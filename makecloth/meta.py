@@ -1,16 +1,20 @@
 #!/usr/bin/python
+
 import sys
 import os.path
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 import utils
-from docs_meta import get_manual_path, MANUAL_BRANCH, render_paths, GENERATED_MAKEFILES
+from docs_meta import get_manual_path, MANUAL_BRANCH, render_paths, GENERATED_MAKEFILES, conf
 from makecloth import MakefileCloth
+
 m = MakefileCloth()
 
 def generate_meta():
     m.section_break('branch/release meta', block='rel')
-    m.var('manual-branch', MANUAL_BRANCH, block='rel')
+    m.var('manual-branch', conf.git.branches.manual, block='rel')
     m.var('current-branch', str(utils.get_branch()), block='rel')
     m.var('last-commit', str(utils.get_commit()), block='rel')
     m.var('current-if-not-manual', str(get_manual_path()), block='rel')
@@ -30,7 +34,7 @@ def generate_meta():
     m.newline()
     for target in GENERATED_MAKEFILES:
         file ='/'.join([paths['output'], "makefile." + target])
-        cloth = '/'.join([paths['tools'], "makecloth", target + '.py'])
+        cloth = os.path.join(conf.build.paths.buildsystem, "makecloth", target + '.py')
         
         generated_makefiles.append(file)
         m.raw(['-include ' + paths['output'] + '/makefile.' + target])

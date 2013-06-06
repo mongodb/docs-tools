@@ -14,7 +14,7 @@ class AttributeDict(dict):
             for key in value:
                 self.__setitem__(key, value[key])
         else:
-            raise TypeError, 'expected dict'
+            raise TypeError('expected dict')
 
     def __setitem__(self, key, value):
         if isinstance(value, dict) and not isinstance(value, AttributeDict):
@@ -34,8 +34,10 @@ class AttributeDict(dict):
     __getattr__ = __getitem__
 
 class BuildConfiguration(AttributeDict):
-    def __init__(self, filename):
-        conf = ingest_yaml_doc(get_conf_file(filename, os.path.split(os.path.abspath(filename))[0]))
+    def __init__(self, filename, directory=None):
+        if directory is None:
+            directory = os.path.split(os.path.abspath(filename))[0]
+        conf = ingest_yaml_doc(get_conf_file(filename, directory))
 
         for key, value in conf.iteritems():
             if isinstance(value, (list, tuple)):
@@ -169,7 +171,8 @@ def ingest_json_list(filename):
 
 def get_conf_file(file, directory=None):
     if directory is None:
-        from docs_meta import GENERATED_MAKEFILE_DATA_DIRECTORY as directory
+        from docs_meta import conf
+        directory = conf.build.paths.builddata
 
     conf_file = os.path.split(file)[1].rsplit('.', 1)[0] + '.yaml'
 

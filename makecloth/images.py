@@ -5,6 +5,7 @@ import json
 from multiprocessing import cpu_count
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 import utils
 from makecloth import MakefileCloth
 

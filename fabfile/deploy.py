@@ -1,5 +1,6 @@
 from fabric.api import cd, local, task, abort, env, puts
 from fabric.utils import _AttributeDict as ad
+
 from docs_meta import PUBLISHED_BRANCHES, MANUAL_BRANCH, render_paths, get_branch, get_commit
 from urllib2 import urlopen
 

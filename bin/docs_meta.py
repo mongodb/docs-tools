@@ -9,8 +9,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './')))
 from utils import write_yaml, shell_value, get_commit, get_branch, get_conf_file, ingest_yaml, BuildConfiguration
 
 ### Configuration and Settings
+root_path = os.path.realpath(os.path.join(os.path.dirname(__file__) , '../../../'))
 
-conf = BuildConfiguration(__file__)
+conf = BuildConfiguration(os.path.join(root_path, 'bin/docs_meta.yaml'))
+conf.build.paths.root = root_path
 
 # For backwards compatibility, populating global variables from yaml file. See
 # the docs_meta.yaml file for documentation of these values.
@@ -26,6 +28,10 @@ GENERATED_MAKEFILES = conf.build.system.files
 GENERATED_MAKEFILE_DATA_DIRECTORY = conf.build.system.data
 
 ### Functions
+
+def get_sphinx_builders():
+    path = os.path.join(conf.build.paths.root, conf.build.paths.builddata, 'sphinx.yaml')
+    return ingest_yaml(path)['builders']
 
 def get_manual_path():
     branch = get_branch()

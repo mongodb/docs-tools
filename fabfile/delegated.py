@@ -6,6 +6,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 
 from utils import log_command_output, ingest_yaml, get_branch
+from docs_meta import conf, get_sphinx_builders
 
 b = 'delegated-builder'
 
@@ -25,9 +26,10 @@ def build_branch(logfile, branch='master', target='publish', wait=False):
         puts('[{0}]: build in progress.'.format(b))
 
 
-env.logfile = 'build/docs-staging-delegated.log'
+env.logfile = os.path.join(conf.build.paths.output, 'docs-staging-delegated.log')
 env.builders = ['publish', 'push', 'stage', 'json-output']
-env.builders.extend(ingest_yaml(os.path.join(os.path.dirname(__file__), '../bin/builddata/sphinx.yaml'))['builders'])
+env.builders.extend(get_sphinx_builders())
+
 env.branch = get_branch()
 env.wait = False
 env.repo = GitRepoManager()
