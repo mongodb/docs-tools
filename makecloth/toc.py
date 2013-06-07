@@ -26,8 +26,8 @@ def make_toc(sources):
         document = document[2:]
 
         m.section_break(document)
-        command = '$(PYTHONBIN) bin/rstcloth/toc.py {0} '
-        generator = 'bin/rstcloth/toc.py'
+        command = '$(PYTHONBIN) $(tools)/rstcloth/toc.py {0} '
+        generator = '$(tools)/rstcloth/toc.py'
 
         if output_format == 'table':
             table_target = 'source/includes/table-' + base_name + '.rst'
