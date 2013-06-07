@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './')))
 from utils import write_yaml, shell_value, get_commit, get_branch, get_conf_file, ingest_yaml, BuildConfiguration
 
 ### Configuration and Settings
-root_path = os.path.realpath(os.path.join(os.path.dirname(__file__) , '../../../'))
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__) , '../../'))
 
 conf = BuildConfiguration(os.path.join(root_path, 'bin/docs_meta.yaml'))
 conf.build.paths.root = root_path

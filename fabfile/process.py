@@ -4,7 +4,7 @@ import os
 import shutil
 
 from utils import md5_file
-from docs_meta import get_manual_path
+from docs_meta import get_manual_path, output_yaml
 from fabric.api import task, env, abort, puts, local
 
 env.input_file = None
@@ -107,3 +107,10 @@ def create_link():
     else:
         os.symlink(env.input_file, env.output_file)
         puts('[{0}] created symbolic link pointing to "{1}" named "{2}"'.format('symlink', env.output_file, env.input_file))
+
+
+@task
+def meta(filename):
+    output_yaml(env.output_file)
+    
+
