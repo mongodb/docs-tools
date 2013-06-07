@@ -2,6 +2,7 @@ import sys
 import os.path
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 
 from rstcloth import RstCloth
 import utils
@@ -14,4 +15,3 @@ def main(fn):
 
 if __name__ == '__main__':
     main(sys.argv[1])
-    

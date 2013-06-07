@@ -6,10 +6,12 @@ from multiprocessing import cpu_count
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
-import utils
+from utils import ingest_yaml_list
+from docs_meta import render_paths
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
+paths = render_paths()
 
 def generate_targets(images):
     image_files = []
@@ -40,8 +42,8 @@ def generate_targets(images):
 
         rst_file = source_base + '.rst'
         image_rst_files.append(rst_file)
-        m.target(rst_file, 'bin/rstcloth/images.py source/images/metadata.yaml', block=b)
-        m.job("$(PYTHONBIN) bin/rstcloth/images.py '%s'" % json.dumps(image), block=b)
+        m.target(rst_file, '{0}/rstcloth/images.py source/images/metadata.yaml'.format(paths['buildsystem']), block=b)
+        m.job("$(PYTHONBIN) {0}/rstcloth/images.py '{1}'".format(paths['buildsystem'], json.dumps(image)), block=b)
         m.msg('[image]: generating rst file for %s' % b, block=b)
 
     b = 'footer'
@@ -71,7 +73,7 @@ def main():
 
     conf = '/'.join([ui.dir, ui.config])
 
-    images = utils.ingest_yaml_list(conf)
+    images = ingest_yaml_list(conf)
     for image in images:
         image['dir'] = ui.dir
 
