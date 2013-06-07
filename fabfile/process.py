@@ -110,7 +110,7 @@ def create_link():
 
 
 @task
-def meta(filename):
+def meta():
     output_yaml(env.output_file)
     
 
