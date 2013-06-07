@@ -183,3 +183,7 @@ def build_platform_notification(title, content):
         return 'growlnotify -n "mongodb-doc-build" -a "Terminal.app" -m %s -t %s' % (title, content)
     if sys.platform.startswith('linux'):
         return 'notify-send "%s" "%s"' % (title, content)
+
+def symlink(name, target):
+    if not os.path.islink(name):
+        os.symlink(target, name)
