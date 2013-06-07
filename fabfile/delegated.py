@@ -29,7 +29,6 @@ def build_branch(logfile, branch='master', target='publish', wait=False):
 env.logfile = os.path.join(conf.build.paths.output, 'docs-staging-delegated.log')
 env.builders = ['publish', 'push', 'stage', 'json-output']
 env.builders.extend(get_sphinx_builders())
-
 env.branch = get_branch()
 env.wait = False
 env.repo = GitRepoManager()

@@ -8,6 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 import utils
 from docs_meta import get_manual_path, MANUAL_BRANCH, render_paths, GENERATED_MAKEFILES, conf
+
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
