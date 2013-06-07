@@ -8,7 +8,7 @@ import sys
 from utils import write_yaml, shell_value, get_commit, get_branch, get_conf_file, ingest_yaml, BuildConfiguration
 
 ### Configuration and Settings
-conf = BuildConfiguration('docs_meta.yaml'))
+conf = BuildConfiguration('docs_meta.yaml')
 
 # For backwards compatibility, populating global variables from yaml file. See
 # the docs_meta.yaml file for documentation of these values.
