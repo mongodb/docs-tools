@@ -5,7 +5,6 @@ import sys
 import re
 import subprocess
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 import docs_meta
 from utils import get_branch
 

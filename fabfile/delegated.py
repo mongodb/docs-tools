@@ -3,8 +3,6 @@ from git import GitRepoManager
 import os.path
 import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
-
 from utils import log_command_output, ingest_yaml, get_branch
 from docs_meta import conf, get_sphinx_builders
 
