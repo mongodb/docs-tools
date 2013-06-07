@@ -12,10 +12,10 @@ def init_fabric(buildsystem, conf_file):
     symlink('docs_meta.yaml', conf_file)
 
     symlink(name=os.path.join(buildsystem, 'fabfile', 'utils.py'),
-            target=os.path.join('../', buildsystem, 'bin', 'utils.py'))
+            target=os.path.join(os.path.abspath(buildsystem), 'bin', 'utils.py'))
 
     symlink(name=os.path.join(buildsystem, 'fabfile', 'docs_meta.py'),
-            target=os.path.join('../', buildsystem, 'bin', 'docs_meta.py'))
+            target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
 
 def clean_buildsystem(buildsystem, output_dir):
     if os.path.islink('fabfile'):
