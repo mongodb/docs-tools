@@ -4,13 +4,14 @@ import os.path
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 
 from makecloth import MakefileCloth
 from conf import intersphinx_mapping
-import docs_meta
+from docs_meta import render_paths
 
-paths = docs_meta.render_paths('dict')
+paths = render_paths('dict')
 m = MakefileCloth()
 
 def intersphinx_builders():
