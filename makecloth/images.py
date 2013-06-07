@@ -11,7 +11,7 @@ from docs_meta import render_paths
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
-paths = render_paths()
+paths = render_paths('dict')
 
 def generate_targets(images):
     image_files = []

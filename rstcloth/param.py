@@ -2,6 +2,7 @@ import sys
 import os.path
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 
 import utils as utils
 from rstcloth import RstCloth
