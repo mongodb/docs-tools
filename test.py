@@ -51,11 +51,11 @@ def run_tests(branch):
         local('git pull')
 
     mflags = 'MAKEFLAGS=-r --no-print-directory'
-    if sys.platform == 'linux':
-        mflags = '-j'
-    elif sys.platform == 'darwin':
-        mflags = '-j16'
-        
+    if sys.platform.startswith('linux'):
+        mflags += ' -j'
+    elif sys.platform.startswith('darwin'):
+        mflags += ' -j16'
+
     with lcd(repo_path):
         local('python bootstrap.py')
         puts('[test]: repository bootstrapped in branch: {0}'.format(branch))
