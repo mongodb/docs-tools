@@ -2,9 +2,6 @@ import sys
 import os.path
 import json
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
-
 import utils
 from rstcloth import RstCloth
 
@@ -29,15 +26,16 @@ def generate_pages(conf):
             tag = '.png'
 
 
-        options = [('alt', alt), ('align', 'center')]
+        options = [('alt', alt), ('align', 'center'), ('figwidth', output['width'])]
 
         if 'scale' in output:
             options.append(('scale', output['scale']))
 
-        r.directive(name='image',
+        r.directive(name='figure',
                     arg='/images/{0}{1}'.format(conf['name'], tag),
                     fields=options,
                     indent=3,
+                    content=alt,
                     block=b)
         r.newline(block=b)
 

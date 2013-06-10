@@ -40,12 +40,12 @@ class CustomTocTree(object):
 
                 if sort is False:
                     pass
-                elif 'name' not in datum: 
+                elif 'name' not in datum:
                     sort = False
 
                 o.append(datum)
 
-        if sort is True: 
+        if sort is True:
             o.sort(key=lambda o: o['name'])
 
         return o
@@ -63,7 +63,7 @@ class CustomTocTree(object):
                     text = None
 
                 link = self.dfn.role('doc', ref['file'], text)
-                self.dfn.definition(link, ref['description'], bold=False)
+                self.dfn.definition(link, ref['description'], bold=False, wrap=False)
                 self.dfn.newline()
 
 def user_input():
