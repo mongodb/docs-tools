@@ -1,6 +1,7 @@
 from fabric.api import local, hide, lcd, puts, settings, hide
 import fabric.state
 import os
+import sys
 import argparse
 
 fabric.state.output.running = False
@@ -49,14 +50,20 @@ def run_tests(branch):
         local('git checkout {0}'.format(branch))
         local('git pull')
 
+    mflags = 'MAKEFLAGS=-r --no-print-directory'
+    if sys.platform == 'linux':
+        mflags = '-j'
+    elif sys.platform == 'darwin':
+        mflags = '-j16'
+        
     with lcd(repo_path):
         local('python bootstrap.py')
         puts('[test]: repository bootstrapped in branch: {0}'.format(branch))
         puts('------------------------------------------------------------------------')
-        local('make json')
+        local('make {0} json'.format(mflags))
         puts('[test]: rebuild json output first.')
         puts('------------------------------------------------------------------------')
-        local('make publish')
+        local('make {0} publish'.format(mflags))
         puts('[test]: repository build publish target in branch: {0}'.format(branch))
         puts('------------------------------------------------------------------------')
 
