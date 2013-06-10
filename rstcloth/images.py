@@ -2,6 +2,9 @@ import sys
 import os.path
 import json
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
 import utils
 from rstcloth import RstCloth
 
