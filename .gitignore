@@ -5,3 +5,4 @@ build/
 *.bak
 fabfile/docs_meta.py
 fabfile/utils.py
+*#*
