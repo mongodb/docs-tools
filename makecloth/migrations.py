@@ -16,13 +16,15 @@ def build_all_migrations(migrations):
     m.newline(block='header')
 
     for migration in migrations:
-        dependency = migration['target'].rsplit('/', 1)[0]
+        target_array = migration['target'].rsplit('/', 1)
         block=migration['type']
 
         m.target(target=migration['target'],
                  dependency=migration['source'],
                  block=block)
-        m.job('mkdir -p ' + dependency, block=block)
+
+        if len(target_array) > 1:
+            m.job('mkdir -p ' + target_array[0], block=block)
         m.job('cp $< $@', block=block)
         m.msg('[build]: migrated $@', block=block)
         m.newline(block=block)
