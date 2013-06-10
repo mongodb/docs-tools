@@ -75,9 +75,9 @@ def render_paths(fn):
     paths['branch-staging'] = paths['public'] + '/' + get_branch()
 
     if str(fn).endswith('yaml'):
-        utils.write_yaml(paths, fn)
+        utils.write_yaml(dict(paths), fn)
     elif fn == 'print':
-        print(yaml.dump(paths, default_flow_style=False))
+        print(yaml.safe_dump(dict(paths), default_flow_style=False) + '...')
     else:
         return paths
 
