@@ -67,11 +67,8 @@ def main():
     if branches == []:
         branches = ['master']
 
-    choices = branches
-    choices.append('all')
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('--branch', '-b', choices=branches, default='master')
+    parser.add_argument('--branch', '-b', default='master')
     parser.add_argument('--repo', '-r', default='git@github.com:mongodb/docs.git')
     user = parser.parse_args()
 
