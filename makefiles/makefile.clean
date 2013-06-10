@@ -1,0 +1,21 @@
+.PHONY: help clean clean-branch clean-public clean-all clean-stale archive
+
+archive:$(public-output).$(timestamp).tar.gz
+	@echo [$@]: created $< $@.
+$(public-output).%.tar.gz:$(public-output)
+	tar -czvf $@ $<
+
+build-ephemera = $(output)/makefile.* $(output)/*.inv $(branch-output)/source meta.yaml
+clean-generated-targets = clean-api clean-tables clean-toc clean-public clean-images-rst
+.PHONY:$(clean-generated-targets)
+clean:$(clean-generated-targets)
+	-rm -rf $(build-ephemera)
+clean-branch:
+	-rm -rf $(branch-output)/*
+clean-public:
+	-rm -rf $(public-output)/*
+clean-all:
+	-rm -rf $(output)/*
+clean-stale:
+	@fab clean.builds:14
+	@echo "[clean]: removed all stale build artifacts older than 14 days."
