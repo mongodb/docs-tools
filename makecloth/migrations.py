@@ -16,7 +16,7 @@ def build_all_migrations(migrations):
     m.newline(block='header')
 
     for migration in migrations:
-        dependency = migration['source'].rsplit('/', 1)[0]
+        dependency = migration['target'].rsplit('/', 1)[0]
         block=migration['type']
 
         m.target(target=migration['target'],
