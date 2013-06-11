@@ -98,15 +98,15 @@ def pdf_builder(pdf, tex, cmd):
     b = pdf
 
     m.target(pdf, tex, block=b)
-    m.job("{0} $(LATEXOPTS) '$<' >|$@.log".format(cmd), block=b)
-    m.msg("[pdf]: \(1/4\) pdflatex $<", block=b)
-    m.job("makeindex -s $(output)/latex/python.ist '$(basename $<).idx' >>$@.log 2>&1", ignore=True, block=b)
-    m.msg("[pdf]: \(2/4\) Indexing: $(basename $<).idx", block=b)
-    m.job("{0} $(LATEXOPTS) '$<' >|$@.log".format(cmd), block=b)
-    m.msg("[pdf]: \(3/4\) pdflatex $<", block=b)
-    m.job("{0} $(LATEXOPTS) '$<' >|$@.log".format(cmd), block=b)
-    m.msg("[pdf]: \(4/4\) pdflatex $<", block=b)
-    m.msg("[pdf]: see '$@.log' for a full report of the pdf build process.", block=b)
+    m.job("{0} $(LATEXOPTS) '{1}' >|{2}.log".format(cmd, tex, pdf), block=b)
+    m.msg("[pdf]: \(1/4\) pdflatex {0}".format(tex), block=b)
+    m.job("makeindex -s {0}/latex/python.ist '$(basename {1}).idx' >>{2}.log 2>&1".format(paths['output'], tex, pdf), ignore=True, block=b)
+    m.msg("[pdf]: \(2/4\) Indexing: $(basename {0}).idx".format(tex), block=b)
+    m.job("{0} $(LATEXOPTS) '{1}' >|{2}.log".format(cmd, tex, pdf), block=b)
+    m.msg("[pdf]: \(3/4\) pdflatex {0}".format(tex), block=b)
+    m.job("{0} $(LATEXOPTS) '{1}' >|{2}.log".format(cmd, tex, pdf), block=b)
+    m.msg("[pdf]: \(4/4\) pdflatex {0}".format(tex), block=b)
+    m.msg("[pdf]: see '{0}.log' for a full report of the pdf build process.".format(pdf), block=b)
 
 def main():
     conf_file = utils.get_conf_file(__file__)
