@@ -59,14 +59,13 @@ def run_tests(branch, project, repo_path):
         local('python bootstrap.py')
         puts('[test]: repository bootstrapped in branch: {0}'.format(branch))
         puts('------------------------------------------------------------------------')
-        pre_builders = 'json dirhtml'
         
         if project == 'manual':
-            pre_builders += ' texinfo'
+            pre_builders = 'json dirhtml texinfo'
+            local('make {0} {1}'.format(mflags, pre_builders))
+            puts('[test]: targets rebuilt: {0}.'.format(pre_builders))
+            puts('------------------------------------------------------------------------')
 
-        local('make {0} {1}'.format(mflags, pre_builders))
-        puts('[test]: targets rebuilt: {0}.'.format(pre_builders))
-        puts('------------------------------------------------------------------------')
         local('make {0} publish'.format(mflags))
         puts('[test]: repository build publish target in branch: {0}'.format(branch))
         puts('------------------------------------------------------------------------')
