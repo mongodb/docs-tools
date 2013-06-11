@@ -26,7 +26,7 @@ def make_all_sphinx(config):
 
     m.section_break('sphinx prerequisites')
     m.newline()
-    m.target('sphinx-prerequisites', config['prerequsites'], block=b)
+    m.target('sphinx-prerequisites', config['prerequisites'], block=b)
     m.msg('[sphinx-prep]: build environment prepared for sphinx.', block=b)
 
     m.target('generate-source',  config['generated-source'], block=b)
