@@ -33,7 +33,10 @@ def get_manual_path():
     branch = get_branch()
 
     if branch == conf.git.branches.manual:
-        return 'manual'
+        if conf.git.remote.upstream.endswith('mms-docs') or conf.git.remote.upstream.endswith('meta-driver'):
+            return 'current'
+        else:
+            return 'manual'
     else:
         return branch
 

@@ -7,27 +7,52 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 import utils
 from makecloth import MakefileCloth
-from docs_meta import render_paths, get_manual_path
+from docs_meta import render_paths, get_manual_path, conf
 
 m = MakefileCloth()
 
 paths = render_paths('dict')
 
 correction = "'s/(index|bfcode)\{(.*!*)*--(.*)\}/\\1\{\\2-\{-\}\\3\}/g'"
-link_correction = "'s%\\\\\code\{/%\\\\\code\{http://docs.mongodb.org/" + get_manual_path() + "/%g'"
 pdf_latex_command = 'TEXINPUTS=".:{0}/latex/:" pdflatex --interaction batchmode --output-directory {0}/latex/ $(LATEXOPTS)'.format(paths['branch-output'])
 
-def pdf_makefile(name, tag):
-    name_tagged = '-'.join([name, tag])
+def pdf_makefile(name, tag=None, edition=None):
+    if tag is None:
+        name_tagged = name
+        name_tagged_branch_pdf = '-'.join([name, utils.get_branch()]) + '.pdf'
+    else:
+        name_tagged = '-'.join([name, tag])
+        name_tagged_branch_pdf = '-'.join([name, tag,  utils.get_branch()]) + '.pdf'
+
+    if conf.git.remote.upstream.endswith('mms-docs'):
+        site_url = 'http://mms.10gen.com'
+    else:
+        site_url = 'http://docs.mongodb.org/' + get_manual_path()
+
+    if edition is None:
+        branch_staging = paths['branch-staging']
+        branch_output = paths['branch-output']
+    else:
+        if edition == 'saas':
+            branch_staging = os.path.join(paths['public'], edition)
+            branch_output = os.path.join(paths['output'], edition)
+            site_url += "/help"
+        elif edition == 'hosted':
+            branch_staging = os.path.join(paths['public'], edition, utils.get_branch())
+            branch_output = os.path.join(paths['output'], edition, utils.get_branch())
+            site_url += '/help-hosted/' + get_manual_path()
+
+    pdf_latex_command = 'TEXINPUTS=".:{0}/latex/:" pdflatex --interaction batchmode --output-directory {0}/latex/ $(LATEXOPTS)'.format(branch_output)
+    link_correction = "'s%\\\\\code\{/%\\\\\code\{" + site_url + "/%g'"
+
     name_tagged_pdf = name_tagged + '.pdf'
-    name_tagged_branch_pdf = '-'.join([name, tag,  utils.get_branch()]) + '.pdf'
 
-    generated_latex = '{0}/latex/{1}.tex'.format(paths['branch-output'], name)
-    built_tex = '{0}/latex/{1}.tex'.format(paths['branch-output'], name_tagged)
+    generated_latex = '{0}/latex/{1}.tex'.format(branch_output, name)
+    built_tex = '{0}/latex/{1}.tex'.format(branch_output, name_tagged)
 
-    built_pdf = '{0}/latex/{1}'.format(paths['branch-output'], name_tagged_pdf)
-    staged_pdf_branch = '{0}/{1}'.format(paths['branch-staging'], name_tagged_branch_pdf)
-    staged_pdf = '{0}/{1}'.format(paths['branch-staging'], name_tagged_pdf)
+    built_pdf = '{0}/latex/{1}'.format(branch_output, name_tagged_pdf)
+    staged_pdf_branch = '{0}/{1}'.format(branch_staging, name_tagged_branch_pdf)
+    staged_pdf = '{0}/{1}'.format(branch_staging, name_tagged_pdf)
 
     m.section_break(name)
     m.target(target=generated_latex, dependency='latex')
@@ -37,6 +62,8 @@ def pdf_makefile(name, tag):
     m.target(target=built_tex, dependency=generated_latex)
     m.job('fab process.input:{0} process.output:{1} process.copy_if_needed:pdf'.format(generated_latex, built_tex))
     m.msg('[pdf]: updated "' + built_tex + '" for pdf generation.')
+
+    pdf_builder(built_pdf, built_tex, pdf_latex_command)
 
     m.target(target=staged_pdf_branch, dependency=built_pdf)
     m.job('cp {0} {1}'.format(built_pdf, staged_pdf_branch))
@@ -53,13 +80,11 @@ def build_all_pdfs(pdfs):
 
     for pdf in pdfs:
         name = pdf['output'].rsplit('.', 1)[0]
-        pdf = pdf_makefile(name, pdf['tag'])
+        if 'edition' not in pdf:
+            pdf['edition'] = None
+
+        pdf = pdf_makefile(name, pdf['tag'], pdf['edition'])
         manual_pdfs.append(pdf)
-
-    m.newline()
-
-    m.section_break('pdf build system')
-    makefile_footer()
 
     m.newline()
 
@@ -69,26 +94,25 @@ def build_all_pdfs(pdfs):
     m.job('rm -f ' + ' '.join(manual_pdfs), ignore=True)
     m.msg('[pdf]: cleaned all compiled pdfs')
 
-def makefile_footer():
-    b = 'meta'
+def pdf_builder(pdf, tex, cmd):
+    b = pdf
 
-    m.target('pdfs', utils.expand_tree(os.path.join(paths['branch-output'], 'latex'), 'tex'), block=b)
-
-    m.newline()
-    m.target('%.pdf', '%.tex', block=b)
-    m.job("{0} $(LATEXOPTS) '$<' >|$@.log".format(pdf_latex_command), block=b)
+    m.target(pdf, tex, block=b)
+    m.job("{0} $(LATEXOPTS) '$<' >|$@.log".format(cmd), block=b)
     m.msg("[pdf]: \(1/4\) pdflatex $<", block=b)
     m.job("makeindex -s $(output)/latex/python.ist '$(basename $<).idx' >>$@.log 2>&1", ignore=True, block=b)
     m.msg("[pdf]: \(2/4\) Indexing: $(basename $<).idx", block=b)
-    m.job("{0} $(LATEXOPTS) '$<' >|$@.log".format(pdf_latex_command), block=b)
+    m.job("{0} $(LATEXOPTS) '$<' >|$@.log".format(cmd), block=b)
     m.msg("[pdf]: \(3/4\) pdflatex $<", block=b)
-    m.job("{0} $(LATEXOPTS) '$<' >|$@.log".format(pdf_latex_command), block=b)
+    m.job("{0} $(LATEXOPTS) '$<' >|$@.log".format(cmd), block=b)
     m.msg("[pdf]: \(4/4\) pdflatex $<", block=b)
     m.msg("[pdf]: see '$@.log' for a full report of the pdf build process.", block=b)
 
 def main():
     conf_file = utils.get_conf_file(__file__)
     build_all_pdfs(utils.ingest_yaml(conf_file))
+
+    m.target('pdfs', utils.expand_tree(os.path.join(paths['branch-output'], 'latex'), 'tex'))
 
     m.write(sys.argv[1])
     print('[meta-build]: built "' + sys.argv[1] + '" to specify pdf builders.')

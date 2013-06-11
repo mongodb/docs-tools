@@ -32,7 +32,7 @@ def build_all_migrations(migrations):
 
 def main():
     conf_file = utils.get_conf_file(__file__)
-    build_all_migrations(utils.ingest_yaml(conf_file))
+    build_all_migrations(utils.ingest_yaml_list(conf_file))
 
     m.write(sys.argv[1])
 
