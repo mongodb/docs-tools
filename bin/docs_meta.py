@@ -21,7 +21,7 @@ PUBLISHED_VERSIONS = conf.version.published
 STABLE_RELEASE = conf.version.stable
 UPCOMING_RELEASE = conf.version.upcoming
 GENERATED_MAKEFILES = conf.build.system.files
-GENERATED_MAKEFILE_DATA_DIRECTORY = conf.build.system.data
+GENERATED_MAKEFILE_DATA_DIRECTORY = conf.build.paths.builddata
 
 ### Functions
 
