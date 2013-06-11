@@ -24,7 +24,7 @@ def bootstrap_test_env(repo):
             local('git clone {0} {1}'.format(repo, repo_path))
 
 def setup_docs_tools_repo():
-    build_path = os.path.join(repo_path, 'build') 
+    build_path = os.path.join(repo_path, 'build')
     if not os.path.exists(build_path):
         os.makedirs(build_path)
 
@@ -41,23 +41,6 @@ def get_branch_list():
         branches = local('git branch -r --no-color --no-column', capture=True).stdout.split()
         branches = [ branch.split('/', 1)[1] for branch in set(branches) if len(branch.split('/', 1)) > 1 and not branch.split('/', 1)[1] == 'HEAD' ]
     return branches
-
-def build_target(target, flags):
-    local( ' '.join([ 'make', flags, target ] ) )
-
-def run_prep(builders, flags):
-    from multiprocessing import Pool
-    workers = len(builders)
-    p = Pool(processes=workers)
-
-    for builder in builders:
-        p.apply_async(build_target, (builder, flags))
-
-    p.close()
-    p.join()
-
-    puts('[test]: rebuilt "{0}" using {1} workers, first.'.format(', '.join(builders), workers))
-
 
 def run_tests(branch):
     with lcd(repo_path):
@@ -77,7 +60,9 @@ def run_tests(branch):
         local('python bootstrap.py')
         puts('[test]: repository bootstrapped in branch: {0}'.format(branch))
         puts('------------------------------------------------------------------------')
-        run_prep(['json', 'texinfo', 'dirhtml'], mflags)
+        pre_builders = 'json texinfo dirhtml'
+        local('make {0} {1}'.format(mflags, pre_builders))
+        puts('[test]: targets rebuilt: {0}.'.format(pre_builders))
         puts('------------------------------------------------------------------------')
         local('make {0} publish'.format(mflags))
         puts('[test]: repository build publish target in branch: {0}'.format(branch))
