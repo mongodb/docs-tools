@@ -42,7 +42,7 @@ def get_branch_list():
         branches = [ branch.split('/', 1)[1] for branch in set(branches) if len(branch.split('/', 1)) > 1 and not branch.split('/', 1)[1] == 'HEAD' ]
     return branches
 
-def run_tests(branch):
+def run_tests(branch, project):
     with lcd(repo_path):
         if local('git symbolic-ref HEAD', capture=True).rsplit('/', 1)[1] != branch:
             local('git branch -f {0} origin/{0}'.format(branch))
@@ -60,11 +60,21 @@ def run_tests(branch):
         local('python bootstrap.py')
         puts('[test]: repository bootstrapped in branch: {0}'.format(branch))
         puts('------------------------------------------------------------------------')
-        pre_builders = 'json texinfo dirhtml'
+        pre_builders = 'json dirhtml'
+        
+        if project == 'manual':
+            pre_builders += ' texinfo'
+
         local('make {0} {1}'.format(mflags, pre_builders))
         puts('[test]: targets rebuilt: {0}.'.format(pre_builders))
         puts('------------------------------------------------------------------------')
-        local('make {0} publish'.format(mflags))
+
+        if project == 'mms':
+            target = 'all'
+        else:
+            target = 'publish'
+
+        local('make {0} {1}'.format(mflags, target))
         puts('[test]: repository build publish target in branch: {0}'.format(branch))
         puts('------------------------------------------------------------------------')
 
@@ -78,6 +88,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--branch', '-b', default='master')
     parser.add_argument('--repo', '-r', default='git@github.com:mongodb/docs.git')
+    parser.add_argument('--project', '-p', default='manual', choices=['manual', 'mms', 'ecosystem'])
     user = parser.parse_args()
 
     bootstrap_test_env(user.repo)
@@ -86,10 +97,10 @@ def main():
     if user.branch == 'all':
         puts('[test]: testing build for each branch: {0}'.format(', '.join(branches)))
         for branch in branches:
-            run_tests(branch)
+            run_tests(branch, user.project)
     else:
         puts('[test]: running test build for branch {0}'.format(user.branch))
-        run_tests(user.branch)
+        run_tests(user.branch, user.project)
 
     puts('[test]: test sequence complete. examine output for errors.')
 

@@ -1,6 +1,7 @@
 from fabric.api import cd, local, task, env, hide, settings
 from fabric.utils import puts
 from multiprocessing import cpu_count
+import os.path
 import pkg_resources
 import docs_meta
 import datetime
@@ -30,14 +31,24 @@ def get_sphinx_args(nitpick=None):
 
     return o
 
+env._clean_sphinx = False
+
 @task
-def build(builder='html', nitpick=None):
-    with settings(host_string='sphinx'):
-        with hide('running'):
+def clean():
+    env._clean_sphinx = True
 
-            local('mkdir -p {0}/{1}'.format(paths['branch-output'], builder))
+@task
+def build(builder='html', root=None, nitpick=None):
+    if root is None:
+        root = paths['branch-output']
 
-            puts('[{0}]: created {1}/{2}'.format(builder, paths['branch-output'], builder))
+    with settings(hide('running'), host_string='sphinx'):
+        if env._clean_sphinx is True:
+            local('rm -rf {0} {1}'.format(os.path.join(root, 'doctrees' + '-' + builder),
+                                          os.path.join(root, builder)))
+        else:
+            local('mkdir -p {0}/{1}'.format(root, builder))
+            puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
             puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
             cmd = 'sphinx-build -b {0} -t {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}'
@@ -45,9 +56,9 @@ def build(builder='html', nitpick=None):
             if builder.startswith('epub'):
                 cmd += ' 2>&1 1>&3 | grep -v "WARNING: unknown mimetype" | grep -v "WARNING: search index" 1>&2; 3>&1'
 
-            local(cmd.format(builder, get_tags(builder), paths['branch-output'], get_sphinx_args(nitpick)))
+            local(cmd.format(builder, get_tags(builder), root, get_sphinx_args(nitpick)))
 
             if builder.startswith('linkcheck'):
-                puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, paths['branch-output']))
+                puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
 
             puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))

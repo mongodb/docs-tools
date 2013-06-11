@@ -10,13 +10,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 
 import utils
 from makecloth import MakefileCloth
-import docs_meta
+from docs_meta import render_paths
 
 # to add a symlink build process, add a tuple to the ``links`` in the builder definitions file.
 
 m = MakefileCloth()
 
-paths = docs_meta.render_paths('dict')
+paths = render_paths('dict')
 
 def make_all_sphinx(config):
     b = 'prereq'
@@ -44,40 +44,69 @@ def make_all_sphinx(config):
     m.newline(block=b)
 
     sphinx_targets = []
-    for builder in config['builders']:
-        sphinx_builder(builder)
 
-        sphinx_targets.append(builder)
-        sphinx_targets.append(builder + '-nitpick')
-        sphinx_targets.append('clean-' + builder)
+    targets = []
+    for builder in config['builders']:
+        if 'tags' in config:
+            builder_targets = []
+            for tag in config['tags']:
+                tag_target = '-'.join([builder, tag])
+
+                builder_targets.append(tag_target)
+                targets.append(tag_target)
+                targets.append('-'.join([builder, tag, 'nitpick']))
+
+            m.target(builder, builder_targets)
+        else:
+            targets.append(builder)
+            targets.append('-'.join([builder, 'nitpick']))
+
+    for builder in targets:
+        sphinx_targets.extend(sphinx_builder(builder))
 
     m.section_break('meta', block='footer')
     m.newline(block='footer')
     m.target('.PHONY', sphinx_targets, block='footer')
 
-def build_kickoff(target, block):
-    m.job('mkdir -p {1}/{0}'.format(target, paths['branch-output']), block=block)
-    m.msg('[{0}]: created {1}/{0}'.format(target, paths['branch-output']), block)
-    m.msg('[sphinx]: starting {0} build'.foramt(target), block)
-    m.msg('[{0}]: build started at `date`.'.format(target), block)
-
-def sphinx_builder(target):
+def sphinx_builder(target_str):
     b = 'production'
-    m.comment(target, block=b)
+    m.comment(target_str, block=b)
 
-    m.target(target, 'sphinx-prerequisites', block=b)
-    m.job('fab sphinx.build:' + target, block=b)
-    m.job(utils.build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
-    m.msg('[{0}]: completed {0} build.'.format(target))
+    target = target_str.split('-')
 
-    m.target(target + '-nitpick', 'sphinx-prerequisites', block=b)
-    m.job('fab sphinx.build:' + target + ',nitpick=True', block=b)
-    m.job(utils.build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
-    m.msg('[{0}]: completed {0} build.'.format(target))
+    ret_value = [ target_str ]
+    fab_arg = [target[0]]
 
-    m.target('clean-' + target, block=b)
-    m.job('rm -rf {0}/doctrees-{1} {0}/{1}'.format(paths['branch-output'], target), block=b)
-    m.msg('[clean-{0}]: removed all files supporting the {0} build'.format(target) )
+    if len(target) > 3:
+        raise Exception('[meta-build]: Invalid sphinx builder: ' + target)
+    elif len(target) == 1:
+        builder = target_str
+        clean_target = '-'.join(['clean', builder])
+        ret_value.append(clean_target)
+
+        m.target(clean_target, block=b)
+        m.job('fab sphinx.clean sphinx.build:{0}'.format(builder), block=b)
+        m.msg('[clean-{0}]: removed all files supporting the {0} build'.format(builder) )
+        m.newline(block=b)
+    elif len(target) <= 3 and len(target) > 1:
+        if target[1] == 'hosted' or target[1] == 'saas':
+            builder = target[0]
+
+            if target[1] == 'hosted':
+                fab_arg.append('root=' + os.path.join(paths['output'], target[1], utils.get_branch()))
+            elif target[1] == 'saas':
+                fab_arg.append('root=' + os.path.join(paths['output'], target[1]))
+
+        if target[1] == 'nitpick' or target_str.endswith('-nitpick'):
+            builder = target[0]
+            fab_arg.append('nitpick=True')
+
+    m.target(target_str, 'sphinx-prerequisites', block=b)
+    m.job('fab sphinx.build:' + ','.join(fab_arg), block=b)
+    m.job(utils.build_platform_notification('Sphinx', 'completed {0} build.'.format(target_str)), ignore=True, block=b)
+    m.msg('[{0}]: completed {0} build.'.format(target_str))
+
+    return ret_value
 
 def main():
     config = utils.ingest_yaml(utils.get_conf_file(__file__))
