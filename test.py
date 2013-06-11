@@ -7,9 +7,8 @@ import argparse
 fabric.state.output.running = False
 
 build = 'build'
-repo_path = os.path.join(build, 'checkout')
 
-def bootstrap_test_env(repo):
+def bootstrap_test_env(repo, repo_path):
     if not os.path.exists(build):
         os.mkdir(build)
 
@@ -23,7 +22,7 @@ def bootstrap_test_env(repo):
             local('rm -rf ' + repo_path)
             local('git clone {0} {1}'.format(repo, repo_path))
 
-def setup_docs_tools_repo():
+def setup_docs_tools_repo(repo_path):
     build_path = os.path.join(repo_path, 'build')
     if not os.path.exists(build_path):
         os.makedirs(build_path)
@@ -36,13 +35,13 @@ def setup_docs_tools_repo():
         else:
             local('git clone ../../../.git docs-tools')
 
-def get_branch_list():
+def get_branch_list(repo_path):
     with lcd(repo_path):
         branches = local('git branch -r --no-color --no-column', capture=True).stdout.split()
         branches = [ branch.split('/', 1)[1] for branch in set(branches) if len(branch.split('/', 1)) > 1 and not branch.split('/', 1)[1] == 'HEAD' ]
     return branches
 
-def run_tests(branch, project):
+def run_tests(branch, project, repo_path):
     with lcd(repo_path):
         if local('git symbolic-ref HEAD', capture=True).rsplit('/', 1)[1] != branch:
             local('git branch -f {0} origin/{0}'.format(branch))
@@ -68,39 +67,37 @@ def run_tests(branch, project):
         local('make {0} {1}'.format(mflags, pre_builders))
         puts('[test]: targets rebuilt: {0}.'.format(pre_builders))
         puts('------------------------------------------------------------------------')
-
-        if project == 'mms':
-            target = 'all'
-        else:
-            target = 'publish'
-
-        local('make {0} {1}'.format(mflags, target))
+        local('make {0} publish'.format(mflags))
         puts('[test]: repository build publish target in branch: {0}'.format(branch))
         puts('------------------------------------------------------------------------')
 
 def main():
-    with settings(hide('warnings'), warn_only=True):
-        branches = get_branch_list()
-
-    if branches == []:
-        branches = ['master']
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--branch', '-b', default='master')
     parser.add_argument('--repo', '-r', default='git@github.com:mongodb/docs.git')
     parser.add_argument('--project', '-p', default='manual', choices=['manual', 'mms', 'ecosystem'])
     user = parser.parse_args()
 
-    bootstrap_test_env(user.repo)
-    setup_docs_tools_repo()
+    if user.repo == 'git@github.com:mongodb/docs.git' and user.project != 'manual':
+        exit('[test]: project and repo are not correctly matched')
+
+    repo_path = os.path.join(build, user.project)
+    bootstrap_test_env(user.repo, repo_path)
+    setup_docs_tools_repo(repo_path)
+
+    with settings(hide('warnings'), warn_only=True):
+        branches = get_branch_list(repo_path)
+
+    if branches == []:
+        branches = ['master']
 
     if user.branch == 'all':
         puts('[test]: testing build for each branch: {0}'.format(', '.join(branches)))
         for branch in branches:
-            run_tests(branch, user.project)
+            run_tests(branch, user.project, repo_path)
     else:
         puts('[test]: running test build for branch {0}'.format(user.branch))
-        run_tests(user.branch, user.project)
+        run_tests(user.branch, user.project, repo_path)
 
     puts('[test]: test sequence complete. examine output for errors.')
 
