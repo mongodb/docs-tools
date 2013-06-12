@@ -56,6 +56,9 @@ def make_all_sphinx(config):
                 targets.append(tag_target)
                 targets.append('-'.join([builder, tag, 'nitpick']))
 
+                if not 'generated-source' in config:
+                    m.target(tag_target, 'generate-source-' + tag)
+
             m.target(builder, builder_targets)
         else:
             targets.append(builder)
