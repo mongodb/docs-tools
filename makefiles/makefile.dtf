@@ -1,0 +1,13 @@
+.PHONY: dtf test dtf-verbose dtf-passing
+dtf test:
+	@echo "[dtf]: running test suite -- `date`"
+	@dtf --casedir $(tools)/dtf/ --testdir dtf/
+	@echo "[dtf]: test suite complete -- `date`"
+dtf-verbose:
+	@echo "[dtf]: running test suite -- `date`"
+	@dtf --casedir $(tools)/dtf/ --testdir dtf/ -v
+	@echo "[dtf]: test suite complete -- `date`"
+dtf-passing:
+	@echo "[dtf]: running test suite -- `date`"
+	@dtf --casedir $(tools)/dtf/ --testdir dtf/ -p
+	@echo "[dtf]: test suite complete -- `date`"
