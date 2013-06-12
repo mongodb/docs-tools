@@ -33,7 +33,12 @@ def generate_meta():
 
     if 'static' in conf.build.system:
         m.section_break('static makefile includes')
-        m.include(conf.build.system.static, ignore=False)
+
+        for mfile in conf.build.system.static:
+            if mfile.startswith('/'):
+                m.include(mfile[1:], ignore=False)
+            else:
+                m.include(os.path.join(os.path.abspath(os.path.join(__file__, '../makefiles')), mfile))
 
     m.newline()
     m.target('.PHONY', 'meta.yaml')
