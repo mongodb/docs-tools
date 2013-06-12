@@ -885,4 +885,4 @@ div.body div.contents { max-width: 25%; float: right;  padding-right: 2em; margi
 div.body div.contents li { padding-top: .25em; }
 div.hidden { display: none; }
 
-em { font-style: normal; }
+a > em { font-style: normal; }
