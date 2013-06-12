@@ -11,26 +11,28 @@ from makecloth import MakefileCloth
 m = MakefileCloth()
 
 def build_all_sphinx_migrations(migrations):
-    m.comment('Establish basic dependencies.', block='deps')
-    m.target('$(branch-output)/singlehtml/contents.html', '$(branch-output)/singlehtml', block='deps')
-    m.target('$(branch-output)/epub/mongodb-manual.epub', 'epub', block='deps')
-    m.target('$(public-branch-output)/MongoDB-Manual.epub', '$(public-branch-output)/MongoDB-Manual-$(current-branch).epub', block='deps')
-
-    m.comment('targets to establish to ensure clean builds and sphinx content.', block='header')
-    m.newline(block='header')
-
     for migration in migrations:
-        if migration[1] is None:
-            block='content'
-        else:
-            block='build'
+        block = migration['action']
 
-        m.target(target=migration[0],
-                 dependency=migration[1],
+        m.target(target=migration['target'],
+                 dependency=migration['dependency'],
                  block=block)
-        m.job('touch $@', block=block)
-        m.msg('[build]: touched $@ to ensure proper migration', block=block)
-        m.newline(block=block)
+
+        if block == 'touch':
+            m.job('touch {0}'.format(migration['target']), block=block)
+            m.msg('[build]: touched {0} to ensure proper migration'.format(migration['target']), block=block)
+            m.newline(block=block)
+        elif block == 'dep':
+            m.newline(block=block)
+        elif block == 'transfer':
+            m.job('mkdir -p {0}'.format(migration['target']))
+            m.job('rsync -a {0}/ {1}/'.format(migration['target'], migration['dependency']))
+            fsobjs = [ ]
+            for obj in migration['filter']:
+                fsobjs.append(migration['target'] + obj)
+            m.job('rm -f {0}'.format(' '.join(fsobjs)))
+            m.job('touch {0}'.format(migration['target']), block=block)
+            m.msg('[build]: migrated "{0}" to "{0}"'.format(migration['target'], migration['dependency']))
 
 def main():
     conf_file = utils.get_conf_file(__file__)
