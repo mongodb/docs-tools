@@ -38,7 +38,7 @@ def generate_meta():
             if mfile.startswith('/'):
                 m.include(mfile[1:], ignore=False)
             else:
-                m.include(os.path.join(os.path.abspath(os.path.join(__file__, '../makefiles')), mfile))
+                m.include(os.path.join(os.path.abspath(os.path.join(__file__, '../../makefiles')), mfile))
 
     m.newline()
     m.target('.PHONY', 'meta.yaml')
