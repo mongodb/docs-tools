@@ -95,6 +95,8 @@ def sphinx_builder(target_str):
         if target[1] == 'hosted' or target[1] == 'saas':
             builder = target[0]
 
+            fab_arg.append('tags=' + target[1])
+
             if target[1] == 'hosted':
                 fab_arg.append('root=' + os.path.join(paths['output'], target[1], utils.get_branch()))
             elif target[1] == 'saas':

@@ -8,11 +8,15 @@ import datetime
 
 paths = docs_meta.render_paths(True)
 
-def get_tags(target):
+def get_tags(target, argtag):
+    ret = [argtag]
+
     if target.startswith('html') or target.startswith('dirhtml'):
-        return 'website'
+        ret.append('website')
     else:
-        return 'print'
+        ret.append('website')
+
+    return [ '-t ' + i for i in ret if ret is not None ]
 
 def timestamp(form='filename'):
     if form == 'filename':
@@ -38,7 +42,7 @@ def clean():
     env._clean_sphinx = True
 
 @task
-def build(builder='html', root=None, nitpick=None):
+def build(builder='html', tag=None, root=None, nitpick=None):
     if root is None:
         root = paths['branch-output']
 
@@ -51,12 +55,12 @@ def build(builder='html', root=None, nitpick=None):
             puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
             puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
-            cmd = 'sphinx-build -b {0} -t {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}'
+            cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}'
 
             if builder.startswith('epub'):
                 cmd += ' 2>&1 1>&3 | grep -v "WARNING: unknown mimetype" | grep -v "WARNING: search index" 1>&2; 3>&1'
 
-            local(cmd.format(builder, get_tags(builder), root, get_sphinx_args(nitpick)))
+            local(cmd.format(builder, get_tags(builder, tag), root, get_sphinx_args(nitpick)))
 
             if builder.startswith('linkcheck'):
                 puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
