@@ -32,7 +32,7 @@ def build_all_sphinx_migrations(migrations):
                 fsobjs = [ ]
                 for obj in migration['filter']:
                     fsobjs.append(migration['target'] + obj)
-                m.job('rm -f {0}'.format(' '.join(fsobjs)))
+                m.job('rm -rf {0}'.format(' '.join(fsobjs)))
 
             m.job('touch {0}'.format(migration['target']), block=block)
             m.msg('[build]: migrated "{0}" to "{1}"'.format(migration['dependency'], migration['target']))
