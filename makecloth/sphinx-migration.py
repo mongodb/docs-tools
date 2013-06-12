@@ -27,10 +27,13 @@ def build_all_sphinx_migrations(migrations):
         elif block == 'transfer':
             m.job('mkdir -p {0}'.format(migration['target']))
             m.job('rsync -a {0}/ {1}/'.format(migration['target'], migration['dependency']))
-            fsobjs = [ ]
-            for obj in migration['filter']:
-                fsobjs.append(migration['target'] + obj)
-            m.job('rm -f {0}'.format(' '.join(fsobjs)))
+
+            if 'filter' in migration and migration['filter'] and migration['filter'] is not None:
+                fsobjs = [ ]
+                for obj in migration['filter']:
+                    fsobjs.append(migration['target'] + obj)
+                m.job('rm -f {0}'.format(' '.join(fsobjs)))
+
             m.job('touch {0}'.format(migration['target']), block=block)
             m.msg('[build]: migrated "{0}" to "{0}"'.format(migration['target'], migration['dependency']))
 

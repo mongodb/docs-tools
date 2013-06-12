@@ -42,7 +42,7 @@ def make_link(link_path, referent, block):
 
 def main():
     conf_file = utils.get_conf_file(__file__)
-    make_all_links(utils.ingest_yaml(conf_file))
+    make_all_links(utils.ingest_yaml_list(conf_file))
 
     m.write(sys.argv[1])
 
