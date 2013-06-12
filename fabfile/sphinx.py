@@ -9,14 +9,17 @@ import datetime
 paths = docs_meta.render_paths(True)
 
 def get_tags(target, argtag):
-    ret = [argtag]
+    if argtag is None:
+        ret = []
+    else: 
+        ret = [argtag]
 
     if target.startswith('html') or target.startswith('dirhtml'):
         ret.append('website')
     else:
         ret.append('website')
 
-    return [ '-t ' + i for i in ret if ret is not None ]
+    return ' '.join([ '-t ' + i for i in ret ])
 
 def timestamp(form='filename'):
     if form == 'filename':
