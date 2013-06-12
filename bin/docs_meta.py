@@ -10,6 +10,11 @@ from utils import write_yaml, shell_value, get_commit, get_branch, get_conf_file
 ### Configuration and Settings
 conf = BuildConfiguration('docs_meta.yaml')
 
+if os.path.exists('/etc/arch-release'):
+    conf.build.system.python = 'python2'
+else:
+    conf.build.system.python = 'python'
+
 # For backwards compatibility, populating global variables from yaml file. See
 # the docs_meta.yaml file for documentation of these values.
 

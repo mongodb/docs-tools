@@ -115,18 +115,16 @@ def ingest_yaml_list(filename):
     else:
         return [o]
 
-def ingest_yaml_doc(filename):
-    with open(filename, 'r') as f:
-        data = yaml.load_all(f)
+def ingest_yaml_doc(filename, force=False):
+    data = ingest_yaml_list(filename)
 
-        o = data.next()
-
-        try:
-            data.next()
-        except StopIteration:
-            return o
-        else:
+    if force is True or len(data) == 1:
+        return data[0]
+    else:
+        if len(data) > 1:
             raise Exception('{0} has more than one document.'.format(filename))
+        else:
+            return data[0]
 
 def ingest_yaml(filename):
     o = []
