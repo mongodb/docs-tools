@@ -542,6 +542,30 @@ class MakefileCloth(BuildCloth):
         else:
             self._job(job, display, ignore, block)
 
+    def include(self, filename, ignore=False, block='_all'):
+        """
+        :param string filename: The name of the file to include.
+
+        :param boolean ignore: Optional; defaults to ``False``. When ``True``,
+                               this job will have an ``-`` prepended, which will
+                               allow Make to continue building even when this
+                               file exists.
+
+        :param string block: Optional; defaults to ``_all``. Specify the name of
+                             the block in :attr:`~cloth.BuildCloth.builder`.
+        """
+        if ignore is True:
+            incl = '-include'
+        else:
+            incl = 'include'
+
+        if isinstance(filename, list):
+            for f in filename:
+                self._add_to_builder(' '.join([incl, f]), block=block)
+        else:
+            self._add_to_builder(' '.join([incl, f]), block=block)
+
+
     def message(self, message, block='_all'):
         """
         :param string message: The text of a message to be output by a build

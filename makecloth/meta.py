@@ -31,6 +31,10 @@ def generate_meta():
 
     generated_makefiles = []
 
+    if 'static' in conf.build.system:
+        m.section_break('static makefile includes')
+        m.include(conf.build.system.static, ignore=False)
+
     m.newline()
     m.target('.PHONY', 'meta.yaml')
     m.target('meta.yaml', block='metaymal')
