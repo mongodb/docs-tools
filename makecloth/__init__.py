@@ -563,7 +563,7 @@ class MakefileCloth(BuildCloth):
             for f in filename:
                 self._add_to_builder(' '.join([incl, f]), block=block)
         else:
-            self._add_to_builder(' '.join([incl, f]), block=block)
+            self._add_to_builder(' '.join([incl, filename]), block=block)
 
 
     def message(self, message, block='_all'):
