@@ -39,7 +39,7 @@ class BuildConfiguration(AttributeDict):
             directory = os.path.split(os.path.abspath(filename))[0]
         conf = ingest_yaml_doc(get_conf_file(filename, directory))
 
-        for key, value in conf.iteritems():
+        for key, value in conf.items():
             if isinstance(value, (list, tuple)):
                 for item in value:
                     if isinstance(item, dict):
