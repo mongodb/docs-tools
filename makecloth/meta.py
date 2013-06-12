@@ -7,38 +7,43 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 import utils
-from docs_meta import get_manual_path, MANUAL_BRANCH, render_paths, GENERATED_MAKEFILES, conf
+from docs_meta import get_manual_path, conf, render_paths
 
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
+conf.build.paths.update(render_paths('dict'))
 
 def generate_meta():
     m.section_break('branch/release meta', block='rel')
     m.var('manual-branch', conf.git.branches.manual, block='rel')
     m.var('current-branch', str(utils.get_branch()), block='rel')
     m.var('last-commit', str(utils.get_commit()), block='rel')
-    m.var('current-if-not-manual', str(get_manual_path()), block='rel')
-
-    paths = render_paths(True)
+    m.var('current-if-not-manual', conf.git.branches.manual, block='rel')
 
     m.section_break('file system paths', block='paths')
-    m.var('output', paths['output'], block='paths')
-    m.var('public-output', paths['public'], block='paths')
-    m.var('branch-output', paths['branch-output'], block='paths')
-    m.var('rst-include', paths['includes'], block='paths')
-    m.var('branch-source', paths['branch-source'], block='paths')
-    m.var('public-branch-output', paths['branch-staging'], block='paths')
+    m.var('output', conf.build.paths.output, block='paths')
+    m.var('public-output', conf.build.paths.public, block='paths')
+    m.var('branch-output', conf.build.paths['branch-output'], block='paths')
+    m.var('rst-include', conf.build.paths.includes, block='paths')
+    m.var('branch-source', conf.build.paths['branch-source'], block='paths')
+    m.var('public-branch-output', conf.build.paths['branch-staging'], block='paths')
 
     generated_makefiles = []
 
     m.newline()
-    for target in GENERATED_MAKEFILES:
-        file ='/'.join([paths['output'], "makefile." + target])
+    m.target('.PHONY', 'meta.yaml')
+    m.target('meta.yaml', block='metaymal')
+    m.job('fab process.output:meta.yaml process.meta', block='metaymal')
+    m.msg('[meta]: regenerated "meta.yaml"', block='metaymal')
+
+    m.section_break('generated makefiles')
+    for target in conf.build.system.files:
+        file ='/'.join([conf.build.paths.output, "makefile." + target])
         cloth = os.path.join(conf.build.paths.buildsystem, "makecloth", target + '.py')
-        
+
         generated_makefiles.append(file)
-        m.raw(['-include ' + paths['output'] + '/makefile.' + target])
+        m.raw(['-include ' + conf.build.paths.output + '/makefile.' + target])
 
         m.target(target=file, dependency=cloth, block='makefiles')
         m.job(' '.join(["$(PYTHONBIN)", cloth, file]))
