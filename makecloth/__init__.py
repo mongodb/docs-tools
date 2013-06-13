@@ -85,6 +85,7 @@ def print_output(list):
 def write_file(list, filename):
     """
     :param list list: A list of strings to write.
+
     :param string filename: The name of the file to write with ``list``.
 
     Write all items in ``list`` to the file specified by ``filename``. Creates
