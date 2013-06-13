@@ -108,6 +108,20 @@ def create_link():
         os.symlink(env.input_file, env.output_file)
         puts('[{0}] created symbolic link pointing to "{1}" named "{2}"'.format('symlink', env.output_file, env.input_file))
 
+@task
+def manual_single_html():
+    if env.input_file is None or env.output_file is None:
+        abort('[single]: you must specify input and output files.')
+
+    with open(env.input_file, 'r') as f:
+        text = f.read()
+
+    text = re.sub('href="contents.html', 'href="index.html', text)
+    text = re.sub('name="robots" content="index"', 'name="robots" content="noindex"', text)
+    text = re.sub('(href=")genindex.html', '\1../genindex/', text)
+
+    with open(env.output_file, 'w') as f:
+        f.write(text)
 
 @task
 def meta():
