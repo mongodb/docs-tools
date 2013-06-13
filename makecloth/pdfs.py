@@ -110,7 +110,7 @@ def pdf_builder(pdf, tex, cmd):
 
 def main():
     conf_file = utils.get_conf_file(__file__)
-    build_all_pdfs(utils.ingest_yaml(conf_file))
+    build_all_pdfs(utils.ingest_yaml_list(conf_file))
 
     m.target('pdfs', utils.expand_tree(os.path.join(paths['branch-output'], 'latex'), 'tex'))
 
