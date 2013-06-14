@@ -886,3 +886,20 @@ div.body div.contents li { padding-top: .25em; }
 div.hidden { display: none; }
 
 a > em { font-style: normal; }
+
+dl.toc dt {
+   margin-left: 2em;
+   font-weight: bold;
+   line-height: 1.4;
+}
+
+dl.toc > dd {
+   font-size: 85%;
+   margin-left: 4em;
+}
+
+dl.toc dd {
+   margin-left: 4em;
+   max-width: 38em;
+   line-height: 1.3;
+}
