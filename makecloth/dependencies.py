@@ -27,13 +27,16 @@ def generate_build_system(source):
 
     for fn in files:
         includes = []
-        with open(fn, 'r') as f:
-            for line in f:
-                r = inc_pattern.findall(line)
-                if r:
-                    includes.append(fix_include_path(r[0], fn, source))
-        if len(includes) >= 1:
-            dep_info.append( { 't': fn, 'd': includes } )
+        try:
+            with open(fn, 'r') as f:
+                for line in f:
+                    r = inc_pattern.findall(line)
+                    if r:
+                        includes.append(fix_include_path(r[0], fn, source))
+            if len(includes) >= 1:
+                dep_info.append( { 't': fn, 'd': includes } )
+        except IOError
+            continue
 
     composite_files = []
     for dep in dep_info:
