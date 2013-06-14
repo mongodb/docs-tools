@@ -17,3 +17,15 @@ def reset():
     with lcd(conf.build.paths.buildsystem):
         local('git remote set-url origin git@github.com:{0}.git'.format(conf.git.remote.tools))
         puts('[docs-tools]: set docs-tools to use the canonical remote.')
+
+@task
+def bootstrap(action='setup'):
+    cmd = ['python bootstrap.py']
+
+    if action in ['setup', clean]:
+        cmd.append(action)
+    else:
+        abort('[docs-tools]: invalid bootstrap action')
+
+    with lcd(conf.build.paths.projectroot):
+        local(' '.join(cmd))
