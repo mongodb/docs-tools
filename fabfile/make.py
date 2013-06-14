@@ -6,8 +6,8 @@ from docs_meta import conf
 def make(target):
     with lcd(conf.build.paths.projectroot):
         if isinstance(target, list):
-            target_str = ' '.join(target)
+            target_str = make + ' '.join([target])
         elif isinstance(target, basestring):
-            target_str = target
+            target_str = ' '.join(['make', target])
 
         local(target_str)
