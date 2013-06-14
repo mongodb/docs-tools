@@ -9,7 +9,9 @@ from utils import write_yaml, shell_value, get_commit, get_branch, get_conf_file
 
 project_root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..')
 ### Configuration and Settings
-conf = BuildConfiguration(filename='docs_meta.yaml', directoryos.path.join(project_root_dir, 'bin'))
+
+conf = BuildConfiguration(filename='docs_meta.yaml',
+                          directory=os.path.join(project_root_dir, 'bin'))
 
 conf.build.paths.projectroot = project_root_dir
 
