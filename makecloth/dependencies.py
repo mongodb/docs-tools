@@ -45,8 +45,8 @@ def generate_build_system(source):
 
         composite_files.append(t)
         m.target(t, d)
-        m.job('touch {0}'.format(t), block='deps')
-        m.msg('[dependency]: restating {0} because its included files changed'.format(t), block='deps')
+        m.job('fab process.update_time:{0}'.format(t), block='deps')
+        m.msg('[dependency]: updated timestamp of {0} because its included files changed'.format(t), block='deps')
 
     m.target('composites', composite_files)
 

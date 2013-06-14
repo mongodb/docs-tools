@@ -127,4 +127,7 @@ def manual_single_html():
 def meta():
     output_yaml(env.output_file)
     
-
+@task
+def update_time(fn, times=None):
+    if os.path.exists(fn)
+        os.utime(fn, times)
