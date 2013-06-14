@@ -7,8 +7,11 @@ import os.path
 import sys
 from utils import write_yaml, shell_value, get_commit, get_branch, get_conf_file, ingest_yaml, BuildConfiguration
 
+project_root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..')
 ### Configuration and Settings
-conf = BuildConfiguration('docs_meta.yaml')
+conf = BuildConfiguration(filename='docs_meta.yaml', directoryos.path.join(project_root_dir, 'bin'))
+
+conf.build.paths.projectroot = project_root_dir
 
 if os.path.exists('/etc/arch-release'):
     conf.build.system.python = 'python2'
@@ -33,7 +36,7 @@ GENERATED_MAKEFILE_DATA_DIRECTORY = conf.build.paths.builddata
 ### Functions
 
 def get_sphinx_builders():
-    path = os.path.join(conf.build.paths.builddata, 'sphinx.yaml')
+    path = os.path.join(conf.build.paths.projectroot, conf.build.paths.builddata, 'sphinx.yaml')
     return ingest_yaml(path)['builders']
 
 def get_manual_path():
