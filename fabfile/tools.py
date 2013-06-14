@@ -22,7 +22,7 @@ def reset():
 def bootstrap(action='setup'):
     cmd = ['python bootstrap.py']
 
-    if action in ['setup', clean]:
+    if action in ['setup', 'clean']:
         cmd.append(action)
     else:
         abort('[docs-tools]: invalid bootstrap action')

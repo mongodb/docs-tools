@@ -7,11 +7,16 @@ import os.path
 import sys
 from utils import write_yaml, shell_value, get_commit, get_branch, get_conf_file, ingest_yaml, BuildConfiguration
 
-project_root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..')
 ### Configuration and Settings
 
-conf = BuildConfiguration(filename='docs_meta.yaml',
-                          directory=os.path.join(project_root_dir, 'bin'))
+try:
+    project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+    conf = BuildConfiguration(filename='docs_meta.yaml', 
+                              directory=os.path.join(project_root_dir, 'bin'))
+except IOError:
+    project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+    conf = BuildConfiguration(filename='docs_meta.yaml', 
+                              directory=os.path.join(project_root_dir, 'bin'))
 
 conf.build.paths.projectroot = project_root_dir
 
