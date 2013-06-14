@@ -3,7 +3,7 @@ from fabric.api import lcd, local, task
 from docs_meta import conf
 
 @task
-def target(target):
+def make(target):
     with lcd(conf.build.paths.projectroot):
         if isinstance(target, list):
             target_str = ' '.join(target)

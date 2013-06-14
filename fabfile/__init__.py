@@ -9,7 +9,7 @@ import intersphinx
 import process
 import delegated
 import tools
-from make import target as make
+from make import make
 
 import fabric
 fabric.state.output.status = False
