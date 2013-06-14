@@ -890,7 +890,7 @@ a > em { font-style: normal; }
 dl.toc dt {
    margin-left: 2em;
    font-weight: bold;
-   line-height: 1.4;
+   line-height: 1.3;
 }
 
 dl.toc > dd {
@@ -901,5 +901,9 @@ dl.toc > dd {
 dl.toc dd {
    margin-left: 4em;
    max-width: 38em;
+   line-height: 1.3;
+}
+
+dl.toc dd p {
    line-height: 1.3;
 }
