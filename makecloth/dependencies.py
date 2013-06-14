@@ -35,7 +35,7 @@ def generate_build_system(source):
                         includes.append(fix_include_path(r[0], fn, source))
             if len(includes) >= 1:
                 dep_info.append( { 't': fn, 'd': includes } )
-        except IOError
+        except IOError:
             continue
 
     composite_files = []

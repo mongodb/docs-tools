@@ -129,5 +129,5 @@ def meta():
     
 @task
 def update_time(fn, times=None):
-    if os.path.exists(fn)
+    if os.path.exists(fn):
         os.utime(fn, times)
