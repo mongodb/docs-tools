@@ -11,7 +11,7 @@ def init_fabric(buildsystem, conf_file):
 
     symlink('fabfile', os.path.join(buildsystem, 'fabfile'))
 
-    symlink(name=os.path.join(buildsystem, 'bin' 'docs_meta.yaml'),
+    symlink(name=os.path.join(buildsystem, 'bin', 'docs_meta.yaml'),
             target=os.path.join(os.getcwd(), conf_file))
 
     symlink(name=os.path.join(buildsystem, 'fabfile', 'utils.py'),
