@@ -893,15 +893,19 @@ dl.toc dt {
    line-height: 1.3;
 }
 
-dl.toc > dd {
-   font-size: 85%;
-   margin-left: 4em;
+dl.toc > dt {
+   margin-left: 0em;
 }
 
 dl.toc dd {
    margin-left: 4em;
    max-width: 38em;
    line-height: 1.3;
+}
+
+dl.toc > dd {
+   margin-left: 2em;
+   font-size: 85%;
 }
 
 dl.toc dd p {
