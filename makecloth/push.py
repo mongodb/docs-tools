@@ -6,31 +6,37 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 
 from docs_meta import conf
+from utils import get_conf_file, ingest_yaml
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
 
-def generate_build_system():
+def generate_build_system(data):
     phony = []
-    phony.extend(['_build-check-production', '_build-check-staging'])
-    m.target('_build-check-production')
-    m.job('fab --parallel --pool-size=2 deploy.production:{0} deploy.check'.format(conf.git.branches.current))
-    m.target('_build-check-staging')
-    m.job('fab deploy.staging:{0} deploy.check'.format(conf.git.branches.current))
-
+    
+    if data['check'] is True:
+        phony.extend(['_build-check-production', '_build-check-staging'])
+        m.target('_build-check-production')
+        m.job('fab --parallel --pool-size=2 deploy.production:{0} deploy.check'.format(conf.git.branches.current))
+        m.target('_build-check-staging')
+        m.job('fab deploy.staging:{0} deploy.check'.format(conf.git.branches.current))
+        
     push_cmd = {'push': 'fab --parallel --pool-size=2 --linewise deploy.{0}:{1}',
-                'stage': 'fab deploy.'}
+                'stage': 'fab'}
 
-    for (target, action) in [ ('push', 'production'), ('stage', 'staging')]:
+    for (target, action) in data['env'].items():
         m.section_break('targets for pushing to ' + action)
+        phony.extend([target, target_all, target_delete])
         target_all = '-'.join([target, 'all'])
         target_delete = '-'.join([target, 'with', 'delete'])
 
-        phony.extend([target + '-if-up-to-date', target + '-if-up-to-date'])
-        m.target(target + '-if-up-to-date', ['_build-check-' + action, 'publish'])
-
-        phony.extend([target, target_all, target_delete])
-        m.target(target, target + '-if-up-to-date')
+        if data['check'] is True:
+            phony.extend([target + '-if-up-to-date', target + '-if-up-to-date'])
+            m.target(target + '-if-up-to-date', ['_build-check-' + action, 'publish'])
+            m.target(target, target + '-if-up-to-date')
+        else:
+            m.target(target, 'publish')
+            
         m.msg('[push]: copying the new "{0}" build to the {1} web servers'.format(conf.git.branches.current, action))
         m.job(' '.join([push_cmd[target].format(action, conf.git.branches.current), 'deploy.push', 'deploy.static' ]))
         m.msg('[push]: deployed a new build of the "{0}" branch of the manual to {1}'.format(conf.git.branches.current, action))
@@ -49,7 +55,9 @@ def generate_build_system():
     m.target('.PHONY', phony)
 
 def main():
-    generate_build_system()
+    push_conf = ingest_yaml(get_conf_file(__file__))
+
+    generate_build_system(push_conf)
 
     m.write(sys.argv[1])
 
