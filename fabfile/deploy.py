@@ -61,7 +61,7 @@ def mms(version='saas'):
 
 @task
 def ecostage():
-    if conf.git.remote != 'mongodb/docs-ecosystem'
+    if conf.git.remote != 'mongodb/docs-ecosystem':
         abort('this is not the ecosystem docs repo, refusing to stage.')
 
     staging('ecosystem')
