@@ -98,6 +98,10 @@ def copy_if_needed(builder='build'):
 
 @task
 def create_link():
+    out_dirname = os.path.dirname(env.output_file)
+    if not os.path.exists(out_dirname):
+        os.makedirs(out_dirname)
+    
     if os.path.islink(env.output_file):
         pass
     elif os.path.isdir(env.output_file):
