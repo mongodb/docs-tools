@@ -159,7 +159,7 @@ class RstCloth(Cloth):
             name = self.bold(name)
 
         o.append(name)
-        o.append(fill(text, 3, 3, wrap=wrap))
+        o.append(fill(text, indent + 3, indent + 3, wrap=wrap))
 
         self._add(_indent(o, indent), block)
 
