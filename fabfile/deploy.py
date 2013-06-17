@@ -60,6 +60,13 @@ def mms(version='saas'):
         env.remote_rsync_location = '/data/sites/docs/mms-hosted'
 
 @task
+def ecostage():
+    if conf.git.remote != 'mongodb/docs-ecosystem'
+        abort('this is not the ecosystem docs repo, refusing to stage.')
+
+    staging('ecosystem')
+
+@task
 def ecosystem():
     env.project = 'ecosystem'
 
