@@ -21,6 +21,8 @@ class CustomTocTree(object):
     def build_dfn(self):
         self.dfn = RstCloth()
         self.dfn.directive('class', 'toc')
+        self.dfn.newline()
+        
 
     def build_contents(self):
         self.contents = RstCloth()
@@ -65,7 +67,6 @@ class CustomTocTree(object):
 
                 link = self.dfn.role('doc', ref['file'], text)
                 self.dfn.definition(link, ref['description'], indent=3, bold=False, wrap=False)
-                self.dfn.newline()
 
 def user_input():
     parser = argparse.ArgumentParser('table of contents generator.')

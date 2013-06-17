@@ -158,10 +158,10 @@ class RstCloth(Cloth):
         if bold is True:
             name = self.bold(name)
 
-        o.append(name)
+        o.append(_indent(name, indent))
         o.append(fill(text, indent + 3, indent + 3, wrap=wrap))
 
-        self._add(_indent(o, indent), block)
+        self._add(o, block)
 
     def li(self, content, bullet='-', indent=0, wrap=True, block='_all'):
         bullet = bullet + ' '
