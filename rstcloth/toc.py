@@ -20,6 +20,7 @@ class CustomTocTree(object):
 
     def build_dfn(self):
         self.dfn = RstCloth()
+        self.dfn.directive('class', 'toc')
 
     def build_contents(self):
         self.contents = RstCloth()
@@ -63,7 +64,7 @@ class CustomTocTree(object):
                     text = None
 
                 link = self.dfn.role('doc', ref['file'], text)
-                self.dfn.definition(link, ref['description'], bold=False, wrap=False)
+                self.dfn.definition(link, ref['description'], indent=3, bold=False, wrap=False)
                 self.dfn.newline()
 
 def user_input():
