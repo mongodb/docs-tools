@@ -89,10 +89,10 @@ def output_yaml(fn):
 
 def render_paths(fn):
     paths = conf['build']['paths']
-    paths['public'] = paths['output'] + '/public'
-    paths['branch-output'] = paths['output'] + '/' + get_branch()
-    paths['branch-source'] = paths['branch-output'] + '/source'
-    paths['branch-staging'] = paths['public'] + '/' + get_branch()
+    paths['public'] = os.path.join(paths['output'], 'public')
+    paths['branch-output'] = os.path.join(paths['output'], get_branch())
+    paths['branch-source'] = os.path.join(paths['branch-output'], 'source')
+    paths['branch-staging'] = os.path(paths['public'], get_branch())
 
     if str(fn).endswith('yaml'):
         utils.write_yaml(dict(paths), fn)
