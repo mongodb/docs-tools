@@ -26,10 +26,10 @@ def generate_build_system(data):
 
     for (target, action) in data['env'].items():
         m.section_break('targets for pushing to ' + action)
-        phony.extend([target, target_all, target_delete])
         target_all = '-'.join([target, 'all'])
         target_delete = '-'.join([target, 'with', 'delete'])
-
+        phony.extend([target, target_all, target_delete])
+        
         if data['check'] is True:
             phony.extend([target + '-if-up-to-date', target + '-if-up-to-date'])
             m.target(target + '-if-up-to-date', ['_build-check-' + action, 'publish'])
