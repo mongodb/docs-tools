@@ -92,7 +92,7 @@ def render_paths(fn):
     paths['public'] = os.path.join(paths['output'], 'public')
     paths['branch-output'] = os.path.join(paths['output'], get_branch())
     paths['branch-source'] = os.path.join(paths['branch-output'], 'source')
-    paths['branch-staging'] = os.path(paths['public'], get_branch())
+    paths['branch-staging'] = os.path.join(paths['public'], get_branch())
 
     if str(fn).endswith('yaml'):
         utils.write_yaml(dict(paths), fn)
