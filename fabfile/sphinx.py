@@ -30,7 +30,7 @@ def timestamp(form='filename'):
 def get_sphinx_args(nitpick=None):
     o = ''
 
-    if pkg_resources.get_distribution("sphinx").version == '1.2b1-xgen-dev-20130529':
+    if pkg_resources.get_distribution("sphinx").version.startswith('1.2b1-xgen'):
          o += '-j ' + str(cpu_count() + 1) + ' '
 
     if nitpick is not None:
