@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 import sys
 import os.path
 
@@ -6,50 +7,104 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 
 from docs_meta import conf
-from utils import get_conf_file, ingest_yaml
+from utils import get_conf_file, ingest_yaml, get_branch
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
 
+_check_dependency = set()
+
+def add_dependency(data):
+    if not isinstance(data['dependency'], list):
+        data['dependency'] = [data['dependency']]
+
+    phony = []
+    dependency = []
+    for dep in data['dependency']:
+        if dep.endswith('if-up-to-date') and dep not in _check_dependency:
+            env = data['env']
+            m.target('_build-check-' + env)
+            m.job('fab deploy.{0}:{1} deploy.check'.format(env, conf.git.branches.current))
+            m.target(data['target'] + '-if-up-to-date', ['_build-check-' + env, 'publish'])
+            _check_dependency.add(dep)
+
+        dependency.append(dep)
+        phony.append(dep)
+
+    return { 'phony': phony, 'dep': dependency }
+
+def is_recursive(options):
+    if 'recursive' in options:
+        return True
+    else:
+        return True
+
+def is_delete(options):
+    if 'delete' in options:
+        return True
+    else:
+        return False
+
+def build_type(options):
+    if 'static' in options:
+        return 'static'
+    else:
+        return 'push'
+
+
+def get_local_path(options, *args):
+    if 'branched' in options:
+        return os.path.join(os.path.sep.join(args),
+                            conf.git.branches.current)
+    else:
+        return os.path.sep.join(args)
+
+def add_static_commands(paths):
+    rstr = 'deploy.static:local="{1}",remote="{0}"'
+
+    if isinstance(paths['static'], list):
+        r = []
+        for static_path in paths['static']:
+            r.append(rstr.format(os.path.join(conf.build.paths.output, paths['local'], static_path),
+                                 os.path.join(paths['remote'], static_path)))
+        return ' '.join(r)
+    else:
+        return rstr.format(os.path.join(conf.build.paths.output, paths['local'], paths['static']),
+                           os.path.join(paths['remote'], paths['static']))
+
+###### primary builder generators ######
+
 def generate_build_system(data):
     phony = []
-    
-    if data['check'] is True:
-        phony.extend(['_build-check-production', '_build-check-staging'])
-        m.target('_build-check-production')
-        m.job('fab --parallel --pool-size=2 deploy.production:{0} deploy.check'.format(conf.git.branches.current))
-        m.target('_build-check-staging')
-        m.job('fab deploy.staging:{0} deploy.check'.format(conf.git.branches.current))
-        
-    push_cmd = {'push': 'fab --parallel --pool-size=2 --linewise deploy.{0}:{1}',
-                'stage': 'fab'}
+    for builder in data:
+        dep = add_dependency(builder)
+        phony.extend(dep['phony'])
+        dep = dep['dep']
+        target = builder['target']
 
-    for (target, action) in data['env'].items():
-        m.section_break('targets for pushing to ' + action)
-        target_all = '-'.join([target, 'all'])
-        target_delete = '-'.join([target, 'with', 'delete'])
-        phony.extend([target, target_all, target_delete])
-        
-        if data['check'] is True:
-            phony.extend([target + '-if-up-to-date', target + '-if-up-to-date'])
-            m.target(target + '-if-up-to-date', ['_build-check-' + action, 'publish'])
-            m.target(target, target + '-if-up-to-date')
-        else:
-            m.target(target, 'publish')
-            
-        m.msg('[push]: copying the new "{0}" build to the {1} web servers'.format(conf.git.branches.current, action))
-        m.job(' '.join([push_cmd[target].format(action, conf.git.branches.current), 'deploy.push', 'deploy.static' ]))
-        m.msg('[push]: deployed a new build of the "{0}" branch of the manual to {1}'.format(conf.git.branches.current, action))
-    
-        m.target(target + '-all', 'publish')
-        m.msg('[push]: deploying the full docs site to the {0} web servers'.format(action))
-        m.job(' '.join([push_cmd[target].format('production', 'override'), 'deploy.everything:override']))
-        m.msg('[push]: deployed a new full build of Manual to the {0} environment'.format(action))
-    
-        m.target(target + '-with-delete', 'publish')
-        m.msg('[push]: copying the new "{0}" build to the {1} web servers (with rsync --delete)'.format(conf.git.branches.current, action))
-        m.job(' '.join([push_cmd[target].format('production', conf.git.branches.current), 'deploy.push:delete', 'deploy.static' ]))
-        m.msg('[push]: deployed a new build of the "{0}" branch of the manual to the {1} environment'.format(conf.git.branches.current, action))
+        push_cmd = ['fab']
+
+        if is_recursive(builder['options']):
+            push_cmd.append('deploy.recursive')
+        if is_delete(builder['options']):
+            push_cmd.append('deploy.delete')
+
+        push_cmd.append( 'deploy.remote:"{0}"'.format(builder['env']))
+
+        push_cmd.append('deploy.{0}:local="{1}",remote="{2}"'.format(build_type(builder['options']),
+                                                                     get_local_path(builder['options'],
+                                                                                    conf.build.paths.output,
+                                                                                    builder['paths']['local']),
+                                                                     builder['paths']['remote']))
+
+        if 'static' in builder['paths']:
+            push_cmd.append(add_static_commands(builder['paths']))
+
+        phony.append(target)
+        m.target(target, dep)
+        m.msg('[{0}]: deploying "{1}" to the "{2}" environment'.format(target, conf.git.branches.current, builder['env']))
+        m.job(' '.join(push_cmd))
+        m.msg('[{0}]: deployed "{1}" to the "{2}" environment'.format(target, conf.git.branches.current, builder['env']))
         m.newline()
 
     m.target('.PHONY', phony)
@@ -65,4 +120,3 @@ def main():
 
 if __name__ == '__main__':
     main()
- 
