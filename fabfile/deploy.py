@@ -78,7 +78,7 @@ def delete(opt=True):
 @task
 @parallel
 def static(local_path='all', remote=None):
-    cmd = [ 'echo', rsync_options(recursive=False, delete=False) ]
+    cmd = [ 'rsync', rsync_options(recursive=False, delete=False) ]
 
     if local_path == 'all':
         cmd.append('*')
@@ -102,7 +102,7 @@ def push(local_path, remote):
     else:
         remote = remote
 
-    cmd = [ 'echo',
+    cmd = [ 'rsync',
             rsync_options(env.rsync_options.recursive,
                           env.rsync_options.delete),
             local_path,

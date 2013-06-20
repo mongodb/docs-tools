@@ -60,7 +60,7 @@ def get_local_path(options, *args):
         return os.path.sep.join(args)
 
 def add_static_commands(paths):
-    rstr = 'deploy.static:local_path="{1}",remote="{0}"'
+    rstr = 'deploy.static:local_path="{0}",remote="{1}"'
 
     if isinstance(paths['static'], list):
         r = []
