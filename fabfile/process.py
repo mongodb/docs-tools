@@ -3,7 +3,7 @@ import re
 import os
 import shutil
 
-from utils import md5_file
+from utils import md5_file, symlink
 from docs_meta import get_manual_path, output_yaml
 from fabric.api import task, env, abort, puts, local
 
@@ -109,7 +109,7 @@ def create_link():
     elif os.path.exists(env.output_file):
         abort('[{0}]: could not create a symlink at {1}.'.format('link', env.output_file))
     else:
-        os.symlink(env.input_file, env.output_file)
+        symlink(env.output_file, env.input_file)
         puts('[{0}] created symbolic link pointing to "{1}" named "{2}"'.format('symlink', env.output_file, env.input_file))
 
 @task
