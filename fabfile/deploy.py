@@ -77,13 +77,13 @@ def delete(opt=True):
 
 @task
 @parallel
-def static(local='all', remote=None):
+def static(local_path='all', remote=None):
     cmd = [ 'echo', rsync_options(recursive=False, delete=False) ]
 
-    if local == 'all':
+    if local_path == 'all':
         cmd.append('*')
     else:
-        cmd.append(local)
+        cmd.append(local_path)
 
     cmd.append(':'.join([env.host_string, remote]))
 
@@ -91,11 +91,11 @@ def static(local='all', remote=None):
 
 @task
 @parallel
-def push(local, remote):
-    if local.endswith('/') or local.endswith('/*'):
-        local = local
+def push(local_path, remote):
+    if local_path.endswith('/') or local_path.endswith('/*'):
+        local_path = local_path
     else:
-        local = local + '/'
+        local_path = local_path + '/'
 
     if remote.endswith('/'):
         remote = remote[:-1]
@@ -105,7 +105,7 @@ def push(local, remote):
     cmd = [ 'echo',
             rsync_options(env.rsync_options.recursive,
                           env.rsync_options.delete),
-            local,
+            local_path,
             ':'.join([env.host_string, remote]) ]
 
     local(' '.join(cmd))

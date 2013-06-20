@@ -60,7 +60,7 @@ def get_local_path(options, *args):
         return os.path.sep.join(args)
 
 def add_static_commands(paths):
-    rstr = 'deploy.static:local="{1}",remote="{0}"'
+    rstr = 'deploy.static:local_path="{1}",remote="{0}"'
 
     if isinstance(paths['static'], list):
         r = []
@@ -91,7 +91,7 @@ def generate_build_system(data):
 
         push_cmd.append( 'deploy.remote:"{0}"'.format(builder['env']))
 
-        push_cmd.append('deploy.{0}:local="{1}",remote="{2}"'.format(build_type(builder['options']),
+        push_cmd.append('deploy.{0}:local_path="{1}",remote="{2}"'.format(build_type(builder['options']),
                                                                      get_local_path(builder['options'],
                                                                                     conf.build.paths.output,
                                                                                     builder['paths']['local']),
