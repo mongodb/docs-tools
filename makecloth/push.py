@@ -51,8 +51,7 @@ def build_type(options):
     else:
         return 'push'
 
-
-def get_local_path(options, *args):
+def get_branched_path(options, *args):
     if 'branched' in options:
         return os.path.join(os.path.sep.join(args),
                             conf.git.branches.current)
@@ -92,10 +91,11 @@ def generate_build_system(data):
         push_cmd.append( 'deploy.remote:"{0}"'.format(builder['env']))
 
         push_cmd.append('deploy.{0}:local_path="{1}",remote="{2}"'.format(build_type(builder['options']),
-                                                                     get_local_path(builder['options'],
-                                                                                    conf.build.paths.output,
-                                                                                    builder['paths']['local']),
-                                                                     builder['paths']['remote']))
+                                                                          get_branched_path(builder['options'],
+                                                                                            conf.build.paths.output,
+                                                                                            builder['paths']['local']),
+                                                                          get_branched_path(builder['options'],
+                                                                                            builder['paths']['remote'])))
 
         if 'static' in builder['paths']:
             push_cmd.append(add_static_commands(builder['paths']))
