@@ -196,4 +196,10 @@ def build_platform_notification(title, content):
 
 def symlink(name, target):
     if not os.path.islink(name):
-        os.symlink(target, name)
+        try:
+            os.symlink(target, name)
+        except AttributeError:
+            from win32file import CreateSymbolicLink
+            CreateSymbolicLink()
+        except ImportError:
+            exit('ERROR: platform does not contain support for symlinks. Windows users need to pywin32.')
