@@ -828,6 +828,16 @@ div#btnv ul#btnvl li#btnvup:before, div#btnv ul#btnvl li#btnvnx:before {
     color:#c48c55
 }
 
+div#btnv ul#btnvl li#btnvpr {
+    float:left;
+}
+
+div#btnv ul#btnvl li#btnvnx {
+    float:right;
+    text-align: right;
+    padding-right: 6em;
+}
+
 div.body > div.section > div.section {
     margin-left:0;
     margin-top:2em;
