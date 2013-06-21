@@ -830,6 +830,7 @@ div#btnv ul#btnvl li#btnvup:before, div#btnv ul#btnvl li#btnvnx:before {
 
 div#btnv ul#btnvl li#btnvpr {
     float:left;
+    text-align: left;
 }
 
 div#btnv ul#btnvl li#btnvnx {
