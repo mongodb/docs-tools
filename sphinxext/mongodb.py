@@ -24,11 +24,10 @@ from sphinx.util.docfields import Field, GroupedField, TypedField
 import yaml
 
 try:
-    with open('composite-pages.yaml', 'r') as f:
-        composite_pages = yaml.safe_load_all(f).next()
+    with open('mongodb-domain.yaml', 'r') as f:
+        conf = yaml.safe_load_all(f).next()
 except IOError:
-    composite_pages = []
-
+    conf = { 'composites': [], 'suppress-prefix': [] } 
 
 def basename(path):
     return path.split('/')[-1].rsplit('.', 1)[0]
@@ -79,8 +78,20 @@ class MongoDBObject(ObjectDescription):
         if self.display_prefix:
             signode += addnodes.desc_annotation(self.display_prefix,
                                                 self.display_prefix)
-        if nameprefix:
-            signode += addnodes.desc_addname(nameprefix + '.', nameprefix + '.')
+
+        if nameprefix: 
+            if nameprefix in conf['suppress-prefix']:
+                pass
+            else:
+                nameprefix += '.'
+                for prefix in conf['suppress-prefix']:
+                    if nameprefix.startswith(prefix):
+                        nameprefix = nameprefix[len(prefix)+1:]
+                        break
+
+                signode += addnodes.desc_addname(nameprefix, nameprefix)
+                nameprefix[:-1]
+
         signode += addnodes.desc_name(name, name)
         if self.has_arguments:
             if not arglist:
@@ -124,9 +135,9 @@ class MongoDBObject(ObjectDescription):
             spath = basename(path)
             sspath = basename(self.state_machine.reporter.source)
 
-            if spath in composite_pages:
+            if spath in conf['composites']:
                 pass
-            elif sspath in composite_pages:
+            elif sspath in conf['composites']:
                 pass
             elif spath == fullname:
                 pass
@@ -149,7 +160,7 @@ class MongoDBObject(ObjectDescription):
                     'other instance in ' + path,
                     line=self.lineno)
 
-        if self.env.docname.rsplit('/', 1)[1] in composite_pages:
+        if self.env.docname.rsplit('/', 1)[1] in conf['composites']:
             pass
         else:
             objects[fullname] = self.env.docname, self.objtype
@@ -391,12 +402,8 @@ class MongoDBDomain(Domain):
                 # point to report on links that fail to resolve
                 return None
 
-
-
         return make_refnode(builder, fromdocname, obj[0],
                             name.replace('$', '_S_'), contnode, target)
-
-    
 
     def get_objects(self):
         for refname, (docname, type) in self.data['objects'].items():
