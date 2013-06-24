@@ -29,6 +29,18 @@ try:
 except IOError:
     conf = { 'composites': [], 'suppress-prefix': [] } 
 
+typ_map = {
+    'binary': 'bin',
+    'dbcommand': 'dbcmd',
+    'expression': 'exp',
+    'group': 'grp',
+    'operator': 'op',
+    'parameter': 'pram',
+    'pipeline': 'stage',
+    'program': 'bin',
+    'projection':  'proj',
+    }
+
 def basename(path):
     return path.split('/')[-1].rsplit('.', 1)[0]
 
@@ -104,22 +116,24 @@ class MongoDBObject(ObjectDescription):
         objectname = self.options.get(
             'object', self.env.temp_data.get('mongodb:object'))
 
-        if self.objtype == 'dbcommand':
-            fullname = 'dbcmd.' + name_obj[0]
-        elif self.objtype == 'operator':
-            fullname = 'op.' + name_obj[0]
-        elif self.objtype == 'projection':
-            fullname = 'prj.' + name_obj[0]
-        elif self.objtype == 'binary':
-            fullname = 'bin.' + name_obj[0]
-        elif self.objtype == 'parameter':
-            fullname = 'param.' + name_obj[0]
-        elif self.objtype == 'pipeline':
-            fullname = 'stage.' + name_obj[0]
-        elif self.objtype == 'group':
-            fullname = 'grp.' + name_obj[0]
-        elif self.objtype == 'expression':
-            fullname = 'exp.' + name_obj[0]
+        if self.objtype in typ_map.keys():
+            fullname = '.'.join([typ_map[self.objtype], name_obj[0]])
+        # if self.objtype == 'dbcommand':
+        #     fullname = 'dbcmd.' + name_obj[0]
+        # elif self.objtype == 'operator':
+        #     fullname = 'op.' + name_obj[0]
+        # elif self.objtype == 'projection':
+        #     fullname = 'prj.' + name_obj[0]
+        # elif self.objtype == 'binary':
+        #     fullname = 'bin.' + name_obj[0]
+        # elif self.objtype == 'parameter':
+        #     fullname = 'param.' + name_obj[0]
+        # elif self.objtype == 'pipeline':
+        #     fullname = 'stage.' + name_obj[0]
+        # elif self.objtype == 'group':
+        #     fullname = 'grp.' + name_obj[0]
+        # elif self.objtype == 'expression':
+        #     fullname = 'exp.' + name_obj[0]
         elif name_obj[0] in self.state.document.ids:
             fullname = 'iddup.' + name_obj[0]
         else:
@@ -272,67 +286,33 @@ class MongoDBDomain(Domain):
     name = 'mongodb'
     label = 'MongoDB'
     # if you add a new object type make sure to edit MongoDBObject.get_index_string
-    object_types = {
-        'dbcommand':    ObjType(l_('dbcommand'),   'dbcommand'),
-        'operator':     ObjType(l_('operator'),    'operator'),
-        'projection':   ObjType(l_('projection'),  'projection'),
-        'binary':       ObjType(l_('binary'),      'program'),
-        'setting':      ObjType(l_('setting'),     'setting'),
-        'readmode':     ObjType(l_('readmode'),    'readmode'),
-        'method':       ObjType(l_('method'),      'method'),
-        'data':         ObjType(l_('data'),        'data'),
-        'collflag':     ObjType(l_('collflag'),    'collflag'),
-        'error':        ObjType(l_('error'),       'error'),
-        'macro':        ObjType(l_('macro'),       'macro'),
-        'limit':        ObjType(l_('limit'),       'limit'),
-        'bsontype':     ObjType(l_('bsontype'),    'bsontype'),
-        'authrole':     ObjType(l_('authrole'),    'authrole'),
-        'parameter':    ObjType(l_('parameter'),   'parameter'),
-        'pipeline':     ObjType(l_('pipeline'),    'pipeline'),
-        'group':        ObjType(l_('group'),       'group'),
-        'expression':   ObjType(l_('expression'),  'expression'),
-    }
-
     directives = {
-        'dbcommand':     MongoDBObject,
-        'operator':      MongoDBObject,
-        'projection':    MongoDBObject,
-        'binary':        MongoDBObject,
-        'setting':       MongoDBObject,
-        'readmode':      MongoDBObject,
-        'method':        MongoDBMethod,
-        'data':          MongoDBObject,
-        'collflag':      MongoDBObject,
-        'error':         MongoDBObject,
-        'macro':         MongoDBObject,
-        'limit':         MongoDBObject,
-        'bsontype':      MongoDBObject,
         'authrole':      MongoDBObject,
+        'binary':        MongoDBObject,
+        'bsontype':      MongoDBObject,
+        'collflag':      MongoDBObject,
+        'data':          MongoDBObject,
+        'dbcommand':     MongoDBObject,
+        'error':         MongoDBObject,
+        'expression':    MongoDBObject,
+        'group':         MongoDBObject,
+        'limit':         MongoDBObject,
+        'macro':         MongoDBObject,
+        'method':        MongoDBMethod,
+        'operator':      MongoDBObject,
         'parameter':     MongoDBObject,
         'pipeline':      MongoDBObject,
-        'group':         MongoDBObject,
-        'expression':    MongoDBObject,
+        'projection':    MongoDBObject,
+        'readmode':      MongoDBObject,
+        'setting':       MongoDBObject,
     }
-    roles = {
-        'dbcommand':   MongoDBXRefRole(),
-        'operator':    MongoDBXRefRole(),
-        'projection':  MongoDBXRefRole(),
-        'program':     MongoDBXRefRole(),
-        'setting':     MongoDBXRefRole(),
-        'readmode':    MongoDBXRefRole(),
-        'method':      MongoDBXRefRole(),
-        'data':        MongoDBXRefRole(),
-        'collflag':    MongoDBXRefRole(),
-        'error':       MongoDBXRefRole(),
-        'macro':       MongoDBXRefRole(),
-        'limit':       MongoDBXRefRole(),
-        'bsontype':    MongoDBXRefRole(),
-        'authrole':    MongoDBXRefRole(),
-        'parameter':   MongoDBXRefRole(),
-        'pipeline':    MongoDBXRefRole(),
-        'group':       MongoDBXRefRole(),
-        'expression':  MongoDBXRefRole(),
-    }
+
+    roles = { }
+    object_types = { }
+    for reftype in directives.keys():
+        roles[reftype] = MongoDBXRefRole()
+        object_types[reftype] = ObjType(l_(reftype), reftype)
+
     initial_data = {
         'objects': {}, # fullname -> docname, objtype
     }
@@ -343,30 +323,34 @@ class MongoDBDomain(Domain):
         objects = self.data['objects']
         newname = None
 
-        if typ == 'program':
-            name = 'bin.' + name
+        if typ in typ_map.keys():
+            name = '.'.join([typ_map[typ], name])
             newname = name
-        elif typ == 'dbcommand':
-            name = 'dbcmd.' + name
-            newname = name
-        elif typ == 'operator':
-            name = 'op.' + name
-            newname = name
-        elif typ == 'projection':
-            name = 'prj.' + name
-            newname = name
-        elif typ == 'parameter':
-            name = 'param.' + name
-            newname = name
-        elif typ == 'pipeline':
-            name = 'stage.' + name
-            newname = name
-        elif typ == 'group':
-            name = 'grp.' + name
-            newname = name
-        elif typ == 'expression':
-            name = 'exp.' + name
-            newname = name
+
+        # if typ == 'program':
+        #     name = 'bin.' + name
+        #     newname = name
+        # elif typ == 'dbcommand':
+        #     name = 'dbcmd.' + name
+        #     newname = name
+        # elif typ == 'operator':
+        #     name = 'op.' + name
+        #     newname = name
+        # elif typ == 'projection':
+        #     name = 'prj.' + name
+        #     newname = name
+        # elif typ == 'parameter':
+        #     name = 'param.' + name
+        #     newname = name
+        # elif typ == 'pipeline':
+        #     name = 'stage.' + name
+        #     newname = name
+        # elif typ == 'group':
+        #     name = 'grp.' + name
+        #     newname = name
+        # elif typ == 'expression':
+        #     name = 'exp.' + name
+        #     newname = name
 
         searchorder = 1
 
