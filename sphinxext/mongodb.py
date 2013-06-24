@@ -21,25 +21,7 @@ from sphinx.domains.python import _pseudo_parse_arglist
 from sphinx.util.nodes import make_refnode
 from sphinx.util.docfields import Field, GroupedField, TypedField
 
-import yaml
-
-try:
-    with open('mongodb-domain.yaml', 'r') as f:
-        conf = yaml.safe_load_all(f).next()
-except IOError:
-    conf = { 'composites': [], 'suppress-prefix': [] } 
-
-typ_map = {
-    'binary': 'bin',
-    'dbcommand': 'dbcmd',
-    'expression': 'exp',
-    'group': 'grp',
-    'operator': 'op',
-    'parameter': 'pram',
-    'pipeline': 'stage',
-    'program': 'bin',
-    'projection':  'proj',
-    }
+from mongodb_conf import conf
 
 def basename(path):
     return path.split('/')[-1].rsplit('.', 1)[0]
@@ -116,24 +98,8 @@ class MongoDBObject(ObjectDescription):
         objectname = self.options.get(
             'object', self.env.temp_data.get('mongodb:object'))
 
-        if self.objtype in typ_map.keys():
-            fullname = '.'.join([typ_map[self.objtype], name_obj[0]])
-        # if self.objtype == 'dbcommand':
-        #     fullname = 'dbcmd.' + name_obj[0]
-        # elif self.objtype == 'operator':
-        #     fullname = 'op.' + name_obj[0]
-        # elif self.objtype == 'projection':
-        #     fullname = 'prj.' + name_obj[0]
-        # elif self.objtype == 'binary':
-        #     fullname = 'bin.' + name_obj[0]
-        # elif self.objtype == 'parameter':
-        #     fullname = 'param.' + name_obj[0]
-        # elif self.objtype == 'pipeline':
-        #     fullname = 'stage.' + name_obj[0]
-        # elif self.objtype == 'group':
-        #     fullname = 'grp.' + name_obj[0]
-        # elif self.objtype == 'expression':
-        #     fullname = 'exp.' + name_obj[0]
+        if self.objtype in conf['prepend'].keys():
+            fullname = '.'.join([conf['prepend'][self.objtype], name_obj[0]])
         elif name_obj[0] in self.state.document.ids:
             fullname = 'iddup.' + name_obj[0]
         else:
@@ -188,42 +154,11 @@ class MongoDBObject(ObjectDescription):
 
     def get_index_text(self, objectname, name_obj):
         name, obj = name_obj
-        if self.objtype == 'dbcommand':
-            return _('%s (database command)') % name
-        elif self.objtype == 'operator':
-            return _('%s (operator)') % name
-        elif self.objtype == 'projection':
-            return _('%s (projection operator)') % name
-        elif self.objtype == 'binary':
-            return _('%s (program)') % name
-        elif self.objtype == 'setting':
-            return _('%s (setting)') % (name)
-        elif self.objtype == 'data':
-            return _('%s (MongoDB reporting output)') % (name)
-        elif self.objtype == 'method':
-            return _('%s (shell method)') % (name)
-        elif self.objtype == 'collflag':
-            return _('%s (collection flag)') % (name)
-        elif self.objtype == 'readmode':
-            return _('%s (read preference mode)') % (name)
-        elif self.objtype == 'error':
-            return _('%s (error code)') % (name)
-        elif self.objtype == 'macro':
-            return _('%s (JavaScript shell macro)') % (name)
-        elif self.objtype == 'limit':
-            return _('%s (MongoDB system limit)') % (name)
-        elif self.objtype == 'bsontype':
-            return _('%s (BSON type)') % (name)
-        elif self.objtype == 'authrole':
-            return _('%s (User role)') % (name)
-        elif self.objtype == 'parameter':
-            return _('%s (setParameter option)') % (name)
-        elif self.objtype == 'pipeline':
-            return _('%s (aggregation framework pipeline operator)') % (name)
-        elif self.objtype == 'expression':
-            return _('%s (aggregation framework transformation expression)') % (name)
-        elif self.objtype == 'group':
-            return _('%s (aggregation framework group expression)') % (name)
+
+        for directive in conf['directives']:
+            if self.objtype == directive['name']:
+                return _('%s (' + directive['description'] + ')') % name
+
         return ''
 
     def run(self):
@@ -281,37 +216,32 @@ class MongoDBXRefRole(XRefRole):
             refnode['refspecific'] = True
         return title, target
 
+def render_domain_data(mongodb_directives):
+    directives = { }
+    roles = { }
+    object_types = { }
+
+    for directive in mongodb_directives:
+        reftype = directive['name']
+
+        roles[reftype] = MongoDBXRefRole()
+        object_types[reftype] = ObjType(l_(reftype), reftype)
+
+        if directive['callable']:
+            directives[reftype] = MongoDBMethod
+        else:
+            directives[reftype] = MongoDBObject
+    
+    return directives, roles, object_types
+
+
 class MongoDBDomain(Domain):
     """MongoDB Documentation domain."""
     name = 'mongodb'
     label = 'MongoDB'
     # if you add a new object type make sure to edit MongoDBObject.get_index_string
-    directives = {
-        'authrole':      MongoDBObject,
-        'binary':        MongoDBObject,
-        'bsontype':      MongoDBObject,
-        'collflag':      MongoDBObject,
-        'data':          MongoDBObject,
-        'dbcommand':     MongoDBObject,
-        'error':         MongoDBObject,
-        'expression':    MongoDBObject,
-        'group':         MongoDBObject,
-        'limit':         MongoDBObject,
-        'macro':         MongoDBObject,
-        'method':        MongoDBMethod,
-        'operator':      MongoDBObject,
-        'parameter':     MongoDBObject,
-        'pipeline':      MongoDBObject,
-        'projection':    MongoDBObject,
-        'readmode':      MongoDBObject,
-        'setting':       MongoDBObject,
-    }
 
-    roles = { }
-    object_types = { }
-    for reftype in directives.keys():
-        roles[reftype] = MongoDBXRefRole()
-        object_types[reftype] = ObjType(l_(reftype), reftype)
+    directives, roles, object_types = render_domain_data(conf['directives'])
 
     initial_data = {
         'objects': {}, # fullname -> docname, objtype
@@ -323,34 +253,9 @@ class MongoDBDomain(Domain):
         objects = self.data['objects']
         newname = None
 
-        if typ in typ_map.keys():
-            name = '.'.join([typ_map[typ], name])
+        if typ in conf['prepend'].keys():
+            name = '.'.join([conf['prepend'][typ], name])
             newname = name
-
-        # if typ == 'program':
-        #     name = 'bin.' + name
-        #     newname = name
-        # elif typ == 'dbcommand':
-        #     name = 'dbcmd.' + name
-        #     newname = name
-        # elif typ == 'operator':
-        #     name = 'op.' + name
-        #     newname = name
-        # elif typ == 'projection':
-        #     name = 'prj.' + name
-        #     newname = name
-        # elif typ == 'parameter':
-        #     name = 'param.' + name
-        #     newname = name
-        # elif typ == 'pipeline':
-        #     name = 'stage.' + name
-        #     newname = name
-        # elif typ == 'group':
-        #     name = 'grp.' + name
-        #     newname = name
-        # elif typ == 'expression':
-        #     name = 'exp.' + name
-        #     newname = name
 
         searchorder = 1
 
