@@ -9,6 +9,7 @@ import intersphinx
 import process
 import delegated
 import tools
+import stats
 from make import make
 
 import fabric
