@@ -39,7 +39,7 @@ def generate_meta(outputs, msg):
 
     m.target('json-output', outputs)
     if len(outputs) > 0:
-        m.job('rsync --recursive --times --delete --exclude="*fjson" {0} {1}'.format(build_json_output, paths['branch-staging']))
+        m.job('rsync --recursive --times --delete --exclude="*fjson" {0}/ {1}'.format(build_json_output, paths['branch-staging']))
         m.msg('[json]: migrated all .json files to staging.')
     m.msg(msg)
 
