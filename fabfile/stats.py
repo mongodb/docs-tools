@@ -2,6 +2,7 @@ from fabric.api import task, local, env, puts
 from droopy.factory import DroopyFactory
 from droopy.lang.english import English
 import json
+import yaml
 
 @task
 def file(fn):
@@ -11,10 +12,25 @@ def report_statement(fn, test, number):
     puts("[stats]: '{0}' has a {1} of {2}".format(fn, test, number))
 
 def _report(droopy):
-    report_statement(env.input_file, 'coleman-liau', droopy.coleman_liau)
-    report_statement(env.input_file, 'flesch-level', droopy.flesch_grade_level)
-    report_statement(env.input_file, 'flesch-ease', droopy.flesch_reading_ease)
-    report_statement(env.input_file, 'smog', droopy.smog)
+    droopy.foggy_word_syllables = 3
+    
+    o = {
+        'file': env.input_file,
+        'stats': {
+            'smog-index': droopy.smog,
+            'flesch-level': droopy.flesch_grade_level,
+            'flesch-ease': droopy.flesch_reading_ease,
+            'coleman-liau': droopy.coleman_liau,
+            'word-count': droopy.nof_words,
+            'sentence-count': droopy.nof_sentences,
+            'foggy': {
+                'factor':droopy.foggy_factor,
+                'count':  droopy.nof_foggy_words,
+                'threshold':  droopy.foggy_word_syllables,
+                },
+            }
+        }
+    puts(yaml.safe_dump(o,  default_flow_style=False, indent=3, explicit_start=True)[:-1])
 
 @task
 def report():

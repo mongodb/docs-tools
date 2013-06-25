@@ -33,12 +33,13 @@ def json_output():
     else:
         text = doc['body'].encode('ascii', 'ignore')
 
+        text = re.sub(r'<a class=\"headerlink\"', '.<a', text)
         text = re.sub('<[^>]*>', '', text)
         text = re.sub('&#8220;', '"', text)
         text = re.sub('&#8221;', '"', text)
         text = re.sub('&#8216;', "'", text)
         text = re.sub('&#8217;', "'", text)
-        text = re.sub('&#\d{4};', '', text)
+        text = re.sub(r'&#\d{4};', '', text)
         text = re.sub('&nbsp;', '', text)
 
         doc['text'] = ' '.join(text.split('\n')).strip()
