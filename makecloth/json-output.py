@@ -23,6 +23,7 @@ def generate_list_file(outputs, path):
 
 def generate_json_target(source, output_file):
     m.target(source, 'json')
+    m.target(output_file, get_source_name(output_file))
     m.target(output_file, source)
     m.job('fab process.input:{0} process.output:{1} process.json_output'.format(source, output_file))
     m.msg('[json]: generated a processed json file: ' + output_file)
@@ -34,7 +35,9 @@ def generate_meta(outputs):
     build_json_output = paths['branch-output'] + '/json'
     public_json_output = paths['branch-staging'] + '/json'
 
-    m.target('json-output', outputs)
+    m.target('json-output', ['json', 'process-json-output'])
+    m.target('process-json-output', outputs)
+
     if len(outputs) > 0:
         m.job('rsync --recursive --times --delete --exclude="*fjson" {0}/ {1}'.format(build_json_output, public_json_output))
         m.msg('[json]: migrated all .json files to staging.')
@@ -58,6 +61,11 @@ def generate_meta(outputs):
     m.job(' '.join(['rm -rf ', paths['public-json-list-file'], paths['branch-json-list-file'], public_json_output]))
     m.msg('[json]: removed all processed json.')
 
+def get_source_name(fn):
+    path = fn.split(os.path.sep)[3:]
+    path[-1] = '.'.join([os.path.splitext(path[-1])[0], 'txt'])
+    path = os.path.sep.join(path)
+    return os.path.join('source', path)
 
 def source_fn_transform(fn, builder='json', ext='fjson'):
     # 'source/reference/programs.txt' -> build/master/builder/reference/programs.fjson
