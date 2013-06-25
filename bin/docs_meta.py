@@ -26,6 +26,7 @@ else:
     conf.build.system.python = 'python'
 
 conf.git.branches.current = get_branch()
+conf.git.commit = get_commit()
 
 # For backwards compatibility, populating global variables from yaml file. See
 # the docs_meta.yaml file for documentation of these values.

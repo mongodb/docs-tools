@@ -4,36 +4,28 @@ from droopy.factory import DroopyFactory
 from droopy.lang.english import English
 
 from docs_meta import conf
+from utils import expand_tree
 
 import yaml
 import json
 import os.path
 
-env.input_file = None
-@task(aliases=['file', 'input'])
-def input_file(fn):
-    if fn.startswith('/'):
-        fn = fn[1:]
-    if fn.startswith('source'):
-        fn = fn[7:]
+####### internal functions for rendering reports #######
 
-    base_fn = os.path.splitext(fn)[0]
-    path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json',
-                        base_fn)
+def render_report(fn=None):
+    if fn is None:
+        fn = env.input_file
 
-    env.input_file = '.'.join([path, 'json'])
-    env.source_file = '.'.join([os.path.join('source', base_fn), '.txt'])
-
-    if not os.path.exists(env.input_file):
-        abort("[stats]: processed json file does not exist for: {0}, build 'json-output' and try again.".format(fn))
-
-
-def _report(droopy):
+    with open(fn, 'r') as f:
+        text = json.loads(f.read())['text']
+        
+    base_fn, path, source = _fn_process(fn)
+    droopy = DroopyFactory.create_full_droopy(text, English())
     droopy.foggy_word_syllables = 3
-
-    o = {
-        'file': env.input_file,
-        'source': env.source_file,
+    
+    return {
+        'file': fn,
+        'source': source,
         'stats': {
             'smog-index': droopy.smog,
             'flesch-level': droopy.flesch_grade_level,
@@ -49,27 +41,71 @@ def _report(droopy):
                 },
             }
         }
-    puts(yaml.safe_dump(o,  default_flow_style=False, indent=3, explicit_start=True)[:-1])
+
+def output_report(data, fmt='yaml'):
+    if fmt == 'yaml':
+        puts(yaml.safe_dump(data,  default_flow_style=False, indent=3, explicit_start=True)[:-1])
+    elif fmt == 'json':
+        puts(json.dumps(data, indent=2))
+        
+def _fn_process(fn):
+    base_fn = os.path.splitext(fn)[0]
+    path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json',
+                        base_fn)
+    source = '.'.join([os.path.join('source', base_fn), 'txt'])
+
+    return path, base_fn, source
+
+########## user facing operations ##########
+
+env.input_file = None
+
+@task(aliases=['file', 'input'])
+def input_file(fn):
+    if fn.startswith('/'):
+        fn = fn[1:]
+    if fn.startswith('source'):
+        fn = fn[7:]
+
+    base_fn, path, source = _fn_process(fn)
+
+    env.input_file = '.'.join([path, 'json'])
+    env.source_file = source
+
+    if not os.path.exists(env.input_file):
+        abort("[stats]: processed json file does not exist for: {0}, build 'json-output' and try again.".format(fn))
 
 @task
-def report(fn=None):
+def report(fn=None, fmt='yaml'):
     if fn is None and env.input_file is None:
         abort('[stats]: must specify a file to report stats.')
     else:
         input_file(fn)
+        
+    output_report(render_report())
 
-    with open(env.input_file, 'r') as f:
-        document = f.read()
-
-    droopy = DroopyFactory.create_full_droopy(document, English())
-
-    _report(droopy)
 
 @task
-def jreport():
-    with open(env.input_file, 'r') as f:
-        text = json.loads(f.read())['text']
+def sweep():
+    docs = expand_tree(os.path.join(conf.build.paths.output, conf.git.branches.current, 'json'), 'json')
 
-    droopy = DroopyFactory.create_full_droopy(text, English())
+    output = []
 
-    _report(droopy)
+    puts('[stats]: starting full sweep of docs content.')
+    for doc in docs: 
+        if doc.endswith('searchindex.json') or doc.endswith('globalcontext.json'):
+            pass
+        else:
+            output.append(yaml.safe_dump(render_report(doc), default_flow_style=False, explicit_start=True))
+
+    output[0] = output[0][4:]
+    output.append('...')
+
+    out_fn = '.'.join(['-'.join(['stats', 'sweep', conf.git.branches.current, conf.git.commit[:6]]), 'yaml'])
+    out_file = os.path.join(conf.build.paths.output, out_fn)
+    
+    with open(out_file, 'w') as f:
+        for ln in output:
+            f.write(ln)
+
+    puts('[stats]: wrote full manual sweep to {0}'.format(out_file))
