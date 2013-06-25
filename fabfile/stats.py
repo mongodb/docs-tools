@@ -16,7 +16,7 @@ def render_report(fn=None):
     if fn is None:
         fn = env.input_file
 
-    with open(fn, 'r') as f:
+    with open(os.path.abspath(fn), 'r') as f:
         text = json.loads(f.read())['text']
         
     base_fn, path, source = _fn_process(fn)
@@ -71,13 +71,13 @@ def input_file(fn):
     if fn.startswith('source'):
         fn = fn[7:]
 
-    base_fn, path, source = _fn_process(fn)
+    path, base_fn, source = _fn_process(fn)
 
     env.input_file = '.'.join([path, 'json'])
     env.source_file = source
 
     if not os.path.exists(env.input_file):
-        abort("[stats]: processed json file does not exist for: {0}, build 'json-output' and try again.".format(fn))
+        abort("[stats]: processed json file does not exist for: {0}, build 'json-output' and try again.".format(source))
 
 @task
 def report(fn=None, fmt='yaml'):
