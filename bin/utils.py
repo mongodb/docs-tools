@@ -98,13 +98,15 @@ def _expand_tree(path, input_extension):
 
     for root, subFolders, files in os.walk(path):
         for file in files:
-            f = os.path.join(root, file)
-
-            try:
-                if f.rsplit('.', 1)[1] == input_extension:
-                    file_list.append(f)
-            except IndexError:
+            if file.startswith('.#'):
                 continue
+            else:
+                f = os.path.join(root, file)
+                try:
+                    if f.rsplit('.', 1)[1] == input_extension:
+                        file_list.append(f)
+                except IndexError:
+                    continue
 
     return file_list
 
@@ -203,3 +205,12 @@ def symlink(name, target):
             CreateSymbolicLink()
         except ImportError:
             exit('ERROR: platform does not contain support for symlinks. Windows users need to pywin32.')
+
+def concat(*args):
+    return ''.join(args)
+
+def dot_concat(*args):
+    return '.'.join(args)
+
+def path_concat(*args):
+    return os.path.sep.join(args)
