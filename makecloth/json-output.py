@@ -39,7 +39,7 @@ def generate_meta(outputs, msg):
 
     m.target('json-output', outputs)
     if len(outputs) > 0:
-        m.job('rsync --recursive --times --delete --exclude="*fjson" {0} {1}'.format(build_json_output, public_json_output))
+        m.job('rsync --recursive --times --delete --exclude="*fjson" {0} {1}'.format(build_json_output, paths['branch-staging']))
         m.msg('[json]: migrated all .json files to staging.')
     m.msg(msg)
 
@@ -54,7 +54,7 @@ def generate_meta(outputs, msg):
 
     m.target(build_json_output, 'json')
 
-    m.target('.PHONY', ['clean-json-output', 'clean-json', public_json_output])
+    m.target('.PHONY', ['clean-json-output', 'clean-json', 'json-output'])
     m.target('clean-json-output', 'clean-json')
     m.job('rm -rf ' + ' '.join([paths['public-json-list-file'], paths['branch-json-list-file'], public_json_output]))
     m.msg('[json]: removed all processed json.')
