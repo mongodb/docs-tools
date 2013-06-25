@@ -39,6 +39,7 @@ def json_output():
         text = re.sub('&#8216;', "'", text)
         text = re.sub('&#8217;', "'", text)
         text = re.sub('&#\d{4};', '', text)
+        text = re.sub('&nbsp;', '', text)
 
         doc['text'] = ' '.join(text.split('\n')).strip()
 
