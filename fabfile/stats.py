@@ -56,6 +56,10 @@ def _fn_process(fn):
 
     return path, base_fn, source
 
+def _fn_output():
+    out_fn = '.'.join(['-'.join(['stats', 'sweep', conf.git.branches.current, conf.git.commit[:6]]), 'yaml'])
+    return os.path.join(conf.build.paths.output, out_fn)
+
 ########## user facing operations ##########
 
 env.input_file = None
@@ -84,7 +88,6 @@ def report(fn=None, fmt='yaml'):
         
     output_report(render_report())
 
-
 @task
 def sweep():
     docs = expand_tree(os.path.join(conf.build.paths.output, conf.git.branches.current, 'json'), 'json')
@@ -99,13 +102,15 @@ def sweep():
             output.append(yaml.safe_dump(render_report(doc), default_flow_style=False, explicit_start=True))
 
     output[0] = output[0][4:]
-    output.append('...')
+    output.append('...\n')
 
-    out_fn = '.'.join(['-'.join(['stats', 'sweep', conf.git.branches.current, conf.git.commit[:6]]), 'yaml'])
-    out_file = os.path.join(conf.build.paths.output, out_fn)
+    out_file = _fn_output()
     
     with open(out_file, 'w') as f:
         for ln in output:
             f.write(ln)
-
     puts('[stats]: wrote full manual sweep to {0}'.format(out_file))
+
+@task    
+def sweep_report():
+    local(' '.join(['cat', _fn_output()]))

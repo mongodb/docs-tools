@@ -1,4 +1,4 @@
-.PHONY: dtf test dtf-verbose dtf-passing
+.PHONY: dtf test dtf-verbose dtf-passing stats-sweep
 dtf test:
 	@echo "[dtf]: running test suite -- `date`"
 	@dtf --casedir $(tools)/dtf/ --testdir dtf/
@@ -11,3 +11,8 @@ dtf-passing:
 	@echo "[dtf]: running test suite -- `date`"
 	@dtf --casedir $(tools)/dtf/ --testdir dtf/ -p
 	@echo "[dtf]: test suite complete -- `date`"
+
+stats-sweep:
+	@fab stats.sweep
+	@echo -e "\n########################################\n"
+	@fab stats.sweep_report
