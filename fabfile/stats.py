@@ -9,10 +9,13 @@ import yaml
 import json
 import os.path
 
-@task
-def file(fn):
+env.input_file = None
+@task(aliases=['file', 'input'])
+def input_file(fn):
     if fn.startswith('/'):
         fn = fn[1:]
+    if fn.startswith('source'):
+        fn = fn[7:]
 
     base_fn = os.path.splitext(fn)[0]
     path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json',
@@ -49,7 +52,12 @@ def _report(droopy):
     puts(yaml.safe_dump(o,  default_flow_style=False, indent=3, explicit_start=True)[:-1])
 
 @task
-def report():
+def report(fn=None):
+    if fn is None and env.input_file is None:
+        abort('[stats]: must specify a file to report stats.')
+    else:
+        input_file(fn)
+
     with open(env.input_file, 'r') as f:
         document = f.read()
 

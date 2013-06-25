@@ -103,7 +103,7 @@ def create_link():
     out_dirname = os.path.dirname(env.output_file)
     if not os.path.exists(out_dirname):
         os.makedirs(out_dirname)
-    
+
     if os.path.islink(env.output_file):
         pass
     elif os.path.isdir(env.output_file):
@@ -132,7 +132,7 @@ def manual_single_html():
 @task
 def meta():
     output_yaml(env.output_file)
-    
+
 @task
 def update_time(fn, times=None):
     if os.path.exists(fn):
