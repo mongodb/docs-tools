@@ -60,9 +60,17 @@ def _fn_process(fn):
 
     return path, base_fn, source
 
-def _fn_output():
-    out_fn = '.'.join(['-'.join(['stats', 'sweep', conf.git.branches.current, conf.git.commit[:6]]), 'yaml'])
+def _fn_output(tag):
+    fn = ['stats', 'sweep' ]
+    if tag is not None:
+        fn.append(tag.replace('/', '-'))
+    fn.extend([conf.git.branches.current, conf.git.commit[:6]])
+
+    out_fn = '.'.join(['-'.join(fn), 'yaml'])
     return os.path.join(conf.build.paths.output, out_fn)
+
+def _output_report_yaml(doc):
+   return yaml.safe_dump(render_report(doc), default_flow_style=False, explicit_start=True)
 
 ########## user facing operations ##########
 
@@ -93,23 +101,27 @@ def report(fn=None, fmt='yaml'):
     output_report(render_report())
 
 @task
-def sweep():
-    docs = expand_tree(os.path.join(conf.build.paths.output, conf.git.branches.current, 'json'), 'json')
+def sweep(mask=None):
+    base_path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json')
+    docs = expand_tree(base_path, 'json')
 
     output = []
 
     puts('[stats]: starting full sweep of docs content.')
     for doc in docs: 
         if doc.endswith('searchindex.json') or doc.endswith('globalcontext.json'):
-            pass
+            continue 
+        elif mask is not None:
+            if doc.startswith(os.path.join(base_path, mask)):
+                output.append(_output_report_yaml(doc))
         else:
-            output.append(yaml.safe_dump(render_report(doc), default_flow_style=False, explicit_start=True))
+            output.append(_output_report_yaml(doc))
 
     output[0] = output[0][4:]
     output.append('...\n')
 
-    out_file = _fn_output()
-    
+    out_file = _fn_output(mask)
+
     with open(out_file, 'w') as f:
         for ln in output:
             f.write(ln)
