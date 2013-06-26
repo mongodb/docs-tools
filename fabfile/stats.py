@@ -19,10 +19,14 @@ def render_report(fn=None):
     with open(os.path.abspath(fn), 'r') as f:
         text = json.loads(f.read())['text']
         
-    base_fn, path, source = _fn_process(fn)
+    if 'source_file' not in env:
+        base_fn, path, source = _fn_process(fn)
+    else:
+        source = env.source_file
+
     droopy = DroopyFactory.create_full_droopy(text, English())
     droopy.foggy_word_syllables = 3
-    
+
     return {
         'file': fn,
         'source': source,
@@ -44,7 +48,7 @@ def render_report(fn=None):
 
 def output_report(data, fmt='yaml'):
     if fmt == 'yaml':
-        puts(yaml.safe_dump(data,  default_flow_style=False, indent=3, explicit_start=True)[:-1])
+        puts(yaml.safe_dump(data, default_flow_style=False, indent=3, explicit_start=True)[:-1])
     elif fmt == 'json':
         puts(json.dumps(data, indent=2))
         
