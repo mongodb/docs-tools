@@ -73,7 +73,7 @@ class MongoDBObject(ObjectDescription):
             signode += addnodes.desc_annotation(self.display_prefix,
                                                 self.display_prefix)
 
-        if nameprefix: 
+        if nameprefix:
             if nameprefix in conf['suppress-prefix']:
                 pass
             else:
@@ -98,7 +98,7 @@ class MongoDBObject(ObjectDescription):
         objectname = self.options.get(
             'object', self.env.temp_data.get('mongodb:object'))
 
-        if self.objtype in conf['prepend'].keys():
+        if self.objtype != 'program' and self.objtype in conf['prepend'].keys():
             fullname = '.'.join([conf['prepend'][self.objtype], name_obj[0]])
         elif name_obj[0] in self.state.document.ids:
             fullname = 'iddup.' + name_obj[0]
@@ -109,6 +109,7 @@ class MongoDBObject(ObjectDescription):
         signode['ids'].append(fullname.replace('$', '_S_'))
         signode['first'] = not self.names
         self.state.document.note_explicit_target(signode)
+
         objects = self.env.domaindata['mongodb']['objects']
         if fullname in objects:
             path = self.env.doc2path(self.env.domaindata['mongodb']['objects'][fullname][0])
@@ -231,7 +232,7 @@ def render_domain_data(mongodb_directives):
             directives[reftype] = MongoDBMethod
         else:
             directives[reftype] = MongoDBObject
-    
+
     return directives, roles, object_types
 
 
@@ -253,7 +254,7 @@ class MongoDBDomain(Domain):
         objects = self.data['objects']
         newname = None
 
-        if typ in conf['prepend'].keys():
+        if typ != 'binary' and typ in conf['prepend'].keys():
             name = '.'.join([conf['prepend'][typ], name])
             newname = name
 
