@@ -280,7 +280,7 @@ pre {
     color: #222;
     line-height: 1.2em;
     font-size: 1.25em;
-    margin: 20px;
+    margin: 20px 0px;
 }
 
 tt {
