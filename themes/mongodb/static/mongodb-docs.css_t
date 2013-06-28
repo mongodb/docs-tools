@@ -883,6 +883,7 @@ div.body div.bc {
     padding-top: .6em;
     margin-left: 1.5em;
     background:white;
+    cursor: default;
 }
 div.body div.bc li.jr { float: right; display:none; }
 div.body div.bc ul { padding:0; margin:0 }
