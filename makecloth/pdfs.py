@@ -82,9 +82,14 @@ def build_all_pdfs(pdfs):
         name = pdf['output'].rsplit('.', 1)[0]
         if 'edition' not in pdf:
             pdf['edition'] = None
+            manual_pdfs.append(pdf)
+        elif pdf['edition'] == 'saas':
+            if conf.git.branches.current == 'master':
+                manual_pdfs.append(pdf)
+        else pdf['edition'] == 'saas':
+            manual_pdfs.append(pdf)
 
         pdf = pdf_makefile(name, pdf['tag'], pdf['edition'])
-        manual_pdfs.append(pdf)
 
     m.newline()
 
