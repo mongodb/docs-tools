@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 
 import utils
 from makecloth import MakefileCloth
-
+from docs_meta import conf
 m = MakefileCloth()
 
 def build_all_sphinx_migrations(migrations):
@@ -25,17 +25,20 @@ def build_all_sphinx_migrations(migrations):
         elif block == 'dep':
             m.newline(block=block)
         elif block == 'transfer':
-            m.job('mkdir -p {0}'.format(migration['target']))
-            m.job('rsync -a {0}/ {1}/'.format(migration['dependency'], migration['target']))
+            if 'branch' not in migration or migration['branch'] == conf.git.branches.current:
+                m.job('mkdir -p {0}'.format(migration['target']))
+                m.job('rsync -a {0}/ {1}/'.format(migration['dependency'], migration['target']))
 
-            if 'filter' in migration and migration['filter'] and migration['filter'] is not None:
-                fsobjs = [ ]
-                for obj in migration['filter']:
-                    fsobjs.append(migration['target'] + obj)
-                m.job('rm -rf {0}'.format(' '.join(fsobjs)))
+                if 'filter' in migration and migration['filter'] and migration['filter'] is not None:
+                    fsobjs = [ ]
+                    for obj in migration['filter']:
+                        fsobjs.append(migration['target'] + obj)
+                    m.job('rm -rf {0}'.format(' '.join(fsobjs)))
 
-            m.job('touch {0}'.format(migration['target']), block=block)
-            m.msg('[build]: migrated "{0}" to "{1}"'.format(migration['dependency'], migration['target']))
+                m.job('touch {0}'.format(migration['target']), block=block)
+                m.msg('[build]: migrated "{0}" to "{1}"'.format(migration['dependency'], migration['target']))
+            else:
+                m.msg('[build]: doing nothing for {0} in this branch'.format(migration['target']))
         elif block == 'cp':
             target_array = migration['target'].rsplit('/', 1)
             block= '-'.join([block, migration['type']])
