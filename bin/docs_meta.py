@@ -63,12 +63,23 @@ def get_versions():
 
     for version in conf.version.published:
         version_string = str(version)
-        path_name = 'v' + version_string
 
-        if version == conf.version.stable:
-            version_string += ' (current)'
-        elif version == conf.version.upcoming:
-            version_string += ' (upcoming)'
+        if version_string in ['current', 'master', 'upcoming']:
+            path_name = version_string
+        else:
+            path_name = 'v' + version_string
+
+        if conf.git.remote.upstream.endswith('mms-docs'):
+            if version == conf.version.stable:
+                version_string += ' (stable)'
+            if version == conf.version.upcoming:
+                version_string = 'upcoming'
+        else:
+            if version == conf.version.stable:
+                version_string += ' (current)'
+            if version == conf.version.upcoming:
+                version_string += ' (upcoming)'
+
 
         o.append( { 'v': path_name, 't': version_string } )
 
@@ -82,6 +93,7 @@ def output_yaml(fn):
             'date': str(datetime.date.today().year),
             'version_selector': get_versions(),
             'stable': conf.version.stable,
+            'upcoming': conf.version.upcoming,
             'published_branches': conf.git.branches.published,
             'pdfs': []
     }
