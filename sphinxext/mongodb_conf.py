@@ -58,9 +58,9 @@ conf['directives'] = [
     },
     {
         'name': 'pipeline',
-        'tag': 'stage',
+        'tag': 'pipe',
         'description': 'aggregation framework pipeline operator',
-        'prepend': False,
+        'prepend': True,
         'callable': False,
     },
     {
