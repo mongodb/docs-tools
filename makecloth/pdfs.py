@@ -86,7 +86,7 @@ def build_all_pdfs(pdfs):
         elif pdf['edition'] == 'saas':
             if conf.git.branches.current == 'master':
                 manual_pdfs.append(pdf)
-        elif pdf['edition'] == 'saas':
+        elif pdf['edition'] == 'hosted':
             manual_pdfs.append(pdf)
 
         pdf = pdf_makefile(name, pdf['tag'], pdf['edition'])
