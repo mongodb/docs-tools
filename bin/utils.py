@@ -102,11 +102,8 @@ def _expand_tree(path, input_extension):
                 continue
             else:
                 f = os.path.join(root, file)
-                try:
-                    if f.rsplit('.', 1)[1] == input_extension:
-                        file_list.append(f)
-                except IndexError:
-                    continue
+                if f.endswith(input_extension):
+                    file_list.append(f)
 
     return file_list
 
@@ -202,7 +199,7 @@ def symlink(name, target):
             os.symlink(target, name)
         except AttributeError:
             from win32file import CreateSymbolicLink
-            CreateSymbolicLink()
+            CreateSymbolicLink(name, target)
         except ImportError:
             exit('ERROR: platform does not contain support for symlinks. Windows users need to pywin32.')
 
