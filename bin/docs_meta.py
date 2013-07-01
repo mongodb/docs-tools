@@ -70,10 +70,7 @@ def get_versions():
             path_name = 'v' + version_string
 
         if conf.git.remote.upstream.endswith('mms-docs'):
-            if version == conf.version.stable:
-                version_string += ' (stable)'
-            if version == conf.version.upcoming:
-                version_string = 'upcoming'
+            pass
         else:
             if version == conf.version.stable:
                 version_string += ' (current)'
