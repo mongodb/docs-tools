@@ -50,7 +50,7 @@ def generate_meta(outputs):
     fab_cmd = 'fab process.input:{0} process.output:{1} process.copy_if_needed:json'
     m.target('json-file-list', paths['public-json-list-file'])
     m.target(paths['branch-json-list-file'] , [paths['output'] + '/makefile.json-output', build_json_output])
-    m.target(paths['public-json-list-file'], paths['branch-json-list-file'] )
+    m.target(paths['public-json-list-file'], [paths['branch-json-list-file'], 'process-json-output'] )
     m.job(fab_cmd.format(paths['branch-json-list-file'] , paths['public-json-list-file']))
     m.msg('[json]: rebuilt inventory of json output.')
 
