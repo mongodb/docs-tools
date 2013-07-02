@@ -19,14 +19,6 @@ def output(fn):
     env.output_file = fn
 
 def strip_formated_text(text):
-    text = re.sub(r'<a class=\"headerlink\"', '.<a', text)
-    text = re.sub('<[^>]*>', '', text)
-    text = re.sub('&#8220;', '"', text)
-    text = re.sub('&#8221;', '"', text)
-    text = re.sub('&#8216;', "'", text)
-    text = re.sub('&#8217;', "'", text)
-    text = re.sub(r'&#\d{4};', '', text)
-    text = re.sub('&nbsp;', '', text)
     
     return text
 
@@ -46,8 +38,19 @@ def json_output():
         text = doc['body'].encode('ascii', 'ignore')
         title = doc['title'].encode('ascii', 'ignore')
 
-        doc['title'] = strip_formated_text(title)
-        doc['text'] = ' '.join(strip_formated_text(text).split('\n')).strip()
+        text = re.sub(r'<a class=\"headerlink\"', '.<a', text)
+        text = re.sub('<[^>]*>', '', text)
+        text = re.sub('&#8220;', '"', text)
+        text = re.sub('&#8221;', '"', text)
+        text = re.sub('&#8216;', "'", text)
+        text = re.sub('&#8217;', "'", text)
+        text = re.sub(r'&#\d{4};', '', text)
+        text = re.sub('&nbsp;', '', text)
+
+        title = re.sub('<[^>]*>', '', title)
+
+        doc['title'] = title
+        doc['text'] = ' '.join(text.split('\n')).strip()
 
         url = [ 'http://docs.mongodb.org', get_manual_path() ]
         url.extend(env.input_file.rsplit('.', 1)[0].split('/')[3:])
