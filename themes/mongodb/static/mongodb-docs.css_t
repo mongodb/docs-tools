@@ -234,35 +234,30 @@ div.topic { background-color: #eee; }
 div.admonition {
     margin:1.5em auto;
     width:auto;
-    max-width:90%;
-    padding:0;
+    max-width:100%;
+    padding: .5em 1em;
 }
 
 div.seealso {
     padding-bottom: 7px;
-    max-width:95%;
 }
 
 div.warning {
     background-color: #eebbaa;
-    padding:.5em 1em;
 }
 
 div.note {
     background-color: #D9E6F2;
-    padding:.5em 1em;
 }
 
 div.admonition-optional {
     background-color: inherit;
     border: 1px solid #DCDCDC;
-    padding:.5em 1em;
 }
 
 div.admonition-example {
     background-color: #F5F5F5;
     color: #000000;
-    padding:.5em 1em;
 }
 
 div.admonition p.admonition-title { display:inline; font-weight:900;height:100%;}
