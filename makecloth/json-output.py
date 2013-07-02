@@ -16,7 +16,7 @@ m = MakefileCloth()
 def generate_list_file(outputs, path):
     with open(path, 'w') as f:
         for fn in outputs:
-            url = [ 'http://docs.mongodb.org', conf.git.branches.current ]
+            url = [ 'http://docs.mongodb.org', conf.git.branches.current, 'json' ]
             url.extend(fn.split('/', 3)[3:])
 
             f.write(''.join(['/'.join(url), '\n']))
