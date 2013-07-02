@@ -32,11 +32,8 @@ def json_output():
 
     doc = json.loads(document)
 
-    if 'body' not in doc:
-        pass
-    else:
+    if 'body' in doc:
         text = doc['body'].encode('ascii', 'ignore')
-        title = doc['title'].encode('ascii', 'ignore')
 
         text = re.sub(r'<a class=\"headerlink\"', '.<a', text)
         text = re.sub('<[^>]*>', '', text)
@@ -47,15 +44,19 @@ def json_output():
         text = re.sub(r'&#\d{4};', '', text)
         text = re.sub('&nbsp;', '', text)
 
-        title = re.sub('<[^>]*>', '', title)
-
-        doc['title'] = title
         doc['text'] = ' '.join(text.split('\n')).strip()
 
+    if 'url' in doc:
         url = [ 'http://docs.mongodb.org', get_manual_path() ]
         url.extend(env.input_file.rsplit('.', 1)[0].split('/')[3:])
 
         doc['url'] = '/'.join(url)
+
+    if 'title' in doc:
+        title = doc['title'].encode('ascii', 'ignore')
+        title = re.sub('<[^>]*>', '', title)
+
+        doc['title'] = title
 
     with open(env.output_file, 'w') as f:
         f.write(json.dumps(doc))
