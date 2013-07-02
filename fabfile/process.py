@@ -18,6 +18,18 @@ def input(fn):
 def output(fn):
     env.output_file = fn
 
+def strip_formated_text(text):
+    text = re.sub(r'<a class=\"headerlink\"', '.<a', text)
+    text = re.sub('<[^>]*>', '', text)
+    text = re.sub('&#8220;', '"', text)
+    text = re.sub('&#8221;', '"', text)
+    text = re.sub('&#8216;', "'", text)
+    text = re.sub('&#8217;', "'", text)
+    text = re.sub(r'&#\d{4};', '', text)
+    text = re.sub('&nbsp;', '', text)
+    
+    return text
+
 @task
 def json_output():
     if env.input_file is None or env.output_file is None:
@@ -32,17 +44,10 @@ def json_output():
         pass
     else:
         text = doc['body'].encode('ascii', 'ignore')
+        title = doc['title'].encode('ascii', 'ignore')
 
-        text = re.sub(r'<a class=\"headerlink\"', '.<a', text)
-        text = re.sub('<[^>]*>', '', text)
-        text = re.sub('&#8220;', '"', text)
-        text = re.sub('&#8221;', '"', text)
-        text = re.sub('&#8216;', "'", text)
-        text = re.sub('&#8217;', "'", text)
-        text = re.sub(r'&#\d{4};', '', text)
-        text = re.sub('&nbsp;', '', text)
-
-        doc['text'] = ' '.join(text.split('\n')).strip()
+        doc['title'] = strip_formated_text(title)
+        doc['text'] = ' '.join(strip_formated_text(text).split('\n')).strip()
 
         url = [ 'http://docs.mongodb.org', get_manual_path() ]
         url.extend(env.input_file.rsplit('.', 1)[0].split('/')[3:])
@@ -80,7 +85,6 @@ def manpage_url():
         f.write(manpage)
 
     puts("[{0}]: fixed urls in {1}".format('man', env.input_file))
-
 
 @task
 def copy_if_needed(builder='build'):
