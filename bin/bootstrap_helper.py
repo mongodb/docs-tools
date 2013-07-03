@@ -1,6 +1,6 @@
 import os 
 from utils import symlink
-
+from docs_meta import output_yaml
 reset_ref = 'HEAD~4'
 
 def init_fabric(buildsystem, conf_file):
@@ -40,6 +40,7 @@ def bootstrap():
     The bootstrap file calls this function. Use this as a site for future
     extension.
     """
+    output_yaml('meta.yaml')
     print('[bootstrap]: initialized fabfiles and dependencies. Regenerate buildsystem now.')
 
 def main():
