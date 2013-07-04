@@ -26,6 +26,13 @@ paths['public-json-list-file'] = os.path.join(paths['public-json-output'], '.fil
 m = MakefileCloth()
 
 def generate_list_file(outputs, path):
+    dirname = os.path.dirname(path)
+
+    if os.path.exists(dirname):
+        pass
+    else:
+        os.mkdir(dirname)
+        
     with open(path, 'w') as f:
         for fn in outputs:
             url = [ conf.build.url, 'json' ]
