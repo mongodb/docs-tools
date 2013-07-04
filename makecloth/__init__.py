@@ -92,7 +92,7 @@ def write_file(list, filename):
     enclosing directories if needed, and overwrite an existing file of the same
     name if it exists.
     """
-    dirpath = filename.rsplit('/', 1)[0]
+    dirpath = os.path.split(filename)[0]
     if os.path.isdir(dirpath) is False:
         os.mkdir(dirpath)
 

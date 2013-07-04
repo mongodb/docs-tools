@@ -48,16 +48,17 @@ def generate_meta():
 
     m.section_break('generated makefiles')
 
-
     for target in conf.build.system.files:
-        file ='/'.join([conf.build.paths.output, "makefile." + target])
+        fn = os.path.sep.join([conf.build.paths.output, "makefile." + target])
         cloth = os.path.join(conf.build.paths.buildsystem, "makecloth", target + '.py')
 
-        generated_makefiles.append(file)
-        m.raw(['-include ' + conf.build.paths.output + '/makefile.' + target])
+        generated_makefiles.append(fn)
 
-        m.target(target=file, dependency=cloth, block='makefiles')
-        m.job(' '.join([conf.build.system.python, cloth, file]))
+        if target != 'meta':
+            m.raw(['-include ' + conf.build.paths.output + '/makefile.' + target])
+
+        m.target(target=fn, dependency=cloth, block='makefiles')
+        m.job(' '.join([conf.build.system.python, cloth, fn]))
         m.newline()
 
     m.newline()

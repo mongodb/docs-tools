@@ -2,7 +2,7 @@ import os.path
 from fabric.api import task, local, puts, lcd, env
 from docs_meta import conf
 
-env.dev_repo = os.path.abspath(os.path.join(os.path.split(os.path.abspath(__file__))[0], '../../docs-tools'))
+env.dev_repo = os.path.abspath(os.path.join(os.path.split(os.path.abspath(__file__))[0], '..', '..', 'docs-tools'))
 
 @task
 def dev():
