@@ -25,7 +25,8 @@ def fill(string, first=0, hanging=0, wrap=True):
                              width=72,
                              initial_indent=first_indent,
                              subsequent_indent=hanging_indent,
-                             break_on_hyphens=False)
+                             break_on_hyphens=False,
+                             break_long_words=False)
     else:
         content = string.split('\n')
         if first == hanging:
