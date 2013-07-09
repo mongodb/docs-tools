@@ -139,6 +139,13 @@ conf['directives'] = [
         'description': 'setting',
         'prepend': False,
         'callable': False,
+    },
+    {
+        'name': 'replstate',
+        'tag': 'replstate',
+        'description': 'replica set state',
+        'prepend': True,
+        'callable': False,
     }
 ]
 
