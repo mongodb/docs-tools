@@ -19,26 +19,28 @@ def make_all_links(links):
     m.comment('each link is created in the root and then moved into place using the "create-link" script.', block='header')
     m.newline(block='header')
 
+    all_links = []
+    phony = ['links', 'clean-links', '{0}/manual'.format(paths['public'])]
     for link in links:
-        make_link(link['link-path'], link['referent'], link['type'])
+        block = link['type']
+        link_path = link['link-path']
+
+        all_links.append(link_path)
+        if block == 'content':
+            phony.append(link_path)
+
+        m.target(link_path, block=block)
+        m.job(job='fab process.input:{0} process.output:{1} process.create_link'.format(link['referent'], link_path), block=block)
+        m.newline(block=block)
 
     m.comment('meta-targets for testing/integration with rest of the build. must apear at the end', block='footer')
     m.newline(block='footer')
 
-    m.target('.PHONY', ['links', 'clean-links', '{0}/manual'.format(paths['public'])], block='footer')
-    m.target('links', '$(LINKS)', block='footer')
+    m.target('.PHONY', phony, block='footer')
+    m.target('links', all_links, block='footer')
     m.newline(block='footer')
     m.target('clean-links', block='footer')
-    m.job('rm -rf $(LINKS)', True)
-
-def make_link(link_path, referent, block):
-    if block == 'content':
-        m.append_var('LINKS', link_path)
-
-    m.target(link_path, block=block)
-
-    m.job(job='fab process.input:{0} process.output:{1} process.create_link'.format(referent, link_path), block=block)
-    m.newline(block=block)
+    m.job('rm -rf {0}'.format(' '.join(phony)), True)
 
 def main():
     conf_file = utils.get_conf_file(__file__)
