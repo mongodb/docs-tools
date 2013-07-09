@@ -6,7 +6,7 @@
 {%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
 {%- set url_root = pathto('', 1) %}
 
-{%- if not embedded and docstitle %}
+{%- if not embedded and docstitle and theme_project == "manaul" %}
   {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
 {%- else %}
   {%- set titlesuffix = "" %}
