@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# Leaving this file here for backwards compatibility. Can be removed
+# eventually. The composites target is generated in sphinx.py
+
 import sys
 import os.path
 
@@ -10,6 +13,8 @@ from makecloth import MakefileCloth
 m = MakefileCloth()
 
 def generate_build_system():
+    m.target('composites')
+    m.job('fab process.refresh_dependencies')
     m.target('.PHONY', 'composites')
 
 def main():

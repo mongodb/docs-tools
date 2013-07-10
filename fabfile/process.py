@@ -4,6 +4,7 @@ import os
 import shutil
 
 from utils import md5_file, symlink, expand_tree, dot_concat
+from make import check_list_dependency, check_three_way_dependency
 from docs_meta import output_yaml, get_manual_path, get_conf, get_branch_output_path
 from fabric.api import task, env, abort, puts, local
 from multiprocessing import Pool, Process
@@ -19,18 +20,21 @@ def input(fn):
 def output(fn):
     env.output_file = fn
 
-def three_way_dependency_check(target, source, dependency):
-    if not os.path.exists(target) or os.stat(source).st_mtime > os.stat(dependency).st_mtime:
-        return True
-    else:
-        return False
+########## Process Sphinx Json Output ##########
 
 @task
+def json_output():
+    if env.input_file is None or env.output_file is None:
+        all_json_output()
+    else:
+        process_json_file(env.input_file, env.output_file)
+
 def all_json_output():
     p = Pool()
     conf = get_conf()
 
     outputs = []
+    count = 0
     for fn in expand_tree('source', 'txt'):
         # path = build/<branch>/json/<filename>
         path = os.path.join(conf.build.paths.output, conf.git.branches.current,
@@ -38,16 +42,19 @@ def all_json_output():
         fjson = dot_concat(path, 'fjson')
         json = dot_concat(path, 'json')
 
-        if three_way_dependency_check(json, fn, fjson):
-            p.apply_async(process_json_output, args=(fjson, json))
+        if check_three_way_dependency(json, fn, fjson):
+            p.apply_async(process_json_file, args=(fjson, json))
+            count += 1
 
         outputs.append(json)
 
     p.apply_async(generate_list_file,
                   args=(outputs, os.path.join(get_branch_output_path(), 'json-file-list')))
-    
-    p.close()        
+
+    p.close()
     p.join()
+
+    puts('[json]: processed {0} json files.'.format(str(count)))
 
 def generate_list_file(outputs, path):
     dirname = os.path.dirname(path)
@@ -59,21 +66,14 @@ def generate_list_file(outputs, path):
 
     if not os.path.exists(dirname):
         os.mkdir(dirname)
-        
+
     with open(path, 'w') as f:
         for fn in outputs:
             f.write( '/'.join([ url, 'json', fn.split('/', 3)[3:][0]]))
 
     puts('[json]: rebuilt inventory of json output.')
 
-@task
-def json_output():
-    if env.input_file is None or env.output_file is None:
-        abort('[json]: you must specify input and output files.')
-    else:
-        process_json_output(env.input_file, env.output_file)
-        
-def process_json_output(input_fn, output_fn):
+def process_json_file(input_fn, output_fn):
     with open(input_fn, 'r') as f:
         document = f.read()
 
@@ -109,6 +109,62 @@ def process_json_output(input_fn, output_fn):
         f.write(json.dumps(doc))
 
     puts('[json]: generated a processed json file: ' + output_fn)
+
+########## Update Dependencies ##########
+
+def update_dependency(fn):
+    if os.path.exists(fn):
+        os.utime(fn, None)
+        puts('[dependency]: updated timestamp of {0} because its included files changed'.format(fn))
+
+def fix_include_path(inc, fn, source):
+    if inc.startswith('/'):
+        return ''.join([source + inc])
+    else:
+        return os.path.join(os.path.dirname(os.path.abspath(fn)), fn)
+
+def check_deps(file, pattern):
+    includes = []
+    try:
+        with open(file, 'r') as f:
+            for line in f:
+                r = pattern.findall(line)
+                if r:
+                    includes.append(fix_include_path(r[0], file, 'source'))
+        if len(includes) >= 1:
+            if check_list_dependency(file, includes):
+                update_dependency(file)
+    except IOError:
+        pass
+
+@task
+def refresh_dependencies():
+    files = expand_tree('source', 'txt')
+    inc_pattern = re.compile(r'\.\. include:: (.*\.(?:txt|rst))')
+
+    dep_info = []
+    p = Pool()
+
+    for fn in files:
+        p.apply_async(check_deps, kwds=dict(file=fn, pattern=inc_pattern))
+
+    p.close()
+    p.join()
+
+
+########## Simple Tasks ##########
+
+@task
+def meta():
+    output_yaml(env.output_file)
+
+
+@task
+def touch(fn, times=None):
+    if os.path.exists(fn):
+        os.utime(fn, times)
+
+########## Main Output Processing Targets ##########
 
 @task
 def manpage_url():
@@ -185,61 +241,3 @@ def manual_single_html():
 
     with open(env.output_file, 'w') as f:
         f.write(text)
-
-@task
-def meta():
-    output_yaml(env.output_file)
-
-@task
-def update_time(fn, times=None):
-    if os.path.exists(fn):
-        os.utime(fn, times)
-
-def _check_dependency_list(target, dependencies):
-    needs_rebuild = False
-    
-    target_time = os.stat(target).st_mtime 
-    for dep in dependencies:
-        if target_time < os.stat(dep).st_mtime:
-            needs_rebuild = True
-            break
-    return needs_rebuild
-
-def update_dependency(fn):
-    if os.path.exists(fn):
-        os.utime(fn, None)
-        puts('[dependency]: updated timestamp of {0} because its included files changed'.format(fn))
-
-def fix_include_path(inc, fn, source):
-    if inc.startswith('/'):
-        return ''.join([source + inc])
-    else:
-        return os.path.join(os.path.dirname(os.path.abspath(fn)), fn)
-
-def check_deps(file, pattern):
-    includes = []
-    try:
-        with open(file, 'r') as f:
-            for line in f:
-                r = pattern.findall(line)
-                if r:
-                    includes.append(fix_include_path(r[0], file, 'source'))
-        if len(includes) >= 1:
-            if _check_dependency_list(file, includes):
-                update_dependency(file)
-    except IOError:
-        pass
-
-@task
-def refresh_dependencies():
-    files = expand_tree('source', 'txt')
-    inc_pattern = re.compile(r'\.\. include:: (.*\.(?:txt|rst))')
-
-    dep_info = []
-    p = Pool()
-
-    for fn in files:
-        p.apply_async(check_deps, kwds=dict(file=fn, pattern=inc_pattern))
-
-    p.close()
-    p.join()

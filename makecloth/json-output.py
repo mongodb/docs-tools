@@ -25,7 +25,7 @@ def generate_meta():
     m.section_break('meta')
 
     m.target('json-output', ['json'])
-    m.job('fab process.all_json_output')
+    m.job('fab process.json_output')
 
     rsync_cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {0}/ {1}'
     m.job(rsync_cmd.format(build_json_output, public_json_output))
