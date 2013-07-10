@@ -24,6 +24,12 @@ def make_all_sphinx(config):
 
     m.section_break('sphinx prerequisites')
     m.newline()
+
+    m.target('composites')
+    m.job('fab process.refresh_dependencies')
+
+    m.newline()
+
     m.target('sphinx-prerequisites', config['prerequisites'], block=b)
     m.msg('[sphinx-prep]: build environment prepared for sphinx.', block=b)
 
@@ -70,6 +76,7 @@ def make_all_sphinx(config):
     m.section_break('meta', block='footer')
     m.newline(block='footer')
     m.target('.PHONY', sphinx_targets, block='footer')
+    m.target('.PHONY', 'composites', block='footer')
 
 def sphinx_builder(target_str):
     b = 'production'

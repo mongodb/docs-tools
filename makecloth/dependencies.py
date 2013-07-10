@@ -11,8 +11,6 @@ m = MakefileCloth()
 
 def generate_build_system():
     m.target('.PHONY', 'composites')
-    m.target('composites')
-    m.job('fab process.refresh_dependencies')
 
 def main():
     generate_build_system()
