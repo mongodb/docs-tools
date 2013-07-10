@@ -25,11 +25,18 @@ def make_all_sphinx(config):
     m.section_break('sphinx prerequisites')
     m.newline()
 
+    m.comment('content generators')
     m.target('composites')
     m.job('fab process.refresh_dependencies')
 
-    m.newline()
+    m.target('api')
+    m.job('fab generate.api')
 
+    m.target('toc')
+    m.job('fab generate.toc')
+
+    m.newline()
+    m.comment('sphinx prereq integration.')
     m.target('sphinx-prerequisites', config['prerequisites'], block=b)
     m.msg('[sphinx-prep]: build environment prepared for sphinx.', block=b)
 

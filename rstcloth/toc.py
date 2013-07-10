@@ -22,7 +22,6 @@ class CustomTocTree(object):
         self.dfn = RstCloth()
         self.dfn.directive('class', 'toc')
         self.dfn.newline()
-        
 
     def build_contents(self):
         self.contents = RstCloth()

@@ -314,11 +314,11 @@ class ListTable(OutputTable):
         _fields = []
         if self.table.header is not None:
             _fields.append(('header-rows', '1'))
-
+            rows.append(self.table.header[0])
+    
         if self.widths is not None:
             _fields.append(('widths', ' '.join(self.widths)))
 
-        rows.append(self.table.header[0])
         rows.extend(self.table.rows)
 
         self.r.directive('list-table', fields=_fields, indent=self.indent, block=b)
@@ -326,9 +326,6 @@ class ListTable(OutputTable):
         self.r.newline(block=b)
 
         for row in rows:
-            if not row:
-                continue 
-
             r = row.popitem()[1]
 
             self.r.li(r[0], bullet='* -', indent=self.indent + 3, wrap=False, block=b)

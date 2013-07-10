@@ -3,25 +3,25 @@ import argparse
 import yaml
 import utils
 
-from docs_meta import PUBLISHED_BRANCHES
+from docs_meta import conf
 
 def process_redirect(redirect):
     if 'all' in redirect['outputs']:
         redirect['outputs'].remove('all')
-        for branch in PUBLISHED_BRANCHES:
+        for branch in conf.git.branches.published:
             redirect['outputs'].append(branch)
 
     for output in redirect['outputs']:
         if output.startswith('after-'):
-            idx = PUBLISHED_BRANCHES.index(output.split('-', 1)[1])
+            idx = conf.git.branches.published.index(output.split('-', 1)[1])
 
             redirect['outputs'].remove(output)
-            redirect['outputs'].extend(PUBLISHED_BRANCHES[:idx])
+            redirect['outputs'].extend(conf.git.branches.published[:idx])
         elif output.startswith('before-'):
-            idx = PUBLISHED_BRANCHES.index(output.split('-', 1)[1])
+            idx = conf.git.branches.published.index(output.split('-', 1)[1])
 
             redirect['outputs'].remove(output)
-            redirect['outputs'].extend(PUBLISHED_BRANCHES[idx:])
+            redirect['outputs'].extend(conf.git.branches.published[idx:])
 
     if redirect['code'] in [ 301, 302, 303 ]:
         redirect['code'] = str(redirect['code'])
