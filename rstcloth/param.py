@@ -9,8 +9,6 @@ from rstcloth import RstCloth
 from rstcloth import fill
 import table as tb
 
-r = RstCloth()
-
 field_type = {
     'param' : 'Parameter',
     'field': 'Field',
@@ -48,24 +46,6 @@ class ParamTable(tb.TableData):
         else:
             return False
 
-def generate_params(params):
-    params.sort(key=lambda p: p['position'])
-
-    # Begin by generating the table for web output
-    r.directive('only', '(html or singlehtml or dirhtml)', block='htm')
-    r.newline(block='htm')
-    r.content(generate_param_table(params), indent=3, block='html')
-    r.newline(block='htm')
-
-    # Then generate old-style param fields for non-web output
-    r.directive('only', '(texinfo or latex or epub)', block='tex')
-    r.newline(block='tex')
-
-    for param in params:
-        f = generate_param_fields(param)
-        r.field(name=f[0], value=f[1], indent=3, wrap=False, block='tex')
-        r.newline(block='tex')
-
 def generate_param_table(params):
     table_data = ParamTable()
 
@@ -79,7 +59,7 @@ def generate_param_table(params):
                                             table_data.type_column))
 
     for param in params:
-        row = [ r.pre(param['name']) ]
+        row = [ RstCloth().pre(param['name']) ]
 
         if table_data.type_column is True:
             row.append(process_type_cell(param['type'], 'table'))
@@ -152,9 +132,31 @@ def render_header_row(param_zero, num_rows, type_column):
 
     return o
 
+def generate_params(params):
+    r = RstCloth()
+
+    params.sort(key=lambda p: p['position'])
+
+    # Begin by generating the table for web output
+    r.directive('only', '(html or singlehtml or dirhtml)', block='htm')
+    r.newline(block='htm')
+    r.content(generate_param_table(params), indent=3, block='html')
+    r.newline(block='htm')
+
+    # Then generate old-style param fields for non-web output
+    r.directive('only', '(texinfo or latex or epub)', block='tex')
+    r.newline(block='tex')
+
+    for param in params:
+        f = generate_param_fields(param)
+        r.field(name=f[0], value=f[1], indent=3, wrap=False, block='tex')
+        r.newline(block='tex')
+
+    return r
+
 def main():
     input_data = utils.ingest_yaml_list(sys.argv[1])
-    generate_params(input_data)
+    r = generate_params(input_data)
 
     r.write(sys.argv[2])
 

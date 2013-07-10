@@ -7,14 +7,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 import utils
-from docs_meta import PUBLISHED_BRANCHES
+from docs_meta import conf
 
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
 
 def generate_delegated_interface(builders):
-    branches = PUBLISHED_BRANCHES
+    branches = conf.git.branches.published
     current_branch = utils.get_branch()
 
     if current_branch not in branches:

@@ -80,7 +80,7 @@ class GitRepoManager(object):
 
         self.branches = set()
         self.branches.add(self.current_branch)
-        for branch in docs_meta.PUBLISHED_BRANCHES:
+        for branch in docs_meta.conf.git.branches.published:
             if branch is not None:
                 self.branches.add(branch)
 

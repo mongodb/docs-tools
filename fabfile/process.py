@@ -4,7 +4,7 @@ import os
 import shutil
 
 from utils import md5_file, symlink, expand_tree, dot_concat
-from make import check_list_dependency, check_three_way_dependency
+from make import check_dependency, check_three_way_dependency
 from docs_meta import output_yaml, get_manual_path, get_conf, get_branch_output_path
 from fabric.api import task, env, abort, puts, local
 from multiprocessing import Pool, Process
@@ -132,7 +132,7 @@ def check_deps(file, pattern):
                 if r:
                     includes.append(fix_include_path(r[0], file, 'source'))
         if len(includes) >= 1:
-            if check_list_dependency(file, includes):
+            if check_dependency(file, includes):
                 update_dependency(file)
     except IOError:
         pass

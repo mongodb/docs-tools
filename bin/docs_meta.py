@@ -31,16 +31,6 @@ conf.git.commit = get_commit()
 # For backwards compatibility, populating global variables from yaml file. See
 # the docs_meta.yaml file for documentation of these values.
 
-GIT_REMOTE = conf.git.remote
-MANUAL_BRANCH = conf.git.branches.manual
-PUBLISHED_BRANCHES = conf.git.branches.published
-PUBLISHED_VERSIONS = conf.version.published
-
-STABLE_RELEASE = conf.version.stable
-UPCOMING_RELEASE = conf.version.upcoming
-GENERATED_MAKEFILES = conf.build.system.files
-GENERATED_MAKEFILE_DATA_DIRECTORY = conf.build.paths.builddata
-
 ### Functions
 
 def get_sphinx_builders():
@@ -79,7 +69,6 @@ def get_versions():
                 version_string += ' (current)'
             if version == conf.version.upcoming:
                 version_string += ' (upcoming)'
-
 
         o.append( { 'v': path_name, 't': version_string } )
 

@@ -326,6 +326,9 @@ class ListTable(OutputTable):
         self.r.newline(block=b)
 
         for row in rows:
+            if not row:
+                continue 
+
             r = row.popitem()[1]
 
             self.r.li(r[0], bullet='* -', indent=self.indent + 3, wrap=False, block=b)
