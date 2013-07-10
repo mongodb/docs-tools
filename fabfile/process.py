@@ -3,9 +3,10 @@ import re
 import os
 import shutil
 
-from utils import md5_file, symlink
-from docs_meta import get_manual_path, output_yaml
+from utils import md5_file, symlink, expand_tree, dot_concat
+from docs_meta import output_yaml, get_manual_path, get_conf, get_branch_output_path
 from fabric.api import task, env, abort, puts, local
+from multiprocessing import Pool, Process
 
 env.input_file = None
 env.output_file = None
@@ -18,16 +19,62 @@ def input(fn):
 def output(fn):
     env.output_file = fn
 
-def strip_formated_text(text):
+def three_way_dependency_check(target, source, dependency):
+    if not os.path.exists(target) or os.stat(source).st_mtime >= os.stat(dependency).st_mtime:
+        return True
+    else:
+        return False
+
+@task
+def all_json_output():
+    p = Pool()
+    conf = get_conf()
+
+    outputs = []
+    for fn in expand_tree('source', 'txt'):
+        # path = build/<branch>/json/<filename>
+        path = os.path.join(conf.build.paths.output, conf.git.branches.current,
+                            'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
+        fjson = dot_concat(path, 'fjson')
+        json = dot_concat(path, 'json')
+
+        if three_way_dependency_check(json, fn, fjson):
+            p.apply_async(process_json_output, args=(fjson, json))
+
+        outputs.append(json)
+
+    p.apply_async(generate_list_file,
+                  args=(outputs, os.path.join(get_branch_output_path(), 'json-file-list')))
     
-    return text
+    p.close()        
+    p.join()
+
+def generate_list_file(outputs, path):
+    dirname = os.path.dirname(path)
+
+    if get_conf().git.remote.upstream.endswith('ecosystem'):
+        url = 'http://docs.mongodb.org/ecosystem'
+    else:
+        url = '/'.join(['http://docs.mongodb.org', get_manual_path()])
+
+    if not os.path.exists(dirname):
+        os.mkdir(dirname)
+        
+    with open(path, 'w') as f:
+        for fn in outputs:
+            f.write( '/'.join([ url, 'json', fn.split('/', 3)[3:][0]]))
+
+    puts('[json]: rebuilt inventory of json output.')
 
 @task
 def json_output():
     if env.input_file is None or env.output_file is None:
         abort('[json]: you must specify input and output files.')
-
-    with open(env.input_file, 'r') as f:
+    else:
+        process_json_output(env.input_file, env.output_file)
+        
+def process_json_output(input_fn, output_fn):
+    with open(input_fn, 'r') as f:
         document = f.read()
 
     doc = json.loads(document)
@@ -48,7 +95,7 @@ def json_output():
 
     if 'url' in doc:
         url = [ 'http://docs.mongodb.org', get_manual_path() ]
-        url.extend(env.input_file.rsplit('.', 1)[0].split('/')[3:])
+        url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
 
         doc['url'] = '/'.join(url)
 
@@ -58,8 +105,10 @@ def json_output():
 
         doc['title'] = title
 
-    with open(env.output_file, 'w') as f:
+    with open(output_fn, 'w') as f:
         f.write(json.dumps(doc))
+
+    puts('[json]: generated a processed json file: ' + output_fn)
 
 @task
 def manpage_url():

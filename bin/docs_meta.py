@@ -58,6 +58,9 @@ def get_manual_path():
     else:
         return branch
 
+def get_conf():
+    return conf
+
 def get_versions():
     o = []
 
@@ -97,10 +100,13 @@ def output_yaml(fn):
 
     write_yaml(o, fn)
 
+def get_branch_output_path():
+    return os.path.join(conf.build.paths.output, get_branch())
+
 def render_paths(fn):
-    paths = conf['build']['paths']
+    paths = conf.build.paths
     paths['public'] = os.path.join(paths['output'], 'public')
-    paths['branch-output'] = os.path.join(paths['output'], get_branch())
+    paths['branch-output'] = get_branch_output_path()
     paths['branch-source'] = os.path.join(paths['branch-output'], 'source')
     paths['branch-staging'] = os.path.join(paths['public'], get_branch())
 

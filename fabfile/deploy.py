@@ -2,7 +2,7 @@ from fabric.api import cd, local, task, abort, env, puts, parallel
 from fabric.utils import _AttributeDict as ad
 
 import os.path
-from docs_meta import conf, render_paths, get_branch, get_commit
+from docs_meta import get_conf, render_paths, get_branch, get_commit
 from urllib2 import urlopen
 
 _pub_hosts = ['www@www-c1.10gen.cc', 'www@www-c2.10gen.cc']
@@ -18,7 +18,7 @@ def validate_branch(branch):
         pass
     elif branch is None:
         abort('must specify a branch')
-    elif branch not in conf.git.branches.published:
+    elif branch not in get_conf().git.branches.published:
         abort('must specify a published branch.')
 
 def rsync_options(recursive, delete):

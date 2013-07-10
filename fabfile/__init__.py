@@ -11,6 +11,7 @@ import delegated
 import tools
 import stats
 from make import make
+from fabfile.docs_meta import conf
 
 import fabric
 fabric.state.output.status = False

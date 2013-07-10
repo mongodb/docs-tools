@@ -1,10 +1,10 @@
 from fabric.api import lcd, local, task
 
-from docs_meta import conf
+from docs_meta import get_conf
 
 @task
 def make(target):
-    with lcd(conf.build.paths.projectroot):
+    with lcd(get_conf().build.paths.projectroot):
         if isinstance(target, list):
             target_str = make + ' '.join([target])
         elif isinstance(target, basestring):

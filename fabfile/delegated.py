@@ -4,7 +4,7 @@ import os.path
 import sys
 
 from utils import log_command_output, ingest_yaml, get_branch
-from docs_meta import conf, get_sphinx_builders
+from docs_meta import get_conf, get_sphinx_builders
 
 b = 'delegated-builder'
 
@@ -23,8 +23,7 @@ def build_branch(logfile, branch='master', target='publish', wait=False):
     if wait is False:
         puts('[{0}]: build in progress.'.format(b))
 
-
-env.logfile = os.path.join(conf.build.paths.output, 'docs-staging-delegated.log')
+env.logfile = None 
 env.builders = ['publish', 'push', 'stage', 'json-output']
 env.builders.extend(get_sphinx_builders())
 env.branch = get_branch()
@@ -49,6 +48,9 @@ def branch(branch):
 
 @task
 def build(builder='publish'):
+    if env.logfile is None:
+        env.logfile = os.path.join(get_conf().build.paths.output, 'docs-staging-delegated.log')
+
     if builder not in env.builders:
         pass
     else:
