@@ -20,7 +20,7 @@ def output(fn):
     env.output_file = fn
 
 def three_way_dependency_check(target, source, dependency):
-    if not os.path.exists(target) or os.stat(source).st_mtime >= os.stat(dependency).st_mtime:
+    if not os.path.exists(target) or os.stat(source).st_mtime > os.stat(dependency).st_mtime:
         return True
     else:
         return False
@@ -194,3 +194,52 @@ def meta():
 def update_time(fn, times=None):
     if os.path.exists(fn):
         os.utime(fn, times)
+
+def _check_dependency_list(target, dependencies):
+    needs_rebuild = False
+    
+    target_time = os.stat(target).st_mtime 
+    for dep in dependencies:
+        if target_time < os.stat(dep).st_mtime:
+            needs_rebuild = True
+            break
+    return needs_rebuild
+
+def update_dependency(fn):
+    if os.path.exists(fn):
+        os.utime(fn, None)
+        puts('[dependency]: updated timestamp of {0} because its included files changed'.format(fn))
+
+def fix_include_path(inc, fn, source):
+    if inc.startswith('/'):
+        return ''.join([source + inc])
+    else:
+        return os.path.join(os.path.dirname(os.path.abspath(fn)), fn)
+
+def check_deps(file, pattern):
+    includes = []
+    try:
+        with open(file, 'r') as f:
+            for line in f:
+                r = pattern.findall(line)
+                if r:
+                    includes.append(fix_include_path(r[0], file, 'source'))
+        if len(includes) >= 1:
+            if _check_dependency_list(file, includes):
+                update_dependency(file)
+    except IOError:
+        pass
+
+@task
+def refresh_dependencies():
+    files = expand_tree('source', 'txt')
+    inc_pattern = re.compile(r'\.\. include:: (.*\.(?:txt|rst))')
+
+    dep_info = []
+    p = Pool()
+
+    for fn in files:
+        p.apply_async(check_deps, kwds=dict(file=fn, pattern=inc_pattern))
+
+    p.close()
+    p.join()
