@@ -37,7 +37,6 @@ def generate_table_build_rules():
     
     targets = rst_tables + list_tables
     m.section_break('meta targets for generated tables')
-    m.target('tables', targets)
     m.target('rst-tables', rst_tables)
     m.target('list-tables', list_tables)
     m.target('clean-tables')

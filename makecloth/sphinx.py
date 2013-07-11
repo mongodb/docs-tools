@@ -35,6 +35,9 @@ def make_all_sphinx(config):
     m.target('toc')
     m.job('fab generate.toc')
 
+    m.target('tables')
+    m.job('fab generate.tables')
+
     m.newline()
     m.comment('sphinx prereq integration.')
     m.target('sphinx-prerequisites', config['prerequisites'], block=b)
@@ -83,7 +86,7 @@ def make_all_sphinx(config):
     m.section_break('meta', block='footer')
     m.newline(block='footer')
     m.target('.PHONY', sphinx_targets, block='footer')
-    m.target('.PHONY', 'composites', block='footer')
+    m.target('.PHONY', ['composites', 'api', 'toc', 'tables'], block='footer')
 
 def sphinx_builder(target_str):
     b = 'production'
