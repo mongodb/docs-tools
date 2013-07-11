@@ -36,7 +36,7 @@ def api():
     for source in expand_tree('source/reference', 'yaml'):
         target = dot_concat(os.path.splitext(source)[0], 'rst')
         if env.FORCE or check_dependency(target, source):
-            p.apply(_generate_api_param, args=(source, target))
+            p.apply_async(_generate_api_param, args=(source, target))
             count +=1 
 
     p.close()
