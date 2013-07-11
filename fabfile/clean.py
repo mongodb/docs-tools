@@ -24,7 +24,7 @@ def builds(days=14):
     for build in builds:
         branch = build.rsplit('/', 1)[1]
 
-        if branch in docs_meta.PUBLISHED_BRANCHES:
+        if branch in docs_meta.conf.git.branches.published:
             continue
         elif branch == docs_meta.get_branch:
             continue
