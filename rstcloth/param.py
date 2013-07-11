@@ -18,15 +18,23 @@ field_type = {
 }
 
 class ParamTable(TableData):
-    def __init__(self, header=[], rows=[]):
-        self.header = header
-        self.rows = rows
+    def __init__(self, header=None, rows=None):
+        if header is None:
+            self.header = []
+        else:
+            self.header = header
+        
+        if rows is None:
+            self.rows = []
+        else:
+            self.rows = rows
+
         self.num_rows = 0
         self.widths = None
         self.final = False
 
-    def set_column_widths(self, has_type):
-        if has_type:
+    def set_column_widths(self, doc):
+        if self.has_type(doc):
             self.widths = [ 20, 20, 60 ]
             self.num_columns = 3
             self.type_column = True
@@ -45,14 +53,7 @@ class ParamTable(TableData):
 def generate_param_table(params):
     table_data = ParamTable()
 
-    # :/ temporary fix
-    table_data.rows = []
-    table_data.header = []
-    table_data.num_rows = 0
-    table_data.widths = None
-    # return to normalcy
-
-    table_data.set_column_widths(table_data.has_type(params[0]))
+    table_data.set_column_widths(params[0])
 
     table_data.add_header(render_header_row(params[0],
                                             table_data.num_rows,
