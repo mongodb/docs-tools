@@ -18,7 +18,7 @@ def sign():
 @task(alias='am')
 def apply(obj,repo=None):
     if repo is None:
-        repo = docs_meta.GIT_REMOTE['upstream']
+        repo = docs_meta.git.remote.upstream
 
     cmd = ['curl',
            'https://github.com/{0}/'.format(repo),
