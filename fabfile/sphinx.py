@@ -11,7 +11,7 @@ paths = docs_meta.render_paths(True)
 def get_tags(target, argtag):
     if argtag is None:
         ret = []
-    else: 
+    else:
         ret = [argtag]
 
     if target.startswith('html') or target.startswith('dirhtml'):

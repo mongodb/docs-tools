@@ -70,10 +70,11 @@ class TableData(object):
     def _columns(self, num_columns):
         if self.num_columns is None:
             self.num_columns = num_columns
+            return True
+        elif self.num_columns == num_columns:
+            return True
         elif num_columns != self.num_columns:
             raise Exception('rows must have the same number of columns as the table.')
-
-        return True
 
     def add_row(self, row):
         if self._columns(len(row)):
@@ -82,7 +83,7 @@ class TableData(object):
 
     def add_header(self, row):
         if self._columns(len(row)):
-            if self.header == None:
+            if self.header is None:
                 self.header = []
 
             o = []
@@ -102,6 +103,7 @@ class YamlTable(TableData):
         self.format = None
 
         layout, meta, content = self.read_data(inputfile)
+        self.layout = layout
         self.parse_table(layout, meta, content)
 
     def parse_table(self, layout, meta, content):
@@ -186,6 +188,9 @@ class RstTable(OutputTable):
         ``tempcolumnwidths``. ``tempcolumnwidths`` variable maintains
         the running max width of each column.
         """
+        if rowdata == [{}]:
+            return False
+
         for row in rowdata:
             if self.tempcolumnwidths:
                 max_widths = self.tempcolumnwidths.pop()
@@ -209,6 +214,8 @@ class RstTable(OutputTable):
                 max_widths = o
 
                 self.tempcolumnwidths.append(max_widths)
+
+        return True
 
     ###################################
     #
@@ -250,12 +257,16 @@ class RstTable(OutputTable):
         # max cell widths stored in the global var tempcolumnwidths
         # and swap out value(s) if necessary.
         if self.table.header is not None:
-            self._check_column_width(self.table.header)
-            self.table.header = self.table.header[0][0]
+            if self._check_column_width(self.table.header):
+                self.table.header = self.table.header[0][0]
+
             if self.num_columns is None:
                 self.num_columns = len(self.table.header)
 
         for row, index in zip(self.table.rows, range(len(self.table.rows))):
+            if not row:
+                continue
+
             parsed_row = []
             index = index + 1
 
@@ -273,7 +284,8 @@ class RstTable(OutputTable):
             # add the processed data to the table
             self.table_data.append(parsed_row)
 
-        self.columnwidths = self.tempcolumnwidths.pop()
+        if len(self.tempcolumnwidths) > 0:
+            self.columnwidths = self.tempcolumnwidths.pop()
 
     def render_table(self):
         o = []
@@ -315,7 +327,10 @@ class ListTable(OutputTable):
         if self.table.header is not None:
             _fields.append(('header-rows', '1'))
             rows.append(self.table.header[0])
-    
+            idx = 0
+        else:
+            idx = 1
+
         if self.widths is not None:
             _fields.append(('widths', ' '.join(self.widths)))
 
@@ -326,14 +341,16 @@ class ListTable(OutputTable):
         self.r.newline(block=b)
 
         for row in rows:
-            r = row.popitem()[1]
-
+            r = row[idx]
+                
             self.r.li(r[0], bullet='* -', indent=self.indent + 3, wrap=False, block=b)
             self.r.newline(block=b)
 
             for cell in r[1:]:
                 self.r.li(cell, bullet='  -',  indent=self.indent + 3, wrap=False, block=b)
                 self.r.newline(block=b)
+
+            idx += 1
 
 ###################################
 #
@@ -411,23 +428,23 @@ def get_outputfile(inputfile, outputfile):
     else:
         return outputfile
 
-def user_input(formats):
+formats = { 'rst': RstTable,
+            'list': ListTable,
+            'html': HtmlTable }
+
+def user_input():
     parser = argparse.ArgumentParser('YAML to (RST/HTML) Table Builder')
     parser.add_argument('input', nargs='?', help='path of source yaml file.')
 
     output_help = 'path of output file. by default, the input file name with an ".rst" extension.'
     parser.add_argument('output', nargs='?', default=None, help=output_help)
-    parser.add_argument('--type', '-t', choices=formats, default='rst',
+    parser.add_argument('--type', '-t', choices=formats.keys(), default='rst',
                         help='output table format.')
 
     return parser.parse_args()
 
 def main():
-    formats = { 'rst': RstTable,
-                'list': ListTable,
-                'html': HtmlTable }
-
-    ui = user_input(formats.keys())
+    ui = user_input()
 
     table_data = YamlTable(ui.input)
 

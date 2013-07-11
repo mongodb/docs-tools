@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 import utils as utils
 from rstcloth import RstCloth
 from rstcloth import fill
-import table as tb
+from table import TableData, TableBuilder, ListTable
 
 field_type = {
     'param' : 'Parameter',
@@ -17,27 +17,23 @@ field_type = {
     'flag': 'Flag',
 }
 
-class ParamTable(tb.TableData):
+class ParamTable(TableData):
     def __init__(self, header=[], rows=[]):
-        super(ParamTable, self).__init__()
         self.header = header
         self.rows = rows
         self.num_rows = 0
-        self.type_column = None
         self.widths = None
+        self.final = False
 
-    def set_column_widths(self, widths=None):
-        if widths is None:
-            if self.type_column:
-                self.widths = [ 20, 20, 60 ]
-            else:
-                self.widths = [ 20, 80 ]
-
-    def set_type(self, doc):
-        if self.type_column is True or None:
-            pass
+    def set_column_widths(self, has_type):
+        if has_type:
+            self.widths = [ 20, 20, 60 ]
+            self.num_columns = 3
+            self.type_column = True
         else:
-            self.type_column = self.has_type(doc)
+            self.widths = [ 20, 80 ]
+            self.num_columns = 2
+            self.type_column = False
 
     @staticmethod
     def has_type(doc):
@@ -49,10 +45,14 @@ class ParamTable(tb.TableData):
 def generate_param_table(params):
     table_data = ParamTable()
 
-    for param in params:
-        table_data.set_type(param)
+    # :/ temporary fix
+    table_data.rows = []
+    table_data.header = []
+    table_data.num_rows = 0
+    table_data.widths = None
+    # return to normalcy
 
-    table_data.set_column_widths()
+    table_data.set_column_widths(table_data.has_type(params[0]))
 
     table_data.add_header(render_header_row(params[0],
                                             table_data.num_rows,
@@ -68,7 +68,7 @@ def generate_param_table(params):
 
         table_data.add_row(row)
 
-    table = tb.TableBuilder(tb.ListTable(table_data, widths=table_data.widths))
+    table = TableBuilder(ListTable(table_data, widths=table_data.widths))
 
     return table.output
 
@@ -78,12 +78,10 @@ def generate_param_fields(param):
     if ParamTable.has_type(param):
         _name.append(process_type_cell(param['type'], 'field'))
 
-
     if param['name'] is not None:
         _name.append(param['name'])
 
     description = param['description'] 
-
 
     if isinstance( param['description'], list):
         field_content = fill('\n'.join(param['description']), 0, 6, False)
@@ -140,6 +138,7 @@ def generate_params(params):
     # Begin by generating the table for web output
     r.directive('only', '(html or singlehtml or dirhtml)', block='htm')
     r.newline(block='htm')
+
     r.content(generate_param_table(params), indent=3, block='html')
     r.newline(block='htm')
 
