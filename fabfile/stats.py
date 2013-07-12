@@ -2,7 +2,7 @@ from fabric.api import task, local, env
 from fabric.utils import puts, abort
 from droopy.factory import DroopyFactory
 from droopy.lang.english import English
-
+from multiprocessing import Pool, Manager
 from docs_meta import conf
 from utils import expand_tree
 
@@ -12,13 +12,13 @@ import os.path
 
 ####### internal functions for rendering reports #######
 
-def render_report(fn=None):
+def _render_report(fn=None):
     if fn is None:
         fn = env.input_file
 
     with open(os.path.abspath(fn), 'r') as f:
-        text = json.loads(f.read())['text']
-        
+        text = json.load(f)['text']
+
     if 'source_file' not in env:
         base_fn, path, source = _fn_process(fn)
     else:
@@ -46,19 +46,7 @@ def render_report(fn=None):
             }
         }
 
-def output_report(data, fmt='yaml'):
-    if fmt == 'yaml':
-        puts(yaml.safe_dump(data, default_flow_style=False, indent=3, explicit_start=True)[:-1])
-    elif fmt == 'json':
-        puts(json.dumps(data, indent=2))
-        
-def _fn_process(fn):
-    base_fn = os.path.splitext(fn)[0]
-    path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json',
-                        base_fn)
-    source = '.'.join([os.path.join('source', base_fn), 'txt'])
-
-    return path, base_fn, source
+## Path and filneame processing
 
 def _fn_output(tag):
     fn = ['stats', 'sweep' ]
@@ -69,21 +57,17 @@ def _fn_output(tag):
     out_fn = '.'.join(['-'.join(fn), 'yaml'])
     return os.path.join(conf.build.paths.output, out_fn)
 
-def _output_report_yaml(doc):
-   return yaml.safe_dump(render_report(doc), default_flow_style=False, explicit_start=True)
-
-########## user facing operations ##########
-
 env.input_file = None
-
-@task(aliases=['file', 'input'])
-def input_file(fn):
+def _resolve_input_file(fn):
     if fn.startswith('/'):
         fn = fn[1:]
     if fn.startswith('source'):
         fn = fn[7:]
 
-    path, base_fn, source = _fn_process(fn)
+    base_fn = os.path.splitext(fn)[0]
+    path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json',
+                        base_fn)
+    source = '.'.join([os.path.join('source', base_fn), 'txt'])
 
     env.input_file = '.'.join([path, 'json'])
     env.source_file = source
@@ -91,42 +75,58 @@ def input_file(fn):
     if not os.path.exists(env.input_file):
         abort("[stats]: processed json file does not exist for: {0}, build 'json-output' and try again.".format(source))
 
-@task
-def report(fn=None, fmt='yaml'):
-    if fn is None and env.input_file is None:
-        abort('[stats]: must specify a file to report stats.')
-    else:
-        input_file(fn)
-        
-    output_report(render_report())
+## YAML output wrapper
 
-@task
-def sweep(mask=None):
+def _output_report_yaml(data):
+   return yaml.safe_dump(data, default_flow_style=False, explicit_start=True)
+
+
+########## user facing operations ##########
+
+## Report Generator
+def _generate_report(mask, output_file):
     base_path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json')
-    docs = expand_tree(base_path, 'json')
+    docs = expand_tree(base_path, '.json')
 
     output = []
 
-    puts('[stats]: starting full sweep of docs content.')
-    for doc in docs: 
-        if doc.endswith('searchindex.json') or doc.endswith('globalcontext.json'):
-            continue 
-        elif mask is not None:
-            if doc.startswith(os.path.join(base_path, mask)):
-                output.append(_output_report_yaml(doc))
-        else:
-            output.append(_output_report_yaml(doc))
+    p = Pool()
 
+    for doc in docs:
+        if doc.endswith('searchindex.json') or doc.endswith('globalcontext.json'):
+            continue
+        elif mask is None:
+            output.append(p.apply_async( _render_report, kwds=dict(fn=doc)))
+        else:
+            if doc.startswith(os.path.join(base_path, mask)):
+                output.append(p.apply_async( _render_report, kwds=dict(fn=doc)))
+
+    p.close()
+    p.join()
+
+    output = [ _output_report_yaml(o.get()) for o in output ]
     output[0] = output[0][4:]
     output.append('...\n')
 
+    if output_file is None:
+        for ln in output:
+            print ln[:-1]
+    else:
+        with open(output_file, 'w') as f:
+            for ln in output:
+                f.write(ln)
+
+## User facing fabric tasks
+
+@task
+def report(fn=None):
+    _generate_report(fn, None)
+
+@task
+def sweep(mask=None):
+    puts('[stats]: starting full sweep of docs content.')
     out_file = _fn_output(mask)
 
-    with open(out_file, 'w') as f:
-        for ln in output:
-            f.write(ln)
-    puts('[stats]: wrote full manual sweep to {0}'.format(out_file))
+    _generate_report(mask, output_file=out_file)
 
-@task    
-def sweep_report():
-    local(' '.join(['cat', _fn_output()]))
+    puts('[stats]: wrote full manual sweep to {0}'.format(out_file))

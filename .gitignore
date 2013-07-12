@@ -6,3 +6,4 @@ build/
 fabfile/docs_meta.py
 fabfile/utils.py
 *#*
+bin/docs_meta.yaml
