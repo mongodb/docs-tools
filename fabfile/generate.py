@@ -2,7 +2,7 @@ import os.path
 import sys
 
 from multiprocessing import Pool
-from utils import ingest_yaml_list, expand_tree, dot_concat, hyph_concat
+from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat
 from fabric.api import task, puts, local, env
 from make import check_dependency
 from docs_meta import render_paths
@@ -14,6 +14,7 @@ from rstcloth.param import generate_params
 from rstcloth.toc import CustomTocTree
 from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
 from rstcloth.images import generate_image_pages
+from rstcloth.releases import generate_release_output
 
 env.FORCE = False
 @task
@@ -227,3 +228,47 @@ def images():
     p.close()
     p.join()
     puts('[image]: rebuilt {0} rst files and {1} image files'.format(count_rst, count_png))
+
+#################### Snippets for Inclusion in Installation Guides  ####################
+
+# generate_release_output(builder, platform, version, release)
+
+def _check_release_dependency(target):
+    if env.FORCE:
+        return True
+    elif check_dependency(target, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'conf.py')):
+        return True
+    elif check_dependency(target, os.path.join(os.path.dirname(__file__), '..', 'rstcloth', 'releases.py')):
+        return True
+    else:
+        return False
+
+def _generate_release_ent(rel):
+    target = 'source/includes/install-curl-release-ent-{0}.rst'.format(rel['system'])
+
+    if _check_release_dependency(target):
+        r = generate_release_output(rel['type'], rel['type'].split('-')[0], rel['system'] )
+        r.write(target)
+        puts('[release]: wrote: ' + target)
+
+def _generate_release_core(rel):
+    target = 'source/includes/install-curl-release-{0}.rst'.format(rel)
+    if _check_release_dependency(target):
+        r = generate_release_output(rel, rel.split('-')[0], 'core' )
+        r.write(target)
+        puts('[release]: wrote: ' + target)
+
+@task
+def releases():
+    rel_data = ingest_yaml(os.path.join(paths['builddata'], 'releases') + '.yaml')
+
+    p = Pool()
+    for rel in rel_data['source-files']:
+        p.apply_async(_generate_release_core, args=[rel])
+
+    for rel in rel_data['subscription-build']:
+        p.apply_async(_generate_release_ent, args=[rel])
+
+    p.close()
+    p.join()
+    puts('[releases]: completed regenerating release files.')

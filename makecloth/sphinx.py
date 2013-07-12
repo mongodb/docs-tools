@@ -20,7 +20,6 @@ paths = render_paths('dict')
 
 def make_all_sphinx(config):
     b = 'prereq'
-    build_source_dir = paths['branch-output'] + '/source'
 
     m.section_break('sphinx prerequisites')
     m.newline()
@@ -44,10 +43,15 @@ def make_all_sphinx(config):
     m.target('images')
     m.job('fab generate.images')
 
+    m.target('releases')
+    m.job('fab generate.releases')
+
     m.newline()
     m.comment('sphinx prereq integration.')
     m.target('sphinx-prerequisites', config['prerequisites'], block=b)
     m.msg('[sphinx-prep]: build environment prepared for sphinx.', block=b)
+
+    build_source_dir = paths['branch-output'] + '/source'
 
     if 'generated-source' in config and config['generated-source']:
         config['generated-source'].insert(0, build_source_dir)
