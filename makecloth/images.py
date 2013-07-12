@@ -37,7 +37,6 @@ def generate_targets(images):
 
             m.target(target, source_file, block=b)
             m.job('{0} {1} {2}'.format(inkscape_cmd, target, source_file), block=b)
-            m.msg('[image]: inkscape generated images for "%s."' % b, block=b)
             m.newline(block=b)
 
         rst_file = source_base + '.rst'

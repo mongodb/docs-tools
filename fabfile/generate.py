@@ -13,6 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', pa
 from rstcloth.param import generate_params
 from rstcloth.toc import CustomTocTree
 from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
+from rstcloth.images import generate_image_pages
 
 env.FORCE = False
 @task
@@ -26,7 +27,7 @@ def force():
 def _generate_api_param(source, target):
     r = generate_params(ingest_yaml_list(source))
     r.write(target)
-    
+
     puts('[api]: rebuilt {0}'.format(target))
 
 ### User facing fabric task
@@ -47,7 +48,6 @@ def api():
     p.close()
     p.join()
     print('[api]: generated {0} tables for api items'.format(count))
-
 
 #################### Table of Contents Generator ####################
 
@@ -164,4 +164,66 @@ def tables():
     p.close()
     p.join()
 
-    print('[table]: built {0} tables'.format(count))
+    puts('[table]: built {0} tables'.format(count))
+
+#################### Generate Images and Related Content  ####################
+
+## Internal Supporting Methods
+
+def _get_inkscape_cmd():
+    if sys.platform in ['linux', 'linux2']:
+        return '/usr/bin/inkscape'
+    elif sys.platfomr == 'darwin':
+        inkscape = '/Applications/Inkscape.app/Contents/Resources/bin/inkscape'
+        if os.path.exists(inkscape):
+            return inkscape
+
+    return 'inkscape'
+
+
+def _generate_images(cmd, dpi, width, target, source):
+    local(cmd.format(cmd=_get_inkscape_cmd(),
+                     dpi=dpi,
+                     width=width,
+                     target=target,
+                     source=source))
+    puts('[image]: generated image file  {0}'.format(source))
+
+## User facing fabric task
+
+@task
+def images():
+    meta_file = os.path.join(paths['images'], 'metadata') + '.yaml'
+    images_meta = ingest_yaml_list(meta_file)
+
+    p = Pool()
+
+    count_rst = 0
+    count_png = 0
+    for image in images_meta:
+        image['dir'] = paths['images']
+        source_base = os.path.join(image['dir'], image['name'])
+        source_file = source_base + '.svg'
+        rst_file = source_base + '.rst'
+
+        if env.FORCE or ( check_dependency(rst_file, meta_file) and
+                          check_dependency(rst_file, os.path.join(paths['buildsystem'], 'rstcloth', 'images.py'))):
+            p.apply_async(generate_image_pages, args=[image])
+            count_rst += 1
+
+        for output in image['output']:
+            if 'tag' in output:
+                tag = '-' + output['tag']
+            else:
+                tag = ''
+
+            target_img = source_base + tag + '.png'
+
+            if env.FORCE or check_dependency(target_img, source_file):
+                inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
+                p.apply_async(_generate_images, args=(inkscape_cmd, output['dpi'], output['width'], target_img, source_file))
+                count_png += 1
+
+    p.close()
+    p.join()
+    puts('[image]: rebuilt {0} rst files and {1} image files'.format(count_rst, count_png))

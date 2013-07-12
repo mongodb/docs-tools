@@ -10,7 +10,7 @@ from rstcloth import RstCloth
 
 r = RstCloth()
 
-def generate_pages(conf):
+def generate_image_pages(conf):
     image = '/'.join([conf['dir'], conf['name']])
     alt = conf['alt']
     b = conf['name']
@@ -43,10 +43,11 @@ def generate_pages(conf):
         r.newline(block=b)
 
     r.write(image + '.rst')
+    print('[image]: generated include file {0}.rst'.format(image))
 
 def main():
     image = json.loads(sys.argv[1])
-    generate_pages(image)
+    generate_image_pages(image)
 
 if __name__ == '__main__':
     main()
