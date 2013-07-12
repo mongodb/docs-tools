@@ -1,7 +1,11 @@
-from fabric.api import task, local, env, puts, hide
-from fabric.utils import _AttributeDict as ad
+import sys
 import os
 import time
+from multiprocessing import Pool
+
+from fabric.api import task, local, env, puts, hide
+from fabric.utils import _AttributeDict as ad
+from docs_meta import render_paths
 
 env.ACCEPTABLE = 864000
 env.msgid = 'intersphinx'
@@ -9,7 +13,7 @@ env.msgid = 'intersphinx'
 #### Helper functions
 
 def download_file(file, url):
-    cmd = ['curl', '-s', '--remote-time', url, '-o', file]
+    cmd = ['curl', '-s', '--remote-time', url + 'objects.inv', '-o', file]
     with hide('running'):
         local(' '.join(cmd))
 
@@ -18,21 +22,7 @@ def file_timestamp(path):
 
 #### Tasks
 
-env._ui = ad({'url': None, 'file': None})
-
-@task
-def url(url):
-    env._ui.url = url
-
-@task
-def file(file):
-    env._ui.file = file
-
-@task
-def download():
-    f = env._ui.file
-    s = env._ui.url
-
+def download(f, s):
     if os.path.isfile(f):
         newf = False
     else:
@@ -59,3 +49,16 @@ def download():
     else:
         # otherwise, mtime is within the window of n days, and we can do nothing.
         puts('[{0}]: "{1}" is up to date'.format(env.msgid, f))
+
+def intersphinx():
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+    from conf import intersphinx_mapping
+    paths = render_paths('dict')
+
+    p = Pool()
+    for i in intersphinx_mapping:
+        p.apply_async(download,
+                      kwds=dict(f=os.path.join(paths['output'], i) + ".inv",
+                                s=intersphinx_mapping[i][0]))
+    p.close()
+    p.join()

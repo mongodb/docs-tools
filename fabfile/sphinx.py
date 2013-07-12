@@ -8,6 +8,9 @@ import datetime
 
 paths = docs_meta.render_paths(True)
 
+from intersphinx import intersphinx
+intersphinx = task(intersphinx)
+
 def get_tags(target, argtag):
     if argtag is None:
         ret = []

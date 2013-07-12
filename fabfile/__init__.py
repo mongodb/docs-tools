@@ -5,7 +5,6 @@ import deploy
 import sphinx
 import clean
 import git
-import intersphinx
 import process
 import delegated
 import tools
