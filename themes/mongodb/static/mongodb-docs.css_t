@@ -927,3 +927,19 @@ dl.toc dd p {
 dd > dl.toc > dd {
    font-size: 100%;
 }
+
+dl.method dd p, dl.dbcommand dd p {
+  padding-top: 5px;
+}
+
+dl.method dd table.docutils td, dl.dbcommand dd table.docutils td {
+	line-height: 1.3em;
+}
+
+dl.method > dt, dl.dbcommand > dt {
+	background-color: lavender;
+}
+
+div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p > span {
+    font-style: italic;
+}
