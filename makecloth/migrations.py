@@ -11,12 +11,17 @@ from docs_meta import conf
 m = MakefileCloth()
 
 def build_all_sphinx_migrations(migrations):
+    links = { 'phony': [], 'all': [] }
     for migration in migrations:
         block = migration['action']
 
-        m.target(target=migration['target'],
-                 dependency=migration['dependency'],
-                 block=block)
+        if block == 'link':
+            m.target(target=migration['target'],
+                     block=block)
+        else:
+            m.target(target=migration['target'],
+                     dependency=migration['dependency'],
+                     block=block)
 
         if block == 'touch':
             m.job('touch {0}'.format(migration['target']), block=block)
@@ -49,6 +54,19 @@ def build_all_sphinx_migrations(migrations):
             m.job('cp {0} {1}'.format(migration['dependency'], migration['target']), block=block)
             m.msg('[build]: migrated "{0}" to "{1}"'.format(migration['dependency'], migration['target']))
             m.newline(block=block)
+        elif block == 'link':
+            m.job(job='fab process.input:{0} process.output:{1} process.create_link'.format(migration['target'], migration['dependency']), block=block)
+            m.newline(block=block)
+            links['all'].append(migration['target'])
+            
+            if migration['type'] == 'phony':
+                links['phony'].append(migration['target'])
+
+    m.target('.PHONY', links['phony'], block='footer')
+    m.target('links', links['all'], block='footer')
+    m.newline(block='footer')
+    m.target('clean-links', block='footer')
+    m.job('rm -rf {0}'.format(' '.join(links['all'])), True)
 
 def main():
     conf_file = utils.get_conf_file(__file__)

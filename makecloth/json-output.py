@@ -9,8 +9,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 from docs_meta import get_manual_path, render_paths, get_conf
 from makecloth import MakefileCloth
 
-def generate_meta():
+def generate_json_output_meta():
     m = MakefileCloth()
+
+    m.section_break('json output coordination.')
     paths = render_paths('dict')
 
     if get_conf().git.remote.upstream.endswith('ecosystem'):
@@ -52,7 +54,7 @@ def generate_meta():
     return m
 
 def main():
-    m = generate_meta()
+    m = generate_json_output_meta()
 
     m.write(sys.argv[1])
 

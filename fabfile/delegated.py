@@ -1,10 +1,10 @@
 from fabric.api import task, puts, abort, env, hide
-from git import GitRepoManager
 import os.path
 import sys
 
 from utils import log_command_output, ingest_yaml, get_branch
 from docs_meta import get_conf, get_sphinx_builders
+from git import GitRepoManager
 
 b = 'delegated-builder'
 

@@ -54,17 +54,8 @@ def make_all_sphinx(config):
     build_source_dir = paths['branch-output'] + '/source'
 
     if 'generated-source' in config and config['generated-source']:
-        config['generated-source'].insert(0, build_source_dir)
         m.target('generate-source',  config['generated-source'], block=b)
-        m.job('rsync --recursive --times --delete source/ ' + build_source_dir, block=b)
-        m.msg('[sphinx-prep]: updated source in ' + build_source_dir, block=b)
-        info_note = 'Build in progress past critical phase.'
-        m.job(utils.build_platform_notification('Sphinx', info_note), ignore=True, block=b)
-        m.msg('[sphinx-prep]: INFO - ' + info_note, block=b)
-
-    m.target(build_source_dir, block=b)
-    m.job('mkdir -p ' + build_source_dir, block=b)
-    m.msg('[sphinx-prep]: created ' + build_source_dir, block=b)
+        m.job('fab generate.source')
 
     m.section_break('sphinx targets', block=b)
     m.newline(block=b)
