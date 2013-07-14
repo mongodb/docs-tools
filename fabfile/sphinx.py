@@ -20,7 +20,7 @@ def get_tags(target, argtag):
     if target.startswith('html') or target.startswith('dirhtml'):
         ret.append('website')
     else:
-        ret.append('website')
+        ret.append('print')
 
     return ' '.join([ '-t ' + i for i in ret ])
 

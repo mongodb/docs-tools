@@ -55,7 +55,7 @@ def build_all_sphinx_migrations(migrations):
             m.msg('[build]: migrated "{0}" to "{1}"'.format(migration['dependency'], migration['target']))
             m.newline(block=block)
         elif block == 'link':
-            m.job(job='fab process.input:{0} process.output:{1} process.create_link'.format(migration['target'], migration['dependency']), block=block)
+            m.job(job='fab process.input:{0} process.output:{1} process.create_link'.format(migration['dependency'], migration['target']), block=block)
             m.newline(block=block)
             links['all'].append(migration['target'])
             
