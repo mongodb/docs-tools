@@ -277,7 +277,7 @@ def releases():
 
 @task
 def source():
-    target = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', paths['branch-source']))
+    target = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', paths['branch-output']))
 
     if not os.path.exists(target):
         os.makedirs(target)
