@@ -174,7 +174,7 @@ def tables():
 def _get_inkscape_cmd():
     if sys.platform in ['linux', 'linux2']:
         return '/usr/bin/inkscape'
-    elif sys.platfomr == 'darwin':
+    elif sys.platform == 'darwin':
         inkscape = '/Applications/Inkscape.app/Contents/Resources/bin/inkscape'
         if os.path.exists(inkscape):
             return inkscape
