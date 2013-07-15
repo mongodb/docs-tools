@@ -3,7 +3,7 @@ import sys
 
 from multiprocessing import Pool
 from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, build_platform_notification
-from fabric.api import task, puts, local, env
+from fabric.api import task, puts, local, env, quiet
 from make import check_dependency
 from docs_meta import render_paths
 
