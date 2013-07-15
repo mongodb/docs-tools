@@ -288,5 +288,7 @@ def source():
     local('rsync --recursive --times --delete {0} {1}'.format(paths['source'], target))
     puts('[sphinx-prep]: updated source in {0}'.format(target))
 
-    local(build_platform_notification('Sphinx', 'Build in progress past critical phase.'))
+    with quiet():
+        local(build_platform_notification('Sphinx', 'Build in progress past critical phase.'))
+
     puts('[sphinx-prep]: INFO - Build in progress past critical phase.')
