@@ -8,34 +8,35 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 import utils
 from rstcloth import RstCloth
 
-r = RstCloth()
 
-def generate_image_pages(conf):
-    image = '/'.join([conf['dir'], conf['name']])
-    alt = conf['alt']
-    b = conf['name']
+def generate_image_pages(dir, name, alt, output):
+    r = RstCloth()
 
-    for output in conf['output']:
-        if output['type'] == 'print':
+    image = '/'.join([dir, name])
+    alt = alt
+    b = name
+
+    for img_output in output:
+        if img_output['type'] == 'print':
             r.directive('only', 'latex', wrap=False, block=b)
         else:
             r.directive('only', 'not latex', wrap=False, block=b)
 
         r.newline()
 
-        if 'tag' in output:
-            tag = '-' + output['tag'] + '.png'
+        if 'tag' in img_output:
+            tag = '-' + img_output['tag'] + '.png'
         else:
             tag = '.png'
 
 
-        options = [('alt', alt), ('align', 'center'), ('figwidth', output['width'])]
+        options = [('alt', alt), ('align', 'center'), ('figwidth', img_output['width'])]
 
-        if 'scale' in output:
-            options.append(('scale', output['scale']))
+        if 'scale' in img_output:
+            options.append(('scale', img_output['scale']))
 
         r.directive(name='figure',
-                    arg='/images/{0}{1}'.format(conf['name'], tag),
+                    arg='/images/{0}{1}'.format(name, tag),
                     fields=options,
                     indent=3,
                     content=alt,
@@ -47,7 +48,7 @@ def generate_image_pages(conf):
 
 def main():
     image = json.loads(sys.argv[1])
-    generate_image_pages(image)
+    generate_image_pages(**image)
 
 if __name__ == '__main__':
     main()

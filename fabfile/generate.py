@@ -222,9 +222,10 @@ def images():
         source_file = source_base + '.svg'
         rst_file = source_base + '.rst'
 
+
         if env.FORCE or ( check_dependency(rst_file, meta_file) and
                           check_dependency(rst_file, os.path.join(paths['buildsystem'], 'rstcloth', 'images.py'))):
-            p.apply_async(generate_image_pages, kwds=dict(conf=image))
+            p.apply(generate_image_pages, kwds=image)
             count_rst += 1
 
         for output in image['output']:
@@ -237,7 +238,7 @@ def images():
 
             if env.FORCE or check_dependency(target_img, source_file):
                 inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
-                p.apply_async(_generate_images, args=(inkscape_cmd, output['dpi'], output['width'], target_img, source_file))
+                # p.apply_async(_generate_images, args=(inkscape_cmd, output['dpi'], output['width'], target_img, source_file))
                 count_png += 1
 
     p.close()
