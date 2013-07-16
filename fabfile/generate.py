@@ -75,27 +75,32 @@ def _generate_toc_tree(fn, dfn_list_fn, table_fn, toc_output):
     else:
         toc = CustomTocTree(fn)
 
+
     if fmt.startswith('toc'):
         toc.build_dfn()
-        toc.finalize()
 
+    if spec is True or fmt.startswith('ref'):
+        print fn
+        toc.build_table()
+
+    if spec is False:
+        toc.build_contents()
+
+    toc.finalize()
+
+    if fmt.startswith('toc'):
         toc.dfn.write(dfn_list_fn)
         puts('[toc]: wrote: '  + dfn_list_fn)
 
     if spec is True or fmt.startswith('ref'):
-        toc.build_table()
-        toc.finalize()
-
         t = TableBuilder(RstTable(toc.table))
         t.write(table_fn)
         puts('[toc]: wrote: '  + table_fn)
 
     if spec is False:
-        toc.build_contents()
-        toc.finalize()
-
         toc.contents.write(toc_output)
         puts('[toc]: wrote: '  + toc_output)
+
 
     puts('[toc]: complied toc output for {0}'.format(fn))
 
@@ -117,8 +122,8 @@ def toc():
             dfn_list_fn = _get_toc_output_name(base_name, 'dfn-list')
 
             if env.FORCE or check_dependency(dfn_list_fn, fn) or check_dependency(table_fn, fn):
-                _generate_toc_tree(fn, dfn_list_fn, table_fn, output_fn)
-                # p.apply(_generate_toc_tree, args=(fn, dfn_list_fn, table_fn, output_fn))
+                # _generate_toc_tree(fn, dfn_list_fn, table_fn, output_fn)
+                p.apply_async(_generate_toc_tree, args=(fn, dfn_list_fn, table_fn, output_fn))
                 count += 1
 
     p.close()
@@ -225,7 +230,7 @@ def images():
 
         if env.FORCE or ( check_dependency(rst_file, meta_file) and
                           check_dependency(rst_file, os.path.join(paths['buildsystem'], 'rstcloth', 'images.py'))):
-            p.apply(generate_image_pages, kwds=image)
+            p.apply_async(generate_image_pages, kwds=image)
             count_rst += 1
 
         for output in image['output']:

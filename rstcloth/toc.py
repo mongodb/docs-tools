@@ -15,7 +15,7 @@ class CustomTocTree(object):
         self.contents = None
         self.dfn = None
 
-        self.final = True
+        self.final = False
 
     def build_table(self):
         self.table = tb.TableData()
