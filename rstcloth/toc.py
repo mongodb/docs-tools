@@ -1,5 +1,6 @@
 #!/usr/bin/python2
 
+import os.path
 import yaml
 import textwrap
 import argparse
@@ -13,6 +14,8 @@ class CustomTocTree(object):
         self.table = None
         self.contents = None
         self.dfn = None
+
+        self.final = True
 
     def build_table(self):
         self.table = tb.TableData()
@@ -34,7 +37,7 @@ class CustomTocTree(object):
         o = []
 
         with open(spec, 'r') as f:
-            data = yaml.load_all(f)
+            data = yaml.safe_load_all(f)
 
             for datum in data:
                 if datum['description'] is None:
@@ -53,19 +56,46 @@ class CustomTocTree(object):
         return o
 
     def finalize(self):
-        for ref in self.spec:
-            if self.table is not None:
-                self.table.add_row([ ref['name'], ref['description'] ])
-            if self.contents is not None:
-                self.contents.content(ref['file'], 6, block='toc')
-            if self.dfn is not None:
-                if 'name' in ref:
-                    text = ref['name']
-                else:
-                    text = None
+        if not self.final:
+            for ref in self.spec:
+                if self.table is not None:
+                    self.table.add_row([ ref['name'], ref['description'] ])
+                if self.contents is not None:
+                    self.contents.content(ref['file'], 6, block='toc')
+                if self.dfn is not None:
+                    if 'name' in ref:
+                        text = ref['name']
+                    else:
+                        text = None
 
-                link = self.dfn.role('doc', ref['file'], text)
-                self.dfn.definition(link, ref['description'], indent=3, bold=False, wrap=False)
+                    link = self.dfn.role('doc', ref['file'], text)
+                    self.dfn.definition(link, ref['description'], indent=3, bold=False, wrap=False)
+
+class AggregatedTocTree(CustomTocTree):
+    def __init__(self, filename):
+        self.table = None
+        self.contents = None
+        self.dfn = None
+        self.final = False
+
+        self.spec = []
+
+        dfn_dir = os.path.abspath(os.path.dirname(filename))
+
+        with open(filename, 'r') as f:
+            definition = yaml.safe_load(f)
+
+        all_ref_objs = []
+
+        for source in definition['sources']:
+            with open(os.path.join(dfn_dir, source), 'r') as f:
+                objs = yaml.safe_load_all(f)
+
+                all_ref_objs.extend(objs)
+
+        for obj in all_ref_objs:
+            if obj['file'] in definition['files']:
+                self.spec.append(obj)
 
 def user_input():
     parser = argparse.ArgumentParser('table of contents generator.')

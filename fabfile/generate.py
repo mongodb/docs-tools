@@ -1,5 +1,6 @@
 import os.path
 import sys
+import re
 
 from multiprocessing import Pool
 from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, build_platform_notification
@@ -11,7 +12,7 @@ paths = render_paths('dict')
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', paths['buildsystem'])))
 from rstcloth.param import generate_params
-from rstcloth.toc import CustomTocTree
+from rstcloth.toc import CustomTocTree, AggregatedTocTree
 from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
 from rstcloth.images import generate_image_pages
 from rstcloth.releases import generate_release_output
@@ -65,26 +66,36 @@ def _get_toc_base_name(fn):
 def _get_toc_output_name(name, type):
     return 'source/includes/{0}-{1}.rst'.format(type, name)
 
-def _generate_toc_tree(fn, base_name, toc_output):
-    toc = CustomTocTree(fn)
-
-    toc.build_contents()
-
+def _generate_toc_tree(fn, dfn_list_fn, table_fn, toc_output):
     fmt = fn[16:19]
+    spec = True if fn[20:24] == 'spec' else False
+
+    if spec is True:
+        toc = AggregatedTocTree(fn)
+    else:
+        toc = CustomTocTree(fn)
 
     if fmt.startswith('toc'):
         toc.build_dfn()
         toc.finalize()
-        toc.dfn.write(_get_toc_output_name(base_name, 'dfn-list'))
 
-    elif fmt.startswith('ref'):
+        toc.dfn.write(dfn_list_fn)
+        puts('[toc]: wrote: '  + dfn_list_fn)
+
+    if spec is True or fmt.startswith('ref'):
         toc.build_table()
         toc.finalize()
 
         t = TableBuilder(RstTable(toc.table))
-        t.write(_get_toc_output_name(base_name, 'table'))
+        t.write(table_fn)
+        puts('[toc]: wrote: '  + table_fn)
 
-    toc.contents.write(toc_output)
+    if spec is False:
+        toc.build_contents()
+        toc.finalize()
+
+        toc.contents.write(toc_output)
+        puts('[toc]: wrote: '  + toc_output)
 
     puts('[toc]: complied toc output for {0}'.format(fn))
 
@@ -96,14 +107,18 @@ def toc():
 
     count = 0
     for fn in expand_tree('source/includes', 'yaml'):
-        base_name = _get_toc_base_name(fn)
 
-        if not fn.startswith('source/includes/table'):
+        if fn.startswith('source/includes/table'):
+            pass
+        else:
+            base_name = _get_toc_base_name(fn)
             output_fn = _get_toc_output_name(base_name, 'toc')
+            table_fn = _get_toc_output_name(base_name, 'table')
+            dfn_list_fn = _get_toc_output_name(base_name, 'dfn-list')
 
-            if env.FORCE or check_dependency(output_fn, fn):
-                # _generate_toc_tree(fn, base_name, output_fn)
-                p.apply_async(_generate_toc_tree, args=(fn, base_name, output_fn))
+            if env.FORCE or check_dependency(dfn_list_fn, fn) or check_dependency(table_fn, fn):
+                _generate_toc_tree(fn, dfn_list_fn, table_fn, output_fn)
+                # p.apply(_generate_toc_tree, args=(fn, dfn_list_fn, table_fn, output_fn))
                 count += 1
 
     p.close()
@@ -209,7 +224,7 @@ def images():
 
         if env.FORCE or ( check_dependency(rst_file, meta_file) and
                           check_dependency(rst_file, os.path.join(paths['buildsystem'], 'rstcloth', 'images.py'))):
-            p.apply_async(generate_image_pages, args=[image])
+            p.apply_async(generate_image_pages, kwds=dict(conf=image))
             count_rst += 1
 
         for output in image['output']:
