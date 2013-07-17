@@ -23,9 +23,9 @@ def add_dependency(data):
     for dep in data['dependency']:
         if dep.endswith('if-up-to-date') and dep not in _check_dependency:
             env = data['env']
-            m.target('_build-check-' + env)
-            m.job('fab deploy.{0}:{1} deploy.check'.format(env, conf.git.branches.current))
-            m.target(data['target'] + '-if-up-to-date', ['_build-check-' + env, 'publish'])
+            # m.target('_build-check-' + env)
+            # m.job('fab deploy.{0}:{1} deploy.check'.format(env, conf.git.branches.current))
+            m.target(data['target'] + '-if-up-to-date', ['publish'])
             _check_dependency.add(dep)
 
         dependency.append(dep)

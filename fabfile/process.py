@@ -94,17 +94,16 @@ def process_json_file(input_fn, output_fn):
 
         doc['text'] = ' '.join(text.split('\n')).strip()
 
-    if 'url' in doc:
-        url = [ 'http://docs.mongodb.org', get_manual_path() ]
-        url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
-
-        doc['url'] = '/'.join(url)
 
     if 'title' in doc:
         title = doc['title'].encode('ascii', 'ignore')
         title = re.sub('<[^>]*>', '', title)
 
         doc['title'] = title
+
+    url = [ 'http://docs.mongodb.org', get_manual_path() ]
+    url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
+    doc['url'] = '/'.join(url)
 
     with open(output_fn, 'w') as f:
         f.write(json.dumps(doc))
