@@ -70,6 +70,7 @@ def generate_list_file(outputs, path):
     with open(path, 'w') as f:
         for fn in outputs:
             f.write( '/'.join([ url, 'json', fn.split('/', 3)[3:][0]]))
+            f.write('\n')
 
     puts('[json]: rebuilt inventory of json output.')
 
