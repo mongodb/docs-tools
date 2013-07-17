@@ -49,7 +49,7 @@ def api():
 
     p.close()
     p.join()
-    print('[api]: generated {0} tables for api items'.format(count))
+    puts('[api]: generated {0} tables for api items'.format(count))
 
 #################### Table of Contents Generator ####################
 
@@ -80,7 +80,6 @@ def _generate_toc_tree(fn, dfn_list_fn, table_fn, toc_output):
         toc.build_dfn()
 
     if spec is True or fmt.startswith('ref'):
-        print fn
         toc.build_table()
 
     if spec is False:
@@ -129,7 +128,7 @@ def toc():
     p.close()
     p.join()
 
-    print('[toc]: built {0} tables of contents'.format(count))
+    puts('[toc]: built {0} tables of contents'.format(count))
 
 #################### Table Builder ####################
 
@@ -162,7 +161,7 @@ def _generate_tables(source, target, list_target):
 
     #     puts('[table]: rebuilt {0} as (a list table)'.format(target))
 
-    print('[table]: rebuilt table output for {0}'.format(source))
+    puts('[table]: rebuilt table output for {0}'.format(source))
 
 ## User facing fabric task
 
