@@ -232,7 +232,7 @@ def _copy_if_needed(source_file=None, target_file=None, name='build'):
         target_file = env.output_file
 
     if os.path.isfile(source_file) is False:
-        abort("[{0}]: Input file does not exist.".format(name))
+        abort("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
     elif os.path.isfile(target_file) is False:
         if not os.path.exists(os.path.dirname(target_file)):
             os.makedirs(os.path.dirname(target_file))
@@ -339,13 +339,13 @@ def _sanitize_tex(files):
 
     puts('[pdf]: sanitized sphinx tex output in {0} files'.format(count))
 
-def _generate_pdfs(targets, path):
+def _generate_pdfs(targets):
     conf = get_conf()
 
     p = Pool(4)
 
     count = 0
-    for tex, pdf in targets:
+    for tex, pdf, path in targets:
         if check_dependency(pdf, tex):
             # _render_tex_into_pdf(tex, path)
             p.apply_async(_render_tex_into_pdf, args=(tex, path))
@@ -380,7 +380,6 @@ def pdfs():
     conf = get_conf()
 
     pdfs = ingest_yaml_list(os.path.join(conf.build.paths.builddata, 'pdfs.yaml'))
-    latex_dir = os.path.join(conf.build.paths.output, conf.git.branches.current, 'latex')
 
     sources = []
     tex_pairs = []
@@ -389,21 +388,41 @@ def pdfs():
     pdf_links = []
 
     for i in pdfs:
+        tagged_name = i['output'][:-4] + '-' + i['tag']
+        deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
+        link_name = deploy_fn.replace('-' + conf.git.branches.current, '')
+
+        if 'edition' in i:
+            deploy_path = os.path.join(conf.build.paths.public, i['edition'])
+            if i['edition'] == 'hosted':
+                deploy_path = os.path.join(deploy_path,  conf.git.branches.current)
+                latex_dir = os.path.join(conf.build.paths.output, i['edition'], conf.git.branches.current, 'latex')
+            else:
+                latex_dir = os.path.join(conf.build.paths.output, i['edition'], 'latex')
+                deploy_fn = tagged_name + '.pdf'
+                link_name = deploy_fn
+        else:
+            deploy_path = conf.build.paths['branch-staging']
+            latex_dir = os.path.join(conf.build.paths['branch-output'], 'latex')
+
         i['source'] = os.path.join(latex_dir, i['output'])
-        i['processed'] = i['source'][:-4] + '-' + i['tag'] + '.tex'
-        i['pdf'] = i['processed'].replace('.tex', '.pdf')
-        i['deployed'] = os.path.join(conf.build.paths.public, conf.git.branches.current,
-            os.path.splitext(os.path.basename(i['pdf']))[0] + '-' + conf.git.branches.current + '.pdf')
-        i['link'] = i['deployed'].replace('-' + conf.git.branches.current, '')
+        i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')
+        i['pdf'] = os.path.join(latex_dir, tagged_name + '.pdf')
+        i['deployed'] = os.path.join(deploy_path, deploy_fn)
+        i['link'] = os.path.join(deploy_path, link_name)
 
         sources.append(i['source'])
         tex_pairs.append([i['source'], i['processed'], 'pdf'])
-        targets.append([i['processed'], i['pdf']])
+        targets.append([i['processed'], i['pdf'], latex_dir])
         pdf_pairs.append([i['pdf'], i['deployed'], 'pdf'])
-        pdf_links.append((i['link'], i['deployed']))
+
+        if i['link'] != i['deployed']:
+            pdf_links.append((i['link'], i['deployed']))
 
     _sanitize_tex(sources)
     _multi_copy_if_needed(tex_pairs)
-    _generate_pdfs(targets, latex_dir)
+    _generate_pdfs(targets)
     _multi_copy_if_needed(pdf_pairs)
-    _multi_create_link(pdf_links)
+
+    if len(pdf_links) > 0:
+        _multi_create_link(pdf_links)
