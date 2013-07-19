@@ -31,6 +31,8 @@ def generate_integration_targets(conf):
     m.target('.PHONY', 'publish')
 
 def generate_json_output_meta():
+    """This is dead code, hanging around for a while just in case we need it. see fabfile/process.py"""
+
     m.section_break('json output coordination.')
     paths = render_paths('dict')
 
@@ -73,7 +75,6 @@ def generate_json_output_meta():
 def main():
     conf_file = get_conf_file(__file__)
     generate_integration_targets(ingest_yaml(conf_file))
-    generate_json_output_meta()
 
     m.write(sys.argv[1])
     print('[meta-build]: build "' + sys.argv[1] + '" to specify integration targets.')

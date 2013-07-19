@@ -66,15 +66,13 @@ def _get_toc_base_name(fn):
 def _get_toc_output_name(name, type):
     return 'source/includes/{0}-{1}.rst'.format(type, name)
 
-def _generate_toc_tree(fn, dfn_list_fn, table_fn, toc_output):
-    fmt = fn[16:19]
+def _generate_toc_tree(fn, fmt, output_fn, toc_output):
     spec = True if fn[20:24] == 'spec' else False
 
     if spec is True:
         toc = AggregatedTocTree(fn)
     else:
         toc = CustomTocTree(fn)
-
 
     if fmt.startswith('toc'):
         toc.build_dfn()
@@ -88,18 +86,17 @@ def _generate_toc_tree(fn, dfn_list_fn, table_fn, toc_output):
     toc.finalize()
 
     if fmt.startswith('toc'):
-        toc.dfn.write(dfn_list_fn)
-        puts('[toc]: wrote: '  + dfn_list_fn)
+        toc.dfn.write(output_fn)
+        puts('[toc]: wrote: '  + output_fn)
 
     if spec is True or fmt.startswith('ref'):
         t = TableBuilder(RstTable(toc.table))
-        t.write(table_fn)
-        puts('[toc]: wrote: '  + table_fn)
+        t.write(output_fn)
+        puts('[toc]: wrote: '  + output_fn)
 
     if spec is False:
         toc.contents.write(toc_output)
         puts('[toc]: wrote: '  + toc_output)
-
 
     puts('[toc]: complied toc output for {0}'.format(fn))
 
@@ -116,13 +113,19 @@ def toc():
             pass
         else:
             base_name = _get_toc_base_name(fn)
-            output_fn = _get_toc_output_name(base_name, 'toc')
-            table_fn = _get_toc_output_name(base_name, 'table')
-            dfn_list_fn = _get_toc_output_name(base_name, 'dfn-list')
 
-            if env.FORCE or check_dependency(dfn_list_fn, fn) or check_dependency(table_fn, fn):
-                # _generate_toc_tree(fn, dfn_list_fn, table_fn, output_fn)
-                p.apply_async(_generate_toc_tree, args=(fn, dfn_list_fn, table_fn, output_fn))
+            fmt = fn[16:19]
+
+            toc_output = _get_toc_output_name(base_name, 'toc')
+
+            if fmt.startswith('toc'):
+                output_fn = _get_toc_output_name(base_name, 'dfn-list')
+            elif fmt.startswith('ref'):
+                output_fn = _get_toc_output_name(base_name, 'table')
+
+            if env.FORCE or check_dependency(output_fn, fn):
+                # _generate_toc_tree(fn, fmt, output_fn, toc_output)
+                p.apply_async(_generate_toc_tree, args=(fn, fmt, output_fn, toc_output))
                 count += 1
 
     p.close()

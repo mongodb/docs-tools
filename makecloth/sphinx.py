@@ -46,6 +46,12 @@ def make_all_sphinx(config):
     m.target('releases')
     m.job('fab generate.releases')
 
+    m.target('manual-pdfs', 'latex')
+    m.job('fab process.pdfs')
+
+    m.target('json-output', 'json')
+    m.job('fab process.json_output')
+
     m.newline()
     m.comment('sphinx prereq integration.')
     m.target('sphinx-prerequisites', config['prerequisites'], block=b)

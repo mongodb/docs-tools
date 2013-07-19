@@ -30,6 +30,8 @@ def rsync_options(recursive, delete):
     if delete is True:
         r.append('--delete')
 
+    r.extend(['--rsh="ssh"', '--ssh-path="sudo -u www"'])
+
     return ' '.join(r)
 
 ########## Tasks -- Checking current build against production. ############

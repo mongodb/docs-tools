@@ -28,22 +28,22 @@ def check_three_way_dependency(target, source, dependency):
             return False
 
 def check_dependency(target, dependency):
-    if not os.path.exists(target):
+    if not os.path.exists(target) and not os.path.islink(target):
         return True
-    else:
-        def needs_rebuild(targ_t, dep_f):
-            if targ_t < os.stat(dep_f).st_mtime:
-                return True
-            else:
-                return False
 
-        target_time = os.stat(target).st_mtime
-        if isinstance(dependency, list):
-            ret = False
-            for dep in dependency:
-                if needs_rebuild(target_time, dep):
-                    ret = True
-                    break
-            return ret
+    def needs_rebuild(targ_t, dep_f):
+        if targ_t < os.stat(dep_f).st_mtime:
+            return True
         else:
-            return needs_rebuild(target_time, dependency)
+            return False
+
+    target_time = os.stat(target).st_mtime
+    if isinstance(dependency, list):
+        ret = False
+        for dep in dependency:
+            if needs_rebuild(target_time, dep):
+                ret = True
+                break
+        return ret
+    else:
+        return needs_rebuild(target_time, dependency)

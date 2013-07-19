@@ -3,7 +3,7 @@ import re
 import os
 import shutil
 
-from utils import md5_file, symlink, expand_tree, dot_concat
+from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
 from make import check_dependency, check_three_way_dependency
 from docs_meta import output_yaml, get_manual_path, get_conf, get_branch_output_path
 from fabric.api import task, env, abort, puts, local
@@ -48,13 +48,26 @@ def all_json_output():
 
         outputs.append(json)
 
-    p.apply_async(generate_list_file,
-                  args=(outputs, os.path.join(get_branch_output_path(), 'json-file-list')))
+    list_file = os.path.join(get_branch_output_path(), 'json-file-list')
+    public_list_file = os.path.join(conf.build.paths.public,
+                                  conf.git.branches.current,
+                                  'json',
+                                  '.file_list')
+
+    p.apply_async(generate_list_file, args=(outputs, list_file))
+
 
     p.close()
     p.join()
 
     puts('[json]: processed {0} json files.'.format(str(count)))
+
+    cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {src} {dst}'
+    local(cmd.format(src=os.path.join(conf.build.paths.output, conf.git.branches.current, 'json'),
+                     dst=os.path.join(conf.build.paths.public, conf.git.branches.current, 'json')))
+    _copy_if_needed(list_file, public_list_file)
+
+    puts('[json]: deployed json files to local staging.')
 
 def generate_list_file(outputs, path):
     dirname = os.path.dirname(path)
@@ -196,36 +209,53 @@ def manpage_url():
     puts("[{0}]: fixed urls in {1}".format('man', env.input_file))
 
 @task
-def copy_if_needed(builder='build'):
-    if os.path.isfile(env.input_file) is False:
-        abort("[{0}]: Input file does not exist.".format(builder))
-    elif os.path.isfile(env.output_file) is False:
-        if not os.path.exists(os.path.dirname(env.output_file)):
-            os.makedirs(os.path.dirname(env.output_file))
-        shutil.copyfile(env.input_file, env.output_file)
-        puts('[{0}]: created "{1}" which did not exist.'.format(builder, env.input_file))
+def copy_if_needed(source_file=None, target_file=None, name='build'):
+    _copy_if_needed(source_file, target_file, name)
+
+def _copy_if_needed(source_file=None, target_file=None, name='build'):
+    if source_file is None:
+        source_file = env.input_file
+
+    if target_file is None:
+        target_file = env.output_file
+
+    if os.path.isfile(source_file) is False:
+        abort("[{0}]: Input file does not exist.".format(name))
+    elif os.path.isfile(target_file) is False:
+        if not os.path.exists(os.path.dirname(target_file)):
+            os.makedirs(os.path.dirname(target_file))
+        shutil.copyfile(source_file, target_file)
+
+        if name is not None:
+            puts('[{0}]: created "{1}" which did not exist.'.format(name, source_file))
     else:
-        if md5_file(env.input_file) == md5_file(env.output_file):
-            puts('[{0}]: "{1}" not changed.'.format(builder, env.input_file))
+        if md5_file(source_file) == md5_file(target_file):
+            if name is not None:
+                puts('[{0}]: "{1}" not changed.'.format(name, source_file))
         else:
-            shutil.copyfile(env.input_file, env.output_file)
-            puts('[{0}]: "{1}" changed.'.format(builder, env.input_file))
+            shutil.copyfile(source_file, target_file)
+
+            if name is not None:
+                puts('[{0}]: "{1}" changed.'.format(name, source_file))
 
 @task
 def create_link():
-    out_dirname = os.path.dirname(env.input_file)
+    _create_link(env.input_file, env.output_file)
+
+def _create_link(input_fn, output_fn):
+    out_dirname = os.path.dirname(input_fn)
     if out_dirname != '' and not os.path.exists(out_dirname):
         os.makedirs(out_dirname)
 
-    if os.path.islink(env.output_file):
-        os.remove(env.output_file)
-    elif os.path.isdir(env.output_file):
-        abort('[{0}]: {1} exists and is a directory'.format('link', env.output_file))
-    elif os.path.exists(env.output_file):
-        abort('[{0}]: could not create a symlink at {1}.'.format('link', env.output_file))
+    if os.path.islink(output_fn):
+        os.remove(output_fn)
+    elif os.path.isdir(output_fn):
+        abort('[{0}]: {1} exists and is a directory'.format('link', output_fn))
+    elif os.path.exists(output_fn):
+        abort('[{0}]: could not create a symlink at {1}.'.format('link', output_fn))
 
-    symlink(env.output_file, env.input_file)
-    puts('[{0}] created symbolic link pointing to "{1}" named "{2}"'.format('symlink', env.input_file, env.output_file))
+    symlink(output_fn, input_fn)
+    puts('[{0}] created symbolic link pointing to "{1}" named "{2}"'.format('symlink', input_fn, output_fn))
 
 @task
 def manual_single_html():
@@ -241,3 +271,127 @@ def manual_single_html():
 
     with open(env.output_file, 'w') as f:
         f.write(text)
+
+#################### PDFs from Latex Produced by Sphinx  ####################
+
+def _clean_sphinx_latex(fn, regexes):
+    with open(fn, 'r') as f:
+        tex = f.read()
+
+    for regex, subst in regexes:
+        tex = regex.sub(subst, tex)
+
+    with open(fn, 'w') as f:
+        f.write(tex)
+
+env.verbose = False
+
+def _render_tex_into_pdf(fn, path):
+    pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
+
+    if env.verbose:
+        capture = False
+    else:
+        capture = True
+
+    local(pdflatex, capture=capture)
+    puts('[pdf]: completed pdf rendering stage 1 of 4 for: {0}'.format(fn))
+
+    local("makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, os.path.basename(fn)[:-4]), capture=capture)
+    puts('[pdf]: completed pdf rendering stage 2 of 4 (indexing) for: {0}'.format(fn))
+
+    local(pdflatex, capture=capture)
+    puts('[pdf]: completed pdf rendering stage 3 of 4 for: {0}'.format(fn))
+
+    local(pdflatex, capture=capture)
+    puts('[pdf]: completed pdf rendering stage 4 of 4 for: {0}'.format(fn))
+
+    puts('[pdf]: rendered pdf for {0}'.format(fn))
+
+
+def _sanitize_tex(files):
+    conf = get_conf()
+    regexes = [(re.compile(r'(index|bfcode)\{(.*)--(.*)\}'), r'\1\{\2-\{-\}\3\}'),
+               (re.compile(r'\\code\{/(?!.*{}/|etc)'), r'\code{' + conf.project.url + conf.project.tag) ]
+
+    p = Pool()
+
+    count = 0
+    for fn in files:
+        # _clean_sphinx_latex(fn, regexes)
+        p.apply_async(_clean_sphinx_latex, args=(fn, regexes))
+        count += 1
+
+    p.close()
+    p.join()
+
+    puts('[pdf]: sanitized sphinx tex output in {0} files'.format(count))
+
+def _generate_pdfs(targets, path):
+    conf = get_conf()
+
+    p = Pool(4)
+
+    count = 0
+    for tex, pdf in targets:
+        if check_dependency(pdf, tex):
+            # _render_tex_into_pdf(tex, path)
+            p.apply_async(_render_tex_into_pdf, args=(tex, path))
+            count += 1
+
+    p.close()
+    p.join()
+
+    puts('[pdf]: rendered {0} tex files into pdfs.'.format(count))
+
+def _multi_copy_if_needed(target_pairs):
+    p = Pool(4)
+
+    for source, target, builder in target_pairs:
+        # _copy_if_needed(source, target, builder)
+        p.apply_async(_copy_if_needed, args=(source, target, builder))
+
+    p.close()
+    p.join()
+
+def _multi_create_link(link_pairs):
+    p = Pool(2)
+
+    for link, source in link_pairs:
+        _create_link(source, link)
+
+    p.close()
+    p.join()
+
+@task
+def pdfs():
+    conf = get_conf()
+
+    pdfs = ingest_yaml_list(os.path.join(conf.build.paths.builddata, 'pdfs.yaml'))
+    latex_dir = os.path.join(conf.build.paths.output, conf.git.branches.current, 'latex')
+
+    sources = []
+    tex_pairs = []
+    pdf_pairs = []
+    targets = []
+    pdf_links = []
+
+    for i in pdfs:
+        i['source'] = os.path.join(latex_dir, i['output'])
+        i['processed'] = i['source'][:-4] + '-' + i['tag'] + '.tex'
+        i['pdf'] = i['processed'].replace('.tex', '.pdf')
+        i['deployed'] = os.path.join(conf.build.paths.public, conf.git.branches.current,
+            os.path.splitext(os.path.basename(i['pdf']))[0] + '-' + conf.git.branches.current + '.pdf')
+        i['link'] = i['deployed'].replace('-' + conf.git.branches.current, '')
+
+        sources.append(i['source'])
+        tex_pairs.append([i['source'], i['processed'], 'pdf'])
+        targets.append([i['processed'], i['pdf']])
+        pdf_pairs.append([i['pdf'], i['deployed'], 'pdf'])
+        pdf_links.append((i['link'], i['deployed']))
+
+    _sanitize_tex(sources)
+    _multi_copy_if_needed(tex_pairs)
+    _generate_pdfs(targets, latex_dir)
+    _multi_copy_if_needed(pdf_pairs)
+    _multi_create_link(pdf_links)
