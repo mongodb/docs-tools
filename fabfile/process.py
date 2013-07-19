@@ -63,16 +63,23 @@ def all_json_output():
     puts('[json]: processed {0} json files.'.format(str(count)))
 
     cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {src} {dst}'
-    json_dst = os.path.join(conf.build.paths.public, conf.git.branches.current, 'json')
+    json_dst = os.path.join(conf.build.paths['branch-staging'], 'json')
 
     if not os.path.exists(json_dst):
         os.makedirs(json_dst)
 
-    local(cmd.format(src=os.path.join(conf.build.paths.output, conf.git.branches.current, 'json'),
+    local(cmd.format(src=os.path.join(conf.build.paths['branch-output'], 'json'),
                      dst=json_dst))
     _copy_if_needed(list_file, public_list_file)
 
     puts('[json]: deployed json files to local staging.')
+
+@task
+def test():
+    conf = get_conf()
+
+    import json
+    print json.dumps(conf.build.paths, indent=3)
 
 def generate_list_file(outputs, path):
     dirname = os.path.dirname(path)
