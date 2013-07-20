@@ -12,17 +12,11 @@ import os.path
 
 ####### internal functions for rendering reports #######
 
-def _render_report(fn=None):
-    if fn is None:
-        fn = env.input_file
-
+def _render_report(fn):
     with open(os.path.abspath(fn), 'r') as f:
         text = json.load(f)['text']
 
-    if 'source_file' not in env:
-        base_fn, path, source = _fn_process(fn)
-    else:
-        source = env.source_file
+    base_fn, source = _resolve_input_file(fn)
 
     droopy = DroopyFactory.create_full_droopy(text, English())
     droopy.foggy_word_syllables = 3
@@ -57,7 +51,6 @@ def _fn_output(tag):
     out_fn = '.'.join(['-'.join(fn), 'yaml'])
     return os.path.join(conf.build.paths.output, out_fn)
 
-env.input_file = None
 def _resolve_input_file(fn):
     if fn.startswith('/'):
         fn = fn[1:]
@@ -65,15 +58,10 @@ def _resolve_input_file(fn):
         fn = fn[7:]
 
     base_fn = os.path.splitext(fn)[0]
-    path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json',
-                        base_fn)
     source = '.'.join([os.path.join('source', base_fn), 'txt'])
 
-    env.input_file = '.'.join([path, 'json'])
-    env.source_file = source
 
-    if not os.path.exists(env.input_file):
-        abort("[stats]: processed json file does not exist for: {0}, build 'json-output' and try again.".format(source))
+    return base_fn, source
 
 ## YAML output wrapper
 
@@ -88,6 +76,9 @@ def _generate_report(mask, output_file):
     base_path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json')
     docs = expand_tree(base_path, '.json')
 
+    if mask is not None and mask.startswith('/'):
+        mask = mask[1:]
+
     output = []
 
     p = Pool()
@@ -99,18 +90,19 @@ def _generate_report(mask, output_file):
             output.append(p.apply_async( _render_report, kwds=dict(fn=doc)))
         else:
             if doc.startswith(os.path.join(base_path, mask)):
-                output.append(p.apply_async( _render_report, kwds=dict(fn=doc)))
+                output.append(p.apply_async( _render_report, args=(doc,)))
 
     p.close()
     p.join()
 
     output = [ _output_report_yaml(o.get()) for o in output ]
+
     output[0] = output[0][4:]
     output.append('...\n')
 
     if output_file is None:
         for ln in output:
-            print ln[:-1]
+            print(ln[:-1])
     else:
         with open(output_file, 'w') as f:
             for ln in output:
