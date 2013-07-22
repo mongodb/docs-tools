@@ -245,7 +245,9 @@ def images():
 
             if env.FORCE or check_dependency(target_img, source_file):
                 inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
-                # p.apply_async(_generate_images, args=(inkscape_cmd, output['dpi'], output['width'], target_img, source_file))
+                # _generate_images(inkscape_cmd, output['dpi'], output['width'], target_img, source_file)
+                p.apply_async(_generate_images, args=(inkscape_cmd, output['dpi'], output['width'], target_img, source_file))
+
                 count_png += 1
 
     p.close()
