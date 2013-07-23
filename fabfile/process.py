@@ -443,8 +443,7 @@ def _munge_page(fn, regex):
 
     puts('[error-pages]: processed {0}'.format(fn))
 
-@process
-def errors():
+def errors_pages():
     conf = get_conf()
 
     error_conf = os.path.join(conf.build.paths.builddata, 'errors.yaml')
