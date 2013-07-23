@@ -34,7 +34,7 @@ def get_sphinx_args(nitpick=None):
     o = ''
 
     if pkg_resources.get_distribution("sphinx").version.startswith('1.2b1-xgen'):
-         o += '-j ' + str(cpu_count() + 1) + ' '
+         o += '-j ' + str(cpu_count()) + ' '
 
     if nitpick is not None:
         o += '-n -w {0}/build.{1}.log'.format(paths['branch-output'], timestamp('filename'))
@@ -72,3 +72,8 @@ def build(builder='html', tag=None, root=None, nitpick=None):
                 puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
 
             puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
+
+            if builder.startswith('dirhtml'):
+                from process import error_pages
+                error_pages()
+                

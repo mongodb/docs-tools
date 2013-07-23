@@ -49,6 +49,8 @@ def get_manual_path():
         return branch
 
 def get_conf():
+    conf.build.paths.update(render_paths('dict'))
+
     return conf
 
 def get_versions():

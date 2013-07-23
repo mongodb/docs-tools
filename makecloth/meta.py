@@ -7,14 +7,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 import utils
-from docs_meta import get_manual_path, conf, render_paths
+from docs_meta import get_manual_path, get_conf, render_paths
 
 from makecloth import MakefileCloth
 
-m = MakefileCloth()
-conf.build.paths.update(render_paths('dict'))
+def generate_meta(conf):
+    m = MakefileCloth()
 
-def generate_meta():
     m.section_break('branch/release meta', block='rel')
     m.var('manual-branch', conf.git.branches.manual, block='rel')
     m.var('current-branch', str(utils.get_branch()), block='rel')
@@ -65,8 +64,12 @@ def generate_meta():
 
     m.target('.PHONY',  generated_makefiles)
 
+    return m
+
 def main():
-    generate_meta()
+    conf = get_conf()
+
+    m = generate_meta(conf)
 
     m.write(sys.argv[1])
     print('[meta-build]: built "' + sys.argv[1] + '" to seed build metadata.')

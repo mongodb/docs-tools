@@ -426,3 +426,39 @@ def pdfs():
 
     if len(pdf_links) > 0:
         _multi_create_link(pdf_links)
+
+
+#################### Error Page Processing ####################
+
+# this is called directly from the sphinx generation function in sphinx.py.
+
+def _munge_page(fn, regex):
+    with open(fn, 'r') as f:
+        page = f.read()
+
+    page = regex[0].sub(regex[1], page)
+    
+    with open(fn, 'w') as f:
+        f.write(page)
+
+    puts('[error-pages]: processed {0}'.format(fn))
+
+def error_pages():
+    conf = get_conf()
+
+    error_pages = ingest_yaml_list(os.path.join(conf.build.paths.builddata, 'errors.yaml'))
+
+    sub = (re.compile(r'\.\./\.\./'), conf.project.url + conf.project.tag)
+
+    p = Pool(len(error_pages))
+    count = 0
+    for error in error_pages:
+        page = os.path.join(conf.build.paths['branch-output'], 'dirhtml', 'meta', error, 'index.html')
+        p.apply_async(_munge_page, args=(page, sub))
+        # _munge_page(page, sub)
+
+        count += 1
+
+    p.close()
+    p.join()
+    puts('[error-pages]: rendered {0} error pages'.format(count))
