@@ -71,6 +71,7 @@ def _generate_toc_tree(fn, fmt, output_fn, toc_output):
 
     if spec is True:
         toc = AggregatedTocTree(fn)
+        print spec
     else:
         toc = CustomTocTree(fn)
 
@@ -92,6 +93,7 @@ def _generate_toc_tree(fn, fmt, output_fn, toc_output):
     if spec is True or fmt.startswith('ref'):
         t = TableBuilder(RstTable(toc.table))
         t.write(output_fn)
+        print output_fn
         puts('[toc]: wrote: '  + output_fn)
 
     if spec is False:
@@ -118,14 +120,15 @@ def toc():
 
             toc_output = _get_toc_output_name(base_name, 'toc')
 
-            if fmt.startswith('toc'):
+            if fmt.startswith('toc') and not fmt.startswith('toc-spec'):
                 output_fn = _get_toc_output_name(base_name, 'dfn-list')
-            elif fmt.startswith('ref'):
+
+            else:
                 output_fn = _get_toc_output_name(base_name, 'table')
 
             if env.FORCE or check_dependency(output_fn, fn):
-                # _generate_toc_tree(fn, fmt, output_fn, toc_output)
-                p.apply_async(_generate_toc_tree, args=(fn, fmt, output_fn, toc_output))
+                _generate_toc_tree(fn, fmt, output_fn, toc_output)
+                # p.apply_async(_generate_toc_tree, args=(fn, fmt, output_fn, toc_output))
                 count += 1
 
     p.close()
