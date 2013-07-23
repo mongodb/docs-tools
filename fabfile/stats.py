@@ -97,7 +97,9 @@ def _generate_report(mask, output_file):
 
     output = [ _output_report_yaml(o.get()) for o in output ]
 
-    output[0] = output[0][4:]
+    if len(output) == 0:
+        output[0] = output[0][4:]
+ 
     output.append('...\n')
 
     if output_file is None:
