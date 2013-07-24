@@ -67,33 +67,27 @@ def _get_toc_output_name(name, type):
     return 'source/includes/{0}-{1}.rst'.format(type, name)
 
 def _generate_toc_tree(fn, fmt, output_fn, toc_output):
-    spec = True if fn[20:24] == 'spec' else False
-
-    if spec is True:
+    if fmt == 'spec': 
+        spec = True
         toc = AggregatedTocTree(fn)
-        print spec
     else:
+        spec = False
         toc = CustomTocTree(fn)
-
-    if fmt.startswith('toc'):
-        toc.build_dfn()
-
-    if spec is True or fmt.startswith('ref'):
-        toc.build_table()
-
-    if spec is False:
         toc.build_contents()
+        
+    if fmt == 'toc':
+        toc.build_dfn()
+    elif spec is True or fmt == 'ref':
+        toc.build_table()
 
     toc.finalize()
 
-    if fmt.startswith('toc'):
+    if fmt == 'toc':
         toc.dfn.write(output_fn)
         puts('[toc]: wrote: '  + output_fn)
-
-    if spec is True or fmt.startswith('ref'):
+    elif spec is True or fmt == 'ref':
         t = TableBuilder(RstTable(toc.table))
         t.write(output_fn)
-        print output_fn
         puts('[toc]: wrote: '  + output_fn)
 
     if spec is False:
@@ -113,22 +107,23 @@ def toc():
 
         if fn.startswith('source/includes/table'):
             pass
-        else:
+        elif len(fn) >= 24:
             base_name = _get_toc_base_name(fn)
 
-            fmt = fn[16:19]
+            fmt = fn[20:24]
+            if fmt != 'spec':
+                fmt = fn[16:19]
 
-            toc_output = _get_toc_output_name(base_name, 'toc')
-
-            if fmt.startswith('toc') and not fmt.startswith('toc-spec'):
+            if fmt == 'toc':
                 output_fn = _get_toc_output_name(base_name, 'dfn-list')
-
             else:
                 output_fn = _get_toc_output_name(base_name, 'table')
 
+            toc_output = _get_toc_output_name(base_name, 'toc')
+
             if env.FORCE or check_dependency(output_fn, fn):
-                _generate_toc_tree(fn, fmt, output_fn, toc_output)
-                # p.apply_async(_generate_toc_tree, args=(fn, fmt, output_fn, toc_output))
+                #_generate_toc_tree(fn, fmt, output_fn, toc_output)
+                p.apply_async(_generate_toc_tree, args=(fn, fmt, output_fn, toc_output))
                 count += 1
 
     p.close()
