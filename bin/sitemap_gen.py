@@ -379,7 +379,8 @@ class Output:
     if text:
       text = encoder.NarrowText(text, None)
       if self._verbose >= level:
-        print text
+          pass
+          # print text
   #end def Log
 
   def Warn(self, text):

@@ -17,11 +17,6 @@ from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
 from rstcloth.images import generate_image_pages
 from rstcloth.releases import generate_release_output
 
-env.FORCE = False
-@task
-def force():
-    env.FORCE = True
-
 #################### API Param Table Generator ####################
 
 ### Internal Method
@@ -120,7 +115,6 @@ def toc():
                 fmt = fn[16:19]
 
             outputs = [ _get_toc_output_name(i[0], i[1]) for i in [(base_name, 'dfn-list'), 
-                                                                   (base_name, 'table'),
                                                                    (base_name, 'toc')] ]
 
             if env.FORCE or check_multi_dependency(outputs, fn):
@@ -316,3 +310,19 @@ def source():
         local(build_platform_notification('Sphinx', 'Build in progress past critical phase.'))
 
     puts('[sphinx-prep]: INFO - Build in progress past critical phase.')
+
+#################### Generate the Sitemap ####################
+
+@task
+def sitemap(config_path=None):
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', paths['buildsystem'], 'bin')))
+    import sitemap_gen
+
+    if config_path is None:
+        config_path = 'conf-sitemap.xml'
+
+    sitemap = sitemap_gen.CreateSitemapFromFile(configpath=config_path,
+                                                suppress_notify=True)
+    sitemap.Generate()
+
+    puts('[sitemap]: generated sitemap according to the config file {0}'.format(config_path))

@@ -5,7 +5,7 @@ import os.path
 from docs_meta import get_conf, render_paths, get_branch, get_commit
 from urllib2 import urlopen
 
-_pub_hosts = ['www@www-c1.10gen.cc', 'www@www-c2.10gen.cc']
+_pub_hosts = ['www-c1.10gen.cc', 'www-c2.10gen.cc']
 _stage_hosts = ['public@test.docs.10gen.cc']
 env.rsync_options = ad()
 env.rsync_options.default = '-cqltz'
@@ -30,7 +30,7 @@ def rsync_options(recursive, delete):
     if delete is True:
         r.append('--delete')
 
-    r.extend(['--rsh="ssh"', '--ssh-path="sudo -u www"'])
+    r.extend(['--rsh="ssh"', '--rsync-path="sudo -u www rsync"'])
 
     return ' '.join(r)
 

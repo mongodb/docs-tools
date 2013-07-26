@@ -15,6 +15,9 @@ def build_all_sphinx_migrations(migrations):
     for migration in migrations:
         block = migration['action']
 
+        if 'dependency' not in migration:
+            migration['dependency'] = None
+
         if block == 'link':
             m.target(target=migration['target'],
                      block=block)
@@ -61,7 +64,23 @@ def build_all_sphinx_migrations(migrations):
             
             if migration['type'] == 'phony':
                 links['phony'].append(migration['target'])
+        elif block == 'cmd':
+            if isinstance(migration['command'], list):
+                for cmd in migration['command']:
+                    m.job(cmd)
+            else:
+                m.job(migration['command'])
 
+            if 'message' in migration:
+                m.msg(migration['message'])
+
+            if 'phony' in migration:
+                links['phony'].append(migration['target'])
+        elif block == 'mkdir':
+            m.job('mkdir -p $@')
+            m.msg('[build]: created $@')
+
+    m.newline(block='footer')
     m.target('.PHONY', links['phony'], block='footer')
     m.target('links', links['all'], block='footer')
     m.newline(block='footer')
