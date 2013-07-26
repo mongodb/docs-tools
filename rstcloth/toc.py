@@ -69,7 +69,13 @@ class CustomTocTree(object):
                         text = None
 
                     link = self.dfn.role('doc', ref['file'], text)
-                    self.dfn.definition(link, ref['description'], indent=3, bold=False, wrap=False)
+                    
+                    idnt = 3 
+                    if 'level' in ref:
+                        idnt = idnt + 3 * ref['level']
+                    
+                    self.dfn.definition(link, ref['description'], indent=idnt, bold=False, wrap=False)
+                    self.dfn.newline()
 
 class AggregatedTocTree(CustomTocTree):
     def __init__(self, filename):
@@ -84,6 +90,14 @@ class AggregatedTocTree(CustomTocTree):
 
         with open(filename, 'r') as f:
             definition = yaml.safe_load(f)
+            
+            filter_specs = {}
+
+            for dfn in definition['files']:
+                if isinstance(dfn, dict):
+                    filter_specs[dfn['file']] = dfn['level']
+                else:
+                    filter_specs[dfn] = 1
 
         all_ref_objs = []
 
@@ -92,9 +106,11 @@ class AggregatedTocTree(CustomTocTree):
                 objs = yaml.safe_load_all(f)
 
                 all_ref_objs.extend(objs)
-
+    
+        filter_docs = filter_specs.keys()
         for obj in all_ref_objs:
-            if obj['file'] in definition['files']:
+            if obj['file'] in filter_docs:
+                obj['level'] = filter_specs[obj['file']] 
                 self.spec.append(obj)
 
 def user_input():

@@ -66,33 +66,38 @@ def _get_toc_base_name(fn):
 def _get_toc_output_name(name, type):
     return 'source/includes/{0}-{1}.rst'.format(type, name)
 
-def _generate_toc_tree(fn, fmt, output_fn, toc_output):
+def _generate_toc_tree(fn, fmt, base_name):
     if fmt == 'spec': 
         spec = True
         toc = AggregatedTocTree(fn)
+        toc.build_dfn()
+        toc.build_table()
+        toc.finalize()
     else:
         spec = False
         toc = CustomTocTree(fn)
         toc.build_contents()
         
-    if fmt == 'toc':
-        toc.build_dfn()
-    elif spec is True or fmt == 'ref':
-        toc.build_table()
+        if fmt == 'toc':
+            toc.build_dfn()
+        elif fmt == 'ref':
+            toc.build_table()
 
-    toc.finalize()
+        toc.finalize()
 
-    if fmt == 'toc':
-        toc.dfn.write(output_fn)
-        puts('[toc]: wrote: '  + output_fn)
+        outfn = _get_toc_output_name(base_name, 'toc')
+        toc.contents.write(outfn)
+        puts('[toc]: wrote: '  + outfn)
+
+    if spec is True or fmt == 'toc':
+        outfn = _get_toc_output_name(base_name, 'dfn-list')
+        toc.dfn.write(outfn)
+        puts('[toc]: wrote: '  + outfn)
     elif spec is True or fmt == 'ref':
+        outfn = _get_toc_output_name(base_name, 'table')
         t = TableBuilder(RstTable(toc.table))
-        t.write(output_fn)
-        puts('[toc]: wrote: '  + output_fn)
-
-    if spec is False:
-        toc.contents.write(toc_output)
-        puts('[toc]: wrote: '  + toc_output)
+        t.write(outfn)
+        puts('[toc]: wrote: '  + outfn)
 
     puts('[toc]: complied toc output for {0}'.format(fn))
 
@@ -114,16 +119,13 @@ def toc():
             if fmt != 'spec':
                 fmt = fn[16:19]
 
-            if fmt == 'toc':
-                output_fn = _get_toc_output_name(base_name, 'dfn-list')
-            else:
-                output_fn = _get_toc_output_name(base_name, 'table')
+            outputs = [ _get_toc_output_name(i[0], i[1]) for i in [(base_name, 'dfn-list'), 
+                                                                   (base_name, 'table'),
+                                                                   (base_name, 'toc')] ]
 
-            toc_output = _get_toc_output_name(base_name, 'toc')
-
-            if env.FORCE or check_dependency(output_fn, fn):
-                #_generate_toc_tree(fn, fmt, output_fn, toc_output)
-                p.apply_async(_generate_toc_tree, args=(fn, fmt, output_fn, toc_output))
+            if env.FORCE or check_multi_dependency(outputs, fn):
+                # _generate_toc_tree(fn, fmt, base_name)
+                p.apply_async(_generate_toc_tree, args=(fn, fmt, base_name))
                 count += 1
 
     p.close()
@@ -200,7 +202,6 @@ def _get_inkscape_cmd():
             return inkscape
 
     return 'inkscape'
-
 
 def _generate_images(cmd, dpi, width, target, source):
     local(cmd.format(cmd=_get_inkscape_cmd(),

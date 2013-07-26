@@ -27,6 +27,13 @@ def check_three_way_dependency(target, source, dependency):
         else:
             return False
 
+def check_multi_dependency(target, dependency):
+    for t in target:
+        if check_dependency(target, dependency) is True:
+            return True
+        else:
+            continue
+
 def check_dependency(target, dependency):
     if not os.path.exists(target) and not os.path.islink(target):
         return True
