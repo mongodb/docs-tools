@@ -29,7 +29,7 @@ def check_three_way_dependency(target, source, dependency):
 
 def check_multi_dependency(target, dependency):
     for t in target:
-        if check_dependency(target, dependency) is True:
+        if check_dependency(t, dependency) is True:
             return True
         else:
             continue
