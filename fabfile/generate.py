@@ -89,10 +89,11 @@ def _generate_toc_tree(fn, fmt, base_name):
         toc.dfn.write(outfn)
         puts('[toc]: wrote: '  + outfn)
     elif spec is True or fmt == 'ref':
-        outfn = _get_toc_output_name(base_name, 'table')
-        t = TableBuilder(RstTable(toc.table))
-        t.write(outfn)
-        puts('[toc]: wrote: '  + outfn)
+        if toc.table is not None:
+            outfn = _get_toc_output_name(base_name, 'table')
+            t = TableBuilder(RstTable(toc.table))
+            t.write(outfn)
+            puts('[toc]: wrote: '  + outfn)
 
     puts('[toc]: complied toc output for {0}'.format(fn))
 
@@ -118,8 +119,9 @@ def toc():
                                                                    (base_name, 'toc')] ]
 
             if env.FORCE or check_multi_dependency(outputs, fn):
-                # _generate_toc_tree(fn, fmt, base_name)
-                p.apply_async(_generate_toc_tree, args=(fn, fmt, base_name))
+                print base_name
+                _generate_toc_tree(fn, fmt, base_name)
+                #p.apply_async(_generate_toc_tree, args=(fn, fmt, base_name))
                 count += 1
 
     p.close()
