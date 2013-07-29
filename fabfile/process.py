@@ -255,7 +255,7 @@ def create_link():
     _create_link(env.input_file, env.output_file)
 
 def _create_link(input_fn, output_fn):
-    out_dirname = os.path.dirname(input_fn)
+    out_dirname = os.path.dirname(output_fn)
     if out_dirname != '' and not os.path.exists(out_dirname):
         os.makedirs(out_dirname)
 
@@ -266,8 +266,13 @@ def _create_link(input_fn, output_fn):
     elif os.path.exists(output_fn):
         abort('[{0}]: could not create a symlink at {1}.'.format('link', output_fn))
 
-    symlink(output_fn, input_fn)
-    puts('[{0}] created symbolic link pointing to "{1}" named "{2}"'.format('symlink', input_fn, output_fn))
+    out_base = os.path.basename(output_fn)
+    if out_base == "":
+        abort('[{0}]: could not create a symlink at {1}.'.format('link', output_fn))
+    else:
+        symlink(out_base, input_fn)
+        os.rename(out_base, output_fn)
+        puts('[{0}] created symbolic link pointing to "{1}" named "{2}"'.format('symlink', input_fn, out_base))
 
 @task
 def manual_single_html():
@@ -417,7 +422,7 @@ def pdfs():
         pdf_pairs.append([i['pdf'], i['deployed'], 'pdf'])
 
         if i['link'] != i['deployed']:
-            pdf_links.append((i['link'], i['deployed']))
+            pdf_links.append((i['link'], deploy_fn))
 
     _sanitize_tex(sources)
     _multi_copy_if_needed(tex_pairs)
@@ -437,7 +442,7 @@ def _munge_page(fn, regex):
         page = f.read()
 
     page = regex[0].sub(regex[1], page)
-    
+
     with open(fn, 'w') as f:
         f.write(page)
 
