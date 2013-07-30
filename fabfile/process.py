@@ -74,13 +74,6 @@ def all_json_output():
 
     puts('[json]: deployed json files to local staging.')
 
-@task
-def test():
-    conf = get_conf()
-
-    import json
-    print json.dumps(conf.build.paths, indent=3)
-
 def generate_list_file(outputs, path):
     dirname = os.path.dirname(path)
 
@@ -118,7 +111,6 @@ def process_json_file(input_fn, output_fn):
         text = re.sub('&nbsp;', '', text)
 
         doc['text'] = ' '.join(text.split('\n')).strip()
-
 
     if 'title' in doc:
         title = doc['title'].encode('ascii', 'ignore')
