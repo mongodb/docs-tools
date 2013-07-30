@@ -62,7 +62,7 @@ def _get_toc_output_name(name, type):
     return 'source/includes/{0}-{1}.rst'.format(type, name)
 
 def _generate_toc_tree(fn, fmt, base_name):
-    if fmt == 'spec': 
+    if fmt == 'spec':
         spec = True
         toc = AggregatedTocTree(fn)
         toc.build_dfn()
@@ -72,7 +72,7 @@ def _generate_toc_tree(fn, fmt, base_name):
         spec = False
         toc = CustomTocTree(fn)
         toc.build_contents()
-        
+
         if fmt == 'toc':
             toc.build_dfn()
         elif fmt == 'ref':
@@ -115,13 +115,12 @@ def toc():
             if fmt != 'spec':
                 fmt = fn[16:19]
 
-            outputs = [ _get_toc_output_name(i[0], i[1]) for i in [(base_name, 'dfn-list'), 
+            outputs = [ _get_toc_output_name(i[0], i[1]) for i in [(base_name, 'dfn-list'),
                                                                    (base_name, 'toc')] ]
 
             if env.FORCE or check_multi_dependency(outputs, fn):
-                print base_name
-                _generate_toc_tree(fn, fmt, base_name)
-                #p.apply_async(_generate_toc_tree, args=(fn, fmt, base_name))
+                # _generate_toc_tree(fn, fmt, base_name)
+                p.apply_async(_generate_toc_tree, args=(fn, fmt, base_name))
                 count += 1
 
     p.close()
