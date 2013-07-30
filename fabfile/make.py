@@ -35,7 +35,6 @@ def check_three_way_dependency(target, source, dependency):
 def check_multi_dependency(target, dependency, pass_non_existing=True):
     for t in target:
         if check_dependency(t, dependency, pass_non_existing) is True:
-            print "---" + t + "---"
             return True
 
     return False
