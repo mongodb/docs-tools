@@ -40,6 +40,7 @@ class CustomTocTree(object):
             data = yaml.safe_load_all(f)
 
             for datum in data:
+                #print datum
                 if datum['description'] is None:
                     datum['description'] = ''
 
@@ -58,8 +59,8 @@ class CustomTocTree(object):
     def finalize(self):
         if not self.final:
             for ref in self.spec:
-                if self.table is not None: 
-                    if 'name' in ref: 
+                if self.table is not None:
+                    if 'name' in ref:
                         self.table.add_row([ ref['name'], ref['description'] ])
                     else:
                         self.table = None
@@ -70,19 +71,20 @@ class CustomTocTree(object):
                         text = ref['name']
                     else:
                         text = None
-
-                    link = self.dfn.role('doc', ref['file'], text)
                     
-                    idnt = 3 
+                    link = self.dfn.role('doc', ref['file'], text)
+
+                    idnt = 3
                     if 'level' in ref:
                         idnt = idnt + 3 * ref['level']
-                    
+
                     self.dfn.definition(link, ref['description'], indent=idnt, bold=False, wrap=False)
                     self.dfn.newline()
-                    
+
 
 class AggregatedTocTree(CustomTocTree):
     def __init__(self, filename):
+        
         self.table = None
         self.contents = None
         self.dfn = None
@@ -94,25 +96,28 @@ class AggregatedTocTree(CustomTocTree):
 
         with open(filename, 'r') as f:
             definition = yaml.safe_load(f)
-            
+
             filter_specs = {}
 
             for dfn in definition['files']:
+                #print dfn
                 if isinstance(dfn, dict):
                     filter_specs[dfn['file']] = dfn['level']
                 else:
                     filter_specs[dfn] = 1
 
-        all_ref_objs = []
+        all_objs = {}
 
         for source in definition['sources']:
             with open(os.path.join(dfn_dir, source), 'r') as f:
                 objs = yaml.safe_load_all(f)
+                
+                for obj in objs:
+                    all_objs[obj['file']] = obj
 
-                all_ref_objs.extend(objs)
-    
         filter_docs = filter_specs.keys()
-        for obj in all_ref_objs:
-            if obj['file'] in filter_docs:
-                obj['level'] = filter_specs[obj['file']] 
-                self.spec.append(obj)
+        for fn in filter_docs:
+            try: 
+                self.spec.append(all_objs[fn])
+            except KeyError:
+                print('[ERROR] [toc]: KeyError "{0}" in file: {1}'.format(fn, filename))
