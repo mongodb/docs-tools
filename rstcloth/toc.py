@@ -73,7 +73,7 @@ class CustomTocTree(object):
 
                     link = self.dfn.role('doc', ref['file'], text)
 
-                    idnt = 3
+                    idnt = 0
                     if 'level' in ref:
                         idnt = idnt + 3 * ref['level']
 
@@ -96,13 +96,13 @@ class AggregatedTocTree(CustomTocTree):
         with open(filename, 'r') as f:
             definition = yaml.safe_load(f)
 
-            filter_specs = {}
+            filter_specs = []
 
             for dfn in definition['files']:
                 if isinstance(dfn, dict):
-                    filter_specs[dfn['file']] = dfn['level']
+                    filter_specs.append( (dfn['file'],  dfn['level']) )
                 else:
-                    filter_specs[dfn] = 1
+                    filter_specs.append( (dfn,  1) )
 
         all_objs = {}
 
@@ -113,9 +113,10 @@ class AggregatedTocTree(CustomTocTree):
                 for obj in objs:
                     all_objs[obj['file']] = obj
 
-        filter_docs = filter_specs.keys()
-        for fn in filter_docs:
+        for fn, level in filter_specs:
             try:
-                self.spec.append(all_objs[fn])
+                obj = all_objs[fn]
+                obj['level'] = level
+                self.spec.append(obj)
             except KeyError:
                 print('[ERROR] [toc]: KeyError "{0}" in file: {1}'.format(fn, filename))
