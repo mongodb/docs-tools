@@ -8,9 +8,7 @@ from fabric.api import task, puts, local, env, quiet
 from make import check_dependency, check_multi_dependency
 from docs_meta import render_paths
 
-paths = render_paths('dict')
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', paths['buildsystem'])))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')))
 from rstcloth.param import generate_params
 from rstcloth.toc import CustomTocTree, AggregatedTocTree
 from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
@@ -33,8 +31,10 @@ def _generate_api_param(source, target):
 def api():
     p = Pool()
 
+    paths = render_paths('obj')
+
     count = 0
-    for source in expand_tree('source/reference', 'yaml'):
+    for source in expand_tree(os.path.join(paths.source, 'reference'), 'yaml'):
         target = dot_concat(os.path.splitext(source)[0], 'rst')
         if env.FORCE or check_dependency(target, source):
             # _generate_api_param(source, target)
@@ -58,10 +58,10 @@ def _get_toc_base_name(fn):
     if bn.startswith('toc-'):
         return os.path.splitext(bn)[0][4:]
 
-def _get_toc_output_name(name, type):
-    return 'source/includes/{0}-{1}.rst'.format(type, name)
+def _get_toc_output_name(name, type, paths):
+    return os.path.join(paths.includes, '{0}-{1}.rst'.format(type, name))
 
-def _generate_toc_tree(fn, fmt, base_name):
+def _generate_toc_tree(fn, fmt, base_name, paths):
     if fmt == 'spec':
         spec = True
         toc = AggregatedTocTree(fn)
@@ -80,17 +80,17 @@ def _generate_toc_tree(fn, fmt, base_name):
 
         toc.finalize()
 
-        outfn = _get_toc_output_name(base_name, 'toc')
+        outfn = _get_toc_output_name(base_name, 'toc', paths)
         toc.contents.write(outfn)
         puts('[toc]: wrote: '  + outfn)
 
     if spec is True or fmt == 'toc':
-        outfn = _get_toc_output_name(base_name, 'dfn-list')
+        outfn = _get_toc_output_name(base_name, 'dfn-list', paths)
         toc.dfn.write(outfn)
         puts('[toc]: wrote: '  + outfn)
     elif spec is True or fmt == 'ref':
         if toc.table is not None:
-            outfn = _get_toc_output_name(base_name, 'table')
+            outfn = _get_toc_output_name(base_name, 'table', paths)
             t = TableBuilder(RstTable(toc.table))
             t.write(outfn)
             puts('[toc]: wrote: '  + outfn)
@@ -103,10 +103,12 @@ def _generate_toc_tree(fn, fmt, base_name):
 def toc():
     p = Pool()
 
-    count = 0
-    for fn in expand_tree('source/includes', 'yaml'):
+    paths = render_paths('obj')
 
-        if fn.startswith('source/includes/table'):
+    count = 0
+    for fn in expand_tree(paths.includes, 'yaml'):
+
+        if fn.startswith(os.path.join(paths.includes, 'table')):
             pass
         elif len(fn) >= 24:
             base_name = _get_toc_base_name(fn)
@@ -115,12 +117,12 @@ def toc():
             if fmt != 'spec':
                 fmt = fn[16:19]
 
-            outputs = [ _get_toc_output_name(i[0], i[1]) for i in [(base_name, 'dfn-list'),
-                                                                   (base_name, 'toc')] ]
+            outputs = [ _get_toc_output_name(i[0], i[1], paths) for i in [(base_name, 'dfn-list'),
+                                                                          (base_name, 'toc')] ]
 
             if env.FORCE or check_multi_dependency(outputs, fn):
-                # _generate_toc_tree(fn, fmt, base_name)
-                p.apply_async(_generate_toc_tree, args=(fn, fmt, base_name))
+                # _generate_toc_tree(fn, fmt, base_name, paths)
+                p.apply_async(_generate_toc_tree, args=(fn, fmt, base_name, paths))
                 count += 1
 
     p.close()
@@ -168,7 +170,9 @@ def tables():
     p = Pool()
 
     count = 0
-    for source in expand_tree(paths['includes'], 'yaml'):
+
+    paths = render_paths('obj')
+    for source in expand_tree(paths.includes, 'yaml'):
         if os.path.basename(source).startswith('table'):
 
             target = _get_table_output_name(source)
@@ -210,7 +214,9 @@ def _generate_images(cmd, dpi, width, target, source):
 
 @task
 def images():
-    meta_file = os.path.join(paths['images'], 'metadata') + '.yaml'
+    paths = render_paths('obj')
+
+    meta_file = os.path.join(paths.images, 'metadata') + '.yaml'
     images_meta = ingest_yaml_list(meta_file)
 
     p = Pool()
@@ -218,14 +224,14 @@ def images():
     count_rst = 0
     count_png = 0
     for image in images_meta:
-        image['dir'] = paths['images']
+        image['dir'] = paths.images
         source_base = os.path.join(image['dir'], image['name'])
         source_file = source_base + '.svg'
         rst_file = source_base + '.rst'
 
 
         if env.FORCE or ( check_dependency(rst_file, meta_file) and
-                          check_dependency(rst_file, os.path.join(paths['buildsystem'], 'rstcloth', 'images.py'))):
+                          check_dependency(rst_file, os.path.join(paths.buildsystem, 'rstcloth', 'images.py'))):
             p.apply_async(generate_image_pages, kwds=image)
             count_rst += 1
 
@@ -279,7 +285,8 @@ def _generate_release_core(rel):
 
 @task
 def releases():
-    rel_data = ingest_yaml(os.path.join(paths['builddata'], 'releases') + '.yaml')
+    paths = render_paths('obj')
+    rel_data = ingest_yaml(os.path.join(paths.builddata, 'releases') + '.yaml')
 
     p = Pool()
     for rel in rel_data['source-files']:
@@ -296,6 +303,7 @@ def releases():
 
 @task
 def source():
+    paths = render_paths('obj')
     target = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', paths['branch-output']))
 
     if not os.path.exists(target):
@@ -304,7 +312,7 @@ def source():
     elif not os.path.isdir(target):
         abort('[sphinx-prep]: {0} exists and is not a directory'.format(target))
 
-    local('rsync --recursive --times --delete {0} {1}'.format(paths['source'], target))
+    local('rsync --recursive --times --delete {0} {1}'.format(paths.source, target))
     puts('[sphinx-prep]: updated source in {0}'.format(target))
 
     with quiet():
@@ -316,7 +324,9 @@ def source():
 
 @task
 def sitemap(config_path=None):
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', paths['buildsystem'], 'bin')))
+    paths = render_paths('obj')
+
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', paths.buildsystem, 'bin')))
     import sitemap_gen
 
     if config_path is None:

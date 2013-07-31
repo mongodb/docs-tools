@@ -5,9 +5,11 @@ import shutil
 
 from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
 from make import check_dependency, check_three_way_dependency
-from docs_meta import output_yaml, get_manual_path, get_conf, get_branch_output_path
+from docs_meta import output_yaml, get_manual_path, get_conf
 from fabric.api import task, env, abort, puts, local
 from multiprocessing import Pool, Process
+from subprocess import call
+
 
 env.input_file = None
 env.output_file = None
@@ -48,14 +50,13 @@ def all_json_output():
 
         outputs.append(json)
 
-    list_file = os.path.join(get_branch_output_path(), 'json-file-list')
+    list_file = os.path.join(conf.build.paths.branch_output, 'json-file-list')
     public_list_file = os.path.join(conf.build.paths.public,
                                   conf.git.branches.current,
                                   'json',
                                   '.file_list')
 
     p.apply_async(generate_list_file, args=(outputs, list_file))
-
 
     p.close()
     p.join()
@@ -216,6 +217,8 @@ def manpage_url():
 def copy_if_needed(source_file=None, target_file=None, name='build'):
     _copy_if_needed(source_file, target_file, name)
 
+class InvalidPath(Exception): pass
+
 def _copy_if_needed(source_file=None, target_file=None, name='build'):
     if source_file is None:
         source_file = env.input_file
@@ -224,7 +227,8 @@ def _copy_if_needed(source_file=None, target_file=None, name='build'):
         target_file = env.output_file
 
     if os.path.isfile(source_file) is False:
-        abort("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
+        puts("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
+        raise InvalidPath
     elif os.path.isfile(target_file) is False:
         if not os.path.exists(os.path.dirname(target_file)):
             os.makedirs(os.path.dirname(target_file))
@@ -316,7 +320,6 @@ def _render_tex_into_pdf(fn, path):
     puts('[pdf]: completed pdf rendering stage 4 of 4 for: {0}'.format(fn))
 
     puts('[pdf]: rendered pdf for {0}'.format(fn))
-
 
 def _sanitize_tex(files):
     conf = get_conf()
@@ -456,8 +459,8 @@ def error_pages():
         count = 0
         for error in error_pages:
             page = os.path.join(conf.build.paths['branch-output'], 'dirhtml', 'meta', error, 'index.html')
-            p.apply_async(_munge_page, args=(page, sub))
             # _munge_page(page, sub)
+            p.apply_async(_munge_page, args=(page, sub))
 
             count += 1
 

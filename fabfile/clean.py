@@ -56,7 +56,7 @@ def toc():
     if not env.FORCE:
         abort('[clean]: cannot clean without calling ``force`` task.')
 
-
+    conf = docs_meta.get_conf()
 
 @task
 def tables():

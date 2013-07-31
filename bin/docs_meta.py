@@ -104,17 +104,20 @@ def output_yaml(fn):
 
     write_yaml(o, fn)
 
-def get_branch_output_path():
-    return render_paths()['branch-output']
-
 def render_paths(fn):
     conf = load_conf()
 
     paths = conf.build.paths
-    paths['public'] = os.path.join(paths['output'], 'public')
-    paths['branch-output'] = os.path.join(conf.build.paths.output, get_branch())
-    paths['branch-source'] = os.path.join(paths['branch-output'], 'source')
-    paths['branch-staging'] = os.path.join(paths['public'], get_branch())
+
+    paths.public = os.path.join(paths.output, 'public')
+    paths.branch_output = os.path.join(paths.output, get_branch())
+    paths.branch_source = os.path.join(paths.branch_output, 'source')
+    paths.branch_staging = os.path.join(paths.public, get_branch())
+
+    # for backwards compatibility
+    paths['branch-staging'] = paths.branch_staging
+    paths['branch-output'] = paths.branch_output
+    paths['branch-source'] = paths.branch_source
 
     if str(fn).endswith('yaml'):
         utils.write_yaml(dict(paths), fn)
