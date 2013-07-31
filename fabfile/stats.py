@@ -2,8 +2,8 @@ from fabric.api import task, local, env
 from fabric.utils import puts, abort
 from droopy.factory import DroopyFactory
 from droopy.lang.english import English
-from multiprocessing import Pool, Manager
-from docs_meta import conf
+from multiprocessing import Pool
+from docs_meta import get_conf
 from utils import expand_tree
 
 import yaml
@@ -42,7 +42,10 @@ def _render_report(fn):
 
 ## Path and filneame processing
 
-def _fn_output(tag):
+def _fn_output(tag, conf=None):
+    if conf is None:
+        conf = get_conf()
+
     fn = ['stats', 'sweep' ]
     if tag is not None:
         fn.append(tag.replace('/', '-'))
@@ -72,7 +75,10 @@ def _output_report_yaml(data):
 ########## user facing operations ##########
 
 ## Report Generator
-def _generate_report(mask, output_file):
+def _generate_report(mask, output_file, conf=None):
+    if conf is None:
+        conf = get_conf()
+
     base_path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json')
     docs = expand_tree(base_path, '.json')
 
@@ -99,7 +105,7 @@ def _generate_report(mask, output_file):
 
     if len(output) == 0:
         output[0] = output[0][4:]
- 
+
     output.append('...\n')
 
     if output_file is None:
@@ -119,8 +125,10 @@ def report(fn=None):
 @task
 def sweep(mask=None):
     puts('[stats]: starting full sweep of docs content.')
-    out_file = _fn_output(mask)
+    conf = get_conf()
 
-    _generate_report(mask, output_file=out_file)
+    out_file = _fn_output(mask, conf)
+
+    _generate_report(mask, output_file=out_file, conf=conf)
 
     puts('[stats]: wrote full manual sweep to {0}'.format(out_file))

@@ -5,7 +5,7 @@ import sys
 import re
 import subprocess
 
-import docs_meta
+from docs_meta import get_conf
 from utils import get_branch
 
 env.sign = False
@@ -18,7 +18,8 @@ def sign():
 @task(alias='am')
 def apply(obj,repo=None):
     if repo is None:
-        repo = docs_meta.conf.git.remote.upstream
+
+        repo = get_conf().git.remote.upstream
 
     cmd = ['curl',
            'https://github.com/{0}/'.format(repo),
@@ -80,7 +81,7 @@ class GitRepoManager(object):
 
         self.branches = set()
         self.branches.add(self.current_branch)
-        for branch in docs_meta.conf.git.branches.published:
+        for branch in get_conf().git.branches.published:
             if branch is not None:
                 self.branches.add(branch)
 

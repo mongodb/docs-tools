@@ -7,10 +7,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 
 import utils
 from makecloth import MakefileCloth
-from docs_meta import conf
+from docs_meta import get_conf
 m = MakefileCloth()
 
 def build_all_sphinx_migrations(migrations):
+    conf = get_conf()
+
     links = { 'phony': [], 'all': [] }
     for migration in migrations:
         block = migration['action']
@@ -61,7 +63,7 @@ def build_all_sphinx_migrations(migrations):
             m.job(job='fab process.input:{0} process.output:{1} process.create_link'.format(migration['dependency'], migration['target']), block=block)
             m.newline(block=block)
             links['all'].append(migration['target'])
-            
+
             if migration['type'] == 'phony':
                 links['phony'].append(migration['target'])
         elif block == 'cmd':

@@ -3,9 +3,12 @@ import argparse
 import yaml
 import utils
 
-from docs_meta import conf
+from docs_meta import get_conf
 
-def process_redirect(redirect):
+def process_redirect(redirect, conf=None):
+    if conf is None:
+        conf = get_conf()
+
     if 'all' in redirect['outputs']:
         redirect['outputs'].remove('all')
         for branch in conf.git.branches.published:
@@ -88,11 +91,14 @@ def main():
 
     lines = []
 
+    conf = get_conf()
+
+
     for doc in utils.ingest_yaml(ui.data):
         if doc['type'] == 'redirect':
-            lines.append(generate_redirects(process_redirect(doc), match=ui.match))
+            lines.append(generate_redirects(process_redirect(doc, conf), match=ui.match))
         if doc['type'] == 'redirect-draft':
-            print(generate_redirects(process_redirect(doc), match=ui.match))
+            print(generate_redirects(process_redirect(doc, conf), match=ui.match))
 
     if lines:
         with open(ui.filename, 'w') as f:

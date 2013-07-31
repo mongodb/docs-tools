@@ -9,35 +9,20 @@ from utils import write_yaml, shell_value, get_commit, get_branch, get_conf_file
 
 ### Configuration and Settings
 
-try:
-    project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
-    conf = BuildConfiguration(filename='docs_meta.yaml', 
-                              directory=os.path.join(project_root_dir, 'bin'))
-except IOError:
-    project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-    conf = BuildConfiguration(filename='docs_meta.yaml', 
-                              directory=os.path.join(project_root_dir, 'bin'))
-
-conf.build.paths.projectroot = project_root_dir
-
-if os.path.exists('/etc/arch-release'):
-    conf.build.system.python = 'python2'
-else:
-    conf.build.system.python = 'python'
-
-conf.git.branches.current = get_branch()
-conf.git.commit = get_commit()
-
 # For backwards compatibility, populating global variables from yaml file. See
 # the docs_meta.yaml file for documentation of these values.
 
 ### Functions
 
 def get_sphinx_builders():
+    conf = get_conf()
+
     path = os.path.join(conf.build.paths.projectroot, conf.build.paths.builddata, 'sphinx.yaml')
     return ingest_yaml(path)['builders']
 
 def get_manual_path():
+    conf = get_conf()
+
     branch = get_branch()
 
     if branch == conf.git.branches.manual:
@@ -48,13 +33,39 @@ def get_manual_path():
     else:
         return branch
 
+def load_conf():
+    try:
+        project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+        conf = BuildConfiguration(filename='docs_meta.yaml',
+                                  directory=os.path.join(project_root_dir, 'bin'))
+    except IOError:
+        project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+        conf = BuildConfiguration(filename='docs_meta.yaml',
+                                  directory=os.path.join(project_root_dir, 'bin'))
+
+    conf.build.paths.projectroot = project_root_dir
+
+    return conf
+
 def get_conf():
+    conf = load_conf()
+
+    if os.path.exists('/etc/arch-release'):
+        conf.build.system.python = 'python2'
+    else:
+        conf.build.system.python = 'python'
+
+    conf.git.branches.current = get_branch()
+    conf.git.commit = get_commit()
+
     conf.build.paths.update(render_paths('dict'))
 
     return conf
 
 def get_versions():
     o = []
+
+    conf = load_conf()
 
     for version in conf.version.published:
         version_string = str(version)
@@ -77,6 +88,8 @@ def get_versions():
     return o
 
 def output_yaml(fn):
+    conf = load_conf()
+
     o = {
             'branch': get_branch(),
             'commit': get_commit(),
@@ -92,12 +105,14 @@ def output_yaml(fn):
     write_yaml(o, fn)
 
 def get_branch_output_path():
-    return os.path.join(conf.build.paths.output, get_branch())
+    return render_paths()['branch-output']
 
 def render_paths(fn):
+    conf = load_conf()
+
     paths = conf.build.paths
     paths['public'] = os.path.join(paths['output'], 'public')
-    paths['branch-output'] = get_branch_output_path()
+    paths['branch-output'] = os.path.join(conf.build.paths.output, get_branch())
     paths['branch-source'] = os.path.join(paths['branch-output'], 'source')
     paths['branch-staging'] = os.path.join(paths['public'], get_branch())
 

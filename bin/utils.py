@@ -180,7 +180,9 @@ def ingest_json_list(filename):
 
 def get_conf_file(file, directory=None):
     if directory is None:
-        from docs_meta import conf
+        from docs_meta import get_conf
+        conf = get_conf()
+
         directory = conf.build.paths.builddata
 
     conf_file = os.path.split(file)[1].rsplit('.', 1)[0] + '.yaml'

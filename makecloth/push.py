@@ -6,11 +6,12 @@ import os.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 
-from docs_meta import conf
+from docs_meta import get_conf
 from utils import get_conf_file, ingest_yaml, get_branch
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
+conf = get_conf()
 
 _check_dependency = set()
 
@@ -23,8 +24,6 @@ def add_dependency(data):
     for dep in data['dependency']:
         if dep.endswith('if-up-to-date') and dep not in _check_dependency:
             env = data['env']
-            # m.target('_build-check-' + env)
-            # m.job('fab deploy.{0}:{1} deploy.check'.format(env, conf.git.branches.current))
             m.target(data['target'] + '-if-up-to-date', ['publish'])
             _check_dependency.add(dep)
 

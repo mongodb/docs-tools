@@ -73,7 +73,6 @@ class CustomTocTree(object):
 
                     link = self.dfn.role('doc', ref['file'], text)
 
-
                     if 'level' in ref:
                         idnt = 3 * ref['level']
                     else:
