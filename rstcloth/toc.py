@@ -73,9 +73,11 @@ class CustomTocTree(object):
 
                     link = self.dfn.role('doc', ref['file'], text)
 
-                    idnt = 0
+
                     if 'level' in ref:
-                        idnt = idnt + 3 * ref['level']
+                        idnt = 3 * ref['level']
+                    else:
+                        idnt = 3
 
                     self.dfn.definition(link, ref['description'], indent=idnt, bold=False, wrap=False)
                     self.dfn.newline()
