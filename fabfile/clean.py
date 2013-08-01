@@ -25,9 +25,9 @@ def builds(days=14):
     for build in builds:
         branch = build.rsplit('/', 1)[1]
 
-        if branch in docs_meta.conf.git.branches.published:
+        if branch in docs_meta.get_conf().git.branches.published:
             continue
-        elif branch == docs_meta.get_branch:
+        elif branch == docs_meta.get_branch():
             continue
         elif branch == 'public':
             continue
