@@ -89,11 +89,9 @@ def user_input():
 def main():
     ui = user_input()
 
-    lines = []
-
     conf = get_conf()
 
-
+    lines = []
     for doc in utils.ingest_yaml(ui.data):
         if doc['type'] == 'redirect':
             lines.append(generate_redirects(process_redirect(doc, conf), match=ui.match))
@@ -106,7 +104,6 @@ def main():
                 f.write(line)
 
         print('[redirect]: regenerated ' + ui.filename + ' file.' )
-
 
 if __name__ == '__main__':
     main()
