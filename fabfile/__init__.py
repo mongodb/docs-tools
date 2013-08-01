@@ -10,7 +10,7 @@ import delegated
 import tools
 import stats
 import generate
-from make import make, force
+from make import make, force, serial
 
 import fabric
 fabric.state.output.status = False

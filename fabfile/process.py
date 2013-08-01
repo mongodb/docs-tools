@@ -7,9 +7,8 @@ from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
 from make import check_dependency, check_three_way_dependency
 from docs_meta import output_yaml, get_manual_path, get_conf
 from fabric.api import task, env, abort, puts, local
-from multiprocessing import Pool, Process
+from multiprocessing import Pool
 from subprocess import call
-
 
 env.input_file = None
 env.output_file = None
@@ -32,7 +31,9 @@ def json_output():
         process_json_file(env.input_file, env.output_file)
 
 def all_json_output():
-    p = Pool()
+    if env.PARALLEL is True:
+        p = Pool()
+
     conf = get_conf()
 
     outputs = []
@@ -45,7 +46,11 @@ def all_json_output():
         json = dot_concat(path, 'json')
 
         if check_three_way_dependency(json, fn, fjson):
-            p.apply_async(process_json_file, args=(fjson, json))
+            if env.PARALLEL is True:
+                p.apply_async(process_json_file, args=(fjson, json))
+            else:
+                process_json_file(fjson, json)
+
             count += 1
 
         outputs.append(json)
@@ -56,10 +61,12 @@ def all_json_output():
                                   'json',
                                   '.file_list')
 
-    p.apply_async(generate_list_file, args=(outputs, list_file))
-
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.apply_async(generate_list_file, args=(outputs, list_file))
+        p.close()
+        p.join()
+    else:
+        generate_list_file(outputs, list_file)
 
     puts('[json]: processed {0} json files.'.format(str(count)))
 
@@ -161,13 +168,19 @@ def refresh_dependencies():
     inc_pattern = re.compile(r'\.\. include:: (.*\.(?:txt|rst))')
 
     dep_info = []
-    p = Pool()
+
+    if env.PARALLEL is True:
+        p = Pool()
 
     for fn in files:
-        p.apply_async(check_deps, kwds=dict(file=fn, pattern=inc_pattern))
+        if env.PARALLEL is True:
+            p.apply_async(check_deps, kwds=dict(file=fn, pattern=inc_pattern))
+        else:
+            check_deps(file=fn, pattern=inc_pattern)
 
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
 
 
 ########## Simple Tasks ##########
@@ -175,7 +188,6 @@ def refresh_dependencies():
 @task
 def meta():
     output_yaml(env.output_file)
-
 
 @task
 def touch(fn, times=None):
@@ -326,54 +338,73 @@ def _sanitize_tex(files):
     regexes = [(re.compile(r'(index|bfcode)\{(.*)--(.*)\}'), r'\1\{\2-\{-\}\3\}'),
                (re.compile(r'\\code\{/(?!.*{}/|etc)'), r'\code{' + conf.project.url + conf.project.tag) ]
 
-    p = Pool()
+    if env.PARALLEL is True:
+        p = Pool()
 
     count = 0
     for fn in files:
-        # _clean_sphinx_latex(fn, regexes)
-        p.apply_async(_clean_sphinx_latex, args=(fn, regexes))
+        if env.PARALLEL is True:
+            p.apply_async(_clean_sphinx_latex, args=(fn, regexes))
+        else:
+            _clean_sphinx_latex(fn, regexes)
+
         count += 1
 
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
 
     puts('[pdf]: sanitized sphinx tex output in {0} files'.format(count))
 
 def _generate_pdfs(targets):
     conf = get_conf()
 
-    p = Pool(4)
+    if env.PARALLEL is True:
+        p = Pool()
 
     count = 0
     for tex, pdf, path in targets:
         if check_dependency(pdf, tex):
-            # _render_tex_into_pdf(tex, path)
-            p.apply_async(_render_tex_into_pdf, args=(tex, path))
+            if env.PARALLEL is True:
+                p.apply_async(_render_tex_into_pdf, args=(tex, path))
+            else:
+                _render_tex_into_pdf(tex, path)
+
             count += 1
 
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
 
     puts('[pdf]: rendered {0} tex files into pdfs.'.format(count))
 
 def _multi_copy_if_needed(target_pairs):
-    p = Pool(4)
+    if env.PARALLEL is True:
+        p = Pool(4)
 
     for source, target, builder in target_pairs:
-        # _copy_if_needed(source, target, builder)
-        p.apply_async(_copy_if_needed, args=(source, target, builder))
+        if env.PARALLEL is True:
+            p.apply_async(_copy_if_needed, args=(source, target, builder))
+        else:
+            _copy_if_needed(source, target, builder)
 
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
 
 def _multi_create_link(link_pairs):
-    p = Pool(2)
+    if env.PARALLEL is True:
+        p = Pool(2)
 
     for link, source in link_pairs:
-        _create_link(source, link)
+        if env.PARALLEL is True:
+            p.apply_async(_create_link, args=(source, link))
+        else:
+            _create_link(source, link)
 
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
 
 @task
 def pdfs():
@@ -455,15 +486,21 @@ def error_pages():
 
         sub = (re.compile(r'\.\./\.\./'), conf.project.url + conf.project.tag)
 
-        p = Pool(len(error_pages))
+        if env.PARALLEL is True:
+            p = Pool(len(error_pages))
+
         count = 0
         for error in error_pages:
             page = os.path.join(conf.build.paths['branch-output'], 'dirhtml', 'meta', error, 'index.html')
-            # _munge_page(page, sub)
-            p.apply_async(_munge_page, args=(page, sub))
+            if env.PARALLEL is True:
+                p.apply_async(_munge_page, args=(page, sub))
+            else:
+                _munge_page(page, sub)
 
             count += 1
 
-        p.close()
-        p.join()
+        if env.PARALLEL is True:
+            p.close()
+            p.join()
+
         puts('[error-pages]: rendered {0} error pages'.format(count))

@@ -7,6 +7,11 @@ env.FORCE = False
 def force():
     env.FORCE = True
 
+env.PARALLEL = True
+@task
+def serial():
+    env.PARALLEL = False
+
 @task
 def make(target):
     with lcd(get_conf().build.paths.projectroot):

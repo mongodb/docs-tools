@@ -29,7 +29,8 @@ def _generate_api_param(source, target):
 
 @task
 def api():
-    p = Pool()
+    if env.PARALLEL is True:
+        p = Pool()
 
     paths = render_paths('obj')
 
@@ -37,13 +38,17 @@ def api():
     for source in expand_tree(os.path.join(paths.source, 'reference'), 'yaml'):
         target = dot_concat(os.path.splitext(source)[0], 'rst')
         if env.FORCE or check_dependency(target, source):
-            # _generate_api_param(source, target)
-            p.apply_async(_generate_api_param, args=(source, target))
+            if env.PARALLEL is True:
+                p.apply_async(_generate_api_param, args=(source, target))
+            else:
+                _generate_api_param(source, target)
 
             count +=1
 
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
+
     puts('[api]: generated {0} tables for api items'.format(count))
 
 #################### Table of Contents Generator ####################
@@ -101,7 +106,8 @@ def _generate_toc_tree(fn, fmt, base_name, paths):
 
 @task
 def toc():
-    p = Pool()
+    if env.PARALLEL is True:
+        p = Pool()
 
     paths = render_paths('obj')
 
@@ -121,12 +127,16 @@ def toc():
                                                                           (base_name, 'toc')] ]
 
             if env.FORCE or check_multi_dependency(outputs, fn):
-                # _generate_toc_tree(fn, fmt, base_name, paths)
-                p.apply_async(_generate_toc_tree, args=(fn, fmt, base_name, paths))
+                if env.PARALLEL is True:
+                    p.apply_async(_generate_toc_tree, args=(fn, fmt, base_name, paths))
+                else:
+                    _generate_toc_tree(fn, fmt, base_name, paths)
+
                 count += 1
 
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
 
     puts('[toc]: built {0} tables of contents'.format(count))
 
@@ -179,12 +189,16 @@ def tables():
             list_target = _get_list_table_output_name(source)
 
             if env.FORCE or check_dependency(target, source) or check_dependency(list_target, source):
-                # _generate_tables(source, target, list_target)
-                p.apply_async(_generate_tables, args=(source, target, list_target))
+                if env.PARALLEL is True:
+                    p.apply_async(_generate_tables, args=(source, target, list_target))
+                else:
+                    _generate_tables(source, target, list_target)
+
                 count += 1
 
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
 
     puts('[table]: built {0} tables'.format(count))
 
@@ -219,7 +233,8 @@ def images():
     meta_file = os.path.join(paths.images, 'metadata') + '.yaml'
     images_meta = ingest_yaml_list(meta_file)
 
-    p = Pool()
+    if env.PARALLEL is True:
+        p = Pool()
 
     count_rst = 0
     count_png = 0
@@ -232,7 +247,11 @@ def images():
 
         if env.FORCE or ( check_dependency(rst_file, meta_file) and
                           check_dependency(rst_file, os.path.join(paths.buildsystem, 'rstcloth', 'images.py'))):
-            p.apply_async(generate_image_pages, kwds=image)
+            if env.PARALLEL is True:
+                p.apply_async(generate_image_pages, kwds=image)
+            else:
+                generate_image_pages(**image)
+
             count_rst += 1
 
         for output in image['output']:
@@ -245,13 +264,18 @@ def images():
 
             if env.FORCE or check_dependency(target_img, source_file):
                 inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
-                # _generate_images(inkscape_cmd, output['dpi'], output['width'], target_img, source_file)
-                p.apply_async(_generate_images, args=(inkscape_cmd, output['dpi'], output['width'], target_img, source_file))
+
+                if env.PARALLEL is True:
+                    p.apply_async(_generate_images, args=(inkscape_cmd, output['dpi'], output['width'], target_img, source_file))
+                else:
+                    _generate_images(inkscape_cmd, output['dpi'], output['width'], target_img, source_file)
 
                 count_png += 1
 
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
+
     puts('[image]: rebuilt {0} rst files and {1} image files'.format(count_rst, count_png))
 
 #################### Snippets for Inclusion in Installation Guides  ####################
@@ -288,15 +312,25 @@ def releases():
     paths = render_paths('obj')
     rel_data = ingest_yaml(os.path.join(paths.builddata, 'releases') + '.yaml')
 
-    p = Pool()
+    if env.PARALLEL is True:
+        p = Pool()
+
     for rel in rel_data['source-files']:
-        p.apply_async(_generate_release_core, args=[rel])
+        if env.PARALLEL is True:
+            p.apply_async(_generate_release_core, args=[rel])
+        else:
+            _generate_release_core(*rel)
 
     for rel in rel_data['subscription-build']:
-        p.apply_async(_generate_release_ent, args=[rel])
+        if env.PARALLEL is True:
+            p.apply_async(_generate_release_ent, args=[rel])
+        else:
+            _generate_release_ent(*rel)
 
-    p.close()
-    p.join()
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
+
     puts('[releases]: completed regenerating release files.')
 
 #################### Copy of Source Directory for Build  ####################
