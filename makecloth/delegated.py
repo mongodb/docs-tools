@@ -7,11 +7,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 import utils
-from docs_meta import conf
+from docs_meta import get_conf
 
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
+conf = get_conf()
 
 def generate_delegated_interface(builders):
     branches = conf.git.branches.published

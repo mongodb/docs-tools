@@ -35,12 +35,12 @@ def apply(obj,repo=None):
         cmd[1] = cmd[1] + 'commit/' + obj + '.patch'
 
         local(' '.join(cmd))
-        puts('[git]: merged commit {0} for {1} into {2}'.format(obj, repo, utils.get_branch()))
+        puts('[git]: merged commit {0} for {1} into {2}'.format(obj, repo, get_branch()))
     else:
         cmd[1] = cmd[1] + 'pull/' + obj + '.patch'
 
         local(' '.join(cmd))
-        puts('[git]: merged pull request #{0} for {1} into {2}'.format(obj, repo, utils.get_branch()))
+        puts('[git]: merged pull request #{0} for {1} into {2}'.format(obj, repo, get_branch()))
 
 @task()
 def branch(branch):
