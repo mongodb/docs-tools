@@ -118,13 +118,19 @@ def toc():
             pass
         elif len(fn) >= 24:
             base_name = _get_toc_base_name(fn)
+            output_base = [ ]
 
             fmt = fn[20:24]
             if fmt != 'spec':
                 fmt = fn[16:19]
+                output_base.append((base_name, 'toc'))
 
-            outputs = [ _get_toc_output_name(i[0], i[1], paths) for i in [(base_name, 'dfn-list'),
-                                                                          (base_name, 'toc')] ]
+            if fmt == 'ref':
+                output_base.append((base_name, 'table'))
+            elif fmt == 'toc' or fmt == 'spec':
+                output_base.append((base_name, 'dfn-list'))
+
+            outputs = [ _get_toc_output_name(i[0], i[1], paths) for i in output_base ]
 
             if env.FORCE or check_multi_dependency(outputs, fn):
                 if env.PARALLEL is True:
