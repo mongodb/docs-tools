@@ -1,10 +1,11 @@
 import sys
 import os.path
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 
 import utils as utils
+from docs_meta import load_conf
 from rstcloth import RstCloth
 from rstcloth import fill
 from table import TableData, TableBuilder, ListTable
@@ -23,7 +24,7 @@ class ParamTable(TableData):
             self.header = []
         else:
             self.header = header
-        
+
         if rows is None:
             self.rows = []
         else:
@@ -82,7 +83,7 @@ def generate_param_fields(param):
     if param['name'] is not None:
         _name.append(param['name'])
 
-    description = param['description'] 
+    description = param['description']
 
     if isinstance( param['description'], list):
         field_content = fill('\n'.join(param['description']), 0, 6, False)
@@ -90,7 +91,7 @@ def generate_param_fields(param):
         field_content = fill(param['description'], 0, 6, True)
 
     return ' '.join(_name), field_content
-        
+
 
 def process_description(content, optional=False):
     if isinstance(content, list):
@@ -131,8 +132,30 @@ def render_header_row(param_zero, num_rows, type_column):
 
     return o
 
-def generate_params(params):
+def populate_external_param(fn, basename, projectdir, sourcedir):
+    try:
+        ext_param = ingest_yaml_list(fn)
+    except OSError:
+        fn = os.path.join(basename, fn)
+        ext_param = ingest_yaml_list(fn)
+    except OSError:
+        fn = os.path.join(projectdir, sourcedir, fn)
+        ext_param = ingest_yaml_list(fn)
+    else:
+        pass
+
+    o = { }
+    for param in ext_param:
+        # leaving the object sub-document unmodified if we use it at some point,
+        # we might need to modify here.
+        o[param['name']] = param
+
+    return fn, o
+
+def generate_params(params, fn):
     r = RstCloth()
+    lconf = load_conf()
+    basename = os.path.basename(fn)
 
     params.sort(key=lambda p: p['position'])
 
@@ -147,16 +170,29 @@ def generate_params(params):
     r.directive('only', '(texinfo or latex or epub)', block='tex')
     r.newline(block='tex')
 
+    # { filename: { $name: <param> } }
+    ext_params = {}
+
     for param in params:
-        f = generate_param_fields(param)
-        r.field(name=f[0], value=f[1], indent=3, wrap=False, block='tex')
+        if 'file' in param:
+            if param['file'] not in ext_params:
+                fn, ext = populate_external_param(param['file'],
+                                                  basename,
+                                                  lconf.build.paths.projectroot,
+                                                  lconf.build.paths.source)
+                ext_params[fn] = ext
+
+            param = ext_param[param['file']]['name']
+
+        key, val = generate_param_fields(param)
+        r.field(name=key, value=val, indent=3, wrap=False, block='tex')
         r.newline(block='tex')
 
     return r
 
 def main():
     input_data = utils.ingest_yaml_list(sys.argv[1])
-    r = generate_params(input_data)
+    r = generate_params(input_data, sys.argv[1])
 
     r.write(sys.argv[2])
 

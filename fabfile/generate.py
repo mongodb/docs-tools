@@ -20,7 +20,7 @@ from rstcloth.releases import generate_release_output
 ### Internal Method
 
 def _generate_api_param(source, target):
-    r = generate_params(ingest_yaml_list(source))
+    r = generate_params(ingest_yaml_list(source), source)
     r.write(target)
 
     puts('[api]: rebuilt {0}'.format(target))
@@ -352,7 +352,7 @@ def source():
     with quiet():
         local(build_platform_notification('Sphinx', 'Build in progress past critical phase.'))
 
-    puts('[sphinx-prep]: INFO - Build in progress past critical phase.')
+    puts('[sphinx-prep]: INFO - Build in progress pastcritical phase.')
 
 #################### Generate the Sitemap ####################
 
