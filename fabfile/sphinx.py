@@ -61,7 +61,8 @@ def build(builder='html', tag=None, root=None, nitpick=None):
             puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
             puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
-            cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}'
+            # cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}'
+            cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees -c ./ {3} {2}/source {2}/{0}'
 
             if builder.startswith('epub'):
                 cmd += ' 2>&1 1>&3 | grep -v "WARNING: unknown mimetype" | grep -v "WARNING: search index" 1>&2; 3>&1'
@@ -76,4 +77,3 @@ def build(builder='html', tag=None, root=None, nitpick=None):
             if builder.startswith('dirhtml'):
                 from process import error_pages
                 error_pages()
-                
