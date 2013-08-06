@@ -101,9 +101,7 @@ def generate_build_system(data):
 
         phony.append(target)
         m.target(target, dep)
-        m.msg('[{0}]: deploying "{1}" to the "{2}" environment'.format(target, conf.git.branches.current, builder['env']))
         m.job(' '.join(push_cmd))
-        m.msg('[{0}]: deployed "{1}" to the "{2}" environment'.format(target, conf.git.branches.current, builder['env']))
         m.newline()
 
     m.target('.PHONY', phony)

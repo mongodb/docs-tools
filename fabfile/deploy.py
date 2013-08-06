@@ -77,19 +77,22 @@ def recursive(opt=True):
 def delete(opt=True):
     env.rsync_options.delete = opt
 
+
 @task
 @parallel
 def static(local_path='all', remote=None):
     cmd = [ 'rsync', rsync_options(recursive=False, delete=False) ]
 
     if local_path == 'all':
-        cmd.append('*')
-    else:
-        cmd.append(local_path)
+        local_path = '*'
+
+    cmd.append(local_path)
 
     cmd.append(':'.join([env.host_string, remote]))
 
+    puts('[deploy]: migrating {0} files to {1} remote'.format(local_path, remote))
     local(' '.join(cmd))
+    puts('[deploy]: completed migration of {0} files to {1} remote'.format(local_path, remote))
 
 @task
 @parallel
@@ -110,4 +113,6 @@ def push(local_path, remote):
             local_path,
             ':'.join([env.host_string, remote]) ]
 
+    puts('[deploy]: migrating {0} files to {1} remote'.format(local_path, remote))
     local(' '.join(cmd))
+    puts('[deploy]: completed migration of {0} files to {1} remote'.format(local_path, remote))
