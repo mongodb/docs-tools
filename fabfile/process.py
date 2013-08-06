@@ -484,7 +484,7 @@ def error_pages():
     else:
         error_pages = ingest_yaml_list(error_conf)
 
-        sub = (re.compile(r'\.\./\.\./'), conf.project.url + conf.project.tag)
+        sub = (re.compile(r'\.\./\.\./'), conf.project.url + conf.project.tag + '/')
 
         if env.PARALLEL is True:
             p = Pool(len(error_pages))
