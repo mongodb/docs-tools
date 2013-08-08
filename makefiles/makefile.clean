@@ -17,5 +17,5 @@ clean-public:
 clean-all:
 	-rm -rf $(output)/*
 clean-stale:
-	@fab clean.builds:14
+	@fab clean.builds:7
 	@echo "[clean]: removed all stale build artifacts older than 14 days."
