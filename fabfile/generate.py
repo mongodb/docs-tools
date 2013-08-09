@@ -70,9 +70,22 @@ def _generate_toc_tree(fn, fmt, base_name, paths):
     if fmt == 'spec':
         spec = True
         toc = AggregatedTocTree(fn)
+        fmt = toc._first_source[0:3]
         toc.build_dfn()
         toc.build_table()
         toc.finalize()
+
+        if fmt == 'ref':
+            if toc.table is not None:
+                outfn = _get_toc_output_name(base_name, 'table', paths)
+                t = TableBuilder(RstTable(toc.table))
+                t.write(outfn)
+                puts('[toc-spec]: wrote: '  + outfn)
+        elif fmt == 'toc':
+            outfn = _get_toc_output_name(base_name, 'dfn-list', paths)
+            toc.dfn.write(outfn)
+            puts('[toc-spec]: wrote: '  + outfn)
+        
     else:
         spec = False
         toc = CustomTocTree(fn)
@@ -89,18 +102,17 @@ def _generate_toc_tree(fn, fmt, base_name, paths):
         toc.contents.write(outfn)
         puts('[toc]: wrote: '  + outfn)
 
-    if spec is True or fmt == 'toc':
-        outfn = _get_toc_output_name(base_name, 'dfn-list', paths)
-        toc.dfn.write(outfn)
-        puts('[toc]: wrote: '  + outfn)
-    elif spec is True or fmt == 'ref':
-        if toc.table is not None:
+        if fmt == 'ref':
             outfn = _get_toc_output_name(base_name, 'table', paths)
             t = TableBuilder(RstTable(toc.table))
             t.write(outfn)
+            puts('[ref-toc]: wrote: '  + outfn)
+        elif fmt == 'toc':
+            outfn = _get_toc_output_name(base_name, 'dfn-list', paths)
+            toc.dfn.write(outfn)
             puts('[toc]: wrote: '  + outfn)
 
-    puts('[toc]: complied toc output for {0}'.format(fn))
+    puts('[toc]: compiled toc output for {0}'.format(fn))
 
 ### User facing fabric task
 

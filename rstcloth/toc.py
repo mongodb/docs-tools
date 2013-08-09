@@ -107,6 +107,8 @@ class AggregatedTocTree(CustomTocTree):
 
         all_objs = {}
 
+        self._first_source = definition['sources'][0]
+
         for source in definition['sources']:
             with open(os.path.join(dfn_dir, source), 'r') as f:
                 objs = yaml.safe_load_all(f)
