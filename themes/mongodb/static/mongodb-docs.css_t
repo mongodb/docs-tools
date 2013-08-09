@@ -910,6 +910,18 @@ dl.toc dd {
    line-height: 1.3;
 }
 
+### Begin: The next two will need to change a little for another level
+
+dl.toc dl dt {
+   margin-left: 0em;
+}
+
+dl.toc dl dd {
+   margin-left: 2em;
+}
+
+### End
+
 dl.toc > dd {
    margin-left: 2em;
    font-size: 85%;
