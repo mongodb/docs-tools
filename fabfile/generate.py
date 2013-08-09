@@ -6,7 +6,7 @@ from multiprocessing import Pool
 from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, build_platform_notification
 from fabric.api import task, puts, local, env, quiet
 from make import check_dependency, check_multi_dependency
-from docs_meta import render_paths
+from docs_meta import render_paths, load_conf
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')))
 from rstcloth.param import generate_params
@@ -14,7 +14,7 @@ from rstcloth.toc import CustomTocTree, AggregatedTocTree
 from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
 from rstcloth.images import generate_image_pages
 from rstcloth.releases import generate_release_output
-
+from rstcloth.hash import generate_hash_file
 #################### API Param Table Generator ####################
 
 ### Internal Method
@@ -389,3 +389,13 @@ def sitemap(config_path=None):
     sitemap.Generate()
 
     puts('[sitemap]: generated sitemap according to the config file {0}'.format(config_path))
+
+#################### BuildInfo Hash ####################
+
+@task
+def buildinfo_hash():
+    conf = load_conf()
+
+    fn = os.path.join(conf.build.paths.projectroot, conf.build.paths.includes, 'hash.rst')
+
+    generate_hash_file(fn)

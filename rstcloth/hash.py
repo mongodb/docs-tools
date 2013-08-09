@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 from rstcloth import RstCloth
 import utils
 
-def main(fn):
+def generate_hash_file(fn):
     r = RstCloth()
 
     if os.path.exists(fn):
@@ -29,6 +29,10 @@ def main(fn):
         r.write(fn)
         print('[build]: regenerated {0} with new commit hash: {1}'.format(fn, commit))
 
+def main():
+    fn = sys.argv[1]
+
+    generate_hash_file(fn)
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main()

@@ -25,7 +25,12 @@ def build_branch(logfile, branch='master', target='publish', wait=False):
 
 env.logfile = None 
 env.builders = ['publish', 'push', 'stage', 'json-output']
-env.builders.extend(get_sphinx_builders())
+
+try:
+    env.builders.extend(get_sphinx_builders())
+except IOError:
+    env.builders.extend(['html', 'json', 'dirhtml', 'epub'])
+
 env.branch = get_branch()
 env.wait = False
 env.repo = GitRepoManager()

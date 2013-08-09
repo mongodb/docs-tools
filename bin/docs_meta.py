@@ -21,7 +21,7 @@ def get_sphinx_builders():
     return ingest_yaml(path)['builders']
 
 def get_manual_path():
-    conf = get_conf()
+    conf = load_conf()
 
     branch = get_branch()
 
