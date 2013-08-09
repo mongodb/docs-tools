@@ -3,16 +3,16 @@
 import sys
 import os.path
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 import utils
 from makecloth import MakefileCloth
-from docs_meta import render_paths, get_manual_path, conf
+from docs_meta import render_paths, get_manual_path, get_conf
 
 m = MakefileCloth()
 
 paths = render_paths('dict')
-
+conf = get_conf()
 correction = "'s/(index|bfcode)\{(.*!*)*--(.*)\}/\\1\{\\2-\{-\}\\3\}/g'"
 pdf_latex_command = 'TEXINPUTS=".:{0}/latex/:" pdflatex --interaction batchmode --output-directory {0}/latex/ $(LATEXOPTS)'.format(paths['branch-output'])
 
