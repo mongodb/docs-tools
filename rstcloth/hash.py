@@ -20,11 +20,15 @@ def main(fn):
 
     r.directive('|commit| replace', '``{0}``'.format(commit))
 
-    if r.get_block('_all')[0] == existing[:-1]:
-        print('[build]: no new commit(s), not updating {0} ({1})'.format(fn, commit))
+    try: 
+        if r.get_block('_all')[0] == existing[:-1]:
+            print('[build]: no new commit(s), not updating {0} ({1})'.format(fn, commit))
+    except TypeError:
+        print('[ERROR] [build]: problem generating {0}, continuing'.format(fn))
     else:
         r.write(fn)
         print('[build]: regenerated {0} with new commit hash: {1}'.format(fn, commit))
+
 
 if __name__ == '__main__':
     main(sys.argv[1])
