@@ -65,8 +65,8 @@ div.footer p {
 }
 
 div.footer a {
-    color: #989898;
-    text-decoration: underline;
+    color: #c48c55;
+    text-decoration: none;
 }
 
 div.related {
