@@ -48,7 +48,7 @@ def branch(branch):
         branches = local("git for-each-ref  refs/heads/ --format='%(refname:short)'", capture=True).split()
 
         if branch not in branches:
-            abort('{0} is not a local git branch'.foramt(branch))
+            abort('{0} is not a local git branch'.format(branch))
         else:
             env.branch = branch
 
