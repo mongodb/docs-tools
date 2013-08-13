@@ -410,7 +410,7 @@ def htaccess(fn='.htaccess'):
     conf = load_conf()
 
     if env.input_file is None:
-        in_files = [i for i in expand_tree(conf.build.paths.builddata, 'yaml') if os.path.basename(i).startswith('ht')]
+        in_files = [i for i in expand_tree(conf.build.paths.builddata, 'yaml') if os.path.basename(i).startswith('htaccess')]
     else:
         in_files = list(env.input_file)
 
@@ -418,8 +418,9 @@ def htaccess(fn='.htaccess'):
     for i in in_files:
         sources.extend(ingest_yaml_list(i))
 
-    if not os.path.exist(sos.path.dirname(fn)):
-        os.makedirs(fn)
+    dirname = os.path.dirname(fn)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
 
     with open(fn, 'w') as f:
         for redir in sources:
