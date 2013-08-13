@@ -9,6 +9,8 @@ from make import check_dependency, check_multi_dependency
 from docs_meta import render_paths, load_conf
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
+from htaccess import generate_redirects, process_redirect
 from rstcloth.param import generate_params
 from rstcloth.toc import CustomTocTree, AggregatedTocTree
 from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
@@ -85,7 +87,7 @@ def _generate_toc_tree(fn, fmt, base_name, paths):
             outfn = _get_toc_output_name(base_name, 'dfn-list', paths)
             toc.dfn.write(outfn)
             puts('[toc-spec]: wrote: '  + outfn)
-        
+
     else:
         spec = False
         toc = CustomTocTree(fn)
@@ -399,3 +401,29 @@ def buildinfo_hash():
     fn = os.path.join(conf.build.paths.projectroot, conf.build.paths.includes, 'hash.rst')
 
     generate_hash_file(fn)
+
+
+#################### .htaccess files ####################
+
+@task
+def htaccess(fn='.htaccess'):
+    conf = load_conf()
+
+    if env.input_file is None:
+        in_files = [i for i in expand_tree(conf.build.paths.builddata, 'yaml') if os.path.basename(i).startswith('ht')]
+    else:
+        in_files = list(env.input_file)
+
+    sources = []
+    for i in in_files:
+        sources.extend(ingest_yaml_list(i))
+
+    if not os.path.exist(sos.path.dirname(fn)):
+        os.makedirs(fn)
+
+    with open(fn, 'w') as f:
+        for redir in sources:
+            redirect = generate_redirects(process_redirect(redir, conf), match=False)
+            f.write(redirect)
+
+    puts('[redirect]: regenerated {0} with {1} redirects'.format(fn, len(sources)))
