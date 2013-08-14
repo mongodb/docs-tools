@@ -20,9 +20,10 @@ def generate_hash_file(fn):
 
     r.directive('|commit| replace', '``{0}``'.format(commit))
 
-    try: 
+    try:
         if r.get_block('_all')[0] == existing[:-1]:
             print('[build]: no new commit(s), not updating {0} ({1})'.format(fn, commit))
+            return True
     except TypeError:
         print('[ERROR] [build]: problem generating {0}, continuing'.format(fn))
     else:

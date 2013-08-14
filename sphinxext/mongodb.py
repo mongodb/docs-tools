@@ -235,7 +235,6 @@ def render_domain_data(mongodb_directives):
 
     return directives, roles, object_types
 
-
 class MongoDBDomain(Domain):
     """MongoDB Documentation domain."""
     name = 'mongodb'
@@ -264,6 +263,7 @@ class MongoDBDomain(Domain):
             if obj and obj + '.' + name in objects:
                 newname = obj + '.' + name
             else:
+                # almost everything hits this branch in ecosystem
                 newname = name
         else:
             if name in objects:

@@ -419,12 +419,14 @@ def htaccess(fn='.htaccess'):
         sources.extend(ingest_yaml_list(i))
 
     dirname = os.path.dirname(fn)
-    if not os.path.exists(dirname):
+    if not dirname == '' and not os.path.exists(dirname):
         os.makedirs(dirname)
 
-    with open(fn, 'w') as f:
-        for redir in sources:
-            redirect = generate_redirects(process_redirect(redir, conf), match=False)
-            f.write(redirect)
+    lines = set()
+    for redir in sources:
+        lines.add(generate_redirects(process_redirect(redir, conf), match=False))
 
-    puts('[redirect]: regenerated {0} with {1} redirects'.format(fn, len(sources)))
+    with open(fn, 'w') as f:
+        f.writelines(lines)
+
+    puts('[redirect]: regenerated {0} with {1} redirects ({2} lines)'.format(fn, len(sources), len(lines)))

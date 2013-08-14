@@ -4,7 +4,7 @@ import sys
 import os
 import argparse
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 from conf import release
 
 from rstcloth import RstCloth
