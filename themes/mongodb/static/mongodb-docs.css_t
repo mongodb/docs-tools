@@ -250,6 +250,14 @@ div.note {
     background-color: #D9E6F2;
 }
 
+div.admonition.important {
+    background-color: #F9DCA0;
+}
+
+div.admonition.tip {
+    background-color: #BBDB88;
+}
+
 div.admonition-optional {
     background-color: inherit;
     border: 1px solid #DCDCDC;
