@@ -22,7 +22,7 @@ class MongoDBNode(Directive):
             para += argnodes
             para += msgs
             ret[0].insert(1, para)
-        
+
         return ret
 
     def run(self):
@@ -53,6 +53,8 @@ class optional_node(nodes.Admonition, nodes.Element): pass
 
 class example_node(nodes.Admonition, nodes.Element): pass
 
+class tip_node(nodes.Admonition, nodes.Element): pass
+
 class see_node(nodes.Admonition, nodes.Element): pass
 
 class Optional(MongoDBNode):
@@ -61,6 +63,9 @@ class Optional(MongoDBNode):
 class Example(MongoDBNode):
     directive_name = ["Example"]
 
+class Tip(MongoDBNode):
+    directive_name = ["Tip"]
+
 class See(MongoDBNode):
     directive_name = ["See"]
 
@@ -68,13 +73,13 @@ class See(MongoDBNode):
         ret = make_admonition(see_node, self.name, [_('See')], self.options,
                               self.content, self.lineno, self.content_offset, self.block_text,
                               self.state, self.state_machine)
-        
+
         return self.return_node(ret)
 
 
 class Related(MongoDBNode):
     directive_name = ["Related"]
-    
+
     def run(self):
         ret = make_admonition(related_node, self.name, [_('Related')], self.options,
                               self.content, self.lineno, self.content_offset, self.block_text,
@@ -85,9 +90,11 @@ class Related(MongoDBNode):
 def setup(app):
     app.add_directive('optional', Optional)
     app.add_directive('see', See)
+    app.add_directive('tip', Tip)
     app.add_directive('related', Related)
     app.add_directive('example', Example)
 
     mongodb_add_node(app, optional_node)
     mongodb_add_node(app, example_node)
+    mongodb_add_node(app, tip_node)
     mongodb_add_node(app, see_node)
