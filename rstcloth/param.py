@@ -175,6 +175,7 @@ def generate_params(params, fn):
 
     for param in params:
         if 'file' in param:
+            pos = param['position']
             if param['file'] not in ext_params:
                 fn, ext = populate_external_param(param['file'],
                                                   basename,
@@ -183,6 +184,7 @@ def generate_params(params, fn):
                 ext_params[fn] = ext
 
             param = ext_param[param['file']]['name']
+            param['position'] = pos
 
         key, val = generate_param_fields(param)
         r.field(name=key, value=val, indent=3, wrap=False, block='tex')
