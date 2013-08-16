@@ -4,7 +4,7 @@ import os.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 
-import utils as utils
+import utils
 from docs_meta import load_conf
 from rstcloth import RstCloth
 from rstcloth import fill
@@ -133,14 +133,17 @@ def render_header_row(param_zero, num_rows, type_column):
     return o
 
 def populate_external_param(fn, basename, projectdir, sourcedir):
+    if fn.startswith('/'):
+        fn = os.path.join(sourcedir, fn[1:])
+
     try:
-        ext_param = ingest_yaml_list(fn)
+        ext_param = utils.ingest_yaml_list(fn)
     except OSError:
         fn = os.path.join(basename, fn)
-        ext_param = ingest_yaml_list(fn)
+        ext_param = utils.ingest_yaml_list(fn)
     except OSError:
         fn = os.path.join(projectdir, sourcedir, fn)
-        ext_param = ingest_yaml_list(fn)
+        ext_param = utils.ingest_yaml_list(fn)
     else:
         pass
 
@@ -163,29 +166,34 @@ def generate_params(params, fn):
     r.directive('only', '(html or singlehtml or dirhtml)', block='htm')
     r.newline(block='htm')
 
-    r.content(generate_param_table(params), indent=3, block='html')
-    r.newline(block='htm')
-
-    # Then generate old-style param fields for non-web output
-    r.directive('only', '(texinfo or latex or epub)', block='tex')
-    r.newline(block='tex')
-
     # { filename: { $name: <param> } }
     ext_params = {}
 
+    processed_params = []
     for param in params:
         if 'file' in param:
             pos = param['position']
             if param['file'] not in ext_params:
+
                 fn, ext = populate_external_param(param['file'],
                                                   basename,
                                                   lconf.build.paths.projectroot,
                                                   lconf.build.paths.source)
                 ext_params[fn] = ext
 
-            param = ext_param[param['file']]['name']
+            param = ext_params[lconf.build.paths.source + param['file']][param['name']]
             param['position'] = pos
 
+        processed_params.append(param)
+
+    r.content(generate_param_table(processed_params), indent=3, block='html')
+    r.newline(block='htm')
+
+    # Then generate old-style param fields for non-web output
+    r.directive('only', '(texinfo or latex or epub)', block='tex')
+    r.newline(block='tex')
+
+    for param in processed_params:
         key, val = generate_param_fields(param)
         r.field(name=key, value=val, indent=3, wrap=False, block='tex')
         r.newline(block='tex')
