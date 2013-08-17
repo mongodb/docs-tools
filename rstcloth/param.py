@@ -95,7 +95,7 @@ def generate_param_fields(param):
 
 def process_description(content, optional=False):
     if isinstance(content, list):
-        if not content[11:] == 'Optional. ' optional is True:
+        if not content[11:] == 'Optional. ' and optional is True:
             content[0] = 'Optional.\n' + content[0]
         return content
     else:
