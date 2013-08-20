@@ -14,7 +14,7 @@ def generate_hash_file(fn):
         with open(fn, 'r') as f:
             existing = f.read()
     else:
-        existing = None
+        existing = []
 
     commit = utils.get_commit()
 
@@ -26,6 +26,8 @@ def generate_hash_file(fn):
             return True
     except TypeError:
         print('[ERROR] [build]: problem generating {0}, continuing'.format(fn))
+        with file(fn, 'a'):
+            os.utime(fn, times)
     else:
         r.write(fn)
         print('[build]: regenerated {0} with new commit hash: {1}'.format(fn, commit))
