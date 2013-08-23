@@ -98,11 +98,13 @@
   <meta name="release" content="{{release}}"/>
   <meta name="DC.Source" content="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt"/>
 
-  {%- if pagename == 'index' %}
-      <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
-  {%- else %}
-      <link rel="canonical" href="http://docs.mongodb.org/{{ theme_project }}/{{pagename}}" />
-  {%- endif -%}
+  {%- if theme_project != 'mms' %}
+      {%- if pagename == 'index' %}
+          <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
+      {%- else %}
+          <link rel="canonical" href="http://docs.mongodb.org/{{ theme_project }}/{{pagename}}" />
+      {%- endif -%}
+  {%- endif %}
 
   {{ metatags }}
   {{ css() }}
@@ -202,7 +204,7 @@
   {%- endblock %}
 
   {%- block subnav %}
-      {%- if theme_project != 'about' %}
+      {%- if theme_project not in [ 'about', 'mms' ] %}
           <div id="etp">
             <ul>
               <li>{{ githublink() }}</li>
@@ -231,7 +233,12 @@
   {%- endblock %}
 
   {%- block versionnav %}
-      {%- include "versionnav.html"%}
+      {%- if theme_project == 'mms' %}
+          {%- include "mms-versionnav.html"%}
+      {%- else %}
+          {%- include "versionnav.html"%}
+      {%- endif %}
+
   {%- endblock %}
 </body>
 </html>
