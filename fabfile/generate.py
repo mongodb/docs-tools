@@ -17,6 +17,7 @@ from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
 from rstcloth.images import generate_image_pages
 from rstcloth.releases import generate_release_output
 from rstcloth.hash import generate_hash_file
+
 #################### API Param Table Generator ####################
 
 ### Internal Method
@@ -69,6 +70,7 @@ def _get_toc_output_name(name, type, paths):
     return os.path.join(paths.includes, '{0}-{1}.rst'.format(type, name))
 
 def _generate_toc_tree(fn, fmt, base_name, paths):
+    puts('[toc]: generating {0} toc'.format(fn))
     if fmt == 'spec':
         spec = True
         toc = AggregatedTocTree(fn)

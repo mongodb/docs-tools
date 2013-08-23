@@ -336,7 +336,7 @@ def _render_tex_into_pdf(fn, path):
 def _sanitize_tex(files):
     conf = get_conf()
     regexes = [(re.compile(r'(index|bfcode)\{(.*)--(.*)\}'), r'\1\{\2-\{-\}\3\}'),
-               (re.compile(r'\\code\{/(?!.*{}/|etc)'), r'\code{' + conf.project.url + conf.project.tag) ]
+               (re.compile(r'\\code\{/(?!.*{}/|etc)'), r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
 
     if env.PARALLEL is True:
         p = Pool()
