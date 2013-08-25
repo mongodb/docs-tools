@@ -18,3 +18,13 @@ fabric.state.output.aborts = True
 fabric.state.output.warnings = True
 fabric.state.output.running = False
 fabric.state.output.user = True
+
+from fabric.api import task
+from docs_meta import get_conf
+
+@task
+def test():
+    conf = get_conf()
+    import json
+
+    print(json.dumps(conf, indent=3))
