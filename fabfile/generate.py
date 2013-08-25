@@ -272,6 +272,10 @@ def image_jobs():
     paths = render_paths('obj')
 
     meta_file = os.path.join(paths.images, 'metadata') + '.yaml'
+
+    if not os.path.exists(meta_file):
+        return
+
     images_meta = ingest_yaml_list(meta_file)
 
     for image in images_meta:
@@ -344,6 +348,11 @@ def releases():
 
 def release_jobs():
     conf = get_conf()
+    data_file = os.path.join(conf.build.paths.builddata, 'releases') + '.yaml'
+
+    if not os.path.exists(data_file):
+        return
+
     rel_data = ingest_yaml(os.path.join(conf.build.paths.builddata, 'releases') + '.yaml')
 
     for rel in rel_data['source-files']:

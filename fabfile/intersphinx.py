@@ -60,9 +60,14 @@ def intersphinx():
 
 def intersphinx_jobs():
     conf = get_conf()
-    intersphinx_mapping = ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
-                                                        conf.build.paths.builddata,
-                                                        'intersphinx.yaml'))
+    data_file = os.path.join(conf.build.paths.projectroot,
+                             conf.build.paths.builddata,
+                             'intersphinx.yaml')
+
+    if not os.path.exists(data_file):
+        return
+
+    intersphinx_mapping = ingest_yaml_list(data_file)
 
     for i in intersphinx_mapping:
         f = os.path.join(conf.build.paths.projectroot, 
