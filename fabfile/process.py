@@ -9,6 +9,7 @@ from docs_meta import output_yaml, get_manual_path, get_conf
 from fabric.api import task, env, abort, puts, local
 from multiprocessing import Pool
 from subprocess import call
+from generate import runner
 
 env.input_file = None
 env.output_file = None
@@ -31,44 +32,17 @@ def json_output():
         process_json_file(env.input_file, env.output_file)
 
 def all_json_output():
-    if env.PARALLEL is True:
-        p = Pool()
-
     conf = get_conf()
 
-    outputs = []
-    count = 0
-    for fn in expand_tree('source', 'txt'):
-        # path = build/<branch>/json/<filename>
-        path = os.path.join(conf.build.paths.output, conf.git.branches.current,
-                            'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
-        fjson = dot_concat(path, 'fjson')
-        json = dot_concat(path, 'json')
+    count = runner(json_output_jobs())
 
-        if check_three_way_dependency(json, fn, fjson):
-            if env.PARALLEL is True:
-                p.apply_async(process_json_file, args=(fjson, json))
-            else:
-                process_json_file(fjson, json)
-
-            count += 1
-
-        outputs.append(json)
+    puts('[json]: processed {0} json files.'.format(str(count)))
 
     list_file = os.path.join(conf.build.paths.branch_output, 'json-file-list')
     public_list_file = os.path.join(conf.build.paths.public,
                                   conf.git.branches.current,
                                   'json',
                                   '.file_list')
-
-    if env.PARALLEL is True:
-        p.apply_async(generate_list_file, args=(outputs, list_file))
-        p.close()
-        p.join()
-    else:
-        generate_list_file(outputs, list_file)
-
-    puts('[json]: processed {0} json files.'.format(str(count)))
 
     cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {src} {dst}'
     json_dst = os.path.join(conf.build.paths['branch-staging'], 'json')
@@ -81,6 +55,31 @@ def all_json_output():
     _copy_if_needed(list_file, public_list_file)
 
     puts('[json]: deployed json files to local staging.')
+
+def json_output_jobs():
+    conf = get_conf()
+
+    outputs = []
+    for fn in expand_tree('source', 'txt'):
+        # path = build/<branch>/json/<filename>
+        path = os.path.join(conf.build.paths.output, conf.git.branches.current,
+                            'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
+        fjson = dot_concat(path, 'fjson')
+        json = dot_concat(path, 'json')
+
+        yield dict(target=json,
+                   dependency=fjson,
+                   job=process_json_file,
+                   args=(fjson, json))
+
+        outputs.append(json)
+
+    list_file = os.path.join(conf.build.paths.branch_output, 'json-file-list')
+
+    yield dict(target=list_file,
+               dependency=None,
+               job=generate_list_file,
+               args=(outputs, list_file))
 
 def generate_list_file(outputs, path):
     dirname = os.path.dirname(path)
