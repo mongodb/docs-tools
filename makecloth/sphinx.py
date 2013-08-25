@@ -54,13 +54,13 @@ def make_all_sphinx(config):
 
     m.newline()
     m.comment('sphinx prereq integration.')
-    m.target('sphinx-prerequisites', config['prerequisites'], block=b)
-    m.msg('[sphinx-prep]: build environment prepared for sphinx.', block=b)
+    m.target('sphinx-prerequisites', ['setup'], block=b)
+    m.job('fab sphinx.prereq', block=b)
 
     build_source_dir = paths['branch-output'] + '/source'
 
-    if 'generated-source' in config and config['generated-source']:
-        m.target('generate-source',  config['generated-source'], block=b)
+    if 'generate-source' in config and config['generate-sourced']:
+        m.target('generate-source',  config['generate-sourced'], block=b)
         m.job('fab generate.source')
 
     m.section_break('sphinx targets', block=b)
@@ -101,6 +101,7 @@ def sphinx_builder(target_str):
 
     target = target_str.split('-')
 
+    fab_prefix = 'fab'
     ret_value = [ target_str ]
     fab_arg = [target[0]]
 
@@ -113,7 +114,6 @@ def sphinx_builder(target_str):
 
         m.target(clean_target, block=b)
         m.job('fab sphinx.clean sphinx.build:{0}'.format(builder), block=b)
-        m.msg('[clean-{0}]: removed all files supporting the {0} build'.format(builder) )
         m.newline(block=b)
     elif len(target) <= 3 and len(target) > 1:
         if target[1] == 'hosted' or target[1] == 'saas':
@@ -127,13 +127,12 @@ def sphinx_builder(target_str):
                 fab_arg.append('root=' + os.path.join(paths['output'], target[1]))
 
         if target[1] == 'nitpick' or target_str.endswith('-nitpick'):
+            fab_prefix += ' sphinx.nitpick'
             builder = target[0]
-            fab_arg.append('nitpick=True')
 
     m.target(target_str, 'sphinx-prerequisites', block=b)
-    m.job('fab sphinx.build:' + ','.join(fab_arg), block=b)
+    m.job(fab_prefix + ' sphinx.build:' + ','.join(fab_arg), block=b)
     m.job(utils.build_platform_notification('Sphinx', 'completed {0} build.'.format(target_str)), ignore=True, block=b)
-    m.msg('[{0}]: completed {0} build.'.format(target_str))
 
     return ret_value
 

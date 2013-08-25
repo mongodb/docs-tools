@@ -5,7 +5,10 @@ from multiprocessing import Pool
 
 from fabric.api import task, local, env, puts, hide
 from fabric.utils import _AttributeDict as ad
-from docs_meta import render_paths
+from docs_meta import get_conf
+from utils import ingest_yaml_list
+
+from generate import runner
 
 env.ACCEPTABLE = 864000
 env.msgid = 'intersphinx'
@@ -13,7 +16,7 @@ env.msgid = 'intersphinx'
 #### Helper functions
 
 def download_file(file, url):
-    cmd = ['curl', '-s', '--remote-time', url + 'objects.inv', '-o', file]
+    cmd = ['curl', '-s', '--remote-time', url, '-o', file]
     with hide('running'):
         local(' '.join(cmd))
 
@@ -51,14 +54,25 @@ def download(f, s):
         puts('[{0}]: "{1}" is up to date'.format(env.msgid, f))
 
 def intersphinx():
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-    from conf import intersphinx_mapping
-    paths = render_paths('dict')
+    count = runner([ job for job in intersphinx_jobs() ])
 
-    p = Pool()
+    puts('[intersphinx]: processed {0} intersphinx inventories'.format(count))
+
+def intersphinx_jobs():
+    conf = get_conf()
+    intersphinx_mapping = ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
+                                                        conf.build.paths.builddata,
+                                                        'intersphinx.yaml'))
+
     for i in intersphinx_mapping:
-        p.apply_async(download,
-                      kwds=dict(f=os.path.join(paths['output'], i) + ".inv",
-                                s=intersphinx_mapping[i][0]))
-    p.close()
-    p.join()
+        f = os.path.join(conf.build.paths.projectroot, 
+                         conf.build.paths.output, i['path'])
+
+        s = i['url'] + 'objects.inv'
+
+        yield {
+                'target': f,
+                'dependency': None,
+                'job': download,
+                'args': { 'f': f, 's': s }
+              }

@@ -6,7 +6,7 @@ from multiprocessing import Pool
 from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, build_platform_notification
 from fabric.api import task, puts, local, env, quiet
 from make import check_dependency, check_multi_dependency
-from docs_meta import render_paths, load_conf
+from docs_meta import render_paths, get_conf, load_conf
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
@@ -17,6 +17,38 @@ from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
 from rstcloth.images import generate_image_pages
 from rstcloth.releases import generate_release_output
 from rstcloth.hash import generate_hash_file
+
+def runner(jobs):
+    if env.PARALLEL is True:
+        p = Pool()
+
+    count = 0
+
+    for job in jobs:
+        if isinstance(job['target'], list):
+            dep_check = check_multi_dependency
+        else:
+            dep_check = check_dependency
+
+        if env.FORCE or dep_check(job['target'], job['dependency']):
+            if env.PARALLEL is True:
+                if isinstance(job['args'], dict):
+                    p.apply_async(job['job'], kwds=job['args'])
+                else:
+                    p.apply_async(job['job'], args=job['args'])
+            else:
+                if isinstance(job['args'], dict):
+                    job['job'](**job['args'])
+                else:
+                    job['job'](*job['args'])
+
+            count +=1
+
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
+
+    return count
 
 #################### API Param Table Generator ####################
 
@@ -32,27 +64,22 @@ def _generate_api_param(source, target):
 
 @task
 def api():
-    if env.PARALLEL is True:
-        p = Pool()
-
-    paths = render_paths('obj')
-
-    count = 0
-    for source in expand_tree(os.path.join(paths.source, 'reference'), 'yaml'):
-        target = dot_concat(os.path.splitext(source)[0], 'rst')
-        if env.FORCE or check_dependency(target, source):
-            if env.PARALLEL is True:
-                p.apply_async(_generate_api_param, args=(source, target))
-            else:
-                _generate_api_param(source, target)
-
-            count +=1
-
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
+    count = runner( api_jobs() )
 
     puts('[api]: generated {0} tables for api items'.format(count))
+
+def api_jobs():
+    paths = render_paths('obj')
+
+    for source in expand_tree(os.path.join(paths.source, 'reference'), 'yaml'):
+        target = dot_concat(os.path.splitext(source)[0], 'rst')
+
+        yield {
+                'target': target,
+                'dependency': source,
+                'job': _generate_api_param,
+                'args': [source, target]
+              }
 
 #################### Table of Contents Generator ####################
 
@@ -122,45 +149,39 @@ def _generate_toc_tree(fn, fmt, base_name, paths):
 
 @task
 def toc():
-    if env.PARALLEL is True:
-        p = Pool()
+    count = runner( toc_jobs() )
 
+    puts('[toc]: built {0} tables of contents'.format(count))
+
+def toc_jobs():
     paths = render_paths('obj')
 
-    count = 0
     for fn in expand_tree(paths.includes, 'yaml'):
-
         if fn.startswith(os.path.join(paths.includes, 'table')):
             pass
         elif len(fn) >= 24:
             base_name = _get_toc_base_name(fn)
-            output_base = [ ]
 
             fmt = fn[20:24]
             if fmt != 'spec':
                 fmt = fn[16:19]
-                output_base.append((base_name, 'toc'))
+
+            o = {
+                  'dependency': fn,
+                  'job': _generate_toc_tree,
+                  'target': [],
+                  'args': [fn, fmt, base_name, paths]
+                }
+
+            if fmt != 'spec':
+                o['target'].append(_get_toc_output_name(base_name, 'toc', paths))
 
             if fmt == 'ref':
-                output_base.append((base_name, 'table'))
+                o['target'].append(_get_toc_output_name(base_name, 'table', paths))
             elif fmt == 'toc' or fmt == 'spec':
-                output_base.append((base_name, 'dfn-list'))
+                o['target'].append(_get_toc_output_name(base_name, 'dfn-list', paths))
 
-            outputs = [ _get_toc_output_name(i[0], i[1], paths) for i in output_base ]
-
-            if env.FORCE or check_multi_dependency(outputs, fn):
-                if env.PARALLEL is True:
-                    p.apply_async(_generate_toc_tree, args=(fn, fmt, base_name, paths))
-                else:
-                    _generate_toc_tree(fn, fmt, base_name, paths)
-
-                count += 1
-
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
-
-    puts('[toc]: built {0} tables of contents'.format(count))
+            yield o
 
 #################### Table Builder ####################
 
@@ -199,30 +220,24 @@ def _generate_tables(source, target, list_target):
 
 @task
 def tables():
-    p = Pool()
+    count = runner( table_jobs() )
 
-    count = 0
+    puts('[table]: built {0} tables'.format(count))
 
+def table_jobs():
     paths = render_paths('obj')
+
     for source in expand_tree(paths.includes, 'yaml'):
         if os.path.basename(source).startswith('table'):
-
             target = _get_table_output_name(source)
             list_target = _get_list_table_output_name(source)
 
-            if env.FORCE or check_dependency(target, source) or check_dependency(list_target, source):
-                if env.PARALLEL is True:
-                    p.apply_async(_generate_tables, args=(source, target, list_target))
-                else:
-                    _generate_tables(source, target, list_target)
-
-                count += 1
-
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
-
-    puts('[table]: built {0} tables'.format(count))
+            yield {
+                    'target': [ target, list_target ],
+                    'dependency': source,
+                    'job': _generate_tables,
+                    'args': [ source, target, list_target ]
+                  }
 
 #################### Generate Images and Related Content  ####################
 
@@ -250,31 +265,27 @@ def _generate_images(cmd, dpi, width, target, source):
 
 @task
 def images():
+    count = runner( image_jobs() )
+    puts('[image]: rebuilt {0} rst and image files'.format(count))
+
+def image_jobs():
     paths = render_paths('obj')
 
     meta_file = os.path.join(paths.images, 'metadata') + '.yaml'
     images_meta = ingest_yaml_list(meta_file)
 
-    if env.PARALLEL is True:
-        p = Pool()
-
-    count_rst = 0
-    count_png = 0
     for image in images_meta:
         image['dir'] = paths.images
         source_base = os.path.join(image['dir'], image['name'])
         source_file = source_base + '.svg'
         rst_file = source_base + '.rst'
 
-
-        if env.FORCE or ( check_dependency(rst_file, meta_file) and
-                          check_dependency(rst_file, os.path.join(paths.buildsystem, 'rstcloth', 'images.py'))):
-            if env.PARALLEL is True:
-                p.apply_async(generate_image_pages, kwds=image)
-            else:
-                generate_image_pages(**image)
-
-            count_rst += 1
+        yield {
+                'target': rst_file,
+                'dependency': [ meta_file, os.path.join(paths.buildsystem, 'rstcloth', 'images.py') ],
+                'job': generate_image_pages,
+                'args': image
+              }
 
         for output in image['output']:
             if 'tag' in output:
@@ -284,21 +295,21 @@ def images():
 
             target_img = source_base + tag + '.png'
 
-            if env.FORCE or check_dependency(target_img, source_file):
-                inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
+            inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
 
-                if env.PARALLEL is True:
-                    p.apply_async(_generate_images, args=(inkscape_cmd, output['dpi'], output['width'], target_img, source_file))
-                else:
-                    _generate_images(inkscape_cmd, output['dpi'], output['width'], target_img, source_file)
+            yield {
+                    'target': target_img,
+                    'dependency': source_file,
+                    'job': _generate_images,
+                    'args': [
+                              inkscape_cmd,
+                              output['dpi'],
+                              output['width'],
+                              target_img,
+                              source_file
+                            ],
+                  }
 
-                count_png += 1
-
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
-
-    puts('[image]: rebuilt {0} rst files and {1} image files'.format(count_rst, count_png))
 
 #################### Snippets for Inclusion in Installation Guides  ####################
 
@@ -307,53 +318,71 @@ def images():
 def _check_release_dependency(target):
     if env.FORCE:
         return True
-    elif check_dependency(target, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'conf.py')):
+    elif check_dependency(target, os.path.join(conf.build.paths.projectroot, 'conf.py')):
         return True
-    elif check_dependency(target, os.path.join(os.path.dirname(__file__), '..', 'rstcloth', 'releases.py')):
+    elif check_dependency(target, os.path.join(conf.build.paths.projectroot,
+                                               conf.build.paths.buildsystem,
+                                               'rstcloth', 'releases.py')):
         return True
     else:
         return False
 
-def _generate_release_ent(rel):
-    target = 'source/includes/install-curl-release-ent-{0}.rst'.format(rel['system'])
+def _generate_release_ent(rel, target):
+    r = generate_release_output( rel['type'], rel['type'].split('-')[0], rel['system'] )
+    r.write(target)
+    puts('[release]: wrote: ' + target)
 
-    if _check_release_dependency(target):
-        r = generate_release_output(rel['type'], rel['type'].split('-')[0], rel['system'] )
-        r.write(target)
-        puts('[release]: wrote: ' + target)
-
-def _generate_release_core(rel):
-    target = 'source/includes/install-curl-release-{0}.rst'.format(rel)
-    if _check_release_dependency(target):
-        r = generate_release_output(rel, rel.split('-')[0], 'core' )
-        r.write(target)
-        puts('[release]: wrote: ' + target)
+def _generate_release_core(rel, target):
+    r = generate_release_output( rel, rel.split('-')[0], 'core' )
+    r.write(target)
+    puts('[release]: wrote: ' + target)
 
 @task
 def releases():
-    paths = render_paths('obj')
-    rel_data = ingest_yaml(os.path.join(paths.builddata, 'releases') + '.yaml')
+    count = runner( release_jobs() )
+    puts('[releases]: completed regenerating {0} release files.'.format(count))
 
-    if env.PARALLEL is True:
-        p = Pool()
+def release_jobs():
+    conf = get_conf()
+    rel_data = ingest_yaml(os.path.join(conf.build.paths.builddata, 'releases') + '.yaml')
 
     for rel in rel_data['source-files']:
-        if env.PARALLEL is True:
-            p.apply_async(_generate_release_core, args=[rel])
-        else:
-            _generate_release_core(*rel)
+        target = os.path.join(conf.build.paths.projectroot,
+                              conf.build.paths.includes,
+                              'install-curl-release-{0}.rst'.format(rel))
+        yield {
+                'target': target,
+                'dependency': [
+                                os.path.join(conf.build.paths.projectroot, 'conf.py'),
+                                os.path.join(conf.build.paths.projectroot,
+                                             conf.build.paths.buildsystem,
+                                             'rstcloth', 'releases.py')
+                              ],
+                'job': _generate_release_core,
+                'args': [
+                          rel,
+                          target
+                        ]
+              }
 
     for rel in rel_data['subscription-build']:
-        if env.PARALLEL is True:
-            p.apply_async(_generate_release_ent, args=[rel])
-        else:
-            _generate_release_ent(*rel)
+        target = 'source/includes/install-curl-release-ent-{0}.rst'.format(rel['system'])
 
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
+        yield {
+                'target': target,
+                'dependency': [
+                                os.path.join(conf.build.paths.projectroot, 'conf.py'),
+                                os.path.join(conf.build.paths.projectroot,
+                                             conf.build.paths.buildsystem,
+                                             'rstcloth', 'releases.py')
+                              ],
+                'job': _generate_release_ent,
+                'args': [
+                          rel,
+                          target
+                        ]
+              }
 
-    puts('[releases]: completed regenerating release files.')
 
 #################### Copy of Source Directory for Build  ####################
 
@@ -374,7 +403,7 @@ def source():
     with quiet():
         local(build_platform_notification('Sphinx', 'Build in progress past critical phase.'))
 
-    puts('[sphinx-prep]: INFO - Build in progress pastcritical phase.')
+    puts('[sphinx-prep]: INFO - Build in progress past critical phase.')
 
 #################### Generate the Sitemap ####################
 
@@ -403,7 +432,6 @@ def buildinfo_hash():
     fn = os.path.join(conf.build.paths.projectroot, conf.build.paths.includes, 'hash.rst')
 
     generate_hash_file(fn)
-
 
 #################### .htaccess files ####################
 

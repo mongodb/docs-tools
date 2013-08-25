@@ -14,6 +14,9 @@ def serial():
 
 @task
 def make(target):
+    return _make(target)
+
+def _make(target):
     with lcd(get_conf().build.paths.projectroot):
         if isinstance(target, list):
             target_str = make + ' '.join([target])
@@ -45,6 +48,9 @@ def check_multi_dependency(target, dependency):
     return False
 
 def check_dependency(target, dependency):
+    if dependency is None:
+        return True
+
     if not os.path.exists(target):
         return True
 
@@ -64,3 +70,5 @@ def check_dependency(target, dependency):
         return ret
     else:
         return needs_rebuild(target_time, dependency)
+
+
