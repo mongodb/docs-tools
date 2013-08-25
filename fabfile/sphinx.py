@@ -13,7 +13,9 @@ import generate
 import process
 import docs_meta
 
-paths = docs_meta.render_paths(True)
+conf = docs_meta.get_conf()
+
+paths = conf.build.paths
 
 from intersphinx import intersphinx, intersphinx_jobs
 intersphinx = task(intersphinx)
@@ -68,9 +70,9 @@ def clean():
 
 @task
 def prereq():
-    jobs = itertools.chain(manpage_jobs(), 
+    jobs = itertools.chain(manpage_jobs(),
                            generate.table_jobs(),
-                           generate.api_jobs(), 
+                           generate.api_jobs(),
                            generate.toc_jobs(),
                            generate.release_jobs(),
                            intersphinx_jobs(),
@@ -116,7 +118,7 @@ def build(builder='html', tag=None, root=None, nitpick=False):
 
             if builder.startswith('dirhtml'):
                 process.error_pages()
-            elif builder.startswith('json'):
+            elif builder.startswith('json') and not conf.project.name == 'mms':
                 process.json_output()
             elif builder.startswith('latex'):
                 process.pdfs()
