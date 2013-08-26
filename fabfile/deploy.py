@@ -30,7 +30,8 @@ def rsync_options(recursive, delete):
     if delete is True:
         r.append('--delete')
 
-    r.extend(['--rsh="ssh"', '--rsync-path="sudo -u www rsync"'])
+    if env.deploy_target == 'production':
+        r.extend(['--rsh="ssh"', '--rsync-path="sudo -u www rsync"'])
 
     return ' '.join(r)
 
@@ -64,7 +65,9 @@ def check():
 def remote(host):
     if host in ['publication', 'mms']:
         env.hosts = _pub_hosts
+        env.deploy_target = 'production'
     elif host.startswith('stag'): # staging or stage
+        env.deploy_target = 'staging'
         env.hosts = _stage_hosts
     else:
         abort('[deploy]: must specify a valid host to deploy the docs to.')

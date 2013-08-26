@@ -19,6 +19,7 @@
 {%- macro jiralink() -%}
    https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22
 {%- endmacro -%}
+
 {%- macro relbar() %}
     <div class="bc">
       <ul>
@@ -112,9 +113,11 @@
   {%- if not embedded %}
       {{ script() }}
 
-      {%- block googlecse_opensearch %}
-          <link rel="search" type="application/opensearchdescription+xml" href="http://docs.mongodb.org/osd.xml" title="MongoDB Help"/>
-      {%- endblock -%}
+      {%- if theme_project != 'mms' %}
+          {%- block googlecse_opensearch %}
+              <link rel="search" type="application/opensearchdescription+xml" href="http://docs.mongodb.org/osd.xml" title="MongoDB Help"/>
+          {%- endblock -%}
+      {%- endif %}
 
       {%- if favicon %}
           <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}"/>
@@ -128,7 +131,7 @@
   {%- block extrahead %}{% endblock -%}
 
   {%- block sitesearch %}
-      {%- if builder != 'singlehtml' %}
+      {%- if builder != 'singlehtml' and theme_project != 'mms' %}
           <script>
             (function() {
                var cx = '017213726194841070573:WMX6838984';
@@ -138,8 +141,8 @@
             })();
           </script>
       {%- endif %}
-
   {%- endblock -%}
+
 </head>
 <body>
   {%- block header %}
@@ -170,9 +173,11 @@
              {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
                <div class="body">
                  {{ relbar() }}
-                 <div id="cse-results">
-                   <gcse:searchresults linkTarget="_top"></gcse:searchresults>
-                 </div>
+                 {%- if builder != 'singlehtml' and theme_project != 'mms' %}
+                    <div id="cse-results">
+                      <gcse:searchresults linkTarget="_top"></gcse:searchresults>
+                    </div>
+                 {%- endif %}
                  {% block body %}{% endblock %}
                  {{- render_nextprev() -}}
                </div>
@@ -185,23 +190,27 @@
   {%- endblock %}
 
   {%- block commnav -%}
-      <div id="top-right">
-        <div class="user-right">
-          <ul id="header-menu-bar" class="ajs-menu-bar">
-            <li class="normal"><a target="_blank" href="http://groups.google.com/group/mongodb-user">Forums</a></li>
-            <li class="normal"><a target="_blank" href="http://blog.mongodb.org/">Blog</a></li>
-            <li class="normal"><a href="http://www.mongodb.org/downloads">Download</a></li>
-            <li class="normal"><a href="http://docs.mongodb.org/ecosystem/drivers/">Drivers</a></li>
-            <li class="normal"><a href="http://www.10gen.com/events">Events</a></li>
-            <li class="normal last"><a class="last" href="http://docs.mongodb.org/manual/meta/translation">Translations</a></li>
-          </ul>
-        </div>
-      </div>
+      {%- if theme_project != 'mms' %}
+          <div id="top-right">
+            <div class="user-right">
+              <ul id="header-menu-bar" class="ajs-menu-bar">
+                <li class="normal"><a target="_blank" href="http://groups.google.com/group/mongodb-user">Forums</a></li>
+                <li class="normal"><a target="_blank" href="http://blog.mongodb.org/">Blog</a></li>
+                <li class="normal"><a href="http://www.mongodb.org/downloads">Download</a></li>
+                <li class="normal"><a href="http://docs.mongodb.org/ecosystem/drivers/">Drivers</a></li>
+                <li class="normal"><a href="http://www.mongodb.com/events">Events</a></li>
+                <li class="normal last"><a class="last" href="http://docs.mongodb.org/manual/meta/translation">Translations</a></li>
+              </ul>
+            </div>
+          </div>
+      {%- endif %}
   {%- endblock -%}
 
-  {%- block searchbox %}
-      <div class="search-db"><gcse:searchbox></gcse:searchbox></div>
-  {%- endblock %}
+  {%- if builder != 'singlehtml' or theme_project != 'mms' %}
+      {%- block searchbox %}
+          <div class="search-db"><gcse:searchbox></gcse:searchbox></div>
+      {%- endblock %}
+  {%- endif %}
 
   {%- block subnav %}
       {%- if theme_project not in [ 'about', 'mms' ] %}
@@ -219,7 +228,7 @@
       <div class="footer">
         <p>
           {% trans copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }} {% endtrans %}
-          MongoDB&reg;, Mongo&reg;, and the leaf logo are registered trademarks of <a href="http://www.10gen.com/">10gen, Inc.</a>
+          MongoDB&reg;, Mongo&reg;, and the leaf logo are registered trademarks of <a href="http://www.mongodb.com/">MongoDB, Inc.</a>
         </p>
       </div>
   {%- endblock %}
