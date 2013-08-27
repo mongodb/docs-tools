@@ -414,7 +414,7 @@ def pdfs():
     pdf_links = []
 
     tex_regexes = [(re.compile(r'(index|bfcode)\{(.*)--(.*)\}'), r'\1\{\2-\{-\}\3\}'),
-                   (re.compile(r'\\code\{/(?!.*{}/|etc)'), r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
+                   (re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv)'), r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
 
     for i in pdfs:
         tagged_name = i['output'][:-4] + '-' + i['tag']
