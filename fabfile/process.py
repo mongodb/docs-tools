@@ -8,7 +8,7 @@ from make import check_dependency, check_three_way_dependency
 from docs_meta import output_yaml, get_manual_path, get_conf
 from fabric.api import task, env, abort, puts, local
 from multiprocessing import Pool
-from subprocess import call
+import subprocess
 from generate import runner
 
 env.input_file = None
@@ -309,21 +309,36 @@ env.verbose = False
 def _render_tex_into_pdf(fn, path):
     pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
 
-    if env.verbose:
-        capture = False
-    else:
-        capture = True
+    try:
+        with open(os.devnull, 'w') as f:
+            subprocess.check_call(pdflatex, shell=True, stdout=f, stderr=f)
+    except subprocess.CalledProcessError:
+        print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
+        return False
 
-    local(pdflatex, capture=capture)
     puts('[pdf]: completed pdf rendering stage 1 of 4 for: {0}'.format(fn))
 
-    local("makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, os.path.basename(fn)[:-4]), capture=capture)
+    try:
+        with open(os.devnull, 'w') as f:
+            subprocess.check_call("makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, os.path.basename(fn)[:-4]), shell=True, stdout=f, stderr=f)
+    except subprocess.CalledProcessError:
+        print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
     puts('[pdf]: completed pdf rendering stage 2 of 4 (indexing) for: {0}'.format(fn))
 
-    local(pdflatex, capture=capture)
+    try:
+        with open(os.devnull, 'w') as f:
+            subprocess.check_call(pdflatex, shell=True, stdout=f, stderr=f)
+    except subprocess.CalledProcessError:
+        print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
+        return False
     puts('[pdf]: completed pdf rendering stage 3 of 4 for: {0}'.format(fn))
 
-    local(pdflatex, capture=capture)
+    try:
+        with open(os.devnull, 'w') as f:
+            subprocess.check_call(pdflatex, shell=True, stdout=f, stderr=f)
+    except subprocess.CalledProcessError:
+        print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
+        return False
     puts('[pdf]: completed pdf rendering stage 4 of 4 for: {0}'.format(fn))
 
     puts('[pdf]: rendered pdf for {0}'.format(fn))
