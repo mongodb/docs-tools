@@ -43,10 +43,19 @@ def generate_simple_rule(redir, base=None):
     if base is None:
         base = redir['outputs'][0]
 
+    o = 'Redirect {0} /{1}{2} http://docs.mongodb.org/{1}{3}'
+
+    return o.format(redir['code'], base, redir['redirect-path'],
+                    redir['url-base'])
+
+def generate_external_rule(redir, base=None):
+    if base is None:
+        base = redir['outputs'][0]
+
     o = 'Redirect {0} /{1}{2} http://docs.mongodb.org/{3}{4}'
 
     return o.format(redir['code'], base, redir['redirect-path'],
-                    base, redir['url-base'])
+                    redir['external'], redir['url-base'])
 
 def determine_is_multi(targets):
     if len(targets) > 1:
@@ -57,7 +66,12 @@ def determine_is_multi(targets):
 def generate_redirects(redirect, match=False):
     multi = determine_is_multi(redirect['outputs'])
 
-    if multi and match is True:
+    if 'external' in redirect:
+        o = ''
+        for output in redirect['outputs']:
+            o += generate_external_rule(redirect, output)
+            o += '\n'
+    elif multi and match is True:
         _base = ''
         for path in redirect['outputs']:
             _base += path + '|'
