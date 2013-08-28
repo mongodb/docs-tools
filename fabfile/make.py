@@ -12,6 +12,11 @@ env.PARALLEL = True
 def serial():
     env.PARALLEL = False
 
+env.POOL = None
+@task
+def pool(value):
+    env.POOL = int(value)
+
 @task
 def make(target):
     return _make(target)

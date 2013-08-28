@@ -19,9 +19,14 @@ from rstcloth.releases import generate_release_output
 from rstcloth.hash import generate_hash_file
 
 def runner(jobs, pool=None):
+    if pool == 1:
+        env.PARALLEL = False
+
     if env.PARALLEL is True:
         if pool is not None:
             p = Pool(pool)
+        elif env.POOL is not None:
+            p = Pool(env.POOL)
         else:
             p = Pool()
 
