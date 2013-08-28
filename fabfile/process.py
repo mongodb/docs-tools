@@ -7,7 +7,6 @@ from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
 from make import check_dependency, check_three_way_dependency
 from docs_meta import output_yaml, get_manual_path, get_conf
 from fabric.api import task, env, abort, puts, local
-from multiprocessing import Pool
 import subprocess
 from generate import runner
 
@@ -304,7 +303,7 @@ def _clean_sphinx_latex(fn, regexes):
     with open(fn, 'w') as f:
         f.write(tex)
 
-env.verbose = False
+    puts('[pdf]: processed Sphinx latex for mat for {0}'.format(fn))
 
 def _render_tex_into_pdf(fn, path):
     pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
@@ -341,80 +340,7 @@ def _render_tex_into_pdf(fn, path):
         return False
     puts('[pdf]: completed pdf rendering stage 4 of 4 for: {0}'.format(fn))
 
-    puts('[pdf]: rendered pdf for {0}'.format(fn))
-
-def _sanitize_tex(files):
-    conf = get_conf()
-    regexes = [(re.compile(r'(index|bfcode)\{(.*)--(.*)\}'), r'\1\{\2-\{-\}\3\}'),
-               (re.compile(r'\\code\{/(?!.*{}/|etc)'), r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
-
-    if env.PARALLEL is True:
-        p = Pool()
-
-    count = 0
-    for fn in files:
-        if env.PARALLEL is True:
-            p.apply_async(_clean_sphinx_latex, args=(fn, regexes))
-        else:
-            _clean_sphinx_latex(fn, regexes)
-
-        count += 1
-
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
-
-    puts('[pdf]: sanitized sphinx tex output in {0} files'.format(count))
-
-def _generate_pdfs(targets):
-    conf = get_conf()
-
-    if env.PARALLEL is True:
-        p = Pool()
-
-    count = 0
-    for tex, pdf, path in targets:
-        if check_dependency(pdf, tex):
-            if env.PARALLEL is True:
-                p.apply_async(_render_tex_into_pdf, args=(tex, path))
-            else:
-                _render_tex_into_pdf(tex, path)
-
-            count += 1
-
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
-
-    puts('[pdf]: rendered {0} tex files into pdfs.'.format(count))
-
-def _multi_copy_if_needed(target_pairs):
-    if env.PARALLEL is True:
-        p = Pool(4)
-
-    for source, target, builder in target_pairs:
-        if env.PARALLEL is True:
-            p.apply_async(_copy_if_needed, args=(source, target, builder))
-        else:
-            _copy_if_needed(source, target, builder)
-
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
-
-def _multi_create_link(link_pairs):
-    if env.PARALLEL is True:
-        p = Pool(2)
-
-    for link, source in link_pairs:
-        if env.PARALLEL is True:
-            p.apply_async(_create_link, args=(source, link))
-        else:
-            _create_link(source, link)
-
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
+    puts('[pdf]: rendered {0}.{1}'.format(os.path.basename(fn), 'pdf'))
 
 @task
 def pdfs():
@@ -470,7 +396,6 @@ def pdf_jobs():
                             job=_copy_if_needed,
                             args=(i['source'], i['processed'], 'pdf')))
 
-
         queue[2].append(dict(target=i['pdf'],
                              dependency=i['processed'],
                              job=_render_tex_into_pdf,
@@ -488,7 +413,6 @@ def pdf_jobs():
                                  args=(i['link'], i['fn'])))
 
     return queue
-
 
 #################### Error Page Processing ####################
 
