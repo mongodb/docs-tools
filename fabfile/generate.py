@@ -18,9 +18,12 @@ from rstcloth.images import generate_image_pages
 from rstcloth.releases import generate_release_output
 from rstcloth.hash import generate_hash_file
 
-def runner(jobs):
+def runner(jobs, pool=None):
     if env.PARALLEL is True:
-        p = Pool()
+        if pool is not None:
+            p = Pool(pool)
+        else:
+            p = Pool()
 
     count = 0
 
@@ -29,6 +32,7 @@ def runner(jobs):
             dep_check = check_multi_dependency
         else:
             dep_check = check_dependency
+
 
         if env.FORCE or dep_check(job['target'], job['dependency']):
             if env.PARALLEL is True:

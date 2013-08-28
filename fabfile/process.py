@@ -418,71 +418,19 @@ def _multi_create_link(link_pairs):
 
 @task
 def pdfs():
-    conf = get_conf()
-
-    pdfs = ingest_yaml_list(os.path.join(conf.build.paths.builddata, 'pdfs.yaml'))
-
-    sources = []
-    tex_pairs = []
-    pdf_pairs = []
-    targets = []
-    pdf_links = []
-
-    tex_regexes = [(re.compile(r'(index|bfcode)\{(.*)--(.*)\}'), r'\1\{\2-\{-\}\3\}'),
-                   (re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv)'), r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
-
-    for i in pdfs:
-        tagged_name = i['output'][:-4] + '-' + i['tag']
-        deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
-        link_name = deploy_fn.replace('-' + conf.git.branches.current, '')
-
-        if 'edition' in i:
-            deploy_path = os.path.join(conf.build.paths.public, i['edition'])
-            if i['edition'] == 'hosted':
-                deploy_path = os.path.join(deploy_path,  conf.git.branches.current)
-                latex_dir = os.path.join(conf.build.paths.output, i['edition'], conf.git.branches.current, 'latex')
-            else:
-                latex_dir = os.path.join(conf.build.paths.output, i['edition'], 'latex')
-                deploy_fn = tagged_name + '.pdf'
-                link_name = deploy_fn
-        else:
-            deploy_path = conf.build.paths['branch-staging']
-            latex_dir = os.path.join(conf.build.paths['branch-output'], 'latex')
-
-        i['source'] = os.path.join(latex_dir, i['output'])
-        i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')
-        i['pdf'] = os.path.join(latex_dir, tagged_name + '.pdf')
-        i['deployed'] = os.path.join(deploy_path, deploy_fn)
-        i['link'] = os.path.join(deploy_path, link_name)
-        i['fn'] = deploy_fn
-        i['path'] = latex_dir
-
-        sources.append(i['source'])
-
-        tex_pairs.append([i['source'], i['processed'], 'pdf'])
-
-        targets.append([i['processed'], i['pdf'], i['path']])
-
-        pdf_pairs.append([i['pdf'], i['deployed'], 'pdf'])
-
-        if i['link'] != i['deployed']:
-            pdf_links.append((i['link'], i['fn']))
-
-    _sanitize_tex(sources)
-    _multi_copy_if_needed(tex_pairs)
-    _generate_pdfs(targets)
-    _multi_copy_if_needed(pdf_pairs)
-
-    if len(pdf_links) > 0:
-        _multi_create_link(pdf_links)
+    for queue in pdf_jobs():
+        runner(queue)
 
 def pdf_jobs():
     conf = get_conf()
 
     pdfs = ingest_yaml_list(os.path.join(conf.build.paths.builddata, 'pdfs.yaml'))
-
     tex_regexes = [(re.compile(r'(index|bfcode)\{(.*)--(.*)\}'), r'\1\{\2-\{-\}\3\}'),
-                   (re.compile(r'\\code\{/(?!.*{}/|etc)'), r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
+                   (re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv)'), r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
+
+    # this is temporary
+    queue = ( [], [], [], [], [] )
+    pdfs.sort()
 
     for i in pdfs:
         tagged_name = i['output'][:-4] + '-' + i['tag']
@@ -510,33 +458,36 @@ def pdf_jobs():
         i['fn'] = deploy_fn
         i['path'] = latex_dir
 
-        yield dict(target=i['source'],
-                   dependency=None,
-                   job=_clean_sphinx_latex,
-                   args=(i['source'], tex_regexes))
+        # these appends will become yields, once runner() can be dependency
+        # aware.
+        queue[0].append(dict(target=i['source'],
+                             dependency=None,
+                             job=_clean_sphinx_latex,
+                             args=(i['source'], tex_regexes)))
 
-        yield dict(target=i['processed'],
-                   dependency=i['source'],
-                   job=_copy_if_needed,
-                   args=(i['source'], i['processed'], 'pdf'))
+        queue[1].append(dict(target=i['processed'],
+                            dependency=i['source'],
+                            job=_copy_if_needed,
+                            args=(i['source'], i['processed'], 'pdf')))
 
-        yield dict(target=i['pdf'],
-                   dependency=i['processed'],
-                   job=_render_tex_into_pdf,
-                   args=(i['processed'], i['path']))
 
-        yield dict(target=i['deployed'],
-                   dependency=i['pdf'],
-                   job=_copy_if_needed,
-                   args=(i['pdf'], i['processed'], 'pdf'))
+        queue[2].append(dict(target=i['pdf'],
+                             dependency=i['processed'],
+                             job=_render_tex_into_pdf,
+                             args=(i['processed'], i['path'])))
 
+        queue[3].append(dict(target=i['deployed'],
+                             dependency=i['pdf'],
+                             job=_copy_if_needed,
+                             args=(i['pdf'], i['processed'], 'pdf')))
 
         if i['link'] != i['deployed']:
-            yield dict(target=i['link'],
-                       dependency=i['deployed'],
-                       job=_create_link,
-                       args=(i['link'], i['fn']))
+            queue[4].append(dict(target=i['link'],
+                                 dependency=i['deployed'],
+                                 job=_create_link,
+                                 args=(i['link'], i['fn'])))
 
+    return queue
 
 
 #################### Error Page Processing ####################
