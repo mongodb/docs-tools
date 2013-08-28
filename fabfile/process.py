@@ -352,6 +352,7 @@ def pdf_jobs():
 
     pdfs = ingest_yaml_list(os.path.join(conf.build.paths.builddata, 'pdfs.yaml'))
     tex_regexes = [(re.compile(r'(index|bfcode)\{(.*)--(.*)\}'), r'\1\{\2-\{-\}\3\}'),
+                   (re.compile(r'\\PYGZsq{}'), "'"),
                    (re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv)'), r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
 
     # this is temporary
