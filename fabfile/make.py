@@ -40,16 +40,12 @@ def check_three_way_dependency(target, source, dependency):
         else:
             return False
 
-def check_multi_dependency(target, dependency):
-    for t in target:
-        if check_dependency(t, dependency) is True:
-            return True
-
-    return False
-
 def check_dependency(target, dependency):
     if dependency is None:
         return True
+
+    if isinstance(target, list):
+        return check_multi_dependency(target, dependency)
 
     if not os.path.exists(target):
         return True
@@ -71,4 +67,9 @@ def check_dependency(target, dependency):
     else:
         return needs_rebuild(target_time, dependency)
 
+def check_multi_dependency(target, dependency):
+    for t in target:
+        if check_dependency(t, dependency) is True:
+            return True
 
+    return False

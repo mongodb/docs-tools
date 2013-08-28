@@ -5,8 +5,8 @@ import re
 from multiprocessing import Pool
 from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, build_platform_notification
 from fabric.api import task, puts, local, env, quiet
-from make import check_dependency, check_multi_dependency
 from docs_meta import render_paths, get_conf, load_conf
+from make import check_dependency
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
@@ -28,13 +28,7 @@ def runner(jobs, pool=None):
     count = 0
 
     for job in jobs:
-        if isinstance(job['target'], list):
-            dep_check = check_multi_dependency
-        else:
-            dep_check = check_dependency
-
-
-        if env.FORCE or dep_check(job['target'], job['dependency']):
+        if env.FORCE or check_dependency(job['target'], job['dependency']):
             if env.PARALLEL is True:
                 if isinstance(job['args'], dict):
                     p.apply_async(job['job'], kwds=job['args'])

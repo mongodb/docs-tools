@@ -250,7 +250,7 @@ def _copy_if_needed(source_file=None, target_file=None, name='build'):
             shutil.copyfile(source_file, target_file)
 
             if name is not None:
-                puts('[{0}]: "{1}" changed.'.format(name, source_file))
+                puts('[{0}]: "{1}" changed. Updated: {2}'.format(name, source_file, target_file))
 
 @task
 def create_link():
@@ -303,7 +303,7 @@ def _clean_sphinx_latex(fn, regexes):
     with open(fn, 'w') as f:
         f.write(tex)
 
-    puts('[pdf]: processed Sphinx latex for mat for {0}'.format(fn))
+    puts('[pdf]: processed Sphinx latex format for {0}'.format(fn))
 
 def _render_tex_into_pdf(fn, path):
     pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
@@ -386,29 +386,29 @@ def pdf_jobs():
 
         # these appends will become yields, once runner() can be dependency
         # aware.
-        queue[0].append(dict(target=i['source'],
-                             dependency=None,
+        queue[0].append(dict(dependency=None,
+                             target=i['source'],
                              job=_clean_sphinx_latex,
                              args=(i['source'], tex_regexes)))
 
-        queue[1].append(dict(target=i['processed'],
-                            dependency=i['source'],
-                            job=_copy_if_needed,
-                            args=(i['source'], i['processed'], 'pdf')))
+        queue[1].append(dict(dependency=i['source'],
+                             target=i['processed'],
+                             job=_copy_if_needed,
+                             args=(i['source'], i['processed'], 'pdf')))
 
-        queue[2].append(dict(target=i['pdf'],
-                             dependency=i['processed'],
+        queue[2].append(dict(dependency=i['processed'],
+                             target=i['pdf'],
                              job=_render_tex_into_pdf,
                              args=(i['processed'], i['path'])))
 
-        queue[3].append(dict(target=i['deployed'],
-                             dependency=i['pdf'],
+        queue[3].append(dict(dependency=i['pdf'],
+                             target=i['deployed'],
                              job=_copy_if_needed,
-                             args=(i['pdf'], i['processed'], 'pdf')))
+                             args=(i['pdf'], i['deployed'], 'pdf')))
 
         if i['link'] != i['deployed']:
-            queue[4].append(dict(target=i['link'],
-                                 dependency=i['deployed'],
+            queue[4].append(dict(dependency=i['deployed'],
+                                 target=i['link'],
                                  job=_create_link,
                                  args=(i['link'], i['fn'])))
 
