@@ -31,7 +31,6 @@ def runner(jobs, pool=None):
             p = Pool()
 
     count = 0
-
     for job in jobs:
         if env.FORCE or check_dependency(job['target'], job['dependency']):
             if env.PARALLEL is True:
@@ -93,7 +92,7 @@ def _get_toc_base_name(fn):
 
     if bn.startswith('ref-toc-'):
         return os.path.splitext(bn)[0][8:]
-    if bn.startswith('toc-'):
+    elif bn.startswith('toc-') or bn.startswith('ref-spec-'):
         return os.path.splitext(bn)[0][4:]
 
 def _get_toc_output_name(name, type, paths):
@@ -179,10 +178,12 @@ def toc_jobs():
             if fmt != 'spec':
                 o['target'].append(_get_toc_output_name(base_name, 'toc', paths))
 
-            if fmt == 'ref':
-                o['target'].append(_get_toc_output_name(base_name, 'table', paths))
-            elif fmt == 'toc' or fmt == 'spec':
+            is_ref_spec = fn.startswith(os.path.join(os.path.dirname(fn), 'ref-spec'))
+
+            if not is_ref_spec and (fmt == 'toc' or fmt == 'spec'):
                 o['target'].append(_get_toc_output_name(base_name, 'dfn-list', paths))
+            elif fmt == 'ref' or is_ref_spec:
+                o['target'].append(_get_toc_output_name(base_name, 'table', paths))
 
             yield o
 
