@@ -5,7 +5,7 @@ import os
 import argparse
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
-from conf import release
+from docs_meta import load_conf
 
 from rstcloth import RstCloth
 
@@ -61,7 +61,7 @@ def generate_output(builder, platform, version, release):
 
     return r
 
-def generate_release_output(builder, platform, architecture):
+def generate_release_output(builder, platform, architecture, release):
     """ This is the contemporary version of the function used by the generate.py script"""
 
     r = RstCloth()

@@ -82,6 +82,7 @@ def prereq():
     dep_count = generate.runner(process.composite_jobs())
     puts('[sphinx-prep]: built {0} pieces of content'.format(job_count))
     puts('[sphinx-prep]: checked timestamps of all {0} files'.format(dep_count))
+    generate.buildinfo_hash()
     generate.source()
     puts('[sphinx-prep]: build environment prepared for sphinx.')
 
@@ -103,7 +104,7 @@ def build(builder='html', tag=None, root=None, nitpick=False):
             puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
             puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
-            cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}' # per-builder-doctrees
+            cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}' # per-builder-doctree
             # cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees -c ./ {3} {2}/source {2}/{0}' # shared doctrees
 
             if builder.startswith('epub'):

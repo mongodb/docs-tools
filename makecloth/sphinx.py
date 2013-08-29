@@ -54,13 +54,13 @@ def make_all_sphinx(config):
 
     m.newline()
     m.comment('sphinx prereq integration.')
-    m.target('sphinx-prerequisites', ['setup'], block=b)
+    m.target('sphinx-prerequisites', block=b)
     m.job('fab sphinx.prereq', block=b)
 
     build_source_dir = paths['branch-output'] + '/source'
 
     if 'generate-source' in config and config['generate-sourced']:
-        m.target('generate-source',  config['generate-sourced'], block=b)
+        m.target('generate-source', ['setup'], config['generate-sourced'], block=b)
         m.job('fab generate.source')
 
     m.section_break('sphinx targets', block=b)

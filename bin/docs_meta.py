@@ -14,14 +14,16 @@ from utils import write_yaml, shell_value, get_commit, get_branch, get_conf_file
 
 ### Functions
 
-def get_sphinx_builders():
-    conf = get_conf()
+def get_sphinx_builders(conf=None):
+    if conf is None:
+        conf = get_conf()
 
     path = os.path.join(conf.build.paths.projectroot, conf.build.paths.builddata, 'sphinx.yaml')
     return ingest_yaml(path)['builders']
 
-def get_manual_path():
-    conf = load_conf()
+def get_manual_path(conf=None):
+    if conf is None:
+        conf = load_conf()
 
     branch = get_branch()
 
@@ -62,10 +64,11 @@ def get_conf():
 
     return conf
 
-def get_versions():
-    o = []
+def get_versions(conf=None):
+    if conf is None:
+        conf = load_conf()
 
-    conf = load_conf()
+    o = []
 
     for version in conf.version.published:
         version_string = str(version)
@@ -87,8 +90,9 @@ def get_versions():
 
     return o
 
-def output_yaml(fn):
-    conf = load_conf()
+def output_yaml(fn, conf=None):
+    if conf is None:
+        conf = load_conf()
 
     o = {
             'branch': get_branch(),
@@ -104,8 +108,9 @@ def output_yaml(fn):
 
     write_yaml(o, fn)
 
-def render_paths(fn):
-    conf = load_conf()
+def render_paths(fn, conf=None):
+    if conf is None:
+        conf = load_conf()
 
     paths = conf.build.paths
 

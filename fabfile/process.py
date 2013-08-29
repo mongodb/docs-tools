@@ -23,7 +23,6 @@ def output(fn):
 
 ########## Process Sphinx Json Output ##########
 
-@task
 def json_output():
     if env.input_file is None or env.output_file is None:
         all_json_output()
@@ -270,7 +269,7 @@ def _create_link(input_fn, output_fn):
 
     out_base = os.path.basename(output_fn)
     if out_base == "":
-        abort('[{0}]: could not create a symlink at {1}.'.format('link', output_fn))
+       abort('[{0}]: could not create a symlink at {1}.'.format('link', output_fn))
     else:
         symlink(out_base, input_fn)
         os.rename(out_base, output_fn)
@@ -381,8 +380,7 @@ def pdf_jobs():
         i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')
         i['pdf'] = os.path.join(latex_dir, tagged_name + '.pdf')
         i['deployed'] = os.path.join(deploy_path, deploy_fn)
-        i['link'] = os.path.join(deploy_path, link_name)
-        i['fn'] = deploy_fn
+        i['link'] = os.path.abspath(os.path.join(deploy_path, link_name))
         i['path'] = latex_dir
 
         # these appends will become yields, once runner() can be dependency
@@ -411,7 +409,7 @@ def pdf_jobs():
             queue[4].append(dict(dependency=i['deployed'],
                                  target=i['link'],
                                  job=_create_link,
-                                 args=(i['link'], i['fn'])))
+                                 args=(i['deployed'], i['link'])))
 
     return queue
 

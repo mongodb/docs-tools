@@ -264,6 +264,7 @@ def _generate_images(cmd, dpi, width, target, source):
                      source=source))
     puts('[image]: generated image file  {0}'.format(source))
 
+
 ## User facing fabric task
 
 @task
@@ -334,13 +335,13 @@ def _check_release_dependency(target):
     else:
         return False
 
-def _generate_release_ent(rel, target):
-    r = generate_release_output( rel['type'], rel['type'].split('-')[0], rel['system'] )
+def _generate_release_ent(rel, target, release):
+    r = generate_release_output( rel['type'], rel['type'].split('-')[0], rel['system'], release )
     r.write(target)
     puts('[release]: wrote: ' + target)
 
-def _generate_release_core(rel, target):
-    r = generate_release_output( rel, rel.split('-')[0], 'core' )
+def _generate_release_core(rel, target, release):
+    r = generate_release_output( rel, rel.split('-')[0], 'core', release )
     r.write(target)
     puts('[release]: wrote: ' + target)
 
@@ -352,6 +353,15 @@ def releases():
 def release_jobs():
     conf = get_conf()
     data_file = os.path.join(conf.build.paths.builddata, 'releases') + '.yaml'
+
+    # shim to allow backwards compatibility on older branches for a while.
+    try:
+        release_version = conf.version.release
+    except AttributeError:
+        from conf import release as release_version
+    except IOError:
+        print('[ERROR]: cannot determine current release.')
+        exit(1)
 
     if not os.path.exists(data_file):
         return
@@ -373,7 +383,8 @@ def release_jobs():
                 'job': _generate_release_core,
                 'args': [
                           rel,
-                          target
+                          target,
+                          release_version,
                         ]
               }
 
@@ -391,7 +402,8 @@ def release_jobs():
                 'job': _generate_release_ent,
                 'args': [
                           rel,
-                          target
+                          target,
+                          release_version
                         ]
               }
 
@@ -439,11 +451,23 @@ def sitemap(config_path=None):
 
 @task
 def buildinfo_hash():
-    conf = load_conf()
+    conf = get_conf()
 
-    fn = os.path.join(conf.build.paths.projectroot, conf.build.paths.includes, 'hash.rst')
+    fn = os.path.join(conf.build.paths.projectroot,
+                      conf.build.paths.includes,
+                      'hash.rst')
 
     generate_hash_file(fn)
+
+    release_fn = os.path.join(conf.build.paths.projectroot,
+                              conf.build.paths.branch_staging,
+                              'release.txt')
+
+    if conf.project.name == 'manual':
+        with open(release_fn, 'w') as f:
+            f.write(conf.git.commit)
+
+        puts('[build]: generated "{0}" with current release hash.'.format(release_fn))
 
 #################### .htaccess files ####################
 
