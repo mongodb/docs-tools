@@ -380,7 +380,7 @@ def pdf_jobs():
         i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')
         i['pdf'] = os.path.join(latex_dir, tagged_name + '.pdf')
         i['deployed'] = os.path.join(deploy_path, deploy_fn)
-        i['link'] = os.path.abspath(os.path.join(deploy_path, link_name))
+        i['link'] = os.path.join(deploy_path, link_name)
         i['path'] = latex_dir
 
         # these appends will become yields, once runner() can be dependency
@@ -409,7 +409,7 @@ def pdf_jobs():
             queue[4].append(dict(dependency=i['deployed'],
                                  target=i['link'],
                                  job=_create_link,
-                                 args=(i['deployed'], i['link'])))
+                                 args=(deploy_fn, i['link'])))
 
     return queue
 
