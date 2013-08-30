@@ -59,26 +59,39 @@ class CustomTocTree(object):
         if not self.final:
             for ref in self.spec:
                 if self.table is not None:
+                    if 'text' in ref:
+                        if ref['name'] is None:
+                            self.table.add_row( [ '', ref['text'] ] )
+                        else:
+                            self.table.add_row( [ ref['name'], ref['text'] ])
                     if 'name' in ref:
                         self.table.add_row([ ref['name'], ref['description'] ])
                     else:
                         self.table = None
+
                 if self.contents is not None:
                     self.contents.content(ref['file'], 6, block='toc')
+
                 if self.dfn is not None:
                     if 'name' in ref:
                         text = ref['name']
                     else:
                         text = None
 
-                    link = self.dfn.role('doc', ref['file'], text)
-
                     if 'level' in ref:
                         idnt = 3 * ref['level']
                     else:
                         idnt = 3
 
-                    self.dfn.definition(link, ref['description'], indent=idnt, bold=False, wrap=False)
+                    if 'text' in ref:
+                        if ref['name'] is None:
+                            self.dfn.content(ref['text'], idnt)
+                        else:
+                            self.dfn.definition(ref['name'], ref['text'], indent=idnt, bold=False, wrap=False)
+                    else:
+                        link = self.dfn.role('doc', ref['file'], text)
+                        self.dfn.definition(link, ref['description'], indent=idnt, bold=False, wrap=False)
+
                     self.dfn.newline()
 
 
@@ -101,7 +114,15 @@ class AggregatedTocTree(CustomTocTree):
 
             for dfn in definition['files']:
                 if isinstance(dfn, dict):
-                    filter_specs.append( (dfn['file'],  dfn['level']) )
+                    if 'file' in dfn:
+                        filter_specs.append( (dfn['file'],  dfn['level'], True) )
+                    elif 'text' in dfn:
+                        if 'title' in dfn:
+                            filter_specs.append( ( (dfn['title'], dfn['text']), dfn['level'], False ) )
+                        else:
+                            filter_specs.append( ( dfn['text'], dfn['level'], False ) )
+                    else:
+                        print('[ERROR] [toc]: problem with {0} in {0}'.format(dfn, filename))
                 else:
                     filter_specs.append( (dfn,  1) )
 
@@ -116,10 +137,21 @@ class AggregatedTocTree(CustomTocTree):
                 for obj in objs:
                     all_objs[obj['file']] = obj
 
-        for fn, level in filter_specs:
-            try:
-                obj = all_objs[fn]
-                obj['level'] = level
-                self.spec.append(obj)
-            except KeyError:
-                print('[ERROR] [toc]: KeyError "{0}" in file: {1}'.format(fn, filename))
+        for fn, level, is_file in filter_specs:
+            if is_file is True:
+                try:
+                    obj = all_objs[fn]
+                    obj['level'] = level
+                    self.spec.append(obj)
+                except KeyError:
+                    print('[ERROR] [toc]: KeyError "{0}" in file: {1}'.format(fn, filename))
+            else:
+                # translation
+                if isinstance(fn, tuple):
+                    self.spec.append( { 'name': fn[0],
+                                        'level': level,
+                                        'text': fn[1] } )
+                else:
+                    self.spec.append( { 'name': None,
+                                        'level': level,
+                                        'text': fn } )
