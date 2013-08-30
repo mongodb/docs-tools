@@ -98,7 +98,7 @@ def build(builder='html', tag=None, root=None, nitpick=False):
         if env._clean_sphinx is True:
             local('rm -rf {0} {1}'.format(os.path.join(root, 'doctrees' + '-' + builder),
                                           os.path.join(root, builder)))
-            puts('[clean-{0}]: removed all files supporting the {0} build'.format(buider))
+            puts('[clean-{0}]: removed all files supporting the {0} build'.format(builder))
         else:
             local('mkdir -p {0}/{1}'.format(root, builder))
             puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
