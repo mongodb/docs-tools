@@ -100,13 +100,11 @@
   <meta name="DC.Source" content="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt"/>
 
   {%- block canonicalref %}
-    {%- if theme_project != 'mms' %}
-      {%- if pagename == 'index' %}
-        <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
-        {%- else %}
-          <link rel="canonical" href="http://docs.mongodb.org/{{ theme_project }}/{{pagename}}" />
-      {%- endif -%}
-    {%- endif %}
+    {%- if pagename == 'index' %}
+      <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
+      {%- else %}
+        <link rel="canonical" href="http://docs.mongodb.org/{{ theme_project }}/{{pagename}}" />
+    {%- endif -%}
   {%- endblock -%}
 
   {{ metatags }}
@@ -116,9 +114,7 @@
     {{ script() }}
 
     {%- block googlecse_opensearch %}
-      {%- if theme_project != 'mms' %}
-        <link rel="search" type="application/opensearchdescription+xml" href="http://docs.mongodb.org/osd.xml" title="MongoDB Help"/>
-      {%- endif %}
+      <link rel="search" type="application/opensearchdescription+xml" href="http://docs.mongodb.org/osd.xml" title="MongoDB Help"/>
     {%- endblock -%}
 
       {%- if favicon %}
@@ -133,7 +129,7 @@
   {%- block extrahead %}{% endblock -%}
 
   {%- block sitesearch %}
-    {%- if builder != 'singlehtml' and theme_project != 'mms' %}
+    {%- if builder != 'singlehtml' %}
       <script>
         (function() {
            var cx = '017213726194841070573:WMX6838984';
@@ -161,7 +157,7 @@
       <div id="header-db" class="spread">
         <div class="split">
           <div id="logo">
-            <div><a href="http://www.mongodb.org/"><img class="logo" src="http://media.mongodb.org/logo-mongodb.png" alt="MongoDB Logo"/></a></div>
+            {%- block logo %}<div><a href="http://www.mongodb.org/"><img class="logo" src="http://media.mongodb.org/logo-mongodb.png" alt="MongoDB Logo"/></a></div>{%- endblock -%}
           </div>
         </div>
       </div>
@@ -175,12 +171,19 @@
              {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
                <div class="body">
                  {{ relbar() }}
-                 {%- if builder != 'singlehtml' and theme_project != 'mms' %}
-                    <div id="cse-results">
-                      <gcse:searchresults linkTarget="_top"></gcse:searchresults>
-                    </div>
-                 {%- endif %}
-                 {% block body %}{% endblock %}
+
+                 {% block gcseresults %}
+                   {%- if builder != 'singlehtml' %}
+                     <div id="cse-results">
+                       <gcse:searchresults linkTarget="_top"></gcse:searchresults>
+                     </div>
+                   {%- endif %}
+                 {% endblock %}
+
+                 {% block body %}
+                   {{ body }}
+                 {% endblock %}
+
                  {{- render_nextprev() -}}
                </div>
              {%- if render_sidebar %}</div>{%- endif %}
@@ -192,38 +195,34 @@
   {%- endblock %}
 
   {%- block commnav -%}
-      {%- if theme_project != 'mms' %}
-          <div id="top-right">
-            <div class="user-right">
-              <ul id="header-menu-bar" class="ajs-menu-bar">
-                <li class="normal"><a target="_blank" href="http://groups.google.com/group/mongodb-user">Forums</a></li>
-                <li class="normal"><a target="_blank" href="http://blog.mongodb.org/">Blog</a></li>
-                <li class="normal"><a href="http://www.mongodb.org/downloads">Download</a></li>
-                <li class="normal"><a href="http://docs.mongodb.org/ecosystem/drivers/">Drivers</a></li>
-                <li class="normal"><a href="http://www.mongodb.com/events">Events</a></li>
-                <li class="normal last"><a class="last" href="http://docs.mongodb.org/manual/meta/translation">Translations</a></li>
-              </ul>
-            </div>
-          </div>
-      {%- endif %}
+    <div id="top-right">
+      <div class="user-right">
+        <ul id="header-menu-bar" class="ajs-menu-bar">
+          <li class="normal"><a target="_blank" href="http://groups.google.com/group/mongodb-user">Forums</a></li>
+          <li class="normal"><a target="_blank" href="http://blog.mongodb.org/">Blog</a></li>
+          <li class="normal"><a href="http://www.mongodb.org/downloads">Download</a></li>
+          <li class="normal"><a href="http://docs.mongodb.org/ecosystem/drivers/">Drivers</a></li>
+          <li class="normal"><a href="http://www.mongodb.com/events">Events</a></li>
+          <li class="normal last"><a class="last" href="http://docs.mongodb.org/manual/meta/translation">Translations</a></li>
+        </ul>
+      </div>
+    </div>
   {%- endblock -%}
 
   {%- block searchbox %}
-    {%- if builder != 'singlehtml' or theme_project != 'mms' %}
+    {%- if builder != 'singlehtml' %}
           <div class="search-db"><gcse:searchbox></gcse:searchbox></div>
     {%- endif %}
   {%- endblock %}
 
   {%- block subnav %}
-    {%- if theme_project not in [ 'about', 'mms' ] %}
-      <div id="etp">
-        <ul>
-          <li>{{ githublink() }}</li>
-          <li><a href="http://github.com/mongodb/{{ theme_repo_name }}" target="_blank" title="Fork the documentation on GitHub and contribute.">GitHub</a></li>
-          <li><a id="jirafeedback" href="{{ jiralink() }}" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira">Report a Problem</a></li>
-        </ul>
-      </div>
-    {%- endif %}
+    <div id="etp">
+      <ul>
+        <li>{{ githublink() }}</li>
+        <li><a href="http://github.com/mongodb/{{ theme_repo_name }}" target="_blank" title="Fork the documentation on GitHub and contribute.">GitHub</a></li>
+        <li><a id="jirafeedback" href="{{ jiralink() }}" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira">Report a Problem</a></li>
+      </ul>
+    </div>
   {%- endblock -%}
 
   {%- block footer %}
@@ -244,11 +243,7 @@
   {%- endblock %}
 
   {%- block versionnav %}
-    {%- if theme_project == 'mms' %}
-      {%- include "mms-versionnav.html"%}
-    {%- else %}
-      {%- include "versionnav.html"%}
-    {%- endif %}
+    {%- include "versionnav.html"%}
   {%- endblock %}
 
 </body>
