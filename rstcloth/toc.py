@@ -124,7 +124,7 @@ class AggregatedTocTree(CustomTocTree):
                     else:
                         print('[ERROR] [toc]: problem with {0} in {0}'.format(dfn, filename))
                 else:
-                    filter_specs.append( (dfn,  1) )
+                    filter_specs.append( (dfn,  1, True) )
 
         all_objs = {}
 
