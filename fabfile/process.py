@@ -438,7 +438,7 @@ def error_pages():
     else:
         error_pages = ingest_yaml_list(error_conf)
 
-        sub = (re.compile(r'\.\./\.\./'), conf.project.url + conf.project.tag + '/')
+        sub = (re.compile(r'\.\./\.\./'), conf.project.url + r'/' + conf.project.tag + r'/')
 
         for error in error_pages:
             page = os.path.join(conf.build.paths.projectroot, conf.build.paths['branch-output'], 'dirhtml', 'meta', error, 'index.html')
