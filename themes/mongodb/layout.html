@@ -99,63 +99,65 @@
   <meta name="release" content="{{release}}"/>
   <meta name="DC.Source" content="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt"/>
 
-  {%- if theme_project != 'mms' %}
+  {%- block canonicalref %}
+    {%- if theme_project != 'mms' %}
       {%- if pagename == 'index' %}
-          <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
-      {%- else %}
+        <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
+        {%- else %}
           <link rel="canonical" href="http://docs.mongodb.org/{{ theme_project }}/{{pagename}}" />
       {%- endif -%}
-  {%- endif %}
+    {%- endif %}
+  {%- endblock -%}
 
   {{ metatags }}
   {{ css() }}
 
   {%- if not embedded %}
-      {{ script() }}
+    {{ script() }}
 
+    {%- block googlecse_opensearch %}
       {%- if theme_project != 'mms' %}
-          {%- block googlecse_opensearch %}
-              <link rel="search" type="application/opensearchdescription+xml" href="http://docs.mongodb.org/osd.xml" title="MongoDB Help"/>
-          {%- endblock -%}
+        <link rel="search" type="application/opensearchdescription+xml" href="http://docs.mongodb.org/osd.xml" title="MongoDB Help"/>
       {%- endif %}
+    {%- endblock -%}
 
       {%- if favicon %}
-          <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}"/>
+        <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}"/>
       {%- endif %}
   {%- endif %}
 
   {%- block linktags %}
-      {%- include "linktags.html" %}
+    {%- include "linktags.html" %}
   {%- endblock -%}
 
   {%- block extrahead %}{% endblock -%}
 
   {%- block sitesearch %}
-      {%- if builder != 'singlehtml' and theme_project != 'mms' %}
-          <script>
-            (function() {
-               var cx = '017213726194841070573:WMX6838984';
-               var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
-               gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
-               var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
-            })();
-          </script>
-      {%- endif %}
+    {%- if builder != 'singlehtml' and theme_project != 'mms' %}
+      <script>
+        (function() {
+           var cx = '017213726194841070573:WMX6838984';
+           var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
+           gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
+           })();
+      </script>
+    {%- endif %}
   {%- endblock -%}
 
 </head>
 <body>
-  {%- block header %}
-    <!-- Google Tag Manager -->
-      <script>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-RHMS');
-      </script>
-    <!-- End Google Tag Manager -->
+  {%- block googletagmanager %}
+    <script>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-RHMS');
+    </script>
+  {%- endblock -%}
 
+  {%- block header %}
       <div id="header-db" class="spread">
         <div class="split">
           <div id="logo">
@@ -206,48 +208,48 @@
       {%- endif %}
   {%- endblock -%}
 
-  {%- if builder != 'singlehtml' or theme_project != 'mms' %}
-      {%- block searchbox %}
+  {%- block searchbox %}
+    {%- if builder != 'singlehtml' or theme_project != 'mms' %}
           <div class="search-db"><gcse:searchbox></gcse:searchbox></div>
-      {%- endblock %}
-  {%- endif %}
+    {%- endif %}
+  {%- endblock %}
 
   {%- block subnav %}
-      {%- if theme_project not in [ 'about', 'mms' ] %}
-          <div id="etp">
-            <ul>
-              <li>{{ githublink() }}</li>
-              <li><a href="http://github.com/mongodb/{{ theme_repo_name }}" target="_blank" title="Fork the documentation on GitHub and contribute.">GitHub</a></li>
-              <li><a id="jirafeedback" href="{{ jiralink() }}" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira">Report a Problem</a></li>
-            </ul>
-          </div>
-      {%- endif %}
+    {%- if theme_project not in [ 'about', 'mms' ] %}
+      <div id="etp">
+        <ul>
+          <li>{{ githublink() }}</li>
+          <li><a href="http://github.com/mongodb/{{ theme_repo_name }}" target="_blank" title="Fork the documentation on GitHub and contribute.">GitHub</a></li>
+          <li><a id="jirafeedback" href="{{ jiralink() }}" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira">Report a Problem</a></li>
+        </ul>
+      </div>
+    {%- endif %}
   {%- endblock -%}
 
   {%- block footer %}
-      <div class="footer">
-        <p>
-          {% trans copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }} {% endtrans %}
-          MongoDB&reg;, Mongo&reg;, and the leaf logo are registered trademarks of <a href="http://www.mongodb.com/">MongoDB, Inc.</a>
-        </p>
-      </div>
+    <div class="footer">
+      <p>
+        {% trans copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }} {% endtrans %}
+        MongoDB&reg;, Mongo&reg;, and the leaf logo are registered trademarks of <a href="http://www.mongodb.com/">MongoDB, Inc.</a>
+      </p>
+    </div>
   {%- endblock %}
 
   {%- block analytics %}
-      {%- include "analytics.html" %}
+    {%- include "analytics.html" %}
   {%- endblock %}
 
   {%- block jiracollector %}
-      {%- include "jiracollector.html" %}
+    {%- include "jiracollector.html" %}
   {%- endblock %}
 
   {%- block versionnav %}
-      {%- if theme_project == 'mms' %}
-          {%- include "mms-versionnav.html"%}
-      {%- else %}
-          {%- include "versionnav.html"%}
-      {%- endif %}
-
+    {%- if theme_project == 'mms' %}
+      {%- include "mms-versionnav.html"%}
+    {%- else %}
+      {%- include "versionnav.html"%}
+    {%- endif %}
   {%- endblock %}
+
 </body>
 </html>
