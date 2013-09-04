@@ -436,17 +436,26 @@ def source():
 def sitemap(config_path=None):
     paths = render_paths('obj')
 
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', paths.buildsystem, 'bin')))
+    sys.path.append(os.path.join(paths.projectroot, paths.buildsystem, 'bin'))
     import sitemap_gen
 
     if config_path is None:
-        config_path = 'conf-sitemap.xml'
+        config_path = os.path.join(paths.projectroot, 'conf-sitemap.xml')
+
+    if not os.path.exists(config_path):
+        puts('[ERROR] [sitemap]: configuration file {0} does not exist. Returning early'.fomrat(config_path))
+        return False
 
     sitemap = sitemap_gen.CreateSitemapFromFile(configpath=config_path,
                                                 suppress_notify=True)
+    if sitemap is None:
+        puts('[ERROR] [sitemap]: failed to generate the sitemap due to encountered errors.')
+        return False
+
     sitemap.Generate()
 
     puts('[sitemap]: generated sitemap according to the config file {0}'.format(config_path))
+    return True
 
 #################### BuildInfo Hash ####################
 
