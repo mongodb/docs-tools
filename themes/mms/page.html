@@ -6,7 +6,28 @@
 
 {%- block sitesearch %} {%- endblock -%}
 
-{%- block logo %}<div><a href="http://mms.mongodb.com/"><img class="logo" src="http://media.mongodb.org/logo-mongodb.png" alt="MongoDB Logo"/></a></div>{%- endblock -%}
+{%- block logo %}
+  <div>
+    <a href="http://mms.mongodb.com/"><img class="logo" src="http://media.mongodb.org/logo-mongodb.png" alt="MongoDB Logo"/></a>
+  </div>
+{%- endblock -%}
+
+{%- block canonicalref %}
+  {%- if theme_edition == 'saas' %}
+    {%- if pagename == 'index' %}
+      <link rel="canonical" href="http://mms.mongodb.com/" />
+    {%- else %}
+      <link rel="canonical" href="http://mms.mongodb.com/{{pagename}}" />
+    {%- endif -%}
+  {%- elif theme_edition == 'hosted' %}
+    {%- if pagename == 'index' %}
+      <link rel="canonical" href="http://mms.mongodb.com/{{theme_manual_path}}/" />
+    {%- else %}
+      <link rel="canonical" href="http://mms.mongodb.com/{{theme_manual_path}}/{{pagename}}/" />
+    {%- endif -%}
+  {%- endif -%}
+{%- endblock -%}
+
 
 {% block gcseresults %} {% endblock %}
 

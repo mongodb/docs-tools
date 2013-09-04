@@ -6,12 +6,6 @@
 {%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
 {%- set url_root = pathto('', 1) %}
 
-{%- if not embedded and docstitle and theme_project == "manaul" %}
-  {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
-{%- else %}
-  {%- set titlesuffix = "" %}
-{%- endif -%}
-
 {%- macro githublink() -%}
     <a href="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub">Edit this Page</a>
 {%- endmacro -%}
@@ -91,7 +85,9 @@
 {%- endif %}
 
 <head>
-  {%- block htmltitle %}<title>{{ title|striptags|e }}{{ titlesuffix }}</title>{%- endblock -%}
+  {%- block htmltitle %}
+    <title>{{ title|striptags|e }}</title>
+  {%- endblock -%}
 
   <link rel="shortcut icon" href="http://media.mongodb.org/favicon.ico" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
@@ -99,13 +95,7 @@
   <meta name="release" content="{{release}}"/>
   <meta name="DC.Source" content="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt"/>
 
-  {%- block canonicalref %}
-    {%- if pagename == 'index' %}
-      <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
-      {%- else %}
-        <link rel="canonical" href="http://docs.mongodb.org/{{ theme_project }}/{{pagename}}" />
-    {%- endif -%}
-  {%- endblock -%}
+  {%- block canonicalref %}{%- endblock -%}
 
   {{ metatags }}
   {{ css() }}
