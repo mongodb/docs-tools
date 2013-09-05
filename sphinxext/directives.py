@@ -57,6 +57,8 @@ class tip_node(nodes.Admonition, nodes.Element): pass
 
 class see_node(nodes.Admonition, nodes.Element): pass
 
+class related_node(nodes.Admonition, nodes.Element): pass
+
 class Optional(MongoDBNode):
     directive_name = ["Optional"]
 
@@ -76,7 +78,6 @@ class See(MongoDBNode):
 
         return self.return_node(ret)
 
-
 class Related(MongoDBNode):
     directive_name = ["Related"]
 
@@ -95,6 +96,7 @@ def setup(app):
     app.add_directive('example', Example)
 
     mongodb_add_node(app, optional_node)
+    mongodb_add_node(app, related_node)
     mongodb_add_node(app, example_node)
     mongodb_add_node(app, tip_node)
     mongodb_add_node(app, see_node)
