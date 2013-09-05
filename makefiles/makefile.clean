@@ -28,5 +28,6 @@ clean-api:
 	@-rm -rf $(source)/reference/command/*.rst
 	@echo "[clean]: removed all generated reference tables."
 clean-toc:
-	@-rm -rf $(rst-include)/*.rst
+	@-rm -rf $(rst-include)/toc-*.rst
+	@-rm -rf $(rst-include)/dfn-list-*.rst
 	@echo "[clean]: removed all generated tables of contents."
