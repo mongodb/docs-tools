@@ -39,10 +39,10 @@ def timestamp(form='filename'):
     else:
         return datetime.datetime.now().strftime("%Y-%m-%d, %H:%M %p")
 
-def get_sphinx_args():
+def get_sphinx_args(tag):
     o = ''
 
-    if pkg_resources.get_distribution("sphinx").version.startswith('1.2b1-xgen'):
+    if pkg_resources.get_distribution("sphinx").version.startswith('1.2b1-xgen') and (tag is None or not tag.startswith('hosted') or not tag.startswith('saas')):
          o += '-j ' + str(cpu_count()) + ' '
 
     if env._sphinx_nitpick is True:
@@ -110,7 +110,7 @@ def build(builder='html', tag=None, root=None, nitpick=False):
             if builder.startswith('epub'):
                 cmd += ' 2>&1 1>&3 | grep -v "WARNING: unknown mimetype" | grep -v "WARNING: search index" 1>&2; 3>&1'
 
-            local(cmd.format(builder, get_tags(builder, tag), root, get_sphinx_args()))
+            local(cmd.format(builder, get_tags(builder, tag), root, get_sphinx_args(tag)))
 
             if builder.startswith('linkcheck'):
                 puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
