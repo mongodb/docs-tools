@@ -49,6 +49,28 @@ def get_sphinx_args(tag):
 
     return o
 
+#################### Associated Sphinx Artifacts ####################
+
+@task
+def html_tarball():
+    process.copy_if_needed(os.path.join(conf.build.paths.projectroot,
+                                        conf.build.paths.includes, 'hash.rst'),
+                           os.path.join(conf.build.paths.projectroot,
+                                        conf.build.paths.branch_output,
+                                        'html', 'release.txt'))
+
+    basename = os.path.join(conf.build.paths.projectroot,
+                            conf.build.paths.branch_staging,
+                            conf.project.name + '-' + conf.git.branches.current)
+
+    generate.tarball(name=basename + '.tar.gz',
+                     path='html',
+                     cdir=os.path.join(conf.build.paths.projectroot,
+                                       conf.build.paths.branch_output),
+                     sourcep='html',
+                     newp=os.path.basename(basename))
+
+
 #################### Public Fabric Tasks ####################
 
 ## modifiers
@@ -123,5 +145,6 @@ def build(builder='html', tag=None, root=None, nitpick=False):
             elif builder.startswith('latex'):
                 process.pdfs()
             elif builder.startswith('man'):
-                for manpage in expand_tree(os.path.join(conf.build.paths.output, conf.git.branches.current, 'man'), '1'):
-                    process.manpage_url(manpage)
+                generate.runner( process.manpage_url_jobs(), pool=1 )
+            elif builder.startswith('html'):
+                html_tarball()

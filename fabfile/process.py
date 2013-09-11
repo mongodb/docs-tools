@@ -190,41 +190,6 @@ def touch(fn, times=None):
 ########## Main Output Processing Targets ##########
 
 @task
-def manpage_url(input_file=None):
-    conf = get_conf()
-
-    if input_file is None:
-        if env.input_file is None:
-            abort('[man]: you must specify input and output files.')
-        else:
-            input_file = env.input_file
-
-    project_source = 'source'
-
-    top_level_items = set()
-    for fs_obj in os.listdir(project_source):
-        if fs_obj.startswith('.static') or fs_obj == 'index.txt':
-            continue
-        if os.path.isdir(os.path.join(project_source, fs_obj)):
-            top_level_items.add(fs_obj)
-        if fs_obj.endswith('.txt'):
-            top_level_items.add(fs_obj[:-4])
-
-    top_level_items = '/'+ r'[^\s]*|/'.join(top_level_items) + r'[^\s]*'
-    re_string = r'(\\fB({0})\\fP)'.format(top_level_items).replace(r'-', r'\-')
-
-    print re_string
-    with open(input_file, 'r') as f:
-        manpage = f.read()
-
-    manpage = re.sub(re_string, conf.project.url + '/' + conf.project.tag + r'\2', manpage)
-
-    with open(input_file, 'w') as f:
-        f.write(manpage)
-
-    puts("[{0}]: fixed urls in {1}".format('man', input_file))
-
-@task
 def copy_if_needed(source_file=None, target_file=None, name='build'):
     _copy_if_needed(source_file, target_file, name)
 
@@ -461,6 +426,58 @@ def error_pages():
 
 #################### Manpage Processing ####################
 
+def manpage_url(regex_obj, input_file=None):
+    if input_file is None:
+        if env.input_file is None:
+            abort('[man]: you must specify input and output files.')
+        else:
+            input_file = env.input_file
+
+    with open(input_file, 'r') as f:
+        manpage = f.read()
+
+    if isinstance(regex_obj, list):
+        for regex, subst in regex_obj:
+            manpage = regex.sub(subst, manpage)
+    else:
+        manpage = regex_obj[0].sub(regex_obj[1], manpage)
+
+    with open(input_file, 'w') as f:
+        f.write(manpage)
+
+    puts("[{0}]: fixed urls in {1}".format('man', input_file))
+
+def manpage_url_jobs():
+    conf = get_conf()
+
+    project_source = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
+
+    top_level_items = set()
+    for fs_obj in os.listdir(project_source):
+        if fs_obj.startswith('.static') or fs_obj == 'index.txt':
+            continue
+        if os.path.isdir(os.path.join(project_source, fs_obj)):
+            top_level_items.add(fs_obj)
+        if fs_obj.endswith('.txt'):
+            top_level_items.add(fs_obj[:-4])
+
+    top_level_items = '/'+ r'[^\s]*|/'.join(top_level_items) + r'[^\s]*'
+
+    re_string = r'(\\fB({0})\\fP)'.format(top_level_items).replace(r'-', r'\-')
+    subst = conf.project.url + '/' + conf.project.tag + r'\2'
+
+    regex_obj = (re.compile(re_string), subst)
+
+    for manpage in expand_tree(os.path.join(conf.build.paths.projectroot,
+                                            conf.build.paths.output,
+                                            conf.git.branches.current,
+                                            'man'), '1'):
+        yield dict(target=manpage,
+                   dependency=None,
+                   job=manpage_url,
+                   args=[regex_obj, manpage])
+
+
 def _process_page(fn, output_fn, regex, builder='processor'):
     tmp_fn = fn + '~'
 
@@ -470,14 +487,12 @@ def _process_page(fn, output_fn, regex, builder='processor'):
                'dependency': fn,
                'job': _munge_page,
                'args': dict(fn=fn, out_fn=tmp_fn, regex=regex),
-               'debug': True
              },
              {
                'target': output_fn,
                'dependency': tmp_fn,
                'job': _copy_if_needed,
                'args': dict(source_file=tmp_fn, target_file=output_fn, name=builder),
-               'debug': True
              }
            ]
 
@@ -507,5 +522,4 @@ def manpage_jobs():
                 'dependency': output_fn,
                 'job': _process_page,
                 'args': [ input_fn, output_fn, regex, 'manpage' ],
-                'debug': True
               }

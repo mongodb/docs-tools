@@ -6,7 +6,7 @@ $(public-output).%.tar.gz:$(public-output)
 	tar -czvf $@ $<
 
 build-ephemera = $(output)/makefile.* $(output)/*.inv $(branch-output)/source meta.yaml
-clean-generated-targets = clean-api clean-tables clean-toc clean-public clean-images clean-api clean-toc
+clean-generated-targets = clean-api clean-tables clean-toc clean-public clean-images
 .PHONY:$(clean-generated-targets)
 clean:$(clean-generated-targets)
 	@-rm -rf $(build-ephemera)
@@ -20,7 +20,7 @@ clean-stale:
 	@fab clean.builds:7
 	@echo "[clean]: removed all stale build artifacts older than 7 days."
 clean-images:
-	@-rm -rf $(source)/*.png $(source)/*.png
+	@-rm -rf $(source)/images/*.png $(source)/images/*.rst
 	@echo "[clean]: removed all generated images."
 	@echo "[clean]: removed all rst files supporing generated images."
 clean-api:
