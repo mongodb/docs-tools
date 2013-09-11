@@ -1,13 +1,8 @@
-.PHONY: help clean clean-branch clean-public clean-all clean-stale archive
-
-archive:$(public-output).$(timestamp).tar.gz
-	@echo [$@]: created $< $@.
-$(public-output).%.tar.gz:$(public-output)
-	tar -czvf $@ $<
-
 build-ephemera = $(output)/makefile.* $(output)/*.inv $(branch-output)/source meta.yaml
 clean-generated-targets = clean-api clean-tables clean-toc clean-public clean-images
-.PHONY:$(clean-generated-targets)
+
+.PHONY: help clean clean-branch clean-public clean-all clean-stale $(clean-generated-targets)
+
 clean:$(clean-generated-targets)
 	@-rm -rf $(build-ephemera)
 clean-branch:

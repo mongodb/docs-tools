@@ -388,7 +388,7 @@ def pdf_jobs():
 
 # this is called directly from the sphinx generation function in sphinx.py.
 
-def _munge_page(fn, regex, out_fn=None,  tag='build'):
+def munge_page(fn, regex, out_fn=None,  tag='build'):
     with open(fn, 'r') as f:
         page = f.read()
 
@@ -420,7 +420,7 @@ def error_pages():
 
         for error in error_pages:
             page = os.path.join(conf.build.paths.projectroot, conf.build.paths['branch-output'], 'dirhtml', 'meta', error, 'index.html')
-            _munge_page(fn=page, regex=sub, tag='error-pages')
+            munge_page(fn=page, regex=sub, tag='error-pages')
 
         puts('[error-pages]: rendered {0} error pages'.format(len(error_pages)))
 
@@ -485,7 +485,7 @@ def _process_page(fn, output_fn, regex, builder='processor'):
              {
                'target': tmp_fn,
                'dependency': fn,
-               'job': _munge_page,
+               'job': munge_page,
                'args': dict(fn=fn, out_fn=tmp_fn, regex=regex),
              },
              {

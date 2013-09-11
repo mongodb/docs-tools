@@ -1,2 +1,0 @@
-# man page support, uses sphinx `man` builder output.
-manpages:$(branch-output)/manpages.tar.gz
