@@ -164,6 +164,6 @@ def build(builder='html', tag=None, root=None, nitpick=False):
             elif builder.startswith('latex'):
                 process.pdfs()
             elif builder.startswith('man'):
-                generate.runner( process.manpage_url_jobs(), pool=1 )
+                generate.runner( process.manpage_url_jobs() )
             elif builder.startswith('html'):
                 html_tarball()
