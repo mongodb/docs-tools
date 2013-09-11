@@ -1,4 +1,5 @@
 import os.path
+import json
 from fabric.api import task, local, puts, lcd, env
 from docs_meta import get_conf
 
@@ -29,3 +30,8 @@ def bootstrap(action='setup'):
 
     with lcd(get_conf().build.paths.projectroot):
         local(' '.join(cmd))
+
+@task
+def conf():
+    conf = get_conf()
+    puts(json.dumps(conf, indent=3))
