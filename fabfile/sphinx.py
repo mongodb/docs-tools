@@ -3,17 +3,17 @@ from fabric.utils import puts
 from multiprocessing import cpu_count
 
 import itertools
-import os.path
+import os
 import pkg_resources
 import datetime
 
 from utils import ingest_yaml, expand_tree
+from clean import cleaner
 import generate
 import process
 import docs_meta
 
 conf = docs_meta.get_conf()
-
 paths = conf.build.paths
 
 from intersphinx import intersphinx, intersphinx_jobs
@@ -45,7 +45,7 @@ def get_sphinx_args(tag):
          o += '-j ' + str(cpu_count()) + ' '
 
     if env._sphinx_nitpick is True:
-        o += '-n -w {0}/build.{1}.log'.format(paths['branch-output'], timestamp('filename'))
+        o += '-n -w {0}/build.{1}.log'.format(conf.build.paths.branch_output, timestamp('filename'))
 
     return o
 
@@ -129,18 +129,18 @@ def prereq():
 @task
 def build(builder='html', tag=None, root=None, nitpick=False):
     if root is None:
-        root = paths['branch-output']
+        root = conf.build.paths.branch_output
 
     if nitpick is True:
         nitpick()
 
     with settings(hide('running'), host_string='sphinx'):
         if env._clean_sphinx is True:
-            local('rm -rf {0} {1}'.format(os.path.join(root, 'doctrees' + '-' + builder),
-                                          os.path.join(root, builder)))
+            cleaner([ os.path.join(root, 'doctrees' + '-' + builder), 
+                      os.path.join(root, builder) ] )
             puts('[clean-{0}]: removed all files supporting the {0} build'.format(builder))
         else:
-            local('mkdir -p {0}/{1}'.format(root, builder))
+            os.makedirs(os.path.join(root, builder))
             puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
             puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 

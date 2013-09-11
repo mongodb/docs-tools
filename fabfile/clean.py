@@ -1,4 +1,4 @@
-from fabric.api import task, abort
+from fabric.api import task, abort, local
 import time
 import os
 import sys
@@ -7,6 +7,7 @@ import shutil
 import utils
 import docs_meta
 from multiprocessing import Pool, cpu_count
+from generate import runner
 
 def _rm_rf(path):
     if os.path.isdir(path):
@@ -36,34 +37,12 @@ def builds(days=14):
             _rm_rf(path + "public/" + branch)
             print('[clean]: removed stale build artifact: ' + build)
 
-def _multi_clean(paths):
-    if len(paths) <= cpu_count + 1:
+def cleaner(paths):
+    if len(paths) <= cpu_count() + 1:
         workers = len(paths)
     else:
         workers = cpu_count
 
-    p = Pool(workers)
+    jobs = ( dict(target=path, dependency=None, job=_rm_rf, args=[path]) for path in paths )
 
-    for i in paths:
-        p.apply_async(_rm_rf, args=(i))
-
-    p.close()
-    p.join()
-
-
-@task
-def toc():
-    if not env.FORCE:
-        abort('[clean]: cannot clean without calling ``force`` task.')
-
-    conf = docs_meta.get_conf()
-
-@task
-def tables():
-    if not env.FORCE:
-        abort('[clean]: cannot clean without calling ``force`` task.')
-
-@task
-def api():
-    if not env.FORCE:
-        abort('[clean]: cannot clean without calling ``force`` task.')
+    runner(jobs, pool=workers)
