@@ -63,13 +63,19 @@ def html_tarball():
                             conf.build.paths.branch_staging,
                             conf.project.name + '-' + conf.git.branches.current)
 
-    generate.tarball(name=basename + '.tar.gz',
+    tarball_name = basename + '.tar.gz'
+
+    generate.tarball(name=tarball_name,
                      path='html',
                      cdir=os.path.join(conf.build.paths.projectroot,
                                        conf.build.paths.branch_output),
                      sourcep='html',
                      newp=os.path.basename(basename))
 
+    process._create_link(input_fn=os.path.basename(tarball_name),
+                         output_fn=os.path.join(conf.build.paths.projectroot,
+                                                conf.build.paths.branch_staging,
+                                                conf.project.name + '.tar.gz'))
 
 @task
 def man_tarball():
@@ -89,6 +95,11 @@ def man_tarball():
                            os.path.join(conf.build.paths.projectroot,
                                         conf.build.paths.branch_staging,
                                         os.path.basename(tarball_name)))
+
+    process._create_link(input_fn=os.path.basename(tarball_name),
+                         output_fn=os.path.join(conf.build.paths.projectroot,
+                                                conf.build.paths.branch_staging,
+                                                'manpages' + '.tar.gz'))
 
 #################### Public Fabric Tasks ####################
 
@@ -140,8 +151,11 @@ def build(builder='html', tag=None, root=None, nitpick=False):
                       os.path.join(root, builder) ] )
             puts('[clean-{0}]: removed all files supporting the {0} build'.format(builder))
         else:
-            os.makedirs(os.path.join(root, builder))
-            puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
+            dirpath = os.path.join(root, builder)
+            if not os.path.exists(dirpath):
+                os.makedirs(dirpath)
+                puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
+
             puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
             cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}' # per-builder-doctree
@@ -165,5 +179,6 @@ def build(builder='html', tag=None, root=None, nitpick=False):
                 process.pdfs()
             elif builder.startswith('man'):
                 generate.runner( process.manpage_url_jobs() )
+                man_tarball()
             elif builder.startswith('html'):
                 html_tarball()
