@@ -471,7 +471,7 @@ def manpage_url_jobs():
     for manpage in expand_tree(os.path.join(conf.build.paths.projectroot,
                                             conf.build.paths.output,
                                             conf.git.branches.current,
-                                            'man'), '1'):
+                                            'man'), ['1', '5']):
         yield dict(target=manpage,
                    dependency=None,
                    job=manpage_url,
