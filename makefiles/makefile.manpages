@@ -1,8 +1,2 @@
 # man page support, uses sphinx `man` builder output.
 manpages:$(branch-output)/manpages.tar.gz
-
-$(branch-output)/manpages.tar.gz:man
-	@touch $@.log
-	@$(TARBIN) -C $(branch-output)/ --transform=s/man/manpages/ \
-		   -czvf $@ $(subst $(branch-output)/,,$(manpages)) >> $@.log
-	@echo [man]: created $@ archive of all manpages

@@ -71,6 +71,25 @@ def html_tarball():
                      newp=os.path.basename(basename))
 
 
+@task
+def man_tarball():
+    basename = os.path.join(conf.build.paths.projectroot,
+                            conf.build.paths.branch_output,
+                            'manpages-' + conf.git.branches.current)
+
+    tarball_name = basename + '.tar.gz'
+    generate.tarball(name=tarball_name,
+                     path='man',
+                     cdir=os.path.dirname(basename),
+                     sourcep='man',
+                     newp=conf.project.name + '-manpages'
+                     )
+
+    process.copy_if_needed(tarball_name,
+                           os.path.join(conf.build.paths.projectroot,
+                                        conf.build.paths.branch_staging,
+                                        os.path.basename(tarball_name)))
+
 #################### Public Fabric Tasks ####################
 
 ## modifiers
