@@ -498,6 +498,9 @@ def tarball(name, path, sourcep=None, newp=None, cdir=None):
 
         cmd.extend([ '-C', cdir ])
 
+    if not os.path.exists(os.path.dirname(name)):
+        os.makedirs(os.path.dirname(name))
+
     if sourcep is not None and newp is not None:
         cmd.append('--transform=s/{0}/{1}/'.format(sourcep, newp))
 

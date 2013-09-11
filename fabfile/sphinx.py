@@ -180,5 +180,5 @@ def build(builder='html', tag=None, root=None, nitpick=False):
             elif builder.startswith('man'):
                 generate.runner( process.manpage_url_jobs() )
                 man_tarball()
-            elif builder.startswith('html'):
+            elif builder.startswith('html') and not conf.project.name == 'mms':
                 html_tarball()
