@@ -7,8 +7,7 @@ import os.path
 import pkg_resources
 import datetime
 
-from utils import ingest_yaml
-from shim import manpage_jobs
+from utils import ingest_yaml, expand_tree
 import generate
 import process
 import docs_meta
@@ -70,7 +69,7 @@ def clean():
 
 @task
 def prereq():
-    jobs = itertools.chain(manpage_jobs(),
+    jobs = itertools.chain(process.manpage_jobs(),
                            generate.table_jobs(),
                            generate.api_jobs(),
                            generate.toc_jobs(),
@@ -123,3 +122,6 @@ def build(builder='html', tag=None, root=None, nitpick=False):
                 process.json_output()
             elif builder.startswith('latex'):
                 process.pdfs()
+            elif builder.startswith('man'):
+                for manpage in expand_tree(os.path.join(conf.build.paths.output, conf.git.branches.current, 'man'), '1'):
+                    process.manpage_url(manpage)
