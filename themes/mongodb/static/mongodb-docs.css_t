@@ -38,15 +38,12 @@ div.document {
 
 div.body {
     background-color: white;
-    color: black;
+    color: #333;
     font-size: 100%;
     overflow-x: auto;
+    padding: 0 1.5em;
 }
-div.body > div.section { margin:0 1.5em; }
-div.body > div#cse-results + div.section { margin:0 1.5em; }
-div.body > div#cse-results + span.target + div.section { margin:0 1.5em; }
-div.body > div#cse-results + span.target + span.target+ div.section { margin:0 1.5em; }
-div.body > div#cse-results {margin:0;padding:0;margin-left:24px;height:auto;}
+div.body > div#cse-results {margin:0;padding:0;height:auto;}
 div.footer {
     color:white;
     width:auto;
@@ -887,7 +884,6 @@ div.sphinxsidebar a:focus tt.literal .pre,
 div.sphinxsidebar a:hover tt.literal .pre {font-weight:900;}
 div.body div.bc {
     padding-top: .6em;
-    margin-left: 1.5em;
     background:white;
     cursor: default;
 }
