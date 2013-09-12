@@ -162,14 +162,6 @@
                <div class="body">
                  {{ relbar() }}
 
-                 {% block gcseresults %}
-                   {%- if builder != 'singlehtml' %}
-                     <div id="cse-results">
-                       <gcse:searchresults linkTarget="_top"></gcse:searchresults>
-                     </div>
-                   {%- endif %}
-                 {% endblock %}
-
                  {% block body %}
                    {{ body }}
                  {% endblock %}
@@ -201,7 +193,7 @@
 
   {%- block searchbox %}
     {%- if builder != 'singlehtml' %}
-          <div class="search-db"><gcse:searchbox></gcse:searchbox></div>
+      <div class="search-db"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
     {%- endif %}
   {%- endblock %}
 
