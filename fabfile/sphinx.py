@@ -3,18 +3,17 @@ from fabric.utils import puts
 from multiprocessing import cpu_count
 
 import itertools
-import os.path
+import os
 import pkg_resources
 import datetime
 
-from utils import ingest_yaml
-from shim import manpage_jobs
+from utils import ingest_yaml, expand_tree
+from clean import cleaner
 import generate
 import process
 import docs_meta
 
 conf = docs_meta.get_conf()
-
 paths = conf.build.paths
 
 from intersphinx import intersphinx, intersphinx_jobs
@@ -46,9 +45,61 @@ def get_sphinx_args(tag):
          o += '-j ' + str(cpu_count()) + ' '
 
     if env._sphinx_nitpick is True:
-        o += '-n -w {0}/build.{1}.log'.format(paths['branch-output'], timestamp('filename'))
+        o += '-n -w {0}/build.{1}.log'.format(conf.build.paths.branch_output, timestamp('filename'))
 
     return o
+
+#################### Associated Sphinx Artifacts ####################
+
+@task
+def html_tarball():
+    process.copy_if_needed(os.path.join(conf.build.paths.projectroot,
+                                        conf.build.paths.includes, 'hash.rst'),
+                           os.path.join(conf.build.paths.projectroot,
+                                        conf.build.paths.branch_output,
+                                        'html', 'release.txt'))
+
+    basename = os.path.join(conf.build.paths.projectroot,
+                            conf.build.paths.branch_staging,
+                            conf.project.name + '-' + conf.git.branches.current)
+
+    tarball_name = basename + '.tar.gz'
+
+    generate.tarball(name=tarball_name,
+                     path='html',
+                     cdir=os.path.join(conf.build.paths.projectroot,
+                                       conf.build.paths.branch_output),
+                     sourcep='html',
+                     newp=os.path.basename(basename))
+
+    process._create_link(input_fn=os.path.basename(tarball_name),
+                         output_fn=os.path.join(conf.build.paths.projectroot,
+                                                conf.build.paths.branch_staging,
+                                                conf.project.name + '.tar.gz'))
+
+@task
+def man_tarball():
+    basename = os.path.join(conf.build.paths.projectroot,
+                            conf.build.paths.branch_output,
+                            'manpages-' + conf.git.branches.current)
+
+    tarball_name = basename + '.tar.gz'
+    generate.tarball(name=tarball_name,
+                     path='man',
+                     cdir=os.path.dirname(basename),
+                     sourcep='man',
+                     newp=conf.project.name + '-manpages'
+                     )
+
+    process.copy_if_needed(tarball_name,
+                           os.path.join(conf.build.paths.projectroot,
+                                        conf.build.paths.branch_staging,
+                                        os.path.basename(tarball_name)))
+
+    process._create_link(input_fn=os.path.basename(tarball_name),
+                         output_fn=os.path.join(conf.build.paths.projectroot,
+                                                conf.build.paths.branch_staging,
+                                                'manpages' + '.tar.gz'))
 
 #################### Public Fabric Tasks ####################
 
@@ -70,7 +121,7 @@ def clean():
 
 @task
 def prereq():
-    jobs = itertools.chain(manpage_jobs(),
+    jobs = itertools.chain(process.manpage_jobs(),
                            generate.table_jobs(),
                            generate.api_jobs(),
                            generate.toc_jobs(),
@@ -89,19 +140,22 @@ def prereq():
 @task
 def build(builder='html', tag=None, root=None, nitpick=False):
     if root is None:
-        root = paths['branch-output']
+        root = conf.build.paths.branch_output
 
     if nitpick is True:
         nitpick()
 
     with settings(hide('running'), host_string='sphinx'):
         if env._clean_sphinx is True:
-            local('rm -rf {0} {1}'.format(os.path.join(root, 'doctrees' + '-' + builder),
-                                          os.path.join(root, builder)))
+            cleaner([ os.path.join(root, 'doctrees' + '-' + builder), 
+                      os.path.join(root, builder) ] )
             puts('[clean-{0}]: removed all files supporting the {0} build'.format(builder))
         else:
-            local('mkdir -p {0}/{1}'.format(root, builder))
-            puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
+            dirpath = os.path.join(root, builder)
+            if not os.path.exists(dirpath):
+                os.makedirs(dirpath)
+                puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
+
             puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
             cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}' # per-builder-doctree
@@ -123,3 +177,8 @@ def build(builder='html', tag=None, root=None, nitpick=False):
                 process.json_output()
             elif builder.startswith('latex'):
                 process.pdfs()
+            elif builder.startswith('man'):
+                generate.runner( process.manpage_url_jobs() )
+                man_tarball()
+            elif builder.startswith('html') and not conf.project.name == 'mms':
+                html_tarball()

@@ -93,7 +93,7 @@ def get_branch(path=None):
 
     return shell_value('git symbolic-ref HEAD', path).split('/')[2]
 
-def _expand_tree(path, input_extension):
+def expand_tree(path, input_extension='yaml'):
     file_list = []
 
     for root, subFolders, files in os.walk(path):
@@ -102,21 +102,16 @@ def _expand_tree(path, input_extension):
                 continue
             else:
                 f = os.path.join(root, file)
-                if f.endswith(input_extension):
-                    file_list.append(f)
+                if isinstance(input_extension, list):
+                    if os.path.splitext(f)[1][1:] not in input_extension:
+                        continue
+                else:
+                    if not f.endswith(input_extension):
+                        continue
+
+                file_list.append(f)
 
     return file_list
-
-def expand_tree(path, input_extension='yaml'):
-    ret = []
-
-    if isinstance(input_extension, list):
-        for ext in input_extension:
-            ret.extend(_expand_tree(path, input_extension))
-    else:
-        ret.extend(_expand_tree(path, input_extension))
-
-    return ret
 
 def ingest_yaml_list(filename):
     o = ingest_yaml(filename)
