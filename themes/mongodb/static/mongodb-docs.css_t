@@ -16,7 +16,7 @@ body {
     font-family: helvetica,arial,sans-serif;
     font-size: 100%;
     background-color: #402817;
-    color: black;
+    color: #333;
     margin: 0;
     padding: 0;
 }
@@ -105,14 +105,14 @@ div.sphinxsidebarwrapper{
 
 div.sphinxsidebar h3 {
     font-family: helvetica,arial,sans-serif;
-    color: black;
+    color: #333;
     font-size: 1.5em;
     font-weight: bold;
     margin: 0;
     padding: 0px 0 0 10px;
 }
 
-div.sphinxsidebar h3 a { color: black; }
+div.sphinxsidebar h3 a { color: #333; }
 
 div.sphinxsidebar h3 a.showlink {
     color: #003594;
@@ -145,7 +145,7 @@ div.sphinxsidebar ul {
     color: #000;
 }
 
-div.sphinxsidebar a { color: black; }
+div.sphinxsidebar a { color: #333; }
 
 div.sphinxsidebar input {
     border: 1px solid #ccc;
@@ -166,12 +166,11 @@ p.searchtip { font-size: 93%; }
 /* -- body styles ----------------------------------------------------------- */
 
 a {
-    color: #003594;
+    color: #006cbc;
     text-decoration: none;
 }
 
 a:hover {
-    color: #E32E00;
     text-decoration: underline;
 }
 
@@ -408,20 +407,20 @@ div.sphinxsidebar ul.current li.toctree-l1 a {
 }
 */
 div.sphinxsidebar ul.current li.toctree-l2 a {
-    color: black;
+    color: #333;
     line-height: 1.5em;
 }
 
 div.sphinxsidebar ul.current li.toctree-l3 a {
-    color: black;
+    color: #333;
     line-height: 1.5em;
 }
 div.sphinxsidebar ul.current li.toctree-l4 a {
-    color: black;
+    color: #333;
     line-height: 1.5em;
 }
 div.sphinxsidebar ul.current li.toctree-l5 a {
-    color: black;
+    color: #333;
     line-height: 1.5em;
 }
 div.related li.right {
@@ -879,7 +878,7 @@ div.sphinxsidebarwrapper ul {margin:0;padding:0;margin-left:10px;}
 div.sphinxsidebarwrapper ul li {font-family:Helvetica,Arial,Sans-serif;line-height:1.5;}
 div.sphinxsidebarwrapper ul li a:active,
 div.sphinxsidebarwrapper ul li a:focus {font-weight:900;}
-div.sphinxsidebarwrapper ul li a tt span {font-family:Helvetica,Arial,sans-serif;font-size:inherit;color: black;}
+div.sphinxsidebarwrapper ul li a tt span {font-family:Helvetica,Arial,sans-serif;font-size:inherit;color: #333;}
 div.sphinxsidebarwrapper ul li a:active tt span, div.sphinxsidebarwrapper ul li a:hover tt span, div.sphinxsidebarwrapper ul li a:focus tt span {font-weight:900}
 #div.sphinxsidebarwrapper ul.current li.current a tt span {font-weight:900;}
 #div.sphinxsidebar ul.current li.current tt.literal .pre {font-weight:900;}
