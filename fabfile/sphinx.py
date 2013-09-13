@@ -89,7 +89,7 @@ def html_tarball():
                      newp=os.path.basename(basename))
 
     process._create_link(input_fn=os.path.basename(tarball_name),
-                         outputfn=os.path.join(conf.build.paths.projectroot,
+                         output_fn=os.path.join(conf.build.paths.projectroot,
                                                 conf.build.paths.public_site_output,
                                                 conf.project.name + '.tar.gz'))
 
