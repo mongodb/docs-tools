@@ -469,15 +469,19 @@ def buildinfo_hash():
 
     generate_hash_file(fn)
 
-    release_fn = os.path.join(conf.build.paths.projectroot,
-                              conf.build.paths.branch_staging,
-                              'release.txt')
 
     if conf.project.name == 'manual':
-        with open(release_fn, 'w') as f:
-            f.write(conf.git.commit)
+        release_fn = os.path.join(conf.build.paths.projectroot,
+                                  conf.build.paths.branch_staging,
+                                  'release.txt')
+    else: 
+        release_fn = os.path.join(conf.build.paths.projectroot,
+                                  conf.build.paths.public, 'release.txt')
 
-        puts('[build]: generated "{0}" with current release hash.'.format(release_fn))
+    with open(release_fn, 'w') as f:
+        f.write(conf.git.commit)
+
+    puts('[build]: generated "{0}" with current release hash.'.format(release_fn))
 
 #################### tarball ####################
 
