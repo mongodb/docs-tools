@@ -46,9 +46,6 @@ def all_json_output():
     if not os.path.exists(json_dst):
         os.makedirs(json_dst)
 
-    print(cmd.format(src=os.path.join(conf.build.paths['branch-output'], 'json'),
-                     dst=json_dst))
-
     local(cmd.format(src=os.path.join(conf.build.paths['branch-output'], 'json'),
                      dst=json_dst))
     _copy_if_needed(list_file, public_list_file)

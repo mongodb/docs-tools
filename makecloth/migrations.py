@@ -29,7 +29,7 @@ def _job_transfer(migration, block):
             m.job('rm -rf {0}'.format(' '.join(fsobjs)))
 
         m.job('touch {0}'.format(migration['target']), block=block)
-        m.msg('[build]: migrated "{0}" to "{1}"'.format(migration['dependency'], 
+        m.msg('[build]: migrated "{0}" to "{1}"'.format(migration['dependency'],
                                                         migration['target']))
     else:
         m.msg('[build]: doing nothing for {0} in this branch'.format(migration['target']))
@@ -102,11 +102,13 @@ def build_all_sphinx_migrations(migrations):
             m.msg('[build]: created $@')
 
     m.newline(block='footer')
-    m.target('.PHONY', links['phony'], block='footer')
-    m.target('links', links['all'], block='footer')
-    m.newline(block='footer')
-    m.target('clean-links', block='footer')
-    m.job('rm -rf {0}'.format(' '.join(links['all'])), True)
+    if len(links['phony']) >= 1:
+        m.target('.PHONY', links['phony'], block='footer')
+    if len(links['all']) >= 1:
+        m.target('links', links['all'], block='footer')
+        m.newline(block='footer')
+        m.target('clean-links', block='footer')
+        m.job('rm -rf {0}'.format(' '.join(links['all'])), True)
 
 def main():
     conf_file = utils.get_conf_file(__file__)
