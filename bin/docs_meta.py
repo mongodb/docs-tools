@@ -119,6 +119,20 @@ def render_paths(fn, conf=None):
     paths.branch_source = os.path.join(paths.branch_output, 'source')
     paths.branch_staging = os.path.join(paths.public, get_branch())
 
+    public_site_output = {
+        'manual': os.path.join(paths.output, 'public', get_branch()),
+        'ecosystem': os.path.join(paths.output, 'public'),
+        'about': os.path.join(paths.output, 'public'),
+        'meta-driver': os.path.join(paths.output, 'public', get_branch()),
+        'mms-hosted': os.path.join(paths.output, 'public', 'hosted', get_branch()),
+        'mms-saas': os.path.join(paths.output, 'public', 'saas')
+    }
+
+    try:
+        paths.public_site_output = public_site_output[conf.project.name]
+    except KeyError:
+        paths.public_site_output = paths.public
+
     # for backwards compatibility
     paths['branch-staging'] = paths.branch_staging
     paths['branch-output'] = paths.branch_output

@@ -60,7 +60,7 @@ def html_tarball():
                                         'html', 'release.txt'))
 
     basename = os.path.join(conf.build.paths.projectroot,
-                            conf.build.paths.branch_staging,
+                            conf.build.paths.public_site_output,
                             conf.project.name + '-' + conf.git.branches.current)
 
     tarball_name = basename + '.tar.gz'
@@ -74,7 +74,7 @@ def html_tarball():
 
     process._create_link(input_fn=os.path.basename(tarball_name),
                          output_fn=os.path.join(conf.build.paths.projectroot,
-                                                conf.build.paths.branch_staging,
+                                                conf.build.paths.public_site_output,
                                                 conf.project.name + '.tar.gz'))
 
 @task
@@ -93,12 +93,12 @@ def man_tarball():
 
     process.copy_if_needed(tarball_name,
                            os.path.join(conf.build.paths.projectroot,
-                                        conf.build.paths.branch_staging,
+                                        conf.build.paths.public_site_output,
                                         os.path.basename(tarball_name)))
 
     process._create_link(input_fn=os.path.basename(tarball_name),
                          output_fn=os.path.join(conf.build.paths.projectroot,
-                                                conf.build.paths.branch_staging,
+                                                conf.build.paths.public_site_output,
                                                 'manpages' + '.tar.gz'))
 
 #################### Public Fabric Tasks ####################
