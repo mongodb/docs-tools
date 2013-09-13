@@ -469,14 +469,17 @@ def buildinfo_hash():
 
     generate_hash_file(fn)
 
-
     if conf.project.name == 'manual':
         release_fn = os.path.join(conf.build.paths.projectroot,
                                   conf.build.paths.branch_staging,
                                   'release.txt')
-    else: 
+    else:
         release_fn = os.path.join(conf.build.paths.projectroot,
                                   conf.build.paths.public, 'release.txt')
+
+
+    if not os.path.exists(os.path.dirname(release_fn)):
+        os.makedirs(os.path.dirname(release_fn))
 
     with open(release_fn, 'w') as f:
         f.write(conf.git.commit)

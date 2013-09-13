@@ -147,7 +147,7 @@ def build(builder='html', tag=None, root=None, nitpick=False):
 
     with settings(hide('running'), host_string='sphinx'):
         if env._clean_sphinx is True:
-            cleaner([ os.path.join(root, 'doctrees' + '-' + builder), 
+            cleaner([ os.path.join(root, 'doctrees' + '-' + builder),
                       os.path.join(root, builder) ] )
             puts('[clean-{0}]: removed all files supporting the {0} build'.format(builder))
         else:
@@ -166,12 +166,11 @@ def build(builder='html', tag=None, root=None, nitpick=False):
 
             local(cmd.format(builder, get_tags(builder, tag), root, get_sphinx_args(tag)))
 
-            if builder.startswith('linkcheck'):
-                puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
-
             puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
-            if builder.startswith('dirhtml'):
+            if builder.startswith('linkcheck'):
+                puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
+            elif builder.startswith('dirhtml'):
                 process.error_pages()
             elif builder.startswith('json') and not conf.project.name == 'mms':
                 process.json_output()
