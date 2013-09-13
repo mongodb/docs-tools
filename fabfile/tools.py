@@ -35,15 +35,16 @@ def bootstrap(action='setup'):
         local(' '.join(cmd))
 
 @task
-def conf():
-    conf = get_conf()
+def conf(conf=None):
+    if conf is None:
+        conf = get_conf()
     puts(json.dumps(conf, indent=3))
 
 @task
 def tags():
     conf = get_conf()
 
-    regexp_fn = os.path.join(os.path.join(conf.build.paths.projectroot, 
+    regexp_fn = os.path.join(os.path.join(conf.build.paths.projectroot,
                                         conf.build.paths.tools, 'etags.regexp'))
 
     if not os.path.exists(regexp_fn):
@@ -58,12 +59,12 @@ def tags():
     source = ' '.join(source)
 
     local('etags -I --language=none --regex=@{0} {1}'.format(regexp_fn, source))
-    
+
     regexps = [
         (re.compile(r'\.\. (.*):: \$*(.*)'), r'\1.\2'),
         (re.compile(r'\.\. _(.*)'), r'ref.\1')
     ]
 
-    munge_page(fn=os.path.join(conf.build.paths.projectroot, 'TAGS'), 
+    munge_page(fn=os.path.join(conf.build.paths.projectroot, 'TAGS'),
                regex=regexps,
                tag='dev')

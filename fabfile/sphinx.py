@@ -19,6 +19,22 @@ paths = conf.build.paths
 from intersphinx import intersphinx, intersphinx_jobs
 intersphinx = task(intersphinx)
 
+env.EDITION = None
+@task
+def edition(val=None):
+    if 'editions' in conf.project and val in conf.project.editions:
+        env.EDITION = val
+        conf.project.edition = val
+
+    if conf.project.name == 'mms':
+        conf.build.paths.public_site_output = conf.build.paths.mms[val]
+
+        if val == 'saas':
+            conf.build.paths.branch_staging = os.path.join(conf.build.paths.output, val)
+        elif val == 'hosted':
+            conf.build.paths.branch_staging = os.path.join(conf.build.paths.output, val,
+                                                           conf.git.branches.current)
+
 def get_tags(target, argtag):
     if argtag is None:
         ret = []
@@ -73,7 +89,7 @@ def html_tarball():
                      newp=os.path.basename(basename))
 
     process._create_link(input_fn=os.path.basename(tarball_name),
-                         output_fn=os.path.join(conf.build.paths.projectroot,
+                         outputfn=os.path.join(conf.build.paths.projectroot,
                                                 conf.build.paths.public_site_output,
                                                 conf.project.name + '.tar.gz'))
 
@@ -172,12 +188,12 @@ def build(builder='html', tag=None, root=None, nitpick=False):
                 puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
             elif builder.startswith('dirhtml'):
                 process.error_pages()
-            elif builder.startswith('json') and not conf.project.name == 'mms':
-                process.json_output()
+            elif builder.startswith('json'):
+                process.json_output(conf)
             elif builder.startswith('latex'):
                 process.pdfs()
             elif builder.startswith('man'):
                 generate.runner( process.manpage_url_jobs() )
                 man_tarball()
-            elif builder.startswith('html') and not conf.project.name == 'mms':
+            elif builder.startswith('html'):
                 html_tarball()

@@ -124,14 +124,19 @@ def render_paths(fn, conf=None):
         'ecosystem': os.path.join(paths.output, 'public'),
         'about': os.path.join(paths.output, 'public'),
         'meta-driver': os.path.join(paths.output, 'public', get_branch()),
-        'mms-hosted': os.path.join(paths.output, 'public', 'hosted', get_branch()),
-        'mms-saas': os.path.join(paths.output, 'public', 'saas')
+        'mms': paths.public,
     }
 
     try:
         paths.public_site_output = public_site_output[conf.project.name]
     except KeyError:
         paths.public_site_output = paths.public
+
+    if conf.project.name == 'mms':
+        conf.build.paths.mms = {
+            'hosted': os.path.join(paths.output, 'public', 'hosted', get_branch()),
+            'saas': os.path.join(paths.output, 'public', 'saas')
+        }
 
     # for backwards compatibility
     paths['branch-staging'] = paths.branch_staging

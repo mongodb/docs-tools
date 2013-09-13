@@ -23,20 +23,21 @@ def output(fn):
 
 ########## Process Sphinx Json Output ##########
 
-def json_output():
+def json_output(conf=None):
     if env.input_file is None or env.output_file is None:
-        all_json_output()
+        all_json_output(conf)
     else:
         process_json_file(env.input_file, env.output_file)
 
-def all_json_output():
-    conf = get_conf()
+def all_json_output(conf=None):
+    if conf is None:
+        conf = get_conf()
 
-    count = runner(json_output_jobs())
+    count = runner(json_output_jobs(conf))
 
     puts('[json]: processed {0} json files.'.format(str(count)))
 
-    list_file = os.path.join(conf.build.paths.branch_output, 'json-file-list')
+    list_file = os.path.join(conf.build.paths.branch_staging, 'json-file-list')
     public_list_file = os.path.join(conf.build.paths.public_site_output,
                                     'json', '.file_list')
 
@@ -46,20 +47,25 @@ def all_json_output():
     if not os.path.exists(json_dst):
         os.makedirs(json_dst)
 
-    local(cmd.format(src=os.path.join(conf.build.paths['branch-output'], 'json'),
+    local(cmd.format(src=os.path.join(conf.build.paths.branch_staging, 'json') + '/',
                      dst=json_dst))
-    _copy_if_needed(list_file, public_list_file)
 
+    _copy_if_needed(list_file, public_list_file)
     puts('[json]: deployed json files to local staging.')
 
-def json_output_jobs():
-    conf = get_conf()
+def json_output_jobs(conf=None):
+    if conf is None:
+        conf = get_conf()
 
     outputs = []
     for fn in expand_tree('source', 'txt'):
         # path = build/<branch>/json/<filename>
-        path = os.path.join(conf.build.paths.output, conf.git.branches.current,
-                            'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
+        if conf.project.name == 'mms':
+            path = os.path.join(conf.build.paths.branch_staging,
+                                'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
+        else:
+            path = os.path.join(conf.build.paths.branch_output,
+                                'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
         fjson = dot_concat(path, 'fjson')
         json = dot_concat(path, 'json')
 
@@ -67,21 +73,28 @@ def json_output_jobs():
                    dependency=fjson,
                    job=process_json_file,
                    args=(fjson, json))
-
         outputs.append(json)
 
-    list_file = os.path.join(conf.build.paths.branch_output, 'json-file-list')
+    list_file = os.path.join(conf.build.paths.branch_staging, 'json-file-list')
 
     yield dict(target=list_file,
                dependency=None,
                job=generate_list_file,
-               args=(outputs, list_file))
+               args=(outputs, list_file, conf))
 
-def generate_list_file(outputs, path):
+def generate_list_file(outputs, path, conf=None):
     dirname = os.path.dirname(path)
 
-    if get_conf().git.remote.upstream.endswith('ecosystem'):
+    if conf is None:
+        conf = get_conf()
+
+    if conf.project.name == 'ecosystem':
         url = 'http://docs.mongodb.org/ecosystem'
+    elif conf.project.name == 'mms':
+        if conf.project.edition == 'hosted':
+            url = '/'.join(['http://mms.mongodb.com/help-hosted', get_manual_path()])
+        else:
+            url = 'http://mms.mongodb.com/help'
     else:
         url = '/'.join(['http://docs.mongodb.org', get_manual_path()])
 
@@ -90,7 +103,7 @@ def generate_list_file(outputs, path):
 
     with open(path, 'w') as f:
         for fn in outputs:
-            f.write( '/'.join([ url, 'json', fn.split('/', 3)[3:][0]]))
+            f.write( '/'.join([ url, 'json', fn.split('/', 3)[3:][0]]) )
             f.write('\n')
 
     puts('[json]: rebuilt inventory of json output.')
