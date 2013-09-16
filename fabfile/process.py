@@ -72,7 +72,7 @@ def json_output_jobs(conf=None):
         yield dict(target=json,
                    dependency=fjson,
                    job=process_json_file,
-                   args=(fjson, json))
+                   args=(fjson, json, conf))
         outputs.append(json)
 
     list_file = os.path.join(conf.build.paths.branch_staging, 'json-file-list')
@@ -108,7 +108,7 @@ def generate_list_file(outputs, path, conf=None):
 
     puts('[json]: rebuilt inventory of json output.')
 
-def process_json_file(input_fn, output_fn):
+def process_json_file(input_fn, output_fn, conf=None):
     with open(input_fn, 'r') as f:
         document = f.read()
 
@@ -125,6 +125,8 @@ def process_json_file(input_fn, output_fn):
         text = re.sub('&#8217;', "'", text)
         text = re.sub(r'&#\d{4};', '', text)
         text = re.sub('&nbsp;', '', text)
+        text = re.sub('&gt;', '>', text)
+        text = re.sub('&lt;', '<', text)
 
         doc['text'] = ' '.join(text.split('\n')).strip()
 
@@ -134,9 +136,17 @@ def process_json_file(input_fn, output_fn):
 
         doc['title'] = title
 
-    url = [ 'http://docs.mongodb.org', get_manual_path() ]
+    if conf.project.name == 'mms':
+        if conf.project.edition == 'hosted':
+            url = ['http://mms.mongodb.com/help-hosted', get_manaul_path() ]
+        else:
+            url = ['http://mms.mongodb.com/help' ]
+    else:
+        url = [ 'http://docs.mongodb.org', get_manual_path() ]
+
     url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
-    doc['url'] = '/'.join(url)
+    doc['url'] = '/'.join(url) + '/'
+
 
     with open(output_fn, 'w') as f:
         f.write(json.dumps(doc))

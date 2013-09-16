@@ -25,10 +25,13 @@ def get_manual_path(conf=None):
     if conf is None:
         conf = load_conf()
 
+    if conf.project.name in ['about', 'ecosystem']:
+        return conf.project.name
+
     branch = get_branch()
 
     if branch == conf.git.branches.manual:
-        if conf.git.remote.upstream.endswith('mms-docs') or conf.git.remote.upstream.endswith('meta-driver'):
+        if conf.project.name == 'mms-docs' or conf.project.name == 'meta-driver':
             return 'current'
         else:
             return 'manual'
