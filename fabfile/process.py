@@ -47,7 +47,7 @@ def all_json_output(conf=None):
     if not os.path.exists(json_dst):
         os.makedirs(json_dst)
 
-    local(cmd.format(src=os.path.join(conf.build.paths.branch_staging, 'json') + '/',
+    local(cmd.format(src=os.path.join(conf.build.paths.branch_output, 'json') + '/',
                      dst=json_dst))
 
     _copy_if_needed(list_file, public_list_file)
@@ -56,6 +56,19 @@ def all_json_output(conf=None):
 def json_output_jobs(conf=None):
     if conf is None:
         conf = get_conf()
+
+    regexes = [
+        (re.compile(r'<a class=\"headerlink\"'), '<a'),
+        (re.compile(r'<[^>]*>'), ''),
+        (re.compile(r'&#8220;'), '"'),
+        (re.compile(r'&#8221;'), '"'),
+        (re.compile(r'&#8216;'), "'"),
+        (re.compile(r'&#8217;'), "'"),
+        (re.compile(r'&#\d{4};'), ''),
+        (re.compile(r'&nbsp;'), ''),
+        (re.compile(r'&gt;'), '>'),
+        (re.compile(r'&lt;'), '<')
+    ]
 
     outputs = []
     for fn in expand_tree('source', 'txt'):
@@ -72,7 +85,7 @@ def json_output_jobs(conf=None):
         yield dict(target=json,
                    dependency=fjson,
                    job=process_json_file,
-                   args=(fjson, json, conf))
+                   args=(fjson, json, regexes, conf))
         outputs.append(json)
 
     list_file = os.path.join(conf.build.paths.branch_staging, 'json-file-list')
@@ -81,6 +94,40 @@ def json_output_jobs(conf=None):
                dependency=None,
                job=generate_list_file,
                args=(outputs, list_file, conf))
+
+def process_json_file(input_fn, output_fn, regexes, conf=None):
+    with open(input_fn, 'r') as f:
+        document = f.read()
+
+    doc = json.loads(document)
+
+    if 'body' in doc:
+        text = doc['body'].encode('ascii', 'ignore')
+        text = munge_content(text, regexes)
+
+        doc['text'] = ' '.join(text.split('\n')).strip()
+
+    if 'title' in doc:
+        title = doc['title'].encode('ascii', 'ignore')
+        title = munge_content(title, regexes)
+
+        doc['title'] = title
+
+    if conf.project.name == 'mms':
+        if conf.project.edition == 'hosted':
+            url = ['http://mms.mongodb.com/help-hosted', get_manaul_path() ]
+        else:
+            url = ['http://mms.mongodb.com/help' ]
+    else:
+        url = [ 'http://docs.mongodb.org', get_manual_path() ]
+
+    url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
+    doc['url'] = '/'.join(url) + '/'
+
+    with open(output_fn, 'w') as f:
+        f.write(json.dumps(doc))
+
+    puts('[json]: generated a processed json file: ' + output_fn)
 
 def generate_list_file(outputs, path, conf=None):
     dirname = os.path.dirname(path)
@@ -107,51 +154,6 @@ def generate_list_file(outputs, path, conf=None):
             f.write('\n')
 
     puts('[json]: rebuilt inventory of json output.')
-
-def process_json_file(input_fn, output_fn, conf=None):
-    with open(input_fn, 'r') as f:
-        document = f.read()
-
-    doc = json.loads(document)
-
-    if 'body' in doc:
-        text = doc['body'].encode('ascii', 'ignore')
-
-        text = re.sub(r'<a class=\"headerlink\"', '.<a', text)
-        text = re.sub('<[^>]*>', '', text)
-        text = re.sub('&#8220;', '"', text)
-        text = re.sub('&#8221;', '"', text)
-        text = re.sub('&#8216;', "'", text)
-        text = re.sub('&#8217;', "'", text)
-        text = re.sub(r'&#\d{4};', '', text)
-        text = re.sub('&nbsp;', '', text)
-        text = re.sub('&gt;', '>', text)
-        text = re.sub('&lt;', '<', text)
-
-        doc['text'] = ' '.join(text.split('\n')).strip()
-
-    if 'title' in doc:
-        title = doc['title'].encode('ascii', 'ignore')
-        title = re.sub('<[^>]*>', '', title)
-
-        doc['title'] = title
-
-    if conf.project.name == 'mms':
-        if conf.project.edition == 'hosted':
-            url = ['http://mms.mongodb.com/help-hosted', get_manaul_path() ]
-        else:
-            url = ['http://mms.mongodb.com/help' ]
-    else:
-        url = [ 'http://docs.mongodb.org', get_manual_path() ]
-
-    url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
-    doc['url'] = '/'.join(url) + '/'
-
-
-    with open(output_fn, 'w') as f:
-        f.write(json.dumps(doc))
-
-    puts('[json]: generated a processed json file: ' + output_fn)
 
 ########## Update Dependencies ##########
 
@@ -413,11 +415,7 @@ def munge_page(fn, regex, out_fn=None,  tag='build'):
     with open(fn, 'r') as f:
         page = f.read()
 
-    if isinstance(regex, list):
-        for cregex, subst in regex:
-            page = cregex.sub(subst, page)
-    else:
-        page = regex[0].sub(regex[1], page)
+    page = munge_content(page, regex)
 
     if out_fn is None:
         out_fn = fn
@@ -426,6 +424,14 @@ def munge_page(fn, regex, out_fn=None,  tag='build'):
         f.write(page)
 
     puts('[{0}]: processed {1}'.format(tag, fn))
+
+def munge_content(content, regex):
+    if isinstance(regex, list):
+        for cregex, subst in regex:
+            content = cregex.sub(subst, content)
+        return content
+    else:
+        return regex[0].sub(regex[1], content)
 
 def error_pages():
     conf = get_conf()

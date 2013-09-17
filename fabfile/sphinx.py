@@ -30,9 +30,9 @@ def edition(val=None):
         conf.build.paths.public_site_output = conf.build.paths.mms[val]
 
         if val == 'saas':
-            conf.build.paths.branch_staging = os.path.join(conf.build.paths.output, val)
+            conf.build.paths.branch_output = os.path.join(conf.build.paths.output, val)
         elif val == 'hosted':
-            conf.build.paths.branch_staging = os.path.join(conf.build.paths.output, val,
+            conf.build.paths.branch_output = os.path.join(conf.build.paths.output, val,
                                                            conf.git.branches.current)
 
 def get_tags(target, argtag):
