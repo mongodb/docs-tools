@@ -50,6 +50,7 @@ def generate_match_rule(redir, base, conf=None):
 
 def generate_simple_rule(redir, base=None, conf=None):
     conf = update_conf(conf)
+
     if base is None:
         base = redir['outputs'][0]
 
@@ -67,13 +68,15 @@ def generate_simple_rule(redir, base=None, conf=None):
                         conf.project.url, redir['url-base'])
 
 def generate_external_rule(redir, base=None, conf=None):
+    conf = update_conf(conf)
+
     if base is None:
         base = redir['outputs'][0]
 
     o = 'Redirect {0} /{1}{2} {3}/{4}{5}'
 
     return o.format(redir['code'], base, redir['redirect-path'],
-                    redir['external'], redir['url-base'])
+                    conf.project.url, redir['external'], redir['url-base'])
 
 def determine_is_multi(targets):
     if len(targets) > 1:
