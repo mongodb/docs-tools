@@ -5,9 +5,14 @@ import utils
 
 from docs_meta import get_conf
 
-def process_redirect(redirect, conf=None):
+def update_conf(conf):
     if conf is None:
-        conf = get_conf()
+        return get_conf()
+    else:
+        return conf
+
+def process_redirect(redirect, conf=None):
+    conf = update_conf(conf)
 
     if 'all' in redirect['outputs']:
         redirect['outputs'].remove('all')
@@ -15,7 +20,9 @@ def process_redirect(redirect, conf=None):
             redirect['outputs'].append(branch)
 
     for output in redirect['outputs']:
-        if output.startswith('after-'):
+        if isinstance(output, dict):
+            continue
+        elif output.startswith('after-'):
             idx = conf.git.branches.published.index(output.split('-', 1)[1])
 
             redirect['outputs'].remove(output)
@@ -33,26 +40,37 @@ def process_redirect(redirect, conf=None):
 
     return redirect
 
-def generate_match_rule(redir, base):
-    o = 'RedirectMatch {0} /({1}){2} http://docs.mongodb.org/$1{3}'
+def generate_match_rule(redir, base, conf=None):
+    conf = update_conf(conf)
+
+    o = 'RedirectMatch {0} /({1}){2} {3}/$1{4}'
 
     return o.format(redir['code'], base, redir['redirect-path'],
-                    redir['url-base'])
+                    conf.project.url, redir['url-base'])
 
-def generate_simple_rule(redir, base=None):
+def generate_simple_rule(redir, base=None, conf=None):
+    conf = update_conf(conf)
     if base is None:
         base = redir['outputs'][0]
 
-    o = 'Redirect {0} /{1}{2} http://docs.mongodb.org/{1}{3}'
+    if isinstance(base, dict):
+        left, right = base.items()[0]
 
-    return o.format(redir['code'], base, redir['redirect-path'],
-                    redir['url-base'])
+        o = 'Redirect {0} /{1}{2} {3}/{4}{5}'
 
-def generate_external_rule(redir, base=None):
+        return o.format(redir['code'], left, redir['redirect-path'],
+                        conf.project.url, right, redir['url-base'])
+    else:
+        o = 'Redirect {0} /{1}{2} {3}/{1}{4}'
+
+        return o.format(redir['code'], base, redir['redirect-path'],
+                        conf.project.url, redir['url-base'])
+
+def generate_external_rule(redir, base=None, conf=None):
     if base is None:
         base = redir['outputs'][0]
 
-    o = 'Redirect {0} /{1}{2} http://docs.mongodb.org/{3}{4}'
+    o = 'Redirect {0} /{1}{2} {3}/{4}{5}'
 
     return o.format(redir['code'], base, redir['redirect-path'],
                     redir['external'], redir['url-base'])
@@ -63,13 +81,15 @@ def determine_is_multi(targets):
     else:
         return False
 
-def generate_redirects(redirect, match=False):
+def generate_redirects(redirect, match=False, conf=None):
+    conf = update_conf(conf)
+
     multi = determine_is_multi(redirect['outputs'])
 
     if 'external' in redirect:
         o = ''
         for output in redirect['outputs']:
-            o += generate_external_rule(redirect, output)
+            o += generate_external_rule(redirect, output, conf)
             o += '\n'
     elif multi and match is True:
         _base = ''
@@ -77,15 +97,15 @@ def generate_redirects(redirect, match=False):
             _base += path + '|'
         base = _base[:-1]
 
-        o = generate_match_rule(redirect, base)
+        o = generate_match_rule(redirect, base, conf)
         o += '\n'
     elif multi is True and match is False:
         o = ''
         for output in redirect['outputs']:
-            o += generate_simple_rule(redirect, output)
+            o += generate_simple_rule(redirect, output, conf)
             o += '\n'
     elif multi is False:
-        o = generate_simple_rule(redirect)
+        o = generate_simple_rule(redirect, conf=conf)
         o += '\n'
 
     return o
@@ -108,9 +128,9 @@ def main():
     lines = []
     for doc in utils.ingest_yaml(ui.data):
         if doc['type'] == 'redirect':
-            lines.append(generate_redirects(process_redirect(doc, conf), match=ui.match))
+            lines.append(generate_redirects(process_redirect(doc, conf=conf), match=ui.match, conf=conf))
         if doc['type'] == 'redirect-draft':
-            print(generate_redirects(process_redirect(doc, conf), match=ui.match))
+            print(generate_redirects(process_redirect(doc, conf=conf), match=ui.match, conf=conf))
 
     if lines:
         with open(ui.filename, 'w') as f:
