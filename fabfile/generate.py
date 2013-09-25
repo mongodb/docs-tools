@@ -539,7 +539,7 @@ def htaccess(fn='.htaccess'):
 
     lines = set()
     for redir in sources:
-        lines.add(generate_redirects(process_redirect(redir, conf), match=False))
+        lines.add(generate_redirects(process_redirect(redir, conf), conf=conf, match=False))
 
     with open(fn, 'w') as f:
         f.writelines(lines)
