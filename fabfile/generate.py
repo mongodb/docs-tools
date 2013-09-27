@@ -18,7 +18,7 @@ from rstcloth.images import generate_image_pages
 from rstcloth.releases import generate_release_output
 from rstcloth.hash import generate_hash_file
 
-def runner(jobs, pool=None):
+def runner(jobs, pool=None, retval='count'):
     if pool == 1:
         env.PARALLEL = False
 
@@ -31,18 +31,19 @@ def runner(jobs, pool=None):
             p = Pool()
 
     count = 0
+    results = []
     for job in jobs:
         if env.FORCE or check_dependency(job['target'], job['dependency']):
             if env.PARALLEL is True:
                 if isinstance(job['args'], dict):
-                    p.apply_async(job['job'], kwds=job['args'])
+                    results.append(p.apply_async(job['job'], kwds=job['args']))
                 else:
-                    p.apply_async(job['job'], args=job['args'])
+                    results.append(p.apply_async(job['job'], args=job['args']))
             else:
                 if isinstance(job['args'], dict):
-                    job['job'](**job['args'])
+                    results.append(job['job'](**job['args']))
                 else:
-                    job['job'](*job['args'])
+                    results.append(job['job'](*job['args']))
 
             count +=1
 
@@ -50,7 +51,17 @@ def runner(jobs, pool=None):
         p.close()
         p.join()
 
-    return count
+    # return values differ based on retval argument
+    if retval == 'count':
+        return count
+    elif retval == 'results':
+        return ( o.get() for o in results )
+    elif retval is None:
+        return None
+    else:
+        return dict(count=count,
+                    results=( o.get() for o in results )
+                   )
 
 #################### API Param Table Generator ####################
 
@@ -412,9 +423,11 @@ def release_jobs():
 #################### Copy of Source Directory for Build  ####################
 
 @task
-def source():
-    paths = render_paths('obj')
-    target = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', paths['branch-output']))
+def source(conf=None):
+    if conf is None:
+        conf = get_conf()
+
+    target = os.path.join(conf.build.paths.projectroot, conf.build.paths.branch_output)
 
     if not os.path.exists(target):
         os.makedirs(target)
@@ -422,7 +435,9 @@ def source():
     elif not os.path.isdir(target):
         abort('[sphinx-prep]: {0} exists and is not a directory'.format(target))
 
-    local('rsync --recursive --times --delete {0} {1}'.format(paths.source, target))
+    source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
+
+    local('rsync --recursive --times --delete {0} {1}'.format(source_dir, target))
     puts('[sphinx-prep]: updated source in {0}'.format(target))
 
     with quiet():
