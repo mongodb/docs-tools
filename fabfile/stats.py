@@ -75,7 +75,7 @@ def _output_report_yaml(data):
 ########## user facing operations ##########
 
 ## Report Generator
-def _generate_report(mask, output_file, conf=None):
+def _generate_report(mask, output_file=None, conf=None):
     if conf is None:
         conf = get_conf()
 
@@ -101,26 +101,46 @@ def _generate_report(mask, output_file, conf=None):
     p.close()
     p.join()
 
-    output = [ _output_report_yaml(o.get()) for o in output ]
+    stats = [ _output_report_yaml(o.get()) for o in output ]
 
-    if len(output) == 0:
-        output[0] = output[0][4:]
+    if len(stats) == 0:
+        stats[0] = stats[0][4:]
 
-    output.append('...\n')
+    stats.append('...\n')
 
     if output_file is None:
-        for ln in output:
+        return (o.get() for o in output )
+    elif output_file == 'print':
+        for ln in stats:
             print(ln[:-1])
     else:
         with open(output_file, 'w') as f:
-            for ln in output:
+            for ln in stats:
                 f.write(ln)
 
 ## User facing fabric tasks
 
 @task
+def wc(mask=None):
+    report = _generate_report(mask)
+
+    count = 0
+    for doc in report:
+        count += doc['stats']['word-count']
+
+    msg = "[stats]: there are {0} words".format(count)
+    if mask is None:
+        msg += ' total'
+    else:
+        msg += ' in ' + mask
+
+    puts(msg)
+
+    return count
+
+@task
 def report(fn=None):
-    _generate_report(fn, None)
+    _generate_report(fn, output_file='print')
 
 @task
 def sweep(mask=None):
