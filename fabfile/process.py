@@ -2,6 +2,7 @@ import json
 import re
 import os
 import shutil
+import collections
 
 from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
 from make import check_dependency, check_three_way_dependency
@@ -550,3 +551,44 @@ def manpage_jobs():
                 'job': _process_page,
                 'args': [ input_fn, output_fn, regex, 'manpage' ],
               }
+
+def post_process_jobs(source_fn=None, tasks=None, conf=None):
+    if tasks is None:
+        if conf is None:
+            conf = get_conf()
+
+        if source_fn is None:
+            source_fn = os.path.join(conf.build.paths.project.root,
+                                     conf.build.paths.builddata,
+                                     'processing.yaml')
+        tasks = ingest_yaml(source_fn)
+    elif not isinstance(tasks, collections.Iterable):
+        abort('[ERROR]: cannot parse post processing specification.')
+
+    def rjob(fn, regex, type):
+        return {
+                 'target': fn,
+                 'dependency': None,
+                 'job': _process_page,
+                 'args': dict(fn=fn, output_fn=fn, regex=regex, builder=type)
+               }
+
+    for job in tasks:
+        if not isinstance(job, dict):
+            abort('[ERROR]: invalid replacement specification.')
+        elif not 'file' in job and not 'transform' in job:
+            abort('[ERROR]: replacement specification incomplete.')
+
+        if 'type' not in job:
+            job['type'] = 'processor'
+
+        if isinstance(job['transform'], list):
+            regex = [ ( re.compile(rs['regex'], rs['replace']) ) for rs  in job['transform'] ]
+        else:
+            regex = ( re.compile(job['transform']['regex']), job['transform']['replace'])
+
+        if isinstance(job['file'], list):
+            for fn in job['file']:
+                yield rjob(fn, regex, job['type'])
+        else:
+            yield rjob(fn, regex, job['type'])
