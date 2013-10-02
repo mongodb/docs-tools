@@ -107,7 +107,10 @@ def _get_toc_base_name(fn):
         return os.path.splitext(bn)[0][4:]
 
 def _get_toc_output_name(name, type, paths):
-    return os.path.join(paths.includes, '{0}-{1}.rst'.format(type, name))
+    if type == 'toc':
+        return os.path.join(paths.includes, 'toc', '{0}.rst'.format(name))
+    else:
+        return os.path.join(paths.includes, 'toc', '{0}-{1}.rst'.format(type, name))
 
 def _generate_toc_tree(fn, fmt, base_name, paths):
     puts('[toc]: generating {0} toc'.format(fn))
@@ -203,25 +206,40 @@ def toc_jobs():
 ## Internal Supporting Methods
 
 def _get_table_output_name(fn):
-    return dot_concat(os.path.splitext(fn)[0], 'rst')
+    base, leaf = os.path.split(os.path.splitext(fn)[0])
+
+    return dot_concat(os.path.join(base, 'table', leaf[6:]), 'rst')
+
 def _get_list_table_output_name(fn):
-    return dot_concat(hyph_concat(os.path.splitext(fn)[0], 'list'), 'rst')
+    base, leaf = os.path.split(os.path.splitext(fn)[0])
+
+    return dot_concat(hyph_concat(os.path.join(base, 'table', leaf[6:]), 'list'), 'rst')
+
+def make_parent_dirs(*paths):
+    for path in paths:
+        dirname = os.path.dirname(path)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
 
 def _generate_tables(source, target, list_target):
     table_data = YamlTable(source)
 
-    build_all = False
-    if not table_data.format or table_data.format is None:
-        build_all = True
+    make_parent_dirs(target, list_target)
 
-    if build_all or table_data.format == 'list':
-        list_table = TableBuilder(ListTable(table_data))
-        list_table.write(list_target)
-        puts('[table]: rebuilt {0}'.format(list_target))
+    # if not table_data.format or table_data.format is None:
+    #     build_all = True
 
-        list_table.write(target)
-        puts('[table]: rebuilt {0} as (a list table)'.format(target))
+    list_table = TableBuilder(ListTable(table_data))
+    list_table.write(list_target)
+    puts('[table]: rebuilt {0}'.format(list_target))
 
+    list_table.write(target)
+    puts('[table]: rebuilt {0} as (a list table)'.format(target))
+
+    # if build_all or table_data.format == 'list':
+    #     list_table = TableBuilder(ListTable(table_data))
+    #     list_table.write(list_target)
+    #     puts('[table]: rebuilt {0}'.format(list_target))
     # if build_all or table_data.format == 'rst':
     #     # this really ought to be RstTable, but there's a bug there.
     #     rst_table = TableBuilder(ListTable(table_data))
@@ -240,9 +258,9 @@ def tables():
     puts('[table]: built {0} tables'.format(count))
 
 def table_jobs():
-    paths = render_paths('obj')
+    paths = get_conf().build.paths
 
-    for source in expand_tree(paths.includes, 'yaml'):
+    for source in expand_tree(os.path.join(paths.projectroot, paths.includes), 'yaml'):
         if os.path.basename(source).startswith('table'):
             target = _get_table_output_name(source)
             list_target = _get_list_table_output_name(source)
@@ -253,6 +271,7 @@ def table_jobs():
                     'job': _generate_tables,
                     'args': [ source, target, list_target ]
                   }
+
 
 #################### Generate Images and Related Content  ####################
 
