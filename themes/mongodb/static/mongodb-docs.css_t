@@ -13,12 +13,14 @@
 /* -- page layout ----------------------------------------------------------- */
 
 body {
-    font-family: helvetica,arial,sans-serif;
+    font-family: "helvetica neue",helvetica,arial,sans-serif;
     font-size: 100%;
     background-color: #402817;
     color: #333;
     margin: 0;
     padding: 0;
+    font-weight: 300;
+    letter-spacing: .3px;
 }
 
 div.documentwrapper {
