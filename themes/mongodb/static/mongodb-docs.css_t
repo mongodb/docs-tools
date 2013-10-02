@@ -15,7 +15,7 @@
 body {
     font-family: "helvetica neue",helvetica,arial,sans-serif;
     font-size: 100%;
-    background-color: #402817;
+    background-color: #eee;
     color: #333;
     margin: 0;
     padding: 0;
@@ -48,6 +48,7 @@ div.body {
 div.body > div#cse-results {margin:0;padding:0;height:auto;}
 div.footer {
     color:white;
+    background-color:#402817;
     width:auto;
     padding:0;
     margin:0;
