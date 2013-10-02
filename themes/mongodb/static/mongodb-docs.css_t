@@ -174,7 +174,7 @@ a:hover {
 div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
     font-family: helvetica,arial,sans-serif;
     font-weight: bold;
-    margin: 30px 0px 0px 0px;
+    margin: 2px 0px 0px 0px;
     padding: 0;
 }
 
@@ -184,25 +184,29 @@ div.body h1 {
     font-size: 200%;
 }
 div.body h2 { font-size: 150%; }
-div.body h3 { font-size: 120%; }
+div.body h3 { 
+    font-size: 135%; 
+    font-weight: normal !important;
+}
+
 div.body h4 { font-size: 110%; }
 div.body h5 { font-size: 100%; }
 div.body h6 { font-size: 100%; }
 
 div.body h1 + p,  div.body h2 + p, div.body h3 + p, div.body h4 + p,
-div.body h1 + ul, div.body h2 + ul, div.body h3 + ul, div.body  h4 + ul,
 div.body h1 + dl, div.body h2 + dl, div.body h3 + dl,  div.body h4 + dl {
-    padding-top:0;
-    margin-top:0em;
+    padding-top:0.4em;
+    margin-top: 0em;
     text-indent:0;
+    padding-bottom: 0.3em;
 }
 
-div.section h1 + p,  div.section h2 + p, div.section h3 + p, div.section h4 + p,
-div.section h1 + ul, div.section h2 + ul, div.section h3 + ul, div.section  h4 + ul,
-div.section h1 + dl, div.section h2 + dl, div.section h3 + dl,  div.section h4 + dl {
+div.body h1 + ul, div.body h2 + ul, div.body h3 + ul, div.body  h4 + ul,
+div.section h1 + ul, div.section h2 + ul, div.section h3 + ul, div.section  h4 + ul{
     padding-top:0;
-    margin-top:1.05em;
+    margin-top: 0.3em;
     text-indent:0;
+    margin-left: -1.5em !important; 
 }
 
 a.headerlink {
@@ -219,8 +223,8 @@ a.headerlink:hover {
 
 div.body p, div.body dd { line-height: 1.8; }
 div.body li {
-    padding-top: .5em;
-    line-height: 1.4em;
+    padding-top: .2em;
+    line-height: 1.3em;
 }
 div.admonition p.admonition-title + p { display: inline; }
 div.highlight{ background-color: white; }
@@ -385,8 +389,9 @@ div#mongodb ul {
 }
 
 div#mongodb ul.simple {
-    padding-left:40px;
     list-style:circle;
+    margin-top: 0px;
+    padding-left:0px;
 }
 
 /*
@@ -773,16 +778,22 @@ div.body {
 }
 */
 
-div.body p { line-height: 1.5em; }
+div.body p { 
+    line-height: 1.3em;  
+    margin: 0.2em 0 0.8em 0!important
+}
 
-div.body li>p { line-height: 1.5em; }
+div.body li>p { 
+    line-height: 1.3em; 
+    margin-bottom: 0.2em !important;
+}
 
 div.highlight pre { background-color: #F5F5F5; }
 
 div.section > h2, div.section > h3,div.section > h4 {
-    margin-top:0;
+    margin-top: 0.8em;
     padding-top:0;
-    line-height:1.77
+    margin-bottom: 0.2em;
 }
 
 div.admonition p {
@@ -845,11 +856,6 @@ div#btnv ul#btnvl li#btnvnx {
 div.body > div.section > div.section {
     margin-left:0;
     margin-top:2em;
-}
-
-div.body > div.section > div.section div.section {
-    margin-left: 2pc;
-    margin-right: 2pc;
 }
 
 table.docutils {
