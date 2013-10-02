@@ -746,8 +746,8 @@ input.gsc-input {
 
 tt,tt  span.pre {
     font-family: 'Inconsolata', monospace;
-    font-weight: bold;
-    font-size: 1.04em;
+    font-size: 1.05em;
+    letter-spacing: .5px;
 }
 tt.descname {
     font-size: 1.15em;
