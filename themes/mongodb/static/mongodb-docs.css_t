@@ -302,6 +302,11 @@ a>tt {
     color: #003594;
 }
 
+tt.xref, a tt {
+    font-weight: normal;
+}
+
+
 .viewcode-back { font-family: helvetica,arial,sans-serif; }
 
 div.viewcode-block:target {
