@@ -24,12 +24,12 @@ body {
 }
 
 div.documentwrapper {
-    float: left;
-    width: 100%;
-    background-color: #F3F4EB;
+    /* float: left; */
+    /* width: 100%; */
+    /* background-color: #F3F4EB; */
+    padding-left: 0;
+    padding-right: 0;
 }
-
-div.bodywrapper { margin: 0 0 0 280px; }
 
 hr { border: 1px solid #B1B4B6; }
 
@@ -50,8 +50,6 @@ div.footer {
     color:white;
     background-color:#402817;
     width:auto;
-    padding:0;
-    margin:0;
     text-align:center;
     font-size:80%;
     border:none;
@@ -92,15 +90,15 @@ div.footer-nav div.related ul {
 
 div.sphinxsidebar {
     font-size: 0.72em;
-    line-height: 1.4em;
-    width: 280px;
-    padding-top: .45em;
+    background-color: #F3F4EB;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 div.sphinxsidebarwrapper{
     font-size: 1.0em;
     background-color: #F3F4EB;
-    padding: 12px 5px;
+    padding: 12px 20px;
 }
 
 div.sphinxsidebar h3 {
@@ -187,8 +185,8 @@ div.body h1 {
     font-size: 200%;
 }
 div.body h2 { font-size: 150%; }
-div.body h3 { 
-    font-size: 135%; 
+div.body h3 {
+    font-size: 135%;
     font-weight: normal !important;
 }
 
@@ -209,7 +207,7 @@ div.section h1 + ul, div.section h2 + ul, div.section h3 + ul, div.section  h4 +
     padding-top:0;
     margin-top: 0.3em;
     text-indent:0;
-    margin-left: -1.5em !important; 
+    margin-left: -1.5em !important;
 }
 
 a.headerlink {
@@ -449,24 +447,15 @@ div.sphinxsidebar tt.literal .pre {
 }
 
 /* header-db */
-div.spread {
-    margin: 0 auto;
-    width: 100%;
-    min-width: 975px;
-}
 
 div.split {
-    width: 950px;
     margin: 0 auto;
-    text-align: left;
+    position: relative;
 }
 
 #header-db {
     height: 110px;
     background-color: #402817;
-    background-repeat: no-repeat;
-    background-position: top center;
-    margin-top:0;
 }
 
 #header-db div#logo {
@@ -578,7 +567,7 @@ input[type="text"]:disabled { color: #333; }
 
 div.search-db {
     position: absolute;
-    top: 46px;
+    top: 35px;
     right: 10px;
     width: 246px;
     height: 31px;
@@ -701,29 +690,51 @@ div#docs-header { width: 950px; }
 
 div#main-db.hidden { display: none; }
 
-div#header-db  { background-repeat: repeat-x; }
-
-div#header-db div.split { float: left; }
-
 div.gsc-control-cse-en, div.gsc-control-cse { padding: 0 !important; }
 
-.cse .gsc-search-button input.gsc-search-button-v2,input.gsc-search-button-v2 {
-    height: 13px;
-    margin-top: 0px!important;
-    min-width: 13px;
-    padding: 6px 27px;
-    width: 13px;
+form.gsc-search-box {
+    background-color: rgba(255,255,255,0.3);
+    border-radius: 6px;
+    border: 1px solid #3b2920;
+}
+
+.gsc-search-box.gsc-search-box-tools .gsc-search-box .gsc-input {
+    padding: 0;
+}
+
+div.gsc-input-box,
+.gsc-search-box .gsc-input>input:hover, .gsc-input-box-hover,
+.gsc-search-box .gsc-input>input:focus, .gsc-input-box-focus {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+/* [name] selector is a hack to override google's stylsheet */
+.gsc-input input.gsc-input[name="search"] {
+    background-color: transparent !important;
+    color: white;
+}
+
+.gsib_b {
+    display: none;
+}
+
+/* [title] selector is a hack to override google's stylesheet */
+input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-search-button:focus[title] {
+    border-color: transparent;
+    background-color: transparent;
+    padding: 0 8px;
 }
 
 div#etp {
     position: absolute;
     background: none;
     margin: 0;
-    top: 87px;
+    top: 79px;
     padding: 0;
-    float: right;
     right: 10px;
-    color: #C48C55
+    color: white;
 }
 
 div#etp ul {
@@ -735,19 +746,20 @@ div#etp ul li {
     display: inline;
     list-style-type: none;
     font-size: 10pt;
-    color: #C48C55;
     padding: 8px 1em 0 0;
 }
 
-div#etp ul li a { color: #AA814D }
+div#etp ul li a {
+    color: white
+}
 
 div#etp ul li:before {
     content: "|";
     padding-right: 1em;
-    color: #c48c55
 }
 
 div#etp ul li:first-child:before { content: ""; }
+div#etp ul li:last-child { padding-right: 0; }
 
 input.gsc-input {
     background: none;
@@ -772,8 +784,6 @@ div.section > h1 + dl.projection > dt {display: none;}
 
 div.section {cursor: default;}
 
-div#header-db {background-image: url(http://media.mongodb.org/back-header.png)}
-
 /*
   background-color: #f6f4cd; -- house nav style
   footer bg: #fdfcf7; font-size 80%; line-height:1.5em; color: #4c3a2c;
@@ -791,13 +801,13 @@ div.body {
 }
 */
 
-div.body p { 
-    line-height: 1.3em;  
+div.body p {
+    line-height: 1.3em;
     margin: 0.2em 0 0.8em 0!important
 }
 
-div.body li>p { 
-    line-height: 1.3em; 
+div.body li>p {
+    line-height: 1.3em;
     margin-bottom: 0.2em !important;
 }
 
@@ -893,7 +903,6 @@ div.admonition-example pre { background-color: #FBFBFB; }
 li p.first { margin-bottom: 0em; }
 h4#vnd {padding:0;margin:0;line-height:1.5;padding-left:10px;}
 
-div.sphinxsidebarwrapper {padding-top:0.5em; padding-left: 8px;}
 div.sphinxsidebarwrapper ul {margin:0;padding:0;margin-left:10px;}
 div.sphinxsidebarwrapper ul li {font-family:Helvetica,Arial,Sans-serif;line-height:1.5;}
 div.sphinxsidebarwrapper ul li a:active,
