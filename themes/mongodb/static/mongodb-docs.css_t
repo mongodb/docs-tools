@@ -15,7 +15,7 @@
 body {
     font-family: "helvetica neue",helvetica,arial,sans-serif;
     font-size: 100%;
-    background-color: #eee;
+    background-color: #402817;
     color: #333;
     margin: 0;
     padding: 0;
