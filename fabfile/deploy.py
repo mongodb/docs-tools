@@ -84,6 +84,10 @@ def delete(opt=True):
 @task
 @parallel
 def static(local_path='all', remote=None):
+    if local_path.endswith('.htaccess') and env.branch != 'master':
+        puts('[deploy] [ERROR]: cowardly refusing to deploy a non-master htaccess file.')
+        return False
+
     cmd = [ 'rsync', rsync_options(recursive=False, delete=False) ]
 
     if local_path == 'all':
@@ -100,6 +104,11 @@ def static(local_path='all', remote=None):
 @task
 @parallel
 def push(local_path, remote):
+    if get_conf().project.name == 'mms' and (env.branch != 'master' and
+                                             env.edition == 'saas'):
+        puts('[deploy] [ERROR]: cowardly refusing to push non-master saas.')
+        return False
+
     if local_path.endswith('/') or local_path.endswith('/*'):
         local_path = local_path
     else:

@@ -82,13 +82,18 @@ def generate_build_system(data):
 
         push_cmd = ['fab']
 
+        push_cmd.append('git.branch:' + get_branch())
+
+        if 'edition' in builder:
+            push_cmd.append('sphinx.edition:' + builder['edition'])
+
         if is_recursive(builder['options']):
             push_cmd.append('deploy.recursive')
+
         if is_delete(builder['options']):
             push_cmd.append('deploy.delete')
 
-        push_cmd.append( 'deploy.remote:"{0}"'.format(builder['env']))
-
+        push_cmd.append('deploy.remote:"{0}"'.format(builder['env']))
         push_cmd.append('deploy.{0}:local_path="{1}",remote="{2}"'.format(build_type(builder['options']),
                                                                           get_branched_path(builder['options'],
                                                                                             conf.build.paths.output,
