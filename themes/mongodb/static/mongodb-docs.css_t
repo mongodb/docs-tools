@@ -796,7 +796,11 @@ div.body li>p {
     margin-bottom: 0.2em !important;
 }
 
-div.highlight pre { background-color: #F5F5F5; }
+div.highlight pre { 
+    background-color: #F5F5F5;
+    font-family: 'Inconsolata', monospace;
+    font-size: 1.1em;
+}
 
 div.section > h2, div.section > h3,div.section > h4 {
     margin-top: 0.8em;
