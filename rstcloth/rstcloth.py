@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
+
 import textwrap
 
-from cloth import Cloth, AttributeDict
+from rstcloth.cloth import Cloth
 
 def fill(string, first=0, hanging=0, wrap=True):
     first_indent = ' ' * first
@@ -23,10 +25,10 @@ def fill(string, first=0, hanging=0, wrap=True):
     if wrap is True:
         return textwrap.fill(string,
                              width=72,
-                             initial_indent=first_indent,
-                             subsequent_indent=hanging_indent,
                              break_on_hyphens=False,
-                             break_long_words=False)
+                             break_long_words=False,
+                             initial_indent=first_indent,
+                             subsequent_indent=hanging_indent)
     else:
         content = string.split('\n')
         if first == hanging:
@@ -34,7 +36,7 @@ def fill(string, first=0, hanging=0, wrap=True):
         elif first > hanging:
             indent_diff = first - hanging
             o = indent_diff * ' '
-            o + '\n'.join([ hanging_indent + line for line in content ])
+            o += '\n'.join([ hanging_indent + line for line in content ])
             return o
         elif first < hanging:
             indent_diff = hanging - first
@@ -47,26 +49,24 @@ def _indent(content, indent):
     else:
         indent = ' ' * indent
         if isinstance(content, list):
-            for line in content:
-                return map(lambda line: indent + line, content)
+            return [ indent + line for line in content ]
         else:
             return indent + content
 
-
 class RstCloth(Cloth):
     def __init__(self):
-        self.docs = AttributeDict( { } )
-        self.docs._all = [ ]
+        self.docs = dict()
+        self.docs['_all'] = [ ]
 
     def _add(self, content, block='_all'):
         def _add_line(line):
-            self.docs._all.append(line)
+            self.docs['_all'].append(line)
 
             if block != '_all':
                 if block not in self.docs:
                     self.docs[block] = []
 
-                self.docs[block] = content
+                self.docs[block].append(line)
 
         if isinstance(content, list):
             for string in content:
@@ -79,6 +79,7 @@ class RstCloth(Cloth):
             if count == 1:
                 self._add('', block=block)
             else:
+                # subtract one because every item gets one \n for free.
                 self._add('\n' * (count - 1), block=block)
         else:
             raise Exception("Count of newlines must be a positive int.")
@@ -86,7 +87,7 @@ class RstCloth(Cloth):
     def directive(self, name, arg=None, fields=None, content=None, indent=0, wrap=True, block='_all'):
         o = [ ]
 
-        o.append('.. ' + name + '::')
+        o.append('.. {0}::'.format(name))
 
         if arg is not None:
             o[0] += ' ' + arg
@@ -97,10 +98,10 @@ class RstCloth(Cloth):
 
         if content is not None:
             o.append('')
-            
+
             if isinstance(content, list):
                 for line in content:
-                    o.append(_indent(content, 3))
+                    o.append(_indent(line, 3))
             else:
                 o.append(_indent(content, 3))
 
@@ -109,10 +110,7 @@ class RstCloth(Cloth):
     @staticmethod
     def role(name, value, text=None):
         if isinstance(name, list):
-            n = ''
-            for domain in name:
-                n = domain + ':'
-            name = n[:-1]
+            name = ':'.join(name)
 
         if text is None:
             return ':{0}:`{1}`'.format(name, value)
@@ -143,8 +141,12 @@ class RstCloth(Cloth):
     def _paragraph(content, wrap=True):
         return [ i.strip() for i in fill(content, wrap=wrap).split('\n') ]
 
-    def codeblock(self, content, indent=0, wrap=True, language=None):
-        if langauge is None:
+    def replacement(self, name, value, indent=0, block='_all'):
+        output = '.. |{0}| replace:: {1}'.format(name, value)
+        self._add(_indent(output, indent), block)
+
+    def codeblock(self, content, indent=0, wrap=True, language=None, block='_all'):
+        if language is None:
             o = [ '::', _indent(content, 3) ]
             self._add(_indent(o, indent), block=block)
         else:
@@ -177,10 +179,6 @@ class RstCloth(Cloth):
             content = bullet + fill(content, 0, len(bullet), wrap)
             self._add(fill(content, indent, indent, wrap), block)
 
-    def replacement(self, name, value, indent=0, wrap=True, block='_all'):
-        output = '.. |{0}| replace:: {1}'.format(name, value)
-        self.add(indent(output, indent, wrap=wrap), block)
-
     def field(self, name, value, indent=0, wrap=True, block='_all'):
         output = [ ':{0}:'.format(name) ]
 
@@ -195,11 +193,16 @@ class RstCloth(Cloth):
             content = fill(value, wrap=wrap).split('\n')
             for line in content:
                 output.append(_indent(line, 3))
+ 
         if wrap is False and final is False:
             output.append(_indent(value, 3))
 
         for line in output:
-            self._add(_indent(line, indent))
+            self._add(_indent(line, indent), block)
+
+    def ref_target(self, name, indent=0, block='_all'):
+        o = '.. _{0}:'.format(name)
+        self._add(_indent(o, indent), block)
 
     def content(self, content, indent=0, wrap=True, block='_all'):
         if isinstance(content, list):
@@ -216,7 +219,7 @@ class RstCloth(Cloth):
         self._add([line, text, line], block)
 
     def heading(self, text, char, block='_all'):
-        self._add([text, char * len(text)])
+        self._add([text, char * len(text)], block)
 
     def h1(self, text, block='_all'):
         self.heading(text, char='=', block=block)
