@@ -803,7 +803,7 @@ div.highlight pre {
 }
 
 div.section > h2, div.section > h3,div.section > h4 {
-    margin-top: 0.8em;
+    margin-top: 1.4em;
     padding-top:0;
     margin-bottom: 0.2em;
 }
