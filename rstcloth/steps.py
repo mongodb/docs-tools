@@ -47,8 +47,6 @@ class Steps(object):
     """
     take the input file, ingest content to support spec/aggregated lists, and
     store in an internal representation.
-
-    should also include methods for writing the output file.
     """
     def __init__(self, fn, cache=None):
         if cache is None:
@@ -78,9 +76,8 @@ class Steps(object):
 
 class StepsOutput(object):
     """
-    base class, __init__ method accepts one argument that takes a steps object.
-
-    sub-classes just implement a single render method.
+    Base class for rendered step form. The render() method generates the rst in
+    the internal RstCloth object.
     """
 
     def __init__(self, steps):
@@ -120,73 +117,73 @@ class StepsOutput(object):
             self.rst.newline()
 
     def code_step(self, block):
-        if 'pre' in block:
-            self.rst.content(block['pre'], indent=self.indent)
-            self.rst.newline()
-        else:
-            self.rst.newline()
+        self.pre(block)
 
-        self.rst.directive( name='code-block', arg=block['language'], content=block['code'], indent=self.indent)
+        self.rst.directive(name='code-block',
+                           arg=block['language'],
+                           content=block['code'],
+                           indent=self.indent)
 
-        if 'post' in block:
-            self.rst.content(block['post'], indent=self.indent)
-            self.rst.newline()
-        else:
-            self.rst.newline()
+        self.post(block)
 
     def key_name(self):
         key_name = os.path.splitext(os.path.basename(self.steps.source_fn))[0]
         if key_name.startswith('step-') or key_name.startswith('steps-'):
             key_name = key_name.split('-', 1)[1]
-        
+
         return key_name
- 
 
 class PrintStepsOutput(StepsOutput):
     """
-    renders content into rst by creating headlines with "step <num>: " prepended
-    to headings
+    Variant of Steps class for generating latex-appropriate content that won't
+    depend on CSS.
     """
+
     def hook(self):
         self.indent = 0
 
     def heading(self, doc):
-        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['number'], self.key_name(), doc['ref']))
+        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['number'],
+                                                      self.key_name(),
+                                                      doc['ref']))
         self.rst.newline()
 
-        self.rst.h3(text="Step {0}: {1}".format(str(doc['number']), doc['title']), indent=self.indent)
+        self.rst.h3(text="Step {0}: {1}".format(str(doc['number']),
+                    doc['title']),
+                    indent=self.indent)
         self.rst.newline()
 
 class WebStepsOutput(StepsOutput):
     """
-    renders content into rst by wrapping objects in rst classes for rst.
+    Variant of Steps class for generating web-content that depends on CSS
+    classes.
     """
 
     def hook(self):
         self.indent = 3
 
     def heading(self, doc):
-        self.rst.directive(name="class", arg="step-" + str(doc['number']), indent=self.indent-3)
+        self.rst.directive(name="class",
+                           arg="step-" + str(doc['number']),
+                           indent=self.indent-3)
+
         self.rst.newline()
+
         self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['number'],
-                                                      self.key_name(), doc['ref']), indent=self.indent)
+                                                      self.key_name(), doc['ref']),
+                                                      indent=self.indent)
         self.rst.newline()
         self.rst.h3(doc['title'], indent=self.indent)
         self.rst.newline()
 
 def render_step_file(input_fn, output_fn=None):
-    if output_fn is None:
-        output_fn = os.path.splitext(input_fn)[0] + '.rst'
-
     steps = Steps(input_fn)
-
     r = RstCloth()
 
     r.directive('only', 'not latex')
     r.newline()
     web_output = WebStepsOutput(steps)
     web_output.render()
-
     r.content(web_output.rst.get_block(), indent=3, wrap=False)
 
     r.directive('only', 'latex')
@@ -194,6 +191,9 @@ def render_step_file(input_fn, output_fn=None):
     print_output = PrintStepsOutput(steps)
     print_output.render()
     r.content(print_output.rst.get_block(), indent=3, wrap=False)
+
+    if output_fn is None:
+        output_fn = os.path.splitext(input_fn)[0] + '.rst'
 
     r.write(output_fn)
     print('[steps]: rendered step include at ' + output_fn)
