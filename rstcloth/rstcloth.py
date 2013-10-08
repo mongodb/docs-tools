@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-
 import textwrap
 
-from rstcloth.cloth import Cloth
+from cloth import Cloth
 
 def fill(string, first=0, hanging=0, wrap=True):
     first_indent = ' ' * first
@@ -193,7 +191,7 @@ class RstCloth(Cloth):
             content = fill(value, wrap=wrap).split('\n')
             for line in content:
                 output.append(_indent(line, 3))
- 
+
         if wrap is False and final is False:
             output.append(_indent(value, 3))
 
@@ -218,23 +216,23 @@ class RstCloth(Cloth):
         line = char * len(text)
         self._add([line, text, line], block)
 
-    def heading(self, text, char, indent=0, block='_all'):
-        self._add([text, char * len(text)], indent=0, block)
+    def heading(self, text, char, indent, block='_all'):
+        self._add(_indent([text, char * len(text)], indent), block=block)
 
     def h1(self, text, indent=0, block='_all'):
-        self.heading(text, char='=', indent=0, block=block)
+        self.heading(text, char='=', indent=indent, block=block)
 
     def h2(self, text, indent=0, block='_all'):
-        self.heading(text, char='-', indent=0, block=block)
+        self.heading(text, char='-', indent=indent, block=block)
 
     def h3(self, text, indent=0, block='_all'):
-        self.heading(text, char='~', indent=0, block=block)
+        self.heading(text, char='~', indent=indent, block=block)
 
     def h4(self, text, indent=0, block='_all'):
-        self.heading(text, char='+', indent=0, block=block)
+        self.heading(text, char='+', indent=indent, block=block)
 
     def h5(self, text, indent=0, block='_all'):
-        self.heading(text, char='^', indent=0, block=block)
+        self.heading(text, char='^', indent=indent, block=block)
 
     def h6(self, text, indent=0, block='_all'):
-        self.heading(text, char=';', indent=0, block=block)
+        self.heading(text, char=';', indent=indent, block=block)

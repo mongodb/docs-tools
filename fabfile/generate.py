@@ -17,6 +17,7 @@ from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
 from rstcloth.images import generate_image_pages
 from rstcloth.releases import generate_release_output
 from rstcloth.hash import generate_hash_file
+from rstcloth.steps import render_step_file
 
 def runner(jobs, pool=None, retval='count'):
     if pool == 1:
@@ -579,3 +580,28 @@ def htaccess(fn='.htaccess'):
         f.writelines(lines)
 
     puts('[redirect]: regenerated {0} with {1} redirects ({2} lines)'.format(fn, len(sources), len(lines)))
+
+#################### tarball ####################
+
+def _get_steps_output_fn(fn, paths):
+    root_name = os.path.basename(fn).split('-', 1)[1] + '.rst'
+
+    return os.path.join(paths.projectroot, paths.includes, 'steps', root_name)
+
+def steps_jobs():
+    paths = render_paths('obj')
+
+    for fn in expand_tree(os.path.join(paths.projectroot, paths.includes), 'yaml'):
+        if fn.startswith(os.path.join((paths.projectroot, paths.includes, 'step')):
+            out_fn = _get_steps_output_fn(fn, paths)
+
+            yield dict('dependency': fn,
+                       'target': out_fn,
+                       'job': render_step_file,
+                       'args': [fn, out_fn])
+
+@task
+def steps():
+    count = runner( steps_jobs() )
+
+    puts('[steps]: rendered {0} step files'.format(count))

@@ -31,6 +31,9 @@ def make_all_sphinx(config):
     m.target('api')
     m.job('fab generate.api')
 
+    m.target('steps')
+    m.job('fab generate.steps')
+
     m.target('intersphinx')
     m.job('fab sphinx.intersphinx')
 

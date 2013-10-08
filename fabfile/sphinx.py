@@ -141,6 +141,7 @@ def prereq():
                            generate.table_jobs(),
                            generate.api_jobs(),
                            generate.toc_jobs(),
+                           generate.steps_jobs(),
                            generate.release_jobs(),
                            intersphinx_jobs(),
                            generate.image_jobs())
