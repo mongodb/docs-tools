@@ -595,10 +595,10 @@ def steps_jobs():
         if fn.startswith(os.path.join((paths.projectroot, paths.includes, 'step'))):
             out_fn = _get_steps_output_fn(fn, paths)
 
-            yield dict('dependency': fn,
-                       'target': out_fn,
-                       'job': render_step_file,
-                       'args': [fn, out_fn])
+            yield { 'dependency': fn,
+                    'target': out_fn,
+                    'job': render_step_file,
+                    'args': [fn, out_fn] }
 
 @task
 def steps():
