@@ -3,11 +3,11 @@ Steps schema is:
 
 {
   "title": <str>,
-  "number": <int>,
+  "ordinal": <int>,
   "pre": <str>,
   "post": <str>,
   "ref": <str>,
-  "example": {
+  "action": {
                "language": <str>,
                "code": <str>,
                "pre": <str>,
@@ -21,7 +21,7 @@ Notes:
 
  - pre/post are optional
 
- - Example should be either a doc or a list of docs.
+ - Action should be either a doc or a list of docs.
 
  - the spec/agg format would be at least:
 
@@ -78,7 +78,7 @@ class Steps(object):
 
             idx += 1
 
-        self.source_list.sort(key=lambda k:k['number'])
+        self.source_list.sort(key=lambda k:k['ordinal'])
 
     def get_step(self, ref):
         return self.source[ref]
@@ -107,11 +107,11 @@ class StepsOutput(object):
 
             self.pre(step)
 
-            if isinstance(step['example'], list):
-                for block in step['example']:
+            if isinstance(step['action'], list):
+                for block in step['action']:
                     self.code_step(block)
             else:
-                self.code_step(step['example'])
+                self.code_step(step['action'])
 
             self.post(step)
 
@@ -152,12 +152,12 @@ class PrintStepsOutput(StepsOutput):
         self.indent = 0
 
     def heading(self, doc):
-        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['number'],
+        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['ordinal'],
                                                       self.key_name(),
                                                       doc['ref']))
         self.rst.newline()
 
-        self.rst.h3(text="Step {0}: {1}".format(str(doc['number']),
+        self.rst.h3(text="Step {0}: {1}".format(str(doc['ordinal']),
                     doc['title']),
                     indent=self.indent)
         self.rst.newline()
@@ -173,12 +173,12 @@ class WebStepsOutput(StepsOutput):
 
     def heading(self, doc):
         self.rst.directive(name="class",
-                           arg="step-" + str(doc['number']),
+                           arg="step-" + str(doc['ordinal']),
                            indent=self.indent-3)
 
         self.rst.newline()
 
-        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['number'],
+        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['ordinal'],
                                                       self.key_name(), doc['ref']),
                                                       indent=self.indent)
         self.rst.newline()
