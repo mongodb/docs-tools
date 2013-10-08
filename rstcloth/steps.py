@@ -136,6 +136,11 @@ class StepsOutput(object):
 
     def key_name(self):
         key_name = os.path.splitext(os.path.basename(self.steps.source_fn))[0]
+        if key_name.startswith('step-') or key_name.startswith('steps-'):
+            key_name = key_name.split('-', 1)[1]
+        
+        return key_name
+ 
 
 class PrintStepsOutput(StepsOutput):
     """
