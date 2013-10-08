@@ -62,13 +62,14 @@ class Steps(object):
             if 'source' in step:
                 source_file = step['source']['file']
                 if source_file in self.agg_sources:
-                    current_step = self.agg_sources[step['source']['file']][step['source']['ref	']]
+                    current_step = self.agg_sources[step['source']['file']][step['source']['ref']]
                 else:
                     steps = Steps(source_file, self.agg_sources)
                     current_step = steps.get_step(step['source']['ref'])
                     self.agg_sources[source_file] = steps
+                    self.agg_sources.update(steps.agg_sources)
 
-                current_step['number'] = step['number']
+                current_step.update(step)
 
                 self.source_list[idx] = current_step
                 self.source[step['source']['ref']] = current_step
