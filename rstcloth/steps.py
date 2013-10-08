@@ -54,25 +54,33 @@ class Steps(object):
 
         self.source_fn = fn
         self.agg_sources = cache
-        self.source = ingest_yaml_list(self.source_fn)
+        self.source_list = ingest_yaml_list(self.source_fn)
+        self.source = dict()
 
         idx = 0
-        for step in self.source:
+        for step in self.source_list:
             if 'source' in step:
                 source_file = step['source']['file']
                 if source_file in self.agg_sources:
-                    self.source[idx] = self.agg_sources[source_file]
-                    step.pop('number', None)
-                    self.source[idx].update(step)
+                    current_step = self.agg_sources[step['source']['file']][step['source']['ref	']]
                 else:
                     steps = Steps(source_file, self.agg_sources)
+                    current_step = steps.get_step(step['source']['ref'])
                     self.agg_sources[source_file] = steps
-                    self.source[idx] = self.agg_sources[source_file]
-                    step.pop('number', None)
-                    self.source[idx].update(step)
+
+                current_step['number'] = step['number']
+
+                self.source_list[idx] = current_step
+                self.source[step['source']['ref']] = current_step
+            else:
+                self.source[step['ref']] = step
+
             idx += 1
 
-        self.source.sort(key=lambda k:k['number'])
+        self.source_list.sort(key=lambda k:k['number'])
+
+    def get_step(self, ref):
+        return self.source[ref]
 
 class StepsOutput(object):
     """
@@ -93,7 +101,7 @@ class StepsOutput(object):
         self.indent = 3
 
     def render(self):
-        for step in self.steps.source:
+        for step in self.steps.source_list:
             self.heading(step)
 
             self.pre(step)
