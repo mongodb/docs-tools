@@ -85,7 +85,7 @@ def api():
 def api_jobs():
     paths = render_paths('obj')
 
-    for source in expand_tree(os.path.join(paths.source, 'reference'), 'yaml'):
+    for source in expand_tree(os.path.join(paths.projectroot, paths.source, 'reference'), 'yaml'):
         target = dot_concat(os.path.splitext(source)[0], 'rst')
 
         yield {

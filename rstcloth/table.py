@@ -317,7 +317,7 @@ class ListTable(OutputTable):
 
         self.r = RstCloth()
         self._render_table()
-        self.output = self.r.docs._all
+        self.output = self.r.docs['_all']
 
     def _render_table(self):
         b = '_all'
