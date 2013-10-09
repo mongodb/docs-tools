@@ -70,13 +70,34 @@ def generate_release_output(builder, platform, architecture, release):
     r.newline(block='header')
 
     if architecture == 'core':
-        r.content('curl http://downloads.mongodb.org/{0}/mongodb-{1}-{2}.tgz > mongodb.tgz'.format(platform, builder, release), 3, wrap=False, block='cmd')
+        r.content('curl http://downloads.mongodb.org/{0}/mongodb-{1}-{2}.tgz > mongodb-{1}-{2}.tgz'.format(platform, builder, release), 3, wrap=False, block='cmd')
     else:
-        r.content('curl http://downloads.10gen.com/linux/mongodb-{0}-subscription-{1}-{2}.tgz > mongodb.tgz'.format(builder, architecture, release), 3, wrap=False, block='cmd')
-        r.content('tar -zxvf mongodb.tgz', 3, wrap=False, block='cmd')
+        r.content('curl http://downloads.10gen.com/linux/mongodb-{0}-subscription-{1}-{2}.tgz > mongodb-{0}-subscription-{1}-{2}.tgz'.format(builder, architecture, release), 3, wrap=False, block='cmd')
+        r.content('tar -zxvf mongodb-{0}-subscription-{1}-{2}.tgz'.format(builder, architecture, release), 3, wrap=False, block='cmd')
         r.content('cp -R -n mongodb-{0}-subscription-{1}-{2}/ mongodb'.format(builder, architecture, release), 3, wrap=False, block='cmd')
 
     r.newline(block='footer')
+
+    return r
+
+def generate_release_untar(builder, release):
+    r = RstCloth()
+
+    r.directive('code-block', 'sh', block='header')
+    r.newline(block='header')
+
+    r.content('tar -zxvf mongodb-{0}-{1}.tgz'.format(builder, release), 3, wrap=False, block='cmd')
+
+    return r
+
+def generate_release_copy(builder, release):
+    r = RstCloth()
+
+    r.directive('code-block', 'sh', block='header')
+    r.newline(block='header')
+
+    r.content('mkdir -p mongodb', 3, wrap=False, block='cmd')
+    r.content('cp -R -n mongodb-{0}-{1}/ mongodb'.format(builder, release), 3, wrap=False, block='cmd')
 
     return r
 

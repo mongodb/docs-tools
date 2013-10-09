@@ -14,7 +14,7 @@ from rstcloth.param import generate_params
 from rstcloth.toc import CustomTocTree, AggregatedTocTree
 from rstcloth.table import TableBuilder, YamlTable, ListTable, RstTable
 from rstcloth.images import generate_image_pages
-from rstcloth.releases import generate_release_output
+from rstcloth.releases import generate_release_output, generate_release_copy, generate_release_untar
 from rstcloth.hash import generate_hash_file
 from rstcloth.steps import render_step_file
 
@@ -334,6 +334,16 @@ def _generate_release_core(rel, target, release):
     r.write(target)
     puts('[release]: wrote: ' + target)
 
+def _generate_untar_core(rel, target, release):
+    r = generate_release_untar(rel, release)
+    r.write(target)
+    puts('[release]: wrote: ' + target)
+
+def _generate_copy_core(rel, target, release):
+    r = generate_release_copy(rel, release)
+    r.write(target)
+    puts('[release]: wrote: ' + target)
+
 @task
 def releases():
     count = runner( release_jobs() )
@@ -357,24 +367,41 @@ def release_jobs():
 
     rel_data = ingest_yaml(os.path.join(conf.build.paths.builddata, 'releases') + '.yaml')
 
+    deps = [ os.path.join(conf.build.paths.projectroot, 'conf.py'),
+             os.path.join(conf.build.paths.projectroot,
+                          conf.build.paths.buildsystem,
+                          'rstcloth', 'releases.py') ]
+
     for rel in rel_data['source-files']:
         target = os.path.join(conf.build.paths.projectroot,
                               conf.build.paths.includes,
                               'install-curl-release-{0}.rst'.format(rel))
+
         yield {
                 'target': target,
-                'dependency': [
-                                os.path.join(conf.build.paths.projectroot, 'conf.py'),
-                                os.path.join(conf.build.paths.projectroot,
-                                             conf.build.paths.buildsystem,
-                                             'rstcloth', 'releases.py')
-                              ],
+                'dependency': deps,
                 'job': _generate_release_core,
-                'args': [
-                          rel,
-                          target,
-                          release_version,
-                        ]
+                'args': [ rel, target, release_version ]
+              }
+
+        target = os.path.join(conf.build.paths.projectroot,
+                              conf.build.paths.includes,
+                              'install-untar-release-{0}.rst'.format(rel))
+        yield {
+                'target': target,
+                'dependency': deps,
+                'job': _generate_untar_core,
+                'args': [ rel, target, release_version ]
+              }
+
+        target = os.path.join(conf.build.paths.projectroot,
+                              conf.build.paths.includes,
+                              'install-copy-release-{0}.rst'.format(rel))
+        yield {
+                'target': target,
+                'dependency': deps,
+                'job': _generate_copy_core,
+                'args': [ rel, target, release_version ]
               }
 
     for rel in rel_data['subscription-build']:
@@ -382,18 +409,9 @@ def release_jobs():
 
         yield {
                 'target': target,
-                'dependency': [
-                                os.path.join(conf.build.paths.projectroot, 'conf.py'),
-                                os.path.join(conf.build.paths.projectroot,
-                                             conf.build.paths.buildsystem,
-                                             'rstcloth', 'releases.py')
-                              ],
+                'dependency': deps,
                 'job': _generate_release_ent,
-                'args': [
-                          rel,
-                          target,
-                          release_version
-                        ]
+                'args': [ rel, target, release_version ]
               }
 
 
