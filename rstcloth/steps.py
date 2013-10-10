@@ -3,25 +3,55 @@ Steps schema is:
 
 {
   "title": <str>,
-  "ordinal": <int>,
+  "stepnum": <int>,
   "pre": <str>,
   "post": <str>,
   "ref": <str>,
   "action": {
-               "language": <str>,
+               "heading": <str>,
                "code": <str>,
+               "language": <str>,
+               "content": <str>,
                "pre": <str>,
                "post": <str>
              }
 }
 
 Notes:
- - ref becomes a global id, but has ``step-<file_name>-`` prepended to it in
-   source
 
- - pre/post are optional
+ - ref becomes a global link target, but has ``step-<num>-<file_name>-``
+   prepended to it in source.
 
- - Action should be either a doc or a list of docs.
+ - stepnum is optional. If not specified, we assume that the sequence starts at
+   one. If you specify your own ``stepnum`` in one step you have to specify your
+   own step number in all steps in this sequence. The script enforces order, so
+   that if you specify stepnum, you don't need to specify steps in the source file in order.
+
+ - "title" and "heading" fields can optionally hold a document that contains
+   both a "text" field *and* a "character" field if you need to adjust the level
+   of the heading. For example:
+   
+   { 
+     "title": 
+       {
+         "text": "name of step",
+         "character": "-"
+       }
+   }
+
+   Therefore "name of step" is, by MongoDB docs convention an "h2". By default,
+   heading within actions are h4s and titles of steps are h3s.
+
+ - pre/post are optional. and allow you to add prefix or postfix text to a step
+   or code example/action.
+
+ - Action should be either a doc or a list of docs. Their fields are optional,
+   with the following notable points:
+
+   - "language" refers to the syntax highlighting of "code," and is unused
+     otherwise.
+
+   - "content" is a paragraph, for steps that don't have code examples.
 
  - the spec/agg format would be at least:
 
@@ -35,6 +65,14 @@ Notes:
 
    callers may specify ``description`` and ``title`` to override the source
    location. (ref needs to be modified in calling location.)
+   
+There are several situations where we raise errors because a step document is
+invalid:
+
+1. A step has both a "source" (i.e. is an included step), and an "action" field.
+
+2. A code block contains both "content" and "code" fields.
+
 """
 
 import yaml
@@ -42,6 +80,9 @@ import sys, os
 from rstcloth import RstCloth
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 from utils import ingest_yaml_list
+
+class InvalidStep(Exception):
+    pass
 
 class Steps(object):
     """
@@ -57,9 +98,18 @@ class Steps(object):
         self.source_list = ingest_yaml_list(self.source_fn)
         self.source = dict()
 
+        sort_needed = False
+
         idx = 0
         for step in self.source_list:
+            if 'stepnum' not in step:
+                step['stepnum'] = idx+1
+            else: 
+                sort_needed = True
+
             if 'source' in step:
+                if 'action' in step:
+                    raise InvalidStep
                 source_file = step['source']['file']
                 if source_file in self.agg_sources:
                     current_step = self.agg_sources[step['source']['file']][step['source']['ref']]
@@ -78,7 +128,8 @@ class Steps(object):
 
             idx += 1
 
-        self.source_list.sort(key=lambda k:k['ordinal'])
+        if sort_needed is True:
+            self.source_list.sort(key=lambda k:k['stepnum'])
 
     def get_step(self, ref):
         return self.source[ref]
@@ -125,13 +176,42 @@ class StepsOutput(object):
             self.rst.content(doc['post'], indent=self.indent)
             self.rst.newline()
 
+    def _heading(self, block, override_char=None, indent=0):
+        if 'heading' in block:
+            if isinstance(block['heading'], dict):
+                if 'character' in block['heading']:
+                    pass
+                else:
+                    block['heading']['character'] = override_char
+            else:
+                block['heading'] = { 'text': block['heading'], 
+                                     'character': override_char }
+
+            self.rst.heading(text=block['heading']['text'],
+                             char=block['heading']['character'],
+                             indent=self.indent)
+
+            self.rst.newline()
+        
     def code_step(self, block):
+        if 'code' in block and 'content' in block: 
+            raise InvalidStep
+
         self.pre(block)
 
-        self.rst.directive(name='code-block',
-                           arg=block['language'],
-                           content=block['code'],
-                           indent=self.indent)
+        self._heading(block, override_char='`', indent=self.indent)
+
+        if 'code' in block:
+            if 'language' not in block:
+                block['language'] = 'none'
+
+            self.rst.directive(name='code-block',
+                               arg=block['language'],
+                               content=block['code'],
+                               indent=self.indent)
+
+        if 'content' in block: 
+            self.content(block['content'], indent=self.indent)
 
         self.post(block)
 
@@ -152,15 +232,14 @@ class PrintStepsOutput(StepsOutput):
         self.indent = 0
 
     def heading(self, doc):
-        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['ordinal'],
+        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['stepnum'],
                                                       self.key_name(),
                                                       doc['ref']))
         self.rst.newline()
 
-        self.rst.h3(text="Step {0}: {1}".format(str(doc['ordinal']),
-                    doc['title']),
-                    indent=self.indent)
-        self.rst.newline()
+        self._heading(block={ 'heading': "Step {0}: {1}".format(str(doc['stepnum']), doc['title']) },
+                      override_char='~',
+                      indent=self.indent)
 
 class WebStepsOutput(StepsOutput):
     """
@@ -173,17 +252,19 @@ class WebStepsOutput(StepsOutput):
 
     def heading(self, doc):
         self.rst.directive(name="class",
-                           arg="step-" + str(doc['ordinal']),
+                           arg="step-" + str(doc['stepnum']),
                            indent=self.indent-3)
 
         self.rst.newline()
 
-        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['ordinal'],
+        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['stepnum'],
                                                       self.key_name(), doc['ref']),
                                                       indent=self.indent)
         self.rst.newline()
-        self.rst.h3(doc['title'], indent=self.indent)
-        self.rst.newline()
+
+        self._heading(block={ 'heading': doc['title'] },
+                      override_char='~',
+                      indent=self.indent)
 
 def render_step_file(input_fn, output_fn=None):
     steps = Steps(input_fn)
