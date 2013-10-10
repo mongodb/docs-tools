@@ -83,6 +83,10 @@ class CustomTocTree(object):
                     else:
                         idnt = 3
 
+                    if 'class' in ref:
+                        self.dfn.directive(name='class', arg=ref['class'], indent=idnt)
+                        idnt += 3 
+
                     if 'text' in ref:
                         if ref['name'] is None:
                             self.dfn.content(ref['text'], idnt)
