@@ -245,7 +245,7 @@ div.seealso {
     padding-bottom: 7px;
 }
 
-div.admonition {
+div.admonition-platform-support.admonition {
     background-color: #BBBBAA;
 }
 
