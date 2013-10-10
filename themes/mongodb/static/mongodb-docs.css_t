@@ -245,6 +245,11 @@ div.seealso {
     padding-bottom: 7px;
 }
 
+div.admonition {
+    background-color: #BBBBAA;
+}
+
+
 div.warning {
     background-color: #eebbaa;
 }
