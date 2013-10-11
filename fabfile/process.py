@@ -338,8 +338,11 @@ def _render_tex_into_pdf(fn, path):
 
 @task
 def pdfs():
+    it = 0
     for queue in pdf_jobs():
-        runner(queue)
+        it += 1
+        count = runner(queue)
+        puts("[pdf]: completed {0} pdf jobs, in stage {1}".format(count, it))
 
 def pdf_jobs():
     conf = get_conf()
@@ -351,7 +354,6 @@ def pdf_jobs():
 
     # this is temporary
     queue = ( [], [], [], [], [] )
-    pdfs.sort()
 
     for i in pdfs:
         tagged_name = i['output'][:-4] + '-' + i['tag']
