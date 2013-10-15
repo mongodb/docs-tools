@@ -7,10 +7,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 import utils
 from rstcloth import RstCloth
+from docs_meta import load_conf
 
 
 def generate_image_pages(dir, name, alt, output):
     r = RstCloth()
+    conf = load_conf()
 
     image = '/'.join([dir, name])
     alt = alt
@@ -19,7 +21,9 @@ def generate_image_pages(dir, name, alt, output):
     for img_output in output:
         if img_output['type'] == 'print':
             r.directive('only', 'latex', wrap=False, block=b)
+            html = False
         else:
+            html = True
             r.directive('only', 'not latex', wrap=False, block=b)
             img_output['width'] = str(img_output['width']) + 'px'
 
@@ -36,12 +40,20 @@ def generate_image_pages(dir, name, alt, output):
         if 'scale' in img_output:
             options.append(('scale', img_output['scale']))
 
-        r.directive(name='figure',
-                    arg='/images/{0}{1}'.format(name, tag),
-                    fields=options,
-                    indent=3,
-                    content=alt,
-                    block=b)
+        if html is False:
+            r.directive(name='figure',
+                        arg='/images/{0}{1}'.format(name, tag),
+                        fields=options,
+                        indent=3,
+                        content=alt,
+                        block=b)
+        elif html is True:
+            img_str = '<div class="figure align-center" style="max-width:{4};"><img src="{0}/images/{1}{2}" alt="{3}"></img><p class="caption">{3}</p></div>'
+            r.directive(name='raw', arg='html',
+                        content=img_str.format(conf.project.url, name, tag, alt, img_output['width']),
+                        indent=3,
+                        block=b)
+
         r.newline(block=b)
 
     r.write(image + '.rst')
