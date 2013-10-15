@@ -21,6 +21,7 @@ def generate_image_pages(dir, name, alt, output):
             r.directive('only', 'latex', wrap=False, block=b)
         else:
             r.directive('only', 'not latex', wrap=False, block=b)
+            img_output['width'] = str(img_output['width']) + 'px'
 
         r.newline()
 
