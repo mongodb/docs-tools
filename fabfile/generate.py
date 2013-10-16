@@ -584,7 +584,7 @@ def htaccess(fn='.htaccess'):
 #################### tarball ####################
 
 def _get_steps_output_fn(fn, paths):
-    root_name = os.path.basename(fn).split('-', 1)[1] + '.rst'
+    root_name = os.path.splitext(os.path.basename(fn).split('-', 1)[1])[0] + '.rst'
 
     return os.path.join(paths.projectroot, paths.includes, 'steps', root_name)
 
