@@ -22,6 +22,9 @@ intersphinx = task(intersphinx)
 env.EDITION = None
 @task
 def edition(val=None):
+    if val is None and env.EDITION is not None:
+        val = env.EDITION
+
     if 'editions' in conf.project and val in conf.project.editions:
         env.EDITION = val
         conf.project.edition = val
