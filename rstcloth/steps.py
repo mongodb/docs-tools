@@ -30,9 +30,9 @@ Notes:
  - "title" and "heading" fields can optionally hold a document that contains
    both a "text" field *and* a "character" field if you need to adjust the level
    of the heading. For example:
-   
-   { 
-     "title": 
+
+   {
+     "title":
        {
          "text": "name of step",
          "character": "-"
@@ -65,7 +65,7 @@ Notes:
 
    callers may specify ``description`` and ``title`` to override the source
    location. (ref needs to be modified in calling location.)
-   
+
 There are several situations where we raise errors because a step document is
 invalid:
 
@@ -104,7 +104,7 @@ class Steps(object):
         for step in self.source_list:
             if 'stepnum' not in step:
                 step['stepnum'] = idx+1
-            else: 
+            else:
                 sort_needed = True
 
             if 'source' in step:
@@ -184,7 +184,7 @@ class StepsOutput(object):
                 else:
                     block['heading']['character'] = override_char
             else:
-                block['heading'] = { 'text': block['heading'], 
+                block['heading'] = { 'text': block['heading'],
                                      'character': override_char }
 
             self.rst.heading(text=block['heading']['text'],
@@ -192,9 +192,9 @@ class StepsOutput(object):
                              indent=self.indent)
 
             self.rst.newline()
-        
+
     def code_step(self, block):
-        if 'code' in block and 'content' in block: 
+        if 'code' in block and 'content' in block:
             raise InvalidStep
 
         self.pre(block)
@@ -210,7 +210,7 @@ class StepsOutput(object):
                                content=block['code'],
                                indent=self.indent)
 
-        if 'content' in block: 
+        if 'content' in block:
             self.content(block['content'], indent=self.indent)
 
         self.post(block)
@@ -284,6 +284,7 @@ def render_step_file(input_fn, output_fn=None):
 
     if output_fn is None:
         output_fn = os.path.splitext(input_fn)[0] + '.rst'
+
 
     r.write(output_fn)
     print('[steps]: rendered step include at ' + output_fn)
