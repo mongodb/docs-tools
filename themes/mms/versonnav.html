@@ -34,11 +34,11 @@ $(document).ready(function(){
     });
 
     $("#vn select").bind('change', vfnav);
-    if ( '{{ theme_branch }}' == 'master' ){
+
+    {%- if theme_branch == 'master' -%}
         $('#vn select').val('current');
-    }
-    else {
+    {%- else -%}
         $('#vn select').val('v{{version|e}}');
-    }
+    {%- endif -%}
 });
 </script>
