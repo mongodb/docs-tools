@@ -1,7 +1,7 @@
 <script type="text/javascript">
 var versions = {{theme_version_selector}}
 var pagename = '{{pagename}}'
-var stable = 'v{{theme_stable}}'
+var stable = 'manual'
 
 function vfnav() {
     if ( pagename=='index' ) {
@@ -19,7 +19,7 @@ function vfnav() {
     else {
         uri = '/' + v + '/' + pn
     }
-    window.location.href= uri;
+    window.location.href = uri;
 }
 
 $(document).ready(function(){
@@ -41,6 +41,13 @@ $(document).ready(function(){
     });
 
     $("#vn select").bind('change', vfnav);
-    $('#vn select').val('v{{version|e}}');
+    {%- if theme_manual_path == 'manual' -%}
+        $('#vn select').val('manual');
+    {%- elif theme_branch == 'master' -%}
+        $('#vn select').val('master');
+    {%- else -%}
+        $('#vn select').val('v{{version|e}}');
+    {%- endif -%}
+
 });
 </script>

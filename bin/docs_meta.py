@@ -30,6 +30,8 @@ def get_manual_path(conf=None):
 
     branch = get_branch()
 
+    print branch == conf.git.branches.manual
+    print branch, conf.git.branches.manual
     if branch == conf.git.branches.manual:
         if conf.project.name == 'mms' or conf.project.name == 'meta-driver':
             return 'current'
@@ -74,22 +76,27 @@ def get_versions(conf=None):
     o = []
 
     for version in conf.version.published:
-        version_string = str(version)
-
-        if version_string in ['current', 'master', 'upcoming']:
-            path_name = version_string
+        if version in ['current', 'master', 'upcoming']:
+            if version == 'upcoming':
+                version = str(conf.version.upcoming)
+                path_name = 'master' # we may want to change this later.
+            else:
+                path_name = version
         else:
-            path_name = 'v' + version_string
+            path_name = 'v' + version
 
         if conf.git.remote.upstream.endswith('mms-docs'):
-            pass
+            if version == conf.version.stable:
+                path_name = 'current'
         else:
             if version == conf.version.stable:
-                version_string += ' (current)'
-            if version == conf.version.upcoming:
-                version_string += ' (upcoming)'
+                version += ' (current)'
+                path_name = 'manual'
+            elif version == conf.version.upcoming:
+                version = conf.version.upcoming + ' (upcoming)'
+                path_name = 'master'
 
-        o.append( { 'v': path_name, 't': version_string } )
+        o.append( { 'v': path_name, 't': version } )
 
     return o
 
