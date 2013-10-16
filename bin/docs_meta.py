@@ -30,8 +30,6 @@ def get_manual_path(conf=None):
 
     branch = get_branch()
 
-    print branch == conf.git.branches.manual
-    print branch, conf.git.branches.manual
     if branch == conf.git.branches.manual:
         if conf.project.name == 'mms' or conf.project.name == 'meta-driver':
             return 'current'
