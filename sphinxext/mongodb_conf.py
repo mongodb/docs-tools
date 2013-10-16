@@ -50,6 +50,13 @@ conf['directives'] = [
         'callable': False,
     },
     {
+        'name': 'update',
+        'tag': 'up',
+        'description': 'update operator',
+        'prepend': True,
+        'callable': False,
+    },
+    {
         'name': 'parameter',
         'tag': 'param',
         'description': 'setParameter option',
