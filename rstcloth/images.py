@@ -7,12 +7,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 import utils
 from rstcloth import RstCloth
-from docs_meta import load_conf
+from docs_meta import get_conf
 
 
 def generate_image_pages(dir, name, alt, output):
     r = RstCloth()
-    conf = load_conf()
+    conf = get_conf()
 
     image = '/'.join([dir, name])
     alt = alt
