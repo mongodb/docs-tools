@@ -54,7 +54,7 @@ def generate_image_pages(dir, name, alt, output):
             img_str = ''.join(img_tags)
             r.directive(name='raw', arg='html',
                         content=img_str.format(conf.project.url,
-                                               conf.project.tag, name, tag, alt,
+                                               conf.git.branches.current, name, tag, alt,
                                                img_output['width']),
                         indent=3,
                         block=b)
