@@ -48,9 +48,14 @@ def generate_image_pages(dir, name, alt, output):
                         content=alt,
                         block=b)
         elif html is True:
-            img_str = '<div class="figure align-center" style="max-width:{4};"><img src="{0}/images/{1}{2}" alt="{3}"></img><p class="caption">{3}</p></div>'
+            img_tags = ['<div class="figure align-center" style="max-width:{5};">',
+                        '<img src="{0}/{1}/_images/{2}{3}" alt="{4}">', '</img>',
+                        '<p class="caption">{4}</p></div>' ]
+            img_str = ''.join(img_tags)
             r.directive(name='raw', arg='html',
-                        content=img_str.format(conf.project.url, name, tag, alt, img_output['width']),
+                        content=img_str.format(conf.project.url,
+                                               conf.project.tag, name, tag, alt,
+                                               img_output['width']),
                         indent=3,
                         block=b)
 
