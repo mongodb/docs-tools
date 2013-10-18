@@ -63,12 +63,22 @@ def add_static_commands(paths):
     if isinstance(paths['static'], list):
         r = []
         for static_path in paths['static']:
+            if static_path in ['manual', 'current']:
+                remote_string = paths['remote']
+            else:
+                remote_string = os.path.join(paths['remote'], static_path)
+
             r.append(rstr.format(os.path.join(conf.build.paths.output, paths['local'], static_path),
-                                 os.path.join(paths['remote'], static_path)))
+                                 remote_string))
         return ' '.join(r)
     else:
+        if static_path in ['manual', 'current']:
+            remote_string = paths['remote']
+        else:
+            remote_string = os.path.join(paths['remote'], paths['static'])
+
         return rstr.format(os.path.join(conf.build.paths.output, paths['local'], paths['static']),
-                           os.path.join(paths['remote'], paths['static']))
+                           remote_string)
 
 ###### primary builder generators ######
 
