@@ -592,7 +592,7 @@ def steps_jobs():
     paths = render_paths('obj')
 
     for fn in expand_tree(os.path.join(paths.projectroot, paths.includes), 'yaml'):
-        if fn.startswith(os.path.join((paths.projectroot, paths.includes, 'step'))):
+        if fn.startswith(os.path.join(paths.projectroot, paths.includes, 'step')):
             out_fn = _get_steps_output_fn(fn, paths)
 
             yield { 'dependency': fn,
