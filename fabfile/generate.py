@@ -305,7 +305,8 @@ def images():
     puts('[image]: rebuilt {0} rst and image files'.format(count))
 
 def image_jobs():
-    paths = render_paths('obj')
+    conf = get_conf()
+    paths = conf.build.paths
 
     meta_file = os.path.join(paths.images, 'metadata') + '.yaml'
 
@@ -319,6 +320,7 @@ def image_jobs():
         source_base = os.path.join(image['dir'], image['name'])
         source_file = source_base + '.svg'
         rst_file = source_base + '.rst'
+        image['conf'] = conf
 
         yield {
                 'target': rst_file,

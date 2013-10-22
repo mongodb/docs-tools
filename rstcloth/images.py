@@ -2,17 +2,17 @@ import sys
 import os.path
 import json
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import utils
 from rstcloth import RstCloth
 from docs_meta import get_conf
 
-
-def generate_image_pages(dir, name, alt, output):
+def generate_image_pages(dir, name, alt, output, conf=None):
     r = RstCloth()
-    conf = get_conf()
+    if conf is None:
+        conf = get_conf()
 
     image = '/'.join([dir, name])
     alt = alt
@@ -33,7 +33,6 @@ def generate_image_pages(dir, name, alt, output):
             tag = '-' + img_output['tag'] + '.png'
         else:
             tag = '.png'
-
 
         options = [('alt', alt), ('align', 'center'), ('figwidth', img_output['width'])]
 
