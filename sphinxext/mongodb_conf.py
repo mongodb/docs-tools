@@ -99,6 +99,13 @@ conf['directives'] = [
         'callable': False,
     },
     {
+        'name': 'authaction',
+        'tag': 'authr',
+        'description': 'user action',
+        'prepend': False,
+        'callable': False,
+    },
+    {
         'name': 'bsontype',
         'tag': 'bson',
         'description': 'BSON type',
