@@ -2,6 +2,7 @@ import sys
 import os.path
 
 import deploy
+import stage
 import sphinx
 import clean
 import git

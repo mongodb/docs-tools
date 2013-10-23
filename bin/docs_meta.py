@@ -126,6 +126,7 @@ def render_paths(fn, conf=None):
     paths.branch_output = os.path.join(paths.output, get_branch())
     paths.branch_source = os.path.join(paths.branch_output, 'source')
     paths.branch_staging = os.path.join(paths.public, get_branch())
+    paths.buildarchive = os.path.join(paths.output, 'archive')
 
     public_site_output = {
         'manual': os.path.join(paths.output, 'public', get_branch()),
