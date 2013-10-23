@@ -3,8 +3,8 @@
 import sys
 import os.path
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 
 from docs_meta import get_conf
 from utils import get_conf_file, ingest_yaml, get_branch
@@ -12,6 +12,12 @@ from makecloth import MakefileCloth
 
 m = MakefileCloth()
 conf = get_conf()
+
+
+##############################  Legacy Push Makefile Builder ##############################
+
+## Leaving existing code in place for a while, but the following code now lives
+## (in updated form) in the fabfile/deploy.program
 
 _check_dependency = set()
 
@@ -121,10 +127,27 @@ def generate_build_system(data):
 
     m.target('.PHONY', phony)
 
+##############################  New Style Push Commands ##############################
+
+def generate_new_deploy_system(push_conf):
+    phony = []
+    for job in push_conf:
+        dep = add_dependency(job)
+        phony.extend(dep['phony'])
+        dep = dep['dep']
+        t = job['target']
+
+        m.target(t, dep)
+        m.job('fab deploy.deploy:{0}'.format(t))
+        m.newline()
+
+    m.target('.PHONY', phony)
+
 def main():
     push_conf = ingest_yaml(get_conf_file(__file__))
 
-    generate_build_system(push_conf)
+    # generate_build_system(push_conf)
+    generate_new_deploy_system(push_conf)
 
     m.write(sys.argv[1])
 

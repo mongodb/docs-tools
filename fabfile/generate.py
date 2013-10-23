@@ -33,6 +33,7 @@ def runner(jobs, pool=None, retval='count'):
 
     count = 0
     results = []
+
     for job in jobs:
         if env.FORCE or check_dependency(job['target'], job['dependency']):
             if env.PARALLEL is True:
