@@ -56,12 +56,12 @@ def runner(jobs, pool=None, retval='count'):
     if retval == 'count':
         return count
     elif retval == 'results':
-        return ( o.get() for o in results )
+        return [ o.get() for o in results ]
     elif retval is None:
         return None
     else:
         return dict(count=count,
-                    results=( o.get() for o in results )
+                    results=[ o.get() for o in results ]
                    )
 
 #################### API Param Table Generator ####################

@@ -36,7 +36,7 @@ def is_recursive(options):
     if 'recursive' in options:
         return True
     else:
-        return True
+        return False
 
 def is_delete(options):
     if 'delete' in options:
@@ -72,7 +72,7 @@ def add_static_commands(paths):
                                  remote_string))
         return ' '.join(r)
     else:
-        if static_path in ['manual', 'current']:
+        if paths['static'] in ['manual', 'current']:
             remote_string = paths['remote']
         else:
             remote_string = os.path.join(paths['remote'], paths['static'])

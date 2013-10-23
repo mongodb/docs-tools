@@ -52,6 +52,8 @@ class BuildConfiguration(AttributeDict):
                 else:
                     setattr(self, key, value)
 
+def conf_from_list(key, source):
+    return AttributeDict(dict( (item[key], item) for item in source ))
 
 def md5_file(file, block_size=2**20):
     md5 = hashlib.md5()

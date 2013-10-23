@@ -2,7 +2,10 @@ from fabric.api import cd, local, task, abort, env, puts, parallel
 from fabric.utils import _AttributeDict as ad
 
 import os.path
+from sphinx import edition
+from generate import runner
 from docs_meta import get_conf, render_paths, get_branch, get_commit
+from utils import ingest_yaml_list, conf_from_list
 from urllib2 import urlopen
 
 _pub_hosts = ['www-c1.10gen.cc', 'www-c2.10gen.cc']
@@ -21,7 +24,7 @@ def validate_branch(branch):
     elif branch not in get_conf().git.branches.published:
         abort('must specify a published branch.')
 
-def rsync_options(recursive, delete):
+def rsync_options(recursive, delete, environ):
     r = [env.rsync_options.default]
 
     if recursive is True:
@@ -30,7 +33,7 @@ def rsync_options(recursive, delete):
     if delete is True:
         r.append('--delete')
 
-    if env.deploy_target == 'production':
+    if environ == 'production':
         r.extend(['--rsh="ssh"', '--rsync-path="sudo -u www rsync"'])
 
     return ' '.join(r)
@@ -80,22 +83,29 @@ def recursive(opt=True):
 def delete(opt=True):
     env.rsync_options.delete = opt
 
-
 @task
 @parallel
-def static(local_path='all', remote=None):
+def static(local_path='all', remote=None, host_string=None, environ=None):
+    static_worker(local_path, remote, host_string, environ=None)
+
+def static_worker(local_path='all', remote=None, host_string=None, environ=None):
+    if host_string is None:
+        host_string = env.host_string
+    if environ is None:
+        environ = env.deploy_target
+
     if local_path.endswith('.htaccess') and env.branch != 'master':
         puts('[deploy] [ERROR]: cowardly refusing to deploy a non-master htaccess file.')
         return False
 
-    cmd = [ 'rsync', rsync_options(recursive=False, delete=False) ]
+    cmd = [ 'rsync', rsync_options(recursive=False, delete=False, environ=environ) ]
 
     if local_path == 'all':
         local_path = '*'
 
     cmd.append(local_path)
 
-    cmd.append(':'.join([env.host_string, remote]))
+    cmd.append(':'.join([host_string, remote]))
 
     puts('[deploy]: migrating {0} files to {1} remote'.format(local_path, remote))
     local(' '.join(cmd))
@@ -103,7 +113,15 @@ def static(local_path='all', remote=None):
 
 @task
 @parallel
-def push(local_path, remote):
+def push(local_path, remote, host_string=None, environ=None):
+    push_worker(local_path, remote, host_string, environ=None)
+
+def push_worker(local_path, remote, host_string=None, environ=None):
+    if host_string is None:
+        host_string = env.host_string
+    if environ is None:
+        environ = env.deploy_target
+
     if get_conf().project.name == 'mms' and (env.branch != 'master' and
                                              env.edition == 'saas'):
         puts('[deploy] [ERROR]: cowardly refusing to push non-master saas.')
@@ -121,10 +139,88 @@ def push(local_path, remote):
 
     cmd = [ 'rsync',
             rsync_options(env.rsync_options.recursive,
-                          env.rsync_options.delete),
+                          env.rsync_options.delete,
+                          environ),
             local_path,
-            ':'.join([env.host_string, remote]) ]
+            ':'.join([host_string, remote]) ]
 
     puts('[deploy]: migrating {0} files to {1} remote'.format(local_path, remote))
     local(' '.join(cmd))
     puts('[deploy]: completed migration of {0} files to {1} remote'.format(local_path, remote))
+
+def get_branched_path(options, conf=None, *args):
+    if conf is None:
+        conf = get_conf()
+
+    if 'branched' in options:
+        return os.path.join(os.path.sep.join(args),
+                            conf.git.branches.current)
+    else:
+        return os.path.sep.join(args)
+
+@task
+def deploy(target):
+    count = runner(deploy_jobs(target), pool=2)
+    puts('[deploy]: pushed {0} targets'.format(count))
+
+def deploy_jobs(target):
+    conf = get_conf()
+
+    push_conf = ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
+                                              conf.build.paths.builddata,
+                                              'push.yaml'))
+
+    pconf = conf_from_list('target', push_conf)[target]
+
+    if 'edition' in pconf:
+        sphinx.edition(pconf.edition)
+    if 'recursive' in pconf.options:
+        env.rsync_options.recursive = True
+    if 'delete' in pconf.options:
+        env.rsync_options.delete = True
+
+    remote(pconf.env)
+
+    for host in env.hosts:
+        yield { 'job': static_worker if 'static' in pconf.options else push_worker,
+                'args': dict(local_path=get_branched_path(pconf.options, conf, conf.build.paths.output, pconf.paths.local),
+                             remote=get_branched_path(pconf.options, conf, pconf.paths.remote),
+                             host_string=host,
+                             environ=env.deploy_target),
+                'target': '/tmp',
+                'dependency': None }
+
+    if 'static' in pconf.paths:
+        if isinstance(pconf.paths.static, list):
+            for static_path in pconf.paths.static:
+                if static_path in ['manual', 'current']:
+                    remote_string = conf.build.paths.remote
+                else:
+                    remote_string = os.path.join(pconf.paths.remote, static_path)
+
+                for host in env.hosts:
+
+                    yield { 'job': static_worker,
+                            'args': dict(local_path=os.path.join(conf.build.paths.output,
+                                                       pconf.paths.local,
+                                                       static_path),
+                                         remote=remote_string,
+                                         host_string=host,
+                                         environ=env.deploy_target),
+                            'target': None,
+                            'dependency': None }
+
+        else:
+            if pconf.paths.static in ['manual', 'current']:
+                remote_string = pconf.paths.remote
+            else:
+                remote_string = os.path.join(pconf.paths.remote, pconf.paths.static)
+
+            for host in env.hosts:
+                yield { 'job': _static,
+                        'args': dict(local_path=os.path.join(conf.build.paths.output, pconf.paths.local, pconf.paths.static),
+                                     remote=remote_string,
+                                     host_string=host,
+                                     environ=env.deploy_target),
+                        'target': None,
+                        'dependency': None }
