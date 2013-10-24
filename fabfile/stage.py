@@ -1,4 +1,5 @@
 import os
+import pwd
 import sys
 import datetime
 import tarfile
@@ -23,7 +24,7 @@ def get_build_metadata(conf=None):
                                                 'push.yaml')):
         o['push'][target['target']] = target
 
-    o['meta']['user'] = os.getlogin()
+    o['meta']['user'] = pwd.getpwuid(os.getuid())[0]
     o['meta']['platform'] = sys.platform
     o['meta']['time'] = utc=datetime.datetime.utcnow().isoformat()
     o['meta']['host'] = os.uname()[1]
