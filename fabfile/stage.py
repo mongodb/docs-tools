@@ -66,12 +66,14 @@ def package(conf=None):
               arcname=conf.git.branches.current)
         t.add(arc_conf, arcname='conf.json')
 
-        if 'static' in pconf.paths and conf.project.name != 'mms':
+        if 'static' in pconf.paths:
             for path in pconf.paths.static:
-                t.add(name=os.path.join(conf.build.paths.projectroot,
-                                        conf.build.paths.public,
-                                        path),
-                      arcname=path)
+                rendered_path = os.path.join(conf.build.paths.projectroot,
+                                             conf.build.paths.public, path)
+                if os.path.exists(rendered_path):
+                    t.add(name=rendered_path,
+                          arcname=path)
+
     puts('[deploy] [tarball]: created {0} as archive of current build artifacts.'.format(fn))
 
 @task
