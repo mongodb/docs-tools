@@ -59,7 +59,7 @@ def run_tests(branch, project, repo_path):
         local('python bootstrap.py')
         puts('[test]: repository bootstrapped in branch: {0}'.format(branch))
         puts('------------------------------------------------------------------------')
-        
+
         if project == 'manual':
             pre_builders = 'json dirhtml texinfo'
             local('make {0} {1}'.format(mflags, pre_builders))
@@ -68,6 +68,10 @@ def run_tests(branch, project, repo_path):
 
         local('make {0} publish'.format(mflags))
         puts('[test]: repository build publish target in branch: {0}'.format(branch))
+        puts('------------------------------------------------------------------------')
+
+        local('fab stage.package'.format(mflags))
+        puts('[test]: building package for: {0}'.format(branch))
         puts('------------------------------------------------------------------------')
 
 def main():
