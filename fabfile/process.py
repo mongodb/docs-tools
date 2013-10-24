@@ -215,17 +215,28 @@ def touch(fn, times=None):
 
 @task
 def copy_if_needed(source_file=None, target_file=None, name='build'):
-    _copy_if_needed(source_file, target_file, name)
-
-class InvalidPath(Exception): pass
-
-def _copy_if_needed(source_file=None, target_file=None, name='build'):
     if source_file is None:
         source_file = env.input_file
 
     if target_file is None:
         target_file = env.output_file
 
+    _copy_if_needed(source_file, target_file, name)
+
+class InvalidPath(Exception): pass
+
+def copy_always(source_file, target_file, name='build'):
+    if os.path.isfile(source_file) is False:
+        puts("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
+        raise InvalidPath
+    else:
+        if not os.path.exists(os.path.dirname(target_file)):
+            os.makedirs(os.path.dirname(target_file))
+        shutil.copyfile(source_file, target_file)
+
+    puts('[{0}]: copied {1} to {2}'.format(name, source_file, target_file))
+
+def _copy_if_needed(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False:
         puts("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
         raise InvalidPath
@@ -521,7 +532,7 @@ def _process_page(fn, output_fn, regex, builder='processor'):
              {
                'target': output_fn,
                'dependency': tmp_fn,
-               'job': _copy_if_needed,
+               'job': copy_always,
                'args': dict(source_file=tmp_fn, target_file=output_fn, name=builder),
              }
            ]
