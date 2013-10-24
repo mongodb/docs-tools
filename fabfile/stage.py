@@ -43,7 +43,8 @@ def package(conf=None):
 
     pconf = conf_from_list('target', ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
                                                                    conf.build.paths.builddata,
-                                                                   'push.yaml')))['push']
+                                                                   'push.yaml')))
+    pconf = pconf[pconf.keys()[0]]
 
     if not os.path.exists(archive_path):
         os.makedirs(archive_path)
@@ -64,7 +65,7 @@ def package(conf=None):
               arcname=conf.git.branches.current)
         t.add(arc_conf, arcname='conf.json')
 
-        if 'static' in pconf.paths:
+        if 'static' in pconf.paths and conf.project.name != 'mms':
             for path in pconf.paths.static:
                 t.add(name=os.path.join(conf.build.paths.projectroot,
                                         conf.build.paths.public,
