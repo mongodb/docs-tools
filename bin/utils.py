@@ -41,7 +41,7 @@ class BuildConfiguration(AttributeDict):
         if filename.endswith('yaml'):
             conf = ingest_yaml_doc(get_conf_file(filename, directory))
         elif filename.endswith('json'):
-            with open(conf, 'r') as f:
+            with open(os.path.join(directory, filename), 'r') as f:
                 conf = json.load(f)
 
         for key, value in conf.items():

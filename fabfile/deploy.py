@@ -168,10 +168,11 @@ def deploy(target, conf=None, pconf=None):
 
         pconf = conf_from_list('target', push_conf)[target]
 
-    if target not in pconf:
+
+    if pconf['target'] != target:
         abort('[deploy] [ERROR]: this build environment does not support the {0} target'.format(target))
 
-    count = runner(deploy_jobs(target, conf), pool=2)
+    count = runner(deploy_jobs(target, conf, pconf), pool=2)
     puts('[deploy]: pushed {0} targets'.format(count))
 
 def deploy_jobs(target, conf, pconf):

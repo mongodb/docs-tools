@@ -17,7 +17,7 @@ def generate_integration_targets(conf):
     for dep in conf['doc-root']:
         dependencies.append(os.path.join(paths['public'], dep))
 
-    for dep in conf['branch-root']: 
+    for dep in conf['branch-root']:
         if isinstance(dep, list):
             dep = os.path.sep.join(dep)
 
@@ -25,10 +25,15 @@ def generate_integration_targets(conf):
             dependencies.append(os.path.join(paths['branch-staging'], dep))
         else:
             dependencies.append(paths['branch-staging'])
-    
+
+    m.target('package')
+    m.job('fab stage.package')
+
     m.target('publish', dependencies)
     m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
-    m.target('.PHONY', 'publish')
+    m.newline()
+
+    m.target('.PHONY', ['publish', 'package'])
 
 def generate_json_output_meta():
     """This is dead code, hanging around for a while just in case we need it. see fabfile/process.py"""
