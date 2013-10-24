@@ -157,19 +157,24 @@ def get_branched_path(options, conf=None, *args):
         return os.path.sep.join(args)
 
 @task
-def deploy(target):
-    count = runner(deploy_jobs(target), pool=2)
+def deploy(target, conf=None, pconf=None):
+    if conf is None:
+        conf = get_conf()
+
+    if pconf is None:
+        push_conf = ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
+                                                  conf.build.paths.builddata,
+                                                  'push.yaml'))
+
+        pconf = conf_from_list('target', push_conf)[target]
+
+    if target not in pconf:
+        abort('[deploy] [ERROR]: this build environment does not support the {0} target'.format(target))
+
+    count = runner(deploy_jobs(target, conf), pool=2)
     puts('[deploy]: pushed {0} targets'.format(count))
 
-def deploy_jobs(target):
-    conf = get_conf()
-
-    push_conf = ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
-                                              conf.build.paths.builddata,
-                                              'push.yaml'))
-
-    pconf = conf_from_list('target', push_conf)[target]
-
+def deploy_jobs(target, conf, pconf):
     if 'edition' in pconf:
         edition(pconf.edition)
     if 'recursive' in pconf.options:

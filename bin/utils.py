@@ -37,7 +37,12 @@ class BuildConfiguration(AttributeDict):
     def __init__(self, filename, directory=None):
         if directory is None:
             directory = os.path.split(os.path.abspath(filename))[0]
-        conf = ingest_yaml_doc(get_conf_file(filename, directory))
+
+        if filename.endswith('yaml'):
+            conf = ingest_yaml_doc(get_conf_file(filename, directory))
+        elif filename.endswith('json'):
+            with open(conf, 'r') as f:
+                conf = json.load(f)
 
         for key, value in conf.items():
             if isinstance(value, (list, tuple)):
@@ -98,7 +103,7 @@ def get_branch(path=None):
 def expand_tree(path, input_extension='yaml'):
     file_list = []
 
-    for root, subFolders, files in os.walk(path):
+    for root, sub_folders, files in os.walk(path):
         for file in files:
             if file.startswith('.#'):
                 continue
