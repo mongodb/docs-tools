@@ -203,10 +203,18 @@ def finalize_build(builder, conf, root):
     elif builder.startswith('json'):
         process.json_output(conf)
     elif builder.startswith('singlehtml'):
-        process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
-                                                    'singlehtml', 'contents.html'),
-                                   output_file=pjoin(conf.build.paths.branch_staging,
-                                                     'single', 'index.html'))
+
+        try:
+            process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
+                                                        'singlehtml', 'contents.html'),
+                                       output_file=pjoin(conf.build.paths.branch_staging,
+                                                         'single', 'index.html'))
+        except IOError:
+            process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
+                                                        'singlehtml', 'index.html'),
+                                       output_file=pjoin(conf.build.paths.branch_staging,
+                                                         'single', 'index.html'))
+
         process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
                                                  'singlehtml', 'objects.inv'),
                                target_file=pjoin(conf.build.paths.branch_staging,
