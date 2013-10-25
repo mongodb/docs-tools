@@ -3,7 +3,8 @@ import operator
 import os.path
 import re
 import yaml
-from itertools import groupby
+
+from itertools import groupby, tee, izip
 from multiprocessing import Pool
 from pprint import pprint
 
@@ -50,9 +51,6 @@ class Weakness(object):
                         skip = True
         return count
 
-
-from itertools import tee, izip
-
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = tee(iterable)
@@ -73,7 +71,7 @@ def _render_report(fn):
         'file': fn,
         'source': source,
         'stats': {
-            'weasel': {
+            'weasels': {
                 'count': droopy.weasel_count,
                 'list': droopy.weasel_list
             },
@@ -93,9 +91,8 @@ def _render_report(fn):
             }
         }
 
-
-    if r['stats']['weasel']['count'] == 0:
-        r['stats']['weasel'].pop('list', None)
+    if r['stats']['weasels']['count'] == 0:
+        r['stats']['weasels'] = r['stats']['weasels']['count']
 
     return r
 

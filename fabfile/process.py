@@ -226,7 +226,7 @@ def copy_always(source_file, target_file, name='build'):
     puts('[{0}]: copied {1} to {2}'.format(name, source_file, target_file))
 
 def copy_if_needed(source_file, target_file, name='build'):
-    if os.path.isfile(source_file) is False:
+    if os.path.isfile(source_file) is False or os.path.isdir(source_file):
         puts("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
         raise InvalidPath
     elif os.path.isfile(target_file) is False:

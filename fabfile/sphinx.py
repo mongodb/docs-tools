@@ -7,6 +7,7 @@ import os
 import pkg_resources
 import datetime
 
+
 from utils import ingest_yaml, expand_tree
 from clean import cleaner
 import generate
@@ -190,6 +191,10 @@ def build(builder='html', tag=None, root=None, nitpick=False):
                 puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
             elif builder.startswith('dirhtml'):
                 process.error_pages()
+                process.copy_if_needed(source_file=os.path.join(conf.build.paths.branch_output,
+                                                                'dirhtml', 'index.html'),
+                                       target_file=os.path.join(conf.build.paths.branch_staging,
+                                                                'single', 'search.html'))
             elif builder.startswith('json'):
                 process.json_output(conf)
             elif builder.startswith('singlehtml'):
@@ -197,6 +202,15 @@ def build(builder='html', tag=None, root=None, nitpick=False):
                                                                    'singlehtml', 'contents.html'),
                                            output_file=os.path.join(conf.build.paths.branch_staging,
                                                                     'single', 'index.html'))
+                process.copy_if_needed(source_file=os.path.join(conf.build.paths.branch_output,
+                                                                'singlehtml', 'objects.inv'),
+                                       target_file=os.path.join(conf.build.paths.branch_staging,
+                                                                'single', 'objects.inv'))
+                single_path = os.path.join(conf.build.paths.branch_staging,
+                                                 'single', '_static')
+                for fn in expand_tree(os.path.join(conf.build.paths.branch_output,
+                                                  'singlehtml', '_static')):
+                    process.copy_if_needed(fn, os.path.join(single_path, os.path.basename(fn)))
             elif builder.startswith('latex'):
                 process.pdfs()
             elif builder.startswith('man'):
