@@ -173,9 +173,16 @@ def includes(mask=None):
         if mask.startswith('/source'):
             mask = mask[7:]
 
-        pprint(include(mask))
+        files = include()
 
-def include(mask=None):
+        try:
+           return pprint(files[mask])
+        except ValueError:
+            for pair in files.items():
+                if pair[0].startswith(mask):
+                    return pprint(files[pair[0]])
+
+def include():
     conf = get_conf()
     source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
     grep = local('grep ".. include:: /" {0} -R'.format(source_dir), capture = True)
@@ -193,12 +200,4 @@ def include(mask=None):
         for src in i[1]:
             files[i[0]].append(src[0])
 
-    if mask is not None:
-        try:
-           return files[mask]
-        except ValueError:
-            for pair in files.items():
-                if pair[0].startswith(mask):
-                    return files[pair[0]]
-    else:
-        return files
+    return files
