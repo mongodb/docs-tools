@@ -30,22 +30,37 @@ def get_build_metadata(conf=None):
     o['meta']['host'] = os.uname()[1]
     return o
 
+def package_filename(archive_path, target, conf):
+    fn = [conf.project.name ]
+
+    if target is not None:
+        tag = ''.join([ i if i not in ['push', 'stage'] else '' for i in target.split('-') ])
+        if tag != '':
+            fn.append(tag)
+
+    fn.extend([ conf.git.branches.current,
+                conf.git.commit[:8],
+                datetime.datetime.utcnow().strftime('%s') ])
+
+    fn = os.path.join(archive_path, '-'.join(fn) + '.tar.gz')
+
+    return fn
+
 @task
-def package(conf=None):
+def package(target=None, conf=None):
     if conf is None:
         conf = get_conf()
 
     archive_path = os.path.join(conf.build.paths.projectroot, conf.build.paths.buildarchive)
-
-    fn = os.path.join(archive_path, '-'.join([conf.project.name,
-                                              conf.git.branches.current,
-                                              conf.git.commit[:8],
-                                              datetime.datetime.utcnow().strftime('%s') ]) + '.tar.gz')
+    fn = package_filename(archive_path, target, conf)
 
     pconf = conf_from_list('target', ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
                                                                    conf.build.paths.builddata,
                                                                    'push.yaml')))
-    pconf = pconf[pconf.keys()[0]]
+    if target is None:
+        pconf = pconf[pconf.keys()[0]]
+    else:
+        pconf = pconf[target]
 
     if not os.path.exists(archive_path):
         os.makedirs(archive_path)
@@ -62,8 +77,20 @@ def package(conf=None):
         json.dump(get_build_metadata(conf), f, indent=2)
 
     with tarfile.open(fn, 'w:gz') as t:
-        t.add(name=os.path.join(conf.build.paths.projectroot, conf.build.paths.public_site_output),
-              arcname=conf.git.branches.current)
+        if 'branched' in pconf.options:
+            input_path = os.path.join(conf.build.paths.projectroot,
+                                      conf.build.paths.output,
+                                      pconf.paths.local,
+                                      conf.git.branches.current)
+            output_path_name = conf.git.branches.current
+        else:
+            input_path = os.path.join(conf.build.paths.projectroot,
+                                      conf.build.paths.output,
+                                      pconf.paths.local)
+            output_path_name = os.path.split(pconf.paths.local)[-1]
+
+        t.add(name=input_path,
+              arcname=output_path_name)
         t.add(arc_conf, arcname='conf.json')
 
         if 'static' in pconf.paths:
