@@ -2,11 +2,10 @@ import os.path
 import sys
 import re
 
-from multiprocessing import Pool
 from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, build_platform_notification
 from fabric.api import task, puts, local, env, quiet, settings
 from docs_meta import render_paths, get_conf, load_conf
-from make import check_dependency
+from make import check_dependency, runner
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
@@ -18,52 +17,6 @@ from rstcloth.images import generate_image_pages
 from rstcloth.releases import generate_release_output
 from rstcloth.hash import generate_hash_file
 from rstcloth.steps import render_step_file
-
-def runner(jobs, pool=None, retval='count'):
-    if pool == 1:
-        env.PARALLEL = False
-
-    if env.PARALLEL is True:
-        if pool is not None:
-            p = Pool(pool)
-        elif env.POOL is not None:
-            p = Pool(env.POOL)
-        else:
-            p = Pool()
-
-    count = 0
-    results = []
-
-    for job in jobs:
-        if env.FORCE or check_dependency(job['target'], job['dependency']):
-            if env.PARALLEL is True:
-                if isinstance(job['args'], dict):
-                    results.append(p.apply_async(job['job'], kwds=job['args']))
-                else:
-                    results.append(p.apply_async(job['job'], args=job['args']))
-            else:
-                if isinstance(job['args'], dict):
-                    results.append(job['job'](**job['args']))
-                else:
-                    results.append(job['job'](*job['args']))
-
-            count +=1
-
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
-
-    # return values differ based on retval argument
-    if retval == 'count':
-        return count
-    elif retval == 'results':
-        return [ o.get() for o in results ]
-    elif retval is None:
-        return None
-    else:
-        return dict(count=count,
-                    results=[ o.get() for o in results ]
-                   )
 
 #################### API Param Table Generator ####################
 

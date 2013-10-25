@@ -1,12 +1,13 @@
+import os.path
+from urllib2 import urlopen
+
 from fabric.api import cd, local, task, abort, env, puts, parallel
 from fabric.utils import _AttributeDict as ad
-
-import os.path
 from sphinx import edition
-from generate import runner
+
 from docs_meta import get_conf, render_paths, get_branch, get_commit
 from utils import ingest_yaml_list, conf_from_list
-from urllib2 import urlopen
+from make import runner
 
 _pub_hosts = ['www-c1.10gen.cc', 'www-c2.10gen.cc']
 _stage_hosts = ['public@test.docs.10gen.cc']

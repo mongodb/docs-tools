@@ -7,9 +7,9 @@ import os
 import pkg_resources
 import datetime
 
-
 from utils import ingest_yaml, expand_tree
 from clean import cleaner
+from make import runner
 import generate
 import process
 import docs_meta
@@ -148,8 +148,8 @@ def prereq():
                            intersphinx_jobs(),
                            generate.image_jobs())
 
-    job_count = generate.runner(jobs)
-    dep_count = generate.runner(process.composite_jobs())
+    job_count = runner(jobs)
+    dep_count = runner(process.composite_jobs())
     puts('[sphinx-prep]: built {0} pieces of content'.format(job_count))
     puts('[sphinx-prep]: checked timestamps of all {0} files'.format(dep_count))
     generate.buildinfo_hash()
@@ -187,34 +187,39 @@ def build(builder='html', tag=None, root=None, nitpick=False):
 
             puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
-            if builder.startswith('linkcheck'):
-                puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
-            elif builder.startswith('dirhtml'):
-                process.error_pages()
-                process.copy_if_needed(source_file=os.path.join(conf.build.paths.branch_output,
-                                                                'dirhtml', 'index.html'),
-                                       target_file=os.path.join(conf.build.paths.branch_staging,
-                                                                'single', 'search.html'))
-            elif builder.startswith('json'):
-                process.json_output(conf)
-            elif builder.startswith('singlehtml'):
-                process.manual_single_html(input_file=os.path.join(conf.build.paths.branch_output,
-                                                                   'singlehtml', 'contents.html'),
-                                           output_file=os.path.join(conf.build.paths.branch_staging,
-                                                                    'single', 'index.html'))
-                process.copy_if_needed(source_file=os.path.join(conf.build.paths.branch_output,
-                                                                'singlehtml', 'objects.inv'),
-                                       target_file=os.path.join(conf.build.paths.branch_staging,
-                                                                'single', 'objects.inv'))
-                single_path = os.path.join(conf.build.paths.branch_staging,
-                                                 'single', '_static')
-                for fn in expand_tree(os.path.join(conf.build.paths.branch_output,
-                                                  'singlehtml', '_static')):
-                    process.copy_if_needed(fn, os.path.join(single_path, os.path.basename(fn)))
-            elif builder.startswith('latex'):
-                process.pdfs()
-            elif builder.startswith('man'):
-                generate.runner( process.manpage_url_jobs() )
-                man_tarball()
-            elif builder.startswith('html'):
-                html_tarball()
+            finalize_build(builder, conf, root)
+
+def finalize_build(builder, conf, root):
+    pjoin = os.path.join
+
+    if builder.startswith('linkcheck'):
+        puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
+    elif builder.startswith('dirhtml'):
+        process.error_pages()
+        process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
+                                                 'dirhtml', 'index.html'),
+                               target_file=pjoin(conf.build.paths.branch_staging,
+                                                 'single', 'search.html'))
+    elif builder.startswith('json'):
+        process.json_output(conf)
+    elif builder.startswith('singlehtml'):
+        process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
+                                                    'singlehtml', 'contents.html'),
+                                   output_file=pjoin(conf.build.paths.branch_staging,
+                                                     'single', 'index.html'))
+        process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
+                                                 'singlehtml', 'objects.inv'),
+                               target_file=pjoin(conf.build.paths.branch_staging,
+                                                 'single', 'objects.inv'))
+        single_path = pjoin(conf.build.paths.branch_staging,
+                            'single', '_static')
+        for fn in expand_tree(pjoin(conf.build.paths.branch_output,
+                                    'singlehtml', '_static')):
+            process.copy_if_needed(fn, pjoin(single_path, os.path.basename(fn)))
+    elif builder.startswith('latex'):
+        process.pdfs()
+    elif builder.startswith('man'):
+        runner( process.manpage_url_jobs() )
+        man_tarball()
+    elif builder.startswith('html'):
+        html_tarball()

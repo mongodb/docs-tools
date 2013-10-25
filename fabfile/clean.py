@@ -1,13 +1,14 @@
-from fabric.api import task, abort, local
-import time
 import os
-import sys
 import shutil
+import sys
+import time
+from multiprocessing import Pool, cpu_count
+
+from fabric.api import task, abort, local
 
 import utils
 import docs_meta
-from multiprocessing import Pool, cpu_count
-from generate import runner
+from make import runner
 
 def _rm_rf(path):
     if os.path.isdir(path):

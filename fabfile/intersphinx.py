@@ -8,7 +8,7 @@ from fabric.utils import _AttributeDict as ad
 from docs_meta import get_conf
 from utils import ingest_yaml_list
 
-from generate import runner
+from make import runner
 
 env.ACCEPTABLE = 864000
 env.msgid = 'intersphinx'
@@ -70,7 +70,7 @@ def intersphinx_jobs():
     intersphinx_mapping = ingest_yaml_list(data_file)
 
     for i in intersphinx_mapping:
-        f = os.path.join(conf.build.paths.projectroot, 
+        f = os.path.join(conf.build.paths.projectroot,
                          conf.build.paths.output, i['path'])
 
         s = i['url'] + 'objects.inv'

@@ -1,5 +1,8 @@
 import os
+from multiprocessing import Pool
+
 from fabric.api import lcd, local, task, env
+
 from docs_meta import get_conf
 
 env.FORCE = False
@@ -78,3 +81,49 @@ def check_multi_dependency(target, dependency):
             return True
 
     return False
+
+def runner(jobs, pool=None, retval='count'):
+    if pool == 1:
+        env.PARALLEL = False
+
+    if env.PARALLEL is True:
+        if pool is not None:
+            p = Pool(pool)
+        elif env.POOL is not None:
+            p = Pool(env.POOL)
+        else:
+            p = Pool()
+
+    count = 0
+    results = []
+
+    for job in jobs:
+        if env.FORCE or check_dependency(job['target'], job['dependency']):
+            if env.PARALLEL is True:
+                if isinstance(job['args'], dict):
+                    results.append(p.apply_async(job['job'], kwds=job['args']))
+                else:
+                    results.append(p.apply_async(job['job'], args=job['args']))
+            else:
+                if isinstance(job['args'], dict):
+                    results.append(job['job'](**job['args']))
+                else:
+                    results.append(job['job'](*job['args']))
+
+            count +=1
+
+    if env.PARALLEL is True:
+        p.close()
+        p.join()
+
+    # return values differ based on retval argument
+    if retval == 'count':
+        return count
+    elif retval == 'results':
+        return [ o.get() for o in results ]
+    elif retval is None:
+        return None
+    else:
+        return dict(count=count,
+                    results=[ o.get() for o in results ]
+                   )

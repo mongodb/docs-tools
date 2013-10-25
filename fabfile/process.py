@@ -1,15 +1,15 @@
-import json
-import re
-import os
-import shutil
 import collections
-
-from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
-from make import check_dependency, check_three_way_dependency
-from docs_meta import output_yaml, get_manual_path, get_conf
-from fabric.api import task, env, abort, puts, local
+import json
+import os
+import re
+import shutil
 import subprocess
-from generate import runner
+
+from fabric.api import task, env, abort, puts, local
+
+from docs_meta import output_yaml, get_manual_path, get_conf
+from make import check_dependency, check_three_way_dependency, runner
+from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
 
 env.input_file = None
 env.output_file = None
