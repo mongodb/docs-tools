@@ -1,14 +1,20 @@
+import json
+import operator
+import os.path
+import re
+import yaml
+from itertools import groupby
+from multiprocessing import Pool
+from pprint import pprint
+
+
 from fabric.api import task, local, env
 from fabric.utils import puts, abort
 from droopy.factory import DroopyFactory
 from droopy.lang.english import English
-from multiprocessing import Pool
+
 from docs_meta import get_conf
 from utils import expand_tree
-
-import yaml
-import json
-import os.path
 
 ####### internal functions for rendering reports #######
 
@@ -152,3 +158,47 @@ def sweep(mask=None):
     _generate_report(mask, output_file=out_file, conf=conf)
 
     puts('[stats]: wrote full manual sweep to {0}'.format(out_file))
+
+@task
+def includes(mask=None):
+    if mask == 'list':
+        pprint(include().keys())
+    elif mask is not None:
+        if not mask.endswith('.rst'):
+            mask += '.rst'
+
+        if mask.startswith('source'):
+            mask = mask[6:]
+
+        if mask.startswith('/source'):
+            mask = mask[7:]
+
+        pprint(include(mask))
+
+def include(mask=None):
+    conf = get_conf()
+    source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
+    grep = local('grep ".. include:: /" {0} -R'.format(source_dir), capture = True)
+
+    rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
+
+    s = [rx.match(d).groups() for d in grep.split('\n')]
+    def tuple_sort(k): return k[1]
+    s.sort(key=tuple_sort)
+
+    files = dict()
+
+    for i in groupby(s, operator.itemgetter(1) ):
+        files[i[0]] = list()
+        for src in i[1]:
+            files[i[0]].append(src[0])
+
+    if mask is not None:
+        try:
+           return files[mask]
+        except ValueError:
+            for pair in files.items():
+                if pair[0].startswith(mask):
+                    return files[pair[0]]
+    else:
+        return files

@@ -1,7 +1,9 @@
 import os.path
 import re
 import json
+
 from fabric.api import task, local, puts, lcd, env, abort
+
 from docs_meta import get_conf
 from utils import expand_tree
 from process import munge_page
@@ -18,7 +20,8 @@ def dev():
 
 @task
 def reset():
-    with lcd(get_conf().build.paths.buildsystem):
+    conf = get_conf()
+    with lcd(conf.build.paths.buildsystem):
         local('git remote set-url origin git@github.com:{0}.git'.format(conf.git.remote.tools))
         puts('[docs-tools]: set docs-tools to use the canonical remote.')
 
@@ -45,7 +48,7 @@ def tags():
     conf = get_conf()
 
     regexp_fn = os.path.join(os.path.join(conf.build.paths.projectroot,
-                                        conf.build.paths.tools, 'etags.regexp'))
+                                          conf.build.paths.tools, 'etags.regexp'))
 
     if not os.path.exists(regexp_fn):
         abort('[dev]: cannot regenerate TAGS: no {0} file'.format(regexp_fn))
