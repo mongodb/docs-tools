@@ -51,7 +51,7 @@ def all_json_output(conf=None):
     local(cmd.format(src=os.path.join(conf.build.paths.branch_output, 'json') + '/',
                      dst=json_dst))
 
-    _copy_if_needed(list_file, public_list_file)
+    copy_if_needed(list_file, public_list_file)
     puts('[json]: deployed json files to local staging.')
 
 def json_output_jobs(conf=None):
@@ -183,7 +183,6 @@ def check_deps(file, pattern):
     except IOError:
         pass
 
-@task
 def refresh_dependencies():
     count = runner(composite_jobs())
     puts('[dependency]: updated timestamps of {0} files'.format(count))
@@ -213,16 +212,6 @@ def touch(fn, times=None):
 
 ########## Main Output Processing Targets ##########
 
-@task
-def copy_if_needed(source_file=None, target_file=None, name='build'):
-    if source_file is None:
-        source_file = env.input_file
-
-    if target_file is None:
-        target_file = env.output_file
-
-    _copy_if_needed(source_file, target_file, name)
-
 class InvalidPath(Exception): pass
 
 def copy_always(source_file, target_file, name='build'):
@@ -236,7 +225,7 @@ def copy_always(source_file, target_file, name='build'):
 
     puts('[{0}]: copied {1} to {2}'.format(name, source_file, target_file))
 
-def _copy_if_needed(source_file, target_file, name='build'):
+def copy_if_needed(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False:
         puts("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
         raise InvalidPath
@@ -281,20 +270,25 @@ def _create_link(input_fn, output_fn):
         os.rename(out_base, output_fn)
         puts('[{0}] created symbolic link pointing to "{1}" named "{2}"'.format('symlink', input_fn, out_base))
 
-@task
-def manual_single_html():
-    if env.input_file is None or env.output_file is None:
-        abort('[single]: you must specify input and output files.')
+def manual_single_html(input_file, output_file):
+    # don't rebuild this if its not needed.
+    if check_dependency(output_file, input_file) is True:
+        pass
+    else:
+        puts('[process] [single]: singlehtml not changed, not reprocessing.')
+        return False
 
-    with open(env.input_file, 'r') as f:
+    with open(input_file, 'r') as f:
         text = f.read()
 
     text = re.sub('href="contents.html', 'href="index.html', text)
     text = re.sub('name="robots" content="index"', 'name="robots" content="noindex"', text)
     text = re.sub('(href=")genindex.html', '\1../genindex/', text)
 
-    with open(env.output_file, 'w') as f:
+    with open(output_file, 'w') as f:
         f.write(text)
+
+    puts('[process] [single]: processed singlehtml file.')
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 
@@ -400,7 +394,7 @@ def pdf_jobs():
 
         queue[1].append(dict(dependency=i['source'],
                              target=i['processed'],
-                             job=_copy_if_needed,
+                             job=copy_if_needed,
                              args=(i['source'], i['processed'], 'pdf')))
 
         queue[2].append(dict(dependency=i['processed'],
@@ -410,7 +404,7 @@ def pdf_jobs():
 
         queue[3].append(dict(dependency=i['pdf'],
                              target=i['deployed'],
-                             job=_copy_if_needed,
+                             job=copy_if_needed,
                              args=(i['pdf'], i['deployed'], 'pdf')))
 
         if i['link'] != i['deployed']:

@@ -69,8 +69,8 @@ def runner(jobs, pool=None, retval='count'):
 
 ### Internal Method
 
-def _generate_api_param(source, target):
-    r = generate_params(ingest_yaml_list(source), source)
+def _generate_api_param(source, target, conf):
+    r = generate_params(ingest_yaml_list(source), source, conf)
     r.write(target)
 
     puts('[api]: rebuilt {0}'.format(target))
@@ -83,17 +83,18 @@ def api():
 
     puts('[api]: generated {0} tables for api items'.format(count))
 
-def api_jobs():
-    paths = render_paths('obj')
+def api_jobs(conf=None):
+    if conf is None:
+        conf = get_conf()
 
-    for source in expand_tree(os.path.join(paths.projectroot, paths.source, 'reference'), 'yaml'):
+    for source in expand_tree(os.path.join(conf.build.paths.projectroot, conf.build.paths.source, 'reference'), 'yaml'):
         target = dot_concat(os.path.splitext(source)[0], 'rst')
 
         yield {
                 'target': target,
                 'dependency': source,
                 'job': _generate_api_param,
-                'args': [source, target]
+                'args': [source, target, conf]
               }
 
 #################### Table of Contents Generator ####################
@@ -497,7 +498,6 @@ def sitemap(config_path=None):
 
 #################### BuildInfo Hash ####################
 
-@task
 def buildinfo_hash():
     conf = get_conf()
 

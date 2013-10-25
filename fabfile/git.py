@@ -52,7 +52,7 @@ def branch(branch):
         else:
             env.branch = branch
 
-@task(aliases=['cp', 'cherry-pick'])
+@task(aliases=['cp'])
 def cherrypick(*obj):
     with hide('running'):
         if env.branch is not None:

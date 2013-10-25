@@ -16,14 +16,6 @@ env.rsync_options.recursive = None
 env.rsync_options.delete = None
 env.paths = render_paths('dict')
 
-def validate_branch(branch):
-    if branch == 'override':
-        pass
-    elif branch is None:
-        abort('must specify a branch')
-    elif branch not in get_conf().git.branches.published:
-        abort('must specify a published branch.')
-
 def rsync_options(recursive, delete, environ):
     r = [env.rsync_options.default]
 
@@ -41,21 +33,16 @@ def rsync_options(recursive, delete, environ):
 ########## Tasks -- Checking current build against production. ############
 
 @task
-def staging(branch=None):
-    env.release_info_url = 'http://test.docs.10gen.cc/{0}/release.txt'.format(str(branch))
+def check(site, conf=None):
+    if conf is None:
+        conf = get_conf()
+    if site.startswith('stag'):
+        env.release_info_url = 'http://test.docs.10gen.cc/{0}/release.txt'.format(str(branch))
+    elif site == 'ecosystem':
+        env.release_info_url = 'http://docs.mongodb.org/ecosystem/release.txt'
+    elif site.startswith('prod') or site.startswith('pub'):
+        env.release_info_url = 'http://docs.mongodb.org/{0}/release.txt'.format(conf.git.commit)
 
-@task(alias='production')
-def publication(branch=None):
-    validate_branch(branch)
-    env.release_info_url = 'http://docs.mongodb.org/{0}/release.txt'.format(str(branch))
-
-@task
-def ecosystem():
-    env.release_info_url = 'http://docs.mongodb.org/ecosystem/release.txt'
-
-@task
-@parallel
-def check():
     r = urlopen(env.release_info_url).readlines()[0].split('\n')[0]
     if get_commit() == r:
         abort('ERROR: the current published version of is the same as the current commit. Make a new commit before publishing.')
@@ -64,7 +51,6 @@ def check():
 
 ########## Tasks -- Deployment and configuration. ############
 
-@task
 def remote(host):
     if host in ['publication', 'mms']:
         env.hosts = _pub_hosts
@@ -74,14 +60,6 @@ def remote(host):
         env.hosts = _stage_hosts
     else:
         abort('[deploy]: must specify a valid host to deploy the docs to.')
-
-@task
-def recursive(opt=True):
-    env.rsync_options.recursive = opt
-
-@task
-def delete(opt=True):
-    env.rsync_options.delete = opt
 
 @task
 @parallel
@@ -145,6 +123,8 @@ def push_worker(local_path, remote, host_string, recursive, delete, environ):
     puts('[deploy]: migrating {0} files to {1} remote'.format(local_path, remote))
     local(' '.join(cmd))
     puts('[deploy]: completed migration of {0} files to {1} remote'.format(local_path, remote))
+
+############################## Deploy -- Generic Deployment Framework ##############################
 
 def get_branched_path(options, conf=None, *args):
     if conf is None:

@@ -5,7 +5,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 
 import utils
-from docs_meta import load_conf
 from rstcloth import RstCloth
 from rstcloth import fill
 from table import TableData, TableBuilder, ListTable
@@ -155,9 +154,8 @@ def populate_external_param(fn, basename, projectdir, sourcedir):
 
     return fn, o
 
-def generate_params(params, fn):
+def generate_params(params, fn, conf):
     r = RstCloth()
-    lconf = load_conf()
     basename = os.path.basename(fn)
 
     params.sort(key=lambda p: p['position'])
@@ -177,11 +175,11 @@ def generate_params(params, fn):
 
                 fn, ext = populate_external_param(param['file'],
                                                   basename,
-                                                  lconf.build.paths.projectroot,
-                                                  lconf.build.paths.source)
+                                                  conf.build.paths.projectroot,
+                                                  conf.build.paths.source)
                 ext_params[fn] = ext
 
-            param = ext_params[lconf.build.paths.source + param['file']][param['name']]
+            param = ext_params[conf.build.paths.source + param['file']][param['name']]
             param['position'] = pos
 
         processed_params.append(param)
@@ -199,14 +197,3 @@ def generate_params(params, fn):
         r.newline(block='tex')
 
     return r
-
-def main():
-    input_data = utils.ingest_yaml_list(sys.argv[1])
-    r = generate_params(input_data, sys.argv[1])
-
-    r.write(sys.argv[2])
-
-    print('[api]: rebuilt "' + sys.argv[2] + '" parameter table.')
-
-if __name__ == '__main__':
-    main()

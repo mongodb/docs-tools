@@ -70,7 +70,6 @@ def get_sphinx_args(tag):
 
 #################### Associated Sphinx Artifacts ####################
 
-@task
 def html_tarball():
     process.copy_if_needed(os.path.join(conf.build.paths.projectroot,
                                         conf.build.paths.includes, 'hash.rst'),
@@ -96,7 +95,6 @@ def html_tarball():
                                                 conf.build.paths.public_site_output,
                                                 conf.project.name + '.tar.gz'))
 
-@task
 def man_tarball():
     basename = os.path.join(conf.build.paths.projectroot,
                             conf.build.paths.branch_output,
@@ -142,7 +140,7 @@ def clean():
 def prereq():
     jobs = itertools.chain(process.manpage_jobs(),
                            generate.table_jobs(),
-                           generate.api_jobs(),
+                           generate.api_jobs(conf),
                            generate.toc_jobs(),
                            generate.steps_jobs(),
                            generate.release_jobs(),
@@ -194,6 +192,11 @@ def build(builder='html', tag=None, root=None, nitpick=False):
                 process.error_pages()
             elif builder.startswith('json'):
                 process.json_output(conf)
+            elif builder.startswith('singlehtml'):
+                process.manual_single_html(input_file=os.path.join(conf.build.paths.branch_output,
+                                                                   'singlehtml', 'contents.html'),
+                                           output_file=os.path.join(conf.build.paths.branch_staging,
+                                                                    'single', 'index.html'))
             elif builder.startswith('latex'):
                 process.pdfs()
             elif builder.startswith('man'):
