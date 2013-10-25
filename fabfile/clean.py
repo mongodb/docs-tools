@@ -4,7 +4,7 @@ import sys
 import time
 from multiprocessing import Pool, cpu_count
 
-from fabric.api import task, abort, local
+from fabric.api import task, abort, local, puts
 
 import utils
 import docs_meta
@@ -15,6 +15,18 @@ def _rm_rf(path):
         shutil.rmtree(path)
     elif os.path.exists(path):
         os.remove(path)
+
+@task
+def sphinx(builder='html', conf=None):
+    if conf is None:
+        conf = docs_meta.get_conf()
+
+    root = conf.build.paths.branch_output
+
+    cleaner([ os.path.join(root, 'doctrees' + '-' + builder),
+              os.path.join(root, builder) ] )
+
+    puts('[clean-{0}]: removed all files supporting the {0} build'.format(builder))
 
 @task
 def builds(days=14):

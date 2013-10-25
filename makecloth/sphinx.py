@@ -80,7 +80,6 @@ def make_all_sphinx(config):
 
                 builder_targets.append(tag_target)
                 targets.append(tag_target)
-                targets.append('-'.join([builder, tag, 'nitpick']))
 
                 if not 'generated-source' in config:
                     m.target(tag_target, 'generate-source-' + tag)
@@ -88,7 +87,6 @@ def make_all_sphinx(config):
             m.target(builder, builder_targets)
         else:
             targets.append(builder)
-            targets.append('-'.join([builder, 'nitpick']))
 
     for builder in targets:
         sphinx_targets.extend(sphinx_builder(builder))
@@ -116,7 +114,7 @@ def sphinx_builder(target_str):
         ret_value.append(clean_target)
 
         m.target(clean_target, block=b)
-        m.job('fab sphinx.clean sphinx.build:{0}'.format(builder), block=b)
+        m.job('fab clean.sphinx:{0}'.format(builder), block=b)
         m.newline(block=b)
     elif len(target) <= 3 and len(target) > 1:
         if target[1] == 'hosted' or target[1] == 'saas':
@@ -129,10 +127,6 @@ def sphinx_builder(target_str):
                 fab_arg.append('root=' + os.path.join(paths['output'], target[1], utils.get_branch()))
             elif target[1] == 'saas':
                 fab_arg.append('root=' + os.path.join(paths['output'], target[1]))
-
-        if target[1] == 'nitpick' or target_str.endswith('-nitpick'):
-            fab_prefix += ' sphinx.nitpick'
-            builder = target[0]
 
     m.target(target_str, 'sphinx-prerequisites', block=b)
     m.job(fab_prefix + ' sphinx.build:' + ','.join(fab_arg), block=b)

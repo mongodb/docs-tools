@@ -64,9 +64,6 @@ def get_sphinx_args(tag):
     if pkg_resources.get_distribution("sphinx").version.startswith('1.2b1-xgen') and (tag is None or not tag.startswith('hosted') or not tag.startswith('saas')):
          o += '-j ' + str(cpu_count()) + ' '
 
-    if env._sphinx_nitpick is True:
-        o += '-n -w {0}/build.{1}.log'.format(conf.build.paths.branch_output, timestamp('filename'))
-
     return o
 
 #################### Associated Sphinx Artifacts ####################
@@ -123,20 +120,6 @@ def man_tarball():
 
 ## modifiers
 
-env._sphinx_nitpick = False
-
-@task
-def nitpick():
-    env._sphinx_nitpick = True
-
-env._clean_sphinx = False
-
-@task
-def clean():
-    env._clean_sphinx = True
-
-## public tasks
-
 @task
 def prereq():
     jobs = itertools.chain(process.manpage_jobs(),
@@ -157,37 +140,29 @@ def prereq():
     puts('[sphinx-prep]: build environment prepared for sphinx.')
 
 @task
-def build(builder='html', tag=None, root=None, nitpick=False):
+def build(builder='html', tag=None, root=None, clean=False):
     if root is None:
         root = conf.build.paths.branch_output
 
-    if nitpick is True:
-        nitpick()
-
     with settings(hide('running'), host_string='sphinx'):
-        if env._clean_sphinx is True:
-            cleaner([ os.path.join(root, 'doctrees' + '-' + builder),
-                      os.path.join(root, builder) ] )
-            puts('[clean-{0}]: removed all files supporting the {0} build'.format(builder))
-        else:
-            dirpath = os.path.join(root, builder)
-            if not os.path.exists(dirpath):
-                os.makedirs(dirpath)
-                puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
+        dirpath = os.path.join(root, builder)
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
+            puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
 
-            puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
+        puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
-            cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}' # per-builder-doctree
-            # cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees -c ./ {3} {2}/source {2}/{0}' # shared doctrees
+        cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}' # per-builder-doctree
+        # cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees -c ./ {3} {2}/source {2}/{0}' # shared doctrees
 
-            if builder.startswith('epub'):
-                cmd += ' 2>&1 1>&3 | grep -v "WARNING: unknown mimetype" | grep -v "WARNING: search index" 1>&2; 3>&1'
+        if builder.startswith('epub'):
+            cmd += ' 2>&1 1>&3 | grep -v "WARNING: unknown mimetype" | grep -v "WARNING: search index" 1>&2; 3>&1'
 
-            local(cmd.format(builder, get_tags(builder, tag), root, get_sphinx_args(tag)))
+        local(cmd.format(builder, get_tags(builder, tag), root, get_sphinx_args(tag)))
 
-            puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
+        puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
-            finalize_build(builder, conf, root)
+        finalize_build(builder, conf, root)
 
 def finalize_build(builder, conf, root):
     pjoin = os.path.join
