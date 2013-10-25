@@ -353,9 +353,11 @@ def pdf_jobs():
     conf = get_conf()
 
     pdfs = ingest_yaml_list(os.path.join(conf.build.paths.builddata, 'pdfs.yaml'))
-    tex_regexes = [(re.compile(r'(index|bfcode)\{(.*)--(.*)\}'), r'\1\{\2-\{-\}\3\}'),
-                   (re.compile(r'\\PYGZsq{}'), "'"),
-                   (re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv)'), r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
+    tex_regexes = [ ( re.compile(r'(index|bfcode)\{(.*)--(.*)\}'),
+                      r'\1\{\2-\{-\}\3\}'),
+                    ( re.compile(r'\\PYGZsq{}'), "'"),
+                    ( re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv)'),
+                      r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
 
     # this is temporary
     queue = ( [], [], [], [], [] )
@@ -369,7 +371,8 @@ def pdf_jobs():
             deploy_path = os.path.join(conf.build.paths.public, i['edition'])
             if i['edition'] == 'hosted':
                 deploy_path = os.path.join(deploy_path,  conf.git.branches.current)
-                latex_dir = os.path.join(conf.build.paths.output, i['edition'], conf.git.branches.current, 'latex')
+                latex_dir = os.path.join(conf.build.paths.output, i['edition'],
+                                         conf.git.branches.current, 'latex')
             else:
                 latex_dir = os.path.join(conf.build.paths.output, i['edition'], 'latex')
                 deploy_fn = tagged_name + '.pdf'
@@ -454,7 +457,9 @@ def error_pages():
         sub = (re.compile(r'\.\./\.\./'), conf.project.url + r'/' + conf.project.tag + r'/')
 
         for error in error_pages:
-            page = os.path.join(conf.build.paths.projectroot, conf.build.paths['branch-output'], 'dirhtml', 'meta', error, 'index.html')
+            page = os.path.join(conf.build.paths.projectroot,
+                                conf.build.paths['branch-output'], 'dirhtml',
+                                'meta', error, 'index.html')
             munge_page(fn=page, regex=sub, tag='error-pages')
 
         puts('[error-pages]: rendered {0} error pages'.format(len(error_pages)))
@@ -485,7 +490,8 @@ def manpage_url(regex_obj, input_file=None):
 def manpage_url_jobs():
     conf = get_conf()
 
-    project_source = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
+    project_source = os.path.join(conf.build.paths.projectroot,
+                                  conf.build.paths.source)
 
     top_level_items = set()
     for fs_obj in os.listdir(project_source):
@@ -527,7 +533,9 @@ def _process_page(fn, output_fn, regex, builder='processor'):
                'target': output_fn,
                'dependency': tmp_fn,
                'job': copy_always,
-               'args': dict(source_file=tmp_fn, target_file=output_fn, name=builder),
+               'args': dict(source_file=tmp_fn,
+                            target_file=output_fn,
+                            name=builder),
              }
            ]
 
@@ -540,7 +548,8 @@ def manpage_jobs():
         (
             os.path.join(conf.build.paths.includes, "manpage-options-auth.rst"),
             os.path.join(conf.build.paths.includes, 'manpage-options-auth-mongo.rst'),
-            (re.compile('fact-authentication-source-tool'), 'fact-authentication-source-mongo')
+            ( re.compile('fact-authentication-source-tool'),
+              'fact-authentication-source-mongo' )
         ),
         (
             os.path.join(conf.build.paths.includes, 'manpage-options-ssl.rst'),
@@ -590,9 +599,9 @@ def post_process_jobs(source_fn=None, tasks=None, conf=None):
             job['type'] = 'processor'
 
         if isinstance(job['transform'], list):
-            regex = [ ( re.compile(rs['regex'], rs['replace']) ) for rs  in job['transform'] ]
+            regex = [ ( re.compile(rs['regex'], rs['replace'] ) ) for rs  in job['transform'] ]
         else:
-            regex = ( re.compile(job['transform']['regex']), job['transform']['replace'])
+            regex = ( re.compile(job['transform']['regex'] ), job['transform']['replace'])
 
         if isinstance(job['file'], list):
             for fn in job['file']:
