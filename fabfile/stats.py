@@ -7,16 +7,57 @@ from itertools import groupby
 from multiprocessing import Pool
 from pprint import pprint
 
-
 from fabric.api import task, local, env
 from fabric.utils import puts, abort
+
 from droopy.factory import DroopyFactory
 from droopy.lang.english import English
+from droopy import Droopy, attr, op
 
 from docs_meta import get_conf
 from utils import expand_tree
+import stats_data
 
 ####### internal functions for rendering reports #######
+
+class Weakness(object):
+    @attr
+    def weasel_list(self, d):
+        l = []
+        for word in d.words:
+            if word in stats_data.ww:
+                l.append(word)
+        return list(set(l))
+
+    @attr
+    def weasel_count(self, d):
+        return len(self.weasel_list(d))
+
+    @attr
+    def passive_count(self, d):
+        count = 0
+        skip = False
+        for word, nword in pairwise(d.words):
+            if skip is True:
+                skip = False
+            else:
+                if word in stats_data.helper_verbs:
+                    if nword.endswith('ed'):
+                        count += 1
+                        skip = True
+                    if nword in stats_data.irregulars:
+                        count += 1
+                        skip = True
+        return count
+
+
+from itertools import tee, izip
+
+def pairwise(iterable):
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return izip(a, b)
 
 def _render_report(fn):
     with open(os.path.abspath(fn), 'r') as f:
@@ -25,12 +66,18 @@ def _render_report(fn):
     base_fn, source = _resolve_input_file(fn)
 
     droopy = DroopyFactory.create_full_droopy(text, English())
+    droopy.add_bundles(Weakness())
     droopy.foggy_word_syllables = 3
 
-    return {
+    r = {
         'file': fn,
         'source': source,
         'stats': {
+            'weasel': {
+                'count': droopy.weasel_count,
+                'list': droopy.weasel_list
+            },
+            'passives': droopy.passive_count,
             'smog-index': droopy.smog,
             'flesch-level': droopy.flesch_grade_level,
             'flesch-ease': droopy.flesch_reading_ease,
@@ -45,6 +92,12 @@ def _render_report(fn):
                 },
             }
         }
+
+
+    if r['stats']['weasel']['count'] == 0:
+        r['stats']['weasel'].pop('list', None)
+
+    return r
 
 ## Path and filneame processing
 
@@ -68,7 +121,6 @@ def _resolve_input_file(fn):
 
     base_fn = os.path.splitext(fn)[0]
     source = '.'.join([os.path.join('source', base_fn), 'txt'])
-
 
     return base_fn, source
 
