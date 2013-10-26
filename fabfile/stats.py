@@ -4,7 +4,7 @@ import os.path
 import re
 import yaml
 
-from itertools import groupby, tee, izip
+from itertools import groupby
 from multiprocessing import Pool
 from pprint import pprint
 
@@ -16,47 +16,51 @@ from droopy.lang.english import English
 from droopy import Droopy, attr, op
 
 from docs_meta import get_conf
-from utils import expand_tree
+from utils import expand_tree, AttributeDict
 from make import runner
 import stats_data
 
 ####### internal functions for rendering reports #######
 
 class Weakness(object):
+    cache = AttributeDict({ 'w': None, 'p': None })
+
     @attr
     def weasel_list(self, d):
         l = []
         for word in d.words:
             if word in stats_data.ww:
                 l.append(word)
-        return list(set(l))
+
+        w = list(set(l))
+        self.cache.w = w
+        return w
 
     @attr
     def weasel_count(self, d):
-        return len(self.weasel_list(d))
+        if self.cache.w is not None:
+            return len(self.cache.w)
+        else:
+            return len(self.weasel_list(d))
+
+    def passives(self, d):
+        p = stats_data.passive_regex.findall(d.text)
+        self.cache.p = stats_data.passive_regex.findall(d.text)
+        return p
+
+    @attr
+    def passive_list(self, d):
+        if self.cache.p is None:
+            self.passives(d)
+
+        return list(set([ ' '.join(phrase) for phrase in self.cache.p ]))
 
     @attr
     def passive_count(self, d):
-        count = 0
-        skip = False
-        for word, nword in pairwise(d.words):
-            if skip is True:
-                skip = False
-            else:
-                if word in stats_data.helper_verbs:
-                    if nword.endswith('ed'):
-                        count += 1
-                        skip = True
-                    if nword in stats_data.irregulars:
-                        count += 1
-                        skip = True
-        return count
+        if self.cache.p is None:
+            self.passives(d)
 
-def pairwise(iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-    a, b = tee(iterable)
-    next(b, None)
-    return izip(a, b)
+        return len(self.cache.p)
 
 def _render_report(fn):
     with open(os.path.abspath(fn), 'r') as f:
@@ -74,9 +78,12 @@ def _render_report(fn):
         'stats': {
             'weasels': {
                 'count': droopy.weasel_count,
-                'list': droopy.weasel_list
+                'set': droopy.weasel_list
             },
-            'passives': droopy.passive_count,
+            'passives': {
+                'count': droopy.passive_count,
+                'set': droopy.passive_list
+            },
             'smog-index': droopy.smog,
             'flesch-level': droopy.flesch_grade_level,
             'flesch-ease': droopy.flesch_reading_ease,
@@ -94,6 +101,9 @@ def _render_report(fn):
 
     if r['stats']['weasels']['count'] == 0:
         r['stats']['weasels'] = r['stats']['weasels']['count']
+
+    if r['stats']['passives']['count'] == 0:
+        r['stats']['passives'] = r['stats']['passives']['count']
 
     return r
 
