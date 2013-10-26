@@ -265,6 +265,10 @@ def includes(mask='list'):
         results = include_files()
     elif mask.startswith('rec'):
         results = included_recusively()
+    elif mask == 'single':
+        results = included_once()
+    elif mask == 'unused':
+        results = include_files_unused()
     else:
         if mask.startswith('source'):
             mask = mask[6:]
@@ -275,13 +279,19 @@ def includes(mask='list'):
 
     puts(json.dumps(results, indent=3))
 
-def included_recusively():
-    # this is a py2ism
-    files = include_files()
-    results = {}
+def included_once():
+    results = []
+    for file, includes in include_files().items():
+        if len(includes) == 1:
+            results.append(file)
+    return results
 
+def included_recusively():
+    files = include_files()
+    # included_files is a py2ism, depends on it being an actual list
     included_files = files.keys()
 
+    results = {}
     for inc, srcs in files.items():
         for src in srcs:
             if src in included_files:
@@ -294,7 +304,6 @@ def includes_masked(mask):
     files = include_files()
 
     results = {}
-
     try:
         m = mask + '.rst'
         results[m] = files[m]
@@ -305,8 +314,10 @@ def includes_masked(mask):
 
     return results
 
-def include_files():
-    conf = get_conf()
+def include_files(conf=None):
+    if conf == None:
+        conf = get_conf()
+
     source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
     grep = local('grep -R ".. include:: /" {0}'.format(source_dir), capture=True)
 
@@ -326,3 +337,19 @@ def include_files():
         files[i[0]] = list(files[i[0]])
 
     return files
+
+def include_files_unused(conf=None):
+    if conf == None:
+        conf = get_conf()
+
+    inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.build.paths.includes)) ]
+    mapping = include_files(conf)
+
+    results = []
+    for fn in inc_files:
+        if fn.endswith('yaml') or fn.endswith('~'):
+            continue
+        if fn not in mapping.keys():
+            results.append(fn)
+
+    return results

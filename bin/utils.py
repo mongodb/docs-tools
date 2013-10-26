@@ -109,12 +109,13 @@ def expand_tree(path, input_extension='yaml'):
                 continue
             else:
                 f = os.path.join(root, file)
-                if isinstance(input_extension, list):
-                    if os.path.splitext(f)[1][1:] not in input_extension:
-                        continue
-                else:
-                    if not f.endswith(input_extension):
-                        continue
+                if input_extension == None:
+                    if isinstance(input_extension, list):
+                        if os.path.splitext(f)[1][1:] not in input_extension:
+                            continue
+                    else:
+                        if not f.endswith(input_extension):
+                            continue
 
                 file_list.append(f)
 
