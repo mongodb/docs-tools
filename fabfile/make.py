@@ -1,5 +1,5 @@
 import os
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 
 from fabric.api import lcd, local, task, env
 
@@ -32,6 +32,8 @@ def _make(target):
             target_str = ' '.join(['make', target])
 
         local(target_str)
+
+############### Dependency Checking ###############
 
 def check_three_way_dependency(target, source, dependency):
     if not os.path.exists(target):
@@ -82,48 +84,64 @@ def check_multi_dependency(target, dependency):
 
     return False
 
-def runner(jobs, pool=None, retval='count'):
-    if pool == 1:
-        env.PARALLEL = False
+############### Task Running Framework ###############
 
-    if env.PARALLEL is True:
-        if pool is not None:
-            p = Pool(pool)
-        elif env.POOL is not None:
-            p = Pool(env.POOL)
-        else:
-            p = Pool()
+def runner(jobs, pool=None, retval='count'):
+    if pool == 1 or env.PARALLEL is False:
+        return sync_runner(jobs, env.FORCE, retval)
+    else:
+        if pool is None:
+            pool = cpu_count()
+
+        return async_runner(jobs, env.FORCE, pool, retval)
+
+def async_runner(jobs, force, pool, retval):
+    p = Pool(pool)
 
     count = 0
     results = []
 
     for job in jobs:
-        if env.FORCE or check_dependency(job['target'], job['dependency']):
-            if env.PARALLEL is True:
-                if isinstance(job['args'], dict):
-                    results.append(p.apply_async(job['job'], kwds=job['args']))
-                else:
-                    results.append(p.apply_async(job['job'], args=job['args']))
+        if force is True or check_dependency(job['target'], job['dependency']):
+           if isinstance(job['args'], dict):
+                results.append(p.apply_async(job['job'], kwds=job['args']))
+           else:
+                results.append(p.apply_async(job['job'], args=job['args']))
+
+           count += 1
+
+    p.close()
+    p.join()
+
+    if retval == 'count':
+        return count
+    elif retval is None:
+        return None
+    elif retval == 'results':
+        return [ o.get() for o in results ]
+    else:
+        return dict(count=count,
+                    results=[ o.get() for o in results ])
+
+def sync_runner(jobs, force, retval):
+    count = 0
+    results = []
+
+    for job in jobs:
+        if force is True or check_dependency(job['target'], job['dependency']):
+            if isinstance(job['args'], dict):
+                results.append(job['job'](**job['args']))
             else:
-                if isinstance(job['args'], dict):
-                    results.append(job['job'](**job['args']))
-                else:
-                    results.append(job['job'](*job['args']))
+                results.append(job['job'](*job['args']))
 
             count +=1
 
-    if env.PARALLEL is True:
-        p.close()
-        p.join()
-
-    # return values differ based on retval argument
     if retval == 'count':
         return count
     elif retval == 'results':
-        return [ o.get() for o in results ]
+        return results
     elif retval is None:
         return None
     else:
         return dict(count=count,
-                    results=[ o.get() for o in results ]
-                   )
+                    results=results)
