@@ -73,6 +73,7 @@ def _render_report(fn):
     droopy.foggy_word_syllables = 3
 
     r = {
+        'report': 'file',
         'file': fn,
         'source': source,
         'stats': {
@@ -98,12 +99,6 @@ def _render_report(fn):
                 },
             }
         }
-
-    if r['stats']['weasels']['count'] == 0:
-        r['stats']['weasels'] = r['stats']['weasels']['count']
-
-    if r['stats']['passives']['count'] == 0:
-        r['stats']['passives'] = r['stats']['passives']['count']
 
     return r
 
@@ -154,7 +149,7 @@ def report_jobs(docs, mask):
             }
 
 ## Report Generator
-def _generate_report(mask, output_file=None, conf=None):
+def _generate_report(mask, output_file=None, conf=None, data=None):
     if conf is None:
         conf = get_conf()
 
@@ -167,8 +162,11 @@ def _generate_report(mask, output_file=None, conf=None):
 
         mask = os.path.join(base_path, mask)
 
-    output = runner( jobs=report_jobs(docs, mask),
-                     retval='results')
+    if data is None:
+        output = runner( jobs=report_jobs(docs, mask),
+                         retval='results')
+    else:
+        output = data
 
     if output_file is None:
         return output
@@ -201,18 +199,64 @@ def wc(mask=None):
 
 @task
 def report(fn=None):
-    _generate_report(fn, output_file='print')
+    data = _generate_report(fn)
+    if len(data) > 1:
+        data.append(multi(fn, data, None))
+
+    puts(json.dumps(data, indent=3))
+
+def sum_key(key, data, sub=None):
+    r = 0
+    for d in data:
+        if sub is not None:
+            d = d[sub]
+
+        try:
+            r += d[key]
+        except TypeError:
+            r += d[key]['count']
+    return r
 
 @task
-def sweep(mask=None):
-    puts('[stats]: starting full sweep of docs content.')
-    conf = get_conf()
+def multi(mask=None, data=None, output_file='print'):
+    if data is None:
+        data = _generate_report(mask)
 
-    out_file = _fn_output(mask, conf)
+    n = len(data)
 
-    _generate_report(mask, output_file=out_file, conf=conf)
+    o = dict()
 
-    puts('[stats]: wrote full manual sweep to {0}'.format(out_file))
+    keys = [ "flesch-ease", "sentence-count", "word-count",
+             "smog-index", "sentence-len-avg", "flesch-level",
+             "coleman-liau", "passives", "foggy", "weasels" ]
+
+    for key in keys:
+        o[key] = sum_key(key, data, 'stats')
+
+    r = dict()
+    for k,v in o.iteritems():
+        r[k] = float(v)/n if n > 0 else float('nan')
+
+    r['word-count'] = int(r['word-count'])
+    r['sentence-len-avg'] = int(r['sentence-len-avg'])
+
+    o = { 'report': 'multi',
+          'mask': mask if mask is not None else "all",
+          'averages': r,
+          'totals': {
+              'passive': o['passives'],
+              'foggy': o['foggy'],
+              'weasel': o['weasels'],
+              'word-count': o['word-count']
+              }
+          }
+
+    if output_file is None:
+        return o
+    elif output_file == 'print':
+        puts(json.dumps(o, indent=3, sort_keys=True))
+    else:
+        json.dump(o, output_file, indent=3)
 
 @task
 def includes(mask=None):
