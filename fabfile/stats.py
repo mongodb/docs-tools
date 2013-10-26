@@ -6,7 +6,6 @@ import json
 
 from itertools import groupby
 from multiprocessing import Pool
-from pprint import pprint
 
 from fabric.api import task, local, env
 from fabric.utils import puts, abort
@@ -259,32 +258,57 @@ def multi(mask=None, data=None, output_file='print'):
         json.dump(o, output_file, indent=3)
 
 @task
-def includes(mask=None):
+def includes(mask='list'):
     if mask == 'list':
-        pprint(include().keys())
-    elif mask is not None:
-        if not mask.endswith('.rst'):
-            mask += '.rst'
-
+        results = include_files().keys()
+    elif mask == 'all':
+        results = include_files()
+    elif mask.startswith('rec'):
+        results = included_recusively()
+    else:
         if mask.startswith('source'):
             mask = mask[6:]
-
         if mask.startswith('/source'):
             mask = mask[7:]
 
-        files = include()
+        results = includes_masked(mask)
 
-        try:
-           return pprint(files[mask])
-        except ValueError:
-            for pair in files.items():
-                if pair[0].startswith(mask):
-                    return pprint(files[pair[0]])
+    puts(json.dumps(results, indent=3))
 
-def include():
+def included_recusively():
+    # this is a py2ism
+    files = include_files()
+    results = {}
+
+    included_files = files.keys()
+
+    for inc, srcs in files.items():
+        for src in srcs:
+            if src in included_files:
+                results[inc] = srcs
+                break
+
+    return results
+
+def includes_masked(mask):
+    files = include_files()
+
+    results = {}
+
+    try:
+        m = mask + '.rst'
+        results[m] = files[m]
+    except (ValueError, KeyError):
+        for pair in files.items():
+            if pair[0].startswith(mask):
+                results[pair[0]] = pair[1]
+
+    return results
+
+def include_files():
     conf = get_conf()
     source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
-    grep = local('grep ".. include:: /" {0} -R'.format(source_dir), capture = True)
+    grep = local('grep -R ".. include:: /" {0}'.format(source_dir), capture=True)
 
     rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
 
@@ -295,8 +319,10 @@ def include():
     files = dict()
 
     for i in groupby(s, operator.itemgetter(1) ):
-        files[i[0]] = list()
+        files[i[0]] = set()
         for src in i[1]:
-            files[i[0]].append(src[0])
+            if not src[0].endswith('~'):
+                files[i[0]].add(src[0])
+        files[i[0]] = list(files[i[0]])
 
     return files
