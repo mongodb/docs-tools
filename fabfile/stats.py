@@ -2,7 +2,7 @@ import json
 import operator
 import os.path
 import re
-import yaml
+import json
 
 from itertools import groupby
 from multiprocessing import Pool
@@ -118,7 +118,7 @@ def _fn_output(tag, conf=None):
         fn.append(tag.replace('/', '-'))
     fn.extend([conf.git.branches.current, conf.git.commit[:6]])
 
-    out_fn = '.'.join(['-'.join(fn), 'yaml'])
+    out_fn = '.'.join(['-'.join(fn), 'json'])
     return os.path.join(conf.build.paths.output, out_fn)
 
 def _resolve_input_file(fn):
@@ -131,11 +131,6 @@ def _resolve_input_file(fn):
     source = '.'.join([os.path.join('source', base_fn), 'txt'])
 
     return base_fn, source
-
-## YAML output wrapper
-
-def _output_report_yaml(data):
-   return yaml.safe_dump(data, default_flow_style=False, explicit_start=True)
 
 ########## user facing operations ##########
 
@@ -178,15 +173,11 @@ def _generate_report(mask, output_file=None, conf=None):
     if output_file is None:
         return output
     else:
-        stats = [ _output_report_yaml(s) for s in output ]
-        stats.append('...\n')
-        if  output_file == 'print':
-            for ln in stats:
-                print(ln[:-1])
+        if output_file == 'print':
+            puts(json.dumps(output, indent=2))
         else:
             with open(output_file, 'w') as f:
-                for ln in stats:
-                    f.write(ln)
+                json.dump(output, f)
 
 ## User facing fabric tasks
 
