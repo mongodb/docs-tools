@@ -17,6 +17,7 @@ from droopy import Droopy, attr, op
 
 from docs_meta import get_conf
 from utils import expand_tree
+from make import runner
 import stats_data
 
 ####### internal functions for rendering reports #######
@@ -126,8 +127,26 @@ def _resolve_input_file(fn):
 def _output_report_yaml(data):
    return yaml.safe_dump(data, default_flow_style=False, explicit_start=True)
 
-
 ########## user facing operations ##########
+
+def report_jobs(docs, mask):
+    for doc in docs:
+        if doc.endswith('searchindex.json') or doc.endswith('globalcontext.json'):
+            continue
+        elif mask is None:
+            yield {
+                'job': _render_report,
+                'args': dict(fn=doc),
+                'target': None,
+                'dependency': None
+            }
+        elif doc.startswith(mask):
+            yield {
+                'job': _render_report,
+                'args': [doc],
+                'target': None,
+                'dependency': None
+            }
 
 ## Report Generator
 def _generate_report(mask, output_file=None, conf=None):
@@ -137,41 +156,27 @@ def _generate_report(mask, output_file=None, conf=None):
     base_path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json')
     docs = expand_tree(base_path, '.json')
 
-    if mask is not None and mask.startswith('/'):
-        mask = mask[1:]
+    if mask is not None:
+        if mask.startswith('/'):
+            mask = mask[1:]
 
-    output = []
+        mask = os.path.join(base_path, mask)
 
-    p = Pool()
-
-    for doc in docs:
-        if doc.endswith('searchindex.json') or doc.endswith('globalcontext.json'):
-            continue
-        elif mask is None:
-            output.append(p.apply_async( _render_report, kwds=dict(fn=doc)))
-        else:
-            if doc.startswith(os.path.join(base_path, mask)):
-                output.append(p.apply_async( _render_report, args=(doc,)))
-
-    p.close()
-    p.join()
-
-    stats = [ _output_report_yaml(o.get()) for o in output ]
-
-    if len(stats) == 0:
-        stats[0] = stats[0][4:]
-
-    stats.append('...\n')
+    output = runner( jobs=report_jobs(docs, mask),
+                     retval='results')
 
     if output_file is None:
-        return (o.get() for o in output )
-    elif output_file == 'print':
-        for ln in stats:
-            print(ln[:-1])
+        return output
     else:
-        with open(output_file, 'w') as f:
+        stats = [ _output_report_yaml(s) for s in output ]
+        stats.append('...\n')
+        if  output_file == 'print':
             for ln in stats:
-                f.write(ln)
+                print(ln[:-1])
+        else:
+            with open(output_file, 'w') as f:
+                for ln in stats:
+                    f.write(ln)
 
 ## User facing fabric tasks
 
