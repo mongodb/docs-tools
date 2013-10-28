@@ -63,7 +63,7 @@ def get_conf():
     conf.git.branches.current = get_branch()
     conf.git.commit = get_commit()
 
-    conf.build.paths.update(render_paths('dict'))
+    conf.build.paths.update(render_paths('dict', conf))
 
     return conf
 
