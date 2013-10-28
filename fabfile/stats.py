@@ -353,3 +353,34 @@ def include_files_unused(conf=None):
             results.append(fn)
 
     return results
+
+@task
+def changed(output='print'):
+    from pygit2 import Repository, GIT_STATUS_CURRENT, GIT_STATUS_IGNORED
+    conf = get_conf()
+
+    repo_path = conf.build.paths.projectroot
+
+    r = Repository(repo_path)
+
+    changed = []
+    for path, flag in r.status().items():
+        if flag not in [ GIT_STATUS_CURRENT, GIT_STATUS_IGNORED ]:
+            if path.startswith('source/'):
+                if path.endswith('.txt'):
+                    changed.append(path[6:])
+
+    source_path = os.path.join(conf.build.paths.source, conf.build.paths.output, conf.git.branches.current, 'json')
+    changed_report = []
+
+    for report in _generate_report(None):
+        if report['source'][len(source_path):] in changed:
+            changed_report.append(report)
+
+    changed_report.append(multi(data=changed_report, output_file=None))
+    if output is None:
+        return changed_report
+    elif output == 'print':
+        puts(json.dumps(changed_report, indent=2))
+    else:
+        json.dump(changed_report, output)
