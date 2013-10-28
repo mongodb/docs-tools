@@ -919,13 +919,12 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     padding: 0 8px;
     box-sizing: content-box;
     -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
 }
 
 #etp {
     color: white;
     margin-top: 30px;
-    font-weight: normal;
-    letter-spacing: normal;
 }
 
 #etp ul {
@@ -934,7 +933,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     line-height: 1.5em;
 }
 
-#etp ul li {
+#etp li {
     display: inline;
     list-style-type: none;
     font-size: 14px;
@@ -942,7 +941,6 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 }
 
 #header-db .search-db {
-    display: inline-block;
     height: 50px;
     margin-bottom: -11px;
     transition: width 0.3s linear;
@@ -1006,7 +1004,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     #header-db .search-db,
     #header-db .search-db.narrow,
     #header-db .search-db.wide {
-        width :auto;
+        width: auto;
         padding-top: 5px;
     }
 
