@@ -24,9 +24,6 @@ body {
 }
 
 div.documentwrapper {
-    /* float: left; */
-    /* width: 100%; */
-    /* background-color: #F3F4EB; */
     padding-left: 0;
     padding-right: 0;
 }
@@ -36,36 +33,15 @@ hr { border: 1px solid #B1B4B6; }
 div.document {
     background-color: white;
     text-shadow: none;
+    margin-top: 32px;
+    margin-bottom: 32px;
 }
 
 div.body {
-    background-color: white;
-    color: #333;
-    font-size: 100%;
     overflow-x: auto;
-    padding: 0 1.5em;
+    padding: 0 15px 0 25px;
 }
 div.body > div#cse-results {margin:0;padding:0;height:auto;}
-div.footer {
-    color:white;
-    background-color:#402817;
-    width:auto;
-    text-align:center;
-    font-size:80%;
-    border:none;
-    padding:0.5em;
-}
-
-div.footer p {
-    margin:0;
-    padding:0;
-    line-height:1.5;
-}
-
-div.footer a {
-    color: #989898;
-    text-decoration: underline;
-}
 
 div.related {
     color: #fff;
@@ -88,17 +64,22 @@ div.footer-nav div.related ul {
     padding: 5px 10px 0;
 }
 
+.figure img {
+    width: 100%;
+}
+
 div.sphinxsidebar {
     font-size: 0.72em;
-    background-color: #F3F4EB;
+    background-color: #F1F2F5;
     padding-left: 0;
     padding-right: 0;
+    margin-bottom: 32px;
 }
 
 div.sphinxsidebarwrapper{
     font-size: 1.0em;
-    background-color: #F3F4EB;
     padding: 12px 20px;
+    line-height: 1.8em;
 }
 
 div.sphinxsidebar h3 {
@@ -405,37 +386,13 @@ div#mongodb ul.simple {
     padding-left:0px;
 }
 
-/*
-div.sphinxsidebar li.toctree-l1 a.reference {
-    font-size: 1.2em;
-    color: black;
-    line-height: 1.5em;
-}
-*/
-/*
-div.sphinxsidebar ul.current li.toctree-l1 a {
-    font-size: 1.2em;
-    color: black;
-    line-height: 1.5em;
-}
-*/
-div.sphinxsidebar ul.current li.toctree-l2 a {
-    color: #333;
-    line-height: 1.5em;
-}
-
-div.sphinxsidebar ul.current li.toctree-l3 a {
-    color: #333;
-    line-height: 1.5em;
-}
-div.sphinxsidebar ul.current li.toctree-l4 a {
-    color: #333;
-    line-height: 1.5em;
-}
+div.sphinxsidebar ul.current li.toctree-l2 a,
+div.sphinxsidebar ul.current li.toctree-l3 a,
+div.sphinxsidebar ul.current li.toctree-l4 a,
 div.sphinxsidebar ul.current li.toctree-l5 a {
     color: #333;
-    line-height: 1.5em;
 }
+
 div.related li.right {
     float: right;
     margin-right: 5px;
@@ -452,38 +409,6 @@ div.split {
     margin: 0 auto;
     position: relative;
 }
-
-#header-db {
-    height: 110px;
-    background-color: #402817;
-}
-
-#header-db div#logo {
-    margin-left: 15px;
-    padding-top: 15px;
-}
-
-#breadcrumbsback {
-    padding: 1em 0 .8em 0;
-    background-color: #f6f4cd;
-}
-
-#breadcrumbsback div.split { overflow: hidden; }
-
-ol#breadcrumbs { margin-left: -14px; }
-
-#breadcrumbs li {
-    background:transparent url(http://media.mongodb.org/icon-breadcrumbs.png) no-repeat auto 1px center;
-    display:inline;
-    float:left;
-    line-height:1.8em;
-    margin:0 0.33em 0 0;
-    padding-left:15px;
-    white-space:nowrap;
-    line-height: 1.4em;
-}
-
-#breadcrumbs { color: #003594; }
 
 #main-db {
     padding-top: 2.5em;
@@ -564,16 +489,6 @@ input.blur { color: #666; }
 input[type="text"]:disabled { color: #333; }
 
 #quick-search-query { width: 13em; }
-
-div.search-db {
-    position: absolute;
-    top: 35px;
-    right: 10px;
-    width: 246px;
-    height: 31px;
-    background-repeat: no-repeat;
-    *z-index: 1;
-}
 
 input#quick-search-query {
     -webkit-appearance:none;
@@ -690,82 +605,6 @@ div#docs-header { width: 950px; }
 
 div#main-db.hidden { display: none; }
 
-div.gsc-control-cse-en, div.gsc-control-cse { padding: 0 !important; }
-
-form.gsc-search-box {
-    background-color: rgba(255,255,255,0.3);
-    border-radius: 6px;
-    border: 1px solid #3b2920;
-}
-
-.gsc-search-box.gsc-search-box-tools .gsc-search-box .gsc-input {
-    padding: 0;
-}
-
-div.gsc-input-box,
-.gsc-search-box .gsc-input>input:hover, .gsc-input-box-hover,
-.gsc-search-box .gsc-input>input:focus, .gsc-input-box-focus {
-    border: 0;
-    background: transparent;
-    box-shadow: none;
-}
-
-/* [name] selector is a hack to override google's stylsheet */
-.gsc-input input.gsc-input[name="search"] {
-    background-color: transparent !important;
-    color: white;
-}
-
-.gsib_b {
-    display: none;
-}
-
-/* [title] selector is a hack to override google's stylesheet */
-input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-search-button:focus[title] {
-    border-color: transparent;
-    background-color: transparent;
-    padding: 0 8px;
-}
-
-div#etp {
-    position: absolute;
-    background: none;
-    margin: 0;
-    top: 79px;
-    padding: 0;
-    right: 10px;
-    color: white;
-}
-
-div#etp ul {
-    padding: 0;
-    margin: 0;
-}
-
-div#etp ul li {
-    display: inline;
-    list-style-type: none;
-    font-size: 10pt;
-    padding: 8px 1em 0 0;
-}
-
-div#etp ul li a {
-    color: white
-}
-
-div#etp ul li:before {
-    content: "|";
-    padding-right: 1em;
-}
-
-div#etp ul li:first-child:before { content: ""; }
-div#etp ul li:last-child { padding-right: 0; }
-
-input.gsc-input {
-    background: none;
-    background-color: #4c3a2c;
-}
-
 tt,tt  span.pre {
     font-family: 'Inconsolata', monospace;
     font-size: 1.05em;
@@ -811,7 +650,7 @@ div.body li>p {
     margin-bottom: 0.2em !important;
 }
 
-div.highlight pre { 
+div.highlight pre {
     background-color: #F5F5F5;
     font-family: 'Inconsolata', monospace;
     font-size: 1.1em;
@@ -904,7 +743,7 @@ li p.first { margin-bottom: 0em; }
 h4#vnd {padding:0;margin:0;line-height:1.5;padding-left:10px;}
 
 div.sphinxsidebarwrapper ul {margin:0;padding:0;margin-left:10px;}
-div.sphinxsidebarwrapper ul li {font-family:Helvetica,Arial,Sans-serif;line-height:1.5;}
+div.sphinxsidebarwrapper ul li {font-family:Helvetica,Arial,Sans-serif;}
 div.sphinxsidebarwrapper ul li a:active,
 div.sphinxsidebarwrapper ul li a:focus {font-weight:900;}
 div.sphinxsidebarwrapper ul li a tt span {font-family:Helvetica,Arial,sans-serif;font-size:inherit;color: #333;}
@@ -915,9 +754,12 @@ div.sphinxsidebar a:active tt.literal .pre,
 div.sphinxsidebar a:focus tt.literal .pre,
 div.sphinxsidebar a:hover tt.literal .pre {font-weight:900;}
 div.body div.bc {
-    padding-top: .6em;
+    padding-bottom: 10px;
     background:white;
     cursor: default;
+}
+div.body div.bc.hide {
+    display: none;
 }
 div.body div.bc li.jr { float: right; display:none; }
 div.body div.bc ul { padding:0; margin:0 }
@@ -925,11 +767,40 @@ div.body div.bc ul li { list-style: none; font-size: 0.9em; display:inline; }
 div.body div.bc ul li a { color: #003594; }
 div.dc span.bcpoint { font-weight: bold; font-size:0.9em; color: #343434; }
 div.sphinxsidebarwrapper h3 { line-height:2.0; margin:0; padding:0 }
-div.sphinxsidebarwrapper h3:first-child { line-height:1.0; margin:0; padding:0 }
 div.sphinxsidebarwrapper div.idxcontents { margin-left: 8px; font-size: 88%; }
 div.body div.contents { max-width: 25%; float: right;  padding-right: 2em; margin-left: 1em; }
 div.body div.contents li { padding-top: .25em; }
 div.hidden { display: none; }
+
+#vn {
+    font-size: 0.76em;
+}
+
+.jira-link,
+.jira-link:hover,
+.translation-link,
+.translation-link:hover,
+.edit-link,
+.edit-link:hover {
+    float: right;
+    margin-left: 7px;
+    text-decoration: none;
+}
+
+.jira-link {
+    font-size: 24px;
+    margin-top: 1px;
+}
+
+.translation-link {
+    font-size: 30px;
+    margin-top: -2px;
+}
+
+.edit-link {
+    font-size: 23px;
+    margin-top: 3px;
+}
 
 a > em { font-style: normal; }
 
@@ -975,13 +846,325 @@ dl.method dd p, dl.dbcommand dd p {
 }
 
 dl.method dd table.docutils td, dl.dbcommand dd table.docutils td {
-	line-height: 1.3em;
+    line-height: 1.3em;
 }
 
 dl.method > dt, dl.dbcommand > dt {
-	background-color: lavender;
+    background-color: lavender;
 }
 
 div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p > span {
     font-style: italic;
+}
+
+#header-db {
+    min-height: 100px;
+    background-color: #402817;
+}
+
+#logo {
+    float: left;
+    margin-top: 23px;
+}
+
+#logo img {
+    width: 200px;
+}
+
+div.gsc-control-cse-en, div.gsc-control-cse { padding: 0 !important; }
+
+form.gsc-search-box {
+    background-color: rgba(255,255,255,0.3);
+    border-radius: 6px;
+    border: 1px solid #3b2920;
+}
+
+.gsc-search-box.gsc-search-box-tools .gsc-search-box .gsc-input {
+    padding: 0;
+}
+
+div.gsc-input-box,
+.gsc-search-box .gsc-input>input:hover, .gsc-input-box-hover,
+.gsc-search-box .gsc-input>input:focus, .gsc-input-box-focus {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+/* [name] selector is a hack to override google's stylsheet */
+.gsc-input input.gsc-input[name="search"] {
+    background-color: transparent !important;
+    color: white;
+    font-weight: 300;
+    font-size: 15px;
+    height: 1.3em !important;
+}
+
+.gsc-input input.gsc-input::-webkit-input-placeholder,
+.gsc-input input.gsc-input:-moz-input-placeholder,
+.gsc-input input.gsc-input::-moz-input-placeholder,
+.gsc-input input.gsc-input:-ms-input-placeholder {
+    color: #CCC;
+}
+
+/* Clear search button */
+.gsib_b {
+    display: none;
+}
+
+/* [title] selector is a hack to override google's stylesheet */
+input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-search-button:focus[title] {
+    border-color: transparent;
+    background-color: transparent;
+    padding: 0 8px;
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+}
+
+#etp {
+    color: white;
+    margin-top: 30px;
+    font-weight: normal;
+    letter-spacing: normal;
+}
+
+#etp ul {
+    padding: 0;
+    margin: 0;
+    line-height: 1.5em;
+}
+
+#etp ul li {
+    display: inline;
+    list-style-type: none;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+#header-db .search-db {
+    display: inline-block;
+    height: 50px;
+    margin-bottom: -11px;
+    transition: width 0.3s linear;
+    -webkit-transition: width 0.3s linear;
+    -moz-transition: width 0.3s linear;
+    -o-transition: width 0.3s linear;
+    padding: 11px 0 11px 0;
+    margin-left: 10px;
+}
+
+#header-db .search-db.narrow {
+    width: 98px;
+}
+
+#header-db .search-db.wide {
+    width: 226px;
+}
+
+.navbar-header {
+    margin-top: 24px;
+}
+
+.navbar-header .navbar-toggle {
+    border-color: #f1f2f5;
+}
+
+.navbar-header .navbar-toggle .icon-bar {
+    background-color: #f1f2f5;
+}
+
+#etp .nav {
+    float: right;
+}
+
+#etp li>a {
+    color: white;
+}
+
+#etp li>a:hover,
+#etp li>a:focus {
+    background-color: #53341e;
+}
+
+@media (min-width: 992px) {
+    #etp.in .nav {
+        min-width: 409px;
+    }
+}
+
+@media (max-width: 992px) {
+    #etp .nav {
+        float: none;
+    }
+
+    #header-db .search-db {
+        margin-bottom: 0;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    #header-db .search-db,
+    #header-db .search-db.narrow,
+    #header-db .search-db.wide {
+        width :auto;
+        padding-top: 5px;
+    }
+
+    #etp {
+        margin-top: 15px;
+
+        width: 100%;
+
+        padding-left: 0;
+        padding-right: 0;
+
+        margin-left: 0;
+    }
+
+    #etp li {
+        display: block;
+        float: none;
+    }
+
+    #etp li>a:hover,
+    #etp li>a:focus {
+        background-color: #784b2b;
+    }
+
+}
+
+/* Footer styles */
+.footer {
+    width:auto;
+    font-size:80%;
+    border:none;
+    margin-left: 30px;
+    margin-right: 30px;
+    padding: 20px 0;
+}
+
+.this-page-menu li {
+    display: inline;
+    font-size: 22px;
+    margin-right: 5px;
+}
+
+.footer .copyright {
+    text-align: center;
+}
+
+.footer p {
+    margin: 1em 0;
+    padding: 0;
+    line-height:1.5;
+}
+
+.footer a {
+    color: #989898;
+    text-decoration: underline;
+}
+
+.footer h3 {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.footer .box {
+    background-color: #F1F2F5;
+    min-height: 20px;
+    padding: 15px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.footer .box a {
+    color: #333;
+    text-decoration: none;
+}
+
+.footer .box a:hover {
+    text-decoration: underline;
+}
+
+.box .this-page-menu a,
+.box .this-page-menu a:hover {
+    text-decoration: none;
+}
+
+.footer ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.footer .section-0 {
+    padding-left: 100px;
+}
+
+.footer .section-1 {
+    padding-left: 46px;
+}
+
+.footer .section-2 {
+    padding-left: 64px;
+}
+
+.footer .section-3 {
+    padding-left: 49px;
+}
+
+@media (max-width: 992px) {
+    .footer .section-0,
+    .footer .section-1,
+    .footer .section-2,
+    .footer .section-3 {
+        padding-left: 15px;
+    }
+}
+
+.social {
+    float: right;
+    height: 21px;
+    margin-top: 8px;
+}
+
+.footer .social .img {
+    background-repeat: no-repeat;
+    background-size: 21px 21px;
+    width: 21px;
+    height: 21px;
+    display: inline-block;
+}
+
+.footer .social .twitter-icon .img {
+    background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-twitter.png);
+}
+
+.footer .social .youtube-icon .img {
+    background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-youtube.png);
+}
+
+.footer .social .facebook-icon .img {
+    background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-facebook.png);
+}
+
+.footer .social .gplus-icon .img {
+    background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-gplus.png);
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+    .footer .social .twitter-icon .img {
+        background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-twitter@2x.png);
+    }
+
+    .footer .social .youtube-icon .img {
+        background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-youtube@2x.png);
+    }
+
+    .footer .social .facebook-icon .img {
+        background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-facebook@2x.png);
+    }
+
+    .footer .social .gplus-icon .img {
+        background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-gplus@2x.png);
+    }
 }

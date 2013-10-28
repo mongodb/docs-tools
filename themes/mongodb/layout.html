@@ -5,19 +5,23 @@
 
 {%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
 {%- set url_root = pathto('', 1) %}
-{%  set script_files = script_files + ["_static/lib/bootstrap.js"] %}
-{%  set css_files = css_files + ["_static/lib/bootstrap.css"] %}
+{%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.tipsy.js"] %}
+{%  set css_files = css_files + ["_static/bootstrap-custom.css", "_static/lib/icomoon.css", "_static/lib/tipsy.css"] %}
 
-{%- macro githublink() -%}
-    <a href="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub">Edit this Page</a>
+{%- macro translationslink() -%}
+    <a class="translation-link" href="{{ pathto('meta/translation', 1) }}" title="View in another language"><span class="icon-translation"></span></a>
+{%- endmacro -%}
+
+{%- macro editlink() -%}
+    <a class="edit-link" href="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub"><span class="icon-edit"></span></a>
 {%- endmacro -%}
 
 {%- macro jiralink() -%}
-   https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22
+   <a class="jira-link" id="jirafeedback" href="https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira"><span class="icon-feedback"></span></a>
 {%- endmacro -%}
 
 {%- macro relbar() %}
-    <div class="bc">
+    <div class="bc{% if not parents %} hide{% endif %}">
       <ul>
         {%- block rootrellink %}
         {%- endblock %}
@@ -31,17 +35,17 @@
 {%- endmacro %}
 
 {%- macro sidebar() %}
-   {%- if render_sidebar %}
-       <div class="sphinxsidebar col-md-3">
-         <div class="sphinxsidebarwrapper">
-           {%- if sidebars != None %}
-              {%- for sidebartemplate in sidebars %}
-                  {%- include sidebartemplate %}
-              {%- endfor %}
-           {%- endif %}
-         </div>
-       </div>
-    {%- endif %}
+  {%- if render_sidebar %}
+    <div class="sphinxsidebar col-md-3">
+      <div class="sphinxsidebarwrapper">
+        {%- if sidebars != None %}
+          {%- for sidebartemplate in sidebars %}
+            {%- include sidebartemplate %}
+          {%- endfor %}
+        {%- endif %}
+      </div>
+    </div>
+  {%- endif %}
 {%- endmacro -%}
 
 {%- macro script() %}
@@ -123,13 +127,34 @@
 
   {%- block sitesearch %}
     {%- if builder != 'singlehtml' %}
-      <script>
+      <script type="text/javascript">
         (function() {
            var cx = '017213726194841070573:WMX6838984';
            var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
            gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
+           gcse.onload = gcse.onreadystatechange = function() {
+            $(function() {
+              // hack to set a placeholder in google's custom search input
+              var pollInput = window.setInterval(function() {
+                var $input = $('.gsc-input input.gsc-input'),
+                    $div = $('.search-db');
+
+                if ($input.length) {
+                  $input.on('focus', function(e) { $div.addClass('wide').removeClass('narrow'); });
+                  $input.on('blur', function(e) {
+                    if (!$input.val().length) { $div.addClass('narrow').removeClass('wide'); }
+                  });
+                  $input.attr('placeholder', "Search mongodb.org");
+                  window.clearInterval(pollInput);
+                }
+              }, 10);
+            });
+           };
            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
            })();
+        $(function() {
+          $('.translation-link').add('.jira-link').add('.edit-link').tipsy({gravity: 's'});
+        });
       </script>
     {%- endif %}
   {%- endblock -%}
@@ -146,52 +171,59 @@
     </script>
   {%- endblock -%}
 
-  <div class="container">
-    {%- block header %}
-      <div id="header-db" class="spread row">
-        <div class="split">
-          <div id="logo">
-            {%- block logo %}<div><a href="http://www.mongodb.org/"><img class="logo" src="http://media.mongodb.org/logo-mongodb.png" alt="MongoDB Logo"/></a></div>{%- endblock -%}
-          </div>
-
-          {%- block searchbox %}
-            {%- if builder != 'singlehtml' %}
-              <div class="search-db"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/{{ theme_manual_path }}/search/" queryParameterName="query"></gcse:searchbox-only></div>
-            {%- endif %}
-          {%- endblock %}
-
-          {%- block subnav %}
-            <div id="etp">
-              <ul>
-                <li><a href="http://try.mongodb.org/">Try It Out</a></li>
-                <li><a href="http://www.mongodb.org/downloads">Downloads</a></li>
-                <li><a href="http://www.mongodb.org/get-involved">Community</a></li>
-                <li><a href="http://blog.mongodb.org/">Blog</a></li>
-              </ul>
-            </div>
-          {%- endblock -%}
+  {%- block header %}
+    <header id="header-db" role="navigation">
+      <div class="container">
+        <div id="logo">
+          {%- block logo %}<a href="http://www.mongodb.org/"><img class="logo" src="http://media.mongodb.org/logo-mongodb-header.png" alt="MongoDB Logo"/></a>{%- endblock -%}
+        </div>
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-header-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse navbar-header-collapse" id="etp">
+          <ul class="nav navbar-nav">
+            {%- block subnav %}
+            <li><a href="http://docs.mongodb.org">Docs</a></li>
+            <li><a href="http://try.mongodb.org">Try It Out</a></li>
+            <li><a href="http://www.mongodb.org/downloads">Downloads</a></li>
+            <li><a href="http://http://www.mongodb.org/get-involved">Community</a></li>
+            <li><a href="http://blog.mongodb.org">Blog</a></li>
+            {% endblock %}
+            {%- block searchbox %}
+            <li class="search-db narrow"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></li>
+            {% endblock %}
+          </ul>
         </div>
       </div>
-    {%- endblock -%}
+    </header>
+  {%- endblock %}
 
+  <div class="container">
     {%- block content %}
       {%- block sidebar1 %} {# possible location for sidebar #} {% endblock %}
       <div class="document row">
         {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
         {%- block document %}
-           <div class="documentwrapper col-md-9">
-             {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
-               <div class="body">
-                 {{ relbar() }}
+          <div class="documentwrapper col-md-9">
+            {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
+            <div class="body">
+              {{ editlink() }}
+              {{ jiralink() }}
+              {{ translationslink() }}
+              {{ relbar() }}
+              {% block body %}
+              {{ body }}
+              {% endblock %}
 
-                 {% block body %}
-                   {{ body }}
-                 {% endblock %}
-
-                 {{- render_nextprev() -}}
-               </div>
-             {%- if render_sidebar %}</div>{%- endif %}
-           </div>
+              {{- render_nextprev() -}}
+            </div>
+            {%- if render_sidebar %}</div>{%- endif %}
+          </div>
         {%- endblock %}
         <div class="clearer"></div>
       </div>
@@ -199,16 +231,35 @@
 
     {%- block footer %}
       <div class="footer row">
-        <p>
-          {% trans copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }} {% endtrans %}
-          MongoDB&reg;, Mongo&reg;, and the leaf logo are registered trademarks of <a href="http://www.mongodb.com/">MongoDB, Inc.</a>
-        </p>
+        <div class="box col-md-12">
+          <div class="row">
+            <div class="col-xs-6 col-sm-3 section-0">
+              {%- include "intrasite-about.html" %}
+            </div>
+            <div class="col-xs-6 col-sm-3 section-1">
+              {%- include "resources.html" %}
+            </div>
+            <div class="col-xs-6 col-sm-3 section-2">
+              {%- include "intrasite-ecosystem.html" %}
+            </div>
+            <div class="col-xs-6 col-sm-3 section-3">
+              {%- include "intrasite-drivers.html" %}
+            </div>
+        </div>
+      </div>
+      <div class="copyright col-xs-10">
+        <p>Copyright &copy; 2013 <a class="smalltext" href="http://www.mongodb.com">MongoDB, Inc</a>. Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/ ">Creative Commons</a>. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
+      </div>
+      <div class="col-xs-2">
+        <div class="social">
+          <a class="twitter-icon" href="https://twitter.com/mongodbinc"><div class="img"></div></a>
+          <a class="youtube-icon" href="http://www.youtube.com/user/MongoDB"><div class="img"></div></a>
+          <a class="facebook-icon" href="https://www.facebook.com/mongodb"><div class="img"></div></a>
+          <a class="gplus-icon" href="https://plus.google.com/u/1/101024085748034940765/posts?cfem=1"><div class="img"></div></a>
+        </div>
       </div>
     {%- endblock %}
-
   </div>
-
-
 
   {%- block analytics %}
     {%- include "analytics.html" %}
