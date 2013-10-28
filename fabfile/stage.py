@@ -1,6 +1,7 @@
 import os
 import pwd
 import sys
+import time
 import datetime
 import tarfile
 import urllib2
@@ -166,5 +167,8 @@ def deploy(path, conf=None):
     if not tar_path.split('/')[-1].startswith('-'.join([conf.project.name, conf.git.branches.current])):
         abort('[deploy] [tarball] [ERROR]: cannot deploy branches other than: {0}'.format(conf.git.branches.current))
 
-    # production_deploy(env.deploy_target, conf, pconf)
-    puts("[deploy] [tarball]: If this were reality, we would have deployed. here. But it's not. So we didn't. Run 'fab deploy.deploy:{0}' to deploy staged content.".format(env.deploy_target))
+    puts("[deploy] [tarball]: deploying from archive in 5 seconds.")
+    time.sleep(5)
+    puts("[deploy] [tarball]: deploying from archive now.")
+    production_deploy(env.deploy_target, conf, pconf)
+    puts("[deploy] [tarball]: Deployed {0} from archive.".format(env.deploy_target))
