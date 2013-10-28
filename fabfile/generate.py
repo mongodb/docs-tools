@@ -528,7 +528,14 @@ def htaccess(fn='.htaccess'):
     if not dirname == '' and not os.path.exists(dirname):
         os.makedirs(dirname)
 
-    lines = set()
+    lines = set( [
+        '<FilesMatch "\.(ttf|otf|eot|woff)$">',
+           '<IfModule mod_headers.c>',
+             'Header set Access-Control-Allow-Origin "*"',
+           '</IfModule>',
+        '</FilesMatch>'
+    ] )
+
     for redir in sources:
         lines.add(generate_redirects(process_redirect(redir, conf), conf=conf, match=False))
 

@@ -83,9 +83,14 @@ def get_versions(conf=None):
         else:
             path_name = 'v' + version
 
-        if conf.git.remote.upstream.endswith('mms-docs'):
+
+        if conf.project.name == 'mms':
             if version == conf.version.stable:
                 path_name = 'current'
+
+            if path_name == 'master':
+                path_name = 'current'
+
         else:
             if version == conf.version.stable:
                 version += ' (current)'

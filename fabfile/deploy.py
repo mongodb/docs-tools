@@ -64,7 +64,7 @@ def remote(host):
 
 @task
 @parallel
-def static(local_path='all', remote=None, host_string=None, recursive=False, delete=False, environ=None):
+def static(local_path='all', remote=None, host_string=None, recursive=False, delete=False, environ=None, pconf=None):
     if host_string is None:
         host_string = env.host_string
     if environ is None:
@@ -73,9 +73,9 @@ def static(local_path='all', remote=None, host_string=None, recursive=False, del
     if local_path == 'all':
         local_path = '*'
 
-    static_worker(local_path, remote, host_string, recursive, recursive, environ)
+    static_worker(local_path, remote, host_string, recursive, recursive, environ, pconf)
 
-def static_worker(local_path, remote, host_string, recursive, delete, environ):
+def static_worker(local_path, remote, host_string, recursive, delete, environ, pconf):
     if local_path.endswith('.htaccess') and env.branch != 'master':
         puts('[deploy] [ERROR]: cowardly refusing to deploy a non-master htaccess file.')
         return False
@@ -92,17 +92,18 @@ def static_worker(local_path, remote, host_string, recursive, delete, environ):
 
 @task
 @parallel
-def push(local_path, remote, host_string=None, recursive=False, delete=False, environ=None):
+def push(local_path, remote, host_string=None, recursive=False, delete=False, environ=None, pconf=None):
     if host_string is None:
         host_string = env.host_string
     if environ is None:
         environ = env.deploy_target
 
-    push_worker(local_path, remote, host_string, recursive, delete, environ)
+    push_worker(local_path, remote, host_string, recursive, delete, environ, pconf)
 
-def push_worker(local_path, remote, host_string, recursive, delete, environ):
+def push_worker(local_path, remote, host_string, recursive, delete, environ, pconf):
     if get_conf().project.name == 'mms' and (env.branch != 'master' and
-                                             env.edition == 'saas'):
+                                             pconf.edition == 'saas'):
+        print env
         puts('[deploy] [ERROR]: cowardly refusing to push non-master saas.')
         return False
 
@@ -153,7 +154,7 @@ def deploy(target, conf=None, pconf=None):
     if pconf['target'] != target:
         abort('[deploy] [ERROR]: this build environment does not support the {0} target'.format(target))
 
-    count = runner(deploy_jobs(target, conf, pconf), pool=2)
+    count = runner(deploy_jobs(target, conf, pconf), pool=1)
     puts('[deploy]: pushed {0} targets'.format(count))
 
 def deploy_jobs(target, conf, pconf):
@@ -164,6 +165,9 @@ def deploy_jobs(target, conf, pconf):
     if 'delete' in pconf.options:
         env.rsync_options.delete = True
 
+    if 'edition' in pconf:
+        edition(pconf.edition)
+
     remote(pconf.env)
 
     args = dict(local_path=get_branched_path(pconf.options, conf, conf.build.paths.output, pconf.paths.local),
@@ -171,7 +175,8 @@ def deploy_jobs(target, conf, pconf):
                 host_string=None,
                 recursive=env.rsync_options.recursive,
                 delete=env.rsync_options.delete,
-                environ=env.deploy_target)
+                environ=env.deploy_target,
+                pconf=pconf)
 
     for host in env.hosts:
         args['host_string'] = host

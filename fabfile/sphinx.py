@@ -178,17 +178,22 @@ def finalize_build(builder, conf, root):
     elif builder.startswith('json'):
         process.json_output(conf)
     elif builder.startswith('singlehtml'):
+        single_html_dir = pjoin(conf.build.paths.public_site_output, 'single')
+
+        if not os.path.exists(single_html_dir):
+            os.makedirs(single_html_dir)
 
         try:
-            process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
-                                                        'singlehtml', 'index.html'),
-                                       output_file=pjoin(conf.build.paths.public_site_output,
-                                                         'single', 'index.html'))
-        except (IOError, OSError):
             process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
                                                         'singlehtml', 'contents.html'),
                                        output_file=pjoin(conf.build.paths.public_site_output,
                                                          'single', 'index.html'))
+        except (IOError, OSError):
+            process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
+                                                        'singlehtml', 'index.html'),
+                                       output_file=pjoin(conf.build.paths.public_site_output,
+                                                         'single', 'index.html'))
+
 
         process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
                                                  'singlehtml', 'objects.inv'),
