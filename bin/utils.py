@@ -6,6 +6,8 @@ import subprocess
 import json
 import hashlib
 
+from contextlib import closing, contextmanager
+
 class AttributeDict(dict):
     def __init__(self, value=None):
         if value is None:
@@ -180,6 +182,18 @@ def ingest_json_list(filename):
         return o
     else:
         return [o]
+
+@contextmanager
+def swap_stdout(out):
+    tmp = sys.stdout
+    sys.stdout = out
+
+    try:
+        yield out
+    finally:
+        sys.stdout = tmp
+        out.close()
+
 
 def get_conf_file(file, directory=None):
     if directory is None:

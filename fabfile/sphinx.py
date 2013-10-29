@@ -1,13 +1,20 @@
-from fabric.api import cd, local, task, env, hide, settings
-from fabric.utils import puts
-from multiprocessing import cpu_count
-
+import datetime
 import itertools
 import os
 import pkg_resources
-import datetime
+import sys
 
-from utils import ingest_yaml, expand_tree
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
+from fabric.api import cd, local, task, env, hide, settings
+from fabric.utils import puts
+from multiprocessing import cpu_count
+sp_cmd = __import__('sphinx.cmdline')
+
+from utils import ingest_yaml, expand_tree, swap_stdout
 from clean import cleaner
 from make import runner
 import generate
@@ -67,7 +74,7 @@ def get_sphinx_args(tag):
     o = ''
 
     if pkg_resources.get_distribution("sphinx").version.startswith('1.2b1-xgen') and (tag is None or not tag.startswith('hosted') or not tag.startswith('saas')):
-         o += '-j ' + str(cpu_count()) + ' '
+         o += '-j ' + str(cpu_count() + 1) + ' '
 
     return o
 
@@ -145,11 +152,11 @@ def prereq():
     puts('[sphinx-prep]: build environment prepared for sphinx.')
 
 @task
-def build(builder='html', tag=None, root=None, clean=False):
+def build(builder='html', tag=None, root=None):
     if root is None:
         root = conf.build.paths.branch_output
 
-    with settings(hide('running'), host_string='sphinx'):
+    with settings(host_string='sphinx'):
         dirpath = os.path.join(root, builder)
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
@@ -157,13 +164,36 @@ def build(builder='html', tag=None, root=None, clean=False):
 
         puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
-        cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c ./ {3} {2}/source {2}/{0}' # per-builder-doctree
-        # cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees -c ./ {3} {2}/source {2}/{0}' # shared doctrees
+        cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c {3} {4} {2}/source {2}/{0}' # per-builder-doctreea
+        # cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees -c {3} {4} {2}/source {2}/{0}' # shared doctrees
 
-        if builder.startswith('epub'):
-            cmd += ' 2>&1 1>&3 | grep -v "WARNING: unknown mimetype" | grep -v "WARNING: search index" 1>&2; 3>&1'
+        sphinx_argv = cmd.format(builder, get_tags(builder, tag), root, conf.build.paths.projectroot, get_sphinx_args(tag)).split()
 
-        local(cmd.format(builder, get_tags(builder, tag), root, get_sphinx_args(tag)))
+        with swap_stdout(StringIO()) as _out:
+            r = sp_cmd.main(argv=sphinx_argv)
+            out = _out.getvalue()
+
+        if r != 0:
+            puts(out)
+            exit(r)
+        else:
+            out = out.split('\n')
+
+        if len(out) == 1 and out[0] == '':
+            pass
+        else:
+            if builder.startswith('epub'):
+                for l in out:
+                    if l.startswith('WARNING: unknown mimetype'):
+                        pass
+                    elif len(l) == 0:
+                        pass
+                    elif l.startswith('WARNING: search index'):
+                        pass
+                    else:
+                        print(l)
+            else:
+                print(out)
 
         puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
@@ -171,6 +201,11 @@ def build(builder='html', tag=None, root=None, clean=False):
 
 def finalize_build(builder, conf, root):
     pjoin = os.path.join
+    single_html_dir = pjoin(conf.build.paths.public_site_output, 'single')
+    print conf.build.paths.public_site_output
+    print conf.build.paths.branch_staging
+    if not os.path.exists(single_html_dir):
+        os.makedirs(single_html_dir)
 
     if builder.startswith('linkcheck'):
         puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
@@ -178,28 +213,18 @@ def finalize_build(builder, conf, root):
         process.error_pages()
         process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
                                                  'dirhtml', 'index.html'),
-                               target_file=pjoin(conf.build.paths.public_site_output,
-                                                 'single', 'search.html'))
+                               target_file=pjoin(single_html_dir, 'search.html'))
     elif builder.startswith('json'):
         process.json_output(conf)
     elif builder.startswith('singlehtml'):
-        single_html_dir = pjoin(conf.build.paths.public_site_output, 'single')
-
-        if not os.path.exists(single_html_dir):
-            os.makedirs(single_html_dir)
-
         try:
             process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
                                                         'singlehtml', 'contents.html'),
-                                       output_file=pjoin(conf.build.paths.public_site_output,
-                                                         'single', 'index.html'))
+                                       output_file=pjoin(single_html_dir, 'index.html'))
         except (IOError, OSError):
             process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
                                                         'singlehtml', 'index.html'),
-                                       output_file=pjoin(conf.build.paths.public_site_output,
-                                                         'single', 'index.html'))
-
-
+                                       output_file=pjoin(single_html_dir, 'index.html'))
         process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
                                                  'singlehtml', 'objects.inv'),
                                target_file=pjoin(conf.build.paths.branch_staging,
