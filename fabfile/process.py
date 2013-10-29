@@ -128,8 +128,6 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
     with open(output_fn, 'w') as f:
         f.write(json.dumps(doc))
 
-    puts('[json]: generated a processed json file: ' + output_fn)
-
 def generate_list_file(outputs, path, conf=None):
     dirname = os.path.dirname(path)
 
@@ -161,7 +159,6 @@ def generate_list_file(outputs, path, conf=None):
 def update_dependency(fn):
     if os.path.exists(fn):
         os.utime(fn, None)
-        puts('[dependency]: updated timestamp of {0} because its included files changed'.format(fn))
 
 def fix_include_path(inc, fn, source):
     if inc.startswith('/'):
