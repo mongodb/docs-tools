@@ -216,22 +216,7 @@ def finalize_build(builder, conf, root):
     elif builder.startswith('json'):
         process.json_output(conf)
     elif builder.startswith('singlehtml'):
-        try:
-            process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
-                                                        'singlehtml', 'contents.html'),
-                                       output_file=pjoin(single_html_dir, 'index.html'))
-        except (IOError, OSError):
-            process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
-                                                        'singlehtml', 'index.html'),
-                                       output_file=pjoin(single_html_dir, 'index.html'))
-        process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
-                                                 'singlehtml', 'objects.inv'),
-                               target_file=pjoin(single_html_dir, 'objects.inv'))
-
-        single_path = pjoin(single_html_dir, '_static')
-        for fn in expand_tree(pjoin(conf.build.paths.branch_output,
-                                    'singlehtml', '_static'), None):
-            process.copy_if_needed(fn, pjoin(single_path, os.path.basename(fn)))
+        runner( finalize_single_html_jobs(conf, single_html_dir) )
     elif builder.startswith('latex'):
         process.pdfs()
     elif builder.startswith('man'):
@@ -239,3 +224,30 @@ def finalize_build(builder, conf, root):
         man_tarball()
     elif builder.startswith('html'):
         html_tarball()
+
+def finalize_single_html_jobs(conf, single_html_dir):
+    pjoin = os.path.join
+
+    try:
+        process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
+                                                    'singlehtml', 'contents.html'),
+                                   output_file=pjoin(single_html_dir, 'index.html'))
+    except (IOError, OSError):
+        process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
+                                                    'singlehtml', 'index.html'),
+                                   output_file=pjoin(single_html_dir, 'index.html'))
+    process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
+                                             'singlehtml', 'objects.inv'),
+                           target_file=pjoin(single_html_dir, 'objects.inv'))
+
+    single_path = pjoin(single_html_dir, '_static')
+
+    for fn in expand_tree(pjoin(conf.build.paths.branch_output,
+                                'singlehtml', '_static'), None):
+
+        yield {
+            'job': process.copy_if_needed,
+            'args': [fn, pjoin(single_path, os.path.basename(fn))],
+            'target': None,
+            'dependency': None
+        }
