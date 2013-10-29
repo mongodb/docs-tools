@@ -3,7 +3,7 @@ from urllib2 import urlopen
 
 from fabric.api import cd, local, task, abort, env, puts, parallel
 from fabric.utils import _AttributeDict as ad
-from sphinx import edition
+from sphinx import edition_setup
 
 from docs_meta import get_conf, render_paths, get_branch, get_commit
 from utils import ingest_yaml_list, conf_from_list
@@ -11,6 +11,7 @@ from make import runner
 
 _pub_hosts = ['www-c1.10gen.cc', 'www-c2.10gen.cc']
 _stage_hosts = ['public@test.docs.10gen.cc']
+
 env.rsync_options = ad()
 env.rsync_options.default = '-cqltz'
 env.rsync_options.recursive = None
@@ -42,41 +43,19 @@ def check(site, conf=None):
     elif site == 'ecosystem':
         env.release_info_url = 'http://docs.mongodb.org/ecosystem/release.txt'
     elif site.startswith('prod') or site.startswith('pub'):
-        env.release_info_url = 'http://docs.mongodb.org/{0}/release.txt'.format(conf.git.commit)
+        env.release_info_url = 'http://docs.mongodb.org/{0}/release.txt'.format(conf.git.branches.current)
 
     r = urlopen(env.release_info_url).readlines()[0].split('\n')[0]
     if get_commit() == r:
         abort('ERROR: the current published version of is the same as the current commit. Make a new commit before publishing.')
     else:
-        puts('[build]: the current commit is different than the published version on. Building now.')
+        puts('[build]: the current commit is different than the published version on.')
 
 ########## Tasks -- Deployment and configuration. ############
 
-def remote(host):
-    if host in ['publication', 'mms']:
-        env.hosts = _pub_hosts
-        env.deploy_target = 'production'
-    elif host.startswith('stag'): # staging or stage
-        env.deploy_target = 'staging'
-        env.hosts = _stage_hosts
-    else:
-        abort('[deploy]: must specify a valid host to deploy the docs to.')
+def static_worker(local_path, remote, host_string, recursive, delete, environ, pconf, conf):
 
-@task
-@parallel
-def static(local_path='all', remote=None, host_string=None, recursive=False, delete=False, environ=None, pconf=None):
-    if host_string is None:
-        host_string = env.host_string
-    if environ is None:
-        environ = env.deploy_target
-
-    if local_path == 'all':
-        local_path = '*'
-
-    static_worker(local_path, remote, host_string, recursive, recursive, environ, pconf)
-
-def static_worker(local_path, remote, host_string, recursive, delete, environ, pconf):
-    if local_path.endswith('.htaccess') and env.branch != 'master':
+    if local_path.endswith('.htaccess') and conf.git.branches.current != 'master':
         puts('[deploy] [ERROR]: cowardly refusing to deploy a non-master htaccess file.')
         return False
 
@@ -90,20 +69,9 @@ def static_worker(local_path, remote, host_string, recursive, delete, environ, p
     local(' '.join(cmd))
     puts('[deploy]: completed migration of {0} files to {1} remote'.format(local_path, remote))
 
-@task
-@parallel
-def push(local_path, remote, host_string=None, recursive=False, delete=False, environ=None, pconf=None):
-    if host_string is None:
-        host_string = env.host_string
-    if environ is None:
-        environ = env.deploy_target
-
-    push_worker(local_path, remote, host_string, recursive, delete, environ, pconf)
-
-def push_worker(local_path, remote, host_string, recursive, delete, environ, pconf):
-    if get_conf().project.name == 'mms' and (env.branch != 'master' and
+def push_worker(local_path, remote, host_string, recursive, delete, environ, pconf, conf):
+    if get_conf().project.name == 'mms' and (conf.git.branches.current != 'master' and
                                              pconf.edition == 'saas'):
-        print env
         puts('[deploy] [ERROR]: cowardly refusing to push non-master saas.')
         return False
 
@@ -140,45 +108,53 @@ def get_branched_path(options, conf=None, *args):
 
 @task
 def deploy(target, conf=None, pconf=None):
+    """Deploys a site. Specifies the deployment target defined in 'push.yaml'"""
+
     if conf is None:
         conf = get_conf()
 
-    if pconf is None:
-        push_conf = ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
-                                                  conf.build.paths.builddata,
-                                                  'push.yaml'))
+    push_conf = ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
+                                              conf.build.paths.builddata,
+                                              'push.yaml'))
 
-        pconf = conf_from_list('target', push_conf)[target]
+    pconf = conf_from_list('target', push_conf)[target]
 
 
     if pconf['target'] != target:
         abort('[deploy] [ERROR]: this build environment does not support the {0} target'.format(target))
 
-    count = runner(deploy_jobs(target, conf, pconf), pool=1)
+    count = runner(deploy_jobs(target, conf, pconf), pool=2)
     puts('[deploy]: pushed {0} targets'.format(count))
 
 def deploy_jobs(target, conf, pconf):
     if 'edition' in pconf:
-        edition(pconf.edition)
+        conf = edition_setup(pconf.edition, conf)
+
     if 'recursive' in pconf.options:
         env.rsync_options.recursive = True
     if 'delete' in pconf.options:
         env.rsync_options.delete = True
 
-    if 'edition' in pconf:
-        edition(pconf.edition)
+    if pconf.env in ['publication', 'mms']:
+        hosts = _pub_hosts
+        deploy_target = 'production'
+    elif host.startswith('stag'): # staging or stage
+        deploy_target = 'staging'
+        hosts = _stage_hosts
+    else:
+        abort('[deploy]: must specify a valid host to deploy the docs to.')
 
-    remote(pconf.env)
 
     args = dict(local_path=get_branched_path(pconf.options, conf, conf.build.paths.output, pconf.paths.local),
                 remote=get_branched_path(pconf.options, conf, pconf.paths.remote),
                 host_string=None,
                 recursive=env.rsync_options.recursive,
                 delete=env.rsync_options.delete,
-                environ=env.deploy_target,
-                pconf=pconf)
+                environ=deploy_target,
+                pconf=pconf,
+                conf=conf)
 
-    for host in env.hosts:
+    for host in hosts:
         args['host_string'] = host
         yield { 'job': static_worker if 'static' in pconf.options else push_worker,
                 'args': args.copy(),

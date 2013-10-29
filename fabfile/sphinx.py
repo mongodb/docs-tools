@@ -23,6 +23,10 @@ intersphinx = task(intersphinx)
 env.EDITION = None
 @task
 def edition(val=None):
+    # this is a wrapper so we can use edition_setup elsewhere
+    edition_setup(val, conf)
+
+def edition_setup(val, conf):
     if val is None and env.EDITION is not None:
         val = env.EDITION
 
@@ -38,6 +42,7 @@ def edition(val=None):
         elif val == 'hosted':
             conf.build.paths.branch_output = os.path.join(conf.build.paths.output, val,
                                                            conf.git.branches.current)
+    return conf
 
 def get_tags(target, argtag):
     if argtag is None:

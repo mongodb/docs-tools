@@ -12,7 +12,8 @@ from fabric.api import task, puts, abort, env
 from docs_meta import get_conf
 from utils import conf_from_list, ingest_yaml_list, write_yaml, BuildConfiguration
 
-from deploy import deploy as production_deploy
+from make import runner
+from deploy import deploy_jobs
 
 def get_build_metadata(conf=None):
     if conf is None:
@@ -146,7 +147,7 @@ def unwind(path, conf=None):
 
     os.remove(arc_file)
 
-    puts('[deploy] [tarball]: extracted {0} archive into {1}.'.format(tar_path, conf.build.paths.public))
+    puts('[deploy] [tarball]: extracted {0} archive into {1}.'.format(os.path.basename(tar_path), conf.build.paths.public))
     return tar_path, new_conf
 
 env.deploy_target = None
@@ -155,20 +156,19 @@ def target(target):
     env.deploy_target = target
 
 @task
-def deploy(path, conf=None):
+def upload(path, conf=None):
     if conf is None:
         conf = get_conf()
 
+    if env.deploy_target is None:
+        abort('[deploy] [tarball] [ERROR]: cannot deploy without a deploy target.')
+
     tar_path, meta_conf = unwind(path, conf)
 
-    pconf = meta_conf.push
+    pconf = meta_conf.push[env.deploy_target]
     conf = meta_conf.conf
 
-    if not tar_path.split('/')[-1].startswith('-'.join([conf.project.name, conf.git.branches.current])):
-        abort('[deploy] [tarball] [ERROR]: cannot deploy branches other than: {0}'.format(conf.git.branches.current))
-
-    puts("[deploy] [tarball]: deploying from archive in 5 seconds.")
-    time.sleep(5)
     puts("[deploy] [tarball]: deploying from archive now.")
-    production_deploy(env.deploy_target, conf, pconf)
+    count = runner(deploy_jobs(env.deploy_target, conf, pconf), pool=2)
+    puts('[deploy]: pushed {0} targets'.format(count))
     puts("[deploy] [tarball]: Deployed {0} from archive.".format(env.deploy_target))
