@@ -184,14 +184,18 @@ def ingest_json_list(filename):
         return [o]
 
 @contextmanager
-def swap_stdout(out):
-    tmp = sys.stdout
+def swap_streams(out):
+    tmp0 = sys.stdout
+    tmp1 = sys.stderr
+
     sys.stdout = out
+    sys.stderr = out
 
     try:
         yield out
     finally:
-        sys.stdout = tmp
+        sys.stdout = tmp0
+        sys.stdout = tmp1
         out.close()
 
 

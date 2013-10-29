@@ -14,7 +14,7 @@ from fabric.utils import puts
 from multiprocessing import cpu_count
 sp_cmd = __import__('sphinx.cmdline')
 
-from utils import ingest_yaml, expand_tree, swap_stdout
+from utils import ingest_yaml, expand_tree, swap_streams
 from clean import cleaner
 from make import runner
 import generate
@@ -164,40 +164,51 @@ def build(builder='html', tag=None, root=None):
 
         puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
-        cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c {3} {4} {2}/source {2}/{0}' # per-builder-doctreea
+        cmd = 'sphinx-build -P -b {0} {1} -q -d {2}/doctrees-{0} -c {3} {4} {2}/source {2}/{0}' # per-builder-doctreea
         # cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees -c {3} {4} {2}/source {2}/{0}' # shared doctrees
 
         sphinx_argv = cmd.format(builder, get_tags(builder, tag), root, conf.build.paths.projectroot, get_sphinx_args(tag)).split()
 
-        with swap_stdout(StringIO()) as _out:
+        with swap_streams(StringIO()) as _out:
             r = sp_cmd.main(argv=sphinx_argv)
             out = _out.getvalue()
 
         if r != 0:
             puts(out)
             exit(r)
-        else:
-            out = out.split('\n')
 
-        if len(out) == 1 and out[0] == '':
-            pass
-        else:
-            if builder.startswith('epub'):
-                for l in out:
-                    if l.startswith('WARNING: unknown mimetype'):
-                        pass
-                    elif len(l) == 0:
-                        pass
-                    elif l.startswith('WARNING: search index'):
-                        pass
-                    else:
-                        puts(l)
-            else:
-                puts(out)
+        with settings(host_string=''):
+            output_sphinx_stream(out, builder, conf)
 
         puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
         finalize_build(builder, conf, root)
+
+def output_sphinx_stream(out, builder, conf=None):
+    if conf is None:
+        conf = get_conf()
+
+    out = out.split('\n')
+    out = list(set(out))
+
+    for l in out:
+        if l == '':
+            continue
+
+        if builder.startswith('epub'):
+            if l.startswith('WARNING: unknown mimetype'):
+                continue
+            elif len(l) == 0:
+                continue
+            elif l.startswith('WARNING: search index'):
+                continue
+
+        if l.startswith(conf.build.paths.branch_output):
+            l = l[len(conf.build.paths.branch_output)+1:]
+        elif l.startswith(os.path.join(conf.build.paths.projectroot, conf.build.paths.branch_output)):
+            l = l[len[os.path.join(conf.build.paths.projectroot, conf.build.paths.branch_output)]+1:]
+
+        puts(l)
 
 def finalize_build(builder, conf, root):
     pjoin = os.path.join

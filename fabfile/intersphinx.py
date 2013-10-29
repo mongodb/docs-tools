@@ -10,7 +10,7 @@ from utils import ingest_yaml_list
 
 from make import runner
 
-env.ACCEPTABLE = 864000
+ACCEPTABLE = 864000
 env.msgid = 'intersphinx'
 
 #### Helper functions
@@ -29,15 +29,15 @@ def download(f, s):
     if os.path.isfile(f):
         newf = False
     else:
-        puts('[{0}]: "{1} file does not exist'.format(env.msgid, f))
+        puts('[intersphinx]: "{0} file does not exist'.format(f))
         newf = download_file(f, s)
 
     mtime = file_timestamp(f)
 
-    if mtime < time.time() - env.ACCEPTABLE:
+    if mtime < time.time() - ACCEPTABLE:
         # if mtime is less than now - n days, it may be stale.
 
-        newtime = time.time() - (env.ACCEPTABLE / 2)
+        newtime = time.time() - (ACCEPTABLE / 2)
 
         if newf is True:
             # if we just downloaded the file it isn't stale yet
@@ -49,12 +49,9 @@ def download(f, s):
                 # if the source is stale, modify mtime so we don't
                 # download it for a few days.
                 os.utime(f, (newtime, newtime))
-    else:
-        # otherwise, mtime is within the window of n days, and we can do nothing.
-        puts('[{0}]: "{1}" is up to date'.format(env.msgid, f))
 
 def intersphinx():
-    count = runner([ job for job in intersphinx_jobs() ])
+    count = runner( intersphinx_jobs() )
 
     puts('[intersphinx]: processed {0} intersphinx inventories'.format(count))
 
