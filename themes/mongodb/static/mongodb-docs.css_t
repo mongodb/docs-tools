@@ -80,6 +80,10 @@ div.sphinxsidebarwrapper{
     line-height: 1.7em;
 }
 
+div.sphinxsidebarwrapper>ul:nth-of-type(1) {
+    margin-bottom: 10px;
+}
+
 div.sphinxsidebar h3 {
     font-family: helvetica,arial,sans-serif;
     color: #333;
@@ -137,6 +141,16 @@ div.sphinxsidebar input[type="submit"] {
     text-align: center;
     width: 4.5em !important;
 }
+
+div.sphinxsidebarwrapper .this-page-menu {
+    margin-left: 12px;
+}
+div.sphinxsidebarwrapper .this-page-menu li {
+    display: inline;
+    font-size: 22px;
+    margin-right: 5px;
+}
+
 
 p.searchtip { font-size: 93%; }
 
@@ -740,7 +754,10 @@ div.admonition-example pre { background-color: #FBFBFB; }
 li p.first { margin-bottom: 0em; }
 h4#vnd {padding:0;margin:0;line-height:1.5;padding-left:10px;}
 
-div.sphinxsidebarwrapper ul {margin:0;padding:0;margin-left: 12px;}
+div.sphinxsidebarwrapper ul {
+    margin:0;
+    padding:0;
+}
 div.sphinxsidebarwrapper ul li {font-family:Helvetica,Arial,Sans-serif;}
 div.sphinxsidebarwrapper ul li a:active,
 div.sphinxsidebarwrapper ul li a:focus {font-weight:900;}
@@ -1041,12 +1058,6 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     padding: 20px 0;
 }
 
-.this-page-menu li {
-    display: inline;
-    font-size: 22px;
-    margin-right: 5px;
-}
-
 .footer .copyright {
     text-align: center;
 }
@@ -1082,11 +1093,6 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 
 .footer .box a:hover {
     text-decoration: underline;
-}
-
-.box .this-page-menu a,
-.box .this-page-menu a:hover {
-    text-decoration: none;
 }
 
 .footer ul {
