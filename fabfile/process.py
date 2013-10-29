@@ -144,7 +144,7 @@ def generate_list_file(outputs, path, conf=None):
             f.write( '/'.join([ url, 'json', fn.split('/', 3)[3:][0]]) )
             f.write('\n')
 
-    print('[json]: rebuilt inventory of json output.')
+    puts('[json]: rebuilt inventory of json output.')
 
 ########## Update Dependencies ##########
 

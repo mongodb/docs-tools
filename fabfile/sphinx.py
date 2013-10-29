@@ -4,15 +4,9 @@ import os
 import pkg_resources
 import sys
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
 from fabric.api import cd, local, task, env, hide, settings
 from fabric.utils import puts
 from multiprocessing import cpu_count
-sp_cmd = __import__('sphinx.cmdline')
 
 from utils import ingest_yaml, expand_tree, swap_streams
 from clean import cleaner
@@ -167,15 +161,26 @@ def build(builder='html', tag=None, root=None):
         cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c {3} {4} {2}/source {2}/{0}' # per-builder-doctreea
         # cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees -c {3} {4} {2}/source {2}/{0}' # shared doctrees
 
-        sphinx_argv = cmd.format(builder, get_tags(builder, tag), root, conf.build.paths.projectroot, get_sphinx_args(tag)).split()
+        sphinx_cmd = cmd.format(builder, get_tags(builder, tag), root, conf.build.paths.projectroot, get_sphinx_args(tag))
 
-        with swap_streams(StringIO()) as _out:
-            r = sp_cmd.main(argv=sphinx_argv)
-            out = _out.getvalue()
+        if 1 == 1:
+            out = local(sphinx_cmd, capture=True)
+        else:
+            try:
+                from cStringIO import StringIO
+            except ImportError:
+                from StringIO import StringIO
+            sp_cmd = __import__('sphinx.cmdline')
 
-        if r != 0:
-            puts(out)
-            exit(r)
+            sphinx_argv = sphinx_cmd.split()
+
+            with swap_streams(StringIO()) as _out:
+                r = sp_cmd.main(argv=sphinx_argv)
+                out = _out.getvalue()
+
+            if r != 0:
+                puts(out)
+                exit(r)
 
         with settings(host_string=''):
             output_sphinx_stream(out, builder, conf)
@@ -227,6 +232,7 @@ def finalize_build(builder, conf, root):
                                target_file=pjoin(single_html_dir, 'search.html'))
     elif builder.startswith('json'):
         count = runner( process.json_output_jobs(conf) )
+        puts('[json]: processed {0} json files.'.format(count - 1))
         process.json_output(conf)
     elif builder.startswith('singlehtml'):
         runner( finalize_single_html_jobs(conf, single_html_dir) )
