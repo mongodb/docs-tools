@@ -202,8 +202,7 @@ def build(builder='html', tag=None, root=None):
 def finalize_build(builder, conf, root):
     pjoin = os.path.join
     single_html_dir = pjoin(conf.build.paths.public_site_output, 'single')
-    print conf.build.paths.public_site_output
-    print conf.build.paths.branch_staging
+
     if not os.path.exists(single_html_dir):
         os.makedirs(single_html_dir)
 
@@ -227,12 +226,11 @@ def finalize_build(builder, conf, root):
                                        output_file=pjoin(single_html_dir, 'index.html'))
         process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
                                                  'singlehtml', 'objects.inv'),
-                               target_file=pjoin(conf.build.paths.branch_staging,
-                                                 'single', 'objects.inv'))
-        single_path = pjoin(conf.build.paths.branch_staging,
-                            'single', '_static')
+                               target_file=pjoin(single_html_dir, 'objects.inv'))
+
+        single_path = pjoin(single_html_dir, '_static')
         for fn in expand_tree(pjoin(conf.build.paths.branch_output,
-                                    'singlehtml', '_static')):
+                                    'singlehtml', '_static'), None):
             process.copy_if_needed(fn, pjoin(single_path, os.path.basename(fn)))
     elif builder.startswith('latex'):
         process.pdfs()
