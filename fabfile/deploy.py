@@ -161,16 +161,18 @@ def deploy_jobs(target, conf, pconf):
                 'target': None,
                 'dependency': None }
 
-    if 'static' in pconf.paths:
+    try:
         if isinstance(pconf.paths.static, list):
             for static_path in pconf.paths.static:
-                for job in static_deploy(args, static_path, conf, pconf):
+                for job in static_deploy(args, static_path, hosts, conf, pconf):
                     yield job
         else:
-            for job in static_deploy(args, pconf.paths.static, conf, pconf):
+            for job in static_deploy(args, pconf.paths.static, hosts, conf, pconf):
                 yield job
+    except AttributeError:
+        puts('[deploy] [ERROR]: not deploying any static content')
 
-def static_deploy(args, static_path, conf, pconf):
+def static_deploy(args, static_path, hosts, conf, pconf):
     if static_path in ['manual', 'current']:
         args['remote'] = pconf.paths.remote
     else:
@@ -178,7 +180,8 @@ def static_deploy(args, static_path, conf, pconf):
 
     args['local_path'] = os.path.join(conf.build.paths.output, pconf.paths.local, static_path)
 
-    for host in env.hosts:
+
+    for host in hosts:
         args['host_string'] = host
         yield { 'job': static_worker,
                 'args': args.copy(),
