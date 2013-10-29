@@ -1,5 +1,5 @@
 import os
-from multiprocessing import Pool, cpu_count
+from multiprocessing import cpu_count, Pool
 
 from fabric.api import lcd, local, task, env
 
@@ -84,6 +84,7 @@ def check_multi_dependency(target, dependency):
 
     return False
 
+
 ############### Task Running Framework ###############
 
 def runner(jobs, pool=None, retval='count'):
@@ -95,20 +96,26 @@ def runner(jobs, pool=None, retval='count'):
 
         return async_runner(jobs, env.FORCE, pool, retval)
 
-def async_runner(jobs, force, pool, retval):
-    p = Pool(pool)
+import traceback
 
+def async_runner(jobs, force, pool, retval):
+    try:
+        p = Pool()
+    except: 
+        print('[ERROR]: can\'t start pool, falling back to sync ')
+        return sync_runner(jobs, force, retval)
+    
     count = 0
     results = []
 
     for job in jobs:
         if force is True or check_dependency(job['target'], job['dependency']):
-           if isinstance(job['args'], dict):
+            if isinstance(job['args'], dict):
                 results.append(p.apply_async(job['job'], kwds=job['args']))
-           else:
+            else:
                 results.append(p.apply_async(job['job'], args=job['args']))
 
-           count += 1
+            count += 1
 
     p.close()
     p.join()
@@ -138,10 +145,10 @@ def sync_runner(jobs, force, retval):
 
     if retval == 'count':
         return count
-    elif retval == 'results':
-        return results
     elif retval is None:
         return None
+    elif retval == 'results':
+        return results
     else:
         return dict(count=count,
                     results=results)

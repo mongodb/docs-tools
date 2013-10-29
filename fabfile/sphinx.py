@@ -211,8 +211,6 @@ def output_sphinx_stream(out, builder, conf=None):
 
         print(l)
 
-    return True
-
 def finalize_build(builder, conf, root):
     pjoin = os.path.join
     single_html_dir = pjoin(conf.build.paths.public_site_output, 'single')
@@ -228,6 +226,7 @@ def finalize_build(builder, conf, root):
                                                  'dirhtml', 'index.html'),
                                target_file=pjoin(single_html_dir, 'search.html'))
     elif builder.startswith('json'):
+        count = runner( process.json_output_jobs(conf) )
         process.json_output(conf)
     elif builder.startswith('singlehtml'):
         runner( finalize_single_html_jobs(conf, single_html_dir) )
@@ -265,3 +264,4 @@ def finalize_single_html_jobs(conf, single_html_dir):
             'target': None,
             'dependency': None
         }
+

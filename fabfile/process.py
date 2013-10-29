@@ -25,18 +25,8 @@ def output(fn):
 ########## Process Sphinx Json Output ##########
 
 def json_output(conf=None):
-    if env.input_file is None or env.output_file is None:
-        all_json_output(conf)
-    else:
-        process_json_file(env.input_file, env.output_file)
-
-def all_json_output(conf=None):
     if conf is None:
         conf = get_conf()
-
-    count = runner(json_output_jobs(conf))
-
-    puts('[json]: processed {0} json files.'.format(str(count)))
 
     list_file = os.path.join(conf.build.paths.branch_staging, 'json-file-list')
     public_list_file = os.path.join(conf.build.paths.public_site_output,
@@ -74,6 +64,7 @@ def json_output_jobs(conf=None):
     outputs = []
     for fn in expand_tree('source', 'txt'):
         # path = build/<branch>/json/<filename>
+
         if conf.project.name == 'mms':
             path = os.path.join(conf.build.paths.branch_staging,
                                 'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
@@ -87,6 +78,7 @@ def json_output_jobs(conf=None):
                    dependency=fjson,
                    job=process_json_file,
                    args=(fjson, json, regexes, conf))
+
         outputs.append(json)
 
     list_file = os.path.join(conf.build.paths.branch_staging, 'json-file-list')
@@ -152,7 +144,7 @@ def generate_list_file(outputs, path, conf=None):
             f.write( '/'.join([ url, 'json', fn.split('/', 3)[3:][0]]) )
             f.write('\n')
 
-    puts('[json]: rebuilt inventory of json output.')
+    print('[json]: rebuilt inventory of json output.')
 
 ########## Update Dependencies ##########
 
