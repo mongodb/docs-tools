@@ -191,9 +191,9 @@ def build(builder='html', tag=None, root=None):
                     elif l.startswith('WARNING: search index'):
                         pass
                     else:
-                        print(l)
+                        puts(l)
             else:
-                print(out)
+                puts(out)
 
         puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
