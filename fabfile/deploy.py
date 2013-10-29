@@ -138,7 +138,7 @@ def deploy_jobs(target, conf, pconf):
     if pconf.env in ['publication', 'mms']:
         hosts = _pub_hosts
         deploy_target = 'production'
-    elif host.startswith('stag'): # staging or stage
+    elif pconf.env.startswith('stag'): # staging or stage
         deploy_target = 'staging'
         hosts = _stage_hosts
     else:
