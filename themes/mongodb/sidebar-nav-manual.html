@@ -3,8 +3,8 @@
   <span id="vn"><select><option>{{ version }} (current)</option></select></span>
 </h3>
 
-<div class="site-contents"><a href="{{ pathto(master_doc) }}">{{ _('Contents') }}</a></div>
-
 {{ toctree( titles_only=1) }}
 
+<div class="site-about"><a href="{{pathto('about')}}">{{_('About')}}</a></div>
+<div class="site-contents"><a href="{{ pathto(master_doc) }}">{{ _('Contents') }}</a></div>
 <div class="site-index"><a href="{{ pathto('genindex') }}">{{ _('Index') }}</a></div>
