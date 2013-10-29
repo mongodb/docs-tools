@@ -213,9 +213,11 @@
           <div class="documentwrapper col-md-9">
             {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
             <div class="body">
-              {{ editlink() }}
-              {{ jiralink() }}
-              {{ translationslink() }}
+                {{ editlink() }}
+                {{ jiralink() }}
+              {%- block translationslink %}
+                {{ translationslink() }}
+              {% endblock %}
               {{ relbar() }}
               {% block body %}
               {{ body }}
