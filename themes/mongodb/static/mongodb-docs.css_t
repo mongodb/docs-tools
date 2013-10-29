@@ -768,7 +768,8 @@ div.body div.bc ul li a { color: #003594; }
 div.dc span.bcpoint { font-weight: bold; font-size:0.9em; color: #343434; }
 div.sphinxsidebarwrapper h3 { line-height:2.0; margin:0; padding:0 }
 div.sphinxsidebarwrapper div.idxcontents { margin-left: 8px; font-size: 88%; }
-div.body div.contents { max-width: 50%; float: right; padding: 0 0.5em 0.5em; margin-left: 1em; }
+div.body div.contents { max-width: 30%; float: right; padding: 0 0.5em 0.5em; margin-left: 1em; }
+div.body div.contents.long-toc { max-width: 100%; float: none; margin-left: 0; }
 div.body div.contents li { padding-top: .25em; }
 div.body div.contents ul { margin: 0; padding-left: 1.5em; }
 div.hidden { display: none; }
