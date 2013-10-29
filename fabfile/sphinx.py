@@ -164,7 +164,7 @@ def build(builder='html', tag=None, root=None):
 
         puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
-        cmd = 'sphinx-build -P -b {0} {1} -q -d {2}/doctrees-{0} -c {3} {4} {2}/source {2}/{0}' # per-builder-doctreea
+        cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c {3} {4} {2}/source {2}/{0}' # per-builder-doctreea
         # cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees -c {3} {4} {2}/source {2}/{0}' # shared doctrees
 
         sphinx_argv = cmd.format(builder, get_tags(builder, tag), root, conf.build.paths.projectroot, get_sphinx_args(tag)).split()
@@ -203,12 +203,15 @@ def output_sphinx_stream(out, builder, conf=None):
             elif l.startswith('WARNING: search index'):
                 continue
 
+        full_path = os.path.join(conf.build.paths.projectroot, conf.build.paths.branch_output)
         if l.startswith(conf.build.paths.branch_output):
             l = l[len(conf.build.paths.branch_output)+1:]
-        elif l.startswith(os.path.join(conf.build.paths.projectroot, conf.build.paths.branch_output)):
-            l = l[len[os.path.join(conf.build.paths.projectroot, conf.build.paths.branch_output)]+1:]
+        elif l.startswith(full_path):
+            l = l[len(full_path)+1:]
 
-        puts(l)
+        print(l)
+
+    return True
 
 def finalize_build(builder, conf, root):
     pjoin = os.path.join
