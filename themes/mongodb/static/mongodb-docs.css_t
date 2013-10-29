@@ -69,7 +69,7 @@ div.footer-nav div.related ul {
 }
 
 div.sphinxsidebar {
-    font-size: 0.72em;
+    font-size: 0.85em;
     background-color: #F1F2F5;
     padding-left: 0;
     padding-right: 0;
@@ -77,15 +77,14 @@ div.sphinxsidebar {
 }
 
 div.sphinxsidebarwrapper{
-    font-size: 1.0em;
-    padding: 12px 20px;
-    line-height: 1.8em;
+    padding: 12px 12px;
+    line-height: 1.7em;
 }
 
 div.sphinxsidebar h3 {
     font-family: helvetica,arial,sans-serif;
     color: #333;
-    font-size: 1.5em;
+    font-size: 1.2em;
     font-weight: bold;
     margin: 0;
     padding: 0px 0 0 10px;
@@ -115,7 +114,7 @@ div.sphinxsidebar p.topless { }
 
 div.sphinxsidebar ul ul, div.sphinxsidebar ul.want-points {
     list-style: none outside none;
-    margin-left: 10px;
+    margin-left: 12px;
 }
 
 div.sphinxsidebar ul {
@@ -742,7 +741,7 @@ div.admonition-example pre { background-color: #FBFBFB; }
 li p.first { margin-bottom: 0em; }
 h4#vnd {padding:0;margin:0;line-height:1.5;padding-left:10px;}
 
-div.sphinxsidebarwrapper ul {margin:0;padding:0;margin-left:10px;}
+div.sphinxsidebarwrapper ul {margin:0;padding:0;margin-left: 12px;}
 div.sphinxsidebarwrapper ul li {font-family:Helvetica,Arial,Sans-serif;}
 div.sphinxsidebarwrapper ul li a:active,
 div.sphinxsidebarwrapper ul li a:focus {font-weight:900;}
@@ -766,7 +765,7 @@ div.body div.bc ul { padding:0; margin:0 }
 div.body div.bc ul li { list-style: none; font-size: 0.9em; display:inline; }
 div.body div.bc ul li a { color: #003594; }
 div.dc span.bcpoint { font-weight: bold; font-size:0.9em; color: #343434; }
-div.sphinxsidebarwrapper h3 { line-height:2.0; margin:0; padding:0 }
+div.sphinxsidebarwrapper h3 { line-height: 2; margin:0; padding:0 }
 div.sphinxsidebarwrapper div.idxcontents { margin-left: 8px; font-size: 88%; }
 div.body div.contents { max-width: 30%; float: right; padding: 0 0.5em 0.5em; margin-left: 1em; }
 div.body div.contents.long-toc { max-width: 100%; float: none; margin-left: 0; }
@@ -775,7 +774,7 @@ div.body div.contents ul { margin: 0; padding-left: 1.5em; }
 div.hidden { display: none; }
 
 #vn {
-    font-size: 0.76em;
+    font-size: 0.85em;
 }
 
 .jira-link,
