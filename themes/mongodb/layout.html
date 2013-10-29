@@ -9,7 +9,9 @@
 {%  set css_files = css_files + ["_static/bootstrap-custom.css", "_static/lib/icomoon.css", "_static/lib/tipsy.css"] %}
 
 {%- macro translationslink() -%}
+  {%- block translationslink %}
     <a class="translation-link" href="{{ pathto('meta/translation', 1) }}" title="View in another language"><span class="icon-translation"></span></a>
+  {%- endblock -%}
 {%- endmacro -%}
 
 {%- macro editlink() -%}
@@ -213,16 +215,13 @@
           <div class="documentwrapper col-md-9">
             {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
             <div class="body">
-                {{ editlink() }}
-                {{ jiralink() }}
-              {%- block translationslink %}
-                {{ translationslink() }}
-              {% endblock %}
+              {{ editlink() }}
+              {{ jiralink() }}
+              {{ translationslink() }}
               {{ relbar() }}
               {% block body %}
-              {{ body }}
+                {{ body }}
               {% endblock %}
-
               {{- render_nextprev() -}}
             </div>
             {%- if render_sidebar %}</div>{%- endif %}
