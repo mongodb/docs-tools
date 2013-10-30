@@ -159,28 +159,10 @@ def build(builder='html', tag=None, root=None):
         puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
         cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c {3} {4} {2}/source {2}/{0}' # per-builder-doctreea
-        # cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees -c {3} {4} {2}/source {2}/{0}' # shared doctrees
-
         sphinx_cmd = cmd.format(builder, get_tags(builder, tag), root, conf.build.paths.projectroot, get_sphinx_args(tag))
 
-        if 1 == 1:
-            out = local(sphinx_cmd, capture=True)
-        else:
-            try:
-                from cStringIO import StringIO
-            except ImportError:
-                from StringIO import StringIO
-            sp_cmd = __import__('sphinx.cmdline')
-
-            sphinx_argv = sphinx_cmd.split()
-
-            with swap_streams(StringIO()) as _out:
-                r = sp_cmd.main(argv=sphinx_argv)
-                out = _out.getvalue()
-
-            if r != 0:
-                puts(out)
-                exit(r)
+        out = local(sphinx_cmd, capture=True)
+        # out = build_sphinx_native(sphinx_cmd)
 
         with settings(host_string=''):
             output_sphinx_stream(out, builder, conf)
@@ -188,6 +170,28 @@ def build(builder='html', tag=None, root=None):
         puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
         finalize_build(builder, conf, root)
+
+def build_sphinx_native(sphinx_cmd)
+    # Calls sphinx directly rather than in a subprocess/shell. Not used
+    # currently because of the effect on subsequent multiprocessing pools.
+
+    try:
+        from cStringIO import StringIO
+    except ImportError:
+        from StringIO import StringIO
+
+    sp_cmd = __import__('sphinx.cmdline')
+
+    sphinx_argv = sphinx_cmd.split()
+
+    with swap_streams(StringIO()) as _out:
+        r = sp_cmd.main(argv=sphinx_argv)
+        out = _out.getvalue()
+
+    if r != 0:
+        exit(r)
+    else: 
+        return r
 
 def output_sphinx_stream(out, builder, conf=None):
     if conf is None:
