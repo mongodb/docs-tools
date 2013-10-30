@@ -96,24 +96,28 @@ def runner(jobs, pool=None, retval='count'):
 
         return async_runner(jobs, env.FORCE, pool, retval)
 
-import traceback
-
 def async_runner(jobs, force, pool, retval):
     try:
         p = Pool()
-    except: 
+    except:
         print('[ERROR]: can\'t start pool, falling back to sync ')
         return sync_runner(jobs, force, retval)
-    
+
     count = 0
     results = []
 
     for job in jobs:
         if force is True or check_dependency(job['target'], job['dependency']):
-            if isinstance(job['args'], dict):
-                results.append(p.apply_async(job['job'], kwds=job['args']))
+            if 'callback' in job:
+                if isinstance(job['args'], dict):
+                    results.append(p.apply_async(job['job'], kwds=job['args'], callback=job['callback']))
+                else:
+                    results.append(p.apply_async(job['job'], args=job['args'], callback=job['callback']))
             else:
-                results.append(p.apply_async(job['job'], args=job['args']))
+                if isinstance(job['args'], dict):
+                    results.append(p.apply_async(job['job'], kwds=job['args']))
+                else:
+                    results.append(p.apply_async(job['job'], args=job['args']))
 
             count += 1
 
@@ -137,9 +141,13 @@ def sync_runner(jobs, force, retval):
     for job in jobs:
         if force is True or check_dependency(job['target'], job['dependency']):
             if isinstance(job['args'], dict):
-                results.append(job['job'](**job['args']))
+                r = job['job'](**job['args'])
             else:
-                results.append(job['job'](*job['args']))
+                r = job['job'](*job['args'])
+
+            results.append(r)
+            if 'callback' in job:
+                job['callback'](r)
 
             count +=1
 
