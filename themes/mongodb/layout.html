@@ -15,11 +15,15 @@
 {%- endmacro -%}
 
 {%- macro editlink() -%}
+  {%- block editlink %}
     <a class="edit-link" href="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub"><span class="icon-edit"></span></a>
+  {%- endblock -%}
 {%- endmacro -%}
 
 {%- macro jiralink() -%}
-   <a class="jira-link" id="jirafeedback" href="https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira"><span class="icon-feedback"></span></a>
+  {%- block jiralink %}
+    <a class="jira-link" id="jirafeedback" href="https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira"><span class="icon-feedback"></span></a>
+  {%- endblock -%}
 {%- endmacro -%}
 
 {%- macro relbar() %}
