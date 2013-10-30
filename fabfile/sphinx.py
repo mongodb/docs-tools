@@ -234,13 +234,14 @@ def finalize_build(builder, conf, root):
         process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
                                                  'dirhtml', 'index.html'),
                                target_file=pjoin(single_html_dir, 'search.html'))
-        generate.sitemap()
-        process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
-                                                 conf.build.paths.branch_output,
-                                                 'sitemap.xml.gz'),
-                               target_file=pjoin(conf.build.paths.projectroot,
-                                                 conf.build.paths.public_site_output,
-                                                 'sitemap.xml.gz'))
+        if conf.project.name != 'mms':
+            generate.sitemap()
+            process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
+                                                     conf.build.paths.branch_output,
+                                                    'sitemap.xml.gz'),
+                                   target_file=pjoin(conf.build.paths.projectroot,
+                                                     conf.build.paths.public_site_output,
+                                                     'sitemap.xml.gz'))
     elif builder.startswith('json'):
         count = runner( process.json_output_jobs(conf) )
         puts('[json]: processed {0} json files.'.format(count - 1))
