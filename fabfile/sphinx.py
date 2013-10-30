@@ -171,7 +171,7 @@ def build(builder='html', tag=None, root=None):
 
         finalize_build(builder, conf, root)
 
-def build_sphinx_native(sphinx_cmd)
+def build_sphinx_native(sphinx_cmd):
     # Calls sphinx directly rather than in a subprocess/shell. Not used
     # currently because of the effect on subsequent multiprocessing pools.
 
