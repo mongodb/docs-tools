@@ -235,9 +235,11 @@ def finalize_build(builder, conf, root):
                                                  'dirhtml', 'index.html'),
                                target_file=pjoin(single_html_dir, 'search.html'))
         generate.sitemap()
-        process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
+        process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
+                                                 conf.build.paths.branch_output,
                                                  'sitemap.xml.gz'),
-                               target_file=pjoin(conf.build.paths.public_site_output,
+                               target_file=pjoin(conf.build.paths.projectroot,
+                                                 conf.build.paths.public_site_output,
                                                  'sitemap.xml.gz'))
     elif builder.startswith('json'):
         count = runner( process.json_output_jobs(conf) )
@@ -257,7 +259,9 @@ def finalize_build(builder, conf, root):
         epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
         epub_src_filename = epub_name + '.epub'
 
-        process.copy_if_needed(source_file=os.path.join(conf.build.paths.branch_output, 'epub', epub_src_filename),
+        process.copy_if_needed(source_file=os.path.join(conf.build.paths.projectroot,
+                                                        conf.build.paths.branch_output,
+                                                        'epub', epub_src_filename),
                                target_file=os.path.join(conf.build.paths.projectroot,
                                                         conf.build.paths.public_site_output,
                                                         epub_branched_filename))
