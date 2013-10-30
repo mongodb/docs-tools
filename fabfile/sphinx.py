@@ -8,7 +8,7 @@ from fabric.api import cd, local, task, env, hide, settings
 from fabric.utils import puts
 from multiprocessing import cpu_count
 
-from utils import ingest_yaml, expand_tree, swap_streams
+from utils import ingest_yaml, expand_tree, swap_streams, hyph_concat
 from clean import cleaner
 from make import runner
 import generate
@@ -190,7 +190,7 @@ def build_sphinx_native(sphinx_cmd):
 
     if r != 0:
         exit(r)
-    else: 
+    else:
         return r
 
 def output_sphinx_stream(out, builder, conf=None):
@@ -235,6 +235,10 @@ def finalize_build(builder, conf, root):
                                                  'dirhtml', 'index.html'),
                                target_file=pjoin(single_html_dir, 'search.html'))
         generate.sitemap()
+        process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
+                                                 'sitemap.xml.gz'),
+                               target_file=pjoin(conf.build.paths.public_site_output,
+                                                 'sitemap.xml.gz'))
     elif builder.startswith('json'):
         count = runner( process.json_output_jobs(conf) )
         puts('[json]: processed {0} json files.'.format(count - 1))
@@ -248,6 +252,20 @@ def finalize_build(builder, conf, root):
         man_tarball()
     elif builder.startswith('html'):
         html_tarball()
+    elif builder.startswith('epub'):
+        epub_name = '-'.join(conf.project.title.lower().split())
+        epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
+        epub_src_filename = epub_name + '.epub'
+
+        process.copy_if_needed(source_file=os.path.join(conf.build.paths.branch_output, 'epub', epub_src_filename),
+                               target_file=os.path.join(conf.build.paths.projectroot,
+                                                        conf.build.paths.public_site_output,
+                                                        epub_branched_filename))
+        process._create_link(input_fn=epub_branched_filename,
+                             output_fn=os.path.join(conf.build.paths.projectroot,
+                                                    conf.build.paths.public_site_output,
+                                                    epub_src_filename))
+
 
 def finalize_single_html_jobs(conf, single_html_dir):
     pjoin = os.path.join
@@ -275,4 +293,3 @@ def finalize_single_html_jobs(conf, single_html_dir):
             'target': None,
             'dependency': None
         }
-
