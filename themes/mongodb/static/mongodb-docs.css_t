@@ -664,6 +664,8 @@ div.highlight pre {
     background-color: #F5F5F5;
     font-family: 'Inconsolata', monospace;
     font-size: 1.1em;
+    white-space: nowrap;
+    overflow: auto;
 }
 
 div.section > h2, div.section > h3,div.section > h4 {
