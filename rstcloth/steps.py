@@ -171,10 +171,16 @@ class StepsOutput(object):
             self.rst.content(doc['pre'], indent=self.indent)
             self.rst.newline()
 
-    def post(self, doc):
+    def post(self, doc, code_step=False):
         if 'post' in doc:
             self.rst.content(doc['post'], indent=self.indent)
             self.rst.newline()
+
+        if code_step is False:
+            self.post_step_hook()
+
+    def post_step_hook(self):
+        pass
 
     def _heading(self, block, override_char=None, indent=0):
         if 'heading' in block:
@@ -209,11 +215,12 @@ class StepsOutput(object):
                                arg=block['language'],
                                content=block['code'],
                                indent=self.indent)
+            self.rst.newline()
 
         if 'content' in block:
             self.content(block['content'], indent=self.indent)
 
-        self.post(block)
+        self.post(block, code_step=True)
 
     def key_name(self):
         key_name = os.path.splitext(os.path.basename(self.steps.source_fn))[0]
@@ -251,13 +258,13 @@ class WebStepsOutput(StepsOutput):
         self.indent = 3
 
     def heading(self, doc):
-
         self.rst.directive(name='raw',
                            arg='html',
-                           content='<div class="sequence-step">{0}</div>'.format(doc['stepnum']),
+                           content='<div class="sequence-block"><div class="bullet-block"><div class="sequence-step">{0}</div></div>'.format(doc['stepnum']),
                            indent=0)
 
         self.rst.newline()
+
 
         self.rst.directive('only', 'not latex')
 
@@ -275,8 +282,17 @@ class WebStepsOutput(StepsOutput):
         self.rst.directive(name="class",
                            arg="step-" + str(doc['stepnum']),
                            indent=3)
+
         self.indent = 6
         self.rst.newline()
+
+    def post_step_hook(self):
+        self.rst.directive(name='raw',
+                           arg='html',
+                           content='</div>'.format(),
+                           indent=0)
+        self.rst.newline()
+
 
 def render_step_file(input_fn, output_fn=None):
     steps = Steps(input_fn)
