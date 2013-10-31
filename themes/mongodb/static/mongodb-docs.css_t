@@ -81,10 +81,6 @@ div.sphinxsidebarwrapper{
     line-height: 1.7em;
 }
 
-div.sphinxsidebarwrapper>ul:nth-of-type(1) {
-    margin-bottom: 10px;
-}
-
 div.sphinxsidebar h3 {
     font-family: helvetica,arial,sans-serif;
     color: #333;
@@ -145,6 +141,7 @@ div.sphinxsidebar input[type="submit"] {
 
 div.sphinxsidebarwrapper .this-page-menu {
     margin-left: 12px;
+    margin-bottom: 0;
 }
 div.sphinxsidebarwrapper .this-page-menu li {
     display: inline;
@@ -756,8 +753,11 @@ li p.first { margin-bottom: 0em; }
 h4#vnd {padding:0;margin:0;line-height:1.5;padding-left:10px;}
 
 div.sphinxsidebarwrapper ul {
-    margin:0;
-    padding:0;
+    margin: 0;
+    padding: 0;
+}
+div.sphinxsidebarwrapper > ul {
+    margin-bottom: 6px;
 }
 div.sphinxsidebarwrapper ul li {font-family:Helvetica,Arial,Sans-serif;}
 div.sphinxsidebarwrapper ul li a:active,
