@@ -189,7 +189,7 @@ class StepsOutput(object):
 
             self.rst.heading(text=block['heading']['text'],
                              char=block['heading']['character'],
-                             indent=self.indent)
+                             indent=indent)
 
             self.rst.newline()
 
@@ -251,30 +251,40 @@ class WebStepsOutput(StepsOutput):
         self.indent = 3
 
     def heading(self, doc):
-        self.rst.directive(name="class",
-                           arg="step-" + str(doc['stepnum']),
-                           indent=self.indent-3)
+
+        self.rst.directive(name='raw',
+                           arg='html',
+                           content='<span class="icon-{0}"></span>'.format(doc['stepnum']),
+                           indent=0)
+
+        self.rst.newline()
+
+        self.rst.directive('only', 'not latex')
 
         self.rst.newline()
 
         self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['stepnum'],
                                                       self.key_name(), doc['ref']),
-                                                      indent=self.indent)
+                                                      indent=3)
         self.rst.newline()
 
         self._heading(block={ 'heading': doc['title'] },
                       override_char='~',
-                      indent=self.indent)
+                      indent=3)
+
+        self.rst.directive(name="class",
+                           arg="step-" + str(doc['stepnum']),
+                           indent=3)
+        self.indent = 6
+        self.rst.newline()
 
 def render_step_file(input_fn, output_fn=None):
     steps = Steps(input_fn)
     r = RstCloth()
 
-    r.directive('only', 'not latex')
-    r.newline()
     web_output = WebStepsOutput(steps)
     web_output.render()
-    r.content(web_output.rst.get_block(), indent=3, wrap=False)
+    r.content(web_output.rst.get_block(), indent=0, wrap=False)
 
     r.directive('only', 'latex')
     r.newline()
@@ -284,7 +294,6 @@ def render_step_file(input_fn, output_fn=None):
 
     if output_fn is None:
         output_fn = os.path.splitext(input_fn)[0] + '.rst'
-
 
     r.write(output_fn)
     print('[steps]: rendered step include at ' + output_fn)
