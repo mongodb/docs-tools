@@ -20,6 +20,7 @@ body {
     margin: 0;
     padding: 0;
     font-weight: 300;
+    letter-spacing: .3px;
 }
 
 div.documentwrapper {
@@ -78,10 +79,6 @@ div.sphinxsidebar {
 div.sphinxsidebarwrapper{
     padding: 12px 12px;
     line-height: 1.7em;
-}
-
-div.sphinxsidebarwrapper>ul:nth-of-type(1) {
-    margin-bottom: 10px;
 }
 
 div.sphinxsidebar h3 {
@@ -144,6 +141,7 @@ div.sphinxsidebar input[type="submit"] {
 
 div.sphinxsidebarwrapper .this-page-menu {
     margin-left: 12px;
+    margin-bottom: 0;
 }
 div.sphinxsidebarwrapper .this-page-menu li {
     display: inline;
@@ -755,8 +753,11 @@ li p.first { margin-bottom: 0em; }
 h4#vnd {padding:0;margin:0;line-height:1.5;padding-left:10px;}
 
 div.sphinxsidebarwrapper ul {
-    margin:0;
-    padding:0;
+    margin: 0;
+    padding: 0;
+}
+div.sphinxsidebarwrapper > ul {
+    margin-bottom: 6px;
 }
 div.sphinxsidebarwrapper ul li {font-family:Helvetica,Arial,Sans-serif;}
 div.sphinxsidebarwrapper ul li a:active,
@@ -1171,4 +1172,28 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     .footer .social .gplus-icon .img {
         background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-gplus@2x.png);
     }
+}
+
+/* Numbered steps directive */
+.sequence-block {
+    display: table;
+}
+
+.sequence-block > .bullet-block {
+    display: table-cell;
+    padding-right: 10px;
+}
+
+.sequence-block .sequence-step {
+    text-align: center;
+    background-color: black;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    padding-top: 2px;
+}
+
+.sequence-block > .section {
+    display: table-cell;
 }
