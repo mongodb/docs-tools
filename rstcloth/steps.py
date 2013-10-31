@@ -254,7 +254,7 @@ class WebStepsOutput(StepsOutput):
 
         self.rst.directive(name='raw',
                            arg='html',
-                           content='<span class="icon-{0}"></span>'.format(doc['stepnum']),
+                           content='<div class="sequence-step">{0}</div>'.format(doc['stepnum']),
                            indent=0)
 
         self.rst.newline()
