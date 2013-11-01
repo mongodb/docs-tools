@@ -79,6 +79,9 @@ samp {
   font-family: monospace, serif;
   font-size: 1em;
 }
+pre {
+  white-space: pre-wrap;
+}
 q {
   quotes: "\201C" "\201D" "\2018" "\2019";
 }
@@ -519,10 +522,10 @@ dd {
   .dl-horizontal dd:after {
     content: " ";
     /* 1 */
-
+  
     display: table;
     /* 2 */
-
+  
   }
   .dl-horizontal dd:after {
     clear: both;
@@ -531,10 +534,10 @@ dd {
   .dl-horizontal dd:after {
     content: " ";
     /* 1 */
-
+  
     display: table;
     /* 2 */
-
+  
   }
   .dl-horizontal dd:after {
     clear: both;
