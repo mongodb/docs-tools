@@ -41,8 +41,8 @@ def package_filename(archive_path, target, conf):
             fn.append(tag)
 
     fn.extend([ conf.git.branches.current,
-                conf.git.commit[:8],
-                datetime.datetime.utcnow().strftime('%s') ])
+                datetime.datetime.utcnow().strftime('%s'),
+                conf.git.commit[:8] ])
 
     fn = os.path.join(archive_path, '-'.join(fn) + '.tar.gz')
 
