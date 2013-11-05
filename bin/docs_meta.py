@@ -47,6 +47,8 @@ def get_manual_path(conf=None):
             if conf.project.name == 'mms' and 'edition' in conf.project:
                 if conf.project.edition == 'hosted':
                     o.append(branch)
+            else:
+                o.append(branch)
 
         return '/'.join(o)
 
