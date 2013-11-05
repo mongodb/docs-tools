@@ -64,10 +64,17 @@ def timestamp(form='filename'):
     else:
         return datetime.datetime.now().strftime("%Y-%m-%d, %H:%M %p")
 
+def is_parallel_sphinx(version):
+    for i in [ '1.2b1-xgen', '1.2b2', '1.2b3' ]:
+        if version == i:
+            return True
+
+    return False
+
 def get_sphinx_args(tag):
     o = ''
 
-    if pkg_resources.get_distribution("sphinx").version.startswith('1.2b1-xgen') and (tag is None or not tag.startswith('hosted') or not tag.startswith('saas')):
+    if is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version) and (tag is None or not tag.startswith('hosted') or not tag.startswith('saas')):
          o += '-j ' + str(cpu_count() + 1) + ' '
 
     return o
