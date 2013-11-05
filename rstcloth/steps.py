@@ -96,11 +96,13 @@ class Steps(object):
         self.source_fn = fn
         self.agg_sources = cache
         self.source_list = ingest_yaml_list(self.source_fn)
+        self.source_dir = os.path.dirname(self.source_fn)
         self.source = dict()
 
         sort_needed = False
 
         idx = 0
+
         for step in self.source_list:
             if 'stepnum' not in step:
                 step['stepnum'] = idx+1
@@ -114,7 +116,7 @@ class Steps(object):
                 if source_file in self.agg_sources:
                     current_step = self.agg_sources[step['source']['file']][step['source']['ref']]
                 else:
-                    steps = Steps(source_file, self.agg_sources)
+                    steps = Steps(os.path.join(self.source_dir, source_file), self.agg_sources)
                     current_step = steps.get_step(step['source']['ref'])
                     self.agg_sources[source_file] = steps
                     self.agg_sources.update(steps.agg_sources)
@@ -158,11 +160,12 @@ class StepsOutput(object):
 
             self.pre(step)
 
-            if isinstance(step['action'], list):
-                for block in step['action']:
-                    self.code_step(block)
-            else:
-                self.code_step(step['action'])
+            if 'action' in step:
+                if isinstance(step['action'], list):
+                    for block in step['action']:
+                        self.code_step(block)
+                else:
+                    self.code_step(step['action'])
 
             self.post(step)
 
@@ -258,15 +261,14 @@ class WebStepsOutput(StepsOutput):
         self.indent = 3
 
     def heading(self, doc):
+
+        self.rst.directive('only', 'not latex')
+
+        self.rst.newline()
         self.rst.directive(name='raw',
                            arg='html',
                            content='<div class="sequence-block"><div class="bullet-block"><div class="sequence-step">{0}</div></div>'.format(doc['stepnum']),
-                           indent=0)
-
-        self.rst.newline()
-
-
-        self.rst.directive('only', 'not latex')
+                           indent=3)
 
         self.rst.newline()
 
@@ -290,7 +292,7 @@ class WebStepsOutput(StepsOutput):
         self.rst.directive(name='raw',
                            arg='html',
                            content='</div>'.format(),
-                           indent=0)
+                           indent=3)
         self.rst.newline()
 
 
