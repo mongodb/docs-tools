@@ -538,7 +538,7 @@ def manpage_jobs():
     for input_fn, output_fn, regex in jobs:
         yield {
                 'target': output_fn,
-                'dependency': output_fn,
+                'dependency': input_fn,
                 'job': _process_page,
                 'args': [ input_fn, output_fn, regex, 'manpage' ],
               }
