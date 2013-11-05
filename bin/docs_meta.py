@@ -23,20 +23,33 @@ def get_sphinx_builders(conf=None):
 
 def get_manual_path(conf=None):
     if conf is None:
-        conf = load_conf()
+        conf = get_conf()
 
-    if conf.project.name in ['about', 'ecosystem']:
-        return conf.project.name
-
-    branch = get_branch()
-
-    if branch == conf.git.branches.manual:
-        if conf.project.name == 'mms' or conf.project.name == 'meta-driver':
-            return 'current'
-        else:
-            return 'manual'
+    if conf.build.system.branched is False:
+        return conf.project.tag
     else:
-        return branch
+        branch = get_branch()
+
+        o = []
+
+        if conf.project.name in ['mms', 'meta-driver']:
+            o.append(conf.project.tag)
+
+        if branch == conf.git.branches.manual:
+            if conf.project.name in ['mms', 'meta-driver']:
+                if conf.project.name == 'mms' and 'edition' in conf.project:
+                    if conf.project.edition == 'saas':
+                        o = []
+                    o.append('current')
+            elif conf.build.system.branched is True:
+                o.append('manual')
+        else:
+            if conf.project.name == 'mms' and 'edition' in conf.project:
+                if conf.project.edition == 'hosted':
+                    o.append(branch)
+
+        return '/'.join(o)
+
 
 def load_conf():
     try:
@@ -60,8 +73,15 @@ def get_conf():
     else:
         conf.build.system.python = 'python'
 
+    if 'branched' not in conf.build.system:
+        if conf.project.name in ['manual', 'mms', 'meta-driver']:
+            conf.build.system.branched = True
+        else:
+            conf.build.system.branched = False
+
     conf.git.branches.current = get_branch()
     conf.git.commit = get_commit()
+    conf.project.basepath = get_manual_path(conf)
 
     conf.build.paths.update(render_paths('dict', conf))
 
@@ -105,12 +125,12 @@ def get_versions(conf=None):
 
 def output_yaml(fn, conf=None):
     if conf is None:
-        conf = load_conf()
+        conf = get_conf()
 
     o = {
             'branch': get_branch(),
             'commit': get_commit(),
-            'manual_path': get_manual_path(),
+            'manual_path': get_manual_path(conf),
             'date': str(datetime.date.today().year),
             'version_selector': get_versions(),
             'stable': conf.version.stable,

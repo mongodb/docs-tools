@@ -106,13 +106,7 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
 
         doc['title'] = title
 
-    if conf.project.name == 'mms':
-        if conf.project.edition == 'hosted':
-            url = ['http://mms.mongodb.com/help-hosted', get_manaul_path() ]
-        else:
-            url = ['http://mms.mongodb.com/help' ]
-    else:
-        url = [ 'http://docs.mongodb.org', get_manual_path() ]
+    url = '/'.join([ conf.project.url, conf.project.basename ])
 
     url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
     doc['url'] = '/'.join(url) + '/'
@@ -126,15 +120,7 @@ def generate_list_file(outputs, path, conf=None):
     if conf is None:
         conf = get_conf()
 
-    if conf.project.name == 'ecosystem':
-        url = 'http://docs.mongodb.org/ecosystem'
-    elif conf.project.name == 'mms':
-        if conf.project.edition == 'hosted':
-            url = '/'.join(['http://mms.mongodb.com/help-hosted', get_manual_path()])
-        else:
-            url = 'http://mms.mongodb.com/help'
-    else:
-        url = '/'.join(['http://docs.mongodb.org', get_manual_path()])
+    url = '/'.join([ conf.project.url, conf.project.basename ])
 
     if not os.path.exists(dirname):
         os.mkdir(dirname)

@@ -8,6 +8,8 @@ from docs_meta import get_conf
 from utils import expand_tree
 from process import munge_page
 
+from sphinx import edition_setup
+
 env.dev_repo = os.path.abspath(os.path.join(os.path.split(os.path.abspath(__file__))[0], '..', '..', 'docs-tools'))
 
 @task
@@ -38,9 +40,12 @@ def bootstrap(action='setup'):
         local(' '.join(cmd))
 
 @task
-def conf(conf=None):
+def conf(edition=None, conf=None):
     if conf is None:
         conf = get_conf()
+    if edition is not None:
+        conf = edition_setup(edition, conf)
+
     puts(json.dumps(conf, indent=3))
 
 @task

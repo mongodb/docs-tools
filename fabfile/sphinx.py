@@ -40,10 +40,15 @@ def edition_setup(val, conf):
 
         if val == 'saas':
             conf.build.paths.branch_output = os.path.join(conf.build.paths.output, val)
+            conf.project.basepath = 'help'
         elif val == 'hosted':
             conf.build.paths.branch_output = os.path.join(conf.build.paths.output, val,
                                                            conf.git.branches.current)
+            conf.project.tag = 'help-hosted'
+            conf.project.basepath = docs_meta.get_manual_path(conf)
+
     return conf
+
 
 def get_tags(target, argtag):
     if argtag is None:
