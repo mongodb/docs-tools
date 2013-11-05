@@ -79,14 +79,14 @@
 
 {%- macro render_nextprev() %}
     <div id="btnv">
-        <ul id="btnvl">
-          {%- if prev %}
-              <li id="btnvpr"><a href="{{ prev.link|e }}" title="Previous Section: {{ prev.title|striptags|e }}">&larr; &nbsp; {{ prev.title|striptags|e }}</a></li>
-          {%- endif %}
-          {%- if next %}
-              <li id="btnvnx"><a href="{{ next.link|e }}" title="Next Section: {{ next.title|striptags|e }}">{{ next.title|striptags|e }} &nbsp;&rarr;</a></li>
-          {%- endif %}
-        </ul>
+      {%- if prev %}
+      <span class="btn-arrow-left">&larr; &nbsp;</span>
+      <a class="btn-prev-text" href="{{ prev.link|e }}" title="Previous Section: {{ prev.title|striptags|e }}"><span>{{ prev.title|striptags|e }}</span></a>
+      {%- endif %}
+      {%- if next %}
+      <a class="btn-next-text" href="{{ next.link|e }}" title="Next Section: {{ next.title|striptags|e }}"><span>{{ next.title|striptags|e }}</span></a>
+      <span class="btn-arrow-right">&nbsp;&rarr;</span>
+      {%- endif %}
     </div>
 {%- endmacro -%}
 
