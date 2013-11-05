@@ -1180,18 +1180,22 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 /* Numbered steps directive */
 .sequence-block {
     display: table;
+    max-width: 100%;
+    table-layout: fixed;
 }
 
 .sequence-block > .bullet-block {
     display: table-cell;
     padding-right: 10px;
+    width: 2.5em;
 }
 
 .sequence-block .sequence-step {
     text-align: center;
-    background-color: black;
+    background-color: #333;
     color: white;
     width: 24px;
+    font-weight: bold;
     height: 24px;
     border-radius: 12px;
     padding-top: 2px;
