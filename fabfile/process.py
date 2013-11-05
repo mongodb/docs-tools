@@ -106,7 +106,7 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
 
         doc['title'] = title
 
-    url = '/'.join([ conf.project.url, conf.project.basename ])
+    url = '/'.join([ conf.project.url, conf.project.basepath ])
 
     url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
     doc['url'] = '/'.join(url) + '/'
@@ -120,14 +120,14 @@ def generate_list_file(outputs, path, conf=None):
     if conf is None:
         conf = get_conf()
 
-    url = '/'.join([ conf.project.url, conf.project.basename ])
+    url = '/'.join([ conf.project.url, conf.project.basepath ])
 
     if not os.path.exists(dirname):
         os.mkdir(dirname)
 
     with open(path, 'w') as f:
         for fn in outputs:
-            f.write( '/'.join([ url, 'json', fn.split('/', 3)[3:][0]]) )
+            f.write( '/'.join([ url, fn.split('/', 3)[3:][0]]) )
             f.write('\n')
 
     puts('[json]: rebuilt inventory of json output.')
@@ -544,6 +544,21 @@ def manpage_jobs():
               }
 
 def post_process_jobs(source_fn=None, tasks=None, conf=None):
+    """
+    input documents should be:
+
+    {
+      'transform': {
+                     'regex': str,
+                     'replace': str
+                   }
+      'type': <str>
+      'file': <str|list>
+    }
+
+    ``transform`` can be either a document or a list of documents.
+    """
+
     if tasks is None:
         if conf is None:
             conf = get_conf()
