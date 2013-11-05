@@ -154,10 +154,23 @@ class StepsOutput(object):
     def hook(self):
         self.indent = 3
 
+    @staticmethod
+    def annotate_optional(step):
+        if 'optional' in step and step['optional'] is True:
+            if isinstance(step['title'], dict):
+                step['title']['text'] = 'Optional. ' + step['title']['text']
+            else:
+                step['title'] = 'Optional. ' + step['heading']
+
+            del step['optional']
+            return step
+        else:
+            return step
+
     def render(self):
         for step in self.steps.source_list:
+            step = self.annotate_optional(step)
             self.heading(step)
-
             self.pre(step)
 
             if 'action' in step:
@@ -245,9 +258,15 @@ class PrintStepsOutput(StepsOutput):
         self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['stepnum'],
                                                       self.key_name(),
                                                       doc['ref']))
+
         self.rst.newline()
 
-        self._heading(block={ 'heading': "Step {0}: {1}".format(str(doc['stepnum']), doc['title']) },
+        if isinstance(doc['title'], dict):
+            doc['title']['text'] = 'Step {0}: {1}'.format(doc['stepnum'], doc['title']['text'])
+        else:
+            doc['title'] = 'Step {0}: {1}'.format(doc['stepnum'], doc['title'])
+
+        self._heading(block={ 'heading': doc['title'] },
                       override_char='~',
                       indent=self.indent)
 
@@ -261,7 +280,6 @@ class WebStepsOutput(StepsOutput):
         self.indent = 3
 
     def heading(self, doc):
-
         self.rst.directive('only', 'not latex')
 
         self.rst.newline()
@@ -280,6 +298,7 @@ class WebStepsOutput(StepsOutput):
         self._heading(block={ 'heading': doc['title'] },
                       override_char='~',
                       indent=3)
+
 
         self.rst.directive(name="class",
                            arg="step-" + str(doc['stepnum']),

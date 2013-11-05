@@ -130,7 +130,9 @@ def toc_jobs():
 
     for fn in expand_tree(paths.includes, 'yaml'):
         if fn.startswith(os.path.join(paths.includes, 'table')):
-            pass
+            continue
+        elif fn.startswith(os.path.join(paths.includes, 'step')):
+            continue
         elif len(fn) >= 24:
             base_name = _get_toc_base_name(fn)
 
