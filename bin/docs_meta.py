@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import datetime
-import argparse
 import yaml
 import os.path
 import sys
@@ -185,44 +184,3 @@ def render_paths(fn, conf=None):
         print(yaml.safe_dump(dict(paths), default_flow_style=False) + '...')
     else:
         return paths
-
-def main():
-    action_list = [ 'branch', 'commit', 'versions', 'stable', 'all', 'manual',
-                    'yaml', 'current-or-manual', 'output', 'paths']
-
-    parser = argparse.ArgumentParser('MongoDB Documentation Meta Data Provider')
-    parser.add_argument('action', choices=action_list, nargs='?', default='all')
-    parser.add_argument('filename', nargs='?', default='meta.yaml')
-
-    ui = parser.parse_args()
-
-    if ui.action == 'all':
-        BREAK = "\n"
-        print("MongoDB Manual:" + BREAK +
-              "     Commit: " + get_commit() + BREAK +
-              "     Branch: " + get_branch() + BREAK +
-              "     Manual: " + conf.git.branches.manual + BREAK +
-              "     Versions: " + str(conf.version.published) + BREAK +
-              "     Stable: " + str(conf.version.stable) + BREAK +
-              "     Year: " + str(datetime.date.today().year) + BREAK +
-              "     Path: " + get_manual_path() + BREAK +
-              "     Version UI: " + str(get_versions()))
-    elif ui.action == 'branch':
-        print(get_branch())
-    elif ui.action == 'commit':
-        print(get_commit())
-    elif ui.action == 'stable':
-        print(conf.version.stable)
-    elif ui.action == 'versions':
-        print(conf.version.published)
-    elif ui.action == 'manual':
-        print(conf.git.branches.manual)
-    elif ui.action == 'current-or-manual':
-        print(get_manual_path())
-    elif ui.action == 'yaml':
-        output_yaml(ui.filename)
-    elif ui.action == 'paths':
-        render_paths('print')
-
-if __name__ == '__main__':
-    main()
