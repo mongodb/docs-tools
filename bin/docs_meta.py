@@ -39,7 +39,7 @@ def get_manual_path(conf=None):
             if conf.project.name in ['mms', 'meta-driver']:
                 if conf.project.name == 'mms' and 'edition' in conf.project:
                     if conf.project.edition == 'saas':
-                        o = []
+                        pass
                     o.append('current')
             elif conf.build.system.branched is True:
                 o.append('manual')
