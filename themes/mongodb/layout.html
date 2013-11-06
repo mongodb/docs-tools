@@ -260,7 +260,22 @@
     {%- include "jiracollector.html" %}
   {%- endblock %}
 
-  {%- block versionnav %} {%- endblock %}
+  {%- block versionnav %}
+  <script type="text/javascript">
+  $(document).ready(function(){
+    var pagename = '{{pagename}}';
+    $("#vn select").bind('change', function(e) {
+      var pn = pagename;
+      if (pagename == 'index') {
+        pn = '';
+      }
+
+      var base = $(e.currentTarget).find('option:selected').data('path');
+      window.location.href = '/' + base + '/' + pn;
+    });
+  });
+  </script>
+  {%- endblock -%}
 
 </body>
 </html>

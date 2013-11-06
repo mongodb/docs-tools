@@ -28,28 +28,30 @@ def get_manual_path(conf=None):
         return conf.project.tag
     else:
         branch = get_branch()
+        return get_path(conf, branch)
 
-        o = []
+def get_path(conf, branch):
+    o = []
 
+    if conf.project.name in ['mms', 'meta-driver']:
+        o.append(conf.project.tag)
+
+    if branch == conf.git.branches.manual:
         if conf.project.name in ['mms', 'meta-driver']:
-            o.append(conf.project.tag)
-
-        if branch == conf.git.branches.manual:
-            if conf.project.name in ['mms', 'meta-driver']:
-                if conf.project.name == 'mms' and 'edition' in conf.project:
-                    if conf.project.edition == 'saas':
-                        pass
-                    o.append('current')
-            elif conf.build.system.branched is True:
-                o.append('manual')
-        else:
             if conf.project.name == 'mms' and 'edition' in conf.project:
-                if conf.project.edition == 'hosted':
-                    o.append(branch)
-            else:
+                if conf.project.edition == 'saas':
+                    pass
+                o.append('current')
+        elif conf.build.system.branched is True:
+            o.append('manual')
+    else:
+        if conf.project.name == 'mms' and 'edition' in conf.project:
+            if conf.project.edition == 'hosted':
                 o.append(branch)
+        else:
+            o.append(branch)
 
-        return '/'.join(o)
+    return '/'.join(o)
 
 
 def load_conf():
@@ -96,33 +98,22 @@ def get_versions(conf=None):
 
     o = []
 
-    for version in conf.version.published:
-        if version in ['current', 'master', 'upcoming']:
-            if version == 'upcoming':
-                version = str(conf.version.upcoming)
-                path_name = 'master' # we may want to change this later.
-            else:
-                path_name = version
-        else:
-            path_name = 'v' + version
 
+    for idx, version in enumerate(conf.version.published):
+        v = {}
 
-        if conf.project.name == 'mms':
-            if version == conf.version.stable:
-                path_name = 'current'
+        v['path'] = get_path(conf, conf.git.branches.published[idx])
 
-            if path_name == 'master':
-                path_name = 'current'
+        v['text'] = version
+        if version == conf.version.stable:
+            v['text'] += ' (current)'
 
-        else:
-            if version == conf.version.stable:
-                version += ' (current)'
-                path_name = 'manual'
-            elif version == conf.version.upcoming:
-                version = conf.version.upcoming + ' (upcoming)'
-                path_name = 'master'
+        if version == conf.version.upcoming:
+            v['text'] += ' (upcoming)'
 
-        o.append( { 'v': path_name, 't': version } )
+        v['current'] = True if version == conf.version.stable else False
+
+        o.append(v)
 
     return o
 
