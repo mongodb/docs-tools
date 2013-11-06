@@ -15,7 +15,7 @@ from droopy.lang.english import English
 from droopy import Droopy, attr, op
 
 from docs_meta import get_conf
-from utils import expand_tree, AttributeDict
+from utils import expand_tree, AttributeDict, ingest_yaml_doc, ingest_yaml_list
 from make import runner
 import stats_data
 
@@ -258,7 +258,7 @@ def multi(mask=None, data=None, output_file='print'):
         json.dump(o, output_file, indent=3)
 
 @task
-def includes(mask='list'):
+def includes(mask='all'):
     if mask == 'list':
         results = include_files().keys()
     elif mask == 'all':
@@ -269,6 +269,8 @@ def includes(mask='list'):
         results = included_once()
     elif mask == 'unused':
         results = include_files_unused()
+    elif mask.startswith('gen'):
+        results = generated_includes()
     else:
         if mask.startswith('source'):
             mask = mask[6:]
@@ -336,13 +338,55 @@ def include_files(conf=None):
                 files[i[0]].add(src[0])
         files[i[0]] = list(files[i[0]])
 
+    files.update(generated_includes(conf))
+
     return files
+
+def generated_includes(conf=None):
+    if conf == None:
+        conf = get_conf()
+
+    toc_spec_files = []
+    step_files = []
+    for fn in expand_tree(os.path.join(conf.build.paths.includes)):
+        base = os.path.basename(fn)
+
+        if base.startswith('toc-spec'):
+            toc_spec_files.append(fn)
+        elif base.startswith('ref-spec'):
+            toc_spec_files.append(fn)
+        elif base.startswith('steps'):
+            step_files.append(fn)
+
+    maskl = len(conf.build.paths.source)
+    path_prefix = conf.build.paths.includes[len(conf.build.paths.source):]
+    mapping = {}
+    for spec_file in toc_spec_files:
+        data = ingest_yaml_doc(spec_file)
+        deps = [ os.path.join(path_prefix, i ) for i in data['sources']]
+
+        mapping[spec_file[maskl:]] = deps
+
+    for step_def in step_files:
+        data = ingest_yaml_list(step_def)
+
+        deps = []
+        for step in data:
+            if 'source' in step:
+                deps.append(step['source']['file'])
+
+        if len(deps) != 0:
+            deps = [ os.path.join(path_prefix, i ) for i in deps ]
+
+            mapping[step_def[maskl:]] = deps
+
+    return mapping
 
 def include_files_unused(conf=None):
     if conf == None:
         conf = get_conf()
 
-    inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.build.paths.includes)) ]
+    inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.build.paths.includes), None) ]
     mapping = include_files(conf)
 
     results = []

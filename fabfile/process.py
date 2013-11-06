@@ -8,8 +8,9 @@ import subprocess
 from fabric.api import task, env, abort, puts, local
 
 from docs_meta import output_yaml, get_manual_path, get_conf
-from make import check_dependency, check_three_way_dependency, runner
 from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
+
+from make import check_dependency, check_three_way_dependency, runner
 
 env.input_file = None
 env.output_file = None
