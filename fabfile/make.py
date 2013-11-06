@@ -55,7 +55,9 @@ def check_hashed_dependency(target, dependency, dep_map, conf=None):
         return fn
 
     def needs_rebuild(t, d):
-        if d in dep_map:
+        if dep_map is None:
+            return check_dependency(t, d)
+        elif d in dep_map:
             fn_hash = md5_file(d)
         else:
             return check_dependency(t, d)

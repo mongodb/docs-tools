@@ -146,9 +146,12 @@ def update_dependency(fn):
 def refresh_dependency_jobs(conf):
     graph = include_files()
 
-    with open(conf.build.system.dependency_cache, 'r') as f:
-        dep_cache = json.load(f)
-        dep_map = dep_cache['files']
+    if not os.path.exists(conf.build.system.dependency_cache):
+        dep_map = None
+    else:
+        with open(conf.build.system.dependency_cache, 'r') as f:
+            dep_cache = json.load(f)
+            dep_map = dep_cache['files']
 
     for target, deps in graph.items():
         yield {
