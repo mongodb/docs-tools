@@ -1,9 +1,13 @@
+import datetime
+import json
 import os
+
 from multiprocessing import cpu_count, Pool
 
 from fabric.api import lcd, local, task, env
 
 from docs_meta import get_conf
+from utils import md5_file, expand_tree
 
 env.FORCE = False
 @task
@@ -32,6 +36,72 @@ def _make(target):
             target_str = ' '.join(['make', target])
 
         local(target_str)
+
+############### Hashed Dependency Checking ###############
+
+def check_hashed_dependnecy(target, dependency dep_map, conf=None):
+    if conf is None:
+        conf = get_conf()
+
+    def normalize_fn(fn):
+        if not fn.startswith(conf.build.paths.projectroot):
+            if fn.startswith(conf.build.paths.source):
+                fn = os.path.join(conf.build.paths.projectroot, fn)
+            if fn.startswith('/'):
+                fn = os.path.join(conf.build.paths.projectroot,
+                                  conf.build.paths.source,
+                                  fn[1:])
+
+        return fn
+
+    def needs_rebuild(d):
+        if d in dep_map:
+            fn_hash = md5_file(d)
+        else:
+            return True
+
+        if dep_map[d] == fn_hash:
+            return False
+        else:
+            return True
+
+    if target is None or dependency is None:
+        return True
+
+    if isinstance(target, list):
+        for f in target:
+            if not os.path.exists(f):
+                return True
+    else:
+        if not os.path.exists(target):
+            return True
+
+    if isinstance(dependency, list):
+        for dep in dependency:
+            if needs_rebuild(dep) is True:
+                return True
+        return False
+    else:
+        return needs_rebuild(dependency)
+
+def dump_file_hashes(output, conf=None):
+    if conf is None:
+        conf = get_conf()
+
+    o = { 'conf': conf,
+          'time': datetime.datetime.utcnow().strftime("%s"),
+          'files': { }
+        }
+
+    files = expand_tree(os.path.join(conf.build.paths.projectroot, conf.build.paths.source), None)
+
+    fmap = o['files']
+
+    for fn in files:
+        fmap[fn] = md5_file(fn)
+
+    with open(output, 'w') as f:
+        json.dump(o, f)
 
 ############### Dependency Checking ###############
 

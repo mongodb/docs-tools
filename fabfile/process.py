@@ -136,6 +136,10 @@ def generate_list_file(outputs, path, conf=None):
 
 ########## Update Dependencies ##########
 
+def update_dependency(fn):
+    if os.path.exists(fn):
+        os.utime(fn, None)
+
 def refresh_dependencies(conf=None):
     if conf is None:
         conf = get_conf()
