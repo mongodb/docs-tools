@@ -104,6 +104,11 @@ def dump_file_hashes(output, conf=None):
     for fn in files:
         fmap[fn] = md5_file(fn)
 
+    output_dir = os.path.dirname(output)
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     with open(output, 'w') as f:
         json.dump(o, f)
 
@@ -159,7 +164,6 @@ def check_multi_dependency(target, dependency):
             return True
 
     return False
-
 
 ############### Task Running Framework ###############
 
