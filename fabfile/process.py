@@ -11,6 +11,7 @@ from docs_meta import output_yaml, get_manual_path, get_conf
 from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
 
 from make import check_dependency, check_three_way_dependency, runner
+from stats import include_files
 
 env.input_file = None
 env.output_file = None
@@ -135,45 +136,22 @@ def generate_list_file(outputs, path, conf=None):
 
 ########## Update Dependencies ##########
 
-def update_dependency(fn):
-    if os.path.exists(fn):
-        os.utime(fn, None)
+def refresh_dependencies(conf=None):
+    if conf is None:
+        conf = get_conf()
 
-def fix_include_path(inc, fn, source):
-    if inc.startswith('/'):
-        return ''.join([source + inc])
-    else:
-        return os.path.join(os.path.dirname(os.path.abspath(fn)), fn)
+    graph = include_files()
 
-def check_deps(file, pattern):
-    includes = []
-    try:
-        with open(file, 'r') as f:
-            for line in f:
-                r = pattern.findall(line)
-                if r:
-                    includes.append(fix_include_path(r[0], file, 'source'))
-        if len(includes) >= 1:
-            if check_dependency(file, includes):
-                update_dependency(file)
-    except IOError:
-        pass
+    count = 0
+    for target, deps in graph.items():
+        target = os.path.join(conf.build.paths.projectroot, conf.build.paths.source, target[1:])
+        deps = [ os.path.join(conf.build.paths.projectroot, conf.build.paths.source, d[1:]) for d in deps ]
 
-def refresh_dependencies():
-    count = runner(composite_jobs())
-    puts('[dependency]: updated timestamps of {0} files'.format(count))
+        if check_dependency(target, deps):
+            update_dependency(target)
+            count += 1
 
-def composite_jobs():
-    files = expand_tree('source', 'txt')
-    inc_pattern = re.compile(r'\.\. include:: (.*\.(?:txt|rst))')
-
-    for fn in files:
-        yield {
-                'target': fn,
-                'dependency': None,
-                'job': check_deps,
-                'args': [ fn, inc_pattern ]
-              }
+    return count
 
 ########## Simple Tasks ##########
 

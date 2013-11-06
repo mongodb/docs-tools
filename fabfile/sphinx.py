@@ -150,9 +150,9 @@ def prereq():
                            generate.image_jobs())
 
     job_count = runner(jobs)
-    dep_count = runner(process.composite_jobs())
     puts('[sphinx-prep]: built {0} pieces of content'.format(job_count))
-    puts('[sphinx-prep]: checked timestamps of all {0} files'.format(dep_count))
+    dep_count = process.refresh_dependencies(conf)
+    puts('[sphinx-prep]: bumped timestamps of {0} files'.format(dep_count))
     generate.buildinfo_hash()
     generate.source()
     puts('[sphinx-prep]: build environment prepared for sphinx.')
