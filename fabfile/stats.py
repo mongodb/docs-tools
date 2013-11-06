@@ -421,7 +421,9 @@ def changed(output='print'):
         if report['source'][len(source_path):] in changed:
             changed_report.append(report)
 
-    changed_report.append(multi(data=changed_report, output_file=None))
+    if not len(changed_report) == 0:
+        changed_report.append(multi(data=changed_report, output_file=None))
+
     if output is None:
         return changed_report
     elif output == 'print':
