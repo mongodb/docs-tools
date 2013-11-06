@@ -151,9 +151,11 @@ def prereq():
 
     job_count = runner(jobs)
     puts('[sphinx-prep]: built {0} pieces of content'.format(job_count))
-    dep_count = process.refresh_dependencies(conf)
 
+    puts('[sphinx-prep]: resolving all intra-source dependencies now. (takes several seconds)')
+    dep_count = process.refresh_dependencies(conf)
     puts('[sphinx-prep]: bumped timestamps of {0} files'.format(dep_count))
+
     generate.buildinfo_hash()
     generate.source()
     dump_file_hashes(conf.build.system.dependency_cache, conf)

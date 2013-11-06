@@ -5,13 +5,16 @@ import re
 import shutil
 import subprocess
 
+from multiprocessing import cpu_count
+
 from fabric.api import task, env, abort, puts, local
 
 from docs_meta import output_yaml, get_manual_path, get_conf
 from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
 
-from make import check_dependency, check_three_way_dependency, runner
+from make import check_hashed_dependency, check_dependency, runner
 from stats import include_files
+
 
 env.input_file = None
 env.output_file = None
@@ -140,22 +143,33 @@ def update_dependency(fn):
     if os.path.exists(fn):
         os.utime(fn, None)
 
+def refresh_dependency_jobs(conf):
+    graph = include_files()
+
+    with open(conf.build.system.dependency_cache, 'r') as f:
+        dep_cache = json.load(f)
+        dep_map = dep_cache['files']
+
+    for target, deps in graph.items():
+        yield {
+            'job': dep_refresh_worker,
+            'args': [target, deps, dep_map],
+            'target': None,
+            'dependency': None
+        }
+
+def dep_refresh_worker(target, deps, dep_map):
+    if check_hashed_dependency(target, deps, dep_map) is True:
+        update_dependency(target)
+        return 1
+    else:
+        return 0
+
 def refresh_dependencies(conf=None):
     if conf is None:
         conf = get_conf()
 
-    graph = include_files()
-
-    count = 0
-    for target, deps in graph.items():
-        target = os.path.join(conf.build.paths.projectroot, conf.build.paths.source, target[1:])
-        deps = [ os.path.join(conf.build.paths.projectroot, conf.build.paths.source, d[1:]) for d in deps ]
-
-        if check_dependency(target, deps):
-            update_dependency(target)
-            count += 1
-
-    return count
+    return sum(runner(refresh_dependency_jobs(conf), retval='results'))
 
 ########## Simple Tasks ##########
 

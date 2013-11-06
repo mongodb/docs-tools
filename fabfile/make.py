@@ -39,7 +39,7 @@ def _make(target):
 
 ############### Hashed Dependency Checking ###############
 
-def check_hashed_dependnecy(target, dependency, dep_map, conf=None):
+def check_hashed_dependency(target, dependency, dep_map, conf=None):
     if conf is None:
         conf = get_conf()
 
