@@ -156,10 +156,7 @@ def prereq():
     puts('[sphinx-prep]: bumped timestamps of {0} files'.format(dep_count))
     generate.buildinfo_hash()
     generate.source()
-    dump_file_hashes(os.path.join(conf.build.paths.projectroot,
-                                  conf.build.paths.branch_output,
-                                  'deps.json'),
-                     conf)
+    dump_file_hashes(conf.build.system.dependency_cache, conf)
     puts('[sphinx-prep]: build environment prepared for sphinx.')
 
 @task

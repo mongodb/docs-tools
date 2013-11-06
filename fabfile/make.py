@@ -39,7 +39,7 @@ def _make(target):
 
 ############### Hashed Dependency Checking ###############
 
-def check_hashed_dependnecy(target, dependency dep_map, conf=None):
+def check_hashed_dependnecy(target, dependency, dep_map, conf=None):
     if conf is None:
         conf = get_conf()
 
@@ -54,11 +54,11 @@ def check_hashed_dependnecy(target, dependency dep_map, conf=None):
 
         return fn
 
-    def needs_rebuild(d):
+    def needs_rebuild(t, d):
         if d in dep_map:
             fn_hash = md5_file(d)
         else:
-            return True
+            return check_dependency(t, d)
 
         if dep_map[d] == fn_hash:
             return False
@@ -69,20 +69,24 @@ def check_hashed_dependnecy(target, dependency dep_map, conf=None):
         return True
 
     if isinstance(target, list):
+        target = [ normalize_fn(t) for t in target ]
         for f in target:
             if not os.path.exists(f):
                 return True
     else:
+        target = normalize_fn(target)
         if not os.path.exists(target):
             return True
 
     if isinstance(dependency, list):
+        dependency = [ normalize_fn(d) for d in dependency ]
         for dep in dependency:
-            if needs_rebuild(dep) is True:
+            if needs_rebuild(target, dep) is True:
                 return True
         return False
     else:
-        return needs_rebuild(dependency)
+        dependency = normalize_fn(dependency)
+        return needs_rebuild(target, dependency)
 
 def dump_file_hashes(output, conf=None):
     if conf is None:
@@ -102,6 +106,8 @@ def dump_file_hashes(output, conf=None):
 
     with open(output, 'w') as f:
         json.dump(o, f)
+
+    print('[build]: wrote dependency cache to: {0}'.format(output))
 
 ############### Dependency Checking ###############
 

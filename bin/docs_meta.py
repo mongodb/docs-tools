@@ -83,8 +83,10 @@ def get_conf():
     conf.git.branches.current = get_branch()
     conf.git.commit = get_commit()
     conf.project.basepath = get_manual_path(conf)
-
     conf.build.paths.update(render_paths('dict', conf))
+    conf.build.system.dependency_cache = os.path.join(conf.build.paths.projectroot,
+                                                      conf.build.paths.branch_output,
+                                                      'dependencies.json')
 
     return conf
 
