@@ -523,6 +523,11 @@ def _process_page(fn, output_fn, regex, builder='processor'):
 def manpage_jobs():
     conf = get_conf()
 
+    options_compat_re = [ (re.compile(r'\.\. option:: --'), r'.. setting:: ' ),
+                          (re.compile(r'setting:: (\w+) .*'), r'setting:: \1'),
+                          (re.compile(r':option:`--'), r':setting:`') ]
+
+
     jobs = [
         (
             os.path.join(conf.build.paths.includes, "manpage-options-auth.rst"),
@@ -533,21 +538,18 @@ def manpage_jobs():
         (
             os.path.join(conf.build.paths.includes, 'manpage-options-ssl.rst'),
             os.path.join(conf.build.paths.includes, 'manpage-options-ssl-settings.rst'),
-            [ (re.compile(r'\.\. option:: --'), r'.. setting:: ' ),
-              (re.compile(r'setting:: (\w+) .*'), r'setting:: \1'),
-              (re.compile(r':option:`--'), r':setting:`') ]
+            options_compat_re
         ),
         (
             os.path.join(conf.build.paths.includes, 'manpage-options-audit.rst'),
             os.path.join(conf.build.paths.includes, 'manpage-options-audit-settings.rst'),
-            [ (re.compile(r'\.\. option:: --'), r'.. setting:: ' ),
-              (re.compile(r'setting:: (\w+) .*'), r'setting:: \1'),
-              (re.compile(r':option:`--'), r':setting:`') ]
+            options_compat_re
         )
     ]
 
     for input_fn, output_fn, regex in jobs:
-        yield {
+        if os.path.exists(input_fn):
+            yield {
                 'target': output_fn,
                 'dependency': input_fn,
                 'job': _process_page,
