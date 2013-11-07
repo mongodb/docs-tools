@@ -94,10 +94,9 @@ def get_conf():
 
 def get_versions(conf=None):
     if conf is None:
-        conf = load_conf()
+        conf = get_conf()
 
     o = []
-
 
     for idx, version in enumerate(conf.version.published):
         v = {}
