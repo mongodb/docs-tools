@@ -156,13 +156,17 @@ def refresh_dependency_jobs(conf):
     for target, deps in graph.items():
         yield {
             'job': dep_refresh_worker,
-            'args': [target, deps, dep_map],
+            'args': [target, deps, dep_map, conf],
             'target': None,
             'dependency': None
         }
 
-def dep_refresh_worker(target, deps, dep_map):
+def dep_refresh_worker(target, deps, dep_map, conf):
     if check_hashed_dependency(target, deps, dep_map) is True:
+        target = os.path.join(conf.build.paths.projectroot,
+                              conf.build.paths.branch_source,
+                              target[1:])
+
         update_dependency(target)
         return 1
     else:

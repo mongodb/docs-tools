@@ -2,7 +2,7 @@ import os.path
 import sys
 import re
 
-from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, build_platform_notification
+from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat
 from fabric.api import task, puts, local, env, quiet, settings
 from docs_meta import render_paths, get_conf, load_conf
 from make import check_dependency, runner
@@ -436,11 +436,6 @@ def source(conf=None):
 
     local('rsync --checksum --recursive --delete {0} {1}'.format(source_dir, target))
     puts('[sphinx-prep]: updated source in {0}'.format(target))
-
-    with quiet():
-        local(build_platform_notification('Sphinx', 'Build in progress past critical phase.'))
-
-    puts('[sphinx-prep]: INFO - Build in progress past critical phase.')
 
 #################### Generate the Sitemap ####################
 

@@ -1,14 +1,15 @@
 import datetime
 import itertools
 import os
+import re
 import pkg_resources
 import sys
 
-from fabric.api import cd, local, task, env, hide, settings
+from fabric.api import cd, local, task, env, hide, settings, quiet
 from fabric.utils import puts
 from multiprocessing import cpu_count
 
-from utils import ingest_yaml, expand_tree, swap_streams, hyph_concat
+from utils import ingest_yaml, expand_tree, swap_streams, hyph_concat, build_platform_notification
 from clean import cleaner
 from make import runner, dump_file_hashes
 import generate
@@ -152,12 +153,19 @@ def prereq():
     job_count = runner(jobs)
     puts('[sphinx-prep]: built {0} pieces of content'.format(job_count))
 
+    generate.buildinfo_hash()
+    generate.source()
+
     puts('[sphinx-prep]: resolving all intra-source dependencies now. (takes several seconds)')
     dep_count = process.refresh_dependencies(conf)
     puts('[sphinx-prep]: bumped timestamps of {0} files'.format(dep_count))
 
-    generate.buildinfo_hash()
-    generate.source()
+    with quiet():
+        local(build_platform_notification('Sphinx', 'Build in progress past critical phase.'))
+
+    puts('[sphinx-prep]: INFO - Build in progress past critical phase.')
+
+
     dump_file_hashes(conf.build.system.dependency_cache, conf)
     puts('[sphinx-prep]: build environment prepared for sphinx.')
 
@@ -219,6 +227,7 @@ def output_sphinx_stream(out, builder, conf=None):
 
     out.sort()
 
+    regx = re.compile(r'(.*):[0-9]+: WARNING: duplicate object description of ".*", other instance in (.*)')
     for l in out:
         if l == '':
             continue
@@ -237,7 +246,15 @@ def output_sphinx_stream(out, builder, conf=None):
         elif l.startswith(full_path):
             l = l[len(full_path)+1:]
 
+        f1 = regx.match(l)
+        if f1 is not None:
+            g = f1.groups()
+
+            if g[1].endswith(g[0]):
+                continue
+
         l = os.path.join(conf.build.paths.projectroot, l)
+
         print(l)
 
 def finalize_build(builder, conf, root):
