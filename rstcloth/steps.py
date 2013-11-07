@@ -110,11 +110,9 @@ class Steps(object):
                 sort_needed = True
 
             if 'source' in step:
-                if 'action' in step:
-                    raise InvalidStep
                 source_file = step['source']['file']
                 if source_file in self.agg_sources:
-                    current_step = self.agg_sources[step['source']['file']][step['source']['ref']]
+                    current_step = self.agg_sources[source_file].get_step(step['source']['ref'])
                 else:
                     steps = Steps(os.path.join(self.source_dir, source_file), self.agg_sources)
                     current_step = steps.get_step(step['source']['ref'])
