@@ -532,6 +532,13 @@ def manpage_jobs():
             [ (re.compile(r'\.\. option:: --'), r'.. setting:: ' ),
               (re.compile(r'setting:: (\w+) .*'), r'setting:: \1'),
               (re.compile(r':option:`--'), r':setting:`') ]
+        ),
+        (
+            os.path.join(conf.build.paths.includes, 'manpage-options-audit.rst'),
+            os.path.join(conf.build.paths.includes, 'manpage-options-audit-settings.rst'),
+            [ (re.compile(r'\.\. option:: --'), r'.. setting:: ' ),
+              (re.compile(r'setting:: (\w+) .*'), r'setting:: \1'),
+              (re.compile(r':option:`--'), r':setting:`') ]
         )
     ]
 
