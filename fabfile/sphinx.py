@@ -181,6 +181,7 @@ def build(builder='html', tag=None, root=None):
         # out = build_sphinx_native(sphinx_cmd)
 
         with settings(host_string=''):
+            out = '\n'.join( [ out.stderr, out.stdout ] )
             output_sphinx_stream(out, builder, conf)
 
         puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
@@ -216,6 +217,8 @@ def output_sphinx_stream(out, builder, conf=None):
     out = out.split('\n')
     out = list(set(out))
 
+    out.sort()
+
     for l in out:
         if l == '':
             continue
@@ -234,6 +237,7 @@ def output_sphinx_stream(out, builder, conf=None):
         elif l.startswith(full_path):
             l = l[len(full_path)+1:]
 
+        l = os.path.join(conf.build.paths.projectroot, l)
         print(l)
 
 def finalize_build(builder, conf, root):
