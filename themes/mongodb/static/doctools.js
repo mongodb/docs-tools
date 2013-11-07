@@ -97,7 +97,6 @@ jQuery.fn.highlightText = function(text, className) {
 var Documentation = {
 
   init : function() {
-    this.fixFirefoxAnchorBug();
     this.highlightSearchWords();
     this.initIndexTable();
   },
@@ -148,16 +147,6 @@ var Documentation = {
       attr('title', _('Permalink to this definition')).
       appendTo(this);
     });
-  },
-
-  /**
-   * workaround a firefox stupidity
-   */
-  fixFirefoxAnchorBug : function() {
-    if (document.location.hash && $.browser.mozilla)
-      window.setTimeout(function() {
-        document.location.href += '';
-      }, 10);
   },
 
   /**
