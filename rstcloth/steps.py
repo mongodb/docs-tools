@@ -253,9 +253,9 @@ class PrintStepsOutput(StepsOutput):
         self.indent = 0
 
     def heading(self, doc):
-        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['stepnum'],
-                                                      self.key_name(),
-                                                      doc['ref']))
+        # self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['stepnum'],
+        #                                               self.key_name(),
+        #                                               doc['ref']))
 
         self.rst.newline()
 
