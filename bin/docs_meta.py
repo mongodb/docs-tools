@@ -98,10 +98,12 @@ def get_versions(conf=None):
 
     o = []
 
+    current_version = conf.git.branches.published.index(get_branch())
     for idx, version in enumerate(conf.version.published):
         v = {}
 
-        v['path'] = get_path(conf, conf.git.branches.published[idx])
+        branch = conf.git.branches.published[idx]
+        v['path'] = get_path(conf, branch)
 
         v['text'] = version
         if version == conf.version.stable:
@@ -110,7 +112,7 @@ def get_versions(conf=None):
         if version == conf.version.upcoming:
             v['text'] += ' (upcoming)'
 
-        v['current'] = True if version == conf.version.stable else False
+        v['current'] = True if version == current_version else False
 
         o.append(v)
 
