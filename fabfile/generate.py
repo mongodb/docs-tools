@@ -434,7 +434,7 @@ def source(conf=None):
 
     source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
 
-    local('rsync --recursive --times --delete {0} {1}'.format(source_dir, target))
+    local('rsync --checksum --recursive --delete {0} {1}'.format(source_dir, target))
     puts('[sphinx-prep]: updated source in {0}'.format(target))
 
     with quiet():
