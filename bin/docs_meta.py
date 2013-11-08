@@ -141,16 +141,16 @@ def edition_setup(edition, conf):
         conf.project.edition = edition
 
     if conf.project.name == 'mms':
-        conf.build.paths.public_site_output = conf.build.paths.mms[val]
+        conf.build.paths.public_site_output = conf.build.paths.mms[edition]
 
-        if val == 'saas':
+        if edition == 'saas':
             conf.build.paths.branch_output = os.path.join(conf.build.paths.output, edition)
             conf.project.basepath = 'help'
-        elif val == 'hosted':
+        elif edition == 'hosted':
             conf.build.paths.branch_output = os.path.join(conf.build.paths.output, edition,
                                                            conf.git.branches.current)
             conf.project.tag = 'help-hosted'
-            conf.project.basepath = docs_meta.get_manual_path(conf)
+            conf.project.basepath = get_manual_path(conf)
 
     return conf
 

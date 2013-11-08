@@ -36,7 +36,6 @@ def edition_setup(val, conf):
 
     return docs_meta.edition_setup(val, conf)
 
-
 def get_tags(target, argtag):
     if argtag is None:
         ret = []
