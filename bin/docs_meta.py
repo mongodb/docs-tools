@@ -99,7 +99,7 @@ def get_versions(conf=None):
 
     current_branch = get_branch()
     if current_branch not in conf.git.branches.published:
-        current_version = conf.git.branches.published[0]
+        current_version = 0
     else:
         current_version = conf.git.branches.published.index(current_branch)
 
@@ -116,7 +116,7 @@ def get_versions(conf=None):
         if version == conf.version.upcoming:
             v['text'] += ' (upcoming)'
 
-        v['current'] = True if version == current_version else False
+        v['current'] = True if idx == current_version else False
 
         o.append(v)
 
