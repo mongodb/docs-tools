@@ -136,6 +136,24 @@ def output_yaml(fn, conf=None):
 
     write_yaml(o, fn)
 
+def edition_setup(edition, conf):
+    if 'editions' in conf.project and edition in conf.project.editions:
+        conf.project.edition = edition
+
+    if conf.project.name == 'mms':
+        conf.build.paths.public_site_output = conf.build.paths.mms[val]
+
+        if val == 'saas':
+            conf.build.paths.branch_output = os.path.join(conf.build.paths.output, edition)
+            conf.project.basepath = 'help'
+        elif val == 'hosted':
+            conf.build.paths.branch_output = os.path.join(conf.build.paths.output, edition,
+                                                           conf.git.branches.current)
+            conf.project.tag = 'help-hosted'
+            conf.project.basepath = docs_meta.get_manual_path(conf)
+
+    return conf
+
 def render_paths(fn, conf=None):
     if conf is None:
         conf = load_conf()

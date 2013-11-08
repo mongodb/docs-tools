@@ -31,24 +31,10 @@ def edition(val=None):
 def edition_setup(val, conf):
     if val is None and env.EDITION is not None:
         val = env.EDITION
-
-    if 'editions' in conf.project and val in conf.project.editions:
+    else:
         env.EDITION = val
-        conf.project.edition = val
 
-    if conf.project.name == 'mms':
-        conf.build.paths.public_site_output = conf.build.paths.mms[val]
-
-        if val == 'saas':
-            conf.build.paths.branch_output = os.path.join(conf.build.paths.output, val)
-            conf.project.basepath = 'help'
-        elif val == 'hosted':
-            conf.build.paths.branch_output = os.path.join(conf.build.paths.output, val,
-                                                           conf.git.branches.current)
-            conf.project.tag = 'help-hosted'
-            conf.project.basepath = docs_meta.get_manual_path(conf)
-
-    return conf
+    return docs_meta.edition_setup(val, conf)
 
 
 def get_tags(target, argtag):
