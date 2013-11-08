@@ -351,8 +351,9 @@ def releases():
     count = runner( release_jobs() )
     puts('[releases]: completed regenerating {0} release files.'.format(count))
 
-def release_jobs():
-    conf = get_conf()
+def release_jobs(conf=None):
+    if conf is None:
+        conf = get_conf()
     data_file = os.path.join(conf.build.paths.builddata, 'releases') + '.yaml'
 
     # shim to allow backwards compatibility on older branches for a while.
