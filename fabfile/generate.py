@@ -356,14 +356,10 @@ def release_jobs(conf=None):
         conf = get_conf()
     data_file = os.path.join(conf.build.paths.builddata, 'releases') + '.yaml'
 
-    # shim to allow backwards compatibility on older branches for a while.
-    try:
+    if 'release' in conf.version:
         release_version = conf.version.release
-    except AttributeError:
+    else:
         release_version = conf.version.published[0]
-    except IOError:
-        print('[ERROR]: cannot determine current release.')
-        exit(1)
 
     if not os.path.exists(data_file):
         return
