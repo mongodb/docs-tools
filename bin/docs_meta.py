@@ -53,7 +53,6 @@ def get_path(conf, branch):
 
     return '/'.join(o)
 
-
 def load_conf():
     try:
         project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
@@ -98,7 +97,12 @@ def get_versions(conf=None):
 
     o = []
 
-    current_version = conf.git.branches.published.index(get_branch())
+    current_branch = get_branch()
+    if current_branch not in conf.git.branches.published
+        current_version = conf.git.branches.published[0]
+    else:
+        current_version = conf.git.branches.published.index(current_branch)
+
     for idx, version in enumerate(conf.version.published):
         v = {}
 

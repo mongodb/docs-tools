@@ -150,11 +150,8 @@ def prereq():
 
     puts('[sphinx-prep]: INFO - Build in progress past critical phase.')
 
-
     dump_file_hashes(conf.build.system.dependency_cache, conf)
     puts('[sphinx-prep]: build environment prepared for sphinx.')
-
-
 
 @task
 def build(builder='html', tag=None, root=None):
