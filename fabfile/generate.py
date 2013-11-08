@@ -360,7 +360,7 @@ def release_jobs(conf=None):
     try:
         release_version = conf.version.release
     except AttributeError:
-        from conf import release as release_version
+        release_version = conf.version.published[0]
     except IOError:
         print('[ERROR]: cannot determine current release.')
         exit(1)
