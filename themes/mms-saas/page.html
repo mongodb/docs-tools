@@ -8,6 +8,10 @@
   {%- endif -%}
 {%- endblock -%}
 
+{% block searchbox %}
+<li class="search-db narrow"><gcse:searchbox-only resultsUrl="http://mms.mongodb.org/help/search/" queryParameterName="query"></gcse:searchbox-only></li>
+{% endblock %}
+
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
     <script type="text/javascript">
