@@ -138,7 +138,7 @@ def prereq():
     job_count = runner(jobs)
     puts('[sphinx-prep]: built {0} pieces of content'.format(job_count))
 
-    generate.buildinfo_hash()
+    generate.buildinfo_hash(conf)
     generate.source()
 
     puts('[sphinx-prep]: resolving all intra-source dependencies now. (takes several seconds)')

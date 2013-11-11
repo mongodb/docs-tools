@@ -463,23 +463,16 @@ def sitemap(config_path=None):
 
 #################### BuildInfo Hash ####################
 
-def buildinfo_hash():
-    conf = get_conf()
-
+def buildinfo_hash(conf):
     fn = os.path.join(conf.build.paths.projectroot,
                       conf.build.paths.includes,
                       'hash.rst')
 
     generate_hash_file(fn)
 
-    if conf.project.name == 'manual':
-        release_fn = os.path.join(conf.build.paths.projectroot,
-                                  conf.build.paths.branch_staging,
-                                  'release.txt')
-    else:
-        release_fn = os.path.join(conf.build.paths.projectroot,
-                                  conf.build.paths.public, 'release.txt')
-
+    release_fn = os.path.join(conf.build.paths.projectroot,
+                              conf.build.paths.public_site_output,
+                              'release.txt')
 
     if not os.path.exists(os.path.dirname(release_fn)):
         os.makedirs(os.path.dirname(release_fn))
