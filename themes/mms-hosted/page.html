@@ -1,0 +1,17 @@
+{%- extends "page-layout.html" -%}
+
+{%- block logo %}
+  <div>
+    <a href="http://mms.mongodb.com/"><img class="logo" src="http://media.mongodb.org/logo-mongodb-header.png" alt="MongoDB Logo"/></a>
+  </div>
+{%- endblock -%}
+
+{%- block canonicalref %}
+  {%- if pagename == 'index' %}
+    <link rel="canonical" href="http://mms.mongodb.com/{{theme_manual_path}}/" />
+  {%- else %}
+    <link rel="canonical" href="http://mms.mongodb.com/{{theme_manual_path}}/{{pagename}}/" />
+  {%- endif -%}
+{%- endblock -%}
+
+{%- block sitesearch %} {%- endblock -%}
