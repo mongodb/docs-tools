@@ -255,7 +255,9 @@ def finalize_build(builder, conf, root):
         process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
                                                  'dirhtml', 'index.html'),
                                target_file=pjoin(single_html_dir, 'search.html'))
-        if conf.project.name != 'mms' or ( conf.git.branches.current not in conf.git.branches.published):
+        if conf.project.name == 'mms':
+            pass
+        elif conf.git.branches.current in conf.git.branches.published:
             generate.sitemap()
             process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
                                                      conf.build.paths.branch_output,
