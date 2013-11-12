@@ -8,3 +8,4 @@ fabfile/utils.py
 *#*
 bin/docs_meta.yaml
 meta.yaml
+TAGS
