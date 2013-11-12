@@ -338,6 +338,7 @@ def finalize_dirhtml_build(conf, single_html_dir):
                     for fn in sconf.dirhtml.excluded_files ]
 
             cleaner(fns)
+            puts('[dirhtml] [clean]: removed excluded files from output directory')
 
         process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
                                                  conf.build.paths.branch_output,
