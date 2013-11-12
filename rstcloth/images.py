@@ -2,6 +2,8 @@ import sys
 import os.path
 import json
 
+from docutils.core import publish_parts
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -15,7 +17,6 @@ def generate_image_pages(dir, name, alt, output, conf=None):
         conf = get_conf()
 
     image = '/'.join([dir, name])
-    alt = alt
     b = name
 
     for img_output in output:
@@ -47,14 +48,16 @@ def generate_image_pages(dir, name, alt, output, conf=None):
                         content=alt,
                         block=b)
         elif html is True:
+            alt_html = publish_parts(alt, writer_name='html')['body'].strip()
+
             img_tags = ['<div class="figure align-center" style="max-width:{5};">',
                         '<img src="{0}/{1}/_images/{2}{3}" alt="{4}">', '</img>',
-                        '<p class="caption">{4}</p></div>' ]
+                        '{6}</div>' ]
             img_str = ''.join(img_tags)
             r.directive(name='raw', arg='html',
                         content=img_str.format(conf.project.url,
                                                conf.git.branches.current, name, tag, alt,
-                                               img_output['width']),
+                                               img_output['width'], alt_html),
                         indent=3,
                         block=b)
 
