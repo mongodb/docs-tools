@@ -9,7 +9,7 @@ from fabric.api import cd, local, task, env, hide, settings, quiet
 from fabric.utils import puts
 from multiprocessing import cpu_count
 
-from utils import ingest_yaml, expand_tree, swap_streams, hyph_concat, build_platform_notification
+from utils import ingest_yaml, expand_tree, swap_streams, hyph_concat, build_platform_notification, BuildConfiguration
 from clean import cleaner
 from make import runner, dump_file_hashes
 import generate
@@ -251,20 +251,7 @@ def finalize_build(builder, conf, root):
     if builder.startswith('linkcheck'):
         puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
     elif builder.startswith('dirhtml'):
-        process.error_pages()
-        process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
-                                                 'dirhtml', 'index.html'),
-                               target_file=pjoin(single_html_dir, 'search.html'))
-        if conf.project.name == 'mms':
-            pass
-        elif conf.git.branches.current in conf.git.branches.published:
-            generate.sitemap()
-            process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
-                                                     conf.build.paths.branch_output,
-                                                    'sitemap.xml.gz'),
-                                   target_file=pjoin(conf.build.paths.projectroot,
-                                                     conf.build.paths.public_site_output,
-                                                     'sitemap.xml.gz'))
+        finalize_dirhtml_build(conf, single_html_dir)
     elif builder.startswith('json'):
         count = runner( process.json_output_jobs(conf) )
         puts('[json]: processed {0} json files.'.format(count - 1))
@@ -321,3 +308,40 @@ def finalize_single_html_jobs(conf, single_html_dir):
             'target': None,
             'dependency': None
         }
+
+def finalize_dirhtml_build(conf, single_html_dir):
+    pjoin = os.path.join
+
+    process.error_pages()
+    process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
+                                             'dirhtml', 'index.html'),
+                           target_file=pjoin(single_html_dir, 'search.html'))
+
+    if conf.project.name == 'mms':
+        pass
+    elif conf.git.branches.current in conf.git.branches.published:
+        generate.sitemap()
+        migration_info = { 'source': pjoin(conf.build.paths.projectroot,
+                                           conf.build.paths.branch_output, 'dirhtml'),
+                           'destination': pjoin(conf.build.paths.projectroot,
+                                                conf.build.paths.public_site_output)
+                                                  }
+        local('rsync -a {source}/ {destination}'.format(**migration_info))
+
+        sconf = BuildConfiguration('sphinx.yaml', pjoin(conf.build.paths.projectroot,
+                                                   conf.build.paths.builddata))
+
+        if 'dirhtml' in sconf and 'excluded_files' in sconf.dirhtml:
+            fns = [ pjoin(conf.build.paths.projectroot,
+                          conf.build.paths.public_site_output,
+                          fn)
+                    for fn in sconf.dirhtml.excluded_files ]
+
+            cleaner(fns)
+
+        process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
+                                                 conf.build.paths.branch_output,
+                                                 'sitemap.xml.gz'),
+                               target_file=pjoin(conf.build.paths.projectroot,
+                                                 conf.build.paths.public_site_output,
+                                                 'sitemap.xml.gz'))
