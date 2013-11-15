@@ -328,21 +328,23 @@ def finalize_dirhtml_build(conf, single_html_dir):
                                                   }
         local('rsync -a {source}/ {destination}'.format(**migration_info))
 
-        sconf = BuildConfiguration('sphinx.yaml', pjoin(conf.build.paths.projectroot,
-                                                   conf.build.paths.builddata))
-
-        if 'dirhtml' in sconf and 'excluded_files' in sconf.dirhtml:
-            fns = [ pjoin(conf.build.paths.projectroot,
-                          conf.build.paths.public_site_output,
-                          fn)
-                    for fn in sconf.dirhtml.excluded_files ]
-
-            cleaner(fns)
-            puts('[dirhtml] [clean]: removed excluded files from output directory')
-
         process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
                                                  conf.build.paths.branch_output,
                                                  'sitemap.xml.gz'),
                                target_file=pjoin(conf.build.paths.projectroot,
                                                  conf.build.paths.public_site_output,
                                                  'sitemap.xml.gz'))
+
+
+    sconf = BuildConfiguration('sphinx.yaml', pjoin(conf.build.paths.projectroot,
+                                                conf.build.paths.builddata))
+
+    if 'dirhtml' in sconf and 'excluded_files' in sconf.dirhtml:
+        fns = [ pjoin(conf.build.paths.projectroot,
+                      conf.build.paths.public_site_output,
+                      fn)
+                for fn in sconf.dirhtml.excluded_files ]
+
+        cleaner(fns)
+        puts('[dirhtml] [clean]: removed excluded files from output directory')
+
