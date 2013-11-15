@@ -109,6 +109,8 @@ def expand_tree(path, input_extension='yaml'):
         for file in files:
             if file.startswith('.#'):
                 continue
+            elif file.endswith('swp'):
+                continue
             else:
                 f = os.path.join(root, file)
                 if input_extension != None:

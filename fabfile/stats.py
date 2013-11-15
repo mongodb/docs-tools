@@ -325,8 +325,14 @@ def include_files(conf=None):
 
     rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
 
-    s = [rx.match(d).groups() for d in grep.split('\n')]
-    def tuple_sort(k): return k[1]
+    s = [ m.groups()
+          for m in [ rx.match(d)
+                     for d in grep.split('\n') ]
+          if m is not None
+        ]
+
+    def tuple_sort(k):
+        return k[1]
     s.sort(key=tuple_sort)
 
     files = dict()
