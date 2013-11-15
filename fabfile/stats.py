@@ -321,7 +321,7 @@ def include_files(conf=None):
         conf = get_conf()
 
     source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
-    grep = local('grep -R ".. include:: /" {0}'.format(source_dir), capture=True)
+    grep = local('grep -R ".. include:: /" {0} || exit 0'.format(source_dir), capture=True)
 
     rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
 
