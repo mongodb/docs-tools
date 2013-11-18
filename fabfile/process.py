@@ -125,7 +125,7 @@ def generate_list_file(outputs, path, conf=None):
     if conf is None:
         conf = get_conf()
 
-    url = '/'.join([ conf.project.url, conf.project.basepath ])
+    url = '/'.join([ conf.project.url, conf.project.basepath, 'json' ])
 
     if not os.path.exists(dirname):
         os.mkdir(dirname)
