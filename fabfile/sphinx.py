@@ -317,24 +317,24 @@ def finalize_dirhtml_build(conf, single_html_dir):
                                              'dirhtml', 'index.html'),
                            target_file=pjoin(single_html_dir, 'search.html'))
 
+    local('rsync -a {source}/ {destination}'.format(source=pjoin(conf.build.paths.projectroot,
+                                                                 conf.build.paths.branch_output,
+                                                                 'dirhtml'),
+                                                    destination=pjoin(conf.build.paths.projectroot,
+                                                                      conf.build.paths.public_site_output)))
+
     if conf.project.name == 'mms':
+        # mms still does migration in the makefile because the requirements are peculiar.
         pass
     elif conf.git.branches.current in conf.git.branches.published:
-        generate.sitemap()
-        migration_info = { 'source': pjoin(conf.build.paths.projectroot,
-                                           conf.build.paths.branch_output, 'dirhtml'),
-                           'destination': pjoin(conf.build.paths.projectroot,
-                                                conf.build.paths.public_site_output)
-                                                  }
-        local('rsync -a {source}/ {destination}'.format(**migration_info))
+            generate.sitemap()
 
-        process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
-                                                 conf.build.paths.branch_output,
-                                                 'sitemap.xml.gz'),
-                               target_file=pjoin(conf.build.paths.projectroot,
-                                                 conf.build.paths.public_site_output,
-                                                 'sitemap.xml.gz'))
-
+            process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
+                                                     conf.build.paths.branch_output,
+                                                     'sitemap.xml.gz'),
+                                   target_file=pjoin(conf.build.paths.projectroot,
+                                                     conf.build.paths.public_site_output,
+                                                     'sitemap.xml.gz'))
 
     sconf = BuildConfiguration('sphinx.yaml', pjoin(conf.build.paths.projectroot,
                                                 conf.build.paths.builddata))
@@ -347,4 +347,3 @@ def finalize_dirhtml_build(conf, single_html_dir):
 
         cleaner(fns)
         puts('[dirhtml] [clean]: removed excluded files from output directory')
-
