@@ -644,7 +644,7 @@ div.section {cursor: default;}
 /*
 div.body {
     font-size: 12pt;
-    font-family: Helvetica,Arial,Sans-Serif;
+    font-family: "Helvetica Neue",Helvetica,Arial,Sans-Serif;
     font-weight: normal;
     line-height: 1.0;
 }
@@ -749,10 +749,10 @@ div.sphinxsidebarwrapper ul {
 div.sphinxsidebarwrapper > ul {
     margin-bottom: 6px;
 }
-div.sphinxsidebarwrapper ul li {font-family:Helvetica,Arial,Sans-serif;}
+div.sphinxsidebarwrapper ul li {font-family:"Helvetica Neue",Helvetica,Arial,Sans-serif;}
 div.sphinxsidebarwrapper ul li a:active,
 div.sphinxsidebarwrapper ul li a:focus {font-weight:900;}
-div.sphinxsidebarwrapper ul li a tt span {font-family:Helvetica,Arial,sans-serif;font-size:inherit;color: #333;}
+div.sphinxsidebarwrapper ul li a tt span {font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:inherit;color: #333;}
 div.sphinxsidebarwrapper ul li a:active tt span, div.sphinxsidebarwrapper ul li a:hover tt span, div.sphinxsidebarwrapper ul li a:focus tt span {font-weight:900}
 #div.sphinxsidebarwrapper ul.current li.current a tt span {font-weight:900;}
 #div.sphinxsidebar ul.current li.current tt.literal .pre {font-weight:900;}
