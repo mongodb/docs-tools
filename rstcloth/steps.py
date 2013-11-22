@@ -225,6 +225,9 @@ class StepsOutput(object):
             if 'language' not in block:
                 block['language'] = 'none'
 
+            if not isinstance(block['code'], list):
+                block['code'] = block['code'].split('\n')
+
             self.rst.directive(name='code-block',
                                arg=block['language'],
                                content=block['code'],
