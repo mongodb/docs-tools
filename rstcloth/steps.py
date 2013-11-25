@@ -146,6 +146,7 @@ class StepsOutput(object):
         else:
             self.steps = steps
 
+        self.current_step = 1
         self.rst = RstCloth()
         self.hook()
 
@@ -170,6 +171,7 @@ class StepsOutput(object):
             step = self.annotate_optional(step)
             self.heading(step)
             self.pre(step)
+            self.current_step = step['stepnum']
 
             if 'action' in step:
                 if isinstance(step['action'], list):
@@ -217,9 +219,10 @@ class StepsOutput(object):
         if 'code' in block and 'content' in block:
             raise InvalidStep
 
-        self.pre(block)
+        if 'heading' in block:
+            self.block_heading(block)
 
-        self._heading(block, override_char='`', indent=self.indent)
+        self.pre(block)
 
         if 'code' in block:
             if 'language' not in block:
@@ -252,6 +255,9 @@ class PrintStepsOutput(StepsOutput):
     depend on CSS.
     """
 
+    def block_heading(self, block):
+        self._heading(block, override_char='`', indent=self.indent-3)
+
     def hook(self):
         self.indent = 0
 
@@ -279,6 +285,13 @@ class WebStepsOutput(StepsOutput):
 
     def hook(self):
         self.indent = 3
+
+    def block_heading(self, block):
+        self._heading(block, override_char='`', indent=self.indent-3)
+        self.rst.directive(name="class",
+                           arg="step-" + str(self.current_step),
+                           indent=3)
+        self.rst.newline()
 
     def heading(self, doc):
         self.rst.directive('only', 'not latex')
