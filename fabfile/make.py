@@ -189,6 +189,11 @@ def async_runner(jobs, force, pool, retval):
     results = []
 
     for job in jobs:
+        if 'target' not in job:
+            job['target'] = None
+        if 'dependency' not in job:
+            job['dependency'] = None
+
         if force is True or check_dependency(job['target'], job['dependency']):
             if 'callback' in job:
                 if isinstance(job['args'], dict):
@@ -221,6 +226,11 @@ def sync_runner(jobs, force, retval):
     results = []
 
     for job in jobs:
+        if 'target' not in job:
+            job['target'] = None
+        if 'dependency' not in job:
+            job['dependency'] = None
+
         if force is True or check_dependency(job['target'], job['dependency']):
             if isinstance(job['args'], dict):
                 r = job['job'](**job['args'])

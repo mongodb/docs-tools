@@ -36,7 +36,7 @@ def edition_setup(val, conf):
 
     return docs_meta.edition_setup(val, conf)
 
-def get_tags(target, argtag):
+def get_tags(target, argtag, sconf):
     if argtag is None:
         ret = []
     else:
@@ -62,17 +62,19 @@ def is_parallel_sphinx(version):
 
     return False
 
-def get_sphinx_args(tag):
+def get_sphinx_args(tag, sconf):
     o = ''
 
-    if is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version) and (tag is None or not tag.startswith('hosted') or not tag.startswith('saas')):
-         o += '-j ' + str(cpu_count() + 1) + ' '
+    if (is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version) and
+        (tag is None or not tag.startswith('hosted') or
+         not tag.startswith('saas'))):
+        o += '-j ' + str(cpu_count() + 1) + ' '
 
     return o
 
 #################### Associated Sphinx Artifacts ####################
 
-def html_tarball():
+def html_tarball(conf):
     process.copy_if_needed(os.path.join(conf.build.paths.projectroot,
                                         conf.build.paths.includes, 'hash.rst'),
                            os.path.join(conf.build.paths.projectroot,
@@ -97,7 +99,7 @@ def html_tarball():
                                                 conf.build.paths.public_site_output,
                                                 conf.project.name + '.tar.gz'))
 
-def man_tarball():
+def man_tarball(conf):
     basename = os.path.join(conf.build.paths.projectroot,
                             conf.build.paths.branch_output,
                             'manpages-' + conf.git.branches.current)
@@ -158,6 +160,13 @@ def build(builder='html', tag=None, root=None):
     if root is None:
         root = conf.build.paths.branch_output
 
+    sconf = BuildConfiguration(filename='sphinx.yaml',
+                               directory=os.path.join(conf.build.paths.projectroot,
+                                                      conf.build.paths.builddata))
+
+    if 'builder' in sconf:
+        sconf = sconf['builder']
+
     with settings(host_string='sphinx'):
         dirpath = os.path.join(root, builder)
         if not os.path.exists(dirpath):
@@ -167,10 +176,10 @@ def build(builder='html', tag=None, root=None):
         puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
         cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c {3} {4} {2}/source {2}/{0}' # per-builder-doctreea
-        sphinx_cmd = cmd.format(builder, get_tags(builder, tag), root, conf.build.paths.projectroot, get_sphinx_args(tag))
+        sphinx_cmd = cmd.format(builder, get_tags(builder, tag, sconf), root, conf.build.paths.projectroot, get_sphinx_args(tag, sconf))
 
         out = local(sphinx_cmd, capture=True)
-        # out = build_sphinx_native(sphinx_cmd)
+        # out = sphinx_native_worker(sphinx_cmd)
 
         with settings(host_string=''):
             out = '\n'.join( [ out.stderr, out.stdout ] )
@@ -180,7 +189,7 @@ def build(builder='html', tag=None, root=None):
 
         finalize_build(builder, conf, root)
 
-def build_sphinx_native(sphinx_cmd):
+def sphinx_native_worker(sphinx_cmd):
     # Calls sphinx directly rather than in a subprocess/shell. Not used
     # currently because of the effect on subsequent multiprocessing pools.
 
@@ -242,48 +251,78 @@ def output_sphinx_stream(out, builder, conf=None):
         print(l)
 
 def finalize_build(builder, conf, root):
+    # mms compatibility
+    builder_parts = builder.split('-')
+    if len(builder_parts) > 1:
+        builder = builder[0]
+
+    jobs = {
+        'linkcheck': [
+            { 'job': puts,
+              'args': ['[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root)]
+            }
+        ],
+        'dirhtml': [
+            { 'job': finalize_dirhtml_build,
+              'args': [conf]
+            }
+        ],
+        'json': process.json_output_jobs(conf),
+        'singlehtml': finalize_single_html_jobs(conf),
+        'latex': [
+            { 'job': process.pdfs,
+              'args': [conf]
+            }
+        ],
+        'man': itertools.chain(process.manpage_url_jobs(conf), [
+            { 'job': man_tarball,
+              'args': [conf]
+            }
+        ]),
+        'html': [
+            { 'job': html_tarball,
+              'args': [conf]
+            }
+        ],
+        'all': []
+    }
+
+    if builder not in jobs:
+        jobs[builder] = []
+
+    print('[sphinx] [post] [{0}]: running post-processing steps.'.format(builder))
+    count = runner(itertools.chain(jobs[builder], jobs['all']), pool=1)
+    print('[sphinx] [post] [{0}]: completed {1} post-processing steps'.format(builder, count))
+
+#################### Sphinx Post-Processing ####################
+
+def finalize_epub_build(conf):
+    epub_name = '-'.join(conf.project.title.lower().split())
+    epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
+    epub_src_filename = epub_name + '.epub'
+
+    process.copy_if_needed(source_file=os.path.join(conf.build.paths.projectroot,
+                                                    conf.build.paths.branch_output,
+                                                    'epub', epub_src_filename),
+                           target_file=os.path.join(conf.build.paths.projectroot,
+                                                    conf.build.paths.public_site_output,
+                                                    epub_branched_filename))
+    process._create_link(input_fn=epub_branched_filename,
+                         output_fn=os.path.join(conf.build.paths.projectroot,
+                                                conf.build.paths.public_site_output,
+                                                epub_src_filename))
+
+
+def get_single_html_dir(conf):
+    return os.path.join(conf.build.paths.public_site_output, 'single')
+
+def finalize_single_html_jobs(conf):
     pjoin = os.path.join
-    single_html_dir = pjoin(conf.build.paths.public_site_output, 'single')
+
+    single_html_dir = get_single_html_dir(conf)
 
     if not os.path.exists(single_html_dir):
         os.makedirs(single_html_dir)
-
-    if builder.startswith('linkcheck'):
-        puts('[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root))
-    elif builder.startswith('dirhtml'):
-        finalize_dirhtml_build(conf, single_html_dir)
-    elif builder.startswith('json'):
-        count = runner( process.json_output_jobs(conf) )
-        puts('[json]: processed {0} json files.'.format(count - 1))
-        process.json_output(conf)
-    elif builder.startswith('singlehtml'):
-        runner( finalize_single_html_jobs(conf, single_html_dir) )
-    elif builder.startswith('latex'):
-        process.pdfs()
-    elif builder.startswith('man'):
-        runner( process.manpage_url_jobs() )
-        man_tarball()
-    elif builder.startswith('html'):
-        html_tarball()
-    elif builder.startswith('epub'):
-        epub_name = '-'.join(conf.project.title.lower().split())
-        epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
-        epub_src_filename = epub_name + '.epub'
-
-        process.copy_if_needed(source_file=os.path.join(conf.build.paths.projectroot,
-                                                        conf.build.paths.branch_output,
-                                                        'epub', epub_src_filename),
-                               target_file=os.path.join(conf.build.paths.projectroot,
-                                                        conf.build.paths.public_site_output,
-                                                        epub_branched_filename))
-        process._create_link(input_fn=epub_branched_filename,
-                             output_fn=os.path.join(conf.build.paths.projectroot,
-                                                    conf.build.paths.public_site_output,
-                                                    epub_src_filename))
-
-
-def finalize_single_html_jobs(conf, single_html_dir):
-    pjoin = os.path.join
 
     try:
         process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
@@ -309,10 +348,13 @@ def finalize_single_html_jobs(conf, single_html_dir):
             'dependency': None
         }
 
-def finalize_dirhtml_build(conf, single_html_dir):
+def finalize_dirhtml_build(conf):
     pjoin = os.path.join
 
     process.error_pages()
+
+    single_html_dir = get_single_html_dir(conf)
+
     process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
                                              'dirhtml', 'index.html'),
                            target_file=pjoin(single_html_dir, 'search.html'))

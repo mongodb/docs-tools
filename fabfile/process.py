@@ -111,9 +111,9 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
 
         doc['title'] = title
 
-    url = '/'.join([ conf.project.url, conf.project.basepath ])
-
+    url = [ conf.project.url, conf.project.basepath ]
     url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
+
     doc['url'] = '/'.join(url) + '/'
 
     with open(output_fn, 'w') as f:
@@ -321,16 +321,15 @@ def _render_tex_into_pdf(fn, path):
     puts('[pdf]: rendered {0}.{1}'.format(os.path.basename(fn), 'pdf'))
 
 @task
-def pdfs():
-    it = 0
-    for queue in pdf_jobs():
-        it += 1
+def pdfs(conf=None):
+    if conf is None:
+        conf = get_conf()
+
+    for it, queue in enumerate(pdf_jobs(conf)):
         count = runner(queue)
         puts("[pdf]: completed {0} pdf jobs, in stage {1}".format(count, it))
 
-def pdf_jobs():
-    conf = get_conf()
-
+def pdf_jobs(conf):
     pdfs = ingest_yaml_list(os.path.join(conf.build.paths.builddata, 'pdfs.yaml'))
     tex_regexes = [ ( re.compile(r'(index|bfcode)\{(.*)--(.*)\}'),
                       r'\1\{\2-\{-\}\3\}'),
@@ -466,9 +465,7 @@ def manpage_url(regex_obj, input_file=None):
 
     puts("[{0}]: fixed urls in {1}".format('man', input_file))
 
-def manpage_url_jobs():
-    conf = get_conf()
-
+def manpage_url_jobs(conf):
     project_source = os.path.join(conf.build.paths.projectroot,
                                   conf.build.paths.source)
 
@@ -499,7 +496,7 @@ def manpage_url_jobs():
 
 
 def _process_page(fn, output_fn, regex, builder='processor'):
-    tmp_fn = fn + '~'
+    tmp_fn = n + '~'
 
     jobs = [
              {
