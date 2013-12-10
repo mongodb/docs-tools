@@ -70,14 +70,14 @@ def json_output_jobs(conf=None):
     for fn in expand_tree('source', 'txt'):
         # path = build/<branch>/json/<filename>
 
-        if conf.project.name == 'mms':
-            path = os.path.join(conf.build.paths.branch_staging,
-                                'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
-        else:
-            path = os.path.join(conf.build.paths.branch_output,
-                                'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
+        path = os.path.join(conf.build.paths.branch_output,
+                            'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
         fjson = dot_concat(path, 'fjson')
         json = dot_concat(path, 'json')
+
+        if conf.project.name == 'mms':
+            if not os.path.exists(fjson):
+                continue
 
         yield dict(target=json,
                    dependency=fjson,
