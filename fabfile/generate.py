@@ -1,6 +1,7 @@
 import os.path
-import sys
 import re
+import sys
+import tarfile
 
 from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat
 from fabric.api import task, puts, local, env, quiet, settings
@@ -484,33 +485,17 @@ def buildinfo_hash(conf):
 
 #################### tarball ####################
 
-def _get_gnutar_cmd():
-    if sys.platform in ['linux', 'linux2']:
-        return '/bin/tar'
-    elif sys.platform == 'darwin':
-        return '/usr/bin/gnutar'
-    else:
-        return 'tar'
-
 def tarball(name, path, sourcep=None, newp=None, cdir=None):
-    cmd = [ _get_gnutar_cmd() ]
+    with tarfile.open(name, 'w:gz') as t:
+        if newp is not None:
+            arcname = os.path.join(newp, os.path.basename(path))
+        else:
+            arcname = None
 
-    if cdir is not None:
-        if not cdir.endswith('/'):
-            cdir = cdir + '/'
+        if cdir is not None:
+            path = os.path.join(cdir, path)
 
-        cmd.extend([ '-C', cdir ])
-
-    if not os.path.exists(os.path.dirname(name)):
-        os.makedirs(os.path.dirname(name))
-
-    if sourcep is not None and newp is not None:
-        cmd.append('--transform=s/{0}/{1}/'.format(sourcep, newp))
-
-    cmd.extend(['-czf', name, './' + path])
-
-    with settings(host_string='tarball'):
-        local(' '.join(cmd), capture=False)
+        t.add(name=path, arcname=arcname)
 
     puts('[tarball]: created {0}'.format(name))
 
