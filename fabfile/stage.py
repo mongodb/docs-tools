@@ -93,6 +93,7 @@ def package(target=None, conf=None):
 
         t.add(name=input_path,
               arcname=output_path_name)
+
         t.add(arc_conf, arcname='conf.json')
 
         if 'static' in pconf.paths:
@@ -123,6 +124,8 @@ def fetch(path, conf=None):
         puts('[deploy] [tarball]: downloaded {0}'.format(local_path))
     else:
         puts('[deploy] [tarball]: {0} exists locally, not downloading.'.format(local_path))
+
+    return tar_path
 
 @task
 def unwind(path, conf=None):
