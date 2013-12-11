@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 
 import utils
 from makecloth import MakefileCloth
-from docs_meta import render_paths
+from docs_meta import render_paths, get_sphinx_builders
 
 # to add a symlink build process, add a tuple to the ``links`` in the builder definitions file.
 
@@ -72,7 +72,7 @@ def make_all_sphinx(config):
     sphinx_targets = []
 
     targets = []
-    for builder in config['builders']:
+    for builder in get_sphinx_builders():
         if 'tags' in config:
             builder_targets = []
             for tag in config['tags']:

@@ -18,7 +18,16 @@ def get_sphinx_builders(conf=None):
         conf = get_conf()
 
     path = os.path.join(conf.build.paths.projectroot, conf.build.paths.builddata, 'sphinx.yaml')
-    return ingest_yaml(path)['builders']
+
+    sconf = ingest_yaml(path)
+
+    if 'builders' in sconf:
+        return sconf['builders']
+    else:
+        for i in ['prerequisites', 'generated-source']:
+            if i in sconf:
+                del sconf[i]
+        return sconf.keys()
 
 def get_manual_path(conf=None):
     if conf is None:
