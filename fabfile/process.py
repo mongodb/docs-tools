@@ -214,7 +214,7 @@ def copy_if_needed(source_file, target_file, name='build'):
         shutil.copyfile(source_file, target_file)
 
         if name is not None:
-            puts('[{0}]: created "{1}" which did not exist.'.format(name, source_file))
+            puts('[{0}]: created "{1}" which did not exist.'.format(name, target_file))
     else:
         if md5_file(source_file) == md5_file(target_file):
             if name is not None:
@@ -441,6 +441,27 @@ def error_pages():
             munge_page(fn=page, regex=sub, tag='error-pages')
 
         puts('[error-pages]: rendered {0} error pages'.format(len(error_pages)))
+
+#################### Gettext Processing ####################
+
+def gettext_jobs(conf=None):
+    if conf is None:
+        conf = get_conf()
+
+    locale_dirs = os.path.join(conf.build.paths.projectroot,
+                               conf.build.paths.locale, 'pot')
+
+    branch_output = os.path.join(conf.build.paths.projectroot,
+                                       conf.build.paths.branch_output,
+                                       'gettext')
+
+    path_offset = len(branch_output) + 1
+
+    for fn in expand_tree(branch_output, None):
+        yield {
+            'job': copy_if_needed,
+            'args': [ fn, os.path.join(locale_dirs, fn[path_offset:]), None]
+        }
 
 #################### Manpage Processing ####################
 

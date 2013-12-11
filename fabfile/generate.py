@@ -475,8 +475,9 @@ def buildinfo_hash(conf):
                               conf.build.paths.public_site_output,
                               'release.txt')
 
-    if not os.path.exists(os.path.dirname(release_fn)):
-        os.makedirs(os.path.dirname(release_fn))
+    release_root = os.path.dirname(release_fn)
+    if not os.path.exists(release_root):
+        os.makedirs(release_root)
 
     with open(release_fn, 'w') as f:
         f.write(conf.git.commit)
@@ -486,6 +487,10 @@ def buildinfo_hash(conf):
 #################### tarball ####################
 
 def tarball(name, path, sourcep=None, newp=None, cdir=None):
+    tarball_path = os.path.dirname(name)
+    if not os.path.exists(tarball_path):
+        os.makedirs(tarball_path)
+
     with tarfile.open(name, 'w:gz') as t:
         if newp is not None:
             arcname = os.path.join(newp, os.path.basename(path))
@@ -533,7 +538,7 @@ def htaccess(fn='.htaccess'):
 
     puts('[redirect]: regenerated {0} with {1} redirects ({2} lines)'.format(fn, len(sources), len(lines)))
 
-#################### tarball ####################
+#################### steps ####################
 
 def _get_steps_output_fn(fn, paths):
     root_name = os.path.splitext(os.path.basename(fn).split('-', 1)[1])[0] + '.rst'

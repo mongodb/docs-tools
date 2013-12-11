@@ -96,27 +96,27 @@ def make_all_sphinx(config):
     m.target('.PHONY', sphinx_targets, block='footer')
     m.target('.PHONY', ['composites', 'api', 'toc', 'intersphinx', 'images', 'tables'], block='footer')
 
-def sphinx_builder(target_str):
+def sphinx_builder(target):
     b = 'production'
-    m.comment(target_str, block=b)
-
-    target = target_str.split('-')
+    m.comment(target, block=b)
 
     fab_prefix = 'fab'
-    ret_value = [ target_str ]
-    fab_arg = [target[0]]
+    ret_value = [ target ]
+    fab_arg = [target]
 
-    if len(target) > 3:
+    target_parts = target.split('-')
+
+    if len(target_parts) > 3:
         raise Exception('[meta-build]: Invalid sphinx builder: ' + target)
-    elif len(target) == 1:
-        builder = target_str
+    elif len(target_parts) == 1:
+        builder = target
         clean_target = '-'.join(['clean', builder])
         ret_value.append(clean_target)
 
         m.target(clean_target, block=b)
         m.job('fab clean.sphinx:{0}'.format(builder), block=b)
         m.newline(block=b)
-    elif len(target) <= 3 and len(target) > 1:
+    elif len(target_parts) <= 3 and len(target_parts) > 1:
         if target[1] == 'hosted' or target[1] == 'saas':
             fab_prefix += " sphinx.edition:" + target[1]
 
@@ -128,9 +128,9 @@ def sphinx_builder(target_str):
             elif target[1] == 'saas':
                 fab_arg.append('root=' + os.path.join(paths['output'], target[1]))
 
-    m.target(target_str, 'sphinx-prerequisites', block=b)
+    m.target(target, 'sphinx-prerequisites', block=b)
     m.job(fab_prefix + ' sphinx.build:' + ','.join(fab_arg), block=b)
-    m.job(utils.build_platform_notification('Sphinx', 'completed {0} build.'.format(target_str)), ignore=True, block=b)
+    m.job(utils.build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
 
     return ret_value
 

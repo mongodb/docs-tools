@@ -1,5 +1,6 @@
 import sys
 import os.path
+from copy import copy
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
@@ -12,7 +13,7 @@ m = MakefileCloth()
 paths = render_paths('dict')
 
 def generate_integration_targets(conf):
-    dependencies = conf['targets']
+    dependencies = copy(conf['targets'])
 
     for dep in conf['doc-root']:
         dependencies.append(os.path.join(paths['public'], dep))
@@ -35,51 +36,55 @@ def generate_integration_targets(conf):
 
     m.target('.PHONY', ['publish', 'package'])
 
-def generate_json_output_meta():
-    """This is dead code, hanging around for a while just in case we need it. see fabfile/process.py"""
 
-    m.section_break('json output coordination.')
-    paths = render_paths('dict')
+def gennerate_translation_integration_targets(language, conf):
+    dependencies = [ l + '-' + language for l in conf['targets'] ]
 
-    if get_conf().git.remote.upstream.endswith('ecosystem'):
-        public_json_output = os.path.join(paths['public'], 'json')
-    else:
-        public_json_output = os.path.join(paths['branch-staging'], 'json')
+    for dep in conf['doc-root']:
+        dependencies.append(os.path.join(paths['public'], dep))
 
-    build_json_output = os.path.join(paths['branch-output'], 'json')
-    branch_json_list_file = os.path.join(paths['branch-output'], 'json-file-list')
-    public_json_list_file = os.path.join(public_json_output, '.file_list')
+    for dep in conf['branch-root']:
+        if isinstance(dep, list):
+            dep = os.path.sep.join(dep)
 
-    m.section_break('meta')
+        if dep != '':
+            dependencies.append(os.path.join(paths['branch-staging'], dep))
+        else:
+            dependencies.append(paths['branch-staging'])
 
-    m.target('json-output', ['json'])
-    m.job('fab process.json_output')
+    package_target = '-'.join(['package', language])
+    publish_target = '-'.join(['publish', language])
 
-    rsync_cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {0}/ {1}'
-    m.job(rsync_cmd.format(build_json_output, public_json_output))
-    m.msg('[json]: migrated all .json files to staging.')
-    m.msg('[json]: processed all json files.')
+    m.target(package_target)
+    m.job('fab stage.package:' + language)
 
-    m.section_break('list file')
+    m.target(publish_target, dependencies)
+    m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
+    m.newline()
 
-    m.comment('the meta build system generates "{0}" when it generates this file'.format(branch_json_list_file))
-
-    fab_cmd = 'fab process.input:{0} process.output:{1} process.copy_if_needed:json'
-    m.target('json-file-list', public_json_list_file)
-    m.target(public_json_list_file, 'json-output')
-    m.job(fab_cmd.format(branch_json_list_file , public_json_list_file))
-    m.msg('[json]: rebuilt inventory of json output.')
-
-    m.target(build_json_output, 'json')
-
-    m.target('.PHONY', ['clean-json-output', 'clean-json', 'json-output', 'json-file-list'])
-    m.target('clean-json-output', 'clean-json')
-    m.job(' '.join(['rm -rf ', public_json_list_file, branch_json_list_file, public_json_output]))
-    m.msg('[json]: removed all processed json.')
+    m.target('.PHONY', [publish_target, package_target])
 
 def main():
     conf_file = get_conf_file(__file__)
-    generate_integration_targets(ingest_yaml(conf_file))
+
+    config = ingest_yaml(conf_file)
+
+    if 'base' in config:
+        generate_integration_targets(config['base'])
+
+        for lang, lang_config in config.iteritems():
+            if lang == 'base':
+                continue
+
+            if 'inherit' in lang_config:
+                new_config = config[lang_config['inherit']]
+                new_config.update(lang_config)
+
+                gennerate_translation_integration_targets(lang, new_config)
+            else:
+                gennerate_translation_integration_targets(lang, lang_config)
+    else:
+        generate_integration_targets(config)
 
     m.write(sys.argv[1])
     print('[meta-build]: build "' + sys.argv[1] + '" to specify integration targets.')

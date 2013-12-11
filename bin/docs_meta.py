@@ -165,25 +165,33 @@ def edition_setup(edition, conf):
             conf.project.tag = 'help-hosted'
             conf.project.basepath = get_manual_path(conf)
 
-    return conf
+        return conf
+    else:
+        return conf
 
-def render_paths(fn, conf=None):
+def render_paths(fn, conf=None, language=None):
     if conf is None:
         conf = load_conf()
 
     paths = conf.build.paths
 
-    paths.public = os.path.join(paths.output, 'public')
+    if language is None:
+        public_path = 'public'
+    else:
+        public_path = os.path.join('public', language)
+
+
+    paths.public = os.path.join(paths.output, public_path)
     paths.branch_output = os.path.join(paths.output, get_branch())
     paths.branch_source = os.path.join(paths.branch_output, 'source')
     paths.branch_staging = os.path.join(paths.public, get_branch())
     paths.buildarchive = os.path.join(paths.output, 'archive')
 
     public_site_output = {
-        'manual': os.path.join(paths.output, 'public', get_branch()),
-        'ecosystem': os.path.join(paths.output, 'public'),
-        'about': os.path.join(paths.output, 'public'),
-        'meta-driver': os.path.join(paths.output, 'public', get_branch()),
+        'manual': os.path.join(paths.output, public_path, get_branch()),
+        'ecosystem': os.path.join(paths.output, public_path),
+        'about': os.path.join(paths.output, public_path),
+        'meta-driver': os.path.join(paths.output, public_path, get_branch()),
         'mms': paths.public,
     }
 
@@ -194,8 +202,8 @@ def render_paths(fn, conf=None):
 
     if conf.project.name == 'mms':
         conf.build.paths.mms = {
-            'hosted': os.path.join(paths.output, 'public', 'hosted', get_branch()),
-            'saas': os.path.join(paths.output, 'public', 'saas')
+            'hosted': os.path.join(paths.output, public_path, 'hosted', get_branch()),
+            'saas': os.path.join(paths.output, public_path, 'saas')
         }
 
     # for backwards compatibility

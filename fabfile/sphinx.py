@@ -9,7 +9,7 @@ from fabric.api import cd, local, task, env, hide, settings, quiet
 from fabric.utils import puts
 from multiprocessing import cpu_count
 
-from utils import ingest_yaml, expand_tree, swap_streams, hyph_concat, build_platform_notification, BuildConfiguration
+from utils import ingest_yaml, expand_tree, swap_streams, hyph_concat, build_platform_notification, BuildConfiguration, AttributeDict
 from clean import cleaner
 from make import runner, dump_file_hashes
 import generate
@@ -47,6 +47,9 @@ def get_tags(target, argtag, sconf):
     else:
         ret.append('print')
 
+    if 'edition' in sconf:
+        ret.append(sconf.edition)
+
     return ' '.join([ '-t ' + i for i in ret ])
 
 def timestamp(form='filename'):
@@ -62,15 +65,24 @@ def is_parallel_sphinx(version):
 
     return False
 
-def get_sphinx_args(tag, sconf):
-    o = ''
+def get_sphinx_args(tag, sconf, conf):
+    o = []
+
+    o.append(get_tags(sconf.builder, tag, sconf))
+    o.append('-q')
+    o.append('-b {0}'.format(sconf.builder))
 
     if (is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version) and
         (tag is None or not tag.startswith('hosted') or
          not tag.startswith('saas'))):
-        o += '-j ' + str(cpu_count() + 1) + ' '
+        o.append(' '.join( [ '-j', str(cpu_count() + 1) ]))
 
-    return o
+    o.append(' '.join( [ '-c', conf.build.paths.projectroot ] ))
+
+    if 'language' in sconf:
+        o.append("-D language='{0}'".format(sconf.language))
+
+    return ' '.join(o)
 
 #################### Associated Sphinx Artifacts ####################
 
@@ -155,17 +167,48 @@ def prereq():
     dump_file_hashes(conf.build.system.dependency_cache, conf)
     puts('[sphinx-prep]: build environment prepared for sphinx.')
 
-@task
-def build(builder='html', tag=None, root=None):
-    if root is None:
-        root = conf.build.paths.branch_output
-
+def compute_sphinx_config(builder, conf):
     sconf = BuildConfiguration(filename='sphinx.yaml',
                                directory=os.path.join(conf.build.paths.projectroot,
                                                       conf.build.paths.builddata))
 
-    if 'builder' in sconf:
-        sconf = sconf['builder']
+    if conf.project.name == 'mms':
+        builder, edition = builder.split('-')
+    else:
+        edition = None
+
+    if builder in sconf:
+        sphinx_target = sconf[builder]
+    else:
+        sphinx_target = AttributeDict()
+
+    if 'inherit' in sphinx_target:
+        computed_config = sconf[sphinx_target['inherit']]
+        computed_config.update(sphinx_target)
+    else:
+        computed_config = sphinx_target
+
+    if 'builder' not in computed_config:
+        computed_config.builder = builder
+
+    computed_config.edition = edition
+
+    return computed_config
+
+@task
+def build(builder='html', tag=None, root=None):
+    conf = docs_meta.get_conf()
+
+    if root is None:
+        root = conf.build.paths.branch_output
+
+    if conf.project.name == 'mms':
+        conf = edition_setup(edition, conf)
+    else:
+        edition = None
+
+    sconf = compute_sphinx_config(builder, conf)
+    conf = edition_setup(sconf.edition, conf)
 
     with settings(host_string='sphinx'):
         dirpath = os.path.join(root, builder)
@@ -175,8 +218,8 @@ def build(builder='html', tag=None, root=None):
 
         puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
-        cmd = 'sphinx-build -b {0} {1} -q -d {2}/doctrees-{0} -c {3} {4} {2}/source {2}/{0}' # per-builder-doctreea
-        sphinx_cmd = cmd.format(builder, get_tags(builder, tag, sconf), root, conf.build.paths.projectroot, get_sphinx_args(tag, sconf))
+        cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {1}/source {1}/{2}' # per-builder-doctreea
+        sphinx_cmd = cmd.format(get_sphinx_args(tag, sconf, conf), root, builder)
 
         out = local(sphinx_cmd, capture=True)
         # out = sphinx_native_worker(sphinx_cmd)
@@ -187,7 +230,7 @@ def build(builder='html', tag=None, root=None):
 
         puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
-        finalize_build(builder, conf, root)
+        finalize_build(builder, root, sconf, conf)
 
 def sphinx_native_worker(sphinx_cmd):
     # Calls sphinx directly rather than in a subprocess/shell. Not used
@@ -250,11 +293,14 @@ def output_sphinx_stream(out, builder, conf=None):
 
         print(l)
 
-def finalize_build(builder, conf, root):
-    # mms compatibility
-    builder_parts = builder.split('-')
-    if len(builder_parts) > 1:
-        builder = builder[0]
+def finalize_build(builder, root, sconf, conf):
+    if 'language' in sconf:
+        # reinitialize conf and builders for internationalization
+        conf.paths = docs_meta.render_paths(None, conf, sconf.language)
+        builder = sconf.builder
+    else:
+        # mms compatibility
+        builder_parts = builder.split('-', 1)[0]
 
     jobs = {
         'linkcheck': [
@@ -284,6 +330,7 @@ def finalize_build(builder, conf, root):
               'args': [conf]
             }
         ],
+        'gettext': process.gettext_jobs(conf),
         'all': []
     }
 
