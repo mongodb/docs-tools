@@ -50,7 +50,9 @@ def get_tags(target, argtag, sconf):
     if 'edition' in sconf:
         ret.append(sconf.edition)
 
-    return ' '.join([ '-t ' + i for i in ret ])
+    return ' '.join([' '.join(['-t', i ])
+                     for i in ret
+                     if i is not None])
 
 def timestamp(form='filename'):
     if form == 'filename':
@@ -59,9 +61,8 @@ def timestamp(form='filename'):
         return datetime.datetime.now().strftime("%Y-%m-%d, %H:%M %p")
 
 def is_parallel_sphinx(version):
-    for i in [ '1.2b1-xgen', '1.2b2', '1.2b3' ]:
-        if version == i:
-            return True
+    if version in [ '1.2b1-xgen', '1.2b2', '1.2b3', '1.2']:
+        return True
 
     return False
 
