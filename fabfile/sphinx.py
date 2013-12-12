@@ -203,13 +203,13 @@ def build(builder='html', tag=None, root=None):
     if root is None:
         root = conf.build.paths.branch_output
 
-    if conf.project.name == 'mms':
-        conf = edition_setup(edition, conf)
-    else:
-        edition = None
-
     sconf = compute_sphinx_config(builder, conf)
     conf = edition_setup(sconf.edition, conf)
+
+    if conf.project.name == 'mms':
+        conf = edition_setup(sconf.edition, conf)
+    else:
+        edition = None
 
     with settings(host_string='sphinx'):
         dirpath = os.path.join(root, builder)
