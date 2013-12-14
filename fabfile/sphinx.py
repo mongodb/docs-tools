@@ -154,7 +154,10 @@ def prereq():
     puts('[sphinx-prep]: built {0} pieces of content'.format(job_count))
 
     generate.buildinfo_hash(conf)
-    generate.source()
+    if conf.project.name != 'mms':
+        # we copy source manually for mms in makefile.mms, avoiding this
+        # operation to clarify the artifacts directory
+        generate.source(conf)
 
     puts('[sphinx-prep]: resolving all intra-source dependencies now. (takes several seconds)')
     dep_count = process.refresh_dependencies(conf)
@@ -219,8 +222,8 @@ def build(builder='html', tag=None, root=None):
 
         puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
-        cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {1}/source {1}/{2}' # per-builder-doctreea
-        sphinx_cmd = cmd.format(get_sphinx_args(tag, sconf, conf), root, builder)
+        cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {1}/{2}' # per-builder-doctreea
+        sphinx_cmd = cmd.format(get_sphinx_args(tag, sconf, conf), root, builder, conf.build.paths.branch_source)
 
         out = local(sphinx_cmd, capture=True)
         # out = sphinx_native_worker(sphinx_cmd)

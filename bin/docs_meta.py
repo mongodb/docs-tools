@@ -155,13 +155,14 @@ def edition_setup(edition, conf):
 
     if conf.project.name == 'mms':
         conf.build.paths.public_site_output = conf.build.paths.mms[edition]
+        conf.build.paths.branch_source = '-'.join([os.path.join(conf.build.paths.output, conf.git.branches.current, conf.build.paths.source), edition])
+        conf.build.paths.branch_output = os.path.join(conf.build.paths.output,
+                                                      conf.git.branches.current, edition)
+
 
         if edition == 'saas':
-            conf.build.paths.branch_output = os.path.join(conf.build.paths.output, edition)
             conf.project.basepath = 'help'
         elif edition == 'hosted':
-            conf.build.paths.branch_output = os.path.join(conf.build.paths.output, edition,
-                                                           conf.git.branches.current)
             conf.project.tag = 'help-hosted'
             conf.project.basepath = get_manual_path(conf)
 
@@ -179,7 +180,6 @@ def render_paths(fn, conf=None, language=None):
         public_path = 'public'
     else:
         public_path = os.path.join('public', language)
-
 
     paths.public = os.path.join(paths.output, public_path)
     paths.branch_output = os.path.join(paths.output, get_branch())
