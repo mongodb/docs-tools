@@ -321,7 +321,10 @@ def _render_tex_into_pdf(fn, path):
     puts('[pdf]: rendered {0}.{1}'.format(os.path.basename(fn), 'pdf'))
 
 @task
-def pdfs(conf=None):
+def pdfs():
+    pdf_worker()
+
+def pdf_worker(conf=None):
     if conf is None:
         conf = get_conf()
 

@@ -320,7 +320,7 @@ def finalize_build(builder, root, sconf, conf):
         'json': process.json_output_jobs(conf),
         'singlehtml': finalize_single_html_jobs(conf),
         'latex': [
-            { 'job': process.pdfs,
+            { 'job': process.pdf_worker,
               'args': [conf]
             }
         ],
@@ -342,7 +342,7 @@ def finalize_build(builder, root, sconf, conf):
         jobs[builder] = []
 
     print('[sphinx] [post] [{0}]: running post-processing steps.'.format(builder))
-    count = runner(itertools.chain(jobs[builder], jobs['all']), pool=1)
+    count = runner(itertools.chain(jobs[builder], jobs['all']))
     print('[sphinx] [post] [{0}]: completed {1} post-processing steps'.format(builder, count))
 
 #################### Sphinx Post-Processing ####################

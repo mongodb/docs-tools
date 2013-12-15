@@ -2,7 +2,11 @@ import datetime
 import json
 import os
 
-from multiprocessing import cpu_count, Pool
+import multiprocessing
+import multiprocessing.pool
+import multiprocessing.dummy
+
+from multiprocessing import cpu_count
 
 from fabric.api import lcd, local, task, env
 
@@ -169,22 +173,55 @@ def check_multi_dependency(target, dependency):
 
 ############### Task Running Framework ###############
 
-def runner(jobs, pool=None, retval='count'):
-    if pool == 1 or env.PARALLEL is False:
-        return sync_runner(jobs, env.FORCE, retval)
+##### Permit Nested Pool #####
+
+class NonDaemonProcess(multiprocessing.Process):
+    def _get_daemon(self):
+        return False
+    def _set_daemon(self, value):
+        pass
+    daemon = property(_get_daemon, _set_daemon)
+
+class NestedPool(multiprocessing.pool.Pool):
+    Process = NonDaemonProcess
+
+############### Task Running Framework ###############
+
+def runner(jobs, pool=None, parallel=True, force=False, retval='count'):
+    if pool is None:
+        pool = cpu_count()
+
+    if env.FORCE is True: 
+        force = True
+    if env.PARALLEL is False:
+        parallel = False
+
+    if pool == 1 or parallel is False:
+        return sync_runner(jobs, force, retval)
+    elif parallel == 'threads':
+        return async_thread_runner(jobs, force, pool, retval)
     else:
-        if pool is None:
-            pool = cpu_count()
+        return async_process_runner(jobs, force, pool, retval)
 
-        return async_runner(jobs, env.FORCE, pool, retval)
-
-def async_runner(jobs, force, pool, retval):
+def async_thread_runner(jobs, force, pool, retval):
     try:
-        p = Pool()
+        p = multiprocessing.dummy.Pool(pool)
     except:
         print('[ERROR]: can\'t start pool, falling back to sync ')
         return sync_runner(jobs, force, retval)
 
+    return async_runner(jobs, force, pool, retval, p)
+
+def async_process_runner(jobs, force, pool, retval):
+    try:
+        p = NestedPool(pool)
+    except:
+        print('[ERROR]: can\'t start pool, falling back to sync ')
+        return sync_runner(jobs, force, retval)
+
+    return async_runner(jobs, force, pool, retval, p)
+
+def async_runner(jobs, force, pool, retval, p):
     count = 0
     results = []
 
@@ -252,3 +289,48 @@ def sync_runner(jobs, force, retval):
     else:
         return dict(count=count,
                     results=results)
+
+def mapper(func, iter, pool=None, parallel='process'):
+    if pool is None:
+        pool = cpu_count()
+    elif pool == 1:
+        return map(func, iter)
+
+    if parallel in ['serial', 'single']:
+        return map(func, iter)
+    else:
+        if parallel == 'process':
+            p = NestedPool(pool)
+        elif parallel.startswith('thread'):
+            p = multiprocessing.dummy.Pool(pool)
+        else:
+            return map(func, iter)
+
+    result = p.map(func, iter)
+
+    p.close()
+    p.join()
+
+    return result
+
+
+def resolve_dict_keys(dict):
+    return { k:v.get() for k,v in dict.items() }
+
+def resolve_results(results):
+    return [ r.get() for r in results ]
+
+class WorkerPool(object):
+    def __exit__(self, *args):
+        self.p.close()
+        self.p.join()
+
+class ThreadPool(WorkerPool):
+    def __enter__(self):
+        self.p = multiprocessing.dummy.Pool()
+        return self.p
+
+class ProcessPool(WorkerPool):
+    def __enter__(self):
+        self.p = NestedPool()
+        return self.p
