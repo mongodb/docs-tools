@@ -2,8 +2,8 @@ import sys
 import os.path
 from copy import copy
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from utils import expand_tree, get_branch, get_conf_file, ingest_yaml
 from docs_meta import render_paths, get_conf
