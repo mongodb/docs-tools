@@ -1,7 +1,6 @@
 import sys
 import os.path
 
-import deploy
 import stage
 import sphinx
 import clean
@@ -15,6 +14,7 @@ import generate
 import tx
 
 from make import make, force, serial, pool
+from deploy import deploy
 
 import fabric
 fabric.state.output.status = False

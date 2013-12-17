@@ -48,7 +48,7 @@ def generate_new_deploy_system(push_conf):
         t = job['target']
 
         m.target(t, dep)
-        m.job('fab deploy.deploy:{0}'.format(t))
+        m.job('fab deploy:{0}'.format(t))
         m.newline()
 
     m.target('.PHONY', phony)
