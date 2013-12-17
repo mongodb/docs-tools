@@ -64,13 +64,14 @@ def get_path(conf, branch):
 
 def load_conf():
     conf_file_name = 'docs_meta.yaml'
-    conf_file_path = os.path.join(project_root_dir, 'bin')
 
     try:
         project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+        conf_file_path = os.path.join(project_root_dir, 'bin')
         conf = BuildConfiguration(filename=conf_file_name,directory=conf_file_path)
     except IOError:
         project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+        conf_file_path = os.path.join(project_root_dir, 'bin')
         conf = BuildConfiguration(filename=conf_file_name, directory=conf_file_path)
 
     conf.build.paths.projectroot = project_root_dir
