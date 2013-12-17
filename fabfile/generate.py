@@ -9,9 +9,9 @@ from docs_meta import render_paths, get_conf, load_conf
 from make import check_dependency, runner
 from process import create_link_worker as create_link
 
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
+
 from htaccess import generate_redirects, process_redirect
 from rstcloth.param import generate_params
 from rstcloth.toc import CustomTocTree, AggregatedTocTree
