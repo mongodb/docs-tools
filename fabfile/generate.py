@@ -367,10 +367,11 @@ def release_jobs(conf=None):
 
     rel_data = ingest_yaml(os.path.join(conf.build.paths.builddata, 'releases') + '.yaml')
 
-    deps = [ os.path.join(conf.build.paths.projectroot, 'conf.py'),
+    deps = [ os.path.join(conf.build.system.conf_file),
              os.path.join(conf.build.paths.projectroot,
                           conf.build.paths.buildsystem,
-                          'rstcloth', 'releases.py') ]
+                          'rstcloth', 'releases.py'),
+           ]
 
     for rel in rel_data['source-files']:
         target = os.path.join(conf.build.paths.projectroot,
