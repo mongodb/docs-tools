@@ -343,13 +343,18 @@ def finalize_build(builder, sconf, conf):
             }
         ],
         'gettext': process.gettext_jobs(conf),
-        'all': []
+        'all': [
+            { 'job': generate.create_manual_symlink,
+              'args': [conf]
+            }
+        ]
     }
 
     if builder not in jobs:
         jobs[builder] = []
 
     print('[sphinx] [post] [{0}]: running post-processing steps.'.format(builder))
+    env.PARALLEL = False
     count = runner(itertools.chain(jobs[builder], jobs['all']))
     print('[sphinx] [post] [{0}]: completed {1} post-processing steps'.format(builder, count))
 

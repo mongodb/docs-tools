@@ -215,9 +215,9 @@ def copy_if_needed(source_file, target_file, name='build'):
 
 @task
 def create_link():
-    _create_link(env.input_file, env.output_file)
+    create_link_worker(env.input_file, env.output_file)
 
-def _create_link(input_fn, output_fn):
+def create_link_worker(input_fn, output_fn):
     out_dirname = os.path.dirname(output_fn)
     if out_dirname != '' and not os.path.exists(out_dirname):
         os.makedirs(out_dirname)

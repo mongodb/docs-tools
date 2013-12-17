@@ -3,10 +3,12 @@ import re
 import sys
 import tarfile
 
-from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat
+from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, BuildConfiguration
 from fabric.api import task, puts, local, env, quiet, settings
 from docs_meta import render_paths, get_conf, load_conf
 from make import check_dependency, runner
+from process import create_link_worker as create_link
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
@@ -563,3 +565,43 @@ def steps():
     count = runner( steps_jobs() )
 
     puts('[steps]: rendered {0} step files'.format(count))
+
+def _link_path(path, conf):
+    return os.path.join(conf.build.paths.projectroot,
+                        conf.build.paths.public,
+                        path)
+
+def get_top_level_links(links, conf):
+    ret = []
+
+    def process_target_list(lst):
+        for name, target in lst.items():
+            if target == '{{current_branch}}':
+                target = conf.git.branches.current
+
+            yield ( _link_path(name, conf), target )
+
+    if isinstance(links, list):
+        for link in links:
+            ret.extend(process_target_list(link))
+    else:
+        ret.extend(process_target_list(links))
+
+    return ret
+
+def create_manual_symlink(conf):
+    iconf = BuildConfiguration(filename='integration.yaml',
+                               directory=os.path.join(conf.build.paths.projectroot,
+                                                      conf.build.paths.builddata))
+
+    if 'base' not in iconf:
+        return True
+    else:
+        if 'links' not in iconf.base:
+            return True
+        else:
+            links = get_top_level_links(iconf.base.links, conf)
+
+            if links:
+                for name, target in links:
+                    create_link(target, name)
