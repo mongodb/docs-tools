@@ -7,7 +7,7 @@ from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_c
 from fabric.api import task, puts, local, env, quiet, settings
 from docs_meta import render_paths, get_conf, load_conf
 from make import check_dependency, runner
-from process import create_link_worker as create_link
+from process import create_link
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
@@ -513,10 +513,9 @@ def tarball(name, path, sourcep=None, newp=None, cdir=None):
 def htaccess(fn='.htaccess'):
     conf = load_conf()
 
-    if env.input_file is None:
-        in_files = [i for i in expand_tree(conf.build.paths.builddata, 'yaml') if os.path.basename(i).startswith('htaccess')]
-    else:
-        in_files = list(env.input_file)
+    in_files = ( i
+                 for i in expand_tree(conf.build.paths.builddata, 'yaml')
+                 if os.path.basename(i).startswith('htaccess') )
 
     sources = []
     for i in in_files:

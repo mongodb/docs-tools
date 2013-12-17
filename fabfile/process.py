@@ -15,17 +15,6 @@ from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list, 
 from make import check_hashed_dependency, check_dependency, runner
 from includes import include_files
 
-env.input_file = None
-env.output_file = None
-
-@task
-def input(fn):
-    env.input_file = fn
-
-@task
-def output(fn):
-    env.output_file = fn
-
 ########## Process Sphinx Json Output ##########
 
 def json_output(conf=None):
@@ -213,11 +202,7 @@ def copy_if_needed(source_file, target_file, name='build'):
             if name is not None:
                 puts('[{0}]: "{1}" changed. Updated: {2}'.format(name, source_file, target_file))
 
-@task
 def create_link():
-    create_link_worker(env.input_file, env.output_file)
-
-def create_link_worker(input_fn, output_fn):
     out_dirname = os.path.dirname(output_fn)
     if out_dirname != '' and not os.path.exists(out_dirname):
         os.makedirs(out_dirname)
