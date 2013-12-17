@@ -109,20 +109,26 @@ class Steps(object):
             else:
                 sort_needed = True
 
-            if 'source' in step:
-                source_file = step['source']['file']
+            if 'source' in step or 'inherit' in step:
+                if 'source' in step:
+                    source_file = step['source']['file']
+                    source_ref = step['source']['ref']
+                elif 'inherit' in step:
+                    source_file = step['inherit']['file']
+                    source_ref = step['inherit']['ref']
+
                 if source_file in self.agg_sources:
-                    current_step = self.agg_sources[source_file].get_step(step['source']['ref'])
+                    current_step = self.agg_sources[source_file].get_step(source_ref)
                 else:
                     steps = Steps(os.path.join(self.source_dir, source_file), self.agg_sources)
-                    current_step = steps.get_step(step['source']['ref'])
+                    current_step = steps.get_step(source_ref)
                     self.agg_sources[source_file] = steps
                     self.agg_sources.update(steps.agg_sources)
 
                 current_step.update(step)
 
                 self.source_list[idx] = current_step
-                self.source[step['source']['ref']] = current_step
+                self.source[source_ref] = current_step
             else:
                 self.source[step['ref']] = step
 
@@ -269,7 +275,8 @@ class PrintStepsOutput(StepsOutput):
         self.rst.newline()
 
         if isinstance(doc['title'], dict):
-            doc['title']['text'] = 'Step {0}: {1}'.format(doc['stepnum'], doc['title']['text'])
+            doc['title']['text'] = 'Step {0}: {1}'.format(doc['stepnum'],
+                                                          doc['title']['text'])
         else:
             doc['title'] = 'Step {0}: {1}'.format(doc['stepnum'], doc['title'])
 
@@ -297,9 +304,13 @@ class WebStepsOutput(StepsOutput):
         self.rst.directive('only', 'not latex')
 
         self.rst.newline()
+
+        h_content = ('<div class="sequence-block">' '<div class="bullet-block">'
+                     '<div class="sequence-step">' '{0}' '</div>' '</div>')
+
         self.rst.directive(name='raw',
                            arg='html',
-                           content='<div class="sequence-block"><div class="bullet-block"><div class="sequence-step">{0}</div></div>'.format(doc['stepnum']),
+                           content=h_content.format(doc['stepnum']),
                            indent=3)
 
         self.rst.newline()

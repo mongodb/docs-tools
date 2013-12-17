@@ -18,6 +18,8 @@ def _rm_rf(path):
 
 @task
 def sphinx(builder='html', conf=None):
+    "Removes a specific sphinx build and associated artifacts. Defaults to 'html'. "
+
     if conf is None:
         conf = docs_meta.get_conf()
 
@@ -30,6 +32,8 @@ def sphinx(builder='html', conf=None):
 
 @task
 def builds(days=14):
+    "Cleans all builds older than 'n' number of days. Defaults to 14."
+
     days = time.time() - 60*60*24 * int(days)
 
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../build/')) + '/'

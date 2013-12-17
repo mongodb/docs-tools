@@ -1,11 +1,10 @@
 import os.path
-from urllib2 import urlopen
 
 from fabric.api import cd, local, task, abort, env, puts, parallel
 from fabric.utils import _AttributeDict as ad
 from sphinx import edition_setup
 
-from docs_meta import get_conf, render_paths, get_branch, get_commit
+from docs_meta import get_conf, render_paths
 from utils import ingest_yaml_list, conf_from_list
 from make import runner
 
@@ -31,25 +30,6 @@ def rsync_options(recursive, delete, environ):
         r.extend(['--rsh="ssh"', '--rsync-path="sudo -u www rsync"'])
 
     return ' '.join(r)
-
-########## Tasks -- Checking current build against production. ############
-
-@task
-def check(site, conf=None):
-    if conf is None:
-        conf = get_conf()
-    if site.startswith('stag'):
-        env.release_info_url = 'http://test.docs.10gen.cc/{0}/release.txt'.format(str(branch))
-    elif site == 'ecosystem':
-        env.release_info_url = 'http://docs.mongodb.org/ecosystem/release.txt'
-    elif site.startswith('prod') or site.startswith('pub'):
-        env.release_info_url = 'http://docs.mongodb.org/{0}/release.txt'.format(conf.git.branches.current)
-
-    r = urlopen(env.release_info_url).readlines()[0].split('\n')[0]
-    if get_commit() == r:
-        abort('ERROR: the current published version of is the same as the current commit. Make a new commit before publishing.')
-    else:
-        puts('[build]: the current commit is different than the published version on.')
 
 ########## Tasks -- Deployment and configuration. ############
 

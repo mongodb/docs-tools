@@ -180,6 +180,8 @@ def _generate_report(mask, output_file=None, conf=None, data=None):
 
 @task
 def wc(mask=None):
+    "Returns a total word count for the entire resource as rendered."
+
     report = _generate_report(mask)
 
     count = 0
@@ -198,6 +200,8 @@ def wc(mask=None):
 
 @task
 def report(fn=None):
+    "Returns a statistics per file, for a specific file or group of files."
+
     data = _generate_report(fn)
     if len(data) > 1:
         data.append(multi(fn, data, None))
@@ -218,6 +222,8 @@ def sum_key(key, data, sub=None):
 
 @task
 def multi(mask=None, data=None, output_file='print'):
+    "Takes a 'mask' and returns aggregated statistics for a group of documents."
+
     if data is None:
         data = _generate_report(mask)
 
@@ -256,183 +262,3 @@ def multi(mask=None, data=None, output_file='print'):
         puts(json.dumps(o, indent=3, sort_keys=True))
     else:
         json.dump(o, output_file, indent=3)
-
-@task
-def includes(mask='all'):
-    if mask == 'list':
-        results = include_files().keys()
-    elif mask == 'all':
-        results = include_files()
-    elif mask.startswith('rec'):
-        results = included_recusively()
-    elif mask == 'single':
-        results = included_once()
-    elif mask == 'unused':
-        results = include_files_unused()
-    elif mask.startswith('gen'):
-        results = generated_includes()
-    else:
-        if mask.startswith('source'):
-            mask = mask[6:]
-        if mask.startswith('/source'):
-            mask = mask[7:]
-
-        results = includes_masked(mask)
-
-    puts(json.dumps(results, indent=3))
-
-def included_once():
-    results = []
-    for file, includes in include_files().items():
-        if len(includes) == 1:
-            results.append(file)
-    return results
-
-def included_recusively():
-    files = include_files()
-    # included_files is a py2ism, depends on it being an actual list
-    included_files = files.keys()
-
-    results = {}
-    for inc, srcs in files.items():
-        for src in srcs:
-            if src in included_files:
-                results[inc] = srcs
-                break
-
-    return results
-
-def includes_masked(mask):
-    files = include_files()
-
-    results = {}
-    try:
-        m = mask + '.rst'
-        results[m] = files[m]
-    except (ValueError, KeyError):
-        for pair in files.items():
-            if pair[0].startswith(mask):
-                results[pair[0]] = pair[1]
-
-    return results
-
-def include_files(conf=None):
-    if conf == None:
-        conf = get_conf()
-
-    source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
-    grep = local('grep -R ".. include:: /" {0} || exit 0'.format(source_dir), capture=True)
-
-    rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
-
-    s = [ m.groups()
-          for m in [ rx.match(d)
-                     for d in grep.split('\n') ]
-          if m is not None
-        ]
-
-    def tuple_sort(k):
-        return k[1]
-    s.sort(key=tuple_sort)
-
-    files = dict()
-
-    for i in groupby(s, operator.itemgetter(1) ):
-        files[i[0]] = set()
-        for src in i[1]:
-            if not src[0].endswith('~'):
-                files[i[0]].add(src[0])
-        files[i[0]] = list(files[i[0]])
-
-    files.update(generated_includes(conf))
-
-    return files
-
-def generated_includes(conf=None):
-    if conf == None:
-        conf = get_conf()
-
-    toc_spec_files = []
-    step_files = []
-    for fn in expand_tree(os.path.join(conf.build.paths.includes)):
-        base = os.path.basename(fn)
-
-        if base.startswith('toc-spec'):
-            toc_spec_files.append(fn)
-        elif base.startswith('ref-spec'):
-            toc_spec_files.append(fn)
-        elif base.startswith('steps'):
-            step_files.append(fn)
-
-    maskl = len(conf.build.paths.source)
-    path_prefix = conf.build.paths.includes[len(conf.build.paths.source):]
-    mapping = {}
-    for spec_file in toc_spec_files:
-        data = ingest_yaml_doc(spec_file)
-        deps = [ os.path.join(path_prefix, i ) for i in data['sources']]
-
-        mapping[spec_file[maskl:]] = deps
-
-    for step_def in step_files:
-        data = ingest_yaml_list(step_def)
-
-        deps = []
-        for step in data:
-            if 'source' in step:
-                deps.append(step['source']['file'])
-
-        if len(deps) != 0:
-            deps = [ os.path.join(path_prefix, i ) for i in deps ]
-
-            mapping[step_def[maskl:]] = deps
-
-    return mapping
-
-def include_files_unused(conf=None):
-    if conf == None:
-        conf = get_conf()
-
-    inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.build.paths.includes), None) ]
-    mapping = include_files(conf)
-
-    results = []
-    for fn in inc_files:
-        if fn.endswith('yaml') or fn.endswith('~'):
-            continue
-        if fn not in mapping.keys():
-            results.append(fn)
-
-    return results
-
-@task
-def changed(output='print'):
-    from pygit2 import Repository, GIT_STATUS_CURRENT, GIT_STATUS_IGNORED
-    conf = get_conf()
-
-    repo_path = conf.build.paths.projectroot
-
-    r = Repository(repo_path)
-
-    changed = []
-    for path, flag in r.status().items():
-        if flag not in [ GIT_STATUS_CURRENT, GIT_STATUS_IGNORED ]:
-            if path.startswith('source/'):
-                if path.endswith('.txt'):
-                    changed.append(path[6:])
-
-    source_path = os.path.join(conf.build.paths.source, conf.build.paths.output, conf.git.branches.current, 'json')
-    changed_report = []
-
-    for report in _generate_report(None):
-        if report['source'][len(source_path):] in changed:
-            changed_report.append(report)
-
-    if not len(changed_report) == 0:
-        changed_report.append(multi(data=changed_report, output_file=None))
-
-    if output is None:
-        return changed_report
-    elif output == 'print':
-        puts(json.dumps(changed_report, indent=2))
-    else:
-        json.dump(changed_report, output)

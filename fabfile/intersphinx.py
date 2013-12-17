@@ -51,6 +51,8 @@ def download(f, s):
                 os.utime(f, (newtime, newtime))
 
 def intersphinx():
+    "Downloads all intersphinx files if out of date."
+
     count = runner( intersphinx_jobs() )
 
     puts('[intersphinx]: processed {0} intersphinx inventories'.format(count))
@@ -71,7 +73,6 @@ def intersphinx_jobs():
                          conf.build.paths.output, i['path'])
 
         s = i['url'] + 'objects.inv'
-
         yield {
                 'target': f,
                 'dependency': None,

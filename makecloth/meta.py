@@ -40,10 +40,6 @@ def generate_meta(conf):
                 m.include(os.path.join(os.path.abspath(os.path.join(__file__, '../../makefiles')), mfile))
 
     m.newline()
-    m.target('.PHONY', 'meta.yaml')
-    m.target('meta.yaml', block='metaymal')
-    m.job('fab process.output:meta.yaml process.meta', block='metaymal')
-    m.msg('[meta]: regenerated "meta.yaml"', block='metaymal')
 
     m.section_break('generated makefiles')
 

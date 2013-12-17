@@ -23,7 +23,7 @@ def build_branch(logfile, branch='master', target='publish', wait=False):
     if wait is False:
         puts('[{0}]: build in progress.'.format(b))
 
-env.logfile = None 
+env.logfile = None
 env.builders = ['publish', 'push', 'stage', 'json-output']
 
 try:
@@ -38,14 +38,19 @@ env.repo.b = b
 
 @task
 def wait():
+    "Optional. If specified, the delegated.build() operation will block until the build completes."
     env.wait = True
 
 @task
 def log(logfile):
+    "Required. Specifies the path of the build log file."
+
     env.logfile = logfile
 
 @task
 def branch(branch):
+    "Optional. Specify the name of the (publishable) branch to build."
+
     if branch in env.repo.branches:
         env.branch = branch
     else:
@@ -53,6 +58,8 @@ def branch(branch):
 
 @task
 def build(builder='publish'):
+    "Required. Starts a build. Specify the builder to use as an argument."
+
     if env.logfile is None:
         env.logfile = os.path.join(get_conf().build.paths.output, 'docs-staging-delegated.log')
 

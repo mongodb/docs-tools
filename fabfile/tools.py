@@ -1,34 +1,20 @@
 import os.path
 import re
 import json
+import time
 
 from fabric.api import task, local, puts, lcd, env, abort
 
-from docs_meta import get_conf
+from docs_meta import get_conf, edition_setup
 from utils import expand_tree
 from process import munge_page
-
-from sphinx import edition_setup
 
 env.dev_repo = os.path.abspath(os.path.join(os.path.split(os.path.abspath(__file__))[0], '..', '..', 'docs-tools'))
 
 @task
-def dev():
-    if not os.path.exists(env.dev_repo):
-        abort('[docs-tools]: a dev docs-tools branch does not exist.')
-    with lcd(get_conf().build.paths.buildsystem):
-        local('git remote set-url origin {0}/.git'.format(env.dev_repo))
-        puts('[docs-tools]: set docs-tools repository to use a local remote.')
-
-@task
-def reset():
-    conf = get_conf()
-    with lcd(conf.build.paths.buildsystem):
-        local('git remote set-url origin git@github.com:{0}.git'.format(conf.git.remote.tools))
-        puts('[docs-tools]: set docs-tools to use the canonical remote.')
-
-@task
 def bootstrap(action='setup'):
+    "Wrapper around the 'bootstrap.py' operation."
+
     cmd = ['python bootstrap.py']
 
     if action in ['setup', 'clean']:
@@ -41,6 +27,8 @@ def bootstrap(action='setup'):
 
 @task
 def conf(edition=None, conf=None):
+    "Returns the build configuration object for visual introspection. Optionally specify 'edition' argument."
+
     if conf is None:
         conf = get_conf()
     if edition is not None:
@@ -50,6 +38,8 @@ def conf(edition=None, conf=None):
 
 @task
 def tags():
+    "Uses 'etags' to generate a TAG index to aid navigation."
+
     conf = get_conf()
 
     regexp_fn = os.path.join(os.path.join(conf.build.paths.projectroot,
@@ -76,3 +66,17 @@ def tags():
     munge_page(fn=os.path.join(conf.build.paths.projectroot, 'TAGS'),
                regex=regexps,
                tag='dev')
+
+class Timer():
+    def __init__(self, name=None, report=True):
+        self.report = report
+        if name is None:
+            self.name = 'task'
+        else:
+            self.name = name
+    def __enter__(self):
+        self.start = time.time()
+    def __exit__(self, *args):
+        if self.report is True:
+            message = '[build] [timer]: time elapsed for {0} was: {1}'
+            print(message.format(self.name, str(time.time() - self.start)) )

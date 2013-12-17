@@ -10,11 +10,10 @@ from multiprocessing import cpu_count
 from fabric.api import task, env, abort, puts, local
 
 from docs_meta import output_yaml, get_manual_path, get_conf
-from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list
+from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list, munge_content, munge_page
 
 from make import check_hashed_dependency, check_dependency, runner
-from stats import include_files
-
+from includes import include_files
 
 env.input_file = None
 env.output_file = None
@@ -176,18 +175,7 @@ def refresh_dependencies(conf=None):
     if conf is None:
         conf = get_conf()
 
-    return sum(runner(refresh_dependency_jobs(conf), retval='results'))
-
-########## Simple Tasks ##########
-
-@task
-def meta():
-    output_yaml(env.output_file)
-
-@task
-def touch(fn, times=None):
-    if os.path.exists(fn):
-        os.utime(fn, times)
+    return sum(runner(refresh_dependency_jobs(conf), retval='results', parallel='process'))
 
 ########## Main Output Processing Targets ##########
 
@@ -313,7 +301,7 @@ def _render_tex_into_pdf(fn, path):
     try:
         with open(os.devnull, 'w') as f:
             subprocess.check_call(pdflatex, shell=True, stdout=f, stderr=f)
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessErro:
         print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
         return False
     puts('[pdf]: completed pdf rendering stage 4 of 4 for: {0}'.format(fn))
@@ -322,6 +310,7 @@ def _render_tex_into_pdf(fn, path):
 
 @task
 def pdfs():
+    "Processes '.tex' files and runs 'pdflatex' to generate all PDFs."
     pdf_worker()
 
 def pdf_worker(conf=None):
@@ -402,28 +391,6 @@ def pdf_jobs(conf):
 #################### Error Page Processing ####################
 
 # this is called directly from the sphinx generation function in sphinx.py.
-
-def munge_page(fn, regex, out_fn=None,  tag='build'):
-    with open(fn, 'r') as f:
-        page = f.read()
-
-    page = munge_content(page, regex)
-
-    if out_fn is None:
-        out_fn = fn
-
-    with open(out_fn, 'w') as f:
-        f.write(page)
-
-    puts('[{0}]: processed {1}'.format(tag, fn))
-
-def munge_content(content, regex):
-    if isinstance(regex, list):
-        for cregex, subst in regex:
-            content = cregex.sub(subst, content)
-        return content
-    else:
-        return regex[0].sub(regex[1], content)
 
 def error_pages():
     conf = get_conf()

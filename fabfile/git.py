@@ -11,20 +11,25 @@ from utils import get_branch
 env.sign = False
 env.branch = None
 
-@task(alias='signoff')
+@task
 def sign():
+    "For git.am(), sets the --signoff option."
     env.sign = True
 
-@task(alias='am')
-def apply(obj,repo=None):
-    if repo is None:
+@task
+def am(obj,repo=None):
+    "Runs 'git am' on a github object."
 
+    if repo is None:
         repo = get_conf().git.remote.upstream
 
     cmd = ['curl',
            'https://github.com/{0}/'.format(repo),
            '|', 'git', 'am',
            '--signoff --3way' if env.sign else '--3way' ]
+
+    if env.branch is not None:
+        local('git checkout {0}'.format(env.branch))
 
     if obj.startswith('http'):
         cmd[1] = obj
@@ -42,8 +47,10 @@ def apply(obj,repo=None):
         local(' '.join(cmd))
         puts('[git]: merged pull request #{0} for {1} into {2}'.format(obj, repo, get_branch()))
 
-@task()
+@task
 def branch(branch):
+    "Sets a branch to apply a git operation and is a no-op unless run with another operation."
+
     with hide('running'):
         branches = local("git for-each-ref  refs/heads/ --format='%(refname:short)'", capture=True).split()
 
@@ -52,8 +59,10 @@ def branch(branch):
         else:
             env.branch = branch
 
-@task(aliases=['cp'])
-def cherrypick(*obj):
+@task
+def cp(*obj):
+    "Runs git cherry-pick on a given commit."
+
     with hide('running'):
         if env.branch is not None:
             local('git checkout {0}'.format(env.branch))

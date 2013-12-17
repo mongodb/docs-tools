@@ -25,6 +25,8 @@ intersphinx = task(intersphinx)
 env.EDITION = None
 @task
 def edition(val=None):
+    "Specify the edition for multi-edition outputs such as MMS."
+
     # this is a wrapper so we can use edition_setup elsewhere
     edition_setup(val, conf)
 
@@ -36,11 +38,8 @@ def edition_setup(val, conf):
 
     return docs_meta.edition_setup(val, conf)
 
-def get_tags(target, argtag, sconf):
-    if argtag is None:
-        ret = []
-    else:
-        ret = [argtag]
+def get_tags(target, sconf):
+    ret = []
 
     if target.startswith('html') or target.startswith('dirhtml'):
         ret.append('website')
@@ -66,16 +65,15 @@ def is_parallel_sphinx(version):
 
     return False
 
-def get_sphinx_args(tag, sconf, conf):
+def get_sphinx_args(sconf, conf):
     o = []
 
-    o.append(get_tags(sconf.builder, tag, sconf))
+    o.append(get_tags(sconf.builder, sconf))
     o.append('-q')
     o.append('-b {0}'.format(sconf.builder))
 
     if (is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version) and
-        (tag is None or not tag.startswith('hosted') or
-         not tag.startswith('saas'))):
+        conf.project.name != 'mms'):
         o.append(' '.join( [ '-j', str(cpu_count() + 1) ]))
 
     o.append(' '.join( [ '-c', conf.build.paths.projectroot ] ))
@@ -141,6 +139,13 @@ def man_tarball(conf):
 
 @task
 def prereq():
+    "Omnibus operation that builds all prerequisites for a Sphinx build."
+
+    conf = docs_meta.get_conf()
+
+    build_prerequisites(conf)
+
+def build_prerequisites(conf):
     jobs = itertools.chain(process.manpage_jobs(),
                            generate.table_jobs(),
                            generate.api_jobs(conf),
@@ -200,12 +205,15 @@ def compute_sphinx_config(builder, conf):
     return computed_config
 
 @task
-def build(builder='html', tag=None, root=None):
-    conf = docs_meta.get_conf()
+def build(builder='html', conf=None):
+    "Build a single sphinx target. Does not build prerequisites."
 
-    if root is None:
-        root = conf.build.paths.branch_output
+    if conf is None:
+        conf = docs_meta.get_conf()
 
+    build_worker(builder, conf)
+
+def build_worker(builder, conf):
     sconf = compute_sphinx_config(builder, conf)
     conf = edition_setup(sconf.edition, conf)
 
@@ -215,15 +223,15 @@ def build(builder='html', tag=None, root=None):
         edition = None
 
     with settings(host_string='sphinx'):
-        dirpath = os.path.join(root, builder)
+        dirpath = os.path.join(conf.build.paths.branch_output, builder)
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
-            puts('[{0}]: created {1}/{2}'.format(builder, root, builder))
+            puts('[{0}]: created {1}/{2}'.format(builder, conf.build.paths.branch_output, builder))
 
         puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
         cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {1}/{2}' # per-builder-doctreea
-        sphinx_cmd = cmd.format(get_sphinx_args(tag, sconf, conf), root, builder, conf.build.paths.branch_source)
+        sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf), conf.build.paths.branch_output, builder, conf.build.paths.branch_source)
 
         out = local(sphinx_cmd, capture=True)
         # out = sphinx_native_worker(sphinx_cmd)
@@ -234,7 +242,7 @@ def build(builder='html', tag=None, root=None):
 
         puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
-        finalize_build(builder, root, sconf, conf)
+        finalize_build(builder, sconf, conf)
 
 def sphinx_native_worker(sphinx_cmd):
     # Calls sphinx directly rather than in a subprocess/shell. Not used
@@ -297,7 +305,7 @@ def output_sphinx_stream(out, builder, conf=None):
 
         print(l)
 
-def finalize_build(builder, root, sconf, conf):
+def finalize_build(builder, sconf, conf):
     if 'language' in sconf:
         # reinitialize conf and builders for internationalization
         conf.paths = docs_meta.render_paths(None, conf, sconf.language)
@@ -309,7 +317,7 @@ def finalize_build(builder, root, sconf, conf):
     jobs = {
         'linkcheck': [
             { 'job': puts,
-              'args': ['[{0}]: See {1}/{0}/output.txt for output.'.format(builder, root)]
+              'args': ['[{0}]: See {1}/{0}/output.txt for output.'.format(builder, conf.build.paths.branch_output)]
             }
         ],
         'dirhtml': [

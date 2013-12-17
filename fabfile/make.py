@@ -16,20 +16,28 @@ from utils import md5_file, expand_tree
 env.FORCE = False
 @task
 def force():
+    "Sets a flag that forces rebuilds of all generated and processed content."
+
     env.FORCE = True
 
 env.PARALLEL = True
 @task
 def serial():
+    "Sets a flag that removes parallelism from the build process."
+
     env.PARALLEL = False
 
 env.POOL = None
 @task
 def pool(value):
+    "Manually control the size of the worker pool."
+
     env.POOL = int(value)
 
 @task
 def make(target):
+    "Build a make target, indirectly."
+
     return _make(target)
 
 def _make(target):
@@ -187,21 +195,21 @@ class NestedPool(multiprocessing.pool.Pool):
 
 ############### Task Running Framework ###############
 
-def runner(jobs, pool=None, parallel=True, force=False, retval='count'):
+def runner(jobs, pool=None, parallel='process', force=False, retval='count'):
     if pool is None:
         pool = cpu_count()
 
-    if env.FORCE is True: 
+    if env.FORCE is True:
         force = True
     if env.PARALLEL is False:
         parallel = False
 
     if pool == 1 or parallel is False:
         return sync_runner(jobs, force, retval)
-    elif parallel == 'threads':
-        return async_thread_runner(jobs, force, pool, retval)
-    else:
+    elif parallel is True or parallel == 'process':
         return async_process_runner(jobs, force, pool, retval)
+    elif parallel.startswith('threads'):
+        return async_thread_runner(jobs, force, pool, retval)
 
 def async_thread_runner(jobs, force, pool, retval):
     try:

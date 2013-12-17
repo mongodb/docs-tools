@@ -8,6 +8,9 @@ import urllib2
 import json
 
 import yaml
+
+from contextlib import closing
+
 from fabric.api import task, puts, abort, env
 from docs_meta import get_conf
 from utils import conf_from_list, ingest_yaml_list, write_yaml, BuildConfiguration
@@ -50,6 +53,8 @@ def package_filename(archive_path, target, conf):
 
 @task
 def package(target=None, conf=None):
+    "Builds a package from the current build output."
+
     if conf is None:
         conf = get_conf()
 
@@ -108,6 +113,8 @@ def package(target=None, conf=None):
 
 @task
 def fetch(path, conf=None):
+    "Downloads package from a URL if it doesn't exist locally."
+
     if conf is None:
         conf = get_conf()
 
@@ -118,9 +125,9 @@ def fetch(path, conf=None):
                             local_path)
 
     if not os.path.exists(tar_path):
-        u = urllib2.urlopen(path)
-        with open(tar_path, 'w') as f:
-            f.write(u.read())
+        with closing(urllib2.urlopen(path)) as u:
+            with open(tar_path, 'w') as f:
+                f.write(u.read())
         puts('[deploy] [tarball]: downloaded {0}'.format(local_path))
     else:
         puts('[deploy] [tarball]: {0} exists locally, not downloading.'.format(local_path))
@@ -129,6 +136,8 @@ def fetch(path, conf=None):
 
 @task
 def unwind(path, conf=None):
+    "Unpack a package into the 'build/public/' directory."
+
     if conf is None:
         conf = get_conf()
 
@@ -156,10 +165,13 @@ def unwind(path, conf=None):
 env.deploy_target = None
 @task
 def target(target):
+    "Specify the deployment target. Required for stage.upload()"
     env.deploy_target = target
 
 @task
 def upload(path, conf=None):
+    "Downloads, unwinds and deploys the docs build in a package."
+
     if conf is None:
         conf = get_conf()
 
