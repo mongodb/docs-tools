@@ -253,7 +253,10 @@ def build_worker(builder, conf):
         puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
         cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {1}/{2}' # per-builder-doctreea
-        sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf), conf.build.paths.branch_output, builder, conf.build.paths.branch_source)
+        sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
+                                conf.build.paths.branch_output,
+                                builder,
+                                conf.build.paths.branch_source)
 
         out = local(sphinx_cmd, capture=True)
         # out = sphinx_native_worker(sphinx_cmd)

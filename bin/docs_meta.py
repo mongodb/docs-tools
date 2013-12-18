@@ -158,10 +158,12 @@ def edition_setup(edition, conf):
 
     if conf.project.name == 'mms':
         conf.build.paths.public_site_output = conf.build.paths.mms[edition]
-        conf.build.paths.branch_source = '-'.join([os.path.join(conf.build.paths.output, conf.git.branches.current, conf.build.paths.source), edition])
+        conf.build.paths.branch_source = '-'.join([os.path.join(conf.build.paths.output,
+                                                                conf.git.branches.current,
+                                                                conf.build.paths.source),
+                                                   edition])
         conf.build.paths.branch_output = os.path.join(conf.build.paths.output,
                                                       conf.git.branches.current, edition)
-
 
         if edition == 'saas':
             conf.project.basepath = 'help'
