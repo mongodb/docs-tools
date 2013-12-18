@@ -193,8 +193,8 @@ def add_content(r, record):
     r.newline()
 
 meta_strs = {
-    'recursive': '{0} is included recursively.',
-    'generated': '{0} is a generated file'
+    'recursive': '{0} is included in another file used as an include.',
+    'generated': '{0} is a generated file.'
 }
 
 def add_meta(r, page_name, record):
