@@ -20,6 +20,8 @@ from rstcloth.images import generate_image_pages
 from rstcloth.releases import generate_release_output, generate_release_copy, generate_release_untar
 from rstcloth.hash import generate_hash_file
 from rstcloth.steps import render_step_file
+from rstcloth.includes import include_file_data
+from rstcloth.includes import build_page as build_include_index_page
 
 #################### API Param Table Generator ####################
 
@@ -540,6 +542,44 @@ def htaccess(fn='.htaccess'):
 
     puts('[redirect]: regenerated {0} with {1} redirects ({2} lines)'.format(fn, len(sources), len(lines)))
 
+@task
+def robots(fn):
+    conf = get_conf()
+
+    robots_txt_builder(fn, conf, override=True)
+
+def robots_txt_builder(fn, conf, override=False):
+    if override is False:
+        if conf.git.branches.current != 'master':
+            puts('[robots]: cowardly refusing to regenerate robots.txt on non-master branch.')
+            return False
+    else:
+        puts('[robots]: regenerating robots.txt on non-master branch with override.')
+
+    suppressed = ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
+                                               conf.build.paths.builddata,
+                                               'robots.yaml'))
+
+    with open(fn, 'w') as f:
+        f.write('User-agent: *')
+        f.write('\n')
+        for record in suppressed:
+            page = record['file']
+            if 'branches' not in record:
+                f.write('Disallow: {0}'.format(page))
+                f.write('\n')
+            else:
+                for branch in record['branches']:
+                    if branch == '{{published}}':
+                        for pbranch in conf.git.branches.published:
+                            f.write('Disallow: /{0}{1}'.format(pbranch, page))
+                            f.write('\n')
+                    else:
+                        f.write('Disallow: /{0}{1}'.format(branch,page))
+                        f.write('\n')
+
+    puts('[robots]: regenerated robots.txt file.')
+
 #################### steps ####################
 
 def _get_steps_output_fn(fn, paths):
@@ -604,3 +644,21 @@ def create_manual_symlink(conf):
             if links:
                 for name, target in links:
                     create_link(target, name)
+
+@task
+def include_index():
+    conf = get_conf()
+
+    write_include_index(conf)
+
+def write_include_index(conf):
+    fd = include_file_data(conf)
+
+    r = build_include_index_page(fd, conf)
+
+    r.write(os.path.join(conf.build.paths.projectroot,
+                         conf.build.paths.includes,
+                         'generated',
+                         'overview.rst'))
+
+    puts('[includes]: generated /meta/includes source page.')

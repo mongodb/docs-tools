@@ -37,7 +37,7 @@ def single():
 def unused():
     "Returns a list of included files that are never used."
 
-    render_for_console(include_file_unused())
+    render_for_console(include_files_unused())
 
 @task
 def filter(mask):
@@ -66,7 +66,7 @@ def render_for_console(data):
     if not isinstance(data, list):
         data = list(data)
 
-    print(json.dumps(data ,indent=3))
+    print(json.dumps(data, indent=3))
 
 ########## Worker Function ##########
 
@@ -112,7 +112,6 @@ def include_files(files=None, conf=None):
         if conf == None:
             conf = get_conf()
 
-
         source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
         grep = local('grep -R ".. include:: /" {0} || exit 0'.format(source_dir), capture=True)
 
@@ -147,7 +146,7 @@ def generated_includes(conf=None):
 
     toc_spec_files = []
     step_files = []
-    for fn in expand_tree(os.path.join(conf.build.paths.includes)):
+    for fn in expand_tree(os.path.join(conf.build.paths.includes), input_extension='yaml'):
         base = os.path.basename(fn)
 
         if base.startswith('toc-spec'):
@@ -186,7 +185,7 @@ def include_files_unused(inc_files=None, conf=None):
         conf = get_conf()
 
     inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.build.paths.includes), None) ]
-    mapping = include_files(inc_files, conf)
+    mapping = include_files(conf)
 
     results = []
     for fn in inc_files:

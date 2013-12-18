@@ -145,15 +145,37 @@ def prereq():
 
     build_prerequisites(conf)
 
+def build_prereq_jobs(conf):
+    jobs = [
+        {
+            'job': generate.robots_txt_builder,
+            'args': [ os.path.join( conf.build.paths.projectroot,
+                                    conf.build.paths.public,
+                                    'robots.txt'),
+                      conf
+                    ]
+        },
+        {
+            'job': generate.write_include_index,
+            'args': [conf]
+        }
+    ]
+
+    for job in jobs:
+        yield job
+
+
 def build_prerequisites(conf):
     jobs = itertools.chain(process.manpage_jobs(),
+                           build_prereq_jobs(conf),
                            generate.table_jobs(),
                            generate.api_jobs(conf),
                            generate.toc_jobs(),
                            generate.steps_jobs(),
                            generate.release_jobs(conf),
                            intersphinx_jobs(),
-                           generate.image_jobs())
+                           generate.image_jobs()
+        )
 
     job_count = runner(jobs)
     puts('[sphinx-prep]: built {0} pieces of content'.format(job_count))
