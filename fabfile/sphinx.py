@@ -374,15 +374,19 @@ def finalize_build(builder, sconf, conf):
             }
         ],
         'gettext': process.gettext_jobs(conf),
-        'all': [
-            { 'job': generate.create_manual_symlink,
-              'args': [conf]
-            }
-        ]
+        'all': [ ]
     }
 
     if builder not in jobs:
         jobs[builder] = []
+
+    if conf.build.system.branched is True:
+        jobs['all'].append(
+            { 'job': generate.create_manual_symlink,
+              'args': [conf]
+            }
+        )
+
 
     print('[sphinx] [post] [{0}]: running post-processing steps.'.format(builder))
     count = runner(itertools.chain(jobs[builder], jobs['all']), pool=1)
@@ -492,4 +496,3 @@ def finalize_dirhtml_build(builder, conf):
 
         cleaner(fns)
         puts('[dirhtml] [clean]: removed excluded files from output directory')
-
