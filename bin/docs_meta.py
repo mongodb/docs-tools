@@ -162,8 +162,6 @@ def edition_setup(edition, conf):
                                                                 conf.git.branches.current,
                                                                 conf.build.paths.source),
                                                    edition])
-        conf.build.paths.branch_output = os.path.join(conf.build.paths.output,
-                                                      conf.git.branches.current, edition)
 
         if edition == 'saas':
             conf.project.basepath = 'help'

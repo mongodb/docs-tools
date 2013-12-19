@@ -15,6 +15,8 @@ from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list, 
 from make import check_hashed_dependency, check_dependency, runner
 from includes import include_files
 
+import mms
+
 ########## Process Sphinx Json Output ##########
 
 def json_output(conf=None):
@@ -202,7 +204,7 @@ def copy_if_needed(source_file, target_file, name='build'):
             if name is not None:
                 puts('[{0}]: "{1}" changed. Updated: {2}'.format(name, source_file, target_file))
 
-def create_link():
+def create_link(input_fn, output_fn):
     out_dirname = os.path.dirname(output_fn)
     if out_dirname != '' and not os.path.exists(out_dirname):
         os.makedirs(out_dirname)
@@ -298,15 +300,18 @@ def pdfs():
     "Processes '.tex' files and runs 'pdflatex' to generate all PDFs."
     pdf_worker()
 
-def pdf_worker(conf=None):
+def pdf_worker(target=None, conf=None):
     if conf is None:
         conf = get_conf()
 
-    for it, queue in enumerate(pdf_jobs(conf)):
+    if target is None:
+        target = 'latex'
+
+    for it, queue in enumerate(pdf_jobs(target, conf)):
         count = runner(queue)
         puts("[pdf]: completed {0} pdf jobs, in stage {1}".format(count, it))
 
-def pdf_jobs(conf):
+def pdf_jobs(target, conf):
     pdfs = ingest_yaml_list(os.path.join(conf.build.paths.builddata, 'pdfs.yaml'))
     tex_regexes = [ ( re.compile(r'(index|bfcode)\{(.*)--(.*)\}'),
                       r'\1\{\2-\{-\}\3\}'),
@@ -324,17 +329,23 @@ def pdf_jobs(conf):
 
         if 'edition' in i:
             deploy_path = os.path.join(conf.build.paths.public, i['edition'])
+
+            target_split = target.split('-')
+
+            if len(target_split) > 1:
+                if target_split[1] != i['edition']:
+                    continue
+                else:
+                    latex_dir = os.path.join(conf.build.paths['branch-output'], i['edition'], target)
+
             if i['edition'] == 'hosted':
                 deploy_path = os.path.join(deploy_path,  conf.git.branches.current)
-                latex_dir = os.path.join(conf.build.paths.output, i['edition'],
-                                         conf.git.branches.current, 'latex')
             else:
-                latex_dir = os.path.join(conf.build.paths.output, i['edition'], 'latex')
                 deploy_fn = tagged_name + '.pdf'
                 link_name = deploy_fn
         else:
             deploy_path = conf.build.paths['branch-staging']
-            latex_dir = os.path.join(conf.build.paths['branch-output'], 'latex')
+            latex_dir = os.path.join(conf.build.paths['branch-output'], target)
 
         i['source'] = os.path.join(latex_dir, i['output'])
         i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')
@@ -360,16 +371,19 @@ def pdf_jobs(conf):
                              job=_render_tex_into_pdf,
                              args=(i['processed'], i['path'])))
 
-        queue[3].append(dict(dependency=i['pdf'],
-                             target=i['deployed'],
-                             job=copy_if_needed,
-                             args=(i['pdf'], i['deployed'], 'pdf')))
+        if conf.project.name == 'mms' and mms.should_migrate(target, conf) is False:
+            pass
+        else:
+            queue[3].append(dict(dependency=i['pdf'],
+                                 target=i['deployed'],
+                                 job=copy_if_needed,
+                                 args=(i['pdf'], i['deployed'], 'pdf')))
 
-        if i['link'] != i['deployed']:
-            queue[4].append(dict(dependency=i['deployed'],
-                                 target=i['link'],
-                                 job=_create_link,
-                                 args=(deploy_fn, i['link'])))
+            if i['link'] != i['deployed']:
+                queue[4].append(dict(dependency=i['deployed'],
+                                     target=i['link'],
+                                     job=create_link,
+                                     args=(deploy_fn, i['link'])))
 
     return queue
 

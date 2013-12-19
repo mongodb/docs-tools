@@ -15,6 +15,7 @@ from make import runner, dump_file_hashes
 import generate
 import process
 import docs_meta
+import mms
 
 conf = docs_meta.get_conf()
 paths = conf.build.paths
@@ -85,7 +86,10 @@ def get_sphinx_args(sconf, conf):
 
 #################### Associated Sphinx Artifacts ####################
 
-def html_tarball(conf):
+def html_tarball(builder, conf):
+    if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
+        return False
+
     process.copy_if_needed(os.path.join(conf.build.paths.projectroot,
                                         conf.build.paths.includes, 'hash.rst'),
                            os.path.join(conf.build.paths.projectroot,
@@ -105,7 +109,7 @@ def html_tarball(conf):
                      sourcep='html',
                      newp=os.path.basename(basename))
 
-    process._create_link(input_fn=os.path.basename(tarball_name),
+    process.create_link(input_fn=os.path.basename(tarball_name),
                          output_fn=os.path.join(conf.build.paths.projectroot,
                                                 conf.build.paths.public_site_output,
                                                 conf.project.name + '.tar.gz'))
@@ -128,7 +132,7 @@ def man_tarball(conf):
                                         conf.build.paths.public_site_output,
                                         os.path.basename(tarball_name)))
 
-    process._create_link(input_fn=os.path.basename(tarball_name),
+    process.create_link(input_fn=os.path.basename(tarball_name),
                          output_fn=os.path.join(conf.build.paths.projectroot,
                                                 conf.build.paths.public_site_output,
                                                 'manpages' + '.tar.gz'))
@@ -335,9 +339,11 @@ def finalize_build(builder, sconf, conf):
         # reinitialize conf and builders for internationalization
         conf.paths = docs_meta.render_paths(None, conf, sconf.language)
         builder = sconf.builder
+        target = builder
     else:
         # mms compatibility
-        builder_parts = builder.split('-', 1)[0]
+        target = builder
+        builder = builder.split('-', 1)[0]
 
     jobs = {
         'linkcheck': [
@@ -347,14 +353,14 @@ def finalize_build(builder, sconf, conf):
         ],
         'dirhtml': [
             { 'job': finalize_dirhtml_build,
-              'args': [conf]
+              'args': [target, conf]
             }
         ],
         'json': process.json_output_jobs(conf),
-        'singlehtml': finalize_single_html_jobs(conf),
+        'singlehtml': finalize_single_html_jobs(target, conf),
         'latex': [
             { 'job': process.pdf_worker,
-              'args': [conf]
+              'args': [target, conf]
             }
         ],
         'man': itertools.chain(process.manpage_url_jobs(conf), [
@@ -364,7 +370,7 @@ def finalize_build(builder, sconf, conf):
         ]),
         'html': [
             { 'job': html_tarball,
-              'args': [conf]
+              'args': [target, conf]
             }
         ],
         'gettext': process.gettext_jobs(conf),
@@ -379,7 +385,7 @@ def finalize_build(builder, sconf, conf):
         jobs[builder] = []
 
     print('[sphinx] [post] [{0}]: running post-processing steps.'.format(builder))
-    count = runner(itertools.chain(jobs[builder], jobs['all']))
+    count = runner(itertools.chain(jobs[builder], jobs['all']), pool=1)
     print('[sphinx] [post] [{0}]: completed {1} post-processing steps'.format(builder, count))
 
 #################### Sphinx Post-Processing ####################
@@ -389,13 +395,16 @@ def finalize_epub_build(conf):
     epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
     epub_src_filename = epub_name + '.epub'
 
+    if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
+        return False
+
     process.copy_if_needed(source_file=os.path.join(conf.build.paths.projectroot,
                                                     conf.build.paths.branch_output,
                                                     'epub', epub_src_filename),
                            target_file=os.path.join(conf.build.paths.projectroot,
                                                     conf.build.paths.public_site_output,
                                                     epub_branched_filename))
-    process._create_link(input_fn=epub_branched_filename,
+    process.create_link(input_fn=epub_branched_filename,
                          output_fn=os.path.join(conf.build.paths.projectroot,
                                                 conf.build.paths.public_site_output,
                                                 epub_src_filename))
@@ -404,7 +413,10 @@ def finalize_epub_build(conf):
 def get_single_html_dir(conf):
     return os.path.join(conf.build.paths.public_site_output, 'single')
 
-def finalize_single_html_jobs(conf):
+def finalize_single_html_jobs(builder, conf):
+    if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
+        raise StopIteration
+
     pjoin = os.path.join
 
     single_html_dir = get_single_html_dir(conf)
@@ -414,20 +426,20 @@ def finalize_single_html_jobs(conf):
 
     try:
         process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
-                                                    'singlehtml', 'contents.html'),
+                                                    builder, 'contents.html'),
                                    output_file=pjoin(single_html_dir, 'index.html'))
     except (IOError, OSError):
         process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
-                                                    'singlehtml', 'index.html'),
+                                                    builder, 'index.html'),
                                    output_file=pjoin(single_html_dir, 'index.html'))
     process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
-                                             'singlehtml', 'objects.inv'),
+                                             builder, 'objects.inv'),
                            target_file=pjoin(single_html_dir, 'objects.inv'))
 
     single_path = pjoin(single_html_dir, '_static')
 
     for fn in expand_tree(pjoin(conf.build.paths.branch_output,
-                                'singlehtml', '_static'), None):
+                                builder, '_static'), None):
 
         yield {
             'job': process.copy_if_needed,
@@ -436,35 +448,38 @@ def finalize_single_html_jobs(conf):
             'dependency': None
         }
 
-def finalize_dirhtml_build(conf):
+def finalize_dirhtml_build(builder, conf):
     pjoin = os.path.join
 
     process.error_pages()
 
     single_html_dir = get_single_html_dir(conf)
+    search_page = pjoin(conf.build.paths.branch_output, builder, 'index.html')
 
-    process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
-                                             'dirhtml', 'index.html'),
-                           target_file=pjoin(single_html_dir, 'search.html'))
+    if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
+        return False
 
+    if os.path.exists(search_page):
+        process.copy_if_needed(source_file=search_page,
+                               target_file=pjoin(single_html_dir, 'search.html'))
+
+    dest = pjoin(conf.build.paths.projectroot, conf.build.paths.public_site_output)
     local('rsync -a {source}/ {destination}'.format(source=pjoin(conf.build.paths.projectroot,
                                                                  conf.build.paths.branch_output,
-                                                                 'dirhtml'),
-                                                    destination=pjoin(conf.build.paths.projectroot,
-                                                                      conf.build.paths.public_site_output)))
+                                                                 builder),
+                                                    destination=dest))
 
-    if conf.project.name == 'mms':
-        # mms still does migration in the makefile because the requirements are peculiar.
-        pass
-    elif conf.git.branches.current in conf.git.branches.published:
-            generate.sitemap()
+    puts('[{0}]: migrated build to {1}'.format(builder, dest))
 
-            process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
-                                                     conf.build.paths.branch_output,
-                                                     'sitemap.xml.gz'),
-                                   target_file=pjoin(conf.build.paths.projectroot,
-                                                     conf.build.paths.public_site_output,
-                                                     'sitemap.xml.gz'))
+    if conf.git.branches.current in conf.git.branches.published:
+        generate.sitemap()
+
+        process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
+                                                 conf.build.paths.branch_output,
+                                                 'sitemap.xml.gz'),
+                               target_file=pjoin(conf.build.paths.projectroot,
+                                                 conf.build.paths.public_site_output,
+                                                 'sitemap.xml.gz'))
 
     sconf = BuildConfiguration('sphinx.yaml', pjoin(conf.build.paths.projectroot,
                                                 conf.build.paths.builddata))
@@ -477,3 +492,4 @@ def finalize_dirhtml_build(conf):
 
         cleaner(fns)
         puts('[dirhtml] [clean]: removed excluded files from output directory')
+

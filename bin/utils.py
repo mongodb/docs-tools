@@ -252,7 +252,7 @@ def munge_page(fn, regex, out_fn=None,  tag='build'):
     with open(out_fn, 'w') as f:
         f.write(page)
 
-    puts('[{0}]: processed {1}'.format(tag, fn))
+    print('[{0}]: processed {1}'.format(tag, fn))
 
 def munge_content(content, regex):
     if isinstance(regex, list):
