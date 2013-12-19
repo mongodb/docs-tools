@@ -453,7 +453,7 @@ def sitemap(config_path=None):
         config_path = os.path.join(paths.projectroot, 'conf-sitemap.xml')
 
     if not os.path.exists(config_path):
-        puts('[ERROR] [sitemap]: configuration file {0} does not exist. Returning early'.fomrat(config_path))
+        puts('[ERROR] [sitemap]: configuration file {0} does not exist. Returning early'.format(config_path))
         return False
 
     sitemap = sitemap_gen.CreateSitemapFromFile(configpath=config_path,
