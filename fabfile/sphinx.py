@@ -380,7 +380,7 @@ def finalize_build(builder, sconf, conf):
     if builder not in jobs:
         jobs[builder] = []
 
-    if conf.build.system.branched is True:
+    if conf.build.system.branched is True and conf.git.branches.current == 'master':
         jobs['all'].append(
             { 'job': generate.create_manual_symlink,
               'args': [conf]
