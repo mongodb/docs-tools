@@ -1,3 +1,4 @@
+import os.path
 import sys
 import argparse
 import yaml
@@ -136,6 +137,10 @@ def main():
             print(generate_redirects(process_redirect(doc, conf=conf), match=ui.match, conf=conf))
 
     if lines:
+        dirname = os.path.dirname(ui.filename)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+
         with open(ui.filename, 'w') as f:
             for line in lines:
                 f.write(line)
