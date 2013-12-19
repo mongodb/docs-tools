@@ -327,6 +327,8 @@ def pdf_jobs(target, conf):
         deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
         link_name = deploy_fn.replace('-' + conf.git.branches.current, '')
 
+        latex_dir = os.path.join(conf.build.paths.branch_output, target)
+
         if 'edition' in i:
             deploy_path = os.path.join(conf.build.paths.public, i['edition'])
 
@@ -335,8 +337,6 @@ def pdf_jobs(target, conf):
             if len(target_split) > 1:
                 if target_split[1] != i['edition']:
                     continue
-                else:
-                    latex_dir = os.path.join(conf.build.paths['branch-output'], i['edition'], target)
 
             if i['edition'] == 'hosted':
                 deploy_path = os.path.join(deploy_path,  conf.git.branches.current)
@@ -345,7 +345,6 @@ def pdf_jobs(target, conf):
                 link_name = deploy_fn
         else:
             deploy_path = conf.build.paths['branch-staging']
-            latex_dir = os.path.join(conf.build.paths['branch-output'], target)
 
         i['source'] = os.path.join(latex_dir, i['output'])
         i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')

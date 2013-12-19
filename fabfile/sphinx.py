@@ -476,14 +476,15 @@ def finalize_dirhtml_build(builder, conf):
     puts('[{0}]: migrated build to {1}'.format(builder, dest))
 
     if conf.git.branches.current in conf.git.branches.published:
-        generate.sitemap()
+        sitemap_exists = generate.sitemap()
 
-        process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
-                                                 conf.build.paths.branch_output,
-                                                 'sitemap.xml.gz'),
-                               target_file=pjoin(conf.build.paths.projectroot,
-                                                 conf.build.paths.public_site_output,
-                                                 'sitemap.xml.gz'))
+        if sitemap_exists is True:
+            process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
+                                                     conf.build.paths.branch_output,
+                                                     'sitemap.xml.gz'),
+                                   target_file=pjoin(conf.build.paths.projectroot,
+                                                     conf.build.paths.public_site_output,
+                                                     'sitemap.xml.gz'))
 
     sconf = BuildConfiguration('sphinx.yaml', pjoin(conf.build.paths.projectroot,
                                                 conf.build.paths.builddata))
