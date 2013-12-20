@@ -316,6 +316,8 @@ def output_sphinx_stream(out, builder, conf=None):
                 continue
             elif l.startswith('WARNING: search index'):
                 continue
+            elif l.endswith('source/reference/sharding-commands.txt'):
+                continue
 
         full_path = os.path.join(conf.build.paths.projectroot, conf.build.paths.branch_output)
         if l.startswith(conf.build.paths.branch_output):
