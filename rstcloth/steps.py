@@ -189,12 +189,12 @@ class StepsOutput(object):
             self.post(step)
 
     def pre(self, doc):
-        if 'pre' in doc:
+        if 'pre' in doc and doc['pre'] is not None:
             self.rst.content(doc['pre'], indent=self.indent)
             self.rst.newline()
 
     def post(self, doc, code_step=False):
-        if 'post' in doc:
+        if 'post' in doc and doc['post'] is not None:
             self.rst.content(doc['post'], indent=self.indent)
             self.rst.newline()
 
