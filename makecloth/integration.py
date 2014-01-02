@@ -18,14 +18,7 @@ def generate_integration_targets(conf):
     for dep in conf['doc-root']:
         dependencies.append(os.path.join(paths['public'], dep))
 
-    for dep in conf['branch-root']:
-        if isinstance(dep, list):
-            dep = os.path.sep.join(dep)
-
-        if dep != '':
-            dependencies.append(os.path.join(paths['branch-staging'], dep))
-        else:
-            dependencies.append(paths['branch-staging'])
+    dependencies.extend(proccess_branch_root(conf))
 
     m.target('package')
     m.job('fab stage.package')
@@ -37,20 +30,28 @@ def generate_integration_targets(conf):
     m.target('.PHONY', ['publish', 'package'])
 
 
+def proccess_branch_root(conf):
+    dependencies = []
+
+    if 'branch-root' in conf and conf['branch-root'] is not None:
+        for dep in conf['branch-root']:
+            if isinstance(dep, list):
+                dep = os.path.sep.join(dep)
+
+            if dep != '':
+                dependencies.append(os.path.join(paths['branch-staging'], dep))
+            else:
+                dependencies.append(paths['branch-staging'])
+
+    return dependencies
+
 def gennerate_translation_integration_targets(language, conf):
     dependencies = [ l + '-' + language for l in conf['targets'] ]
 
     for dep in conf['doc-root']:
         dependencies.append(os.path.join(paths['public'], dep))
 
-    for dep in conf['branch-root']:
-        if isinstance(dep, list):
-            dep = os.path.sep.join(dep)
-
-        if dep != '':
-            dependencies.append(os.path.join(paths['branch-staging'], dep))
-        else:
-            dependencies.append(paths['branch-staging'])
+    dependencies.extend(proccess_branch_root(conf))
 
     package_target = '-'.join(['package', language])
     publish_target = '-'.join(['publish', language])
