@@ -12,6 +12,8 @@
     inc. (Sam Kleinman, et al.)
 """
 
+import os.path
+
 from sphinx import addnodes
 from sphinx.domains import Domain, ObjType
 from sphinx.locale import l_, _
@@ -24,7 +26,7 @@ from sphinx.util.docfields import Field, GroupedField, TypedField
 from mongodb_conf import conf
 
 def basename(path):
-    return path.split('/')[-1].rsplit('.', 1)[0]
+    return os.path.splitext(os.path.basename(path))[0]
 
 class MongoDBObject(ObjectDescription):
     """
@@ -141,7 +143,7 @@ class MongoDBObject(ObjectDescription):
                     'other instance in ' + path,
                     line=self.lineno)
 
-        if self.env.docname.rsplit('/', 1)[1] in conf['composites']:
+        if os.path.basename(self.env.docname) in conf['composites']:
             pass
         else:
             objects[fullname] = self.env.docname, self.objtype
