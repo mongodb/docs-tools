@@ -102,7 +102,7 @@ conf['directives'] = [
         'name': 'authaction',
         'tag': 'authr',
         'description': 'user action',
-        'prepend': False,
+        'prepend': True,
         'callable': False,
     },
     {
