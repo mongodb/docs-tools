@@ -36,12 +36,12 @@ class Options(object):
 
         self.cache[fn][opt.program][opt.name] = opt
 
-        if opt.inherited is True: 
+        if opt.inherited is True:
             self.unresolved.append(opt)
         else:
             self.data.append(opt)
 
-    def resolve(self, fn): 
+    def resolve(self, fn):
         for opt in self.unresolved:
             if opt.inherited is True:
                 if opt.source.file in self.cache:
@@ -58,7 +58,7 @@ class Options(object):
                 self.cache_option(opt, fn)
 
         self.unresolved = list()
-    
+
     def resolve_inherited(self, spec):
         return self.cache[spec.file][spec.program][spec.name]
 
@@ -74,7 +74,17 @@ class Option(object):
         self.name = doc['name']
 
         self.program = doc['program']
-        
+
+        if 'default' in doc:
+            self.default = doc['default']
+        else:
+            self.default = None
+
+        if 'type' in doc:
+            self.type = doc['type']
+        else:
+            self.type = None
+
         if 'directive' in doc:
             self.directive = doc['directive']
         else:
@@ -84,7 +94,7 @@ class Option(object):
             self.description = doc['description']
         else:
             self.description = ""
-            
+
         if 'inherit' in doc:
             self.inherited = True
             self.source = AttributeDict(doc['inherit'])
@@ -104,7 +114,7 @@ class Option(object):
 
         self.replacement['role'] = '{role}'
         if self.program != '_generic':
-            self.replacement['program'] = self.program
+            self.replacement['program'] = ':program:`{0}`'.format(self.program)
 
     def replace(self):
         self.description = self.description.format(**self.replacement)
@@ -120,7 +130,12 @@ class OptionRendered(object):
 
     def resolve_option_name(self):
         if self.option.directive == 'option':
-            return '--{0} {1}'.format(self.option.name, self.option.arguments)
+            if self.option.argumets.startswith(','):
+                spacer = ''
+            else:
+                spacer = ' '
+
+            return '--{0}{1}{2}'.format(self.option.name, spacer, self.option.arguments)
         else:
             return self.option.name
 
@@ -133,8 +148,17 @@ class OptionRendered(object):
 
         self.rst.directive(self.option.directive, self.resolve_option_name())
         self.rst.newline()
+
+        if self.option.default is not None:
+            self.content('*Default*: {0}'.format(self.option.default))
+            self.rst.newline()
+
+        if self.option.type is not None:
+            self.content('*Type*: {0}'.format(self.option.type))
+            self.rst.newline()
+
         self.rst.content(self.option.description, indent=3, wrap=False)
-        
+
         output_file = self.resolve_output_path(path)
         self.rst.write(output_file)
 
