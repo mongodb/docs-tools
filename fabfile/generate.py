@@ -588,21 +588,21 @@ def options():
     conf = get_conf()
 
     count = runner( option_jobs(conf) )
-    
+
     puts('[options]: rendered {0} options'.format(count))
 
 def render_option_page(opt, path):
     renderer = OptionRendered(opt)
     renderer.render(path)
 
-def option_jobs(conf): 
+def option_jobs(conf):
     paths = conf.build.paths
 
     options = Options()
 
     base_path = os.path.join(paths.projectroot, paths.includes)
     output_path = os.path.join(base_path, 'option')
-    
+
     for fn in expand_tree(base_path, 'yaml'):
         if fn.startswith(output_path):
             options.ingest(fn)
@@ -659,8 +659,8 @@ def get_top_level_links(links, conf):
 
     if isinstance(links, list):
         for link in links:
-            ret.extend(process_target_list(link)) 
-   else:
+            ret.extend(process_target_list(link))
+    else:
         ret.extend(process_target_list(links))
 
     return ret
