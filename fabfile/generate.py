@@ -22,6 +22,7 @@ from rstcloth.hash import generate_hash_file
 from rstcloth.steps import render_step_file
 from rstcloth.includes import include_file_data
 from rstcloth.includes import build_page as build_include_index_page
+from rstcloth.options import Options, OptionRendered
 
 #################### API Param Table Generator ####################
 
@@ -580,6 +581,40 @@ def robots_txt_builder(fn, conf, override=False):
 
     puts('[robots]: regenerated robots.txt file.')
 
+#################### options ####################
+
+@task
+def options():
+    conf = get_conf()
+
+    count = runner( option_jobs(conf) )
+    
+    puts('[options]: rendered {0} options'.format(count))
+
+def render_option_page(opt, path):
+    renderer = OptionRendered(opt)
+    renderer.render(path)
+
+def option_jobs(conf): 
+    paths = conf.build.paths
+
+    options = Options()
+
+    base_path = os.path.join(paths.projectroot, paths.includes)
+    output_path = os.path.join(base_path, 'option')
+    
+    for fn in expand_tree(base_path, 'yaml'):
+        if fn.startswith(output_path):
+            options.ingest(fn)
+
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    for opt in options.iterator():
+        yield { 'job': render_option_page,
+                'args': [ opt, output_path ]
+              }
+
 #################### steps ####################
 
 def _get_steps_output_fn(fn, paths):
@@ -587,8 +622,8 @@ def _get_steps_output_fn(fn, paths):
 
     return os.path.join(paths.projectroot, paths.includes, 'steps', root_name)
 
-def steps_jobs():
-    paths = render_paths('obj')
+def steps_jobs(conf):
+    paths = conf.build.paths
 
     for fn in expand_tree(os.path.join(paths.projectroot, paths.includes), 'yaml'):
         if fn.startswith(os.path.join(paths.projectroot, paths.includes, 'step')):
@@ -601,7 +636,9 @@ def steps_jobs():
 
 @task
 def steps():
-    count = runner( steps_jobs() )
+    conf = get_conf()
+
+    count = runner( steps_jobs(conf) )
 
     puts('[steps]: rendered {0} step files'.format(count))
 
@@ -622,8 +659,8 @@ def get_top_level_links(links, conf):
 
     if isinstance(links, list):
         for link in links:
-            ret.extend(process_target_list(link))
-    else:
+            ret.extend(process_target_list(link)) 
+   else:
         ret.extend(process_target_list(links))
 
     return ret

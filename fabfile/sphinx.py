@@ -175,7 +175,8 @@ def build_prerequisites(conf):
                            generate.table_jobs(),
                            generate.api_jobs(conf),
                            generate.toc_jobs(),
-                           generate.steps_jobs(),
+                           generate.option_jobs(conf),
+                           generate.steps_jobs(conf),
                            generate.release_jobs(conf),
                            intersphinx_jobs(),
                            generate.image_jobs()
