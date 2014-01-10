@@ -101,9 +101,8 @@ class Steps(object):
 
         sort_needed = False
 
-        idx = 0
 
-        for step in self.source_list:
+        for idx, step in enumerate(self.source_list):
             if 'stepnum' not in step:
                 step['stepnum'] = idx+1
             else:
@@ -131,8 +130,6 @@ class Steps(object):
                 self.source[source_ref] = current_step
             else:
                 self.source[step['ref']] = step
-
-            idx += 1
 
         if sort_needed is True:
             self.source_list.sort(key=lambda k:k['stepnum'])
