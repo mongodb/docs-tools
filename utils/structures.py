@@ -1,7 +1,11 @@
 import json
 import os.path
 
-from utils.serialization import ingest_yaml_doc
+try:
+    from serialization import ingest_yaml_doc
+except ImportError:
+    # so bootstrapping works
+    from utils.serialization import ingest_yaml_doc
 
 class AttributeDict(dict):
     def __init__(self, value=None):

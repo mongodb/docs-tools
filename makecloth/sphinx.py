@@ -8,7 +8,10 @@ import pkg_resources
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 
-import utils
+from utils.output import build_platform_notification
+from utils.serialization import ingest_yaml
+from utils.structures import get_conf_file
+
 from makecloth import MakefileCloth
 from docs_meta import render_paths, get_sphinx_builders
 
@@ -130,12 +133,12 @@ def sphinx_builder(target):
 
     m.target(target, 'sphinx-prerequisites', block=b)
     m.job(fab_prefix + ' sphinx.build:' + ','.join(fab_arg), block=b)
-    m.job(utils.build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
+    m.job(build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
 
     return ret_value
 
 def main():
-    config = utils.ingest_yaml(utils.get_conf_file(__file__))
+    config = ingest_yaml(get_conf_file(__file__))
 
     make_all_sphinx(config)
 

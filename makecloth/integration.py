@@ -5,7 +5,11 @@ from copy import copy
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from utils import expand_tree, get_branch, get_conf_file, ingest_yaml
+from utils.files import expand_tree
+from utils.git import get_branch
+from utils.serialization import ingest_yaml
+from utils.structures import get_conf_file
+
 from docs_meta import render_paths, get_conf
 from makecloth import MakefileCloth
 

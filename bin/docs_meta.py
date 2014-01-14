@@ -4,7 +4,11 @@ import datetime
 import yaml
 import os.path
 import sys
-from utils import write_yaml, shell_value, get_commit, get_branch, get_conf_file, ingest_yaml, BuildConfiguration
+
+from utils.serialization import write_yaml, ingest_yaml
+from utils.shell import shell_value
+from utils.git import get_commit, get_branch
+from utils.structures import BuildConfiguration, get_conf_file
 
 ### Configuration and Settings
 

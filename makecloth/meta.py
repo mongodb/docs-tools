@@ -6,18 +6,19 @@ import os.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
-import utils
 from docs_meta import get_manual_path, get_conf, render_paths
 
 from makecloth import MakefileCloth
+
+from utils.git import get_branch, get_commit
 
 def generate_meta(conf):
     m = MakefileCloth()
 
     m.section_break('branch/release meta', block='rel')
     m.var('manual-branch', conf.git.branches.manual, block='rel')
-    m.var('current-branch', str(utils.get_branch()), block='rel')
-    m.var('last-commit', str(utils.get_commit()), block='rel')
+    m.var('current-branch', str(get_branch()), block='rel')
+    m.var('last-commit', str(get_commit()), block='rel')
     m.var('current-if-not-manual', conf.git.branches.manual, block='rel')
 
     m.section_break('file system paths', block='paths')

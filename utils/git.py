@@ -1,6 +1,10 @@
 import os
 
-from utils.shell import shell_value
+try:
+    from shell import shell_value
+except ImportError:
+    # so bootstrapping works
+    from utils.shell import shell_value
 
 def get_commit(path=None):
     if path is None:
@@ -13,4 +17,3 @@ def get_branch(path=None):
         path = os.getcwd()
 
     return shell_value('git symbolic-ref HEAD', path).split('/')[2]
-

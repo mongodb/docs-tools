@@ -5,7 +5,9 @@ import os.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 
-import utils
+from utils.structures import get_conf_file
+from utils.serialization import ingest_yaml
+
 from makecloth import MakefileCloth
 from docs_meta import get_conf
 m = MakefileCloth()
@@ -111,8 +113,8 @@ def build_all_sphinx_migrations(migrations):
         m.job('rm -rf {0}'.format(' '.join(links['all'])), True)
 
 def main():
-    conf_file = utils.get_conf_file(__file__)
-    build_all_sphinx_migrations(utils.ingest_yaml(conf_file))
+    conf_file = get_conf_file(__file__)
+    build_all_sphinx_migrations(ingest_yaml(conf_file))
 
     m.write(sys.argv[1])
 
