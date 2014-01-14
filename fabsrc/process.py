@@ -23,17 +23,17 @@ def json_output(conf=None):
     if conf is None:
         conf = get_conf()
 
-    list_file = os.path.join(conf.build.paths.branch_staging, 'json-file-list')
-    public_list_file = os.path.join(conf.build.paths.public_site_output,
+    list_file = os.path.join(conf.paths.branch_staging, 'json-file-list')
+    public_list_file = os.path.join(conf.paths.public_site_output,
                                     'json', '.file_list')
 
     cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {src} {dst}'
-    json_dst = os.path.join(conf.build.paths.public_site_output, 'json')
+    json_dst = os.path.join(conf.paths.public_site_output, 'json')
 
     if not os.path.exists(json_dst):
         os.makedirs(json_dst)
 
-    local(cmd.format(src=os.path.join(conf.build.paths.branch_output, 'json') + '/',
+    local(cmd.format(src=os.path.join(conf.paths.branch_output, 'json') + '/',
                      dst=json_dst))
 
     copy_if_needed(list_file, public_list_file)
@@ -60,7 +60,7 @@ def json_output_jobs(conf=None):
     for fn in expand_tree('source', 'txt'):
         # path = build/<branch>/json/<filename>
 
-        path = os.path.join(conf.build.paths.branch_output,
+        path = os.path.join(conf.paths.branch_output,
                             'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
         fjson = dot_concat(path, 'fjson')
         json = dot_concat(path, 'json')
@@ -76,7 +76,7 @@ def json_output_jobs(conf=None):
 
         outputs.append(json)
 
-    list_file = os.path.join(conf.build.paths.branch_staging, 'json-file-list')
+    list_file = os.path.join(conf.paths.branch_staging, 'json-file-list')
 
     yield dict(target=list_file,
                dependency=None,
@@ -136,10 +136,10 @@ def update_dependency(fn):
 def refresh_dependency_jobs(conf):
     graph = include_files()
 
-    if not os.path.exists(conf.build.system.dependency_cache):
+    if not os.path.exists(conf.system.dependency_cache):
         dep_map = None
     else:
-        with open(conf.build.system.dependency_cache, 'r') as f:
+        with open(conf.system.dependency_cache, 'r') as f:
             dep_cache = json.load(f)
             dep_map = dep_cache['files']
 
@@ -153,8 +153,8 @@ def refresh_dependency_jobs(conf):
 
 def dep_refresh_worker(target, deps, dep_map, conf):
     if check_hashed_dependency(target, deps, dep_map) is True:
-        target = os.path.join(conf.build.paths.projectroot,
-                              conf.build.paths.branch_source,
+        target = os.path.join(conf.paths.projectroot,
+                              conf.paths.branch_source,
                               target[1:])
 
         update_dependency(target)
@@ -312,7 +312,7 @@ def pdf_worker(target=None, conf=None):
         puts("[pdf]: completed {0} pdf jobs, in stage {1}".format(count, it))
 
 def pdf_jobs(target, conf):
-    pdfs = ingest_yaml_list(os.path.join(conf.build.paths.builddata, 'pdfs.yaml'))
+    pdfs = ingest_yaml_list(os.path.join(conf.paths.builddata, 'pdfs.yaml'))
     tex_regexes = [ ( re.compile(r'(index|bfcode)\{(.*)--(.*)\}'),
                       r'\1\{\2-\{-\}\3\}'),
                     ( re.compile(r'\\PYGZsq{}'), "'"),
@@ -327,10 +327,10 @@ def pdf_jobs(target, conf):
         deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
         link_name = deploy_fn.replace('-' + conf.git.branches.current, '')
 
-        latex_dir = os.path.join(conf.build.paths.branch_output, target)
+        latex_dir = os.path.join(conf.paths.branch_output, target)
 
         if 'edition' in i:
-            deploy_path = os.path.join(conf.build.paths.public, i['edition'])
+            deploy_path = os.path.join(conf.paths.public, i['edition'])
 
             target_split = target.split('-')
 
@@ -344,7 +344,7 @@ def pdf_jobs(target, conf):
                 deploy_fn = tagged_name + '.pdf'
                 link_name = deploy_fn
         else:
-            deploy_path = conf.build.paths['branch-staging']
+            deploy_path = conf.paths['branch-staging']
 
         i['source'] = os.path.join(latex_dir, i['output'])
         i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')
@@ -393,7 +393,7 @@ def pdf_jobs(target, conf):
 def error_pages():
     conf = get_conf()
 
-    error_conf = os.path.join(conf.build.paths.builddata, 'errors.yaml')
+    error_conf = os.path.join(conf.paths.builddata, 'errors.yaml')
 
     if not os.path.exists(error_conf):
         return None
@@ -403,8 +403,8 @@ def error_pages():
         sub = (re.compile(r'\.\./\.\./'), conf.project.url + r'/' + conf.project.tag + r'/')
 
         for error in error_pages:
-            page = os.path.join(conf.build.paths.projectroot,
-                                conf.build.paths['branch-output'], 'dirhtml',
+            page = os.path.join(conf.paths.projectroot,
+                                conf.paths['branch-output'], 'dirhtml',
                                 'meta', error, 'index.html')
             munge_page(fn=page, regex=sub, tag='error-pages')
 
@@ -416,11 +416,11 @@ def gettext_jobs(conf=None):
     if conf is None:
         conf = get_conf()
 
-    locale_dirs = os.path.join(conf.build.paths.projectroot,
-                               conf.build.paths.locale, 'pot')
+    locale_dirs = os.path.join(conf.paths.projectroot,
+                               conf.paths.locale, 'pot')
 
-    branch_output = os.path.join(conf.build.paths.projectroot,
-                                       conf.build.paths.branch_output,
+    branch_output = os.path.join(conf.paths.projectroot,
+                                       conf.paths.branch_output,
                                        'gettext')
 
     path_offset = len(branch_output) + 1
@@ -455,8 +455,8 @@ def manpage_url(regex_obj, input_file=None):
     puts("[{0}]: fixed urls in {1}".format('man', input_file))
 
 def manpage_url_jobs(conf):
-    project_source = os.path.join(conf.build.paths.projectroot,
-                                  conf.build.paths.source)
+    project_source = os.path.join(conf.paths.projectroot,
+                                  conf.paths.source)
 
     top_level_items = set()
     for fs_obj in os.listdir(project_source):
@@ -474,8 +474,8 @@ def manpage_url_jobs(conf):
 
     regex_obj = (re.compile(re_string), subst)
 
-    for manpage in expand_tree(os.path.join(conf.build.paths.projectroot,
-                                            conf.build.paths.output,
+    for manpage in expand_tree(os.path.join(conf.paths.projectroot,
+                                            conf.paths.output,
                                             conf.git.branches.current,
                                             'man'), ['1', '5']):
         yield dict(target=manpage,
@@ -516,19 +516,19 @@ def manpage_jobs():
 
     jobs = [
         (
-            os.path.join(conf.build.paths.includes, "manpage-options-auth.rst"),
-            os.path.join(conf.build.paths.includes, 'manpage-options-auth-mongo.rst'),
+            os.path.join(conf.paths.includes, "manpage-options-auth.rst"),
+            os.path.join(conf.paths.includes, 'manpage-options-auth-mongo.rst'),
             ( re.compile('fact-authentication-source-tool'),
               'fact-authentication-source-mongo' )
         ),
         (
-            os.path.join(conf.build.paths.includes, 'manpage-options-ssl.rst'),
-            os.path.join(conf.build.paths.includes, 'manpage-options-ssl-settings.rst'),
+            os.path.join(conf.paths.includes, 'manpage-options-ssl.rst'),
+            os.path.join(conf.paths.includes, 'manpage-options-ssl-settings.rst'),
             options_compat_re
         ),
         (
-            os.path.join(conf.build.paths.includes, 'manpage-options-audit.rst'),
-            os.path.join(conf.build.paths.includes, 'manpage-options-audit-settings.rst'),
+            os.path.join(conf.paths.includes, 'manpage-options-audit.rst'),
+            os.path.join(conf.paths.includes, 'manpage-options-audit-settings.rst'),
             options_compat_re
         )
     ]
@@ -563,8 +563,8 @@ def post_process_jobs(source_fn=None, tasks=None, conf=None):
             conf = get_conf()
 
         if source_fn is None:
-            source_fn = os.path.join(conf.build.paths.project.root,
-                                     conf.build.paths.builddata,
+            source_fn = os.path.join(conf.paths.project.root,
+                                     conf.paths.builddata,
                                      'processing.yaml')
         tasks = ingest_yaml(source_fn)
     elif not isinstance(tasks, collections.Iterable):

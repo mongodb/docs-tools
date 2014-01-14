@@ -18,13 +18,13 @@ def update():
     conf = edition_setup(sconf.edition, conf)
 
     sphinx_prereq(conf)
-    sphinx_build(builder=sphinx_builder, root=conf.build.paths.branch_output, tag=None, conf=conf)
+    sphinx_build(builder=sphinx_builder, root=conf.paths.branch_output, tag=None, conf=conf)
 
     print('[tx] [sphinx]: rebuild gettext targets')
 
     tx_cmd = "sphinx-intl update-txconfig-resources --pot-dir {path} --transifex-project-name={name}"
 
-    local(tx_cmd.format(path=os.path.join(conf.build.paths.branch_output, sphinx_builder),
+    local(tx_cmd.format(path=os.path.join(conf.paths.branch_output, sphinx_builder),
                         name='-'.join(conf.project.title.lower().split())))
 
     print('[tx] [sphinx-intl]: updated pot directory')

@@ -112,7 +112,7 @@ def include_files(files=None, conf=None):
         if conf == None:
             conf = get_conf()
 
-        source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
+        source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
         grep = local('grep -R ".. include:: /" {0} || exit 0'.format(source_dir), capture=True)
 
         rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
@@ -146,7 +146,7 @@ def generated_includes(conf=None):
 
     toc_spec_files = []
     step_files = []
-    for fn in expand_tree(os.path.join(conf.build.paths.includes), input_extension='yaml'):
+    for fn in expand_tree(os.path.join(conf.paths.includes), input_extension='yaml'):
         base = os.path.basename(fn)
 
         if base.startswith('toc-spec'):
@@ -156,8 +156,8 @@ def generated_includes(conf=None):
         elif base.startswith('steps'):
             step_files.append(fn)
 
-    maskl = len(conf.build.paths.source)
-    path_prefix = conf.build.paths.includes[len(conf.build.paths.source):]
+    maskl = len(conf.paths.source)
+    path_prefix = conf.paths.includes[len(conf.paths.source):]
     mapping = {}
     for spec_file in toc_spec_files:
         data = ingest_yaml_doc(spec_file)
@@ -184,7 +184,7 @@ def include_files_unused(inc_files=None, conf=None):
     if conf == None:
         conf = get_conf()
 
-    inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.build.paths.includes), None) ]
+    inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.paths.includes), None) ]
     mapping = include_files(conf)
 
     results = []
@@ -200,7 +200,7 @@ def changed_includes():
     from pygit2 import Repository, GIT_STATUS_CURRENT, GIT_STATUS_IGNORED
     conf = get_conf()
 
-    repo_path = conf.build.paths.projectroot
+    repo_path = conf.paths.projectroot
 
     r = Repository(repo_path)
 
@@ -211,7 +211,7 @@ def changed_includes():
                 if path.endswith('.txt'):
                     changed.append(path[6:])
 
-    source_path = os.path.join(conf.build.paths.source, conf.build.paths.output, conf.git.branches.current, 'json')
+    source_path = os.path.join(conf.paths.source, conf.paths.output, conf.git.branches.current, 'json')
     changed_report = []
 
     for report in _generate_report(None):

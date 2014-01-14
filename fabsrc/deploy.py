@@ -93,8 +93,8 @@ def deploy(target, conf=None, pconf=None):
     if conf is None:
         conf = get_conf()
 
-    push_conf = ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
-                                              conf.build.paths.builddata,
+    push_conf = ingest_yaml_list(os.path.join(conf.paths.projectroot,
+                                              conf.paths.builddata,
                                               'push.yaml'))
 
     pconf = conf_from_list('target', push_conf)[target]
@@ -125,7 +125,7 @@ def deploy_jobs(target, conf, pconf):
         abort('[deploy]: must specify a valid host to deploy the docs to.')
 
 
-    args = dict(local_path=get_branched_path(pconf.options, conf, conf.build.paths.output, pconf.paths.local),
+    args = dict(local_path=get_branched_path(pconf.options, conf, conf.paths.output, pconf.paths.local),
                 remote=get_branched_path(pconf.options, conf, pconf.paths.remote),
                 host_string=None,
                 recursive=env.rsync_options.recursive,
@@ -158,7 +158,7 @@ def static_deploy(args, static_path, hosts, conf, pconf):
     else:
         args['remote'] = os.path.join(pconf.paths.remote, static_path)
 
-    args['local_path'] = os.path.join(conf.build.paths.output, pconf.paths.local, static_path)
+    args['local_path'] = os.path.join(conf.paths.output, pconf.paths.local, static_path)
 
 
     for host in hosts:

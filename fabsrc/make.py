@@ -56,12 +56,12 @@ def check_hashed_dependency(target, dependency, dep_map, conf=None):
         conf = get_conf()
 
     def normalize_fn(fn):
-        if not fn.startswith(conf.build.paths.projectroot):
-            if fn.startswith(conf.build.paths.source):
-                fn = os.path.join(conf.build.paths.projectroot, fn)
+        if not fn.startswith(conf.paths.projectroot):
+            if fn.startswith(conf.paths.source):
+                fn = os.path.join(conf.paths.projectroot, fn)
             if fn.startswith('/'):
-                fn = os.path.join(conf.build.paths.projectroot,
-                                  conf.build.paths.source,
+                fn = os.path.join(conf.paths.projectroot,
+                                  conf.paths.source,
                                   fn[1:])
 
         return fn
@@ -111,7 +111,7 @@ def dump_file_hashes(output, conf=None):
           'files': { }
         }
 
-    files = expand_tree(os.path.join(conf.build.paths.projectroot, conf.build.paths.source), None)
+    files = expand_tree(os.path.join(conf.paths.projectroot, conf.paths.source), None)
 
     fmap = o['files']
 

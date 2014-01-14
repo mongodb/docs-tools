@@ -113,7 +113,7 @@ def _fn_output(tag, conf=None):
     fn.extend([conf.git.branches.current, conf.git.commit[:6]])
 
     out_fn = '.'.join(['-'.join(fn), 'json'])
-    return os.path.join(conf.build.paths.output, out_fn)
+    return os.path.join(conf.paths.output, out_fn)
 
 def _resolve_input_file(fn):
     if fn.startswith('/'):
@@ -152,7 +152,7 @@ def _generate_report(mask, output_file=None, conf=None, data=None):
     if conf is None:
         conf = get_conf()
 
-    base_path = os.path.join(conf.build.paths.output, conf.git.branches.current, 'json')
+    base_path = os.path.join(conf.paths.output, conf.git.branches.current, 'json')
     docs = expand_tree(base_path, '.json')
 
     if mask is not None:

@@ -25,7 +25,7 @@ suppressed_page_prefixes = [
 
 def include_file_data(conf):
 
-    inc_path = os.path.join(conf.build.paths.includes)
+    inc_path = os.path.join(conf.paths.includes)
     include_files = expand_tree(path=inc_path, input_extension=None)
     include_graph = fabfile.includes.include_files()
 
@@ -34,7 +34,7 @@ def include_file_data(conf):
 
     omni = {}
     for idx, fn in enumerate(include_files):
-        incf = fn[len(conf.build.paths.source):]
+        incf = fn[len(conf.paths.source):]
 
         if fn.endswith('~'):
             continue
@@ -88,8 +88,8 @@ def include_file_data(conf):
     return omni
 
 def build_page(data, conf):
-    iconf = BuildConfiguration(os.path.join(conf.build.paths.projectroot,
-                                            conf.build.paths.includes,
+    iconf = BuildConfiguration(os.path.join(conf.paths.projectroot,
+                                            conf.paths.includes,
                                             'metadata.yaml'))
 
     r = RstCloth()

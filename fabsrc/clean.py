@@ -23,7 +23,7 @@ def sphinx(builder='html', conf=None):
     if conf is None:
         conf = docs_meta.get_conf()
 
-    root = conf.build.paths.branch_output
+    root = conf.paths.branch_output
 
     cleaner([ os.path.join(root, 'doctrees' + '-' + builder),
               os.path.join(root, builder) ] )

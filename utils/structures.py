@@ -66,7 +66,7 @@ def get_conf_file(file, directory=None):
         from docs_meta import get_conf
         conf = get_conf()
 
-        directory = conf.build.paths.builddata
+        directory = conf.paths.builddata
 
     conf_file = os.path.split(file)[1].rsplit('.', 1)[0] + '.yaml'
 

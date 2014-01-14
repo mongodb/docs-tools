@@ -46,7 +46,7 @@ def api_jobs(conf=None):
     if conf is None:
         conf = get_conf()
 
-    for source in expand_tree(os.path.join(conf.build.paths.projectroot, conf.build.paths.source, 'reference'), 'yaml'):
+    for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.source, 'reference'), 'yaml'):
         target = dot_concat(os.path.splitext(source)[0], 'rst')
 
         yield {
@@ -222,9 +222,9 @@ def tables():
     puts('[table]: built {0} tables'.format(count))
 
 def table_jobs():
-    paths = get_conf().build.paths
+    conf = get_conf()
 
-    for source in expand_tree(os.path.join(paths.projectroot, paths.includes), 'yaml'):
+    for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.includes), 'yaml'):
         if os.path.basename(source).startswith('table'):
             target = _get_table_output_name(source)
             list_target = _get_list_table_output_name(source)
@@ -269,7 +269,7 @@ def images():
 
 def image_jobs():
     conf = get_conf()
-    paths = conf.build.paths
+    paths = conf.paths
 
     meta_file = os.path.join(paths.images, 'metadata') + '.yaml'
 
@@ -323,10 +323,10 @@ def image_jobs():
 def _check_release_dependency(target):
     if env.FORCE:
         return True
-    elif check_dependency(target, os.path.join(conf.build.paths.projectroot, 'conf.py')):
+    elif check_dependency(target, os.path.join(conf.paths.projectroot, 'conf.py')):
         return True
-    elif check_dependency(target, os.path.join(conf.build.paths.projectroot,
-                                               conf.build.paths.buildsystem,
+    elif check_dependency(target, os.path.join(conf.paths.projectroot,
+                                               conf.paths.buildsystem,
                                                'rstcloth', 'releases.py')):
         return True
     else:
@@ -360,7 +360,7 @@ def releases():
 def release_jobs(conf=None):
     if conf is None:
         conf = get_conf()
-    data_file = os.path.join(conf.build.paths.builddata, 'releases') + '.yaml'
+    data_file = os.path.join(conf.paths.builddata, 'releases') + '.yaml'
 
     if 'release' in conf.version:
         release_version = conf.version.release
@@ -370,17 +370,17 @@ def release_jobs(conf=None):
     if not os.path.exists(data_file):
         return
 
-    rel_data = ingest_yaml(os.path.join(conf.build.paths.builddata, 'releases') + '.yaml')
+    rel_data = ingest_yaml(os.path.join(conf.paths.builddata, 'releases') + '.yaml')
 
-    deps = [ os.path.join(conf.build.system.conf_file),
-             os.path.join(conf.build.paths.projectroot,
-                          conf.build.paths.buildsystem,
+    deps = [ os.path.join(conf.system.conf_file),
+             os.path.join(conf.paths.projectroot,
+                          conf.paths.buildsystem,
                           'rstcloth', 'releases.py'),
            ]
 
     for rel in rel_data['source-files']:
-        target = os.path.join(conf.build.paths.projectroot,
-                              conf.build.paths.includes,
+        target = os.path.join(conf.paths.projectroot,
+                              conf.paths.includes,
                               'install-curl-release-{0}.rst'.format(rel))
 
         yield {
@@ -390,8 +390,8 @@ def release_jobs(conf=None):
                 'args': [ rel, target, release_version ]
               }
 
-        target = os.path.join(conf.build.paths.projectroot,
-                              conf.build.paths.includes,
+        target = os.path.join(conf.paths.projectroot,
+                              conf.paths.includes,
                               'install-untar-release-{0}.rst'.format(rel))
         yield {
                 'target': target,
@@ -400,8 +400,8 @@ def release_jobs(conf=None):
                 'args': [ rel, target, release_version ]
               }
 
-        target = os.path.join(conf.build.paths.projectroot,
-                              conf.build.paths.includes,
+        target = os.path.join(conf.paths.projectroot,
+                              conf.paths.includes,
                               'install-copy-release-{0}.rst'.format(rel))
         yield {
                 'target': target,
@@ -428,7 +428,7 @@ def source(conf=None):
     if conf is None:
         conf = get_conf()
 
-    target = os.path.join(conf.build.paths.projectroot, conf.build.paths.branch_output)
+    target = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
 
     if not os.path.exists(target):
         os.makedirs(target)
@@ -436,7 +436,7 @@ def source(conf=None):
     elif not os.path.isdir(target):
         abort('[sphinx-prep]: {0} exists and is not a directory'.format(target))
 
-    source_dir = os.path.join(conf.build.paths.projectroot, conf.build.paths.source)
+    source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
 
     local('rsync --checksum --recursive --delete {0} {1}'.format(source_dir, target))
     puts('[sphinx-prep]: updated source in {0}'.format(target))
@@ -471,14 +471,14 @@ def sitemap(config_path=None):
 #################### BuildInfo Hash ####################
 
 def buildinfo_hash(conf):
-    fn = os.path.join(conf.build.paths.projectroot,
-                      conf.build.paths.includes,
+    fn = os.path.join(conf.paths.projectroot,
+                      conf.paths.includes,
                       'hash.rst')
 
     generate_hash_file(fn)
 
-    release_fn = os.path.join(conf.build.paths.projectroot,
-                              conf.build.paths.public_site_output,
+    release_fn = os.path.join(conf.paths.projectroot,
+                              conf.paths.public_site_output,
                               'release.txt')
 
     release_root = os.path.dirname(release_fn)
@@ -517,7 +517,7 @@ def htaccess(fn='.htaccess'):
     conf = load_conf()
 
     in_files = ( i
-                 for i in expand_tree(conf.build.paths.builddata, 'yaml')
+                 for i in expand_tree(conf.paths.builddata, 'yaml')
                  if os.path.basename(i).startswith('htaccess') )
 
     sources = []
@@ -557,8 +557,8 @@ def robots_txt_builder(fn, conf, override=False):
     else:
         puts('[robots]: regenerating robots.txt on non-master branch with override.')
 
-    suppressed = ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
-                                               conf.build.paths.builddata,
+    suppressed = ingest_yaml_list(os.path.join(conf.paths.projectroot,
+                                               conf.paths.builddata,
                                                'robots.yaml'))
 
     with open(fn, 'w') as f:
@@ -596,7 +596,7 @@ def render_option_page(opt, path):
     renderer.render(path)
 
 def option_jobs(conf):
-    paths = conf.build.paths
+    paths = conf.paths
 
     options = Options()
 
@@ -623,7 +623,7 @@ def _get_steps_output_fn(fn, paths):
     return os.path.join(paths.projectroot, paths.includes, 'steps', root_name)
 
 def steps_jobs(conf):
-    paths = conf.build.paths
+    paths = conf.paths
 
     for fn in expand_tree(os.path.join(paths.projectroot, paths.includes), 'yaml'):
         if fn.startswith(os.path.join(paths.projectroot, paths.includes, 'step')):
@@ -643,8 +643,8 @@ def steps():
     puts('[steps]: rendered {0} step files'.format(count))
 
 def _link_path(path, conf):
-    return os.path.join(conf.build.paths.projectroot,
-                        conf.build.paths.public,
+    return os.path.join(conf.paths.projectroot,
+                        conf.paths.public,
                         path)
 
 def get_top_level_links(links, conf):
@@ -667,8 +667,8 @@ def get_top_level_links(links, conf):
 
 def create_manual_symlink(conf):
     iconf = BuildConfiguration(filename='integration.yaml',
-                               directory=os.path.join(conf.build.paths.projectroot,
-                                                      conf.build.paths.builddata))
+                               directory=os.path.join(conf.paths.projectroot,
+                                                      conf.paths.builddata))
 
     if 'base' not in iconf:
         return True
@@ -693,8 +693,8 @@ def write_include_index(conf):
 
     r = build_include_index_page(fd, conf)
 
-    r.write(os.path.join(conf.build.paths.projectroot,
-                         conf.build.paths.includes,
+    r.write(os.path.join(conf.paths.projectroot,
+                         conf.paths.includes,
                          'generated',
                          'overview.rst'))
 

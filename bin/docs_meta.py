@@ -8,7 +8,7 @@ import sys
 from utils.serialization import write_yaml, ingest_yaml
 from utils.shell import shell_value
 from utils.git import get_commit, get_branch
-from utils.structures import BuildConfiguration, get_conf_file
+from utils.structures import BuildConfiguration, AttributeDict, get_conf_file
 
 ### Configuration and Settings
 
@@ -21,7 +21,7 @@ def get_sphinx_builders(conf=None):
     if conf is None:
         conf = get_conf()
 
-    path = os.path.join(conf.build.paths.projectroot, conf.build.paths.builddata, 'sphinx.yaml')
+    path = os.path.join(conf.paths.projectroot, conf.paths.builddata, 'sphinx.yaml')
 
     sconf = ingest_yaml(path)
 
@@ -37,7 +37,7 @@ def get_manual_path(conf=None):
     if conf is None:
         conf = get_conf()
 
-    if conf.build.system.branched is False:
+    if conf.system.branched is False:
         return conf.project.tag
     else:
         branch = get_branch()
@@ -55,7 +55,7 @@ def get_path(conf, branch):
                 if conf.project.edition == 'saas':
                     pass
                 o.append('current')
-        elif conf.build.system.branched is True:
+        elif conf.system.branched is True:
             o.append('manual')
     else:
         if conf.project.name == 'mms' and 'edition' in conf.project:
@@ -67,19 +67,55 @@ def get_path(conf, branch):
     return '/'.join(o)
 
 def load_conf():
-    conf_file_name = 'docs_meta.yaml'
+    project_root_dir, conf_file, conf = tmp_conf_file_path_migration()
 
-    try:
-        project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
-        conf_file_path = os.path.join(project_root_dir, 'bin')
-        conf = BuildConfiguration(filename=conf_file_name,directory=conf_file_path)
-    except IOError:
-        project_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-        conf_file_path = os.path.join(project_root_dir, 'bin')
-        conf = BuildConfiguration(filename=conf_file_name, directory=conf_file_path)
+    conf = tmp_conf_schema_migration(conf)
 
-    conf.build.paths.projectroot = project_root_dir
-    conf.build.system.conf_file = os.path.join(conf_file_path, conf_file_name)
+    conf.paths.projectroot = project_root_dir
+    conf.system.conf_file = conf_file
+
+    return conf
+
+from itertools import product
+
+def tmp_conf_file_path_migration():
+    root_dirs = [ os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..')),
+                  os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+                ]
+
+    conf_dirs = [ 'bin', 'config' ]
+
+    conf_file_names = ['build_conf.yaml', 'docs_meta.yaml']
+
+    for project_root_dir in root_dirs:
+        for path, filename in product(conf_dirs, conf_file_names):
+            conf_file = os.path.join(path, filename)
+            abs_conf_file = os.path.join(project_root_dir, conf_file)
+
+            if not os.path.exists(abs_conf_file):
+                continue
+            else:
+                conf = BuildConfiguration(abs_conf_file)
+                return project_root_dir, conf_file, conf
+
+def tmp_conf_schema_migration(conf):
+    if 'paths' not in conf:
+        conf.paths = AttributeDict(conf.build.paths)
+        del conf.build['paths']
+
+    if 'system' not in conf:
+        conf.system = AttributeDict()
+        conf.system.make = AttributeDict()
+        conf.system.make.generated = conf.build.system.files
+        conf.system.make.static = conf.build.system.static
+        del conf.build.system['files']
+        del conf.build.system['static']
+        conf.system.update(conf.build.system)
+
+        del conf.build['system']
+
+    if 'build' in conf:
+        del conf['build']
 
     return conf
 
@@ -87,24 +123,23 @@ def get_conf():
     conf = load_conf()
 
     if os.path.exists('/etc/arch-release'):
-        conf.build.system.python = 'python2'
+        conf.system.python = 'python2'
     else:
-        conf.build.system.python = 'python'
+        conf.system.python = 'python'
 
-    if 'branched' not in conf.build.system:
+    if 'branched' not in conf.system:
         if conf.project.name in ['manual', 'mms', 'meta-driver']:
-            conf.build.system.branched = True
+            conf.system.branched = True
         else:
-            conf.build.system.branched = False
+            conf.system.branched = False
 
     conf.git.branches.current = get_branch()
     conf.git.commit = get_commit()
     conf.project.basepath = get_manual_path(conf)
-    conf.build.paths.update(render_paths('dict', conf))
-    conf.build.system.dependency_cache = os.path.join(conf.build.paths.projectroot,
-                                                      conf.build.paths.branch_output,
+    conf.paths.update(render_paths('dict', conf))
+    conf.system.dependency_cache = os.path.join(conf.paths.projectroot,
+                                                      conf.paths.branch_output,
                                                       'dependencies.json')
-
     return conf
 
 def get_versions(conf=None):
@@ -161,10 +196,10 @@ def edition_setup(edition, conf):
         conf.project.edition = edition
 
     if conf.project.name == 'mms':
-        conf.build.paths.public_site_output = conf.build.paths.mms[edition]
-        conf.build.paths.branch_source = '-'.join([os.path.join(conf.build.paths.output,
+        conf.paths.public_site_output = conf.paths.mms[edition]
+        conf.paths.branch_source = '-'.join([os.path.join(conf.paths.output,
                                                                 conf.git.branches.current,
-                                                                conf.build.paths.source),
+                                                                conf.paths.source),
                                                    edition])
 
         if edition == 'saas':
@@ -181,7 +216,7 @@ def render_paths(fn, conf=None, language=None):
     if conf is None:
         conf = load_conf()
 
-    paths = conf.build.paths
+    paths = conf.paths
 
     if language is None:
         public_path = 'public'
@@ -208,7 +243,7 @@ def render_paths(fn, conf=None, language=None):
         paths.public_site_output = paths.public
 
     if conf.project.name == 'mms':
-        conf.build.paths.mms = {
+        conf.paths.mms = {
             'hosted': os.path.join(paths.output, public_path, 'hosted', get_branch()),
             'saas': os.path.join(paths.output, public_path, 'saas')
         }

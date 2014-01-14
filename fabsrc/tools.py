@@ -42,14 +42,14 @@ def tags():
 
     conf = get_conf()
 
-    regexp_fn = os.path.join(os.path.join(conf.build.paths.projectroot,
-                                          conf.build.paths.tools, 'etags.regexp'))
+    regexp_fn = os.path.join(os.path.join(conf.paths.projectroot,
+                                          conf.paths.tools, 'etags.regexp'))
 
     if not os.path.exists(regexp_fn):
         abort('[dev]: cannot regenerate TAGS: no {0} file'.format(regexp_fn))
 
-    source = expand_tree(os.path.join(conf.build.paths.projectroot,
-                                      conf.build.paths.source), 'txt')
+    source = expand_tree(os.path.join(conf.paths.projectroot,
+                                      conf.paths.source), 'txt')
 
     if len(source) == 0:
         abort('[dev]: no source files in {0}'.format(source))
@@ -63,7 +63,7 @@ def tags():
         (re.compile(r'\.\. _(.*)'), r'ref.\1')
     ]
 
-    munge_page(fn=os.path.join(conf.build.paths.projectroot, 'TAGS'),
+    munge_page(fn=os.path.join(conf.paths.projectroot, 'TAGS'),
                regex=regexps,
                tag='dev')
 

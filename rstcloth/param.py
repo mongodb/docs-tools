@@ -175,11 +175,11 @@ def generate_params(params, fn, conf):
 
                 fn, ext = populate_external_param(param['file'],
                                                   basename,
-                                                  conf.build.paths.projectroot,
-                                                  conf.build.paths.source)
+                                                  conf.paths.projectroot,
+                                                  conf.paths.source)
                 ext_params[fn] = ext
 
-            param = ext_params[conf.build.paths.source + param['file']][param['name']]
+            param = ext_params[conf.paths.source + param['file']][param['name']]
             param['position'] = pos
 
         processed_params.append(param)

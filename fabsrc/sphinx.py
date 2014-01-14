@@ -18,7 +18,7 @@ import docs_meta
 import mms
 
 conf = docs_meta.get_conf()
-paths = conf.build.paths
+paths = conf.paths
 
 from intersphinx import intersphinx, intersphinx_jobs
 intersphinx = task(intersphinx)
@@ -77,7 +77,7 @@ def get_sphinx_args(sconf, conf):
         conf.project.name != 'mms'):
         o.append(' '.join( [ '-j', str(cpu_count() + 1) ]))
 
-    o.append(' '.join( [ '-c', conf.build.paths.projectroot ] ))
+    o.append(' '.join( [ '-c', conf.paths.projectroot ] ))
 
     if 'language' in sconf:
         o.append("-D language='{0}'".format(sconf.language))
@@ -90,33 +90,33 @@ def html_tarball(builder, conf):
     if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
         return False
 
-    process.copy_if_needed(os.path.join(conf.build.paths.projectroot,
-                                        conf.build.paths.includes, 'hash.rst'),
-                           os.path.join(conf.build.paths.projectroot,
-                                        conf.build.paths.branch_output,
+    process.copy_if_needed(os.path.join(conf.paths.projectroot,
+                                        conf.paths.includes, 'hash.rst'),
+                           os.path.join(conf.paths.projectroot,
+                                        conf.paths.branch_output,
                                         'html', 'release.txt'))
 
-    basename = os.path.join(conf.build.paths.projectroot,
-                            conf.build.paths.public_site_output,
+    basename = os.path.join(conf.paths.projectroot,
+                            conf.paths.public_site_output,
                             conf.project.name + '-' + conf.git.branches.current)
 
     tarball_name = basename + '.tar.gz'
 
     generate.tarball(name=tarball_name,
                      path='html',
-                     cdir=os.path.join(conf.build.paths.projectroot,
-                                       conf.build.paths.branch_output),
+                     cdir=os.path.join(conf.paths.projectroot,
+                                       conf.paths.branch_output),
                      sourcep='html',
                      newp=os.path.basename(basename))
 
     process.create_link(input_fn=os.path.basename(tarball_name),
-                         output_fn=os.path.join(conf.build.paths.projectroot,
-                                                conf.build.paths.public_site_output,
+                         output_fn=os.path.join(conf.paths.projectroot,
+                                                conf.paths.public_site_output,
                                                 conf.project.name + '.tar.gz'))
 
 def man_tarball(conf):
-    basename = os.path.join(conf.build.paths.projectroot,
-                            conf.build.paths.branch_output,
+    basename = os.path.join(conf.paths.projectroot,
+                            conf.paths.branch_output,
                             'manpages-' + conf.git.branches.current)
 
     tarball_name = basename + '.tar.gz'
@@ -128,13 +128,13 @@ def man_tarball(conf):
                      )
 
     process.copy_if_needed(tarball_name,
-                           os.path.join(conf.build.paths.projectroot,
-                                        conf.build.paths.public_site_output,
+                           os.path.join(conf.paths.projectroot,
+                                        conf.paths.public_site_output,
                                         os.path.basename(tarball_name)))
 
     process.create_link(input_fn=os.path.basename(tarball_name),
-                         output_fn=os.path.join(conf.build.paths.projectroot,
-                                                conf.build.paths.public_site_output,
+                         output_fn=os.path.join(conf.paths.projectroot,
+                                                conf.paths.public_site_output,
                                                 'manpages' + '.tar.gz'))
 
 #################### Public Fabric Tasks ####################
@@ -153,8 +153,8 @@ def build_prereq_jobs(conf):
     jobs = [
         {
             'job': generate.robots_txt_builder,
-            'args': [ os.path.join( conf.build.paths.projectroot,
-                                    conf.build.paths.public,
+            'args': [ os.path.join( conf.paths.projectroot,
+                                    conf.paths.public,
                                     'robots.txt'),
                       conf
                     ]
@@ -200,13 +200,13 @@ def build_prerequisites(conf):
 
     puts('[sphinx-prep]: INFO - Build in progress past critical phase.')
 
-    dump_file_hashes(conf.build.system.dependency_cache, conf)
+    dump_file_hashes(conf.system.dependency_cache, conf)
     puts('[sphinx-prep]: build environment prepared for sphinx.')
 
 def compute_sphinx_config(builder, conf):
     sconf = BuildConfiguration(filename='sphinx.yaml',
-                               directory=os.path.join(conf.build.paths.projectroot,
-                                                      conf.build.paths.builddata))
+                               directory=os.path.join(conf.paths.projectroot,
+                                                      conf.paths.builddata))
 
     if conf.project.name == 'mms':
         builder, edition = builder.split('-')
@@ -250,18 +250,18 @@ def build_worker(builder, conf):
         edition = None
 
     with settings(host_string='sphinx'):
-        dirpath = os.path.join(conf.build.paths.branch_output, builder)
+        dirpath = os.path.join(conf.paths.branch_output, builder)
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
-            puts('[{0}]: created {1}/{2}'.format(builder, conf.build.paths.branch_output, builder))
+            puts('[{0}]: created {1}/{2}'.format(builder, conf.paths.branch_output, builder))
 
         puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
         cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {1}/{2}' # per-builder-doctreea
         sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
-                                conf.build.paths.branch_output,
+                                conf.paths.branch_output,
                                 builder,
-                                conf.build.paths.branch_source)
+                                conf.paths.branch_source)
 
         out = local(sphinx_cmd, capture=True)
         # out = sphinx_native_worker(sphinx_cmd)
@@ -320,9 +320,9 @@ def output_sphinx_stream(out, builder, conf=None):
             elif l.endswith('source/reference/sharding-commands.txt'):
                 continue
 
-        full_path = os.path.join(conf.build.paths.projectroot, conf.build.paths.branch_output)
-        if l.startswith(conf.build.paths.branch_output):
-            l = l[len(conf.build.paths.branch_output)+1:]
+        full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
+        if l.startswith(conf.paths.branch_output):
+            l = l[len(conf.paths.branch_output)+1:]
         elif l.startswith(full_path):
             l = l[len(full_path)+1:]
 
@@ -333,7 +333,7 @@ def output_sphinx_stream(out, builder, conf=None):
             if g[1].endswith(g[0]):
                 continue
 
-        l = os.path.join(conf.build.paths.projectroot, l)
+        l = os.path.join(conf.paths.projectroot, l)
 
         print(l)
 
@@ -351,7 +351,7 @@ def finalize_build(builder, sconf, conf):
     jobs = {
         'linkcheck': [
             { 'job': puts,
-              'args': ['[{0}]: See {1}/{0}/output.txt for output.'.format(builder, conf.build.paths.branch_output)]
+              'args': ['[{0}]: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)]
             }
         ],
         'dirhtml': [
@@ -383,7 +383,7 @@ def finalize_build(builder, sconf, conf):
     if builder not in jobs:
         jobs[builder] = []
 
-    if conf.build.system.branched is True and conf.git.branches.current == 'master':
+    if conf.system.branched is True and conf.git.branches.current == 'master':
         jobs['all'].append(
             { 'job': generate.create_manual_symlink,
               'args': [conf]
@@ -405,20 +405,20 @@ def finalize_epub_build(conf):
     if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
         return False
 
-    process.copy_if_needed(source_file=os.path.join(conf.build.paths.projectroot,
-                                                    conf.build.paths.branch_output,
+    process.copy_if_needed(source_file=os.path.join(conf.paths.projectroot,
+                                                    conf.paths.branch_output,
                                                     'epub', epub_src_filename),
-                           target_file=os.path.join(conf.build.paths.projectroot,
-                                                    conf.build.paths.public_site_output,
+                           target_file=os.path.join(conf.paths.projectroot,
+                                                    conf.paths.public_site_output,
                                                     epub_branched_filename))
     process.create_link(input_fn=epub_branched_filename,
-                         output_fn=os.path.join(conf.build.paths.projectroot,
-                                                conf.build.paths.public_site_output,
+                         output_fn=os.path.join(conf.paths.projectroot,
+                                                conf.paths.public_site_output,
                                                 epub_src_filename))
 
 
 def get_single_html_dir(conf):
-    return os.path.join(conf.build.paths.public_site_output, 'single')
+    return os.path.join(conf.paths.public_site_output, 'single')
 
 def finalize_single_html_jobs(builder, conf):
     if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
@@ -432,20 +432,20 @@ def finalize_single_html_jobs(builder, conf):
         os.makedirs(single_html_dir)
 
     try:
-        process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
+        process.manual_single_html(input_file=pjoin(conf.paths.branch_output,
                                                     builder, 'contents.html'),
                                    output_file=pjoin(single_html_dir, 'index.html'))
     except (IOError, OSError):
-        process.manual_single_html(input_file=pjoin(conf.build.paths.branch_output,
+        process.manual_single_html(input_file=pjoin(conf.paths.branch_output,
                                                     builder, 'index.html'),
                                    output_file=pjoin(single_html_dir, 'index.html'))
-    process.copy_if_needed(source_file=pjoin(conf.build.paths.branch_output,
+    process.copy_if_needed(source_file=pjoin(conf.paths.branch_output,
                                              builder, 'objects.inv'),
                            target_file=pjoin(single_html_dir, 'objects.inv'))
 
     single_path = pjoin(single_html_dir, '_static')
 
-    for fn in expand_tree(pjoin(conf.build.paths.branch_output,
+    for fn in expand_tree(pjoin(conf.paths.branch_output,
                                 builder, '_static'), None):
 
         yield {
@@ -461,7 +461,7 @@ def finalize_dirhtml_build(builder, conf):
     process.error_pages()
 
     single_html_dir = get_single_html_dir(conf)
-    search_page = pjoin(conf.build.paths.branch_output, builder, 'index.html')
+    search_page = pjoin(conf.paths.branch_output, builder, 'index.html')
 
     if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
         return False
@@ -470,9 +470,9 @@ def finalize_dirhtml_build(builder, conf):
         process.copy_if_needed(source_file=search_page,
                                target_file=pjoin(single_html_dir, 'search.html'))
 
-    dest = pjoin(conf.build.paths.projectroot, conf.build.paths.public_site_output)
-    local('rsync -a {source}/ {destination}'.format(source=pjoin(conf.build.paths.projectroot,
-                                                                 conf.build.paths.branch_output,
+    dest = pjoin(conf.paths.projectroot, conf.paths.public_site_output)
+    local('rsync -a {source}/ {destination}'.format(source=pjoin(conf.paths.projectroot,
+                                                                 conf.paths.branch_output,
                                                                  builder),
                                                     destination=dest))
 
@@ -482,19 +482,19 @@ def finalize_dirhtml_build(builder, conf):
         sitemap_exists = generate.sitemap()
 
         if sitemap_exists is True:
-            process.copy_if_needed(source_file=pjoin(conf.build.paths.projectroot,
-                                                     conf.build.paths.branch_output,
+            process.copy_if_needed(source_file=pjoin(conf.paths.projectroot,
+                                                     conf.paths.branch_output,
                                                      'sitemap.xml.gz'),
-                                   target_file=pjoin(conf.build.paths.projectroot,
-                                                     conf.build.paths.public_site_output,
+                                   target_file=pjoin(conf.paths.projectroot,
+                                                     conf.paths.public_site_output,
                                                      'sitemap.xml.gz'))
 
-    sconf = BuildConfiguration('sphinx.yaml', pjoin(conf.build.paths.projectroot,
-                                                conf.build.paths.builddata))
+    sconf = BuildConfiguration('sphinx.yaml', pjoin(conf.paths.projectroot,
+                                                conf.paths.builddata))
 
     if 'dirhtml' in sconf and 'excluded_files' in sconf.dirhtml:
-        fns = [ pjoin(conf.build.paths.projectroot,
-                      conf.build.paths.public_site_output,
+        fns = [ pjoin(conf.paths.projectroot,
+                      conf.paths.public_site_output,
                       fn)
                 for fn in sconf.dirhtml.excluded_files ]
 

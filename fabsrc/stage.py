@@ -24,8 +24,8 @@ def get_build_metadata(conf=None):
 
     o = dict(push=dict(), conf=conf, meta=dict())
 
-    for target in ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
-                                                conf.build.paths.builddata,
+    for target in ingest_yaml_list(os.path.join(conf.paths.projectroot,
+                                                conf.paths.builddata,
                                                 'push.yaml')):
         o['push'][target['target']] = target
 
@@ -58,11 +58,11 @@ def package(target=None, conf=None):
     if conf is None:
         conf = get_conf()
 
-    archive_path = os.path.join(conf.build.paths.projectroot, conf.build.paths.buildarchive)
+    archive_path = os.path.join(conf.paths.projectroot, conf.paths.buildarchive)
     fn = package_filename(archive_path, target, conf)
 
-    pconf = conf_from_list('target', ingest_yaml_list(os.path.join(conf.build.paths.projectroot,
-                                                                   conf.build.paths.builddata,
+    pconf = conf_from_list('target', ingest_yaml_list(os.path.join(conf.paths.projectroot,
+                                                                   conf.paths.builddata,
                                                                    'push.yaml')))
     if target is None:
         pconf = pconf[pconf.keys()[0]]
@@ -76,8 +76,8 @@ def package(target=None, conf=None):
         if not os.path.isdir(archive_path):
             abort('[ERROR]: {0} exists and is not a directory.'.format(archive_path))
 
-    arc_conf = os.path.join(conf.build.paths.projectroot,
-                            conf.build.paths.branch_output,
+    arc_conf = os.path.join(conf.paths.projectroot,
+                            conf.paths.branch_output,
                             'conf.json')
 
     with open(arc_conf, 'w') as f:
@@ -85,14 +85,14 @@ def package(target=None, conf=None):
 
     with tarfile.open(fn, 'w:gz') as t:
         if 'branched' in pconf.options:
-            input_path = os.path.join(conf.build.paths.projectroot,
-                                      conf.build.paths.output,
+            input_path = os.path.join(conf.paths.projectroot,
+                                      conf.paths.output,
                                       pconf.paths.local,
                                       conf.git.branches.current)
             output_path_name = conf.git.branches.current
         else:
-            input_path = os.path.join(conf.build.paths.projectroot,
-                                      conf.build.paths.output,
+            input_path = os.path.join(conf.paths.projectroot,
+                                      conf.paths.output,
                                       pconf.paths.local)
             output_path_name = os.path.split(pconf.paths.local)[-1]
 
@@ -103,8 +103,8 @@ def package(target=None, conf=None):
 
         if 'static' in pconf.paths:
             for path in pconf.paths.static:
-                rendered_path = os.path.join(conf.build.paths.projectroot,
-                                             conf.build.paths.public, path)
+                rendered_path = os.path.join(conf.paths.projectroot,
+                                             conf.paths.public, path)
                 if os.path.exists(rendered_path):
                     t.add(name=rendered_path,
                           arcname=path)
@@ -120,8 +120,8 @@ def fetch(path, conf=None):
 
     local_path = path.split('/')[-1]
 
-    tar_path = os.path.join(conf.build.paths.projectroot,
-                            conf.build.paths.buildarchive,
+    tar_path = os.path.join(conf.paths.projectroot,
+                            conf.paths.buildarchive,
                             local_path)
 
     if not os.path.exists(tar_path):
@@ -147,19 +147,19 @@ def unwind(path, conf=None):
         tar_path = path
 
     with tarfile.open(tar_path, "r:gz") as t:
-        t.extractall(os.path.join(conf.build.paths.projectroot, conf.build.paths.public))
+        t.extractall(os.path.join(conf.paths.projectroot, conf.paths.public))
 
-    arc_file = os.path.join(conf.build.paths.projectroot,
-                            conf.build.paths.public,
+    arc_file = os.path.join(conf.paths.projectroot,
+                            conf.paths.public,
                             'conf.json')
 
     new_conf = BuildConfiguration(arc_file)
 
-    new_conf.conf.build.paths.projectroot = conf.build.paths.projectroot
+    new_conf.conf.paths.projectroot = conf.paths.projectroot
 
     os.remove(arc_file)
 
-    puts('[deploy] [tarball]: extracted {0} archive into {1}.'.format(os.path.basename(tar_path), conf.build.paths.public))
+    puts('[deploy] [tarball]: extracted {0} archive into {1}.'.format(os.path.basename(tar_path), conf.paths.public))
     return tar_path, new_conf
 
 env.deploy_target = None

@@ -22,19 +22,19 @@ def generate_meta(conf):
     m.var('current-if-not-manual', conf.git.branches.manual, block='rel')
 
     m.section_break('file system paths', block='paths')
-    m.var('output', conf.build.paths.output, block='paths')
-    m.var('public-output', conf.build.paths.public, block='paths')
-    m.var('branch-output', conf.build.paths['branch-output'], block='paths')
-    m.var('rst-include', conf.build.paths.includes, block='paths')
-    m.var('branch-source', conf.build.paths['branch-source'], block='paths')
-    m.var('public-branch-output', conf.build.paths['branch-staging'], block='paths')
+    m.var('output', conf.paths.output, block='paths')
+    m.var('public-output', conf.paths.public, block='paths')
+    m.var('branch-output', conf.paths['branch-output'], block='paths')
+    m.var('rst-include', conf.paths.includes, block='paths')
+    m.var('branch-source', conf.paths['branch-source'], block='paths')
+    m.var('public-branch-output', conf.paths['branch-staging'], block='paths')
 
     generated_makefiles = []
 
-    if 'static' in conf.build.system:
+    if 'static' in conf.system.make:
         m.section_break('static makefile includes')
 
-        for mfile in conf.build.system.static:
+        for mfile in conf.system.make.static:
             if mfile.startswith('/'):
                 m.include(mfile[1:], ignore=False)
             else:
@@ -44,17 +44,17 @@ def generate_meta(conf):
 
     m.section_break('generated makefiles')
 
-    for target in conf.build.system.files:
-        fn = os.path.sep.join([conf.build.paths.output, "makefile." + target])
-        cloth = os.path.join(conf.build.paths.buildsystem, "makecloth", target + '.py')
+    for target in conf.system.make.generated:
+        fn = os.path.sep.join([conf.paths.output, "makefile." + target])
+        cloth = os.path.join(conf.paths.buildsystem, "makecloth", target + '.py')
 
         generated_makefiles.append(fn)
 
         if target != 'meta':
-            m.raw(['-include ' + conf.build.paths.output + '/makefile.' + target])
+            m.raw(['-include ' + conf.paths.output + '/makefile.' + target])
 
         m.target(target=fn, dependency=cloth, block='makefiles')
-        m.job(' '.join([conf.build.system.python, cloth, fn]))
+        m.job(' '.join([conf.system.python, cloth, fn]))
         m.newline()
 
     m.newline()
