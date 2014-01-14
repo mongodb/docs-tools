@@ -104,7 +104,6 @@ def discover_config_file():
 
 ##### Configuration Object Transformations #####
 
-
 def is_processed(key, conf):
     if key in conf.system.processed and conf.system.processed[key] is True:
         return True
