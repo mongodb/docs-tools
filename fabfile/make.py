@@ -230,7 +230,6 @@ def async_process_runner(jobs, force, pool, retval):
     return async_runner(jobs, force, pool, retval, p)
 
 def async_runner(jobs, force, pool, retval, p):
-    count = 0
     results = []
 
     for job in jobs:
@@ -251,23 +250,20 @@ def async_runner(jobs, force, pool, retval, p):
                 else:
                     results.append(p.apply_async(job['job'], args=job['args']))
 
-            count += 1
-
     p.close()
     p.join()
 
     if retval == 'count':
-        return count
+        return len(results)
     elif retval is None:
         return None
     elif retval == 'results':
         return [ o.get() for o in results ]
     else:
-        return dict(count=count,
+        return dict(count=len(results),
                     results=[ o.get() for o in results ])
 
 def sync_runner(jobs, force, retval):
-    count = 0
     results = []
 
     for job in jobs:
@@ -286,16 +282,14 @@ def sync_runner(jobs, force, retval):
             if 'callback' in job:
                 job['callback'](r)
 
-            count +=1
-
     if retval == 'count':
-        return count
+        return len(results)
     elif retval is None:
         return None
     elif retval == 'results':
         return results
     else:
-        return dict(count=count,
+        return dict(count=len(results),
                     results=results)
 
 def mapper(func, iter, pool=None, parallel='process'):
@@ -320,7 +314,6 @@ def mapper(func, iter, pool=None, parallel='process'):
     p.join()
 
     return result
-
 
 def resolve_dict_keys(dict):
     return { k:v.get() for k,v in dict.items() }

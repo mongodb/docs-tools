@@ -485,7 +485,7 @@ def manpage_url_jobs(conf):
 
 
 def _process_page(fn, output_fn, regex, builder='processor'):
-    tmp_fn = n + '~'
+    tmp_fn = fn + '~'
 
     jobs = [
              {

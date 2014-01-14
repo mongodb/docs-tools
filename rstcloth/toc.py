@@ -40,7 +40,7 @@ class CustomTocTree(object):
             data = yaml.safe_load_all(f)
 
             for datum in data:
-                if datum['description'] is None:
+                if 'description' not in datum or datum['description'] is None:
                     datum['description'] = ''
 
                 if sort is False:
@@ -69,7 +69,7 @@ class CustomTocTree(object):
                     else:
                         self.table = None
 
-                if self.contents is not None:
+                if self.contents is not None and 'file' in ref:
                     self.contents.content(ref['file'], 6, block='toc')
 
                 if self.dfn is not None:
