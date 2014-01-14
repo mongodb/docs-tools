@@ -5,7 +5,7 @@ import tarfile
 
 from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, BuildConfiguration
 from fabric.api import task, puts, local, env, quiet, settings
-from docs_meta import get_conf, load_conf, lazy_conf
+from docs_meta import get_conf, lazy_conf
 from make import check_dependency, runner
 from process import create_link
 

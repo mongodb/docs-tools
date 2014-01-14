@@ -15,8 +15,11 @@ except ImportError:
                                project_specific_path_mangling,
                                project_specific_conf_mangling)
 
-def load_conf():
-    lazy_conf(None)
+def lazy_conf(conf=None):
+    if conf is None:
+        conf = get_conf()
+
+    return conf
 
 def get_conf_file(file, directory=None):
     if directory is None:
@@ -80,10 +83,3 @@ def render_paths(conf=None, language=None):
 
         conf.system.processed.paths = True
         return conf.paths
-
-
-def lazy_conf(conf=None):
-    if conf is None:
-        conf = get_conf()
-
-    return conf

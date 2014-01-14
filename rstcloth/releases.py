@@ -5,7 +5,6 @@ import os
 import argparse
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
-from docs_meta import load_conf
 
 from rstcloth import RstCloth
 

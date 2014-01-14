@@ -13,9 +13,9 @@ specific build tools. That content is now all in the utils package, in:
 The current files is just a shim to provide compatibility.
 """
 
+from utils.config import lazy_conf, get_conf
+from utils.git import get_commit, get_branch
+from utils.project import is_processed, get_manual_path, get_path, get_versions, edition_setup
 from utils.serialization import write_yaml, ingest_yaml
 from utils.shell import shell_value
-from utils.git import get_commit, get_branch
 from utils.structures import BuildConfiguration, AttributeDict, get_conf_file
-from utils.config import load_conf, lazy_conf, get_conf
-from utils.project import is_processed, get_manual_path, get_path, get_versions, edition_setup
