@@ -24,6 +24,12 @@ def init_fabric(buildsystem, conf_file):
     symlink(name=os.path.join(buildsystem, 'fabsrc', 'utils'),
             target=os.path.join(os.path.abspath(buildsystem), 'utils'))
 
+    symlink(name=os.path.join(buildsystem, 'bin'),
+            target=os.path.join(os.path.abspath(buildsystem), 'utils'))
+
+    symlink(name=os.path.join(buildsystem, 'makecloth'),
+            target=os.path.join(os.path.abspath(buildsystem), 'utils'))
+
     symlink(name=os.path.join(buildsystem, 'fabsrc', 'docs_meta.py'),
             target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
 
