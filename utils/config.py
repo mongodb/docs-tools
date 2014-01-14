@@ -1,19 +1,17 @@
-import os
+import os.path
 
 try:
     from utils.structures import BuildConfiguration, AttributeDict
     from utils.git import get_branch, get_commit
-    from utils.project import (tmp_conf_file_path_migration, get_manual_path, is_processed,
-                               tmp_conf_schema_migration, edition_setup,
-                               project_specific_path_mangling,
-                               project_specific_conf_mangling)
+    from utils.project import (discover_config_file, get_manual_path, is_processed,
+                               edition_setup, mangle_paths,
+                               mangle_configuration)
 except ImportError:
     from structures import BuildConfiguration, AttributeDict
     from git import get_branch, get_commit
-    from project import (tmp_conf_file_path_migration, get_manual_path, is_processed,
-                               tmp_conf_schema_migration, edition_setup,
-                               project_specific_path_mangling,
-                               project_specific_conf_mangling)
+    from project import (discover_config_file, get_manual_path, is_processed,
+                         edition_setup, mangle_paths,
+                         mangle_configuration)
 
 def lazy_conf(conf=None):
     if conf is None:
@@ -31,9 +29,9 @@ def get_conf_file(file, directory=None):
     return os.path.join(directory, conf_file)
 
 def get_conf():
-    project_root_dir, conf_file, conf = tmp_conf_file_path_migration()
+    project_root_dir, conf_file, conf = discover_config_file()
 
-    conf = tmp_conf_schema_migration(conf)
+    conf = schema_migration_0(conf)
 
     conf.paths.projectroot = project_root_dir
     conf.system.conf_file = conf_file
@@ -49,14 +47,14 @@ def get_conf():
     conf.system.processed.project_paths = False
     conf.system.processed.project_conf = False
 
-    conf = project_specific_conf_mangling(conf)
+    conf = mangle_configuration(conf)
 
     conf.git.branches.current = get_branch()
     conf.git.commit = get_commit()
     conf.project.basepath = get_manual_path(conf)
     conf.paths.update(render_paths(conf))
 
-    conf = project_specific_path_mangling(conf)
+    conf = mangle_paths(conf)
 
     conf.system.dependency_cache = os.path.join(conf.paths.projectroot,
                                                 conf.paths.branch_output,
@@ -83,3 +81,26 @@ def render_paths(conf=None, language=None):
 
         conf.system.processed.paths = True
         return conf.paths
+
+#### Configuration Object Schema Migration Code ####
+
+def schema_migration_0(conf):
+    if 'paths' not in conf:
+        conf.paths = AttributeDict(conf.build.paths)
+        del conf.build['paths']
+
+    if 'system' not in conf:
+        conf.system = AttributeDict()
+        conf.system.make = AttributeDict()
+        conf.system.make.generated = conf.build.system.files
+        conf.system.make.static = conf.build.system.static
+        del conf.build.system['files']
+        del conf.build.system['static']
+        conf.system.update(conf.build.system)
+
+        del conf.build['system']
+
+    if 'build' in conf:
+        del conf['build']
+
+    return conf
