@@ -14,21 +14,18 @@ def init_fabric(buildsystem, conf_file):
     elif os.path.isdir(fab_dir):
         rmtree(fab_dir)
 
-    symlink('fabfile', os.path.join(buildsystem, 'fabfile'))
+    symlink('fabfile', os.path.join(buildsystem, 'fabsrc'))
 
-    symlink('fabfile', os.path.join(buildsystem, 'fabfile'))
+    symlink('fabfile', os.path.join(buildsystem, 'fabsrc'))
 
     symlink(name=os.path.join(buildsystem, 'bin', 'docs_meta.yaml'),
             target=os.path.join(os.getcwd(), conf_file))
 
-    symlink(name=os.path.join(buildsystem, 'fabfile', 'utils.py'),
-            target=os.path.join(os.path.abspath(buildsystem), 'bin', 'utils.py'))
+    symlink(name=os.path.join(buildsystem, 'fabsrc', 'utils'),
+            target=os.path.join(os.path.abspath(buildsystem), 'utils'))
 
-    symlink(name=os.path.join(buildsystem, 'fabfile', 'docs_meta.py'),
+    symlink(name=os.path.join(buildsystem, 'fabsrc', 'docs_meta.py'),
             target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
-
-    # copyfile(src=os.path.join(os.path.abspath(buildsystem), 'bin', 'bootstrap.py'),
-    #          dst=os.getcwd())
 
 def clean_buildsystem(buildsystem, output_dir):
     if os.path.islink('fabfile'):

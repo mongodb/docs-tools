@@ -3,8 +3,10 @@ build/
 .DS_Store
 .#*
 *.bak
-fabfile/docs_meta.py
-fabfile/utils.py
+fabsrc/docs_meta.py
+fabsrc/utils.py
+fabsrc/utils
+makecloth/utils
 *#*
 bin/docs_meta.yaml
 meta.yaml
