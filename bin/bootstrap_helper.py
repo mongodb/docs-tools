@@ -1,5 +1,4 @@
 import os
-from docs_meta import output_yaml
 from shutil import rmtree, copyfile
 import subprocess
 
@@ -63,6 +62,7 @@ def bootstrap():
     print('[bootstrap]: initialized fabfiles and dependencies. Regenerate buildsystem now.')
 
     # creating stub meta.yaml
+    from docs_meta import output_yaml
     output_yaml('meta.yaml')
 
     # re/generate the makefile.meta
