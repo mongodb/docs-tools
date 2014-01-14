@@ -9,18 +9,22 @@ from fabric.api import cd, local, task, env, hide, settings, quiet
 from fabric.utils import puts
 from multiprocessing import cpu_count
 
-from utils import ingest_yaml, expand_tree, swap_streams, hyph_concat, build_platform_notification, BuildConfiguration, AttributeDict
+import utils.project
+import generate
+import process
+import mms
+
 from clean import cleaner
 from make import runner, dump_file_hashes
 
-import utils.project
+from utils.config import get_conf, BuildConfiguration, render_paths
+from utils.files import expand_tree
+from utils.output import swap_streams, build_platform_notification
+from utils.serialization import ingest_json
+from utils.strings import hyph_concat
+from utils.structures import AttributeDict
 
-import generate
-import process
-import docs_meta
-import mms
-
-conf = docs_meta.get_conf()
+conf = get_conf()
 paths = conf.paths
 
 from intersphinx import intersphinx, intersphinx_jobs
@@ -148,7 +152,7 @@ def man_tarball(conf):
 def prereq():
     "Omnibus operation that builds all prerequisites for a Sphinx build."
 
-    conf = docs_meta.get_conf()
+    conf = get_conf()
 
     build_prerequisites(conf)
 
@@ -239,7 +243,7 @@ def build(builder='html', conf=None):
     "Build a single sphinx target. Does not build prerequisites."
 
     if conf is None:
-        conf = docs_meta.get_conf()
+        conf = get_conf()
 
     build_worker(builder, conf)
 
@@ -343,7 +347,7 @@ def output_sphinx_stream(out, builder, conf=None):
 def finalize_build(builder, sconf, conf):
     if 'language' in sconf:
         # reinitialize conf and builders for internationalization
-        conf.paths = docs_meta.render_paths(conf, sconf.language)
+        conf.paths = render_paths(conf, sconf.language)
         builder = sconf.builder
         target = builder
     else:
