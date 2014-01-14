@@ -5,7 +5,7 @@ from sphinx import build_prerequisites as sphinx_prereq
 from sphinx import build_worker as sphinx_build
 
 from fabric.api import task, local
-from docs_meta import get_conf
+from utils.config import get_conf
 
 @task
 def update():
@@ -18,7 +18,7 @@ def update():
     conf = edition_setup(sconf.edition, conf)
 
     sphinx_prereq(conf)
-    sphinx_build(builder=sphinx_builder, root=conf.paths.branch_output, tag=None, conf=conf)
+    sphinx_build(builder=sphinx_builder, conf=conf)
 
     print('[tx] [sphinx]: rebuild gettext targets')
 
