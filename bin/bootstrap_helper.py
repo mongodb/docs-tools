@@ -1,10 +1,19 @@
 import os
-from utils import symlink
 from docs_meta import output_yaml
 from shutil import rmtree, copyfile
 import subprocess
 
 reset_ref = 'HEAD~4'
+
+def symlink(name, target):
+    if not os.path.islink(name):
+        try:
+            os.symlink(target, name)
+        except AttributeError:
+            from win32file import CreateSymbolicLink
+            CreateSymbolicLink(name, target)
+        except ImportError:
+            exit('ERROR: platform does not contain support for symlinks. Windows users need to pywin32.')
 
 def init_fabric(buildsystem, conf_file):
     fab_dir = 'fabfile'
