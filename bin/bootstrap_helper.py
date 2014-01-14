@@ -22,12 +22,15 @@ def init_fabric(buildsystem, conf_file):
     elif os.path.isdir(fab_dir):
         rmtree(fab_dir)
 
-    symlink('fabfile', os.path.join(buildsystem, 'fabsrc'))
+    meta_link = os.path.join(buildsystem, 'bin', 'docs_meta.yaml')
+    if os.path.exists(meta_link):
+        os.remove(meta_link)
 
     symlink('fabfile', os.path.join(buildsystem, 'fabsrc'))
 
-    symlink(name=os.path.join(buildsystem, 'bin', 'docs_meta.yaml'),
-            target=os.path.join(os.getcwd(), conf_file))
+    symlink('fabfile', os.path.join(buildsystem, 'fabsrc'))
+
+    symlink(name=meta_link, target=os.path.join(os.getcwd(), conf_file))
 
     symlink(name=os.path.join(buildsystem, 'fabsrc', 'utils'),
             target=os.path.join(os.path.abspath(buildsystem), 'utils'))
