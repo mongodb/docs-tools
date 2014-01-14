@@ -8,13 +8,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.files import expand_tree
 from utils.git import get_branch
 from utils.serialization import ingest_yaml
-from utils.structures import get_conf_file
+from utils.config import get_conf, get_conf_file
 
-from docs_meta import render_paths, get_conf
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
-paths = render_paths('dict')
+paths = get_conf().paths
 
 def generate_integration_targets(conf):
     dependencies = copy(conf['targets'])

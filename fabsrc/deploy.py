@@ -4,7 +4,7 @@ from fabric.api import cd, local, task, abort, env, puts, parallel
 from fabric.utils import _AttributeDict as ad
 from sphinx import edition_setup
 
-from docs_meta import get_conf, render_paths
+from docs_meta import get_conf
 from utils import ingest_yaml_list, conf_from_list
 from make import runner
 
@@ -15,7 +15,7 @@ env.rsync_options = ad()
 env.rsync_options.default = '-cqltz'
 env.rsync_options.recursive = None
 env.rsync_options.delete = None
-env.paths = render_paths('dict')
+env.paths = get_conf().paths
 
 def rsync_options(recursive, delete, environ):
     r = [env.rsync_options.default]

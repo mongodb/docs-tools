@@ -40,6 +40,8 @@ def init_fabric(buildsystem, conf_file):
 
     symlink(name=os.path.join(buildsystem, 'fabsrc', 'docs_meta.py'),
             target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
+    symlink(name=os.path.join(buildsystem, 'utils', 'docs_meta.py'),
+            target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
 
 def clean_buildsystem(buildsystem, output_dir):
     if os.path.islink('fabfile'):
@@ -60,10 +62,6 @@ def bootstrap():
     extension.
     """
     print('[bootstrap]: initialized fabfiles and dependencies. Regenerate buildsystem now.')
-
-    # creating stub meta.yaml
-    from docs_meta import output_yaml
-    output_yaml('meta.yaml')
 
     # re/generate the makefile.meta
     makecloth_path = os.path.join(os.path.abspath(__file__).rsplit(os.path.sep, 2)[0], 'makecloth')

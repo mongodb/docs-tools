@@ -41,7 +41,8 @@ def make(target):
     return _make(target)
 
 def _make(target):
-    with lcd(get_conf().build.paths.projectroot):
+    conf = get_conf()
+    with lcd(conf.paths.projectroot):
         if isinstance(target, list):
             target_str = make + ' '.join([target])
         elif isinstance(target, basestring):

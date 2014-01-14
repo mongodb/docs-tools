@@ -5,9 +5,11 @@ import time
 
 from fabric.api import task, local, puts, lcd, env, abort
 
-from docs_meta import get_conf, edition_setup
 from utils import expand_tree
 from process import munge_page
+
+from utils.config import get_conf
+from utils.project import edition_setup
 
 env.dev_repo = os.path.abspath(os.path.join(os.path.split(os.path.abspath(__file__))[0], '..', '..', 'docs-tools'))
 

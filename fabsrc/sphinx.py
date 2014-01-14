@@ -12,6 +12,9 @@ from multiprocessing import cpu_count
 from utils import ingest_yaml, expand_tree, swap_streams, hyph_concat, build_platform_notification, BuildConfiguration, AttributeDict
 from clean import cleaner
 from make import runner, dump_file_hashes
+
+import utils.project
+
 import generate
 import process
 import docs_meta
@@ -37,7 +40,7 @@ def edition_setup(val, conf):
     else:
         env.EDITION = val
 
-    return docs_meta.edition_setup(val, conf)
+    return utils.project.edition_setup(val, conf)
 
 def get_tags(target, sconf):
     ret = []
@@ -174,7 +177,7 @@ def build_prerequisites(conf):
                            build_prereq_jobs(conf),
                            generate.table_jobs(),
                            generate.api_jobs(conf),
-                           generate.toc_jobs(),
+                           generate.toc_jobs(conf),
                            generate.option_jobs(conf),
                            generate.steps_jobs(conf),
                            generate.release_jobs(conf),
@@ -340,7 +343,7 @@ def output_sphinx_stream(out, builder, conf=None):
 def finalize_build(builder, sconf, conf):
     if 'language' in sconf:
         # reinitialize conf and builders for internationalization
-        conf.paths = docs_meta.render_paths(None, conf, sconf.language)
+        conf.paths = docs_meta.render_paths(conf, sconf.language)
         builder = sconf.builder
         target = builder
     else:
@@ -479,7 +482,7 @@ def finalize_dirhtml_build(builder, conf):
     puts('[{0}]: migrated build to {1}'.format(builder, dest))
 
     if conf.git.branches.current in conf.git.branches.published:
-        sitemap_exists = generate.sitemap()
+        sitemap_exists = generate.sitemap(config_path=None, conf=conf)
 
         if sitemap_exists is True:
             process.copy_if_needed(source_file=pjoin(conf.paths.projectroot,

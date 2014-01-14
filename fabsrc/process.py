@@ -9,7 +9,7 @@ from multiprocessing import cpu_count
 
 from fabric.api import task, env, abort, puts, local
 
-from docs_meta import output_yaml, get_manual_path, get_conf
+from docs_meta import get_manual_path, get_conf
 from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list, munge_content, munge_page
 
 from make import check_hashed_dependency, check_dependency, runner
@@ -344,7 +344,7 @@ def pdf_jobs(target, conf):
                 deploy_fn = tagged_name + '.pdf'
                 link_name = deploy_fn
         else:
-            deploy_path = conf.paths['branch-staging']
+            deploy_path = conf.paths.branch_staging
 
         i['source'] = os.path.join(latex_dir, i['output'])
         i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')
@@ -404,7 +404,7 @@ def error_pages():
 
         for error in error_pages:
             page = os.path.join(conf.paths.projectroot,
-                                conf.paths['branch-output'], 'dirhtml',
+                                conf.paths.branch_output, 'dirhtml',
                                 'meta', error, 'index.html')
             munge_page(fn=page, regex=sub, tag='error-pages')
 

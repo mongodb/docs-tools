@@ -7,10 +7,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'b
 
 from utils.structures import get_conf_file
 from utils.serialization import ingest_yaml
+from utils.config import get_conf
 
 from makecloth import MakefileCloth
-from docs_meta import get_conf
+
 m = MakefileCloth()
+conf = get_conf()
 
 def _job_touch(migration, block):
     m.job('touch {0}'.format(migration['target']), block=block)
@@ -113,7 +115,8 @@ def build_all_sphinx_migrations(migrations):
         m.job('rm -rf {0}'.format(' '.join(links['all'])), True)
 
 def main():
-    conf_file = get_conf_file(__file__)
+    conf_file = get_conf_file(file=__file__, directory=conf.paths.builddata)
+
     build_all_sphinx_migrations(ingest_yaml(conf_file))
 
     m.write(sys.argv[1])

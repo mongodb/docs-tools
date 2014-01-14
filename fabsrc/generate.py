@@ -5,7 +5,7 @@ import tarfile
 
 from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, BuildConfiguration
 from fabric.api import task, puts, local, env, quiet, settings
-from docs_meta import render_paths, get_conf, load_conf
+from docs_meta import get_conf, load_conf, lazy_conf
 from make import check_dependency, runner
 from process import create_link
 
@@ -127,12 +127,13 @@ def _generate_toc_tree(fn, fmt, base_name, paths):
 
 @task
 def toc():
-    count = runner( toc_jobs() )
+    conf = lazy_conf()
+    count = runner( toc_jobs(conf) )
 
     puts('[toc]: built {0} tables of contents'.format(count))
 
-def toc_jobs():
-    paths = render_paths('obj')
+def toc_jobs(conf):
+    paths = conf.paths
 
     for fn in expand_tree(paths.includes, 'yaml'):
         if fn.startswith(os.path.join(paths.includes, 'table')):
@@ -444,8 +445,9 @@ def source(conf=None):
 #################### Generate the Sitemap ####################
 
 @task
-def sitemap(config_path=None):
-    paths = render_paths('obj')
+def sitemap(config_path=None, conf=None):
+    conf = lazy_conf(conf)
+    paths = conf.paths
 
     sys.path.append(os.path.join(paths.projectroot, paths.buildsystem, 'bin'))
     import sitemap_gen
@@ -514,7 +516,7 @@ def tarball(name, path, sourcep=None, newp=None, cdir=None):
 
 @task
 def htaccess(fn='.htaccess'):
-    conf = load_conf()
+    conf = lazy_conf()
 
     in_files = ( i
                  for i in expand_tree(conf.paths.builddata, 'yaml')
@@ -539,7 +541,6 @@ def htaccess(fn='.htaccess'):
         f.writelines( ['<FilesMatch "\.(ttf|otf|eot|woff)$">','\n',
                        '   Header set Access-Control-Allow-Origin "*"', '\n'
                        '</FilesMatch>', '\n'] )
-
 
     puts('[redirect]: regenerated {0} with {1} redirects ({2} lines)'.format(fn, len(sources), len(lines)))
 

@@ -10,16 +10,16 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 
 from utils.output import build_platform_notification
 from utils.serialization import ingest_yaml
-from utils.structures import get_conf_file
+from utils.config import get_conf, get_conf_file
+from utils.sphinx import get_sphinx_builders
 
 from makecloth import MakefileCloth
-from docs_meta import render_paths, get_sphinx_builders
 
 # to add a symlink build process, add a tuple to the ``links`` in the builder definitions file.
 
 m = MakefileCloth()
 
-paths = render_paths('dict')
+conf = get_conf()
 
 def make_all_sphinx(config):
     b = 'prereq'
@@ -63,7 +63,7 @@ def make_all_sphinx(config):
     m.target('sphinx-prerequisites', block=b)
     m.job('fab sphinx.prereq', block=b)
 
-    build_source_dir = paths['branch-output'] + '/source'
+    build_source_dir = conf.paths.branch_output + '/source'
 
     if 'generate-source' in config and config['generate-sourced']:
         m.target('generate-source', ['setup'], config['generate-sourced'], block=b)
@@ -138,7 +138,7 @@ def sphinx_builder(target):
     return ret_value
 
 def main():
-    config = ingest_yaml(get_conf_file(__file__))
+    config = ingest_yaml(get_conf_file(file=__file__, directory=conf.paths.builddata))
 
     make_all_sphinx(config)
 

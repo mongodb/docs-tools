@@ -3,14 +3,14 @@
 import sys
 import os.path
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-
-from docs_meta import get_manual_path, get_conf, render_paths
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from makecloth import MakefileCloth
 
 from utils.git import get_branch, get_commit
+from utils.config import get_conf
+from utils.project import get_manual_path
 
 def generate_meta(conf):
     m = MakefileCloth()
@@ -24,10 +24,10 @@ def generate_meta(conf):
     m.section_break('file system paths', block='paths')
     m.var('output', conf.paths.output, block='paths')
     m.var('public-output', conf.paths.public, block='paths')
-    m.var('branch-output', conf.paths['branch-output'], block='paths')
+    m.var('branch-output', conf.paths.branch_output, block='paths')
     m.var('rst-include', conf.paths.includes, block='paths')
-    m.var('branch-source', conf.paths['branch-source'], block='paths')
-    m.var('public-branch-output', conf.paths['branch-staging'], block='paths')
+    m.var('branch-source', conf.paths.branch_source, block='paths')
+    m.var('public-branch-output', conf.paths.branch_staging, block='paths')
 
     generated_makefiles = []
 
@@ -65,7 +65,6 @@ def generate_meta(conf):
 
 def main():
     conf = get_conf()
-
     m = generate_meta(conf)
 
     m.write(sys.argv[1])
