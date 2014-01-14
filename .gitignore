@@ -7,6 +7,7 @@ fabsrc/docs_meta.py
 fabsrc/utils.py
 fabsrc/utils
 makecloth/utils
+bin/utils
 *#*
 bin/docs_meta.yaml
 meta.yaml

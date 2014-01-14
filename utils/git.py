@@ -1,6 +1,6 @@
 import os
 
-from shell import shell_value
+from utils.shell import shell_value
 
 def get_commit(path=None):
     if path is None:

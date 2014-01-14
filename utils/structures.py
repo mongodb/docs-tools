@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from serialization import ingest_yaml_doc
+from utils.serialization import ingest_yaml_doc
 
 class AttributeDict(dict):
     def __init__(self, value=None):
