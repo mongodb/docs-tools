@@ -16,7 +16,9 @@ from utils.strings import dot_concat
 from utils.serialization import ingest_yaml_list
 from utils.transformations import munge_content, munge_page
 
-from make import check_hashed_dependency, check_dependency, runner
+from utils.jobs.dependency import check_hashed_dependency, check_dependency
+
+from make import runner
 from includes import include_files
 
 import mms
@@ -156,7 +158,7 @@ def refresh_dependency_jobs(conf):
         }
 
 def dep_refresh_worker(target, deps, dep_map, conf):
-    if check_hashed_dependency(target, deps, dep_map) is True:
+    if check_hashed_dependency(target, deps, dep_map, conf) is True:
         target = os.path.join(conf.paths.projectroot,
                               conf.paths.branch_source,
                               target[1:])

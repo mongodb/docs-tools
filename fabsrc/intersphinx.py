@@ -5,8 +5,11 @@ from multiprocessing import Pool
 
 from fabric.api import task, local, env, puts, hide
 from fabric.utils import _AttributeDict as ad
-from docs_meta import get_conf
-from utils import ingest_yaml_list
+
+from utils.config import lazy_conf
+from utils.serialization import ingest_yaml_list
+
+
 
 from make import runner
 
@@ -53,12 +56,12 @@ def download(f, s):
 def intersphinx():
     "Downloads all intersphinx files if out of date."
 
-    count = runner( intersphinx_jobs() )
+    count = runner( intersphinx_jobs(conf) )
 
     puts('[intersphinx]: processed {0} intersphinx inventories'.format(count))
 
-def intersphinx_jobs():
-    conf = get_conf()
+def intersphinx_jobs(conf=None):
+    conf = lazy_conf(conf)
     data_file = os.path.join(conf.paths.projectroot,
                              conf.paths.builddata,
                              'intersphinx.yaml')
