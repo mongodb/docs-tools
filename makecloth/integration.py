@@ -36,15 +36,15 @@ def generate_integration_targets(conf):
 def proccess_branch_root(conf):
     dependencies = []
 
-    if 'branch-root' in conf and conf['branch-root'] is not None:
+    if 'branch_root' in conf and conf['branch_root'] is not None:
         for dep in conf['branch-root']:
             if isinstance(dep, list):
                 dep = os.path.sep.join(dep)
 
             if dep != '':
-                dependencies.append(os.path.join(paths['branch-staging'], dep))
+                dependencies.append(os.path.join(paths['branch_staging'], dep))
             else:
-                dependencies.append(paths['branch-staging'])
+                dependencies.append(paths['branch_staging'])
 
     return dependencies
 
