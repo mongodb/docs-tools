@@ -4,8 +4,6 @@ from fabric.api import env, task
 from utils.git import get_commit
 from utils.config import lazy_conf
 
-
-
 # this isn't used or wired in at the moment. Pulled out of deploy.py
 
 @task

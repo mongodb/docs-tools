@@ -5,11 +5,10 @@ import re
 import pkg_resources
 import sys
 
-from fabric.api import cd, local, task, env, hide, settings, quiet
+from fabric.api import local, task, hide, settings, quiet
 from fabric.utils import puts
 from multiprocessing import cpu_count
 
-import utils.project
 import generate
 import process
 import mms
@@ -23,28 +22,10 @@ from utils.output import swap_streams, build_platform_notification
 from utils.serialization import ingest_json
 from utils.strings import hyph_concat
 from utils.structures import AttributeDict
-
-conf = get_conf()
-paths = conf.paths
+from utils.project import edition_setup
 
 from intersphinx import intersphinx, intersphinx_jobs
 intersphinx = task(intersphinx)
-
-env.EDITION = None
-@task
-def edition(val=None):
-    "Specify the edition for multi-edition outputs such as MMS."
-
-    # this is a wrapper so we can use edition_setup elsewhere
-    edition_setup(val, conf)
-
-def edition_setup(val, conf):
-    if val is None and env.EDITION is not None:
-        val = env.EDITION
-    else:
-        env.EDITION = val
-
-    return utils.project.edition_setup(val, conf)
 
 def get_tags(target, sconf):
     ret = []
@@ -179,13 +160,13 @@ def build_prereq_jobs(conf):
 def build_prerequisites(conf):
     jobs = itertools.chain(process.manpage_jobs(conf),
                            build_prereq_jobs(conf),
-                           generate.table_jobs(),
+                           generate.table_jobs(conf),
                            generate.api_jobs(conf),
                            generate.toc_jobs(conf),
                            generate.option_jobs(conf),
                            generate.steps_jobs(conf),
                            generate.release_jobs(conf),
-                           intersphinx_jobs(),
+                           intersphinx_jobs(conf),
                            generate.image_jobs(conf)
         )
 

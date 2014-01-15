@@ -226,7 +226,7 @@ def tables():
 
     puts('[table]: built {0} tables'.format(count))
 
-def table_jobs():
+def table_jobs(conf=None):
     conf = lazy_conf()
 
     for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.includes), 'yaml'):
