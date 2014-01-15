@@ -62,6 +62,4 @@ def command(command, capture=False, ignore=False):
         else:
             return None
     else:
-        print('[ERROR]: ' + out.cmd)
-        print('[ERROR]: returned ' + out.return_code)
-        raise CommandError
+        raise CommandError('[ERROR]: "{0}" returned {1}'.format(out.cmd, out.return_code))
