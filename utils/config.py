@@ -8,12 +8,14 @@ try:
     from utils.project import (discover_config_file, get_manual_path, is_processed,
                                edition_setup, mangle_paths,
                                mangle_configuration)
+    from utils.shell import CommandError
 except ImportError:
     from structures import BuildConfiguration, AttributeDict
     from git import get_branch, get_commit, get_file_from_branch
     from project import (discover_config_file, get_manual_path, is_processed,
                          edition_setup, mangle_paths,
                          mangle_configuration)
+    from shell import CommandError
 
 def lazy_conf(conf=None):
     if conf is None:
@@ -75,7 +77,11 @@ def render_versions(conf=None):
         version_config_file = os.path.join(conf.paths.builddata,
                                            'published_branches.yaml')
 
-        vconf_data = get_file_from_branch(version_config_file, 'master')
+        try:
+            vconf_data = get_file_from_branch(version_config_file, 'master')
+        except CommandError:
+            return conf
+
         vconf = AttributeDict(yaml.load(vconf_data))
 
         conf.version.update(vconf.version)
