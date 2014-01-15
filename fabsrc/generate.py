@@ -363,8 +363,8 @@ def releases():
     puts('[releases]: completed regenerating {0} release files.'.format(count))
 
 def release_jobs(conf=None):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
+
     data_file = os.path.join(conf.paths.builddata, 'releases') + '.yaml'
 
     if 'release' in conf.version:
@@ -430,8 +430,7 @@ def release_jobs(conf=None):
 
 @task
 def source(conf=None):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     target = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
 
@@ -550,7 +549,7 @@ def htaccess(fn='.htaccess'):
 
 @task
 def robots(fn):
-    conf = get_conf()
+    conf = lazy_conf()
 
     robots_txt_builder(fn, conf, override=True)
 
@@ -590,7 +589,8 @@ def robots_txt_builder(fn, conf, override=False):
 
 @task
 def options():
-    conf = get_conf()
+    conf = lazy_conf()
+
     count = runner( option_jobs(conf) )
 
     puts('[options]: rendered {0} options'.format(count))
@@ -640,7 +640,7 @@ def steps_jobs(conf):
 
 @task
 def steps():
-    conf = get_conf()
+    conf = lazy_conf()
 
     count = runner( steps_jobs(conf) )
 
@@ -688,7 +688,7 @@ def create_manual_symlink(conf):
 
 @task
 def include_index():
-    conf = get_conf()
+    conf = lazy_conf()
 
     write_include_index(conf)
 
