@@ -87,22 +87,33 @@ def bootstrap_primer():
     os.remove(os.path.join(os.getcwd(), 'fabfile'))
 
     main_build = os.path.abspath(os.path.join(os.getcwd(), '..', 'build', 'primer'))
+    tmp_build_dir = os.path.join(os.getcwd(), 'build-tmp')
 
     if not os.path.exists(main_build):
         os.makedirs(main_build)
     elif not os.path.isdir(main_build):
         raise Exception("[ERROR]: {0} is not a directory".format(main_build))
 
-    if not os.path.exists(main_build):
-        symlink(name='build',
-                target=main_build)
+    os.rename(os.path.join(os.getcwd(), 'build'),
+              tmp_build_dir)
+
+    symlink(name='build', target=main_build)
+
+    os.rename(os.path.join(tmp_build_dir, 'docs-tools'),
+              os.path.join(os.getcwd(), 'build', 'docs-tools'))
+    os.rename(os.path.join(tmp_build_dir, 'makefile.meta'),
+              os.path.join(os.getcwd(), 'build', 'makefile.meta'))
+
+    if os.path.islink(tmp_build_dir):
+        os.remove(tmp_build_dir)
+    elif os.path.isdir(tmp_build_dir):
+        os.rmdir(tmp_build_dir)
 
     symlink(name='fabfile',
             target=os.path.abspath(os.path.join(main_build, '..', 'docs-tools', 'fabsrc')))
 
     symlink(name=os.path.join('build', 'docs-tools'),
             target=os.path.abspath(os.path.join(main_build, '..', 'docs-tools')))
-
 
 def main():
     bootstrap()
