@@ -173,8 +173,7 @@ def build_prerequisites(conf):
         )
 
     res = runner(jobs, retval=True)
-    count = res['count']
-    puts('[sphinx-prep]: built {0} pieces of content'.format(count))
+    puts('[sphinx-prep]: built {0} pieces of content'.format(res['count']))
 
     generate.buildinfo_hash(conf)
     if conf.project.name != 'mms':

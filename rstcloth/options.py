@@ -30,7 +30,6 @@ class Options(object):
         self.resolve(fn)
 
     def cache_option(self, opt, fn):
-
         if opt.program not in self.cache[fn]:
             self.cache[fn][opt.program] = dict()
 
@@ -44,6 +43,9 @@ class Options(object):
     def resolve(self, fn):
         for opt in self.unresolved:
             if opt.inherited is True:
+                if opt.source.file == fn or opt.source.file in self.cache:
+                    raise Exception('[ERROR]: recursion error in {0}.'.format(fn))
+
                 if opt.source.file in self.cache:
                     base_opt = self.resolve_inherited(opt.source)
                 else:

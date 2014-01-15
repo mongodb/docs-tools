@@ -126,7 +126,7 @@ class AggregatedTocTree(CustomTocTree):
                         else:
                             filter_specs.append( ( dfn['text'], dfn['level'], False ) )
                     else:
-                        print('[ERROR] [toc]: problem with {0} in {0}'.format(dfn, filename))
+                        raise Exception('[ERROR] [toc]: problem with {0} in {0}'.format(dfn, filename))
                 else:
                     filter_specs.append( (dfn,  1, True) )
 
@@ -148,7 +148,7 @@ class AggregatedTocTree(CustomTocTree):
                     obj['level'] = level
                     self.spec.append(obj)
                 except KeyError:
-                    print('[ERROR] [toc]: KeyError "{0}" in file: {1}'.format(fn, filename))
+                    raise Exception('[ERROR] [toc]: KeyError "{0}" in file: {1}'.format(fn, filename))
             else:
                 # translation
                 if isinstance(fn, tuple):
