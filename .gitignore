@@ -12,3 +12,4 @@ bin/utils
 bin/docs_meta.yaml
 meta.yaml
 TAGS
+utils/docs_meta.py
