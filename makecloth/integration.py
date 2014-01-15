@@ -16,10 +16,14 @@ m = MakefileCloth()
 paths = get_conf().paths
 
 def generate_integration_targets(conf):
-    dependencies = copy(conf['targets'])
+    if 'targets' in conf:
+        dependencies = copy(conf['targets'])
+    else:
+        dependencies = []
 
-    for dep in conf['doc-root']:
-        dependencies.append(os.path.join(paths['public'], dep))
+    if 'doc-root' in conf:
+        for dep in conf['doc-root']:
+            dependencies.append(os.path.join(paths['public'], dep))
 
     dependencies.extend(proccess_branch_root(conf))
 
