@@ -35,4 +35,3 @@ clean-tables:
 clean-steps:
 	@-rm -rf $(rst-include)/steps/*
 	@echo "[clean]: removed all generated step files."
-
