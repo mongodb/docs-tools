@@ -448,7 +448,7 @@ def finalize_single_html_jobs(builder, conf):
 def finalize_dirhtml_build(builder, conf):
     pjoin = os.path.join
 
-    process.error_pages()
+    process.error_pages(conf)
 
     single_html_dir = get_single_html_dir(conf)
     search_page = pjoin(conf.paths.branch_output, builder, 'index.html')

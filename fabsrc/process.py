@@ -391,8 +391,8 @@ def pdf_jobs(target, conf):
 
 # this is called directly from the sphinx generation function in sphinx.py.
 
-def error_pages():
-    conf = lazy_conf()
+def error_pages(conf=None):
+    conf = lazy_conf(conf)
 
     error_conf = os.path.join(conf.paths.builddata, 'errors.yaml')
 
