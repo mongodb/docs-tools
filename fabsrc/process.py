@@ -10,7 +10,7 @@ from multiprocessing import cpu_count
 from fabric.api import task, env, abort, puts, local
 
 from utils.project import get_manual_path
-from utils.config import get_conf
+from utils.config import lazy_conf
 from utils.files import md5_file, symlink, expand_tree
 from utils.strings import dot_concat
 from utils.serialization import ingest_yaml_list
@@ -26,8 +26,7 @@ import mms
 ########## Process Sphinx Json Output ##########
 
 def json_output(conf=None):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     list_file = os.path.join(conf.paths.branch_staging, 'json-file-list')
     public_list_file = os.path.join(conf.paths.public_site_output,
@@ -46,8 +45,7 @@ def json_output(conf=None):
     puts('[json]: deployed json files to local staging.')
 
 def json_output_jobs(conf=None):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     regexes = [
         (re.compile(r'<a class=\"headerlink\"'), '<a'),
@@ -118,8 +116,7 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
 def generate_list_file(outputs, path, conf=None):
     dirname = os.path.dirname(path)
 
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     url = '/'.join([ conf.project.url, conf.project.basepath, 'json' ])
 
@@ -169,8 +166,7 @@ def dep_refresh_worker(target, deps, dep_map, conf):
         return 0
 
 def refresh_dependencies(conf=None):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     return sum(runner(refresh_dependency_jobs(conf), retval='results', parallel='process'))
 
@@ -307,8 +303,7 @@ def pdfs():
     pdf_worker()
 
 def pdf_worker(target=None, conf=None):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     if target is None:
         target = 'latex'
@@ -397,7 +392,7 @@ def pdf_jobs(target, conf):
 # this is called directly from the sphinx generation function in sphinx.py.
 
 def error_pages():
-    conf = get_conf()
+    conf = lazy_conf()
 
     error_conf = os.path.join(conf.paths.builddata, 'errors.yaml')
 
@@ -419,8 +414,7 @@ def error_pages():
 #################### Gettext Processing ####################
 
 def gettext_jobs(conf=None):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     locale_dirs = os.path.join(conf.paths.projectroot,
                                conf.paths.locale, 'pot')
@@ -512,8 +506,8 @@ def _process_page(fn, output_fn, regex, builder='processor'):
 
     runner(jobs, pool=1)
 
-def manpage_jobs():
-    conf = get_conf()
+def manpage_jobs(conf=None):
+    conf = lazy_conf(conf)
 
     options_compat_re = [ (re.compile(r'\.\. option:: --'), r'.. setting:: ' ),
                           (re.compile(r'setting:: (\w+) .*'), r'setting:: \1'),
@@ -565,8 +559,7 @@ def post_process_jobs(source_fn=None, tasks=None, conf=None):
     """
 
     if tasks is None:
-        if conf is None:
-            conf = get_conf()
+        conf = lazy_conf(conf)
 
         if source_fn is None:
             source_fn = os.path.join(conf.paths.project.root,

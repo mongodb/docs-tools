@@ -177,7 +177,7 @@ def build_prereq_jobs(conf):
 
 
 def build_prerequisites(conf):
-    jobs = itertools.chain(process.manpage_jobs(),
+    jobs = itertools.chain(process.manpage_jobs(conf),
                            build_prereq_jobs(conf),
                            generate.table_jobs(),
                            generate.api_jobs(conf),
