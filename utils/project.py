@@ -146,6 +146,15 @@ def mangle_configuration(conf):
             else:
                 conf.system.branched = False
 
+        if conf.project.name == 'primer':
+            conf.git.branches = AttributeDict()
+            conf.git.branches.published = 'master'
+            conf.system.processed.versions = True
+
+            del conf.version['published']
+            del conf.version['stable']
+            del conf.version['upcoming']
+
         conf.system.processed.project_conf = True
         return conf
 
@@ -155,6 +164,7 @@ def edition_setup(edition, conf):
     else:
         if 'editions' in conf.project and edition in conf.project.editions:
             conf.project.edition = edition
+
         if conf.project.name == 'mms':
             conf.paths.public_site_output = conf.paths.mms[edition]
             conf.paths.branch_source = '-'.join([os.path.join(conf.paths.output,
