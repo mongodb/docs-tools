@@ -101,7 +101,6 @@ class Steps(object):
 
         sort_needed = False
 
-
         for idx, step in enumerate(self.source_list):
             if 'stepnum' not in step:
                 step['stepnum'] = idx+1
@@ -119,6 +118,11 @@ class Steps(object):
                 if source_file in self.agg_sources:
                     current_step = self.agg_sources[source_file].get_step(source_ref)
                 else:
+                    if not os.path.exists(fn) or not os.path.exists(source_file):
+                        raise Exception('[ERROR]: file {0} does not exist'.format(fn))
+                    elif fn in self.agg_sources or source_file in self.agg_sources:
+                        raise Exception('[ERROR]: hitting recursion issue on {0}'.format(fn))
+                    
                     steps = Steps(os.path.join(self.source_dir, source_file), self.agg_sources)
                     current_step = steps.get_step(source_ref)
                     self.agg_sources[source_file] = steps
@@ -135,7 +139,9 @@ class Steps(object):
             self.source_list.sort(key=lambda k:k['stepnum'])
 
     def get_step(self, ref):
-        return self.source[ref]
+        if ref in self.source: 
+            return self.source[ref]
+
 
 class StepsOutput(object):
     """

@@ -642,7 +642,8 @@ def steps_jobs(conf):
 def steps():
     conf = lazy_conf()
 
-    count = runner( steps_jobs(conf) )
+    res = runner( steps_jobs(conf), retval=True)
+    count = res['count']
 
     puts('[steps]: rendered {0} step files'.format(count))
 
