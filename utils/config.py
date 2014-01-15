@@ -1,14 +1,16 @@
 import os.path
 
+import yaml
+
 try:
     from utils.structures import BuildConfiguration, AttributeDict
-    from utils.git import get_branch, get_commit
+    from utils.git import get_branch, get_commit, get_file_from_branch
     from utils.project import (discover_config_file, get_manual_path, is_processed,
                                edition_setup, mangle_paths,
                                mangle_configuration)
 except ImportError:
     from structures import BuildConfiguration, AttributeDict
-    from git import get_branch, get_commit
+    from git import get_branch, get_commit, get_file_from_branch
     from project import (discover_config_file, get_manual_path, is_processed,
                          edition_setup, mangle_paths,
                          mangle_configuration)
@@ -46,14 +48,16 @@ def get_conf():
     conf.system.processed.edition = False
     conf.system.processed.project_paths = False
     conf.system.processed.project_conf = False
+    conf.system.processed.versions = False
 
+    conf = render_versions(conf)
     conf = mangle_configuration(conf)
 
     conf.git.branches.current = get_branch()
     conf.git.commit = get_commit()
     conf.project.basepath = get_manual_path(conf)
-    conf.paths.update(render_paths(conf))
 
+    conf = render_paths(conf)
     conf = mangle_paths(conf)
 
     conf.system.dependency_cache = os.path.join(conf.paths.projectroot,
@@ -61,6 +65,34 @@ def get_conf():
                                                 'dependencies.json')
 
     return conf
+
+def render_versions(conf=None):
+    if is_processed('versions', conf):
+        return conf
+    else:
+        conf = lazy_conf(conf)
+
+        version_config_file = os.path.join(conf.paths.builddata,
+                                           'published_branches.yaml')
+
+        if get_branch() == 'master':
+            vconf = BuildConfiguration(os.path.join(conf.paths.projectroot,
+                                                    version_config_file))
+        else:
+            vconf_data = get_file_from_branch(version_config_file, 'master')
+            vconf = AttributeDict(yaml.load(vconf_data))
+
+            conf.version.update(vconf.version)
+
+            if 'branches' not in conf.git:
+                conf.git.branches = AttributeDict()
+
+            conf.git.branches.update(vconf.git.branches)
+
+            conf.system.processed.versions = True
+
+        return conf
+
 
 def render_paths(conf=None, language=None):
     if is_processed('paths', conf):
@@ -80,7 +112,7 @@ def render_paths(conf=None, language=None):
         conf.paths.buildarchive = os.path.join(conf.paths.output, 'archive')
 
         conf.system.processed.paths = True
-        return conf.paths
+        return conf
 
 #### Configuration Object Schema Migration Code ####
 
