@@ -12,8 +12,10 @@ import yaml
 from contextlib import closing
 
 from fabric.api import task, puts, abort, env
-from docs_meta import get_conf
-from utils import conf_from_list, ingest_yaml_list, write_yaml, BuildConfiguration
+
+from utils.serialization import ingest_yaml_list, write_yaml
+from utils.config import get_conf, BuildConfiguration,
+from utils.structures import conf_from_list
 
 from make import runner
 from deploy import deploy_jobs

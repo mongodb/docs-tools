@@ -9,8 +9,12 @@ from multiprocessing import cpu_count
 
 from fabric.api import task, env, abort, puts, local
 
-from docs_meta import get_manual_path, get_conf
-from utils import md5_file, symlink, expand_tree, dot_concat, ingest_yaml_list, munge_content, munge_page
+from utils.project import get_manual_path
+from utils.config import get_conf
+from utils.files import md5_file, symlink, expand_tree
+from utils.strings import dot_concat
+from utils.serialization import ingest_yaml_list
+from utils.transformations import munge_content, munge_page
 
 from make import check_hashed_dependency, check_dependency, runner
 from includes import include_files

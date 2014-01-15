@@ -14,8 +14,11 @@ from droopy.factory import DroopyFactory
 from droopy.lang.english import English
 from droopy import Droopy, attr, op
 
-from docs_meta import get_conf
-from utils import expand_tree, AttributeDict, ingest_yaml_doc, ingest_yaml_list
+from utils.config import get_conf
+from utils.files import expand_tree
+from utils.structures import AttributeDict
+from utils.serialization import ingest_yaml_doc, ingest_yaml_list
+
 from make import runner
 import stats_data
 
