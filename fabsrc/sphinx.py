@@ -5,16 +5,18 @@ import re
 import pkg_resources
 import sys
 
+from multiprocessing import cpu_count
+
 from fabric.api import local, task, hide, settings, quiet
 from fabric.utils import puts
-from multiprocessing import cpu_count
 
 import generate
 import process
 import mms
 
 from clean import cleaner
-from make import runner, dump_file_hashes
+from make import runner
+from intersphinx import intersphinx, intersphinx_jobs
 
 from utils.config import get_conf, BuildConfiguration, render_paths
 from utils.files import expand_tree
@@ -23,8 +25,8 @@ from utils.serialization import ingest_json
 from utils.strings import hyph_concat
 from utils.structures import AttributeDict
 from utils.project import edition_setup
+from utils.jobs.dependency import dump_file_hashes
 
-from intersphinx import intersphinx, intersphinx_jobs
 intersphinx = task(intersphinx)
 
 def get_tags(target, sconf):
