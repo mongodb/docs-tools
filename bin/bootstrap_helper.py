@@ -79,6 +79,31 @@ def bootstrap():
     cmd = 'python {0}/meta.py build/makefile.meta'.format(makecloth_path).split()
     subprocess.check_call(cmd)
 
+    if 'primer' in os.path.split(os.getcwd()):
+        bootstrap_primer()
+        print('[bootstrap]: initialized "primer" project.')
+
+def bootstrap_primer():
+    os.remove(os.path.join(os.getcwd(), 'fabfile'))
+
+    main_build = os.path.abspath(os.path.join(os.getcwd(), '..', 'build', 'primer'))
+
+    if not os.path.exists(main_build):
+        os.makedirs(main_build)
+    elif not os.path.isdir(main_build):
+        raise Exception("[ERROR]: {0} is not a directory".format(main_build))
+
+    if not os.path.exists(main_build):
+        symlink(name='build',
+                target=main_build)
+
+    symlink(name='fabfile',
+            target=os.path.abspath(os.path.join(main_build, '..', 'docs-tools', 'fabsrc')))
+
+    symlink(name=os.path.join('build', 'docs-tools'),
+            target=os.path.abspath(os.path.join(main_build, '..', 'docs-tools')))
+
+
 def main():
     bootstrap()
 

@@ -82,9 +82,9 @@ def get_versions(conf=None):
 #### Discovery and Compatibility #####
 
 def discover_config_file():
-    root_dirs = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')),
+    root_dirs = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '..')),
                   os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')),
-                  os.path.abspath(os.path.join(os.path.dirname(__file__), '..')),
+                  os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')),
                 ]
 
     conf_dirs = [ 'bin', 'config' ]
