@@ -234,35 +234,29 @@ def build_worker(builder, conf):
     sconf = compute_sphinx_config(builder, conf)
     conf = edition_setup(sconf.edition, conf)
 
-    if conf.project.name == 'mms':
-        conf = edition_setup(sconf.edition, conf)
-    else:
-        edition = None
+    dirpath = os.path.join(conf.paths.branch_output, builder)
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
+        puts('[{0}]: created {1}/{2}'.format(builder, conf.paths.branch_output, builder))
 
-    with settings(host_string='sphinx'):
-        dirpath = os.path.join(conf.paths.branch_output, builder)
-        if not os.path.exists(dirpath):
-            os.makedirs(dirpath)
-            puts('[{0}]: created {1}/{2}'.format(builder, conf.paths.branch_output, builder))
+    puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
-        puts('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
+    cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {1}/{2}' # per-builder-doctreea
+    sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
+                            conf.paths.branch_output,
+                            builder,
+                            conf.paths.branch_source)
 
-        cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {1}/{2}' # per-builder-doctreea
-        sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
-                                conf.paths.branch_output,
-                                builder,
-                                conf.paths.branch_source)
+    out = local(sphinx_cmd, capture=True)
+    # out = sphinx_native_worker(sphinx_cmd)
 
-        out = local(sphinx_cmd, capture=True)
-        # out = sphinx_native_worker(sphinx_cmd)
+    with settings(host_string=''):
+        out = '\n'.join( [ out.stderr, out.stdout ] )
+        output_sphinx_stream(out, builder, conf)
 
-        with settings(host_string=''):
-            out = '\n'.join( [ out.stderr, out.stdout ] )
-            output_sphinx_stream(out, builder, conf)
+    puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
-        puts('[build]: completed {0} build at {1}'.format(builder, timestamp()))
-
-        finalize_build(builder, sconf, conf)
+    finalize_build(builder, sconf, conf)
 
 def sphinx_native_worker(sphinx_cmd):
     # Calls sphinx directly rather than in a subprocess/shell. Not used
