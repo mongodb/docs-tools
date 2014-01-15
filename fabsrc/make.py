@@ -1,11 +1,3 @@
-import datetime
-import json
-import os
-
-import multiprocessing
-import multiprocessing.pool
-import multiprocessing.dummy
-
 from multiprocessing import cpu_count
 
 from fabric.api import lcd, local, task, env
@@ -42,10 +34,8 @@ def pool(value):
 def make(target):
     "Build a make target, indirectly."
 
-    return _make(target)
-
-def _make(target):
     conf = get_conf()
+
     with lcd(conf.paths.projectroot):
         if isinstance(target, list):
             target_str = make + ' '.join([target])
