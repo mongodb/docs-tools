@@ -82,14 +82,14 @@ def render_versions(conf=None):
             vconf_data = get_file_from_branch(version_config_file, 'master')
             vconf = AttributeDict(yaml.load(vconf_data))
 
-            conf.version.update(vconf.version)
+        conf.version.update(vconf.version)
 
-            if 'branches' not in conf.git:
-                conf.git.branches = AttributeDict()
+        if 'branches' not in conf.git:
+            conf.git.branches = AttributeDict()
 
-            conf.git.branches.update(vconf.git.branches)
+        conf.git.branches.update(vconf.git.branches)
 
-            conf.system.processed.versions = True
+        conf.system.processed.versions = True
 
         return conf
 
