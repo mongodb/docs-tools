@@ -75,12 +75,8 @@ def render_versions(conf=None):
         version_config_file = os.path.join(conf.paths.builddata,
                                            'published_branches.yaml')
 
-        if get_branch() == 'master':
-            vconf = BuildConfiguration(os.path.join(conf.paths.projectroot,
-                                                    version_config_file))
-        else:
-            vconf_data = get_file_from_branch(version_config_file, 'master')
-            vconf = AttributeDict(yaml.load(vconf_data))
+        vconf_data = get_file_from_branch(version_config_file, 'master')
+        vconf = AttributeDict(yaml.load(vconf_data))
 
         conf.version.update(vconf.version)
 
@@ -92,7 +88,6 @@ def render_versions(conf=None):
         conf.system.processed.versions = True
 
         return conf
-
 
 def render_paths(conf=None, language=None):
     if is_processed('paths', conf):
