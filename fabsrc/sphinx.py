@@ -186,7 +186,7 @@ def build_prerequisites(conf):
                            generate.steps_jobs(conf),
                            generate.release_jobs(conf),
                            intersphinx_jobs(),
-                           generate.image_jobs()
+                           generate.image_jobs(conf)
         )
 
     job_count = runner(jobs)

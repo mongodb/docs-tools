@@ -1,13 +1,15 @@
 import re
 import json
 import os.path
-
 import operator
+
 from itertools import groupby
 
-from docs_meta import get_conf
-from utils import expand_tree, ingest_yaml_doc, ingest_yaml_list
 from fabric.api import local, task
+
+from utils.config import lazy_conf
+from utils.files import expand_tree
+from utils.serialization import ingest_yaml_doc, ingest_yaml_list
 
 @task
 def names():
@@ -109,8 +111,7 @@ def include_files(files=None, conf=None):
     if files is not None:
         return files
     else:
-        if conf == None:
-            conf = get_conf()
+        conf = lazy_conf(conf)
 
         source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
         grep = local('grep -R ".. include:: /" {0} || exit 0'.format(source_dir), capture=True)
@@ -141,8 +142,7 @@ def include_files(files=None, conf=None):
         return files
 
 def generated_includes(conf=None):
-    if conf == None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     toc_spec_files = []
     step_files = []
@@ -181,8 +181,7 @@ def generated_includes(conf=None):
     return mapping
 
 def include_files_unused(inc_files=None, conf=None):
-    if conf == None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.paths.includes), None) ]
     mapping = include_files(conf)
@@ -196,9 +195,9 @@ def include_files_unused(inc_files=None, conf=None):
 
     return results
 
-def changed_includes():
+def changed_includes(conf=None):
     from pygit2 import Repository, GIT_STATUS_CURRENT, GIT_STATUS_IGNORED
-    conf = get_conf()
+    conf = lazy_conf(conf)
 
     repo_path = conf.paths.projectroot
 

@@ -3,11 +3,16 @@ import re
 import sys
 import tarfile
 
-from utils import ingest_yaml_list, ingest_yaml, expand_tree, dot_concat, hyph_concat, BuildConfiguration
 from fabric.api import task, puts, local, env, quiet, settings
-from docs_meta import get_conf, lazy_conf
-from make import check_dependency, runner
+
+from make import runner
 from process import create_link
+
+from utils.serialization import ingest_yaml_list, ingest_yaml
+from utils.files import expand_tree
+from utils.strings import dot_concat, hyph_concat
+from utils.config import BuildConfiguration, lazy_conf
+from utils.jobs.dependency import check_dependency
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
@@ -43,8 +48,7 @@ def api():
     puts('[api]: generated {0} tables for api items'.format(count))
 
 def api_jobs(conf=None):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.source, 'reference'), 'yaml'):
         target = dot_concat(os.path.splitext(source)[0], 'rst')
@@ -223,7 +227,7 @@ def tables():
     puts('[table]: built {0} tables'.format(count))
 
 def table_jobs():
-    conf = get_conf()
+    conf = lazy_conf()
 
     for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.includes), 'yaml'):
         if os.path.basename(source).startswith('table'):
@@ -268,8 +272,8 @@ def images():
     count = runner( image_jobs() )
     puts('[image]: rebuilt {0} rst and image files'.format(count))
 
-def image_jobs():
-    conf = get_conf()
+def image_jobs(conf=None):
+    conf = lazy_conf(None)
     paths = conf.paths
 
     meta_file = os.path.join(paths.images, 'metadata') + '.yaml'
@@ -587,7 +591,6 @@ def robots_txt_builder(fn, conf, override=False):
 @task
 def options():
     conf = get_conf()
-
     count = runner( option_jobs(conf) )
 
     puts('[options]: rendered {0} options'.format(count))

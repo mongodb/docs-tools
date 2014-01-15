@@ -1,13 +1,17 @@
 from urllib2 import urlopen
-from docs_meta import get_conf, get_commit
 from fabric.api import env, task
+
+from utils.git import get_commit
+from utils.config import lazy_conf
+
+
 
 # this isn't used or wired in at the moment. Pulled out of deploy.py
 
 @task
 def check(site, conf=None):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
+
     if site.startswith('stag'):
         env.release_info_url = 'http://test.docs.10gen.cc/{0}/release.txt'.format(str(branch))
     elif site == 'ecosystem':

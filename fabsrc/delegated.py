@@ -1,7 +1,6 @@
-from fabric.api import task, puts, abort, env, hide
 import os.path
-import sys
 
+from fabric.api import task, abort, env, hide
 
 from utils.serialization import ingest_yaml
 from utils.config import get_conf
@@ -13,10 +12,10 @@ from git import GitRepoManager
 b = 'delegated-builder'
 
 def build_branch(logfile, branch='master', target='publish', wait=False):
-    puts('[{0}]: building {1} check {2} for build log.'.format(b, branch, logfile))
+    print('[{0}]: building {1} check {2} for build log.'.format(b, branch, logfile))
 
     if wait is True:
-        puts('[{0}]: building now, waiting for the build to finish.'.format(b))
+        print('[{0}]: building now, waiting for the build to finish.'.format(b))
 
     cmd = ['make', target]
     with open(logfile, 'a') as f:
@@ -25,7 +24,7 @@ def build_branch(logfile, branch='master', target='publish', wait=False):
     log_command_output(cmd, env.repo.path, logfile, wait)
 
     if wait is False:
-        puts('[{0}]: build in progress.'.format(b))
+        print('[{0}]: build in progress.'.format(b))
 
 env.logfile = None
 env.builders = ['publish', 'push', 'stage', 'json-output']

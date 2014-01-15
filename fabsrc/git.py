@@ -1,12 +1,13 @@
-from fabric.api import lcd, local, task, abort, env, hide
-from fabric.utils import puts
 import os.path
 import sys
 import re
 import subprocess
 
-from docs_meta import get_conf
-from utils import get_branch
+from fabric.api import lcd, local, task, abort, env, hide
+from fabric.utils import puts
+
+from utils.git import get_branch
+from utils.config import lazy_conf
 
 env.sign = False
 env.branch = None
@@ -21,7 +22,7 @@ def am(obj,repo=None):
     "Runs 'git am' on a github object."
 
     if repo is None:
-        repo = get_conf().git.remote.upstream
+        repo = lazy_conf().git.remote.upstream
 
     cmd = ['curl',
            'https://github.com/{0}/'.format(repo),
@@ -90,7 +91,7 @@ class GitRepoManager(object):
 
         self.branches = set()
         self.branches.add(self.current_branch)
-        for branch in get_conf().git.branches.published:
+        for branch in lazy_conf().git.branches.published:
             if branch is not None:
                 self.branches.add(branch)
 

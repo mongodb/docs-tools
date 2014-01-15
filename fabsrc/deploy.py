@@ -2,10 +2,12 @@ import os.path
 
 from fabric.api import cd, local, task, abort, env, puts, parallel
 from fabric.utils import _AttributeDict as ad
-from sphinx import edition_setup
 
-from docs_meta import get_conf
-from utils import ingest_yaml_list, conf_from_list
+from utils.serialization import ingest_yaml_list
+from utils.structures import conf_from_list
+from utils.config import lazy_conf
+
+from sphinx import edition_setup
 from make import runner
 
 _pub_hosts = ['www-c1.10gen.cc', 'www-c2.10gen.cc']
@@ -15,7 +17,6 @@ env.rsync_options = ad()
 env.rsync_options.default = '-cqltz'
 env.rsync_options.recursive = None
 env.rsync_options.delete = None
-env.paths = get_conf().paths
 
 def rsync_options(recursive, delete, environ):
     r = [env.rsync_options.default]
@@ -34,7 +35,6 @@ def rsync_options(recursive, delete, environ):
 ########## Tasks -- Deployment and configuration. ############
 
 def static_worker(local_path, remote, host_string, recursive, delete, environ, pconf, conf):
-
     if local_path.endswith('.htaccess') and conf.git.branches.current != 'master':
         puts('[deploy] [ERROR]: cowardly refusing to deploy a non-master htaccess file.')
         return False
@@ -50,8 +50,8 @@ def static_worker(local_path, remote, host_string, recursive, delete, environ, p
     puts('[deploy]: completed migration of {0} files to {1} remote'.format(local_path, remote))
 
 def push_worker(local_path, remote, host_string, recursive, delete, environ, pconf, conf):
-    if get_conf().project.name == 'mms' and (conf.git.branches.current != 'master' and
-                                             pconf.edition == 'saas'):
+    if conf.project.name == 'mms' and (conf.git.branches.current != 'master' and
+                                       pconf.edition == 'saas'):
         puts('[deploy] [ERROR]: cowardly refusing to push non-master saas.')
         return False
 
@@ -77,8 +77,7 @@ def push_worker(local_path, remote, host_string, recursive, delete, environ, pco
 ############################## Deploy -- Generic Deployment Framework ##############################
 
 def get_branched_path(options, conf=None, *args):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     if 'branched' in options:
         return os.path.join(os.path.sep.join(args),
@@ -90,8 +89,7 @@ def get_branched_path(options, conf=None, *args):
 def deploy(target, conf=None, pconf=None):
     """Deploys a site. Specifies the deployment target defined in 'push.yaml'"""
 
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     push_conf = ingest_yaml_list(os.path.join(conf.paths.projectroot,
                                               conf.paths.builddata,

@@ -9,8 +9,6 @@ from fabric.utils import _AttributeDict as ad
 from utils.config import lazy_conf
 from utils.serialization import ingest_yaml_list
 
-
-
 from make import runner
 
 ACCEPTABLE = 864000

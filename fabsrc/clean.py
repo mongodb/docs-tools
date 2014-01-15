@@ -1,14 +1,14 @@
 import os
 import shutil
-import sys
 import time
-from multiprocessing import Pool, cpu_count
 
-from fabric.api import task, abort, local, puts
+from fabric.api import task
 
-import utils
-import docs_meta
+from utils.config import lazy_conf
+from utils.git import get_branch
+
 from make import runner
+
 
 def _rm_rf(path):
     if os.path.isdir(path):
@@ -20,15 +20,14 @@ def _rm_rf(path):
 def sphinx(builder='html', conf=None):
     "Removes a specific sphinx build and associated artifacts. Defaults to 'html'. "
 
-    if conf is None:
-        conf = docs_meta.get_conf()
+    conf = lazy_conf(conf)
 
     root = conf.paths.branch_output
 
     cleaner([ os.path.join(root, 'doctrees' + '-' + builder),
               os.path.join(root, builder) ] )
 
-    puts('[clean-{0}]: removed all files supporting the {0} build'.format(builder))
+    print('[clean-{0}]: removed all files supporting the {0} build'.format(builder))
 
 @task
 def builds(days=14):
@@ -40,12 +39,14 @@ def builds(days=14):
 
     builds = [ path + o for o in os.listdir(path) if os.path.isdir(path + o)]
 
+    conf = lazy_conf()
+
     for build in builds:
         branch = build.rsplit('/', 1)[1]
 
-        if branch in docs_meta.get_conf().git.branches.published:
+        if branch in conf.git.branches.published:
             continue
-        elif branch == docs_meta.get_branch():
+        elif branch == get_branch():
             continue
         elif branch == 'public':
             continue
