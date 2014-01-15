@@ -87,6 +87,7 @@ def bootstrap_primer():
     os.remove(os.path.join(os.getcwd(), 'fabfile'))
     main_build = os.path.abspath(os.path.join(os.getcwd(), '..', 'build', 'primer'))
     primer_build = os.path.join(os.getcwd(), 'build')
+    primer_conf = os.path.join(os.getcwd(), 'config')
 
     if not os.path.exists(main_build):
         os.makedirs(main_build)
@@ -105,6 +106,11 @@ def bootstrap_primer():
 
     symlink(name=os.path.join('build', 'docs-tools'),
             target=os.path.abspath(os.path.join(main_build, '..', 'docs-tools')))
+
+    for conf_fn in [ 'intersphinx.yaml', 'sphinx.yaml']:
+        symlink(name=os.path.join(primer_conf, conf_fn),
+                target=os.path.abspath(os.path.join(main_build, '..', '..', 'config', conf_fn)))
+
 
 def main():
     bootstrap()

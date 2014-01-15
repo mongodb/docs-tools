@@ -16,10 +16,11 @@ def generate_meta(conf):
     m = MakefileCloth()
 
     m.section_break('branch/release meta', block='rel')
-    m.var('manual-branch', conf.git.branches.manual, block='rel')
+    if 'manual' in conf.git.branches:
+        m.var('manual-branch', conf.git.branches.manual, block='rel')
+        m.var('current-if-not-manual', conf.git.branches.manual, block='rel')
     m.var('current-branch', str(get_branch()), block='rel')
     m.var('last-commit', str(get_commit()), block='rel')
-    m.var('current-if-not-manual', conf.git.branches.manual, block='rel')
 
     m.section_break('file system paths', block='paths')
     m.var('output', conf.paths.output, block='paths')
