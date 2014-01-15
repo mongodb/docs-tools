@@ -19,7 +19,7 @@ from make import runner
 from intersphinx import intersphinx, intersphinx_jobs
 
 from utils.config import get_conf, BuildConfiguration, render_paths
-from utils.files import expand_tree
+from utils.files import expand_tree, copy_if_needed, create_link
 from utils.output import swap_streams, build_platform_notification
 from utils.serialization import ingest_json
 from utils.strings import hyph_concat
@@ -80,11 +80,11 @@ def html_tarball(builder, conf):
     if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
         return False
 
-    process.copy_if_needed(os.path.join(conf.paths.projectroot,
-                                        conf.paths.includes, 'hash.rst'),
-                           os.path.join(conf.paths.projectroot,
-                                        conf.paths.branch_output,
-                                        'html', 'release.txt'))
+    copy_if_needed(os.path.join(conf.paths.projectroot,
+                                conf.paths.includes, 'hash.rst'),
+                   os.path.join(conf.paths.projectroot,
+                                conf.paths.branch_output,
+                                'html', 'release.txt'))
 
     basename = os.path.join(conf.paths.projectroot,
                             conf.paths.public_site_output,
@@ -99,10 +99,10 @@ def html_tarball(builder, conf):
                      sourcep='html',
                      newp=os.path.basename(basename))
 
-    process.create_link(input_fn=os.path.basename(tarball_name),
-                         output_fn=os.path.join(conf.paths.projectroot,
-                                                conf.paths.public_site_output,
-                                                conf.project.name + '.tar.gz'))
+    create_link(input_fn=os.path.basename(tarball_name),
+                 output_fn=os.path.join(conf.paths.projectroot,
+                                        conf.paths.public_site_output,
+                                        conf.project.name + '.tar.gz'))
 
 def man_tarball(conf):
     basename = os.path.join(conf.paths.projectroot,
@@ -117,15 +117,15 @@ def man_tarball(conf):
                      newp=conf.project.name + '-manpages'
                      )
 
-    process.copy_if_needed(tarball_name,
-                           os.path.join(conf.paths.projectroot,
-                                        conf.paths.public_site_output,
-                                        os.path.basename(tarball_name)))
+    copy_if_needed(tarball_name,
+                   os.path.join(conf.paths.projectroot,
+                                conf.paths.public_site_output,
+                                os.path.basename(tarball_name)))
 
-    process.create_link(input_fn=os.path.basename(tarball_name),
-                         output_fn=os.path.join(conf.paths.projectroot,
-                                                conf.paths.public_site_output,
-                                                'manpages' + '.tar.gz'))
+    create_link(input_fn=os.path.basename(tarball_name),
+                 output_fn=os.path.join(conf.paths.projectroot,
+                                        conf.paths.public_site_output,
+                                        'manpages' + '.tar.gz'))
 
 #################### Public Fabric Tasks ####################
 
@@ -389,16 +389,16 @@ def finalize_epub_build(conf):
     if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
         return False
 
-    process.copy_if_needed(source_file=os.path.join(conf.paths.projectroot,
-                                                    conf.paths.branch_output,
-                                                    'epub', epub_src_filename),
-                           target_file=os.path.join(conf.paths.projectroot,
-                                                    conf.paths.public_site_output,
-                                                    epub_branched_filename))
-    process.create_link(input_fn=epub_branched_filename,
-                         output_fn=os.path.join(conf.paths.projectroot,
-                                                conf.paths.public_site_output,
-                                                epub_src_filename))
+    copy_if_needed(source_file=os.path.join(conf.paths.projectroot,
+                                            conf.paths.branch_output,
+                                            'epub', epub_src_filename),
+                   target_file=os.path.join(conf.paths.projectroot,
+                                            conf.paths.public_site_output,
+                                            epub_branched_filename))
+    create_link(input_fn=epub_branched_filename,
+                 output_fn=os.path.join(conf.paths.projectroot,
+                                        conf.paths.public_site_output,
+                                        epub_src_filename))
 
 
 def get_single_html_dir(conf):
@@ -423,9 +423,9 @@ def finalize_single_html_jobs(builder, conf):
         process.manual_single_html(input_file=pjoin(conf.paths.branch_output,
                                                     builder, 'index.html'),
                                    output_file=pjoin(single_html_dir, 'index.html'))
-    process.copy_if_needed(source_file=pjoin(conf.paths.branch_output,
-                                             builder, 'objects.inv'),
-                           target_file=pjoin(single_html_dir, 'objects.inv'))
+    copy_if_needed(source_file=pjoin(conf.paths.branch_output,
+                                     builder, 'objects.inv'),
+                   target_file=pjoin(single_html_dir, 'objects.inv'))
 
     single_path = pjoin(single_html_dir, '_static')
 
@@ -433,7 +433,7 @@ def finalize_single_html_jobs(builder, conf):
                                 builder, '_static'), None):
 
         yield {
-            'job': process.copy_if_needed,
+            'job': copy_if_needed,
             'args': [fn, pjoin(single_path, os.path.basename(fn))],
             'target': None,
             'dependency': None
@@ -451,8 +451,8 @@ def finalize_dirhtml_build(builder, conf):
         return False
 
     if os.path.exists(search_page):
-        process.copy_if_needed(source_file=search_page,
-                               target_file=pjoin(single_html_dir, 'search.html'))
+        copy_if_needed(source_file=search_page,
+                       target_file=pjoin(single_html_dir, 'search.html'))
 
     dest = pjoin(conf.paths.projectroot, conf.paths.public_site_output)
     local('rsync -a {source}/ {destination}'.format(source=pjoin(conf.paths.projectroot,
@@ -466,12 +466,12 @@ def finalize_dirhtml_build(builder, conf):
         sitemap_exists = generate.sitemap(config_path=None, conf=conf)
 
         if sitemap_exists is True:
-            process.copy_if_needed(source_file=pjoin(conf.paths.projectroot,
-                                                     conf.paths.branch_output,
-                                                     'sitemap.xml.gz'),
-                                   target_file=pjoin(conf.paths.projectroot,
-                                                     conf.paths.public_site_output,
-                                                     'sitemap.xml.gz'))
+            copy_if_needed(source_file=pjoin(conf.paths.projectroot,
+                                             conf.paths.branch_output,
+                                             'sitemap.xml.gz'),
+                           target_file=pjoin(conf.paths.projectroot,
+                                             conf.paths.public_site_output,
+                                             'sitemap.xml.gz'))
 
     sconf = BuildConfiguration('sphinx.yaml', pjoin(conf.paths.projectroot,
                                                 conf.paths.builddata))
