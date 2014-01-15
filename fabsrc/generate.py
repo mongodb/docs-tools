@@ -566,6 +566,10 @@ def robots_txt_builder(fn, conf, override=False):
                                                conf.paths.builddata,
                                                'robots.yaml'))
 
+    robots_txt_dir = os.path.dirname(fn)
+    if not os.path.exists(robot_txt_dir):
+        os.makedirs(robots_txt_dir)
+
     with open(fn, 'w') as f:
         f.write('User-agent: *')
         f.write('\n')
