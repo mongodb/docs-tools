@@ -3,11 +3,11 @@ import multiprocessing.dummy
 try:
     from utils.jobs.dependency import check_dependency
     from utils.jobs.pool import NestedPool
+    from utils.jobs.errors import PoolResultsError, JobRunnerError
 except ImportError:
     from dependency import check_dependency
     from pool import NestedPool
-
-class JobRunnerError(Exception): pass
+    from errors import PoolResultsError, JobRunnerError
 
 def runner(jobs, pool, parallel, force, retval):
     if parallel is False:
@@ -36,8 +36,6 @@ def async_process_runner(jobs, force, pool, retval):
         return sync_runner(jobs, force, retval)
 
     return async_runner(jobs, force, pool, retval, p)
-
-class PoolResultsError(Exception): pass
 
 def async_runner(jobs, force, pool, retval, p):
     results = []
