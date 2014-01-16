@@ -16,7 +16,7 @@ def generate_meta(conf):
     m = MakefileCloth()
 
     m.section_break('branch/release meta', block='rel')
-    if 'manual' in conf.git.branches:
+    if 'manual' in conf.git.branches and conf.project.name != 'primer':
         m.var('manual-branch', conf.git.branches.manual, block='rel')
         m.var('current-if-not-manual', conf.git.branches.manual, block='rel')
     m.var('current-branch', str(get_branch()), block='rel')

@@ -136,6 +136,7 @@ def mangle_paths(conf):
         conf.system.processed.project_paths = True
         return conf
 
+
 def mangle_configuration(conf):
     if is_processed('project', conf) is True:
         return conf
@@ -148,12 +149,12 @@ def mangle_configuration(conf):
 
         if conf.project.name == 'primer':
             conf.git.branches = AttributeDict()
-            conf.git.branches.published = 'master'
+            conf.git.branches.published = ['master']
+            conf.git.branches.manual = None
             conf.system.processed.versions = True
-
-            del conf.version['published']
-            del conf.version['stable']
-            del conf.version['upcoming']
+            conf.version.published = ['master']
+            conf.version.stable = None
+            conf.version.upcoming = None
 
         conf.system.processed.project_conf = True
         return conf
