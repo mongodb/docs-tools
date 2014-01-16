@@ -46,7 +46,7 @@ def make(target):
 
 ############### Task Running Framework ###############
 
-def runner(jobs, pool=None, parallel='process', force=False, retval='count'):
+def runner(jobs, pool=None, parallel='process', force=False, retval=True):
     if pool is None:
         pool = cpu_count()
 

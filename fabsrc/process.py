@@ -167,7 +167,8 @@ def dep_refresh_worker(target, deps, dep_map, conf):
 def refresh_dependencies(conf=None):
     conf = lazy_conf(conf)
 
-    return sum(runner(refresh_dependency_jobs(conf), retval='results', parallel='process'))
+    results = runner(refresh_dependency_jobs(conf), parallel='process')
+    return sum(results)
 
 ########## Main Output Processing Targets ##########
 

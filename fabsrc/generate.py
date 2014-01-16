@@ -45,7 +45,7 @@ def _generate_api_param(source, target, conf):
 def api():
     res = runner( api_jobs(), retval=True )
 
-    puts('[api]: generated {0} tables for api items'.format(res['count']))
+    puts('[api]: generated {0} tables for api items'.format(len(res)))
 
 def api_jobs(conf=None):
     conf = lazy_conf(conf)
@@ -134,7 +134,7 @@ def toc():
     conf = lazy_conf()
     res = runner( toc_jobs(conf), retval=True )
 
-    puts('[toc]: built {0} tables of contents'.format(res['count']))
+    puts('[toc]: built {0} tables of contents'.format(len(res)))
 
 def toc_jobs(conf):
     paths = conf.paths
@@ -224,7 +224,7 @@ def _generate_tables(source, target, list_target):
 def tables():
     res = runner( table_jobs(), retval=True )
 
-    puts('[table]: built {0} tables'.format(res['count']))
+    puts('[table]: built {0} tables'.format(len(res)))
 
 def table_jobs(conf=None):
     conf = lazy_conf()
@@ -271,7 +271,7 @@ def _generate_images(cmd, dpi, width, target, source):
 def images():
     res = runner( image_jobs(), retval=True)
 
-    puts('[image]: rebuilt {0} rst and image files'.format(res['count']))
+    puts('[image]: rebuilt {0} rst and image files'.format(len(res)))
 
 def image_jobs(conf=None):
     conf = lazy_conf(None)
@@ -361,7 +361,7 @@ def _generate_copy_core(rel, target, release):
 @task
 def releases():
     res = runner( release_jobs(), retval=True )
-    puts('[releases]: completed regenerating {0} release files.'.format(res['count']))
+    puts('[releases]: completed regenerating {0} release files.'.format(len(res)))
 
 def release_jobs(conf=None):
     conf = lazy_conf(conf)
@@ -598,7 +598,7 @@ def options():
 
     res = runner( option_jobs(conf), retval=True )
 
-    puts('[options]: rendered {0} options'.format(res['count']))
+    puts('[options]: rendered {0} options'.format(len(res)))
 
 def render_option_page(opt, path):
     renderer = OptionRendered(opt)
@@ -647,9 +647,9 @@ def steps_jobs(conf):
 def steps():
     conf = lazy_conf()
 
-    res = runner( steps_jobs(conf), retval=True)
+    res = runner(steps_jobs(conf))
 
-    puts('[steps]: rendered {0} step files'.format( res['count']))
+    puts('[steps]: rendered {0} step files'.format(len(res)))
 
 def _link_path(path, conf):
     return os.path.join(conf.paths.projectroot,

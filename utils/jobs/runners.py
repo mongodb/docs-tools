@@ -9,35 +9,42 @@ except ImportError:
     from pool import NestedPool
     from errors import PoolResultsError, JobRunnerError
 
-def runner(jobs, pool, parallel, force, retval):
+def runner(jobs, pool, parallel, force, retval=True):
     if parallel is False:
-        return sync_runner(jobs, force, retval)
+        results = sync_runner(jobs, force)
     elif parallel is True or parallel == 'process':
-        return async_process_runner(jobs, force, pool, retval)
+        results = async_process_runner(jobs, force, pool)
     elif parallel.startswith('threads'):
-        return async_thread_runner(jobs, force, pool, retval)
+        results = async_thread_runner(jobs, force, pool)
     else:
         raise JobRunnerError
 
-def async_thread_runner(jobs, force, pool, retval):
+    if retval == 'count':
+        return len(results)
+    elif retval is None:
+        return None
+    else:
+        return results
+
+def async_thread_runner(jobs, force, pool):
     try:
         p = multiprocessing.dummy.Pool(pool)
     except:
         print('[ERROR]: can\'t start pool, falling back to sync ')
-        return sync_runner(jobs, force, retval)
+        return sync_runner(jobs, force)
 
-    return async_runner(jobs, force, pool, retval, p)
+    return async_runner(jobs, force, pool, p)
 
-def async_process_runner(jobs, force, pool, retval):
+def async_process_runner(jobs, force, pool):
     try:
         p = NestedPool(pool)
     except:
         print('[ERROR]: can\'t start pool, falling back to sync ')
-        return sync_runner(jobs, force, retval)
+        return sync_runner(jobs, force)
 
-    return async_runner(jobs, force, pool, retval, p)
+    return async_runner(jobs, force, pool, p)
 
-def async_runner(jobs, force, pool, retval, p):
+def async_runner(jobs, force, pool, p):
     results = []
 
     for job in jobs:
@@ -61,32 +68,27 @@ def async_runner(jobs, force, pool, retval, p):
     p.close()
     p.join()
 
-    retval = []
-    has_errors = False
+    if force is False:
+        retval = []
+        has_errors = False
 
-    for ret in results:
-        try:
-            retval.append(ret.get())
-        except Exception as e:
-            has_errors = True
-            print(e)
+        for ret in results:
+            try:
+                retval.append(ret.get())
+            except Exception as e:
+                has_errors = True
+                print(e)
 
-    if has_errors is True:
-        raise PoolResultsError
+        if has_errors is True:
+            raise PoolResultsError
+        else:
+            results = retval
     else:
-        results = retval
+        results = [ o.get() for o in results ]
 
-    if retval == 'count':
-        return len(results)
-    elif retval is None:
-        return None
-    elif retval == 'results':
-        return results
-    else:
-        return dict(count=len(results),
-                    results=results)
+    return results
 
-def sync_runner(jobs, force, retval):
+def sync_runner(jobs, force):
     results = []
 
     for job in jobs:
@@ -105,15 +107,7 @@ def sync_runner(jobs, force, retval):
             if 'callback' in job:
                 job['callback'](r)
 
-    if retval == 'count':
-        return len(results)
-    elif retval is None:
-        return None
-    elif retval == 'results':
-        return results
-    else:
-        return dict(count=len(results),
-                    results=results)
+    return results
 
 def mapper(func, iter, pool=None, parallel='process'):
     if pool is None:
