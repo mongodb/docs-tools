@@ -106,6 +106,8 @@ def bootstrap_primer():
 
     symlink(name=os.path.join('build', 'docs-tools'),
             target=os.path.abspath(os.path.join(main_build, '..', 'docs-tools')))
+    symlink(name='conf.py',
+            target=os.path.abspath(os.path.join(main_build, '..', '..', 'conf.py')))
 
     for conf_fn in [ 'intersphinx.yaml', 'sphinx.yaml']:
         symlink(name=os.path.join(primer_conf, conf_fn),
