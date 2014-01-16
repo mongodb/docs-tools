@@ -1,11 +1,15 @@
+import collections
+
 try:
     from utils.jobs.runners import runner
     from utils.files import copy_always
     from utils.errors import ProcessingError
+    from utils.config import lazy_conf
 except ImportError:
     from jobs.runners import runner
     from files import copy_always
     from errors import ProcessingError
+    from config import lazy_conf
 
 def munge_page(fn, regex, out_fn=None,  tag='build'):
     with open(fn, 'r') as f:
