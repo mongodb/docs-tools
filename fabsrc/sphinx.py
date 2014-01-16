@@ -384,8 +384,8 @@ def finalize_build(builder, sconf, conf):
 
 
     print('[sphinx] [post] [{0}]: running post-processing steps.'.format(builder))
-    count = runner(itertools.chain(jobs[builder], jobs['all']), pool=1)
-    print('[sphinx] [post] [{0}]: completed {1} post-processing steps'.format(builder, count))
+    res = runner(itertools.chain(jobs[builder], jobs['all']), pool=1)
+    print('[sphinx] [post] [{0}]: completed {1} post-processing steps'.format(builder, len(res)))
 
 #################### Sphinx Post-Processing ####################
 

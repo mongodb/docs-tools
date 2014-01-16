@@ -257,8 +257,8 @@ def pdf_worker(target=None, conf=None):
         target = 'latex'
 
     for it, queue in enumerate(pdf_jobs(target, conf)):
-        count = runner(queue)
-        puts("[pdf]: completed {0} pdf jobs, in stage {1}".format(count, it))
+        res = runner(queue)
+        puts("[pdf]: completed {0} pdf jobs, in stage {1}".format(len(res), it))
 
 def pdf_jobs(target, conf):
     pdfs = ingest_yaml_list(os.path.join(conf.paths.builddata, 'pdfs.yaml'))
