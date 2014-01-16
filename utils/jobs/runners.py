@@ -37,6 +37,8 @@ def async_process_runner(jobs, force, pool, retval):
 
     return async_runner(jobs, force, pool, retval, p)
 
+class PoolResultsError(Exception): pass
+
 def async_runner(jobs, force, pool, retval, p):
     results = []
 
@@ -61,15 +63,30 @@ def async_runner(jobs, force, pool, retval, p):
     p.close()
     p.join()
 
+    retval = []
+    has_errors = False
+
+    for ret in results:
+        try:
+            retval.append(ret.get())
+        except Exception as e:
+            has_errors = True
+            print(e)
+
+    if has_errors is True:
+        raise PoolResultsError
+    else:
+        results = retval
+
     if retval == 'count':
         return len(results)
     elif retval is None:
         return None
     elif retval == 'results':
-        return [ o.get() for o in results ]
+        return results
     else:
         return dict(count=len(results),
-                    results=[ o.get() for o in results ])
+                    results=results)
 
 def sync_runner(jobs, force, retval):
     results = []

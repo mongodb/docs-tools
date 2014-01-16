@@ -30,15 +30,18 @@ from utils.jobs.dependency import dump_file_hashes
 intersphinx = task(intersphinx)
 
 def get_tags(target, sconf):
-    ret = []
+    ret = set()
+
+    ret.add(target)
+    ret.add(target.split('-')[0])
 
     if target.startswith('html') or target.startswith('dirhtml'):
-        ret.append('website')
+        ret.add('website')
     else:
-        ret.append('print')
+        ret.add('print')
 
     if 'edition' in sconf:
-        ret.append(sconf.edition)
+        ret.add(sconf.edition)
 
     return ' '.join([' '.join(['-t', i ])
                      for i in ret
