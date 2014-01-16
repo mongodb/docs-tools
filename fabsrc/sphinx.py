@@ -26,6 +26,7 @@ from utils.strings import hyph_concat
 from utils.structures import AttributeDict
 from utils.project import edition_setup
 from utils.jobs.dependency import dump_file_hashes
+from utils.jobs.errors import PoolResultsError
 
 intersphinx = task(intersphinx)
 
@@ -175,8 +176,12 @@ def build_prerequisites(conf):
                            generate.image_jobs(conf)
         )
 
-    res = runner(jobs, retval=True)
-    puts('[sphinx-prep]: built {0} pieces of content'.format(res['count']))
+    try:
+        res = runner(jobs)
+        print('[sphinx-prep]: built {0} pieces of content'.format(len(res)))
+    except PoolResultsError:
+        print('[WARNING]: sphinx prerequisites encountered errors. '
+              'See output above. Continuing as a temporary measure.')
 
     generate.buildinfo_hash(conf)
     if conf.project.name != 'mms':
