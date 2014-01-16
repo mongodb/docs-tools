@@ -1,0 +1,2 @@
+class ProcessingError(Exception):
+    pass

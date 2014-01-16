@@ -10,11 +10,10 @@ from fabric.api import task, env, abort, puts, local
 
 from utils.project import get_manual_path
 from utils.config import lazy_conf
-from utils.files import md5_file, expand_tree, create_link, copy_always, copy_if_needed
+from utils.files import md5_file, expand_tree, create_link, copy_if_needed
 from utils.strings import dot_concat
 from utils.serialization import ingest_yaml_list
-from utils.transformations import munge_content, munge_page
-
+from utils.transformations import munge_content, munge_page, process_page
 from utils.jobs.dependency import check_hashed_dependency, check_dependency
 
 from make import runner
@@ -41,7 +40,7 @@ def json_output(conf=None):
                      dst=json_dst))
 
     copy_if_needed(list_file, public_list_file)
-    puts('[json]: deployed json files to local staging.')
+    print('[json]: deployed json files to local staging.')
 
 def json_output_jobs(conf=None):
     conf = lazy_conf(conf)
@@ -127,7 +126,7 @@ def generate_list_file(outputs, path, conf=None):
             f.write( '/'.join([ url, fn.split('/', 3)[3:][0]]) )
             f.write('\n')
 
-    puts('[json]: rebuilt inventory of json output.')
+    print('[json]: rebuilt inventory of json output.')
 
 ########## Update Dependencies ##########
 
@@ -179,7 +178,7 @@ def manual_single_html(input_file, output_file):
     if check_dependency(output_file, input_file) is True:
         pass
     else:
-        puts('[process] [single]: singlehtml not changed, not reprocessing.')
+        print('[process] [single]: singlehtml not changed, not reprocessing.')
         return False
 
     with open(input_file, 'r') as f:
@@ -192,7 +191,7 @@ def manual_single_html(input_file, output_file):
     with open(output_file, 'w') as f:
         f.write(text)
 
-    puts('[process] [single]: processed singlehtml file.')
+    print('[process] [single]: processed singlehtml file.')
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 
@@ -206,7 +205,7 @@ def _clean_sphinx_latex(fn, regexes):
     with open(fn, 'w') as f:
         f.write(tex)
 
-    puts('[pdf]: processed Sphinx latex format for {0}'.format(fn))
+    print('[pdf]: processed Sphinx latex format for {0}'.format(fn))
 
 def _render_tex_into_pdf(fn, path):
     pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
@@ -218,14 +217,14 @@ def _render_tex_into_pdf(fn, path):
         print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
         return False
 
-    puts('[pdf]: completed pdf rendering stage 1 of 4 for: {0}'.format(fn))
+    print('[pdf]: completed pdf rendering stage 1 of 4 for: {0}'.format(fn))
 
     try:
         with open(os.devnull, 'w') as f:
             subprocess.check_call("makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, os.path.basename(fn)[:-4]), shell=True, stdout=f, stderr=f)
     except subprocess.CalledProcessError:
         print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
-    puts('[pdf]: completed pdf rendering stage 2 of 4 (indexing) for: {0}'.format(fn))
+    print('[pdf]: completed pdf rendering stage 2 of 4 (indexing) for: {0}'.format(fn))
 
     try:
         with open(os.devnull, 'w') as f:
@@ -233,7 +232,7 @@ def _render_tex_into_pdf(fn, path):
     except subprocess.CalledProcessError:
         print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
         return False
-    puts('[pdf]: completed pdf rendering stage 3 of 4 for: {0}'.format(fn))
+    print('[pdf]: completed pdf rendering stage 3 of 4 for: {0}'.format(fn))
 
     try:
         with open(os.devnull, 'w') as f:
@@ -241,9 +240,9 @@ def _render_tex_into_pdf(fn, path):
     except subprocess.CalledProcessErro:
         print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
         return False
-    puts('[pdf]: completed pdf rendering stage 4 of 4 for: {0}'.format(fn))
+    print('[pdf]: completed pdf rendering stage 4 of 4 for: {0}'.format(fn))
 
-    puts('[pdf]: rendered {0}.{1}'.format(os.path.basename(fn), 'pdf'))
+    print('[pdf]: rendered {0}.{1}'.format(os.path.basename(fn), 'pdf'))
 
 @task
 def pdfs():
@@ -258,7 +257,7 @@ def pdf_worker(target=None, conf=None):
 
     for it, queue in enumerate(pdf_jobs(target, conf)):
         res = runner(queue)
-        puts("[pdf]: completed {0} pdf jobs, in stage {1}".format(len(res), it))
+        print("[pdf]: completed {0} pdf jobs, in stage {1}".format(len(res), it))
 
 def pdf_jobs(target, conf):
     pdfs = ingest_yaml_list(os.path.join(conf.paths.builddata, 'pdfs.yaml'))
@@ -357,7 +356,7 @@ def error_pages(conf=None):
                                 'meta', error, 'index.html')
             munge_page(fn=page, regex=sub, tag='error-pages')
 
-        puts('[error-pages]: rendered {0} error pages'.format(len(error_pages)))
+        print('[error-pages]: rendered {0} error pages'.format(len(error_pages)))
 
 #################### Gettext Processing ####################
 
@@ -400,7 +399,7 @@ def manpage_url(regex_obj, input_file=None):
     with open(input_file, 'w') as f:
         f.write(manpage)
 
-    puts("[{0}]: fixed urls in {1}".format('man', input_file))
+    print("[{0}]: fixed urls in {1}".format('man', input_file))
 
 def manpage_url_jobs(conf):
     project_source = os.path.join(conf.paths.projectroot,
@@ -430,29 +429,6 @@ def manpage_url_jobs(conf):
                    dependency=None,
                    job=manpage_url,
                    args=[regex_obj, manpage])
-
-
-def _process_page(fn, output_fn, regex, builder='processor'):
-    tmp_fn = fn + '~'
-
-    jobs = [
-             {
-               'target': tmp_fn,
-               'dependency': fn,
-               'job': munge_page,
-               'args': dict(fn=fn, out_fn=tmp_fn, regex=regex),
-             },
-             {
-               'target': output_fn,
-               'dependency': tmp_fn,
-               'job': copy_always,
-               'args': dict(source_file=tmp_fn,
-                            target_file=output_fn,
-                            name=builder),
-             }
-           ]
-
-    runner(jobs, pool=1)
 
 def manpage_jobs(conf=None):
     conf = lazy_conf(conf)
@@ -486,61 +462,6 @@ def manpage_jobs(conf=None):
             yield {
                 'target': output_fn,
                 'dependency': input_fn,
-                'job': _process_page,
+                'job': process_page,
                 'args': [ input_fn, output_fn, regex, 'manpage' ],
               }
-
-def post_process_jobs(source_fn=None, tasks=None, conf=None):
-    """
-    input documents should be:
-
-    {
-      'transform': {
-                     'regex': str,
-                     'replace': str
-                   }
-      'type': <str>
-      'file': <str|list>
-    }
-
-    ``transform`` can be either a document or a list of documents.
-    """
-
-    if tasks is None:
-        conf = lazy_conf(conf)
-
-        if source_fn is None:
-            source_fn = os.path.join(conf.paths.project.root,
-                                     conf.paths.builddata,
-                                     'processing.yaml')
-        tasks = ingest_yaml(source_fn)
-    elif not isinstance(tasks, collections.Iterable):
-        abort('[ERROR]: cannot parse post processing specification.')
-
-    def rjob(fn, regex, type):
-        return {
-                 'target': fn,
-                 'dependency': None,
-                 'job': _process_page,
-                 'args': dict(fn=fn, output_fn=fn, regex=regex, builder=type)
-               }
-
-    for job in tasks:
-        if not isinstance(job, dict):
-            abort('[ERROR]: invalid replacement specification.')
-        elif not 'file' in job and not 'transform' in job:
-            abort('[ERROR]: replacement specification incomplete.')
-
-        if 'type' not in job:
-            job['type'] = 'processor'
-
-        if isinstance(job['transform'], list):
-            regex = [ ( re.compile(rs['regex'], rs['replace'] ) ) for rs  in job['transform'] ]
-        else:
-            regex = ( re.compile(job['transform']['regex'] ), job['transform']['replace'])
-
-        if isinstance(job['file'], list):
-            for fn in job['file']:
-                yield rjob(fn, regex, job['type'])
-        else:
-            yield rjob(fn, regex, job['type'])
