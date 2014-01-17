@@ -49,7 +49,7 @@ class FileOperationError(Exception): pass
 def copy_always(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False:
         print("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
-        raise InvalidPath
+        raise FileOperationError
     else:
         if not os.path.exists(os.path.dirname(target_file)):
             os.makedirs(os.path.dirname(target_file))
@@ -59,8 +59,7 @@ def copy_always(source_file, target_file, name='build'):
 
 def copy_if_needed(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False or os.path.isdir(source_file):
-        print("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
-        raise InvalidPath
+        raise FileOperationError("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
     elif os.path.isfile(target_file) is False:
         if not os.path.exists(os.path.dirname(target_file)):
             os.makedirs(os.path.dirname(target_file))

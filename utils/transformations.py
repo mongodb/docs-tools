@@ -1,3 +1,4 @@
+import re
 import collections
 
 try:
@@ -5,10 +6,12 @@ try:
     from utils.files import copy_always
     from utils.errors import ProcessingError
     from utils.config import lazy_conf
+    from utils.serialization import ingest_yaml
 except ImportError:
     from jobs.runners import runner
     from files import copy_always
     from errors import ProcessingError
+    from serialization import ingest_yaml
     from config import lazy_conf
 
 def munge_page(fn, regex, out_fn=None,  tag='build'):
@@ -101,12 +104,34 @@ def post_process_jobs(source_fn=None, tasks=None, conf=None):
             job['type'] = 'processor'
 
         if isinstance(job['transform'], list):
-            regex = [ ( re.compile(rs['regex'], rs['replace'] ) ) for rs  in job['transform'] ]
+            regex = [ (re.compile(rs['regex']), rs['replace'])
+                      for rs in job['transform'] ]
         else:
-            regex = ( re.compile(job['transform']['regex'] ), job['transform']['replace'])
+            regex = (re.compile(job['transform']['regex']), job['transform']['replace'])
 
         if isinstance(job['file'], list):
             for fn in job['file']:
                 yield rjob(fn, regex, job['type'])
         else:
-            yield rjob(fn, regex, job['type'])
+            yield rjob(job['file'], regex, job['type'])
+
+def truncate_file(fn, start_after=None, end_before=None):
+    with open(fn, 'r') as f:
+        source_lines = f.readlines()
+
+    start_idx = 0
+    end_idx = len(source_lines) - 1
+
+    for idx, ln in enumerate(source_lines):
+        if start_after is not None:
+            if start_idx != 0 and ln.startswith(start_after):
+                start_idx = idx - 1
+                start_after = None
+
+        if end_before is not None:
+            if ln.startswith(end_before):
+                end_idx = idx
+                break
+
+    with open(fn, 'w') as f:
+        f.writelines(source_lines[start_idx:end_idx])
