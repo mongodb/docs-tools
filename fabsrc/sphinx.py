@@ -30,6 +30,37 @@ from utils.jobs.errors import PoolResultsError
 
 intersphinx = task(intersphinx)
 
+@task
+def target(*targets):
+    conf = lazy_conf()
+
+    build_prerequisites(conf)
+
+    sconf = BuildConfiguration(filename='sphinx.yaml',
+                               directory=os.path.join(conf.paths.projectroot,
+                                                      conf.paths.builddata))
+
+    if len(targets) == 0:
+        targets.append('html')
+
+    target_jobs = []
+
+    for target in targets:
+        if target in sconf:
+            target_jobs.append({
+                'job': build_worker_wrapper,
+                'args': [ target, sconf, conf]
+            })
+        else:
+            print('[sphinx] [warning]: not building {0} without configuration.'.format(target))
+
+    if len(target_jobs) <= 1:
+        res = runner(target_jobs, pool=1)
+    else:
+        res = runner(target_jobs, pool=3, parallel='process')
+
+    print('[sphinx]: build {0} sphinx targets'.format(len(res)))
+
 def get_tags(target, sconf):
     ret = set()
 
@@ -201,31 +232,20 @@ def build_prerequisites(conf):
     dump_file_hashes(conf.system.dependency_cache, conf)
     puts('[sphinx-prep]: build environment prepared for sphinx.')
 
-def compute_sphinx_config(builder, conf):
-    sconf = BuildConfiguration(filename='sphinx.yaml',
-                               directory=os.path.join(conf.paths.projectroot,
-                                                      conf.paths.builddata))
+def compute_sphinx_config(builder, sconf, conf):
+    if 'inherit' in sconf[builder]:
+        computed_config = sconf[sconf[builder]['inherit']]
+        computed_config.update(sconf[builder])
+    else:
+        computed_config = sconf[builder]
 
     if conf.project.name == 'mms':
-        builder, edition = builder.split('-')
+        computed_config.builder = builder.split('-')[0]
+        if 'edition' not in computed_config:
+            raise Exception('[sphinx] [error]: mms builds must have an edition.')
     else:
-        edition = None
-
-    if builder in sconf:
-        sphinx_target = sconf[builder]
-    else:
-        sphinx_target = AttributeDict()
-
-    if 'inherit' in sphinx_target:
-        computed_config = sconf[sphinx_target['inherit']]
-        computed_config.update(sphinx_target)
-    else:
-        computed_config = sphinx_target
-
-    if 'builder' not in computed_config:
         computed_config.builder = builder
-
-    computed_config.edition = edition
+        computed_config.edition = None
 
     return computed_config
 
@@ -235,10 +255,18 @@ def build(builder='html', conf=None):
 
     conf = lazy_conf(conf)
 
-    build_worker(builder, conf)
+    sconf = BuildConfiguration(filename='sphinx.yaml',
+                               directory=os.path.join(conf.paths.projectroot,
+                                                      conf.paths.builddata))
 
-def build_worker(builder, conf):
-    sconf = compute_sphinx_config(builder, conf)
+    build_worker_wrapper(builder, sconf, conf)
+
+def build_worker_wrapper(builder, sconf, conf):
+    sconf = compute_sphinx_config(builder, sconf, conf)
+
+    build_worker(builder, sconf, conf)
+
+def build_worker(builder, sconf, conf):
     conf = edition_setup(sconf.edition, conf)
 
     dirpath = os.path.join(conf.paths.branch_output, builder)

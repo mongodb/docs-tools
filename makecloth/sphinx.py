@@ -91,6 +91,11 @@ def make_all_sphinx(config):
         else:
             targets.append(builder)
 
+    if 'sphinx_builders' in config:
+        for target in config['sphinx_builders']:
+            m.target(target, [target + '-hosted', target + '-saas'])
+        m.newline()
+
     for builder in targets:
         sphinx_targets.extend(sphinx_builder(builder))
 
