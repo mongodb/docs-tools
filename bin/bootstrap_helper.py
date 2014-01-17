@@ -1,6 +1,5 @@
 import os
 from shutil import rmtree, copyfile
-import subprocess
 
 reset_ref = 'HEAD~4'
 
@@ -14,45 +13,12 @@ def symlink(name, target):
         except ImportError:
             exit('ERROR: platform does not contain support for symlinks. Windows users need to pywin32.')
 
+# compatibility with old bootstrap.py scripts
 def init_fabric(buildsystem, conf_file):
-    fab_dir = 'fabfile'
+    import legacy_bootstrap
 
-    if os.path.islink(fab_dir):
-        os.remove(fab_dir)
-    elif os.path.isdir(fab_dir):
-        rmtree(fab_dir)
-
-    meta_link = os.path.join(buildsystem, 'bin', 'docs_meta.yaml')
-    conf_dir_link = os.path.join(buildsystem, 'config')
-
-    if os.path.exists(meta_link):
-        os.remove(meta_link)
-
-    if os.path.exists(conf_dir_link):
-        os.remove(conf_dir_link)
-
-    symlink('fabfile', os.path.join(buildsystem, 'fabsrc'))
-
-    symlink('fabfile', os.path.join(buildsystem, 'fabsrc'))
-
-    symlink(name=meta_link, target=os.path.join(os.getcwd(), conf_file))
-
-    symlink(name=conf_dir_link, target=os.path.dirname(conf_file))
-
-    symlink(name=os.path.join(buildsystem, 'fabsrc', 'utils'),
-            target=os.path.join(os.path.abspath(buildsystem), 'utils'))
-
-    symlink(name=os.path.join(buildsystem, 'bin', 'utils'),
-            target=os.path.join(os.path.abspath(buildsystem), 'utils'))
-
-    symlink(name=os.path.join(buildsystem, 'makecloth', 'utils'),
-            target=os.path.join(os.path.abspath(buildsystem), 'utils'))
-
-    symlink(name=os.path.join(buildsystem, 'fabsrc', 'docs_meta.py'),
-            target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
-
-    symlink(name=os.path.join(buildsystem, 'utils', 'docs_meta.py'),
-            target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
+    print('[bootstrap] [warning]: legacy bootstrap process. update more thoroughly.')
+    legacy_bootstrap.init_fabric(buildsystem, conf_file)
 
 def clean_buildsystem(buildsystem, output_dir):
     if os.path.islink('fabfile'):
@@ -67,56 +33,37 @@ def clean_buildsystem(buildsystem, output_dir):
         rmtree(buildsystem)
         print('[bootstrap-clean]: purged %s' % buildsystem)
 
-def bootstrap():
+def bootstrap(**kwargs):
     """
     The bootstrap file calls this function. Use this as a site for future
     extension.
     """
-    print('[bootstrap]: initialized fabfiles and dependencies. Regenerate buildsystem now.')
 
-    # re/generate the makefile.meta
-    makecloth_path = os.path.join(os.path.abspath(__file__).rsplit(os.path.sep, 2)[0], 'makecloth')
-    cmd = 'python {0}/meta.py build/makefile.meta'.format(makecloth_path).split()
-    subprocess.check_call(cmd)
+    try:
+        build_tools_path = kwargs['build_tools_path']
+        conf_path = kwargs['conf_path']
+
+        symlink(name=os.path.join(build_tools_path, 'bin', 'utils'),
+                target=os.path.join(os.path.abspath(build_tools_path), 'utils'))
+
+        import utils.bootstrap
+
+        utils.bootstrap.fabric(build_tools_path, conf_path)
+        utils.bootstrap.config(build_tools_path, conf_path)
+        utils.bootstrap.utils(build_tools_path, conf_path)
+
+    except KeyError:
+        print('[bootstrap] [warning]: your bootstrap.py is probably out of date. '
+              'Please update as soon as possible.')
+
+    import utils.bootstrap
+
+    utils.bootstrap.makefile_meta()
 
     if 'primer' in os.path.split(os.getcwd()):
-        bootstrap_primer()
-        print('[bootstrap]: initialized "primer" project.')
+        utils.bootstrap.primer()
 
-def bootstrap_primer():
-    os.remove(os.path.join(os.getcwd(), 'fabfile'))
-    main_build = os.path.abspath(os.path.join(os.getcwd(), '..', 'build', 'primer'))
-    primer_build = os.path.join(os.getcwd(), 'build')
-    primer_conf = os.path.join(os.getcwd(), 'config')
-
-    if not os.path.exists(main_build):
-        os.makedirs(main_build)
-    elif not os.path.isdir(main_build):
-        raise Exception("[ERROR]: {0} is not a directory".format(main_build))
-
-    if not os.path.islink(primer_build):
-        rmtree(primer_build)
-    else:
-        os.remove(primer_build)
-
-    symlink(name='build', target=main_build)
-
-    symlink(name='fabfile',
-            target=os.path.abspath(os.path.join(main_build, '..', 'docs-tools', 'fabsrc')))
-
-    symlink(name=os.path.join('build', 'docs-tools'),
-            target=os.path.abspath(os.path.join(main_build, '..', 'docs-tools')))
-
-    symlink(name='conf.py',
-            target=os.path.abspath(os.path.join(main_build, '..', '..', 'conf.py')))
-
-    symlink(name=os.path.join('source', '.static'),
-            target=os.path.abspath(os.path.join(main_build, '..', '..', 'source', '.static')))
-
-    for conf_fn in [ 'intersphinx.yaml', 'sphinx.yaml']:
-        symlink(name=os.path.join(primer_conf, conf_fn),
-                target=os.path.abspath(os.path.join(main_build, '..', '..', 'config', conf_fn)))
-
+    print('[bootstrap]: initialized fabfiles and dependencies.')
 
 def main():
     bootstrap()

@@ -10,4 +10,4 @@ try:
     from transformations import munge_page, munge_content
 except ImportError:
     print('[utils]: skipping compatibility imports during bootstrap. '
-          'If you see this and you are not bootstrapping, investigate before continuing.')
+          'If you see this and you are **not** bootstrapping, investigate before continuing.')
