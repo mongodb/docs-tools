@@ -18,7 +18,7 @@ from clean import cleaner
 from make import runner
 from intersphinx import intersphinx, intersphinx_jobs
 
-from utils.config import get_conf, BuildConfiguration, render_paths
+from utils.config import lazy_conf, BuildConfiguration, render_paths
 from utils.files import expand_tree, copy_if_needed, create_link
 from utils.output import swap_streams, build_platform_notification
 from utils.serialization import ingest_json
@@ -139,7 +139,7 @@ def man_tarball(conf):
 def prereq():
     "Omnibus operation that builds all prerequisites for a Sphinx build."
 
-    conf = get_conf()
+    conf = lazy_conf()
 
     build_prerequisites(conf)
 
@@ -233,8 +233,7 @@ def compute_sphinx_config(builder, conf):
 def build(builder='html', conf=None):
     "Build a single sphinx target. Does not build prerequisites."
 
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     build_worker(builder, conf)
 
@@ -290,14 +289,17 @@ def sphinx_native_worker(sphinx_cmd):
 
 def output_sphinx_stream(out, builder, conf=None):
     if conf is None:
-        conf = get_conf()
+        conf = lazy_conf()
 
     out = out.split('\n')
     out = list(set(out))
 
     out.sort()
 
+    full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
+
     regx = re.compile(r'(.*):[0-9]+: WARNING: duplicate object description of ".*", other instance in (.*)')
+
     for l in out:
         if l == '':
             continue
@@ -312,12 +314,6 @@ def output_sphinx_stream(out, builder, conf=None):
             elif l.endswith('source/reference/sharding-commands.txt'):
                 continue
 
-        full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
-        if l.startswith(conf.paths.branch_output):
-            l = l[len(conf.paths.branch_output)+1:]
-        elif l.startswith(full_path):
-            l = l[len(full_path)+1:]
-
         f1 = regx.match(l)
         if f1 is not None:
             g = f1.groups()
@@ -325,7 +321,12 @@ def output_sphinx_stream(out, builder, conf=None):
             if g[1].endswith(g[0]):
                 continue
 
-        l = os.path.join(conf.paths.projectroot, l)
+        if l.startswith(conf.paths.branch_output):
+            l = os.path.join(conf.paths.projectroot, l[len(conf.paths.branch_output)+1:])
+        elif l.startswith(full_path):
+            l = os.path.join(conf.paths.projectroot, l[len(full_path)+1:])
+        elif l.startswith('source'):
+            l = os.path.join(conf.paths.projectroot, l)
 
         print(l)
 

@@ -101,8 +101,8 @@ def deploy(target, conf=None, pconf=None):
     if pconf['target'] != target:
         abort('[deploy] [ERROR]: this build environment does not support the {0} target'.format(target))
 
-    count = runner(deploy_jobs(target, conf, pconf), pool=2)
-    puts('[deploy]: pushed {0} targets'.format(count))
+    res = runner(deploy_jobs(target, conf, pconf), pool=2)
+    puts('[deploy]: pushed {0} targets'.format(len(res)))
 
 def deploy_jobs(target, conf, pconf):
     if 'edition' in pconf:
