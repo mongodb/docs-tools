@@ -10,12 +10,12 @@ from utils.sphinx.prepare import build_prerequisites
 from utils.sphinx.output import output_sphinx_stream
 from utils.sphinx.config import compute_sphinx_config, get_sphinx_args
 
-def build_worker_wrapper(builder, sconf, conf, finalize_fn):
+def build_worker_wrapper(builder, sconf, conf, finalize_fun):
     sconf = compute_sphinx_config(builder, sconf, conf)
 
-    build_worker(builder, sconf, conf, finalize_fn)
+    build_worker(builder, sconf, conf, finalize_fun)
 
-def sphinx_build(targets, conf, sconf, finalize_fn):
+def sphinx_build(targets, conf, sconf, finalize_fun):
     build_prerequisites(conf)
 
     if len(targets) == 0:
@@ -27,7 +27,7 @@ def sphinx_build(targets, conf, sconf, finalize_fn):
         if target in sconf:
             target_jobs.append({
                 'job': build_worker_wrapper,
-                'args': [ target, sconf, conf, finalize_fn]
+                'args': [ target, sconf, conf, finalize_fun]
             })
         else:
             print('[sphinx] [warning]: not building {0} without configuration.'.format(target))
@@ -39,7 +39,7 @@ def sphinx_build(targets, conf, sconf, finalize_fn):
 
     print('[sphinx]: build {0} sphinx targets'.format(len(res)))
 
-def build_worker(builder, sconf, conf, finalize_fn):
+def build_worker(builder, sconf, conf, finalize_fun):
     conf = edition_setup(sconf.edition, conf)
 
     dirpath = os.path.join(conf.paths.branch_output, builder)
@@ -63,4 +63,4 @@ def build_worker(builder, sconf, conf, finalize_fn):
 
     print('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
-    finalize_fn(builder, sconf, conf)
+    finalize_fun(builder, sconf, conf)

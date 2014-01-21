@@ -17,9 +17,6 @@ from fabfile.utils.config import lazy_conf, BuildConfiguration
 
 intersphinx = task(intersphinx)
 
-def noop(*args, **kwargs):
-    pass
-
 @task
 def target(*targets):
     "Builds a sphinx target with prerequisites and post-processing."
@@ -30,7 +27,7 @@ def target(*targets):
                                directory=os.path.join(conf.paths.projectroot,
                                                       conf.paths.builddata))
 
-    sphinx_build(targets, conf, sconf, noop)
+    sphinx_build(targets, conf, sconf, finalize_build)
 
 #################### Public Fabric Tasks ####################
 

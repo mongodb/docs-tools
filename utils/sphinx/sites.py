@@ -62,11 +62,11 @@ def finalize_single_html_jobs(builder, conf):
         os.makedirs(single_html_dir)
 
     try:
-        process.manual_single_html(input_file=pjoin(conf.paths.branch_output,
+        manual_single_html(input_file=pjoin(conf.paths.branch_output,
                                                     builder, 'contents.html'),
                                    output_file=pjoin(single_html_dir, 'index.html'))
     except (IOError, OSError):
-        process.manual_single_html(input_file=pjoin(conf.paths.branch_output,
+        manual_single_html(input_file=pjoin(conf.paths.branch_output,
                                                     builder, 'index.html'),
                                    output_file=pjoin(single_html_dir, 'index.html'))
     copy_if_needed(source_file=pjoin(conf.paths.branch_output,
