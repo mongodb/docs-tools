@@ -16,10 +16,10 @@ m = MakefileCloth()
 paths = get_conf().paths
 
 def generate_integration_targets(conf):
-    if 'targets' in conf:
-        dependencies = copy(conf['targets'])
-    else:
-        dependencies = []
+    m.target('_publish')
+    m.job('fab sphinx.target:{0}'.format(','.join(conf['targets'])))
+
+    dependencies = [ '_publish']
 
     if 'doc-root' in conf:
         for dep in conf['doc-root']:
@@ -27,14 +27,14 @@ def generate_integration_targets(conf):
 
     dependencies.extend(proccess_branch_root(conf))
 
-    m.target('package')
-    m.job('fab stage.package')
-
     m.target('publish', dependencies)
     m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
     m.newline()
 
-    m.target('.PHONY', ['publish', 'package'])
+    m.target('package')
+    m.job('fab stage.package')
+
+    m.target('.PHONY', ['_publish', 'publish', 'package'])
 
 
 def proccess_branch_root(conf):

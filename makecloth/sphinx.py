@@ -60,7 +60,7 @@ def make_all_sphinx(config):
 
     m.newline()
     m.comment('sphinx prereq integration.')
-    m.target('sphinx-prerequisites', block=b)
+    m.target(['prereq', 'sphinx-prerequisites'], block=b)
     m.job('fab sphinx.prereq', block=b)
 
     build_source_dir = conf.paths.branch_output + '/source'
@@ -136,8 +136,10 @@ def sphinx_builder(target):
             elif target[1] == 'saas':
                 fab_arg.append('root=' + os.path.join(paths['output'], target[1]))
 
-    m.target(target, 'sphinx-prerequisites', block=b)
-    m.job(fab_prefix + ' sphinx.build:' + ','.join(fab_arg), block=b)
+    # m.target(target, 'sphinx-prerequisites', block=b)
+    # m.job(fab_prefix + ' sphinx.build:' + ','.join(fab_arg), block=b)
+    m.target(target, block=b)
+    m.job('{0} sphinx.target:{1}'.format(fab_prefix, target), block=b)
     m.job(build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
 
     return ret_value
