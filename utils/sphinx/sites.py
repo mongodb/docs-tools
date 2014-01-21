@@ -1,75 +1,29 @@
-import os
-import itertools
+import os.path
+import re
 
-import fabfile.process as process
-import fabfile.generate as generate
-from fabfile.make import runner
+from utils.project import mms_should_migrate
+from utils.jobs.dependency import check_dependency
+from utils.files import expand_tree, create_link, copy_if_needed
 
-from fabfile.utils.shell import command
-from fabfile.utils.files import expand_tree, copy_if_needed, create_link
-from fabfile.utils.config import BuildConfiguration, render_paths
-
-def printer(string):
-    print(string)
-
-def finalize_build(builder, sconf, conf):
-    if 'language' in sconf:
-        # reinitialize conf and builders for internationalization
-        conf.paths = render_paths(conf, sconf.language)
-        builder = sconf.builder
-        target = builder
+def manual_single_html(input_file, output_file):
+    # don't rebuild this if its not needed.
+    if check_dependency(output_file, input_file) is True:
+        pass
     else:
-        # mms compatibility
-        target = builder
-        builder = builder.split('-', 1)[0]
+        print('[process] [single]: singlehtml not changed, not reprocessing.')
+        return False
 
-    jobs = {
-        'linkcheck': [
-            { 'job': printer,
-              'args': ['[{0}]: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)]
-            }
-        ],
-        'dirhtml': [
-            { 'job': finalize_dirhtml_build,
-              'args': [target, conf]
-            }
-        ],
-        'json': process.json_output_jobs(conf),
-        'singlehtml': finalize_single_html_jobs(target, conf),
-        'latex': [
-            { 'job': process.pdf_worker,
-              'args': [target, conf]
-            }
-        ],
-        'man': itertools.chain(process.manpage_url_jobs(conf), [
-            { 'job': man_tarball,
-              'args': [conf]
-            }
-        ]),
-        'html': [
-            { 'job': html_tarball,
-              'args': [target, conf]
-            }
-        ],
-        'gettext': process.gettext_jobs(conf),
-        'all': [ ]
-    }
+    with open(input_file, 'r') as f:
+        text = f.read()
 
-    if builder not in jobs:
-        jobs[builder] = []
+    text = re.sub('href="contents.html', 'href="index.html', text)
+    text = re.sub('name="robots" content="index"', 'name="robots" content="noindex"', text)
+    text = re.sub('(href=")genindex.html', '\1../genindex/', text)
 
-    if conf.system.branched is True and conf.git.branches.current == 'master':
-        jobs['all'].append(
-            { 'job': generate.create_manual_symlink,
-              'args': [conf]
-            }
-        )
+    with open(output_file, 'w') as f:
+        f.write(text)
 
-
-    print('[sphinx] [post] [{0}]: running post-processing steps.'.format(builder))
-    res = runner(itertools.chain(jobs[builder], jobs['all']), pool=1)
-    print('[sphinx] [post] [{0}]: completed {1} post-processing steps'.format(builder, len(res)))
-
+    print('[process] [single]: processed singlehtml file.')
 
 #################### Sphinx Post-Processing ####################
 
@@ -78,7 +32,7 @@ def finalize_epub_build(conf):
     epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
     epub_src_filename = epub_name + '.epub'
 
-    if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
+    if conf.project.name == 'mms' and mms_should_migrate(builder, conf) is False:
         return False
 
     copy_if_needed(source_file=os.path.join(conf.paths.projectroot,
@@ -176,57 +130,3 @@ def finalize_dirhtml_build(builder, conf):
 
         cleaner(fns)
         print('[dirhtml] [clean]: removed excluded files from output directory')
-
-
-#################### Associated Sphinx Artifacts ####################
-
-def html_tarball(builder, conf):
-    if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
-        return False
-
-    copy_if_needed(os.path.join(conf.paths.projectroot,
-                                conf.paths.includes, 'hash.rst'),
-                   os.path.join(conf.paths.projectroot,
-                                conf.paths.branch_output,
-                                'html', 'release.txt'))
-
-    basename = os.path.join(conf.paths.projectroot,
-                            conf.paths.public_site_output,
-                            conf.project.name + '-' + conf.git.branches.current)
-
-    tarball_name = basename + '.tar.gz'
-
-    generate.tarball(name=tarball_name,
-                     path='html',
-                     cdir=os.path.join(conf.paths.projectroot,
-                                       conf.paths.branch_output),
-                     sourcep='html',
-                     newp=os.path.basename(basename))
-
-    create_link(input_fn=os.path.basename(tarball_name),
-                 output_fn=os.path.join(conf.paths.projectroot,
-                                        conf.paths.public_site_output,
-                                        conf.project.name + '.tar.gz'))
-
-def man_tarball(conf):
-    basename = os.path.join(conf.paths.projectroot,
-                            conf.paths.branch_output,
-                            'manpages-' + conf.git.branches.current)
-
-    tarball_name = basename + '.tar.gz'
-    generate.tarball(name=tarball_name,
-                     path='man',
-                     cdir=os.path.dirname(basename),
-                     sourcep='man',
-                     newp=conf.project.name + '-manpages'
-                     )
-
-    copy_if_needed(tarball_name,
-                   os.path.join(conf.paths.projectroot,
-                                conf.paths.public_site_output,
-                                os.path.basename(tarball_name)))
-
-    create_link(input_fn=os.path.basename(tarball_name),
-                 output_fn=os.path.join(conf.paths.projectroot,
-                                        conf.paths.public_site_output,
-                                        'manpages' + '.tar.gz'))

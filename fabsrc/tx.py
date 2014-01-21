@@ -1,8 +1,8 @@
 import os.path
 
-from fabfile.sphinx.config import compute_sphinx_config
-from fabfile.sphinx.workers import build_prerequisites as sphinx_prereq
-from fabfile.sphinx.workers import build_worker as sphinx_build
+from utils.sphinx.config import compute_sphinx_config
+from utils.sphinx.workers import build_prerequisites as sphinx_prereq
+from utils.sphinx.workers import build_worker as sphinx_build
 
 from fabfile.utils.config import lazy_conf
 from fabfile.utils.shell import command

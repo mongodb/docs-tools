@@ -15,6 +15,12 @@ def lazy_conf(conf=None):
 
     return conf
 
+def mms_should_migrate(builder, conf):
+    if builder.endswith('-saas') and conf.git.branches.current != 'master':
+        return False
+    else:
+        return True
+
 #### Project-Specific Configuration Generation #####
 
 def get_manual_path(conf=None):

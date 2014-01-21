@@ -3,8 +3,7 @@ import os.path
 from fabric.api import task, abort, env, hide
 
 from utils.serialization import ingest_yaml
-from utils.config import get_conf
-from utils.sphinx import get_sphinx_builders
+from utils.config import get_conf, get_sphinx_builders
 from utils.git import get_branch
 
 from git import GitRepoManager

@@ -10,8 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 
 from utils.output import build_platform_notification
 from utils.serialization import ingest_yaml
-from utils.config import get_conf, get_conf_file
-from utils.sphinx import get_sphinx_builders
+from utils.config import get_conf, get_conf_file, get_sphinx_builders
 
 from makecloth import MakefileCloth
 

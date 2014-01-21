@@ -6,17 +6,16 @@ from fabfile.utils.shell import command
 
 from fabfile.make import runner
 
-from fabfile.sphinx.prepare import build_prerequisites
-from fabfile.sphinx.finalize import finalize_build
-from fabfile.sphinx.output import output_sphinx_stream
-from fabfile.sphinx.config import compute_sphinx_config, get_sphinx_args
+from utils.sphinx.prepare import build_prerequisites
+from utils.sphinx.output import output_sphinx_stream
+from utils.sphinx.config import compute_sphinx_config, get_sphinx_args
 
-def build_worker_wrapper(builder, sconf, conf):
+def build_worker_wrapper(builder, sconf, conf, finalize_fn):
     sconf = compute_sphinx_config(builder, sconf, conf)
 
-    build_worker(builder, sconf, conf)
+    build_worker(builder, sconf, conf, finalize_fn)
 
-def sphinx_build(targets, conf, sconf):
+def sphinx_build(targets, conf, sconf, finalize_fn):
     build_prerequisites(conf)
 
     if len(targets) == 0:
@@ -28,7 +27,7 @@ def sphinx_build(targets, conf, sconf):
         if target in sconf:
             target_jobs.append({
                 'job': build_worker_wrapper,
-                'args': [ target, sconf, conf]
+                'args': [ target, sconf, conf, finalize_fn]
             })
         else:
             print('[sphinx] [warning]: not building {0} without configuration.'.format(target))
@@ -40,7 +39,7 @@ def sphinx_build(targets, conf, sconf):
 
     print('[sphinx]: build {0} sphinx targets'.format(len(res)))
 
-def build_worker(builder, sconf, conf):
+def build_worker(builder, sconf, conf, finalize_fn):
     conf = edition_setup(sconf.edition, conf)
 
     dirpath = os.path.join(conf.paths.branch_output, builder)
@@ -64,4 +63,4 @@ def build_worker(builder, sconf, conf):
 
     print('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
-    finalize_build(builder, sconf, conf)
+    finalize_fn(builder, sconf, conf)

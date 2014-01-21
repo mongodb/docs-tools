@@ -1,7 +1,6 @@
 import os.path
 import re
 import sys
-import tarfile
 
 from fabric.api import task, puts, local, env, quiet, settings
 
@@ -495,26 +494,6 @@ def buildinfo_hash(conf):
         f.write(conf.git.commit)
 
     puts('[build]: generated "{0}" with current release hash.'.format(release_fn))
-
-#################### tarball ####################
-
-def tarball(name, path, sourcep=None, newp=None, cdir=None):
-    tarball_path = os.path.dirname(name)
-    if not os.path.exists(tarball_path):
-        os.makedirs(tarball_path)
-
-    with tarfile.open(name, 'w:gz') as t:
-        if newp is not None:
-            arcname = os.path.join(newp, os.path.basename(path))
-        else:
-            arcname = None
-
-        if cdir is not None:
-            path = os.path.join(cdir, path)
-
-        t.add(name=path, arcname=arcname)
-
-    puts('[tarball]: created {0}'.format(name))
 
 #################### .htaccess files ####################
 

@@ -9,7 +9,9 @@ try:
                                edition_setup, mangle_paths,
                                mangle_configuration)
     from utils.shell import CommandError
+    from utils.serialization import ingest_yaml
 except ImportError:
+    from serialization import ingest_yaml
     from structures import BuildConfiguration, AttributeDict
     from git import get_branch, get_commit, get_file_from_branch
     from project import (discover_config_file, get_manual_path, is_processed,
@@ -136,6 +138,21 @@ def render_paths(conf=None, language=None):
 
         conf.system.processed.paths = True
         return conf
+
+def get_sphinx_builders(conf=None):
+    conf = lazy_conf(conf)
+
+    path = os.path.join(conf.paths.builddata, 'sphinx.yaml')
+
+    sconf = ingest_yaml(path)
+
+    if 'builders' in sconf:
+        return sconf['builders']
+    else:
+        for i in ['prerequisites', 'generated-source']:
+            if i in sconf:
+                del sconf[i]
+        return sconf.keys()
 
 #### Configuration Object Schema Migration Code ####
 

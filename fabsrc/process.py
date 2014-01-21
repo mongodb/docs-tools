@@ -10,6 +10,7 @@ from fabric.api import task, env, abort, puts, local
 
 from utils.project import get_manual_path
 from utils.config import lazy_conf
+from utils.project import mms_should_migrate
 from utils.files import md5_file, expand_tree, create_link, copy_if_needed
 from utils.strings import dot_concat
 from utils.serialization import ingest_yaml_list
@@ -19,7 +20,6 @@ from utils.jobs.dependency import check_hashed_dependency, check_dependency
 from make import runner
 from includes import include_files
 
-import mms
 
 ########## Process Sphinx Json Output ##########
 
@@ -169,30 +169,6 @@ def refresh_dependencies(conf=None):
     results = runner(refresh_dependency_jobs(conf), parallel='process')
     return sum(results)
 
-########## Main Output Processing Targets ##########
-
-class InvalidPath(Exception): pass
-
-def manual_single_html(input_file, output_file):
-    # don't rebuild this if its not needed.
-    if check_dependency(output_file, input_file) is True:
-        pass
-    else:
-        print('[process] [single]: singlehtml not changed, not reprocessing.')
-        return False
-
-    with open(input_file, 'r') as f:
-        text = f.read()
-
-    text = re.sub('href="contents.html', 'href="index.html', text)
-    text = re.sub('name="robots" content="index"', 'name="robots" content="noindex"', text)
-    text = re.sub('(href=")genindex.html', '\1../genindex/', text)
-
-    with open(output_file, 'w') as f:
-        f.write(text)
-
-    print('[process] [single]: processed singlehtml file.')
-
 #################### PDFs from Latex Produced by Sphinx  ####################
 
 def _clean_sphinx_latex(fn, regexes):
@@ -318,7 +294,7 @@ def pdf_jobs(target, conf):
                              job=_render_tex_into_pdf,
                              args=(i['processed'], i['path'])))
 
-        if conf.project.name == 'mms' and mms.should_migrate(target, conf) is False:
+        if conf.project.name == 'mms' and mms_should_migrate(target, conf) is False:
             pass
         else:
             queue[3].append(dict(dependency=i['pdf'],

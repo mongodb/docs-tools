@@ -1,6 +1,25 @@
 import hashlib
 import os
 import shutil
+import tarfile
+
+def tarball(name, path, sourcep=None, newp=None, cdir=None):
+    tarball_path = os.path.dirname(name)
+    if not os.path.exists(tarball_path):
+        os.makedirs(tarball_path)
+
+    with tarfile.open(name, 'w:gz') as t:
+        if newp is not None:
+            arcname = os.path.join(newp, os.path.basename(path))
+        else:
+            arcname = None
+
+        if cdir is not None:
+            path = os.path.join(cdir, path)
+
+        t.add(name=path, arcname=arcname)
+
+    print('[tarball]: created {0}'.format(name))
 
 def symlink(name, target):
     if not os.path.islink(name):
