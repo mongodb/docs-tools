@@ -1,9 +1,14 @@
+import sys
 import os.path
 import re
 
+from utils.shell import command
+from utils.config import lazy_conf, BuildConfiguration
 from utils.project import mms_should_migrate
+from utils.serialization import ingest_yaml_list
 from utils.jobs.dependency import check_dependency
 from utils.files import expand_tree, create_link, copy_if_needed
+from utils.transformations import munge_page
 
 def manual_single_html(input_file, output_file):
     # don't rebuild this if its not needed.
@@ -85,10 +90,30 @@ def finalize_single_html_jobs(builder, conf):
             'dependency': None
         }
 
+def error_pages(conf=None):
+    conf = lazy_conf(conf)
+
+    error_conf = os.path.join(conf.paths.builddata, 'errors.yaml')
+
+    if not os.path.exists(error_conf):
+        return None
+    else:
+        error_pages = ingest_yaml_list(error_conf)
+
+        sub = (re.compile(r'\.\./\.\./'), conf.project.url + r'/' + conf.project.tag + r'/')
+
+        for error in error_pages:
+            page = os.path.join(conf.paths.projectroot,
+                                conf.paths.branch_output, 'dirhtml',
+                                'meta', error, 'index.html')
+            munge_page(fn=page, regex=sub, tag='error-pages')
+
+        print('[error-pages]: rendered {0} error pages'.format(len(error_pages)))
+
 def finalize_dirhtml_build(builder, conf):
     pjoin = os.path.join
 
-    process.error_pages(conf)
+    error_pages(conf)
 
     single_html_dir = get_single_html_dir(conf)
     search_page = pjoin(conf.paths.branch_output, builder, 'index.html')
@@ -109,7 +134,7 @@ def finalize_dirhtml_build(builder, conf):
     print('[{0}]: migrated build to {1}'.format(builder, dest))
 
     if conf.git.branches.current in conf.git.branches.published:
-        sitemap_exists = generate.sitemap(config_path=None, conf=conf)
+        sitemap_exists = sitemap(config_path=None, conf=conf)
 
         if sitemap_exists is True:
             copy_if_needed(source_file=pjoin(conf.paths.projectroot,
@@ -130,3 +155,28 @@ def finalize_dirhtml_build(builder, conf):
 
         cleaner(fns)
         print('[dirhtml] [clean]: removed excluded files from output directory')
+
+def sitemap(config_path=None, conf=None):
+    conf = lazy_conf(conf)
+    paths = conf.paths
+
+    sys.path.append(os.path.join(paths.projectroot, paths.buildsystem, 'bin'))
+    import sitemap_gen
+
+    if config_path is None:
+        config_path = os.path.join(paths.projectroot, 'conf-sitemap.xml')
+
+    if not os.path.exists(config_path):
+        print('[ERROR] [sitemap]: configuration file {0} does not exist. Returning early'.format(config_path))
+        return False
+
+    sitemap = sitemap_gen.CreateSitemapFromFile(configpath=config_path,
+                                                suppress_notify=True)
+    if sitemap is None:
+        print('[ERROR] [sitemap]: failed to generate the sitemap due to encountered errors.')
+        return False
+
+    sitemap.Generate()
+
+    print('[sitemap]: generated sitemap according to the config file {0}'.format(config_path))
+    return True

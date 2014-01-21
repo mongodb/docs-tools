@@ -310,30 +310,6 @@ def pdf_jobs(target, conf):
 
     return queue
 
-#################### Error Page Processing ####################
-
-# this is called directly from the sphinx generation function in sphinx.py.
-
-def error_pages(conf=None):
-    conf = lazy_conf(conf)
-
-    error_conf = os.path.join(conf.paths.builddata, 'errors.yaml')
-
-    if not os.path.exists(error_conf):
-        return None
-    else:
-        error_pages = ingest_yaml_list(error_conf)
-
-        sub = (re.compile(r'\.\./\.\./'), conf.project.url + r'/' + conf.project.tag + r'/')
-
-        for error in error_pages:
-            page = os.path.join(conf.paths.projectroot,
-                                conf.paths.branch_output, 'dirhtml',
-                                'meta', error, 'index.html')
-            munge_page(fn=page, regex=sub, tag='error-pages')
-
-        print('[error-pages]: rendered {0} error pages'.format(len(error_pages)))
-
 #################### Gettext Processing ####################
 
 def gettext_jobs(conf=None):
