@@ -9,7 +9,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'f
 import fabfile.includes
 from rstcloth import RstCloth
 from utils import BuildConfiguration, expand_tree
-from docs_meta import get_conf
 
 suppressed_page_prefixes = [
     '/includes/generated',

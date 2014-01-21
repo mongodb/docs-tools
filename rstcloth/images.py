@@ -9,12 +9,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import utils
 from rstcloth import RstCloth
-from docs_meta import get_conf
 
 def generate_image_pages(dir, name, alt, output, conf=None):
     r = RstCloth()
-    if conf is None:
-        conf = get_conf()
+    conf = utils.config.lazy_conf(conf)
 
     image = '/'.join([dir, name])
     b = name
