@@ -3,7 +3,8 @@ import os.path
 import re
 
 from utils.shell import command
-from utils.config import lazy_conf, BuildConfiguration
+from utils.config import lazy_conf
+from utils.structures import BuildConfiguration
 from utils.project import mms_should_migrate
 from utils.serialization import ingest_yaml_list
 from utils.jobs.dependency import check_dependency

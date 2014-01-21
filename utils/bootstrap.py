@@ -1,6 +1,8 @@
 import os.path
 import subprocess
 
+from shutil import rmtree
+
 try:
     from utils.files import symlink
     from utils.config import lazy_conf
@@ -58,7 +60,7 @@ def makefile_meta():
                                conf.paths.output,
                                'makefile.meta')
 
-    cmd = 'python {0} build/makefile.meta'.format(script_path).split()
+    cmd = 'python {0} {1}'.format(script_path, makefn_path).split()
     subprocess.check_call(cmd)
 
 def fabric(buildsystem, conf_file):
@@ -108,6 +110,12 @@ def utils(buildsystem, conf_file):
 
     symlink(name=os.path.join(buildsystem, 'makecloth', 'utils'),
             target=os.path.join(os.path.abspath(buildsystem), 'utils'))
+
+    symlink(name=os.path.join(buildsystem, 'rstcloth', 'utils'),
+            target=os.path.join(os.path.abspath(buildsystem), 'utils'))
+
+    symlink(name=os.path.join(buildsystem, 'utils', 'contentlib', 'rstcloth'),
+            target=os.path.join(os.path.abspath(buildsystem), 'rstcloth'))
 
     symlink(name=os.path.join(buildsystem, 'utils', 'docs_meta.py'),
             target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))

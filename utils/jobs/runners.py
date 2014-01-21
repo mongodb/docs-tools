@@ -1,5 +1,7 @@
 import multiprocessing.dummy
 
+from multiprocessing import cpu_count
+
 try:
     from utils.jobs.dependency import check_dependency
     from utils.jobs.pool import NestedPool

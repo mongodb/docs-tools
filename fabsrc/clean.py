@@ -2,6 +2,8 @@ import os
 import shutil
 import time
 
+from multiprocessing import cpu_count
+
 from fabric.api import task
 
 from utils.config import lazy_conf
@@ -58,7 +60,7 @@ def cleaner(paths):
     if len(paths) <= cpu_count() + 1:
         workers = len(paths)
     else:
-        workers = cpu_count
+        workers = cpu_count()
 
     jobs = ( dict(target=path, dependency=None, job=_rm_rf, args=[path]) for path in paths )
 

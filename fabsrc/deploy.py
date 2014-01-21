@@ -1,6 +1,6 @@
 import os.path
 
-from fabric.api import cd, local, task, abort, env, puts, parallel
+from fabric.api import local, task, abort, env, puts
 from fabric.utils import _AttributeDict as ad
 
 from utils.config import lazy_conf

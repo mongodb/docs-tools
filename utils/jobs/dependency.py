@@ -3,9 +3,11 @@ import json
 import datetime
 
 try:
-    from utils.files import md5_file
+    from utils.files import md5_file, expand_tree
+    from utils.config import lazy_conf
 except ImportError:
     from ..files import md5_file, expand_tree
+    from ..config import lazy_conf
 
 ############### Hashed Dependency Checking ###############
 
@@ -58,8 +60,7 @@ def check_hashed_dependency(target, dependency, dep_map, conf):
         return needs_rebuild(target, dependency)
 
 def dump_file_hashes(output, conf=None):
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(conf)
 
     o = { 'conf': conf,
           'time': datetime.datetime.utcnow().strftime("%s"),

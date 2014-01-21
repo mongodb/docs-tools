@@ -1,23 +1,16 @@
 import json
-import operator
 import os.path
-import re
 import json
 
-from itertools import groupby
-from multiprocessing import Pool
-
-from fabric.api import task, local, env
-from fabric.utils import puts, abort
+from fabric.api import task
 
 from droopy.factory import DroopyFactory
 from droopy.lang.english import English
-from droopy import Droopy, attr, op
+from droopy import attr
 
 from utils.config import get_conf
 from utils.files import expand_tree
 from utils.structures import AttributeDict
-from utils.serialization import ingest_yaml_doc, ingest_yaml_list
 
 from make import runner
 import stats_data
@@ -174,7 +167,7 @@ def _generate_report(mask, output_file=None, conf=None, data=None):
         return output
     else:
         if output_file == 'print':
-            puts(json.dumps(output, indent=2))
+            print(json.dumps(output, indent=2))
         else:
             with open(output_file, 'w') as f:
                 json.dump(output, f)
@@ -197,7 +190,7 @@ def wc(mask=None):
     else:
         msg += ' in ' + mask
 
-    puts(msg)
+    print(msg)
 
     return count
 
@@ -209,7 +202,7 @@ def report(fn=None):
     if len(data) > 1:
         data.append(multi(fn, data, None))
 
-    puts(json.dumps(data, indent=3))
+    print(json.dumps(data, indent=3))
 
 def sum_key(key, data, sub=None):
     r = 0
@@ -262,6 +255,6 @@ def multi(mask=None, data=None, output_file='print'):
     if output_file is None:
         return o
     elif output_file == 'print':
-        puts(json.dumps(o, indent=3, sort_keys=True))
+        print(json.dumps(o, indent=3, sort_keys=True))
     else:
         json.dump(o, output_file, indent=3)

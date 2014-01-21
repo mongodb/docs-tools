@@ -1,21 +1,18 @@
 import os
 import pwd
 import sys
-import time
 import datetime
 import tarfile
 import urllib2
 import json
 
-import yaml
-
 from contextlib import closing
 
 from fabric.api import task, puts, abort, env
 
-from utils.serialization import ingest_yaml_list, write_yaml
-from utils.config import get_conf, BuildConfiguration
-from utils.structures import conf_from_list
+from utils.serialization import ingest_yaml_list
+from utils.config import get_conf
+from utils.structures import conf_from_list, BuildConfiguration
 
 from make import runner
 from deploy import deploy_jobs
@@ -33,7 +30,7 @@ def get_build_metadata(conf=None):
 
     o['meta']['user'] = pwd.getpwuid(os.getuid())[0]
     o['meta']['platform'] = sys.platform
-    o['meta']['time'] = utc=datetime.datetime.utcnow().isoformat()
+    o['meta']['time'] = datetime.datetime.utcnow().isoformat()
     o['meta']['host'] = os.uname()[1]
     return o
 

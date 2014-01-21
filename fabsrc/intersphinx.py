@@ -1,10 +1,7 @@
-import sys
-import os
 import time
-from multiprocessing import Pool
+import os
 
-from fabric.api import task, local, env, puts, hide
-from fabric.utils import _AttributeDict as ad
+from fabric.api import local, env, puts, hide
 
 from utils.config import lazy_conf
 from utils.serialization import ingest_yaml_list
@@ -53,6 +50,8 @@ def download(f, s):
 
 def intersphinx():
     "Downloads all intersphinx files if out of date."
+
+    conf = lazy_conf(None)
 
     count = runner( intersphinx_jobs(conf) )
 

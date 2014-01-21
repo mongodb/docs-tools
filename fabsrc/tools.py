@@ -5,7 +5,7 @@ import time
 
 from fabric.api import task, local, puts, lcd, env, abort
 
-from process import munge_page
+from utils.transformations import munge_page
 
 from utils.files import expand_tree
 from utils.config import get_conf

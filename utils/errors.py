@@ -3,3 +3,6 @@ class ProcessingError(Exception):
 
 class FileNotFoundError(Exception):
     pass
+
+class InvalidFile(Exception):
+    pass

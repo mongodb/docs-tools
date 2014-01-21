@@ -3,19 +3,17 @@ import os.path
 import yaml
 
 try:
-    from utils.structures import BuildConfiguration, AttributeDict
+    from utils.structures import AttributeDict
     from utils.git import get_branch, get_commit, get_file_from_branch
-    from utils.project import (discover_config_file, get_manual_path, is_processed,
-                               edition_setup, mangle_paths,
+    from utils.project import (discover_config_file, get_manual_path, is_processed, mangle_paths,
                                mangle_configuration)
     from utils.shell import CommandError
     from utils.serialization import ingest_yaml
 except ImportError:
     from serialization import ingest_yaml
-    from structures import BuildConfiguration, AttributeDict
+    from structures import AttributeDict
     from git import get_branch, get_commit, get_file_from_branch
-    from project import (discover_config_file, get_manual_path, is_processed,
-                         edition_setup, mangle_paths,
+    from project import (discover_config_file, get_manual_path, is_processed, mangle_paths,
                          mangle_configuration)
     from shell import CommandError
 

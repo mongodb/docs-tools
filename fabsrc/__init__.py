@@ -2,7 +2,6 @@ import sys
 import os.path
 
 import stage
-import sphinx
 import clean
 import git
 import process
@@ -11,6 +10,7 @@ import tools
 import stats
 import includes
 import generate
+import sphinx
 import tx
 
 from make import make, force, serial, pool
