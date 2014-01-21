@@ -3,12 +3,12 @@ import os.path
 from fabric.api import cd, local, task, abort, env, puts, parallel
 from fabric.utils import _AttributeDict as ad
 
+from utils.config import lazy_conf
+from utils.project import edition_setup
 from utils.serialization import ingest_yaml_list
 from utils.structures import conf_from_list
-from utils.config import lazy_conf
 
-from sphinx import edition_setup
-from make import runner
+from fabfile.make import runner
 
 _pub_hosts = ['www-c1.10gen.cc', 'www-c2.10gen.cc']
 _stage_hosts = ['public@test.docs.10gen.cc']

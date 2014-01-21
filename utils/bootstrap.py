@@ -50,9 +50,16 @@ def makefile_meta():
     conf = lazy_conf(None)
 
     # re/generate the makefile.meta
-    cmd = 'python {0}/makecloth/meta.py build/makefile.meta'.format(conf.paths.projectroot).split()
-    subprocess.check_call(cmd)
 
+    script_path = os.path.join(conf.paths.projectroot,
+                               conf.paths.buildsystem,
+                               'makecloth', 'meta.py')
+    makefn_path = os.path.join(conf.paths.projectroot,
+                               conf.paths.output,
+                               'makefile.meta')
+
+    cmd = 'python {0} build/makefile.meta'.format(script_path).split()
+    subprocess.check_call(cmd)
 
 def fabric(buildsystem, conf_file):
     fab_dir = 'fabfile'

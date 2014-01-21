@@ -32,12 +32,34 @@ def get_conf_file(file, directory=None):
 
     return os.path.join(directory, conf_file)
 
+def crawl_up_tree(path, base_len=-1):
+    path_parts = os.path.abspath(path).split(os.path.sep)
+
+    head = path_parts[:-base_len]
+    tail = os.path.join(path_parts[-base_len:])
+
+    for i in range(len(head), -1, -1):
+        if path_parts[0] == '':
+            cur_path = ['/']
+        else:
+            cur_path = []
+
+        cur_path.extend(head[:i])
+        cur_path.extend(tail)
+        cur_path = os.path.join(*cur_path)
+
+        if os.path.exists(cur_path):
+            return cur_path
+
+    return path
+
 def get_conf():
     project_root_dir, conf_file, conf = discover_config_file()
 
     conf = schema_migration_0(conf)
 
-    conf.paths.projectroot = project_root_dir
+    conf_file = crawl_up_tree(conf_file, 2)
+    conf.paths.projectroot = os.path.abspath(os.path.join(os.path.dirname(conf_file), '..'))
     conf.system.conf_file = conf_file
 
     if os.path.exists('/etc/arch-release'):

@@ -44,6 +44,7 @@ def async_process_runner(jobs, force, pool):
 
     return async_runner(jobs, force, pool, p)
 
+
 def async_runner(jobs, force, pool, p):
     results = []
 

@@ -82,12 +82,18 @@ def get_versions(conf=None):
 #### Discovery and Compatibility #####
 
 def discover_config_file():
-    root_dirs = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '..')),
+    root_dirs = [
                   os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')),
+
+                  os.path.abspath(os.path.join(os.path.dirname(__file__), '..')),
+
                   os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')),
+
+                  os.path.abspath(os.path.dirname(__file__)),
+
                 ]
 
-    conf_dirs = [ 'bin', 'config' ]
+    conf_dirs = [ 'config', 'bin' ]
 
     conf_file_names = ['build_conf.yaml', 'docs_meta.yaml']
 
@@ -100,6 +106,7 @@ def discover_config_file():
                 continue
             else:
                 conf = BuildConfiguration(abs_conf_file)
+
                 return project_root_dir, conf_file, conf
 
 ##### Configuration Object Transformations #####

@@ -1,11 +1,13 @@
 import os.path
 
-from sphinx import compute_sphinx_config, edition_setup
-from sphinx import build_prerequisites as sphinx_prereq
-from sphinx import build_worker as sphinx_build
+from fabfile.sphinx.config import compute_sphinx_config
+from fabfile.sphinx.workers import build_prerequisites as sphinx_prereq
+from fabfile.sphinx.workers import build_worker as sphinx_build
 
-from fabric.api import task, local
-from utils.config import get_conf
+from fabfile.utils.config import lazy_conf
+from fabfile.utils.shell import command
+from fabfile.utils.project import edition_setup
+from fabric.api import task
 
 @task
 def update():
@@ -13,7 +15,7 @@ def update():
 
     sphinx_builder = 'gettext'
 
-    conf = get_conf()
+    conf = lazy_conf(None)
     sconf = compute_sphinx_config(sphinx_builder, conf)
     conf = edition_setup(sconf.edition, conf)
 
@@ -24,7 +26,7 @@ def update():
 
     tx_cmd = "sphinx-intl update-txconfig-resources --pot-dir {path} --transifex-project-name={name}"
 
-    local(tx_cmd.format(path=os.path.join(conf.paths.branch_output, sphinx_builder),
+    command(tx_cmd.format(path=os.path.join(conf.paths.branch_output, sphinx_builder),
                         name='-'.join(conf.project.title.lower().split())))
 
     print('[tx] [sphinx-intl]: updated pot directory')
@@ -32,4 +34,4 @@ def update():
 @task
 def push():
     "Runs 'tx push' command."
-    local('tx push -s -t')
+    command('tx push -s -t')
