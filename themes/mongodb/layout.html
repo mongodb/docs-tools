@@ -50,6 +50,7 @@
           {%- endfor %}
         {%- endif %}
       </div>
+      {%- block adblock %}{% endblock %}
     </div>
   {%- endif %}
 {%- endmacro -%}
@@ -165,7 +166,7 @@
       </script>
     {%- endif %}
   {%- endblock -%}
-
+  {%- block adblockheader %}{%- endblock -%}
 </head>
 <body>
   {%- block googletagmanager %}
