@@ -62,7 +62,7 @@ def build_prerequisites(conf):
     dep_count = process.refresh_dependencies(conf)
     print('[sphinx-prep]: bumped timestamps of {0} files'.format(dep_count))
 
-    command(build_platform_notification('Sphinx', 'Build in progress past critical phase.'))
+    command(build_platform_notification('Sphinx', 'Build in progress past critical phase.'), ignore=True)
 
     print('[sphinx-prep]: INFO - Build in progress past critical phase.')
 
