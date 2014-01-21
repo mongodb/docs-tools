@@ -4,16 +4,8 @@ import argparse
 import yaml
 import utils
 
-from docs_meta import get_conf
-
-def update_conf(conf):
-    if conf is None:
-        return get_conf()
-    else:
-        return conf
-
 def process_redirect(redirect, conf=None):
-    conf = update_conf(conf)
+    conf = utils.config.lazy_conf(conf)
 
     if 'all' in redirect['outputs']:
         redirect['outputs'].remove('all')
@@ -42,7 +34,7 @@ def process_redirect(redirect, conf=None):
     return redirect
 
 def generate_match_rule(redir, base, conf=None):
-    conf = update_conf(conf)
+    conf = utils.config.lazy_conf(conf)
 
     o = 'RedirectMatch {0} /({1}){2} {3}/$1{4}'
 
@@ -50,7 +42,7 @@ def generate_match_rule(redir, base, conf=None):
                     conf.project.url, redir['url-base'])
 
 def generate_simple_rule(redir, base=None, conf=None):
-    conf = update_conf(conf)
+    conf = utils.config.lazy_conf(conf)
 
     if base is None:
         base = redir['outputs'][0]
@@ -69,7 +61,7 @@ def generate_simple_rule(redir, base=None, conf=None):
                         conf.project.url, redir['url-base'])
 
 def generate_external_rule(redir, base=None, conf=None):
-    conf = update_conf(conf)
+    conf = utils.config.lazy_conf(conf)
 
     if base is None:
         base = redir['outputs'][0]
@@ -86,7 +78,7 @@ def determine_is_multi(targets):
         return False
 
 def generate_redirects(redirect, match=False, conf=None):
-    conf = update_conf(conf)
+    conf = utils.config.lazy_conf(conf)
 
     multi = determine_is_multi(redirect['outputs'])
 
