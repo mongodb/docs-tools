@@ -5,7 +5,6 @@ import stage
 import clean
 import git
 import process
-import delegated
 import tools
 import stats
 import includes
