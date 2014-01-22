@@ -108,14 +108,8 @@ def utils(buildsystem, conf_file):
     symlink(name=os.path.join(buildsystem, 'bin', 'utils'),
             target=os.path.join(os.path.abspath(buildsystem), 'utils'))
 
-    symlink(name=os.path.join(buildsystem, 'bin', 'utils', 'rstcloth'),
-            target=os.path.join(os.path.abspath(buildsystem), 'utils', 'rstcloth'))
-
     symlink(name=os.path.join(buildsystem, 'makecloth', 'utils'),
             target=os.path.join(os.path.abspath(buildsystem), 'utils'))
-
-    symlink(name=os.path.join(buildsystem, 'utils',  'rstcloth'),
-            target=os.path.join(os.path.abspath(buildsystem), 'rstcloth'))
 
     symlink(name=os.path.join(buildsystem, 'utils', 'docs_meta.py'),
             target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
