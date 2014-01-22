@@ -12,8 +12,9 @@ from utils.config import get_conf
 from utils.files import expand_tree
 from utils.structures import AttributeDict
 
-from make import runner
-import stats_data
+from fabfile.make import runner
+from fabfile.stats_data import passive_regex
+from fabfile.stats_data import ww as weasel_words
 
 ####### internal functions for rendering reports #######
 
@@ -24,7 +25,7 @@ class Weakness(object):
     def weasel_list(self, d):
         l = []
         for word in d.words:
-            if word in stats_data.ww:
+            if word in weasel_words:
                 l.append(word)
 
         w = list(set(l))
@@ -39,8 +40,8 @@ class Weakness(object):
             return len(self.weasel_list(d))
 
     def passives(self, d):
-        p = stats_data.passive_regex.findall(d.text)
-        self.cache.p = stats_data.passive_regex.findall(d.text)
+        p = passive_regex.findall(d.text)
+        self.cache.p = passive_regex.findall(d.text)
         return p
 
     @attr
