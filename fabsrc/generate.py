@@ -9,13 +9,10 @@ from utils.serialization import ingest_yaml_list
 from utils.files import expand_tree
 from utils.config import lazy_conf
 
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
 
-# from htaccess import generate_redirects, process_redirect
+from htaccess import generate_redirects, process_redirect
 
-generate_redirects = None
-
-process_redirect = None
 from utils.contentlib.toc import toc_jobs
 from utils.contentlib.param import api_jobs
 from utils.contentlib.table import table_jobs

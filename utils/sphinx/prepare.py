@@ -67,6 +67,7 @@ def build_prereq_jobs(conf):
     for job in jobs:
         yield job
 
+print(manpage_jobs)
 def build_prerequisites(conf):
     jobs = itertools.chain(manpage_jobs(conf),
                            build_prereq_jobs(conf),
