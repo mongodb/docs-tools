@@ -14,8 +14,8 @@ from utils.serialization import ingest_yaml_list
 from utils.config import get_conf
 from utils.structures import conf_from_list, BuildConfiguration
 
-from make import runner
-from deploy import deploy_jobs
+from fabfile.make import runner
+from fabfile.deploy import deploy_jobs
 
 def get_build_metadata(conf=None):
     if conf is None:

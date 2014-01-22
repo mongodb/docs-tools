@@ -6,7 +6,7 @@ from utils.files import copy_if_needed
 from utils.transformations import post_process_jobs, truncate_file
 from utils.errors import FileNotFoundError
 
-from make import runner
+from fabfile.make import runner
 
 from fabric.api import task
 

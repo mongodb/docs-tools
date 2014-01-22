@@ -3,7 +3,7 @@ import sys
 
 from fabric.api import task
 
-from make import runner
+from fabfile.make import runner
 
 from utils.serialization import ingest_yaml_list
 from utils.files import expand_tree

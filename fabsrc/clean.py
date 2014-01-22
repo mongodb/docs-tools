@@ -9,7 +9,7 @@ from fabric.api import task
 from utils.config import lazy_conf
 from utils.git import get_branch
 
-from make import runner
+from fabfile.make import runner
 
 def _rm_rf(path):
     if os.path.isdir(path):

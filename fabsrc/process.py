@@ -9,7 +9,7 @@ from utils.project import mms_should_migrate
 from utils.files import create_link, copy_if_needed
 from utils.serialization import ingest_yaml_list
 
-from make import runner
+from fabfile.make import runner
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 
