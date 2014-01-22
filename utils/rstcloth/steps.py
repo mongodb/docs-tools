@@ -79,12 +79,8 @@ import yaml
 import sys
 import os
 
-try:
-    from utils.rstcloth.rstcloth import RstCloth
-    from utils.serialization import ingest_yaml_list
-except ImportError:
-    from ..rstcloth.rstcloth import RstCloth
-    from ..serialization import ingest_yaml_list
+from utils.rstcloth.rstcloth import RstCloth
+from utils.serialization import ingest_yaml_list
 
 class InvalidStep(Exception):
     pass

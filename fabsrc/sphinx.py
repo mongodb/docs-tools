@@ -5,20 +5,20 @@ from fabric.api import task
 
 from fabfile.make import runner
 from fabfile.process import pdf_worker
-from utils.contentlib.links import create_manual_symlink
+from fabfile.utils.contentlib.links import create_manual_symlink
 
-from utils.sphinx.prepare import build_prerequisites
-from utils.sphinx.workers import sphinx_build, build_worker_wrapper
-from utils.sphinx.archives import man_tarball, html_tarball
-from utils.sphinx.sites import finalize_single_html_jobs, finalize_dirhtml_build
+from fabfile.utils.sphinx.prepare import build_prerequisites
+from fabfile.utils.sphinx.workers import sphinx_build, build_worker_wrapper
+from fabfile.utils.sphinx.archives import man_tarball, html_tarball
+from fabfile.utils.sphinx.sites import finalize_single_html_jobs, finalize_dirhtml_build
 
 from fabfile.intersphinx import intersphinx
 from fabfile.utils.config import lazy_conf, render_paths
 from fabfile.utils.structures import BuildConfiguration
 
-from utils.contentlib.gettext import gettext_jobs
-from utils.contentlib.json_output import json_output_jobs
-from utils.contentlib.manpage import manpage_url_jobs
+from fabfile.utils.contentlib.gettext import gettext_jobs
+from fabfile.utils.contentlib.json_output import json_output_jobs
+from fabfile.utils.contentlib.manpage import manpage_url_jobs
 
 intersphinx = task(intersphinx)
 

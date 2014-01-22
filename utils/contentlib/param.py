@@ -1,18 +1,10 @@
 import os.path
 
-try:
-    from utils.config import lazy_conf
-    from utils.strings import dot_concat
-    from utils.files import expand_tree
-    from utils.serialization import ingest_yaml_list
-    from utils.rstcloth.param import generate_params
-except ImportError:
-    from ..config import lazy_conf
-    from ..strings import dot_concat
-    from ..files import expand_tree
-    from ..serialization import ingest_yaml_list
-    from ..rstcloth.param import generate_params
-
+from utils.config import lazy_conf
+from utils.strings import dot_concat
+from utils.files import expand_tree
+from utils.serialization import ingest_yaml_list
+from utils.rstcloth.param import generate_params
 
 def api_jobs(conf=None):
     conf = lazy_conf(conf)

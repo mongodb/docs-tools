@@ -4,8 +4,8 @@ import re
 from fabric.api import lcd, local, task, abort, env, hide
 from fabric.utils import puts
 
-from utils.git import get_branch
-from utils.config import lazy_conf
+from fabfile.utils.git import get_branch
+from fabfile.utils.config import lazy_conf
 
 env.sign = False
 env.branch = None

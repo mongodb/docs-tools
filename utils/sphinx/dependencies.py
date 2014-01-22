@@ -1,19 +1,11 @@
 import os
 import json
 
+from utils.config import lazy_conf
+from utils.jobs.runners import runner
+from utils.jobs.dependency import check_hashed_dependency
 
-try:
-    from utils.config import lazy_conf
-    from utils.jobs.runners import runner
-    from utils.jobs.dependency import check_hashed_dependency
-
-    from utils.contentlib.includes import include_files
-except ImportError:
-    from ..config import lazy_conf
-    from ..jobs.runners import runner
-    from ..jobs.dependency import check_hashed_dependency
-
-    from ..contentlib.includes import include_files
+from utils.contentlib.includes import include_files
 
 ########## Update Dependencies ##########
 

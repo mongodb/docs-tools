@@ -1,11 +1,7 @@
 import os.path
 
-try:
-    from utils.structures import BuildConfiguration
-    from utils.files import create_link
-except ImportError:
-    from ..structures import BuildConfiguration
-    from ..files import create_link
+from utils.structures import BuildConfiguration
+from utils.files import create_link
 
 def _link_path(path, conf):
     return os.path.join(conf.paths.projectroot,

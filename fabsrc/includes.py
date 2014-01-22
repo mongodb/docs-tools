@@ -2,7 +2,7 @@ import json
 
 from fabric.api import task
 
-from utils.includes import (included_once, included_recusively,
+from fabfile.utils.includes import (included_once, included_recusively,
                             includes_masked, include_files,
                             include_files_unused, changed_includes)
 

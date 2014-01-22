@@ -1,11 +1,7 @@
 import os
 
-try:
-    from utils.files import expand_tree
-    from utils.rstcloth.options import Options, OptionRendered
-except ImportError:
-    from ..files import expand_tree
-    from ..rstcloth.options import Options, OptionRendered
+from utils.files import expand_tree
+from utils.rstcloth.options import Options, OptionRendered
 
 def render_option_page(opt, path):
     renderer = OptionRendered(opt)

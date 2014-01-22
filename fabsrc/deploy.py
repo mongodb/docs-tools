@@ -3,10 +3,10 @@ import os.path
 from fabric.api import local, task, abort, env, puts
 from fabric.utils import _AttributeDict as ad
 
-from utils.config import lazy_conf
-from utils.project import edition_setup
-from utils.serialization import ingest_yaml_list
-from utils.structures import conf_from_list
+from fabfile.utils.config import lazy_conf
+from fabfile.utils.project import edition_setup
+from fabfile.utils.serialization import ingest_yaml_list
+from fabfile.utils.structures import conf_from_list
 
 from fabfile.make import runner
 

@@ -1,11 +1,7 @@
 import os.path
 
-try:
-    from utils.shell import command
-    from utils.errors import InvalidFile
-except ImportError:
-    from ..shell import command
-    from ..errors import InvalidFile
+from utils.shell import command
+from utils.errors import InvalidFile
 
 def transfer_source(conf):
     target = os.path.join(conf.paths.projectroot, conf.paths.branch_output)

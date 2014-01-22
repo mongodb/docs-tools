@@ -1,10 +1,7 @@
 import re
 import os.path
 
-try:
-    from utils.config import lazy_conf
-except ImportError:
-    from ..config import lazy_conf
+from utils.config import lazy_conf
 
 def output_sphinx_stream(out, builder, conf=None):
     if conf is None:

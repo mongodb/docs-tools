@@ -1,11 +1,7 @@
 import os.path
 
-try:
-    from utils.files import expand_tree
-    from utils.rstcloth.steps import render_step_file
-except ImportError:
-    from ..files import expand_tree
-    from ..rstcloth.steps import render_step_file
+from utils.files import expand_tree
+from utils.rstcloth.steps import render_step_file
 
 #################### steps ####################
 

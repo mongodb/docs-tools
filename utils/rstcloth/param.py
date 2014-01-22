@@ -1,17 +1,10 @@
 import sys
 import os.path
 
-try:
-    from utils.serialization import ingest_yaml_list
-    from utils.rstcloth.rstcloth import RstCloth
-    from utils.rstcloth.rstcloth import fill
-    from utils.rstcloth.table import TableData, TableBuilder, ListTable
-except ImportError:
-    from ..serialization import ingest_yaml_list
-    from ..rstcloth.rstcloth import RstCloth
-    from ..rstcloth.rstcloth import fill
-    from ..rstcloth.table import TableData, TableBuilder, ListTable
-
+from utils.serialization import ingest_yaml_list
+from utils.rstcloth.rstcloth import RstCloth
+from utils.rstcloth.rstcloth import fill
+from utils.rstcloth.table import TableData, TableBuilder, ListTable
 
 field_type = {
     'param' : 'Parameter',

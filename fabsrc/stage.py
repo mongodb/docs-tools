@@ -10,9 +10,9 @@ from contextlib import closing
 
 from fabric.api import task, puts, abort, env
 
-from utils.serialization import ingest_yaml_list
-from utils.config import get_conf
-from utils.structures import conf_from_list, BuildConfiguration
+from fabfile.utils.serialization import ingest_yaml_list
+from fabfile.utils.config import get_conf
+from fabfile.utils.structures import conf_from_list, BuildConfiguration
 
 from fabfile.make import runner
 from fabfile.deploy import deploy_jobs

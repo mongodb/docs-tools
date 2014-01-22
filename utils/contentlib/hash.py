@@ -1,9 +1,6 @@
 import os
 
-try:
-    from utils.rstcloth.hash import generate_hash_file
-except ImportError:
-    from ..rstcloth.hash import generate_hash_file
+from utils.rstcloth.hash import generate_hash_file
 
 #################### BuildInfo Hash ####################
 

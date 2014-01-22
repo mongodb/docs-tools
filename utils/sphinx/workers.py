@@ -6,14 +6,9 @@ from fabfile.utils.shell import command
 
 from fabfile.make import runner
 
-try:
-    from utils.sphinx.prepare import build_prerequisites
-    from utils.sphinx.output import output_sphinx_stream
-    from utils.sphinx.config import compute_sphinx_config, get_sphinx_args
-except ImportError:
-    from ..sphinx.prepare import build_prerequisites
-    from ..sphinx.output import output_sphinx_stream
-    from ..sphinx.config import compute_sphinx_config, get_sphinx_args
+from utils.sphinx.prepare import build_prerequisites
+from utils.sphinx.output import output_sphinx_stream
+from utils.sphinx.config import compute_sphinx_config, get_sphinx_args
 
 def build_worker_wrapper(builder, sconf, conf, finalize_fun):
     sconf = compute_sphinx_config(builder, sconf, conf)

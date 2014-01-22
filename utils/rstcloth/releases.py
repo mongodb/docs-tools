@@ -4,10 +4,7 @@ import sys
 import os
 import argparse
 
-try:
-    from utils.rstcloth.rstcloth import RstCloth
-except ImportError:
-    from ..rstcloth.rstcloth import RstCloth
+from utils.rstcloth.rstcloth import RstCloth
 
 def cli():
     parser = argparse.ArgumentParser('Generate install files.')

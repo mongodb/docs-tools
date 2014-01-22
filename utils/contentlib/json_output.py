@@ -2,18 +2,11 @@ import json
 import re
 import os
 
-try:
-    from utils.config import lazy_conf
-    from utils.shell import command
-    from utils.strings import dot_concat
-    from utils.files import expand_tree, copy_if_needed
-    from utils.transformations import munge_content
-except ImportError:
-    from ..config import lazy_conf
-    from ..shell import command
-    from ..strings import dot_concat
-    from ..files import expand_tree, copy_if_needed
-    from ..transformations import munge_content
+from utils.config import lazy_conf
+from utils.shell import command
+from utils.strings import dot_concat
+from utils.files import expand_tree, copy_if_needed
+from utils.transformations import munge_content
 
 ########## Process Sphinx Json Output ##########
 

@@ -21,10 +21,7 @@ import textwrap
 
 import yaml
 
-try:
-    from utils.rstcloth.rstcloth import RstCloth
-except ImportError:
-    from rstcloth import RstCloth
+from utils.rstcloth.rstcloth import RstCloth
 
 def normalize_cell_height(rowdata):
     """

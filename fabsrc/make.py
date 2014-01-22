@@ -2,8 +2,8 @@ from multiprocessing import cpu_count
 
 from fabric.api import lcd, local, task, env
 
-from utils.config import get_conf
-from utils.jobs.runners import runner as base_runner
+from fabfile.utils.config import get_conf
+from fabfile.utils.jobs.runners import runner as base_runner
 
 env.FORCE = False
 @task

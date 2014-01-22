@@ -3,8 +3,8 @@ import os
 
 from fabric.api import local, env, puts, hide
 
-from utils.config import lazy_conf
-from utils.serialization import ingest_yaml_list
+from fabfile.utils.config import lazy_conf
+from fabfile.utils.serialization import ingest_yaml_list
 
 from fabfile.make import runner
 

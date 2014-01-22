@@ -1,12 +1,8 @@
 import sys
 import os.path
 
-try:
-    from utils.rstcloth.rstcloth import RstCloth
-    from utils.git import get_commit
-except ImportError:
-    from ..rstcloth.rstcloth import RstCloth
-    from ..git import get_commit
+from utils.rstcloth.rstcloth import RstCloth
+from utils.git import get_commit
 
 def generate_hash_file(fn):
     r = RstCloth()

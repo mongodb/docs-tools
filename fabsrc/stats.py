@@ -8,9 +8,9 @@ from droopy.factory import DroopyFactory
 from droopy.lang.english import English
 from droopy import attr
 
-from utils.config import get_conf
-from utils.files import expand_tree
-from utils.structures import AttributeDict
+from fabfile.utils.config import get_conf
+from fabfile.utils.files import expand_tree
+from fabfile.utils.structures import AttributeDict
 
 from fabfile.make import runner
 from fabfile.stats_data import passive_regex

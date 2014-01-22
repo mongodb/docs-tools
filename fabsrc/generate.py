@@ -5,24 +5,24 @@ from fabric.api import task
 
 from fabfile.make import runner
 
-from utils.serialization import ingest_yaml_list
-from utils.files import expand_tree
-from utils.config import lazy_conf
+from fabfile.utils.serialization import ingest_yaml_list
+from fabfile.utils.files import expand_tree
+from fabfile.utils.config import lazy_conf
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'bin')))
 
 from htaccess import generate_redirects, process_redirect
 
-from utils.contentlib.toc import toc_jobs
-from utils.contentlib.param import api_jobs
-from utils.contentlib.table import table_jobs
-from utils.contentlib.steps import steps_jobs
-from utils.contentlib.release import release_jobs
-from utils.contentlib.images import image_jobs
-from utils.contentlib.source import transfer_source
-from utils.contentlib.includes import write_include_index
-from utils.contentlib.robots import robots_txt_builder
-from utils.contentlib.options import option_jobs
+from fabfile.utils.contentlib.toc import toc_jobs
+from fabfile.utils.contentlib.param import api_jobs
+from fabfile.utils.contentlib.table import table_jobs
+from fabfile.utils.contentlib.steps import steps_jobs
+from fabfile.utils.contentlib.release import release_jobs
+from fabfile.utils.contentlib.images import image_jobs
+from fabfile.utils.contentlib.source import transfer_source
+from fabfile.utils.contentlib.includes import write_include_index
+from fabfile.utils.contentlib.robots import robots_txt_builder
+from fabfile.utils.contentlib.options import option_jobs
 
 ### User facing fabric tasks
 

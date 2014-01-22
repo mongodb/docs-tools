@@ -6,8 +6,8 @@ from multiprocessing import cpu_count
 
 from fabric.api import task
 
-from utils.config import lazy_conf
-from utils.git import get_branch
+from fabfile.utils.config import lazy_conf
+from fabfile.utils.git import get_branch
 
 from fabfile.make import runner
 

@@ -1,10 +1,10 @@
 import os.path
 
-from utils.config import lazy_conf
-from utils.serialization import ingest_yaml_list
-from utils.files import copy_if_needed
-from utils.transformations import post_process_jobs, truncate_file
-from utils.errors import FileNotFoundError
+from fabfile.utils.config import lazy_conf
+from fabfile.utils.serialization import ingest_yaml_list
+from fabfile.utils.files import copy_if_needed
+from fabfile.utils.transformations import post_process_jobs, truncate_file
+from fabfile.utils.errors import FileNotFoundError
 
 from fabfile.make import runner
 

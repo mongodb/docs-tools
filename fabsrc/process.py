@@ -4,10 +4,10 @@ import subprocess
 
 from fabric.api import task
 
-from utils.config import lazy_conf
-from utils.project import mms_should_migrate
-from utils.files import create_link, copy_if_needed
-from utils.serialization import ingest_yaml_list
+from fabfile.utils.config import lazy_conf
+from fabfile.utils.project import mms_should_migrate
+from fabfile.utils.files import create_link, copy_if_needed
+from fabfile.utils.serialization import ingest_yaml_list
 
 from fabfile.make import runner
 

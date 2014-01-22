@@ -1,14 +1,9 @@
 import re
 import os
 
-try:
-    from utils.files import expand_tree
-    from utils.config import lazy_conf
-    from utils.transformations import process_page
-except ImportError:
-    from ..files import expand_tree
-    from ..config import lazy_conf
-    from ..transformations import process_page
+from utils.files import expand_tree
+from utils.config import lazy_conf
+from utils.transformations import process_page
 
 #################### Manpage Processing ####################
 

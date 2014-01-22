@@ -1,15 +1,9 @@
 import os.path
 
-try:
-    from utils.config import lazy_conf
-    from utils.strings import dot_concat, hyph_concat
-    from utils.files import expand_tree
-    from utils.rstcloth.table import TableBuilder, YamlTable, ListTable #, RstTable
-except ImportError:
-    from ..config import lazy_conf
-    from ..strings import dot_concat, hyph_concat
-    from ..files import expand_tree
-    from ..rstcloth.table import TableBuilder, YamlTable, ListTable #, RstTable
+from utils.config import lazy_conf
+from utils.strings import dot_concat, hyph_concat
+from utils.files import expand_tree
+from utils.rstcloth.table import TableBuilder, YamlTable, ListTable #, RstTable
 
 #################### Table Builder ####################
 

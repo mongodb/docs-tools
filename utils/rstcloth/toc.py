@@ -3,12 +3,8 @@ import yaml
 import textwrap
 import argparse
 
-try:
-    from utils.rstcloth.table import TableData
-    from utils.rstcloth.rstcloth import RstCloth, fill
-except:
-    from table import TableData
-    from rstcloth import RstCloth, fill
+from utils.rstcloth.table import TableData
+from utils.rstcloth.rstcloth import RstCloth, fill
 
 class CustomTocTree(object):
     def __init__(self, filename, sort=False):
