@@ -57,7 +57,7 @@ def get_single_html_dir(conf):
     return os.path.join(conf.paths.public_site_output, 'single')
 
 def finalize_single_html_jobs(builder, conf):
-    if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
+    if conf.project.name == 'mms' and mms_should_migrate(builder, conf) is False:
         raise StopIteration
 
     pjoin = os.path.join
@@ -119,7 +119,7 @@ def finalize_dirhtml_build(builder, conf):
     single_html_dir = get_single_html_dir(conf)
     search_page = pjoin(conf.paths.branch_output, builder, 'index.html')
 
-    if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:
+    if conf.project.name == 'mms' and mms_should_migrate(builder, conf) is False:
         return False
 
     if os.path.exists(search_page):
