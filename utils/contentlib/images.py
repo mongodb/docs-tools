@@ -54,7 +54,7 @@ def image_jobs(conf=None):
 
         yield {
                 'target': rst_file,
-                'dependency': [ meta_file, os.path.join(paths.buildsystem, 'rstcloth', 'images.py') ],
+                'dependency': [ meta_file, os.path.join(paths.buildsystem, 'utils', 'rstcloth', 'images.py') ],
                 'job': generate_image_pages,
                 'args': image
               }
