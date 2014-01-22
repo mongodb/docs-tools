@@ -1,11 +1,16 @@
 import os
 import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
-
-from rstcloth import RstCloth
-from utils import AttributeDict, ingest_yaml_list, expand_tree
-
+try:
+    from utils.rstcloth.rstcloth import RstCloth
+    from utils.structures import AttributeDict
+    from utils.serialization import ingest_yaml_list
+    from utils.files import expand_tree
+except ImportError:
+    from ..rstcloth.rstcloth import RstCloth
+    from ..structures import AttributeDict
+    from ..serialization import ingest_yaml_list
+    from ..files import expand_tree
 
 class Options(object):
     def __init__(self, fn=None):

@@ -1,5 +1,4 @@
 import os.path
-
 import yaml
 
 try:

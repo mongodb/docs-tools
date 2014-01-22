@@ -1,11 +1,12 @@
 import sys
 import os.path
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
-
-from rstcloth import RstCloth
-import utils
+try:
+    from utils.rstcloth.rstcloth import RstCloth
+    from utils.git import get_commit
+except ImportError:
+    from ..rstcloth.rstcloth import RstCloth
+    from ..git import get_commit
 
 def generate_hash_file(fn):
     r = RstCloth()
@@ -16,7 +17,7 @@ def generate_hash_file(fn):
     else:
         existing = []
 
-    commit = utils.get_commit()
+    commit = get_commit()
 
     r.directive('|commit| replace', '``{0}``'.format(commit))
 
@@ -31,11 +32,3 @@ def generate_hash_file(fn):
     else:
         r.write(fn)
         print('[build]: regenerated {0} with new commit hash: {1}'.format(fn, commit[:10]))
-
-def main():
-    fn = sys.argv[1]
-
-    generate_hash_file(fn)
-
-if __name__ == '__main__':
-    main()

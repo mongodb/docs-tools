@@ -1,9 +1,13 @@
 import os.path
 
-from utils.files import expand_tree
-
-from utils.contentlib.rstcloth.toc import CustomTocTree, AggregatedTocTree
-from utils.contentlib.rstcloth.table import TableBuilder, RstTable
+try:
+    from utils.files import expand_tree
+    from utils.rstcloth.toc import CustomTocTree, AggregatedTocTree
+    from utils.rstcloth.table import TableBuilder, RstTable
+except ImportError:
+    from ..files import expand_tree
+    from ..rstcloth.toc import CustomTocTree, AggregatedTocTree
+    from ..rstcloth.table import TableBuilder, RstTable
 
 #################### Table of Contents Generator ####################
 

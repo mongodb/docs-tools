@@ -14,7 +14,12 @@
 
 import textwrap
 
-from cloth import Cloth
+try:
+    from utils.rstcloth.cloth import Cloth
+except ImportError:
+    from cloth import Cloth
+except ImportError:
+    from rstcloth.cloth import Cloth
 
 def fill(string, first=0, hanging=0, wrap=True):
     first_indent = ' ' * first

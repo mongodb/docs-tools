@@ -1,6 +1,9 @@
 import os
 
-from utils.serialization import ingest_yaml_list
+try:
+    from utils.serialization import ingest_yaml_list
+except ImportError:
+    from ..serialization import ingest_yaml_list
 
 def robots_txt_builder(fn, conf, override=False):
     if override is False:

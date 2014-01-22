@@ -1,5 +1,9 @@
 import os.path
-from utils.files import copy_if_needed, create_link, tarball
+
+try:
+    from utils.files import copy_if_needed, create_link, tarball
+except ImportError:
+    from ..files import copy_if_needed, create_link, tarball
 
 def html_tarball(builder, conf):
     if conf.project.name == 'mms' and mms.should_migrate(builder, conf) is False:

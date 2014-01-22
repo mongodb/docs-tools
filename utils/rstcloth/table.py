@@ -20,7 +20,11 @@ import string
 import textwrap
 
 import yaml
-from rstcloth import RstCloth
+
+try:
+    from utils.rstcloth.rstcloth import RstCloth
+except ImportError:
+    from rstcloth import RstCloth
 
 def normalize_cell_height(rowdata):
     """
@@ -342,7 +346,7 @@ class ListTable(OutputTable):
 
         for row in rows:
             r = row[idx]
-                
+
             self.r.li(r[0], bullet='* -', indent=self.indent + 3, wrap=False, block=b)
             self.r.newline(block=b)
 

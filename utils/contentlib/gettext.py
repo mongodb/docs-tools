@@ -1,7 +1,11 @@
 import os.path
 
-from utils.config import lazy_conf
-from utils.files import expand_tree, copy_if_needed
+try:
+    from utils.config import lazy_conf
+    from utils.files import expand_tree, copy_if_needed
+except ImportError:
+    from ..config import lazy_conf
+    from ..files import expand_tree, copy_if_needed
 
 #################### Gettext Processing ####################
 

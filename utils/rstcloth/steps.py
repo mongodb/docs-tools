@@ -76,10 +76,15 @@ invalid:
 """
 
 import yaml
-import sys, os
-from rstcloth import RstCloth
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
-from utils import ingest_yaml_list
+import sys
+import os
+
+try:
+    from utils.rstcloth.rstcloth import RstCloth
+    from utils.serialization import ingest_yaml_list
+except ImportError:
+    from ..rstcloth.rstcloth import RstCloth
+    from ..serialization import ingest_yaml_list
 
 class InvalidStep(Exception):
     pass
@@ -327,12 +332,11 @@ class WebStepsOutput(StepsOutput):
                       override_char='~',
                       indent=3)
 
+        # self.rst.directive(name="class",
+        #                    arg="step-" + str(doc['stepnum']),
+        #                    indent=3)
 
-        self.rst.directive(name="class",
-                           arg="step-" + str(doc['stepnum']),
-                           indent=3)
-
-        self.indent = 6
+        self.indent = 3
         self.rst.newline()
 
     def post_step_hook(self):

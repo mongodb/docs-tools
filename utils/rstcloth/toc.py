@@ -1,11 +1,14 @@
-#!/usr/bin/python2
-
 import os.path
 import yaml
 import textwrap
 import argparse
-import table as tb
-from rstcloth import RstCloth, fill
+
+try:
+    from utils.rstcloth.table import TableData
+    from utils.rstcloth.rstcloth import RstCloth, fill
+except:
+    from table import TableData
+    from rstcloth import RstCloth, fill
 
 class CustomTocTree(object):
     def __init__(self, filename, sort=False):
@@ -18,7 +21,7 @@ class CustomTocTree(object):
         self.final = False
 
     def build_table(self):
-        self.table = tb.TableData()
+        self.table = TableData()
         self.table.add_header(['Name', 'Description'])
 
     def build_dfn(self):

@@ -1,12 +1,18 @@
 import sys
 import os.path
 
-from utils.strings import dot_concat
-from utils.config import lazy_conf
-from utils.shell import command
-from utils.serialization import ingest_yaml_list
-from utils.contentlib.rstcloth.images import generate_image_pages
-
+try:
+    from utils.strings import dot_concat
+    from utils.config import lazy_conf
+    from utils.shell import command
+    from utils.serialization import ingest_yaml_list
+    from utils.rstcloth.images import generate_image_pages
+except ImportError:
+    from ..strings import dot_concat
+    from ..config import lazy_conf
+    from ..shell import command
+    from ..serialization import ingest_yaml_list
+    from ..rstcloth.images import generate_image_pages
 
 ## Internal Supporting Methods
 

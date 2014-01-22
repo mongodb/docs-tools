@@ -1,13 +1,17 @@
 import sys
 import os.path
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
+try:
+    from utils.serialization import ingest_yaml_list
+    from utils.rstcloth.rstcloth import RstCloth
+    from utils.rstcloth.rstcloth import fill
+    from utils.rstcloth.table import TableData, TableBuilder, ListTable
+except ImportError:
+    from ..serialization import ingest_yaml_list
+    from ..rstcloth.rstcloth import RstCloth
+    from ..rstcloth.rstcloth import fill
+    from ..rstcloth.table import TableData, TableBuilder, ListTable
 
-import utils
-from rstcloth import RstCloth
-from rstcloth import fill
-from table import TableData, TableBuilder, ListTable
 
 field_type = {
     'param' : 'Parameter',
@@ -136,13 +140,13 @@ def populate_external_param(fn, basename, projectdir, sourcedir):
         fn = os.path.join(sourcedir, fn[1:])
 
     try:
-        ext_param = utils.ingest_yaml_list(fn)
+        ext_param = ingest_yaml_list(fn)
     except OSError:
         fn = os.path.join(basename, fn)
-        ext_param = utils.ingest_yaml_list(fn)
+        ext_param = ingest_yaml_list(fn)
     except OSError:
         fn = os.path.join(projectdir, sourcedir, fn)
-        ext_param = utils.ingest_yaml_list(fn)
+        ext_param = ingest_yaml_list(fn)
     else:
         pass
 

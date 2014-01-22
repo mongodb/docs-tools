@@ -2,14 +2,24 @@ import sys
 import os.path
 import re
 
-from utils.shell import command
-from utils.config import lazy_conf
-from utils.structures import BuildConfiguration
-from utils.project import mms_should_migrate
-from utils.serialization import ingest_yaml_list
-from utils.jobs.dependency import check_dependency
-from utils.files import expand_tree, create_link, copy_if_needed
-from utils.transformations import munge_page
+try:
+    from utils.shell import command
+    from utils.config import lazy_conf
+    from utils.structures import BuildConfiguration
+    from utils.project import mms_should_migrate
+    from utils.serialization import ingest_yaml_list
+    from utils.jobs.dependency import check_dependency
+    from utils.files import expand_tree, create_link, copy_if_needed
+    from utils.transformations import munge_page
+except ImportError:
+    from ..shell import command
+    from ..config import lazy_conf
+    from ..structures import BuildConfiguration
+    from ..project import mms_should_migrate
+    from ..serialization import ingest_yaml_list
+    from ..jobs.dependency import check_dependency
+    from ..files import expand_tree, create_link, copy_if_needed
+    from ..transformations import munge_page
 
 def manual_single_html(input_file, output_file):
     # don't rebuild this if its not needed.

@@ -1,28 +1,48 @@
 import os
 import itertools
 
-from utils.jobs.dependency import dump_file_hashes
-from utils.jobs.errors import PoolResultsError
-from utils.output import build_platform_notification
-from utils.shell import command
-
 from fabfile.intersphinx import intersphinx_jobs
 from fabfile.make import runner
 
-from utils.contentlib.manpage import manpage_jobs
-from utils.contentlib.table import table_jobs
-from utils.contentlib.param import api_jobs
-from utils.contentlib.toc import toc_jobs
-from utils.contentlib.options import option_jobs
-from utils.contentlib.steps import steps_jobs
-from utils.contentlib.release import release_jobs
-from utils.contentlib.images import image_jobs
-from utils.contentlib.robots import robots_txt_builder
-from utils.contentlib.includes import write_include_index
-from utils.contentlib.hash import buildinfo_hash
-from utils.contentlib.source import transfer_source
+try:
+    from utils.jobs.dependency import dump_file_hashes
+    from utils.jobs.errors import PoolResultsError
+    from utils.output import build_platform_notification
+    from utils.shell import command
 
-from utils.sphinx.dependencies import refresh_dependencies
+    from utils.contentlib.manpage import manpage_jobs
+    from utils.contentlib.table import table_jobs
+    from utils.contentlib.param import api_jobs
+    from utils.contentlib.toc import toc_jobs
+    from utils.contentlib.options import option_jobs
+    from utils.contentlib.steps import steps_jobs
+    from utils.contentlib.release import release_jobs
+    from utils.contentlib.images import image_jobs
+    from utils.contentlib.robots import robots_txt_builder
+    from utils.contentlib.includes import write_include_index
+    from utils.contentlib.hash import buildinfo_hash
+    from utils.contentlib.source import transfer_source
+    from utils.sphinx.dependencies import refresh_dependencies
+except ImportError:
+    from ..jobs.dependency import dump_file_hashes
+    from ..jobs.errors import PoolResultsError
+    from ..output import build_platform_notification
+    from ..shell import command
+
+    from ..contentlib.manpage import manpage_jobs
+    from ..contentlib.table import table_jobs
+    from ..contentlib.param import api_jobs
+    from ..contentlib.toc import toc_jobs
+    from ..contentlib.options import option_jobs
+    from ..contentlib.steps import steps_jobs
+    from ..contentlib.release import release_jobs
+    from ..contentlib.images import image_jobs
+    from ..contentlib.robots import robots_txt_builder
+    from ..contentlib.includes import write_include_index
+    from ..contentlib.hash import buildinfo_hash
+    from ..contentlib.source import transfer_source
+
+    from ..sphinx.dependencies import refresh_dependencies
 
 def build_prereq_jobs(conf):
     if conf.project.name != "mms":

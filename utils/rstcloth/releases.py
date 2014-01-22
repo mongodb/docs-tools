@@ -3,10 +3,11 @@
 import sys
 import os
 import argparse
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 
-from rstcloth import RstCloth
+try:
+    from utils.rstcloth.rstcloth import RstCloth
+except ImportError:
+    from ..rstcloth.rstcloth import RstCloth
 
 def cli():
     parser = argparse.ArgumentParser('Generate install files.')

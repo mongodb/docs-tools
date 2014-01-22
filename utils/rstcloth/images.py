@@ -4,15 +4,16 @@ import json
 
 from docutils.core import publish_parts
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import utils
-from rstcloth import RstCloth
+try:
+    from utils.config import lazy_conf
+    from utils.rstcloth.rstcloth import RstCloth
+except ImportError:
+    from ..config import lazy_conf
+    from ..rstcloth.rstcloth import RstCloth
 
 def generate_image_pages(dir, name, alt, output, conf=None):
     r = RstCloth()
-    conf = utils.config.lazy_conf(conf)
+    conf = lazy_conf(conf)
 
     image = '/'.join([dir, name])
     b = name

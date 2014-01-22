@@ -1,10 +1,15 @@
 import os.path
 
-from utils.files import expand_tree
-from utils.structures import BuildConfiguration
-from utils.includes import generated_includes, included_recusively, include_files
-
-from rstcloth import RstCloth
+try:
+    from utils.files import expand_tree
+    from utils.structures import BuildConfiguration
+    from utils.includes import generated_includes, included_recusively, include_files
+    from utils.rstcloth.rstcloth import RstCloth
+except ImportError:
+    from ..files import expand_tree
+    from ..structures import BuildConfiguration
+    from ..includes import generated_includes, included_recusively, include_files
+    from ..rstcloth.rstcloth import RstCloth
 
 suppressed_page_prefixes = [
     '/includes/generated',
