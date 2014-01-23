@@ -119,7 +119,8 @@ def user_input():
 def main():
     ui = user_input()
 
-    conf = get_conf()
+    conf = utils.config.lazy_conf()
+
 
     lines = []
     for doc in utils.ingest_yaml(ui.data):
