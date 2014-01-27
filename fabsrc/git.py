@@ -30,21 +30,27 @@ def am(obj,repo=None):
     if env.branch is not None:
         local('git checkout {0}'.format(env.branch))
 
-    if obj.startswith('http'):
-        cmd[1] = obj
-        if not obj.endswith('.patch'):
-            cmd[1] += '.patch'
-        local(' '.join(cmd))
-    elif re.search('[a-zA-Z]+', obj):
-        cmd[1] = cmd[1] + 'commit/' + obj + '.patch'
+    for obj in obj.split(','):
+        if obj.startswith('http'):
+            cmd[1] = obj
+            if not obj.endswith('.patch'):
+                cmd[1] += '.patch'
+            local(' '.join(cmd))
+        elif re.search('[a-zA-Z]+', obj):
+            cmd[1] = cmd[1] + 'commit/' + obj + '.patch'
 
-        local(' '.join(cmd))
-        puts('[git]: merged commit {0} for {1} into {2}'.format(obj, repo, get_branch()))
-    else:
-        cmd[1] = cmd[1] + 'pull/' + obj + '.patch'
+            local(' '.join(cmd))
+            puts('[git]: merged commit {0} for {1} into {2}'.format(obj, repo, get_branch()))
+        else:
+            cmd[1] = cmd[1] + 'pull/' + obj + '.patch'
 
-        local(' '.join(cmd))
-        puts('[git]: merged pull request #{0} for {1} into {2}'.format(obj, repo, get_branch()))
+            local(' '.join(cmd))
+            puts('[git]: merged pull request #{0} for {1} into {2}'.format(obj, repo, get_branch()))
+
+    if env.branch is not None:
+        local('git checkout -')
+
+
 
 @task
 def branch(branch):
