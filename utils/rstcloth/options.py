@@ -103,11 +103,11 @@ class Option(object):
             self.inherited = False
             self.source = AttributeDict()
 
-        if self.directive == 'option':
-            if 'args' in doc:
+        if 'args' in doc:
+            if doc['args'] is None or doc['args'] == '':
+                pass
+            else:
                 self.arguments = doc['args']
-        else:
-            self.arguments = ''
 
         self.replacement = dict()
         if 'replacement' in doc:
@@ -132,12 +132,18 @@ class OptionRendered(object):
 
     def resolve_option_name(self):
         if self.option.directive == 'option':
-            if not hasattr(self.option, 'arguments') or self.option.arguments is None:
-                spacer = ' '
-            elif self.option.argumets.startswith(','):
-                spacer = ''
+            option_parts = [ s.strip() for s in self.option.name.split(',') ]
 
-            return '--{0}{1}{2}'.format(self.option.name, spacer, self.option.arguments)
+            if len(option_parts) > 1:
+                if hasattr(self.option, 'arguments'):
+                    return '--{0} {1}, {2}'.format(option_parts[0], self.option.arguments, ', '.join(option_parts[1:]))
+                else:
+                    return '--{0}'.format(self.option.name)
+            else:
+                if hasattr(self.option, 'arguments') is not None:
+                    return '--{0}'.format(', '.join(option_parts))
+                else:
+                    return '--{0}'.format(self.option.name)
         else:
             return self.option.name
 
@@ -149,7 +155,7 @@ class OptionRendered(object):
         else:
             clensed_name = self.option.name
 
-        fn = '-'.join([ self.option.directive, clensed_name ]) + '.rst'
+        fn = '-'.join([ self.option.directive, self.option.program, clensed_name ]) + '.rst'
         return os.path.join(path, fn)
 
     def render(self, path):
