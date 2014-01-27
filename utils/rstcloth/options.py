@@ -109,6 +109,15 @@ class Option(object):
             else:
                 self.arguments = doc['args']
 
+        if 'aliases' in doc: 
+            if doc['aliases'] is None or doc['aliases'] == '':
+                pass
+            else:
+                if not isinstance(doc['aliases'], list):
+                    self.alises = list(doc['aliases'])
+                else:
+                    self.alises = doc['aliases']
+
         self.replacement = dict()
         if 'replacement' in doc:
             if isnstance(doc['replacement'], dict):
@@ -132,17 +141,20 @@ class OptionRendered(object):
 
     def resolve_option_name(self):
         if self.option.directive == 'option':
-            option_parts = [ s.strip() for s in self.option.name.split(',') ]
-
-            if len(option_parts) > 1:
+            if hasattr(self.option, 'aliases'): 
                 if hasattr(self.option, 'arguments'):
-                    return '--{0} {1}, {2}'.format(option_parts[0], self.option.arguments, ', '.join(option_parts[1:]))
-                else:
-                    return '--{0}'.format(self.option.name)
-            else:
-                if hasattr(self.option, 'arguments') is not None:
-                    return '--{0}'.format(', '.join(option_parts))
-                else:
+                    return '--{0} {1}, {2}'.format(self.option.name, 
+                                                   self.option.arguments, 
+                                                   ', '.join(self.option.aliases))
+                else: 
+                    return '--{0} {1}'.format(self.option.name, 
+                                              ', '.join(self.option.aliases))
+                                     
+            else: 
+                if hasattr(self.option, 'arguments'):
+                    return '--{0}, {2}'.format(self.option.name,
+                                               self.option.arguments)
+                else: 
                     return '--{0}'.format(self.option.name)
         else:
             return self.option.name
