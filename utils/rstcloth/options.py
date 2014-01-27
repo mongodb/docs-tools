@@ -152,7 +152,7 @@ class OptionRendered(object):
                                      
             else: 
                 if hasattr(self.option, 'arguments'):
-                    return '--{0}, {2}'.format(self.option.name,
+                    return '--{0}, {1}'.format(self.option.name,
                                                self.option.arguments)
                 else: 
                     return '--{0}'.format(self.option.name)
