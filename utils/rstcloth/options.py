@@ -106,15 +106,16 @@ class Option(object):
         if self.directive == 'option':
             if 'args' in doc:
                 self.arguments = doc['args']
-            else:
-                self.arguments = ''
+        else:
+            self.arguments = ''
 
         self.replacement = dict()
         if 'replacement' in doc:
-            self.replacement = doc['replacement']
+            if isnstance(doc['replacement'], dict):
+                self.replacement = doc['replacement']
 
         self.replacement['role'] = '{role}'
-        if self.program != '_generic':
+        if not self.program.startswith('_'):
             self.replacement['program'] = ':program:`{0}`'.format(self.program)
 
     def replace(self):
@@ -131,17 +132,24 @@ class OptionRendered(object):
 
     def resolve_option_name(self):
         if self.option.directive == 'option':
-            if self.option.argumets.startswith(','):
-                spacer = ''
-            else:
+            if not hasattr(self.option, 'arguments') or self.option.arguments is None:
                 spacer = ' '
+            elif self.option.argumets.startswith(','):
+                spacer = ''
 
             return '--{0}{1}{2}'.format(self.option.name, spacer, self.option.arguments)
         else:
             return self.option.name
 
     def resolve_output_path(self, path):
-        fn = '-'.join([ self.option.directive, self.option.name ]) + '.rst'
+        name_parts = self.option.name.split(',')
+
+        if len(name_parts) > 1:
+            clensed_name = name_parts[0]
+        else:
+            clensed_name = self.option.name
+
+        fn = '-'.join([ self.option.directive, clensed_name ]) + '.rst'
         return os.path.join(path, fn)
 
     def render(self, path):
