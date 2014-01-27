@@ -114,9 +114,9 @@ class Option(object):
                 pass
             else:
                 if not isinstance(doc['aliases'], list):
-                    self.alises = list(doc['aliases'])
+                    self.aliases = list(doc['aliases'])
                 else:
-                    self.alises = doc['aliases']
+                    self.aliases = doc['aliases']
 
         self.replacement = dict()
         if 'replacement' in doc:
