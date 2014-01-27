@@ -113,10 +113,10 @@ class Option(object):
             if doc['aliases'] is None or doc['aliases'] == '':
                 pass
             else:
-                if not isinstance(doc['aliases'], list):
-                    self.aliases = list(doc['aliases'])
-                else:
+                if isinstance(doc['aliases'], list):
                     self.aliases = doc['aliases']
+                else:
+                    self.aliases = [ doc['aliases'] ]
 
         self.replacement = dict()
         if 'replacement' in doc:
