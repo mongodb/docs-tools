@@ -109,7 +109,7 @@ class Option(object):
             else:
                 self.arguments = doc['args']
 
-        if 'aliases' in doc: 
+        if 'aliases' in doc:
             if doc['aliases'] is None or doc['aliases'] == '':
                 pass
             else:
@@ -141,20 +141,20 @@ class OptionRendered(object):
 
     def resolve_option_name(self):
         if self.option.directive == 'option':
-            if hasattr(self.option, 'aliases'): 
+            if hasattr(self.option, 'aliases'):
                 if hasattr(self.option, 'arguments'):
-                    return '--{0} {1}, {2}'.format(self.option.name, 
-                                                   self.option.arguments, 
-                                                   '{0}, '.format(self.otpion.arguments).join(self.option.aliases))
-                else: 
-                    return '--{0}, {1}'.format(self.option.name, 
+                    return '--{0} {1}, {2}'.format(self.option.name,
+                                                   self.option.arguments,
+                                                   '{0}, '.format(self.option.arguments).join(self.option.aliases))
+                else:
+                    return '--{0}, {1}'.format(self.option.name,
                                               ', '.join(self.option.aliases))
-                                     
-            else: 
+
+            else:
                 if hasattr(self.option, 'arguments'):
                     return '--{0} {1}'.format(self.option.name,
                                                self.option.arguments)
-                else: 
+                else:
                     return '--{0}'.format(self.option.name)
         else:
             return self.option.name
