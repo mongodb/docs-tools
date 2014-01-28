@@ -875,7 +875,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     margin-top: 23px;
 }
 
-#logo img {
+#logo img.logo {
     width: 200px;
 }
 
