@@ -96,6 +96,16 @@ class Option(object):
         else:
             self.description = ""
 
+        if 'pre' in doc:
+            self.pre = doc['pre']
+        else:
+            self.pre = None
+
+        if 'post' in doc:
+            self.post = doc['post']
+        else:
+            self.post = None
+
         if 'inherit' in doc:
             self.inherited = True
             self.source = AttributeDict(doc['inherit'])
@@ -184,7 +194,15 @@ class OptionRendered(object):
             self.content('*Type*: {0}'.format(self.option.type))
             self.rst.newline()
 
+        if self.option.pre is not None:
+            self.rst.content(self.option.pre, indent=3, wrap=False)
+            self.rst.newlin()
+
         self.rst.content(self.option.description, indent=3, wrap=False)
+
+        if self.option.post is not None:
+            self.rst.content(self.option.post, indent=3, wrap=False)
+            self.rst.newlin()
 
         output_file = self.resolve_output_path(path)
         self.rst.write(output_file)
