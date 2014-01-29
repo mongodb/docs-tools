@@ -18,11 +18,17 @@ class AttributeDict(dict):
             raise TypeError('expected dict')
 
     def __setitem__(self, key, value):
+        if '-' in key:
+            key = key.replace('-', '_')
+
         if isinstance(value, dict) and not isinstance(value, AttributeDict):
             value = AttributeDict(value)
         dict.__setitem__(self, key, value)
 
     def __getitem__(self, key):
+        if '-' in key:
+            key = key.replace('-', '_')
+
         NotFound = object()
         found = self.get(key, NotFound)
         if found is NotFound:
@@ -30,6 +36,12 @@ class AttributeDict(dict):
             raise AttributeError(err)
         else:
             return found
+
+    def __contains__(self, key):
+        if '-' in key:
+            key = key.replace('-', '_')
+
+        return self.has_key(key)
 
     __setattr__ = __setitem__
     __getattr__ = __getitem__
