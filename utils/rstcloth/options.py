@@ -14,7 +14,7 @@ class Options(object):
         self.unresolved = list()
         if fn is not None:
             self.source_dirname = os.path.dirname(os.path.abspath(fn))
-        else: 
+        else:
             self.source_dirname = fn
 
         if fn is not None:
@@ -49,9 +49,11 @@ class Options(object):
     def resolve(self, fn):
         for opt in self.unresolved:
             if opt.inherited is True:
-                if opt.source.file == fn or opt.source.file in self.cache:
-                    print opt.program
-                    raise Exception('[ERROR]: recursion error in {0}.'.format(fn))
+                #
+                # Commenting this out becuase it doesn't seem to be doing anything useful.'
+                #
+                # if opt.source.file == fn or opt.source.file in self.cache:
+                #     raise Exception('[ERROR]: recursion error in {0}.'.format(fn))
 
                 if opt.source.file in self.cache:
                     base_opt = self.resolve_inherited(opt.source)
@@ -114,7 +116,6 @@ class Option(object):
         else:
             self.post = None
 
-        print doc['program'], doc['name'], doc.keys()
         if 'inherit' in doc:
             self.inherited = True
             self.source = AttributeDict(doc['inherit'])
