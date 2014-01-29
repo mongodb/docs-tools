@@ -12,13 +12,20 @@ class Options(object):
         self.cache = dict()
         self.source_files = list()
         self.unresolved = list()
+        if fn is not None:
+            self.source_dirname = os.path.dirname(os.path.abspath(fn))
+        else: 
+            self.source_dirname = fn
 
         if fn is not None:
             self.ingest(fn)
 
     def ingest(self, fn):
+        if self.source_dirname is None:
+            self.source_dirname = os.path.dirname(os.path.abspath(fn))
+
         self.source_files.append(fn)
-        input_sources = ingest_yaml_list(fn)
+        input_sources = ingest_yaml_list(os.path.join(self.source_dirname, os.path.basename(fn)))
         self.cache[fn] = dict()
 
         for option in input_sources:
@@ -43,6 +50,7 @@ class Options(object):
         for opt in self.unresolved:
             if opt.inherited is True:
                 if opt.source.file == fn or opt.source.file in self.cache:
+                    print opt.program
                     raise Exception('[ERROR]: recursion error in {0}.'.format(fn))
 
                 if opt.source.file in self.cache:
@@ -106,6 +114,7 @@ class Option(object):
         else:
             self.post = None
 
+        print doc['program'], doc['name'], doc.keys()
         if 'inherit' in doc:
             self.inherited = True
             self.source = AttributeDict(doc['inherit'])

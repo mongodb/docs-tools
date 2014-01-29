@@ -11,7 +11,7 @@ def option_jobs(conf):
     paths = conf.paths
 
     options = Options()
-
+    options.source_dirname = os.path.join(paths.projectroot, paths.includes)
     base_path = os.path.join(paths.projectroot, paths.includes)
     output_path = os.path.join(base_path, 'option')
 
