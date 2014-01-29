@@ -1,6 +1,8 @@
 import os
 import sys
 
+from jinja2 import Template
+
 from utils.rstcloth.rstcloth import RstCloth
 from utils.structures import AttributeDict
 from utils.serialization import ingest_yaml_list
@@ -49,11 +51,8 @@ class Options(object):
     def resolve(self, fn):
         for opt in self.unresolved:
             if opt.inherited is True:
-                #
-                # Commenting this out becuase it doesn't seem to be doing anything useful.'
-                #
-                # if opt.source.file == fn or opt.source.file in self.cache:
-                #     raise Exception('[ERROR]: recursion error in {0}.'.format(fn))
+                if opt.source.file == fn:
+                    continue
 
                 if opt.source.file in self.cache:
                     base_opt = self.resolve_inherited(opt.source)
@@ -148,7 +147,8 @@ class Option(object):
             self.replacement['program'] = ':program:`{0}`'.format(self.program)
 
     def replace(self):
-        self.description = self.description.format(**self.replacement)
+        template = Template(self.description)
+        self.description = template.render(**self.replacement)
 
 class OptionRendered(object):
     def __init__(self, option):
@@ -208,17 +208,17 @@ class OptionRendered(object):
             self.rst.content(self.option.pre, indent=3, wrap=False)
             self.rst.newlin()
 
-        self.rst.content(self.option.description, indent=3, wrap=False)
+        self.rst.content(self.option.description.split('\n'), indent=3, wrap=False)
 
         if self.option.post is not None:
             self.rst.content(self.option.post, indent=3, wrap=False)
             self.rst.newlin()
 
+
         output_file = self.resolve_output_path(path)
         self.rst.write(output_file)
 
         print('[options]: rendered option file {0}'.format(output_file))
-
 
 def main(files):
     options = Options()
