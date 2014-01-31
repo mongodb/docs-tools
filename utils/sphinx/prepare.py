@@ -24,7 +24,7 @@ from utils.contentlib.source import transfer_source
 from utils.sphinx.dependencies import refresh_dependencies
 
 def build_prereq_jobs(conf):
-    if conf.project.name != "mms":
+    if conf.project.name not in [ "mms", "ecosystem" ]:
 
         jobs = [
             {
