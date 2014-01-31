@@ -41,7 +41,10 @@ class AttributeDict(dict):
         if '-' in key:
             key = key.replace('-', '_')
 
-        return self.has_key(key)
+        try:
+            return self.has_key(key)
+        except AttributeError:
+            return key in self.keys()
 
     __setattr__ = __setitem__
     __getattr__ = __getitem__
