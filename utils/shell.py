@@ -25,28 +25,23 @@ def shell_value(args, path=None):
 class CommandError(Exception): pass
 
 def command(command, capture=False, ignore=False):
-    dev_null = None
-    if capture:
-        out_stream = subprocess.PIPE
-        err_stream = subprocess.PIPE
-    else:
-        dev_null = open(os.devnull, 'w+')
-        # Non-captured, hidden streams are discarded.
-        out_stream = dev_null
-        err_stream = dev_null
-    try:
+    with open(os.devnull, 'w+') as dev_null:
+        if capture is True:
+            out_stream = subprocess.PIPE
+            err_stream = subprocess.PIPE
+        else:
+            out_stream = dev_null
+            err_stream = dev_null
+
         p = subprocess.Popen(command, shell=True, stdout=out_stream,
                              stderr=err_stream)
 
         (stdout, stderr) = p.communicate()
-    finally:
-        if dev_null is not None:
-            dev_null.close()
 
     out = {
         'cmd': command,
-        'err': stderr.strip() if stdout else "",
-        'out': stdout.strip() if stdout else "",
+        'err': stderr.strip() if stdout is not None else "",
+        'out': stdout.strip() if stdout is not None else "",
         'return_code': p.returncode,
         'succeeded': True if p.returncode == 0 else False,
         'failed': False if p.returncode == 0 else True
