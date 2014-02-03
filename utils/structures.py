@@ -1,11 +1,6 @@
 import json
+import yaml
 import os.path
-
-try:
-    from serialization import ingest_yaml_doc
-except ImportError:
-    # so bootstrapping works
-    from utils.serialization import ingest_yaml_doc
 
 class AttributeDict(dict):
     def __init__(self, value=None):
@@ -54,10 +49,13 @@ class BuildConfiguration(AttributeDict):
         if directory is None:
             directory = os.path.split(os.path.abspath(filename))[0]
 
+        file_path = os.path.join(directory, filename)
+
         if filename.endswith('yaml'):
-            conf = ingest_yaml_doc(get_conf_file(filename, directory))
+            with open(file_path, 'r') as f:
+                conf = yaml.load(f)
         elif filename.endswith('json'):
-            with open(os.path.join(directory, filename), 'r') as f:
+            with open(file_Path, 'r') as f:
                 conf = json.load(f)
 
         for key, value in conf.items():
