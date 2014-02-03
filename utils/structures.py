@@ -46,16 +46,14 @@ class AttributeDict(dict):
 
 class BuildConfiguration(AttributeDict):
     def __init__(self, filename, directory=None):
-        if directory is None:
-            directory = os.path.split(os.path.abspath(filename))[0]
-
-        file_path = os.path.join(directory, filename)
+        if directory is not  None:
+            filename = os.path.join(directory, filename)
 
         if filename.endswith('yaml'):
-            with open(file_path, 'r') as f:
+            with open(filename, 'r') as f:
                 conf = yaml.load(f)
         elif filename.endswith('json'):
-            with open(file_Path, 'r') as f:
+            with open(filename, 'r') as f:
                 conf = json.load(f)
 
         for key, value in conf.items():
