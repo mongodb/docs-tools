@@ -8,6 +8,7 @@ def output_sphinx_stream(out, builder, conf=None):
         conf = lazy_conf(conf)
 
     out = out.split('\n')
+    out = list(set(out))
 
     full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
 
