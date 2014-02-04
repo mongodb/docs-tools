@@ -136,3 +136,8 @@ def truncate_file(fn, start_after=None, end_before=None):
 
     with open(fn, 'w') as f:
         f.writelines(source_lines[start_idx:end_idx])
+
+def append_to_file(fn, text):
+    with open(fn, 'a') as f:
+        f.write('\n')
+        f.write(text)

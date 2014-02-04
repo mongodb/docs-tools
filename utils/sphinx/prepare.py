@@ -24,9 +24,9 @@ from utils.contentlib.source import transfer_source
 from utils.sphinx.dependencies import refresh_dependencies
 
 def build_prereq_jobs(conf):
+    jobs = []
     if conf.project.name not in [ "mms", "ecosystem", "primer"]:
-
-        jobs = [
+        jobs.extend([
             {
                 'job': robots_txt_builder,
                 'args': [ os.path.join( conf.paths.projectroot,
@@ -39,7 +39,7 @@ def build_prereq_jobs(conf):
                'job': write_include_index,
                'args': [conf]
            }
-        ]
+        ])
     else:
         raise StopIteration
 
@@ -47,8 +47,8 @@ def build_prereq_jobs(conf):
         yield job
 
 def build_prerequisites(conf):
-    jobs = itertools.chain(manpage_jobs(conf),
-                           build_prereq_jobs(conf),
+    jobs = itertools.chain(build_prereq_jobs(conf),
+                           manpage_jobs(conf),
                            table_jobs(conf),
                            api_jobs(conf),
                            toc_jobs(conf),

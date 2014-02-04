@@ -5,6 +5,8 @@ from fabric.api import task
 
 from fabfile.make import runner
 from fabfile.process import pdf_worker
+from fabfile.primer import migrate_pages as primer_migrate_pages
+
 from fabfile.utils.contentlib.links import create_manual_symlink
 
 from fabfile.utils.sphinx.prepare import build_prerequisites
@@ -21,6 +23,7 @@ from fabfile.utils.contentlib.json_output import json_output_jobs
 from fabfile.utils.contentlib.manpage import manpage_url_jobs
 
 intersphinx = task(intersphinx)
+primer = task(primer_migrate_pages)
 
 @task
 def target(*targets):
@@ -31,6 +34,7 @@ def target(*targets):
     sconf = BuildConfiguration(filename='sphinx.yaml',
                                directory=os.path.join(conf.paths.projectroot,
                                                       conf.paths.builddata))
+    primer_migrate_pages(conf)
 
     sphinx_build(targets, conf, sconf, finalize_build)
 
@@ -55,6 +59,8 @@ def build(builder='html'):
     sconf = BuildConfiguration(filename='sphinx.yaml',
                                directory=os.path.join(conf.paths.projectroot,
                                                       conf.paths.builddata))
+
+    primer_migrate_pages(conf)
 
     build_worker_wrapper(builder, sconf, conf, finalize_build)
 

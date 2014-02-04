@@ -53,9 +53,9 @@ def intersphinx():
 
     conf = lazy_conf(None)
 
-    count = runner( intersphinx_jobs(conf) )
+    res = runner( intersphinx_jobs(conf) )
 
-    puts('[intersphinx]: processed {0} intersphinx inventories'.format(count))
+    puts('[intersphinx]: processed {0} intersphinx inventories'.format(len(res)))
 
 def intersphinx_jobs(conf=None):
     conf = lazy_conf(conf)

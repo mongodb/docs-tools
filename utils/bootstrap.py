@@ -40,7 +40,7 @@ def primer():
     symlink(name=os.path.join('source', '.static'),
             target=os.path.abspath(os.path.join(main_build, '..', '..', 'source', '.static')))
 
-    for conf_fn in [ 'intersphinx.yaml', 'sphinx.yaml']:
+    for conf_fn in ['sphinx.yaml']:
         symlink(name=os.path.join(primer_conf, conf_fn),
                 target=os.path.abspath(os.path.join(main_build, '..', '..', 'config', conf_fn)))
 
