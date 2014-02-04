@@ -69,7 +69,10 @@ class CustomTocTree(object):
                         self.table = None
 
                 if self.contents is not None and 'file' in ref:
-                    self.contents.content(ref['file'], 6, block='toc')
+                    if 'name' in ref:
+                        self.contents.content("{0} <{1}>".format(ref['name'], ref['file']), 6, wrap=False, block='toc')
+                    else:
+                        self.contents.content(ref['file'], 6, wrap=False, block='toc')
 
                 if self.dfn is not None:
                     if 'name' in ref:
