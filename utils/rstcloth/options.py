@@ -155,21 +155,27 @@ class OptionRendered(object):
 
     def resolve_option_name(self):
         if self.option.directive == 'option':
+            if self.option.name.startswith('<'):
+                prefix = ''
+            else:
+                prefix = '--'
+
+
             if hasattr(self.option, 'aliases'):
                 if hasattr(self.option, 'arguments'):
-                    return '--{0} {1}, {2}'.format(self.option.name,
-                                                   self.option.arguments,
-                                                   '{0}, '.format(self.option.arguments).join(self.option.aliases))
+                    return '{0}{1} {2}, {3}'.format(prefix, self.option.name,
+                                                    self.option.arguments,
+                                                    '{0}, '.format(self.option.arguments).join(self.option.aliases))
                 else:
-                    return '--{0}, {1}'.format(self.option.name,
-                                              ', '.join(self.option.aliases))
+                    return '{0}{1}, {2}'.format(prefix, self.option.name,
+                                                ', '.join(self.option.aliases))
 
             else:
                 if hasattr(self.option, 'arguments'):
-                    return '--{0} {1}'.format(self.option.name,
+                    return '{0}{1} {2}'.format(prefix, self.option.name,
                                                self.option.arguments)
                 else:
-                    return '--{0}'.format(self.option.name)
+                    return '{0}{1}'.format(prefix, self.option.name)
         else:
             return self.option.name
 
