@@ -137,7 +137,10 @@ def sphinx_builder(target):
 
     # m.target(target, 'sphinx-prerequisites', block=b)
     # m.job(fab_prefix + ' sphinx.build:' + ','.join(fab_arg), block=b)
-    m.target(target, block=b)
+    if target.endswith('saas') or target.endswith('hosted'):
+        m.target(target, 'generate-source', block=b)
+    else:
+        m.target(target, block=b)
     m.job('{0} sphinx.target:{1}'.format(fab_prefix, target), block=b)
     m.job(build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
 

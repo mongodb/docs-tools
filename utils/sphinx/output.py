@@ -53,6 +53,12 @@ def path_normalization(l, full_path, conf):
     elif l.startswith('source'):
         pass
 
+    if conf.project.name == 'mms':
+        if l.startswith('source-saas'):
+            l = l.replace('source-saas', 'source')
+        elif l.startswith('source-hosted'):
+            l = l.replace('source-hosted', 'source')
+
     return l
 
 def epub_msg_worthy(l):
