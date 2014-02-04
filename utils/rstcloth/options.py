@@ -77,43 +77,22 @@ class Options(object):
             if not item.program.startswith('_'):
                 yield item
 
+optional_source_fields = ['default', 'type', 'pre', 'description', 'post', 'directive']
+
 class Option(object):
     def __init__(self, doc):
         self.doc = doc
 
         self.name = doc['name']
-
         self.program = doc['program']
 
-        if 'default' in doc:
-            self.default = doc['default']
-        else:
-            self.default = None
+        self._directive = 'describe'
 
-        if 'type' in doc:
-            self.type = doc['type']
-        else:
-            self.type = None
-
-        if 'directive' in doc:
-            self.directive = doc['directive']
-        else:
-            self.directive = 'describe'
-
-        if 'description' in doc:
-            self.description = doc['description']
-        else:
-            self.description = ""
-
-        if 'pre' in doc:
-            self.pre = doc['pre']
-        else:
-            self.pre = None
-
-        if 'post' in doc:
-            self.post = doc['post']
-        else:
-            self.post = None
+        for k in optional_source_fields:
+            if k in doc:
+                setattr(self, k, doc[k])
+            else:
+                setattr(self, k, None)
 
         if 'inherit' in doc:
             self.inherited = True
@@ -139,12 +118,27 @@ class Option(object):
 
         self.replacement = dict()
         if 'replacement' in doc:
-            if isnstance(doc['replacement'], dict):
+            if isinstance(doc['replacement'], dict):
                 self.replacement = doc['replacement']
 
-        self.replacement['role'] = '{role}'
+        # add auto-populated replacements here
+        self.add_replacements()
+
+    @property
+    def directive(self):
+        return self._directive
+
+    @directive.setter
+    def directive(self, value):
+        self._directive = value
+
+    def add_replacements(self):
         if not self.program.startswith('_'):
-            self.replacement['program'] = ':program:`{0}`'.format(self.program)
+            if 'program' not in self.replacement:
+                self.replacement['program'] = ':program:`{0}`'.format(self.program)
+            if 'role' not in self.replacement:
+                self.replacement['role'] = ':program:`{0}`'.format(self.program)
+
 
     def replace(self):
         template = Template(self.description)
@@ -205,20 +199,19 @@ class OptionRendered(object):
             self.rst.newline()
 
         if self.option.pre is not None:
-            self.rst.content(self.option.pre, indent=3, wrap=False)
-            self.rst.newlin()
+            self.rst.content(self.option.pre.split('\n'), indent=3, wrap=False)
+            self.rst.newline()
 
-        self.rst.content(self.option.description.split('\n'), indent=3, wrap=False)
+        if self.option.description is not None:
+            self.rst.content(self.option.description.split('\n'), indent=3, wrap=False)
+            self.rst.newline()
 
         if self.option.post is not None:
-            self.rst.content(self.option.post, indent=3, wrap=False)
+            self.rst.content(self.option.post.split('\n'), indent=3, wrap=False)
             self.rst.newlin()
-
 
         output_file = self.resolve_output_path(path)
         self.rst.write(output_file)
-
-        print('[options]: rendered option file {0}'.format(output_file))
 
 def main(files):
     options = Options()
