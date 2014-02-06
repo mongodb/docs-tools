@@ -27,32 +27,30 @@
 {%- endmacro -%}
 
 {%- macro relbar() %}
-    <div class="bc{% if not parents %} hide{% endif %}">
-      <ul>
-        {%- block rootrellink %}
-        {%- endblock %}
-        {%- for parent in parents %}
-          <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
-          {% if loop.last %}<li>{{title}}</li>{% endif %}
-        {%- endfor %}
-        {%- block relbaritems %} {% endblock %}
-      </ul>
-    </div>
+  <div class="bc{% if not parents %} hide{% endif %}">
+    <ul>
+      {%- block rootrellink %}
+      {%- endblock %}
+      {%- for parent in parents %}
+        <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
+        {% if loop.last %}<li>{{title}}</li>{% endif %}
+      {%- endfor %}
+      {%- block relbaritems %} {% endblock %}
+    </ul>
+  </div>
 {%- endmacro %}
 
 {%- macro sidebar() %}
-  {%- if render_sidebar %}
-    <div class="sphinxsidebar col-md-3">
-      <div class="sphinxsidebarwrapper">
-        {%- if sidebars != None %}
-          {%- for sidebartemplate in sidebars %}
-            {%- include sidebartemplate %}
-          {%- endfor %}
-        {%- endif %}
-      </div>
-      {%- block adblock %}{% endblock %}
+  <div class="sphinxsidebar col-md-3">
+    <div class="sphinxsidebarwrapper">
+      {%- if sidebars != None %}
+        {%- for sidebartemplate in sidebars %}
+          {%- include sidebartemplate %}
+        {%- endfor %}
+      {%- endif %}
     </div>
-  {%- endif %}
+    {%- block adblock %}{% endblock %}
+  </div>
 {%- endmacro -%}
 
 {%- macro script() %}
@@ -215,7 +213,7 @@
 
   <div class="container">
     {%- block content %}
-      {%- block sidebar1 %} {# possible location for sidebar #} {% endblock %}
+      {%- block sidebar1 %}{% endblock %}
       <div class="document row">
         {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
         {%- block document %}
