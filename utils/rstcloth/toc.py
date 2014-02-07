@@ -10,6 +10,12 @@ class CustomTocTree(object):
     def __init__(self, filename, sort=False):
         self.spec = self._process_spec(filename, sort)
 
+
+        if "ref-toc" in filename:
+            self._is_ref = True
+        else:
+            self._is_ref = False
+
         self.table = None
         self.contents = None
         self.dfn = None
@@ -69,7 +75,7 @@ class CustomTocTree(object):
                         self.table = None
 
                 if self.contents is not None and 'file' in ref:
-                    if 'name' in ref:
+                    if 'name' in ref and self._is_ref is False:
                         self.contents.content("{0} <{1}>".format(ref['name'], ref['file']), 6, wrap=False, block='toc')
                     else:
                         self.contents.content(ref['file'], 6, wrap=False, block='toc')

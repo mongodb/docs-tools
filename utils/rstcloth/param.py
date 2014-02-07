@@ -84,7 +84,7 @@ def generate_param_fields(param):
     if isinstance( param['description'], list):
         field_content = fill('\n'.join(param['description']), 0, 6, False)
     else:
-        field_content = fill(param['description'], 0, 6, True)
+        field_content = fill(param['description'], 0, 6, False)
 
     return ' '.join(_name), field_content
 

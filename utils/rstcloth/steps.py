@@ -298,7 +298,7 @@ class WebStepsOutput(StepsOutput):
         self.indent = 3
 
     def block_heading(self, block):
-        self._heading(block, override_char='`', indent=self.indent-3)
+        self._heading(block, override_char='`', indent=self.indent)
         self.rst.directive(name="class",
                            arg="step-" + str(self.current_step),
                            indent=3)
