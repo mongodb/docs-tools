@@ -41,7 +41,7 @@
 {%- endmacro %}
 
 {%- macro sidebar() %}
-  <div class="sphinxsidebar col-md-3">
+  <div class="sphinxsidebar">
     <div class="sphinxsidebarwrapper">
       {%- if sidebars != None %}
         {%- for sidebartemplate in sidebars %}
@@ -49,7 +49,6 @@
         {%- endfor %}
       {%- endif %}
     </div>
-    {%- block adblock %}{% endblock %}
   </div>
 {%- endmacro -%}
 
@@ -69,11 +68,11 @@
 {%- endmacro -%}
 
 {%- macro css() %}
-   <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
-   <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css" />
    {%- for cssfile in css_files %}
        <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css" />
    {%- endfor %}
+   <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
+   <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css" />
 {%- endmacro -%}
 
 {%- macro render_nextprev() %}
@@ -178,78 +177,55 @@
   {%- endblock -%}
 
   {%- block header %}
-    <header id="header-db" role="navigation">
-      <div class="container">
-        <div id="logo">
-          {%- block logo %}
-            <a href="http://www.mongodb.org/"><img class="logo" src="http://media.mongodb.org/logo-mongodb-header.png" alt="MongoDB Logo"/></a>
-          {%- endblock -%}
-        </div>
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-header-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="collapse navbar-collapse navbar-header-collapse" id="etp">
-          <ul class="nav navbar-nav">
-            {%- block subnav %}
-              <li><a href="http://docs.mongodb.org">Docs</a></li>
-              <li><a href="http://try.mongodb.org">Try It Out</a></li>
-              <li><a href="http://www.mongodb.org/downloads">Downloads</a></li>
-              <li><a href="http://www.mongodb.org/get-involved">Community</a></li>
-              <li><a href="http://blog.mongodb.org">Blog</a></li>
-            {% endblock %}
-            {%- block searchbox %}
-              <li class="search-db narrow"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></li>
-            {% endblock %}
-          </ul>
-        </div>
+    <header id="header-db" class="row" role="navigation">
+      <div class="col-md-12">
+        <span class="logo">MongoDB Docs</span>
+        {%- block searchbox %}
+        <span class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></span>
+        {% endblock %}
       </div>
     </header>
   {%- endblock %}
 
-  <div class="container">
-    {%- block content %}
-      {%- block sidebar1 %}{% endblock %}
-      <div class="document row">
-        {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
-        {%- block document %}
-          <div class="documentwrapper col-md-9">
-            {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
-            <div class="body">
-              {{ editlink() }}
-              {{ jiralink() }}
-              {{ translationslink() }}
-              {{ relbar() }}
-              {% block body %}
-                {{ body }}
-              {% endblock %}
-              {{- render_nextprev() -}}
+  <aside class="sidebar">
+    {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
+  </aside>
+  <div class="option-popup closed">
+    <div class="option-header">
+      <span>Options</span>
+      <i class="fa fa-gear pull=right"></i>
+    </div>
+    <div class="option-body">
+      Neah neah neah neah neah
+    </div>
+  </div>
+  <div class="content">
+    <div class="main-column pull-left">
+      {%- block content %}
+        <div class="document">
+          {%- block document %}
+            <div class="documentwrapper">
+              {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
+              <div class="body">
+                {{ editlink() }}
+                {{ jiralink() }}
+                {{ translationslink() }}
+                {{ relbar() }}
+                {% block body %}
+                  {{ body }}
+                {% endblock %}
+                {{- render_nextprev() -}}
+              </div>
+              {%- if render_sidebar %}</div>{%- endif %}
             </div>
-            {%- if render_sidebar %}</div>{%- endif %}
-          </div>
-        {%- endblock %}
-        <div class="clearer"></div>
-      </div>
-    {%- endblock %}
-
-    {%- block footer %}
-      {%- include "footer.html" %}
-
-      <div class="copyright col-xs-10">
-        <p>Copyright &copy; 2013 <a class="smalltext" href="http://www.mongodb.com">MongoDB, Inc</a>. Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/ ">Creative Commons</a>. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
-      </div>
-      <div class="col-xs-2">
-        <div class="social">
-          <a class="twitter-icon" href="https://twitter.com/mongodbinc"><div class="img"></div></a>
-          <a class="youtube-icon" href="http://www.youtube.com/user/MongoDB"><div class="img"></div></a>
-          <a class="facebook-icon" href="https://www.facebook.com/mongodb"><div class="img"></div></a>
-          <a class="gplus-icon" href="https://plus.google.com/u/1/101024085748034940765/posts?cfem=1"><div class="img"></div></a>
+          {%- endblock %}
         </div>
-      </div>
+      {%- endblock %}
+    </div>
+    <div class="right-column pull-right">
+      {%- block adblock %}{% endblock %}
+    </div>
+    {%- block footer %}
     {%- endblock %}
   </div>
 
