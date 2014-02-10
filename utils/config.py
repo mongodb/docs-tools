@@ -73,8 +73,8 @@ def get_conf():
     conf.system.processed.project_conf = False
     conf.system.processed.versions = False
 
-    conf = render_versions(conf)
     conf = mangle_configuration(conf)
+    conf = render_versions(conf)
 
     conf.git.branches.current = get_branch()
     conf.git.commit = get_commit()
