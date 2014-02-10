@@ -60,7 +60,4 @@ def resolve_mask(mask):
     return mask
 
 def render_for_console(data):
-    if not isinstance(data, list):
-        data = list(data)
-
     print(json.dumps(data, indent=3))
