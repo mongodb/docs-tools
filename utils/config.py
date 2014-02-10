@@ -95,6 +95,9 @@ def render_versions(conf=None):
     else:
         conf = lazy_conf(conf)
 
+        if 'branches' not in conf.git:
+            conf.git.branches = AttributeDict()
+
         version_config_file = os.path.join(conf.paths.builddata,
                                            'published_branches.yaml')
 
@@ -111,9 +114,6 @@ def render_versions(conf=None):
         vconf = AttributeDict(yaml.load(vconf_data))
 
         conf.version.update(vconf.version)
-
-        if 'branches' not in conf.git:
-            conf.git.branches = AttributeDict()
 
         conf.git.branches.update(vconf.git.branches)
 
