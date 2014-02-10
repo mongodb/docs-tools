@@ -6,7 +6,7 @@ try:
     from utils.git import get_branch, get_commit, get_file_from_branch
     from utils.project import (discover_config_file, get_manual_path, is_processed, mangle_paths,
                                mangle_configuration)
-    from utils.shell import CommandError
+    from utils.shell import CommandError, command
     from utils.serialization import ingest_yaml
 except ImportError:
     from serialization import ingest_yaml
@@ -14,7 +14,7 @@ except ImportError:
     from git import get_branch, get_commit, get_file_from_branch
     from project import (discover_config_file, get_manual_path, is_processed, mangle_paths,
                          mangle_configuration)
-    from shell import CommandError
+    from shell import CommandError, command
 
 def lazy_conf(conf=None):
     if conf is None:
