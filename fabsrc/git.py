@@ -47,6 +47,8 @@ def am(obj,repo=None):
             local(' '.join(cmd))
             puts('[git]: merged pull request #{0} for {1} into {2}'.format(obj, repo, get_branch()))
 
+    if env.branch is not None:
+        local('git checkout -')
 
 @task
 def update():
