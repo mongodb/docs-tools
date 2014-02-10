@@ -105,6 +105,8 @@ def render_versions(conf=None):
             command('git fetch config-upstream')
             command('git branch master config-upstream/master')
             vconf_data = get_file_from_branch(version_config_file, 'master')
+        except CommandError:
+            return conf
 
         vconf = AttributeDict(yaml.load(vconf_data))
 
