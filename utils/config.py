@@ -104,11 +104,12 @@ def render_versions(conf=None):
         try:
             vconf_data = get_file_from_branch(version_config_file, 'master')
         except CommandError:
-            remotes = command('git remote', capture=True).out.split('\n')
-            if 'config-upstream' not in remotes:
+            if 'config-upstream' not in command('git remote', capture=True).out.split('\n'):
                 command('git remote add config-upstream git://github.com/{0}.git'.format(conf.git.remote.upstream))
-            else:
-                command('git fetch config-upstream')
+
+            command('git fetch config-upstream')
+
+            if 'master' not in command('git branch', capture=True).out.split('\n'):
                 command('git branch master config-upstream/master')
 
             vconf_data = get_file_from_branch(version_config_file, 'master')
