@@ -68,7 +68,7 @@ def main():
 
     if user.branch != 'master':
         try:
-            command('git checkout {0}'.format(branch))
+            command('git checkout {0}'.format(user.branch))
         except CommandError:
             command('git checkout -b {0} origin/{0}'.format(user.branch))
         except CommandError:
