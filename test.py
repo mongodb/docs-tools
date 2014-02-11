@@ -70,9 +70,9 @@ def main():
         try:
             command('git checkout {0}'.format(branch))
         except CommandError:
-            command('git checkout -b {0} origin/{0}'.format(branch))
+            command('git checkout -b {0} origin/{0}'.format(user.branch))
         except CommandError:
-            logger.error('branch name {0} does not exist in remote'.format(branch))
+            logger.error('branch name {0} does not exist in remote'.format(user.branch))
             exit(1)
 
     bootstrapped_tools_path = os.path.join('build', 'docs-tools')
@@ -106,7 +106,7 @@ def print_build_output(task):
         print(">>> build standard output")
         print(task.out)
         print('=' * 72)
-        print()
+        print('\n')
         logger.debug('returned all standard output')
     else:
         logger.info('no build standard output.')
@@ -116,7 +116,7 @@ def print_build_output(task):
         print(">>> build standard error")
         print(task.err)
         print('=' * 72)
-        print()
+        print('\n')
         logger.debug('returned all standard error')
     else:
         logger.info('no build standard error output.')
