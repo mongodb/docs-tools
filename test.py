@@ -5,7 +5,7 @@ import shutil
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from utils.shell import command
+from utils.shell import command, CommandError
 from utils.git import get_commit
 from utils.files import symlink
 
