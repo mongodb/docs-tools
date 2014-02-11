@@ -79,7 +79,7 @@ def main():
     command('git rest --hard HEAD~12')
     logger.debug('re-set testing head 12 commits')
     command('git pull')
-    logger.debug('git pull'd testing')
+    logger.debug('ran "git pull" on testing repo')
 
     bootstrapped_tools_path = os.path.join('build', 'docs-tools')
 
