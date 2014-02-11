@@ -110,7 +110,7 @@ def print_build_output(task):
     if len(task.out) > 0:
         logger.debug('returning all standard output, now:')
         
-        for l in task.out.split():
+        for l in task.out.split('\n'):
             logger.info(l)
 
         logger.debug('returned all standard output')
@@ -120,7 +120,7 @@ def print_build_output(task):
     if len(task.err) > 0:
         logger.debug('returning all standard error, now:')
 
-        for l in task.err.split():
+        for l in task.err.split('\n'):
             logger.warning(l)
 
         logger.debug('returned all standard error')
