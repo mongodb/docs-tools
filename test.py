@@ -76,11 +76,16 @@ def main():
             exit(1)
 
     bootstrapped_tools_path = os.path.join('build', 'docs-tools')
-    if os.path.exists(bootstrapped_tools_path) and os.path.isdir(bootstrapped_tools_path):
+
+    if not os.path.exists(bootstrapped_tools_path):
+        logger.debug("{0} does not exist".format(bootstrapped_tools_path))
+        symlink(name=bootstrapped_tools_path, target=root_path)
+        logger.debug('created tools symlink')
+    elif os.path.islink(bootstrapped_tools_path):
+        logger.debug("{0} is a link. continuing.".format(bootstrapped_tools_path))
+    elif os.path.isdir(bootstrapped_tools_path) and not os.path.islink(bootstraped_tools_path):
         logger.warning('a tools directory currently exists, removing.')
         shutil.rmtree(bootstrapped_tools_path)
-
-    if not os.path.islink(bootstraped_tools_path):
         symlink(name=bootstrapped_tools_path, target=root_path)
         logger.debug('created tools symlink')
 
@@ -101,6 +106,7 @@ def print_build_output(task):
         print(">>> build standard output")
         print(task.out)
         print('=' * 72)
+        print()
         logger.debug('returned all standard output')
     else:
         logger.info('no build standard output.')
@@ -110,6 +116,7 @@ def print_build_output(task):
         print(">>> build standard error")
         print(task.err)
         print('=' * 72)
+        print()
         logger.debug('returned all standard error')
     else:
         logger.info('no build standard error output.')
