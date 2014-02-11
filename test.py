@@ -103,8 +103,6 @@ def print_build_output(task):
     else:
         logger.info('no build standard output.')
 
-    print(len(build_task.err))
-
     if len(task.err) > 0:
         print('=' * 72)
         print(">>> build standard error")
