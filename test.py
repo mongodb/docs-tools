@@ -1,7 +1,6 @@
 import logging
-import os.path
+import os
 import argparse
-import shutil
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -60,6 +59,7 @@ def main():
         logger.info('cloned repository')
 
     os.chdir(build_path)
+    logger.debug('script working directory is now {0}'.format(os.getcwd()))
 
     if user.branch != 'master':
         try:
@@ -80,7 +80,6 @@ def main():
     print_build_output(build_task)
 
     log_and_propogate_task_return(build_task)
-
 
 def print_build_output(task):
     if len(task.out) > 0:
