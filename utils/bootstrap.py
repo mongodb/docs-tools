@@ -61,7 +61,13 @@ def makefile_meta():
                                'makefile.meta')
 
     cmd = 'python {0} {1}'.format(script_path, makefn_path).split()
-    subprocess.check_call(cmd)
+
+    try:
+        subprocess.check_call(cmd)
+    except subprocess.CalledProcessError:
+        subprocess.check_call('python {0} {1}'.format(os.path.join('build', 'docs-tools', 'makecloth', 'meta.py'),
+                                                      os.path.join('build', 'makefile.meta')))
+
 
 def fabric(buildsystem, conf_file):
     fab_dir = 'fabfile'
