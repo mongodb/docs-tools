@@ -76,12 +76,13 @@ def main():
             exit(1)
 
     bootstrapped_tools_path = os.path.join('build', 'docs-tools')
-    if os.path.exists(bootstrapped_tools_path):
+    if os.path.exists(bootstrapped_tools_path) and os.path.isdir(bootstrapped_tools_path):
         logger.warning('a tools directory currently exists, removing.')
         shutil.rmtree(bootstrapped_tools_path)
 
-    symlink(name=bootstrapped_tools_path, target=root_path)
-    logger.debug('created tools symlink')
+    if not os.path.islink(bootstraped_tools_path):
+        symlink(name=bootstrapped_tools_path, target=root_path)
+        logger.debug('created tools symlink')
 
     logger.info('bootstrapping.')
     command('python bootstrap.py safe')
