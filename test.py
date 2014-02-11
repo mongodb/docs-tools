@@ -5,6 +5,7 @@ import argparse
 logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.shell import command
+from utils.git import get_commit
 
 def setup_logging(args):
     config = dict()
@@ -49,6 +50,7 @@ def main():
         logger.warning('build exists but is not a directory. please investigate.')
         os.remove('build')
 
+    root_path = os.path.abspath(os.getcwd())
     build_path = os.path.join('build', user.project)
 
     if os.path.exists(build_path):
@@ -59,6 +61,7 @@ def main():
         logger.info('cloned repository')
 
     os.chdir(build_path)
+
     logger.debug('script working directory is now {0}'.format(os.getcwd()))
 
     if user.branch != 'master':
@@ -70,8 +73,11 @@ def main():
             logger.error('branch name {0} does not exist in remote'.format(branch))
             exit(1)
 
+    symlink(name=os.path.join('build', 'docs-tools'), target=root_path)
+    logger.deub('created tools symlink')
+
     logger.info('bootstrapping.')
-    command('python bootstrap.py')
+    command('python bootstrap.py safe')
     logger.info('moving on to build the publish target.')
 
     build_task = command('make publish', capture=True, ignore=True)
