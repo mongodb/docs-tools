@@ -108,12 +108,14 @@ def main():
 
 def print_build_output(task):
     if len(task.out) > 0:
+        logger.debug('returning all standard output, now:')
         logger.info(task.out)
         logger.debug('returned all standard output')
     else:
         logger.info('no build standard output.')
 
     if len(task.err) > 0:
+        logger.debug('returning all standard error, now:')
         logger.warning(task.err)
         logger.debug('returned all standard error')
     else:
