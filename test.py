@@ -66,7 +66,7 @@ def main():
     logger.debug('script working directory is now {0}'.format(os.getcwd()))
 
     command('git fetch --all')
-    logger.debug('git fetched testing repository {0}'.format(user.project))
+    logger.debug('git fetched testing repository {0} in {1}'.format(user.project, build_path))
 
     try:
         command('git checkout {0}'.format(user.branch))
@@ -75,6 +75,11 @@ def main():
     except CommandError:
         logger.error('branch name {0} does not exist in remote'.format(user.branch))
         exit(1)
+
+    command('git rest --hard HEAD~12')
+    logger.debug('re-set testing head 12 commits')
+    command('git pull')
+    logger.debug('git pull'd testing')
 
     bootstrapped_tools_path = os.path.join('build', 'docs-tools')
 
