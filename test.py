@@ -6,6 +6,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.shell import command
 from utils.git import get_commit
+from utils.files import symlink
 
 def setup_logging(args):
     config = dict()
