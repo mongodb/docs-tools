@@ -83,7 +83,7 @@ def main():
         logger.debug('created tools symlink')
     elif os.path.islink(bootstrapped_tools_path):
         logger.debug("{0} is a link. continuing.".format(bootstrapped_tools_path))
-    elif os.path.isdir(bootstrapped_tools_path) and not os.path.islink(bootstraped_tools_path):
+    elif os.path.isdir(bootstrapped_tools_path) and not os.path.islink(bootstrapped_tools_path):
         logger.warning('a tools directory currently exists, removing.')
         shutil.rmtree(bootstrapped_tools_path)
         symlink(name=bootstrapped_tools_path, target=root_path)
