@@ -76,7 +76,7 @@ def main():
         logger.error('branch name {0} does not exist in remote'.format(user.branch))
         exit(1)
 
-    command('git rest --hard HEAD~12')
+    command('git reset --hard HEAD~12')
     logger.debug('re-set testing head 12 commits')
     command('git pull')
     logger.debug('ran "git pull" on testing repo')
