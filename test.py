@@ -1,108 +1,118 @@
-from fabric.api import local, hide, lcd, puts, settings, hide
-import fabric.state
-import os
-import sys
+import logging
+import os.path
 import argparse
+import shutil
 
-fabric.state.output.running = False
+logger = logging.getLogger(os.path.basename(__file__))
 
-build = 'build'
+from utils.shell import command
 
-def bootstrap_test_env(repo, repo_path):
-    if not os.path.exists(build):
-        os.mkdir(build)
+def setup_logging(args):
+    config = dict()
 
-    if not os.path.exists(repo_path):
-        local('git clone {0} {1}'.format(repo, repo_path))
-    else:
-        if local('git remote show origin | grep "{0}" | wc -l'.format(repo), capture=True) > 1:
-            with lcd(repo_path):
-                local('git fetch origin')
-        else:
-            local('rm -rf ' + repo_path)
-            local('git clone {0} {1}'.format(repo, repo_path))
+    if args.logfile is not None:
+        config['filename'] = args.logfile
 
-def setup_docs_tools_repo(repo_path):
-    build_path = os.path.join(repo_path, 'build')
-    if not os.path.exists(build_path):
-        os.makedirs(build_path)
+    config['level'] = args.level
 
-    with lcd(build_path):
-        if os.path.exists(os.path.join(repo_path, 'build', 'docs-tools')):
-            with lcd('docs-tools'):
-                local('git reset --hard HEAD~2')
-                local('git pull')
-        else:
-            local('git clone ../../../.git docs-tools')
+    logging.basicConfig(**config)
+    logger.debug('set level to: {0}'.format(args.level))
 
-def get_branch_list(repo_path):
-    with lcd(repo_path):
-        branches = local('git branch -r --no-color --no-column', capture=True).stdout.split()
-        branches = [ branch.split('/', 1)[1] for branch in set(branches) if len(branch.split('/', 1)) > 1 and not branch.split('/', 1)[1] == 'HEAD' ]
-    return branches
-
-def run_tests(branch, project, repo_path):
-    with lcd(repo_path):
-        if local('git symbolic-ref HEAD', capture=True).rsplit('/', 1)[1] != branch:
-            local('git branch -f {0} origin/{0}'.format(branch))
-        local('git reset --hard HEAD~2')
-        local('git checkout {0}'.format(branch))
-        local('git pull')
-
-    mflags = 'MAKEFLAGS=-r --no-print-directory'
-    if sys.platform.startswith('linux'):
-        mflags += ' -j'
-    elif sys.platform.startswith('darwin'):
-        mflags += ' -j16'
-
-    with lcd(repo_path):
-        local('python bootstrap.py')
-        puts('[test]: repository bootstrapped in branch: {0}'.format(branch))
-        puts('------------------------------------------------------------------------')
-
-        if project == 'manual':
-            pre_builders = 'json dirhtml texinfo'
-            local('make {0} {1}'.format(mflags, pre_builders))
-            puts('[test]: targets rebuilt: {0}.'.format(pre_builders))
-            puts('------------------------------------------------------------------------')
-
-        local('make {0} publish'.format(mflags))
-        puts('[test]: repository build publish target in branch: {0}'.format(branch))
-        puts('------------------------------------------------------------------------')
-
-        local('fab stage.package'.format(mflags))
-        puts('[test]: building package for: {0}'.format(branch))
-        puts('------------------------------------------------------------------------')
-
-def main():
+def user_input():
     parser = argparse.ArgumentParser()
     parser.add_argument('--branch', '-b', default='master')
     parser.add_argument('--repo', '-r', default='git@github.com:mongodb/docs.git')
     parser.add_argument('--project', '-p', default='manual', choices=['manual', 'mms', 'ecosystem'])
-    user = parser.parse_args()
+
+    parser.add_argument('--silent', action='store_const', const=logging.NOTSET, dest='level',
+                        help='disable all logging output.')
+    parser.add_argument('--debug', action='store_const', const=logging.DEBUG, dest='level',
+                        help='enable debug logging output.')
+    parser.add_argument('--info', action='store_const', const=logging.INFO, dest='level',
+                        help='enable most verbose logging output.')
+    parser.add_argument('--logfile', action='store', default=None,
+                        help='log to file rather than standard output')
+
+    return parser.parse_args()
+
+def main():
+    user = user_input()
+    setup_logging(user)
 
     if user.repo == 'git@github.com:mongodb/docs.git' and user.project != 'manual':
-        exit('[test]: project and repo are not correctly matched')
+        msg = '[test]: project and repo are not correctly matched'
+        logger.error(msg)
+        exit(1)
 
-    repo_path = os.path.join(build, user.project)
-    bootstrap_test_env(user.repo, repo_path)
-    setup_docs_tools_repo(repo_path)
+    if not os.path.exists('build'):
+        os.makedirs('build')
+    elif not os.path.isdir('build'):
+        logger.warning('build exists but is not a directory. please investigate.')
+        os.remove('build')
 
-    with settings(hide('warnings'), warn_only=True):
-        branches = get_branch_list(repo_path)
+    build_path = os.path.join('build', user.project)
 
-    if branches == []:
-        branches = ['master']
-
-    if user.branch == 'all':
-        puts('[test]: testing build for each branch: {0}'.format(', '.join(branches)))
-        for branch in branches:
-            run_tests(branch, user.project, repo_path)
+    if os.path.exists(build_path):
+        logger.info('build directory exists. continuing with quasi-incremental build.')
     else:
-        puts('[test]: running test build for branch {0}'.format(user.branch))
-        run_tests(user.branch, user.project, repo_path)
+        logger.info('cloning repository')
+        command('git clone {0} {1}'.format(user.repo, build_path))
+        logger.info('cloned repository')
 
-    puts('[test]: test sequence complete. examine output for errors.')
+    os.chdir(build_path)
+
+    if user.branch != 'master':
+        try:
+            command('git checkout {0}'.format(branch))
+        except CommandError:
+            command('git checkout -b {0} origin/{0}'.format(branch))
+        except CommandError:
+            logger.error('branch name {0} does not exist in remote'.format(branch))
+            exit(1)
+
+    logger.info('bootstrapping.')
+    command('python bootstrap.py')
+    logger.info('moving on to build the publish target.')
+
+    build_task = command('make publish', capture=True, ignore=True)
+    logger.info('completed build task, moving to printing output')
+
+    print_build_output(build_task)
+
+    log_and_propogate_task_return(build_task)
+
+
+def print_build_output(task):
+    if len(task.out) > 0:
+        print('=' * 72)
+        print(">>> build standard output")
+        print(task.out)
+        print('=' * 72)
+        logger.debug('returned all standard output')
+    else:
+        logger.info('no build standard output.')
+
+    print(len(build_task.err))
+
+    if len(task.err) > 0:
+        print('=' * 72)
+        print(">>> build standard error")
+        print(task.err)
+        print('=' * 72)
+        logger.debug('returned all standard error')
+    else:
+        logger.info('no build standard error output.')
+
+def log_and_propogate_task_return(task):
+    logger.info('task return code is: {0}'.format(task.return_code))
+
+    if task.return_code != 0:
+        logger.error('build was not successful.')
+    else:
+        logger.info('build successful!')
+
+    logger.debug('exiting now...')
+    exit(task.return_code)
 
 if __name__ == '__main__':
     main()
