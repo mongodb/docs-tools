@@ -74,8 +74,13 @@ def main():
             logger.error('branch name {0} does not exist in remote'.format(branch))
             exit(1)
 
-    symlink(name=os.path.join('build', 'docs-tools'), target=root_path)
-    logger.deub('created tools symlink')
+    bootstrapped_tools_path = os.path.join('build', 'docs-tools')
+    if os.path.exists(bootstrapped_tools_path):
+        logger.warning('a tools directory currently exists, removing.')
+        shutil.rmtree(bootstrappped_tools_path)
+
+    symlink(name=bootstrapped_tools_path, target=root_path)
+    logger.debug('created tools symlink')
 
     logger.info('bootstrapping.')
     command('python bootstrap.py safe')
