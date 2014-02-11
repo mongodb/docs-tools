@@ -78,7 +78,7 @@ def main():
     bootstrapped_tools_path = os.path.join('build', 'docs-tools')
     if os.path.exists(bootstrapped_tools_path):
         logger.warning('a tools directory currently exists, removing.')
-        shutil.rmtree(bootstrappped_tools_path)
+        shutil.rmtree(bootstrapped_tools_path)
 
     symlink(name=bootstrapped_tools_path, target=root_path)
     logger.debug('created tools symlink')
