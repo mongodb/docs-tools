@@ -63,8 +63,10 @@ def main():
         logger.info('cloned repository')
 
     os.chdir(build_path)
-
     logger.debug('script working directory is now {0}'.format(os.getcwd()))
+
+    command('git fetch --all')
+    logger.debug('git fetched testing repository {0}'.format(user.project))
 
     try:
         command('git checkout {0}'.format(user.branch))
