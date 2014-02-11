@@ -66,14 +66,13 @@ def main():
 
     logger.debug('script working directory is now {0}'.format(os.getcwd()))
 
-    if user.branch != 'master':
-        try:
-            command('git checkout {0}'.format(user.branch))
-        except CommandError:
-            command('git checkout -b {0} origin/{0}'.format(user.branch))
-        except CommandError:
-            logger.error('branch name {0} does not exist in remote'.format(user.branch))
-            exit(1)
+    try:
+        command('git checkout {0}'.format(user.branch))
+    except CommandError:
+        command('git checkout -b {0} origin/{0}'.format(user.branch))
+    except CommandError:
+        logger.error('branch name {0} does not exist in remote'.format(user.branch))
+        exit(1)
 
     bootstrapped_tools_path = os.path.join('build', 'docs-tools')
 
