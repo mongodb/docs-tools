@@ -64,10 +64,11 @@ def makefile_meta():
 
     try:
         subprocess.check_call(cmd)
-    except subprocess.CalledProcessError:
+    except:
         subprocess.check_call('python {0} {1}'.format(os.path.join('build', 'docs-tools', 'makecloth', 'meta.py'),
                                                       os.path.join('build', 'makefile.meta')))
-
+    finally:
+        return
 
 def fabric(buildsystem, conf_file):
     fab_dir = 'fabfile'
