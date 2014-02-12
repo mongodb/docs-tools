@@ -1,4 +1,4 @@
-import os.path
+import os
 
 from fabfile.utils.config import lazy_conf
 from fabfile.utils.serialization import ingest_yaml_list
@@ -7,12 +7,50 @@ from fabfile.utils.transformations import post_process_jobs, truncate_file, appe
 from fabfile.utils.errors import FileNotFoundError
 from fabfile.utils.jobs.context_pools import ProcessPool
 
-def migrate_pages(conf=None):
+from fabric.api import task
+
+def get_migration_specifications(conf):
+    return [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
+                                                   conf.paths.builddata))
+             if 'primer' in fn and 'migrations' in fn ]
+
+def convert_multi_source(page):
+    return [ { 'source': source } for source in page['sources'] ]
+
+@task
+def clean(conf=None):
+    "Removes all migrated primer files according to the current spec."
+
     conf = lazy_conf(conf)
 
-    migration_paths = [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
-                                                              conf.paths.builddata))
-                        if 'primer' in fn and 'migrations' in fn ]
+    migration_paths = get_migration_specifications(conf)
+    migrations = ingest_yaml_list(*migration_paths)
+
+    targets = []
+    for page in migrations:
+        if 'sources' in page:
+            migrations.extend(convert_multi_source(page))
+            continue
+
+        page = fix_migration_paths(page)
+
+        targets.append(os.path.join(conf.paths.projectroot, conf.paths.source, page['target']))
+
+    map(verbose_remove, targets)
+    print('[clean] [primer]: removed {0} files'.format(len(targets)))
+
+def verbose_remove(path):
+    if os.path.exists(path):
+        print('[clean] [primer]: removing {0}'.format(path))
+        os.remove(path)
+
+@task
+def migrate(conf=None):
+    "Migrates all manual files to primer according to the spec. As needed."
+
+    conf = lazy_conf(conf)
+
+    migration_paths = get_migration_specifications(conf)
 
     if conf.project.name != 'primer':
         return False
@@ -28,7 +66,7 @@ def migrate_pages(conf=None):
 
         for page in migrations:
             if 'sources' in page:
-                migrations.extend( [ { 'source': source } for source in page['sources'] ])
+                migrations.extend(convert_multi_source(page))
                 continue
 
             page = fix_migration_paths(page)

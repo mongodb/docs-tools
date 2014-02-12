@@ -5,7 +5,7 @@ from fabric.api import task
 
 from fabfile.make import runner
 from fabfile.process import pdf_worker
-from fabfile.primer import migrate_pages as primer_migrate_pages
+from fabfile.primer import migrate as primer_migrate_pages
 
 from fabfile.utils.contentlib.links import create_manual_symlink
 
@@ -23,7 +23,6 @@ from fabfile.utils.contentlib.json_output import json_output_jobs
 from fabfile.utils.contentlib.manpage import manpage_url_jobs
 
 intersphinx = task(intersphinx)
-primer = task(primer_migrate_pages)
 
 @task
 def target(*targets):
