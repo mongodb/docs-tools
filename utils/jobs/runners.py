@@ -16,7 +16,7 @@ def runner(jobs, pool, parallel, force, retval=True):
         results = sync_runner(jobs, force)
     elif parallel is True or parallel == 'process':
         results = async_process_runner(jobs, force, pool)
-    elif parallel.startswith('threads'):
+    elif parallel.startswith('thread'):
         results = async_thread_runner(jobs, force, pool)
     else:
         raise JobRunnerError

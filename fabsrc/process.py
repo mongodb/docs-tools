@@ -74,7 +74,7 @@ def pdf_worker(target=None, conf=None):
         target = 'latex'
 
     for it, queue in enumerate(pdf_jobs(target, conf)):
-        res = runner(queue)
+        res = runner(queue, parallel='thread', pool=16)
         print("[pdf]: completed {0} pdf jobs, in stage {1}".format(len(res), it))
 
 def pdf_jobs(target, conf):

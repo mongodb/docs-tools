@@ -35,7 +35,7 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
     if len(target_jobs) <= 1:
         res = runner(target_jobs, pool=1)
     else:
-        res = runner(target_jobs, pool=len(target_jobs), parallel='process')
+        res = runner(target_jobs, pool=len(target_jobs)+2, parallel='threads')
 
     print('[sphinx]: build {0} sphinx targets'.format(len(res)))
 
