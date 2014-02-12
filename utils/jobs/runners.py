@@ -46,8 +46,7 @@ def async_process_runner(jobs, force, pool):
 
     return async_runner(jobs, force, pool, p)
 
-
-def async_runner(jobs, force, pool, p):
+def async_job_loop(jobs, force, p):
     results = []
 
     for job in jobs:
@@ -68,28 +67,38 @@ def async_runner(jobs, force, pool, p):
                 else:
                     results.append(p.apply_async(job['job'], args=job['args']))
 
-    p.close()
-    p.join()
+    return results
 
+def process_async_results(results, force):
     if force is False:
         retval = []
         has_errors = False
 
+        errors = []
         for ret in results:
             try:
                 retval.append(ret.get())
             except Exception as e:
                 has_errors = True
+                errors.append(e)
                 print(e)
 
         if has_errors is True:
-            raise PoolResultsError
+            raise PoolResultsError(errors)
         else:
             results = retval
     else:
         results = [ o.get() for o in results ]
 
     return results
+
+def async_runner(jobs, force, pool, p):
+    results = async_job_loop(jobs, force, p)
+
+    p.close()
+    p.join()
+
+    return process_async_results(results, force)
 
 def sync_runner(jobs, force):
     results = []

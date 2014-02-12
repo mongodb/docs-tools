@@ -2,13 +2,22 @@ import json
 
 import yaml
 
-def ingest_yaml_list(filename):
-    o = ingest_yaml(filename)
+def ingest_yaml_list(*filenames):
+    o = []
 
-    if isinstance(o, list):
-        return o
-    else:
-        return [o]
+    for fn in filenames:
+        if isinstance(fn, list):
+            filenames.extend(fn)
+            continue
+
+        data = ingest_yaml(fn)
+
+        if isinstance(data, list):
+            o.extend(data)
+        else:
+            o.append(data)
+
+    return o
 
 def ingest_yaml_doc(filename, force=False):
     data = ingest_yaml_list(filename)
