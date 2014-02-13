@@ -50,4 +50,12 @@ $(function() {
             $current = $target;
         }
     });
+
+    /* Options panel */
+    $('.option-header').on('click', function(e) {
+        var $target = $(e.currentTarget);
+
+        $target.parent().toggleClass('closed');
+        $target.find('.fa-angle-down, .fa-angle-up').toggleClass('fa-angle-down fa-angle-up');
+    });
 });

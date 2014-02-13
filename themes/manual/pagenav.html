@@ -1,14 +1,10 @@
 <h3>
   <a href="{{ pathto('index') }}">{{ shorttitle }}</a>
-  <span id="vn">
-    <select>
-      {% for v in theme_version_selector %}
-      <option data-path="{{ v.path }}" {% if v.current %}selected="selected"{% endif %}>
-        {{ v.text }}
-      </option>
-      {% endfor %}
-    </select>
-  </span>
+  {% for v in theme_version_selector %}
+    {% if v.current %}
+      {{ v.text }}
+    {% endif %}
+  {% endfor %}
 </h3>
 
 {{ toctree( collapse=false, titles_only=1) }}
