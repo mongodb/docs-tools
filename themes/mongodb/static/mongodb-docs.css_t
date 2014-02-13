@@ -626,28 +626,28 @@ div.hidden { display: none; }
     font-size: 0.85em;
 }
 
-.jira-link,
-.jira-link:hover,
-.translation-link,
-.translation-link:hover,
-.edit-link,
-.edit-link:hover {
+.document .body .jira-link,
+.document .body .jira-link:hover,
+.document .body .translation-link,
+.document .body translation-link:hover,
+.document .body edit-link,
+.document .body edit-link:hover {
     float: right;
     margin-left: 7px;
     text-decoration: none;
 }
 
-.jira-link {
+.document .body jira-link {
     font-size: 24px;
     margin-top: 1px;
 }
 
-.translation-link {
+.document .body translation-link {
     font-size: 30px;
     margin-top: -2px;
 }
 
-.edit-link {
+.document .body edit-link {
     font-size: 23px;
     margin-top: 3px;
 }
@@ -708,31 +708,6 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 
 /* Content */
-.option-popup {
-    position: fixed;
-    width: 293px;
-    height: 303px;
-    bottom: 0;
-    left: 0;
-}
-
-.option-popup.closed {
-    bottom: -255px;
-}
-
-.option-popup .option-header {
-    height: 50px;
-    background-color: rgb(40, 48, 48);
-    color: rgb(160, 159, 158);
-}
-
-.option-popup .option-body {
-    height: 253px;
-    background-color: rgb(73, 71, 71);
-    color: rgb(191, 191, 190);
-
-}
-
 .content {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -1001,7 +976,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     font-size: 0.85em;
 }
 
-div.sphinxsidebarwrapper{
+div.sphinxsidebarwrapper {
     padding: 0; /* overwrites basic.css rules */
     margin-bottom: 50px;
 }
@@ -1018,7 +993,7 @@ div.sphinxsidebar h3 a.showlink {
     color: #003594;
 }
 
-.sphinxsidebarwrapper > ul.current > .toctree-l1 {
+.sphinxsidebarwrapper > ul > .toctree-l1 {
 
     padding: 12.5px 0;
 
@@ -1034,19 +1009,19 @@ div.sphinxsidebar h3 a.showlink {
     display: inline-block;
 }
 
-.sphinxsidebarwrapper > ul.current > .toctree-l1:last-child {
+.sphinxsidebarwrapper > ul > .toctree-l1:last-child {
     border-bottom: 1px solid rgb( 222, 224, 227 );
 }
 
-.sphinxsidebarwrapper > ul.current > .toctree-l1.current {
+.sphinxsidebarwrapper > ul > .toctree-l1.current {
     background-color: white;
 }
 
-.sphinxsidebarwrapper > ul.current > .toctree-l1:not(.current) > ul,
-.sphinxsidebarwrapper > ul.current .toctree-l2:not(.current) > ul,
-.sphinxsidebarwrapper > ul.current .toctree-l3:not(.current) > ul,
-.sphinxsidebarwrapper > ul.current .toctree-l4:not(.current) > ul,
-.sphinxsidebarwrapper > ul.current .toctree-l5:not(.current) > ul {
+.sphinxsidebarwrapper > ul > .toctree-l1:not(.current) > ul,
+.sphinxsidebarwrapper > ul .toctree-l2:not(.current) > ul,
+.sphinxsidebarwrapper > ul .toctree-l3:not(.current) > ul,
+.sphinxsidebarwrapper > ul .toctree-l4:not(.current) > ul,
+.sphinxsidebarwrapper > ul .toctree-l5:not(.current) > ul {
     display: none;
 }
 
@@ -1062,21 +1037,21 @@ div.sphinxsidebar h3 a.showlink {
     color: #333;
 }
 
-.sphinxsidebarwrapper > ul.current > .toctree-l1 > a {
+.sphinxsidebarwrapper > ul > .toctree-l1 > a {
     font-size: 15px;
     padding: 0 12px;
 }
 
-div.sphinxsidebar ul.current li.toctree-l2 > a {
+div.sphinxsidebar li.toctree-l2 > a {
     padding-left: 24px;
 }
-div.sphinxsidebar ul.current li.toctree-l3 > a {
+div.sphinxsidebar li.toctree-l3 > a {
     padding-left: 36px;
 }
-div.sphinxsidebar ul.current li.toctree-l4 > a {
+div.sphinxsidebar li.toctree-l4 > a {
     padding-left: 48px;
 }
-div.sphinxsidebar ul.current li.toctree-l5 > a {
+div.sphinxsidebar li.toctree-l5 > a {
     padding-left: 60px;
 }
 
@@ -1122,16 +1097,6 @@ div.sphinxsidebar input[type="submit"] {
     width: 4.5em !important;
 }
 
-div.sphinxsidebarwrapper .this-page-menu {
-    margin-left: 12px;
-    margin-bottom: 0;
-}
-div.sphinxsidebarwrapper .this-page-menu li {
-    display: inline;
-    font-size: 22px;
-    margin-right: 5px;
-}
-
 div.sphinxsidebar tt.literal .pre {
     font-weight: normal;
 }
@@ -1160,4 +1125,83 @@ div.sphinxsidebar a:hover tt.literal .pre {
 div.sphinxsidebarwrapper div.idxcontents {
     margin-left: 8px;
     font-size: 88%;
+}
+
+/* Options panel */
+.option-popup {
+    position: fixed;
+    width: 293px;
+    height: 303px;
+    bottom: 0;
+    left: 0;
+
+    transition: bottom 0.4s cubic-bezier(.02,.01,.47,1);
+    -moz-transition: bottom 0.4s cubic-bezier(.02,.01,.47,1);
+    -webkit-transition: bottom 0.4s cubic-bezier(.02,.01,.47,1);
+}
+
+.option-popup.closed {
+    bottom: -255px;
+}
+
+.option-popup .option-header {
+    cursor: pointer;
+    height: 50px;
+    background-color: rgb(49, 48, 48);
+    color: rgb(160, 159, 158);
+    padding: 15px 14px;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.option-popup .option-header > .fa-gear {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.option-popup .option-header > .fa-angle-up,
+.option-popup .option-header > .fa-angle-down {
+    font-size: 18px;
+}
+
+.option-popup .option-body {
+    height: 253px;
+    padding: 22px 16px;
+    background-color: rgb(73, 71, 71);
+    color: rgb(191, 191, 190);
+    font-size: 13px;
+}
+
+.option-popup .option-body > ul {
+    padding: 0;
+}
+
+.option-popup > .option-body > ul > li {
+    list-style-type: none;
+    padding-bottom: 20px;
+}
+
+.option-popup .formats-list,
+.option-popup .contribute-list {
+    margin: 0;
+    padding: 0;
+}
+
+.option-popup .formats-list li,
+.option-popup .contribute-list li {
+    display: inline;
+    margin-right: 30px;
+}
+
+.option-body > ul > li > label {
+    color: rgb( 191, 191, 190 );
+    line-height: 1.714;
+    font-weight: normal;
+}
+
+.option-popup .formats-list > li > a,
+.option-popup .contribute-list > li > a {
+    color: rgb( 255, 255, 255 );
+    font-weight: bold;
+    line-height: 0.914;
 }

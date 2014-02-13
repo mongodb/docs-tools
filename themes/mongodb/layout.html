@@ -6,7 +6,7 @@
 {%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
 {%- set url_root = pathto('', 1) %}
 {%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.tipsy.js", "_static/navbar.js"] %}
-{%  set css_files = css_files + ["_static/bootstrap-custom.css", "_static/lib/icomoon.css", "_static/lib/tipsy.css"] %}
+{%  set css_files = css_files + ["_static/bootstrap-custom.css", "_static/lib/icomoon.css", "_static/lib/font-awesome.css", "_static/lib/tipsy.css"] %}
 
 {%- macro translationslink() -%}
   {%- block translationslink %}
@@ -16,13 +16,13 @@
 
 {%- macro editlink() -%}
   {%- block editlink %}
-    <a class="edit-link" href="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub"><span class="icon-edit"></span></a>
+    <a class="edit-link" href="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub">Edit on Github</a>
   {%- endblock -%}
 {%- endmacro -%}
 
 {%- macro jiralink() -%}
   {%- block jiralink %}
-    <a class="jira-link" id="jirafeedback" href="https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira"><span class="icon-feedback"></span></a>
+    <a class="jira-link" id="jirafeedback" href="https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira">Report a Problem</a>
   {%- endblock -%}
 {%- endmacro -%}
 
@@ -51,6 +51,53 @@
     </div>
   </div>
 {%- endmacro -%}
+
+{% macro optionbody() %}
+  <ul>
+    <!-- version selector -->
+    <li>
+      <label>Version</label>
+      <select class="version-selector pull-right">
+        {% for v in theme_version_selector %}
+        <option data-path="{{ v.path }}" {% if v.current %}selected="selected"{% endif %}>
+          {{ v.text }}
+        </option>
+        {% endfor %}
+      </select>
+    </li>
+    <!-- language selector -->
+    <li>
+      <label>Language</label>
+      <select class="language-selector pull-right">
+      {%- for lc,lang in theme_translations -%}
+        <option data-path="http://{{lc}}.docs.mongodb.org/{{ page_url }}">
+          {{lang}}
+        </option>
+      {% endfor -%}
+      </select>
+    </li>
+    <!-- format selector -->
+    <li>
+      <label>{{ _('Formats') }}</label>
+      <ul class="formats-list">
+        {%- if show_source and has_source and sourcename %}
+        <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow">{{ _("This Page's Source") }}</a></li>
+        {%- endif %}
+        <li><a href="/{{ theme_manual_path }}/single/">HTML</span></a></li>
+        <li><a href="{{ theme_pdfpath }}" rel="nofollow">PDF</a></li>
+        <li><a href="{{ theme_epubpath }}" rel="nofollow">EPUB</a></li>
+      </ul>
+    </li>
+    <!-- contribute -->
+    <li>
+      <label>Contribute</label>
+      <ul class="contribute-list">
+        <li>{{ jiralink() }}</li>
+        <li>{{ editlink() }}</li>
+      </ul>
+    </li>
+  </ul>
+{% endmacro %}
 
 {%- macro script() %}
   <script type="text/javascript">
@@ -192,11 +239,12 @@
   </aside>
   <div class="option-popup closed">
     <div class="option-header">
-      <span>Options</span>
-      <i class="fa fa-gear pull=right"></i>
+      <i class="fa fa-gear"></i>
+      <span>OPTIONS</span>
+      <i class="fa fa-angle-up pull-right"></i>
     </div>
     <div class="option-body">
-      Neah neah neah neah neah
+      {{ optionbody() }}
     </div>
   </div>
   <div class="content">
@@ -207,9 +255,6 @@
             <div class="documentwrapper">
               {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
               <div class="body">
-                {{ editlink() }}
-                {{ jiralink() }}
-                {{ translationslink() }}
                 {{ relbar() }}
                 {% block body %}
                   {{ body }}
@@ -241,15 +286,19 @@
   <script type="text/javascript">
   $(document).ready(function(){
     var pagename = '{{pagename}}';
-    $("#vn select").bind('change', function(e) {
-      var pn = pagename;
-      if (pagename == 'index') {
-        pn = '';
-      }
-
+    if (pagename == 'index') {
+      pagename = '';
+    }
+    $("select.version-selector").on('change', function(e) {
       var base = $(e.currentTarget).find('option:selected').data('path');
-      window.location.href = '/' + base + '/' + pn + '/';
+      window.location.href = '/' + base + '/' + pagename + '/';
     });
+
+    $("select.language-selector").on('change', function(e) {
+      var path = $(e.currentTarget).find('option:selected').data('path');
+      window.location.href = path;
+    });
+
   });
   </script>
   {%- endblock -%}
