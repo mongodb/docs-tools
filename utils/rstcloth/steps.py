@@ -78,6 +78,10 @@ invalid:
 import yaml
 import sys
 import os
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
+logging.basicConfig(level=logging.ERROR)
 
 from utils.rstcloth.rstcloth import RstCloth
 from utils.serialization import ingest_yaml_list
@@ -218,6 +222,10 @@ class StepsOutput(object):
             else:
                 block['heading'] = { 'text': block['heading'],
                                      'character': override_char }
+
+            if block['heading']['text'] is None:
+                logger.error('step in "{0}" is missing a heading'.format(os.path.basename(self.steps.source_fn)))
+                return
 
             self.rst.heading(text=block['heading']['text'],
                              char=block['heading']['character'],

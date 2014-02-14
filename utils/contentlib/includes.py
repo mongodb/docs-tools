@@ -22,12 +22,12 @@ def write_include_index(conf):
 
     r = build_page(fd, conf)
 
-    if r is not None: 
+    if r is not None:
         r.write(os.path.join(conf.paths.projectroot,
                              conf.paths.includes,
                              'generated',
                              'overview.rst'))
-    
+
         print('[includes]: generated /meta/includes source page.')
 
 
