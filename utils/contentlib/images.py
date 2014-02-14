@@ -25,7 +25,7 @@ def _generate_images(cmd, dpi, width, target, source):
                        width=width,
                        target=target,
                        source=source))
-    print('[image]: generated image file  {0}'.format(source))
+    print('[image]: generated image file {0}'.format(target))
 
 def image_jobs(conf=None):
     conf = lazy_conf(None)
@@ -67,7 +67,7 @@ def image_jobs(conf=None):
 
             yield {
                     'target': target_img,
-                    'dependency': source_file,
+                    'dependency': [ source_file, meta_file ],
                     'job': _generate_images,
                     'args': [
                               inkscape_cmd,
