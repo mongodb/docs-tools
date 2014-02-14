@@ -50,7 +50,6 @@ def build_prereq_jobs(conf):
 
 def build_prerequisites(conf):
     jobs = itertools.chain(build_prereq_jobs(conf),
-                           external_jobs(conf),
                            manpage_jobs(conf),
                            table_jobs(conf),
                            api_jobs(conf),
@@ -62,11 +61,13 @@ def build_prerequisites(conf):
                            image_jobs(conf))
 
     try:
-        res = runner(jobs, parallel='thread')
+        res = runner(jobs, parallel='process')
         print('[sphinx-prep]: built {0} pieces of content'.format(len(res)))
     except PoolResultsError:
         print('[WARNING]: sphinx prerequisites encountered errors. '
               'See output above. Continuing as a temporary measure.')
+
+    runner(external_jobs(conf), parallel='thread')
 
     buildinfo_hash(conf)
 
