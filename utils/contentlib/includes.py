@@ -22,12 +22,13 @@ def write_include_index(conf):
 
     r = build_page(fd, conf)
 
-    r.write(os.path.join(conf.paths.projectroot,
-                         conf.paths.includes,
-                         'generated',
-                         'overview.rst'))
-
-    print('[includes]: generated /meta/includes source page.')
+    if r is not None: 
+        r.write(os.path.join(conf.paths.projectroot,
+                             conf.paths.includes,
+                             'generated',
+                             'overview.rst'))
+    
+        print('[includes]: generated /meta/includes source page.')
 
 
 def include_file_data(conf):
@@ -94,9 +95,14 @@ def include_file_data(conf):
     return omni
 
 def build_page(data, conf):
-    iconf = BuildConfiguration(os.path.join(conf.paths.projectroot,
-                                            conf.paths.includes,
-                                            'metadata.yaml'))
+    fn = os.path.join(conf.paths.projectroot,
+                      conf.paths.includes,
+                      'metadata.yaml')
+
+    if not os.path.exists(fn):
+        return None
+    else:
+        iconf = BuildConfiguration(fn)
 
     r = RstCloth()
 

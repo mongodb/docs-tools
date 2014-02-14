@@ -50,6 +50,7 @@ def async_job_loop(jobs, force, p):
     results = []
 
     for job in jobs:
+
         if 'target' not in job:
             job['target'] = None
         if 'dependency' not in job:

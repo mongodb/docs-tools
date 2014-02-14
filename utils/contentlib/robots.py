@@ -10,9 +10,16 @@ def robots_txt_builder(fn, conf, override=False):
     else:
         print('[robots]: regenerating robots.txt on non-master branch with override.')
 
-    suppressed = ingest_yaml_list(os.path.join(conf.paths.projectroot,
-                                               conf.paths.builddata,
-                                               'robots.yaml'))
+    input_fn = os.path.join(conf.paths.projectroot,
+                            conf.paths.builddata,
+                            'robots.yaml')
+
+    if not os.path.exists(input_fn):
+        print('[robots]: {0} does not exist. not generating robots.txt'.format(input_fn))
+        return False
+    
+    suppressed = ingest_yaml_list(input_fn)
+
 
     robots_txt_dir = os.path.dirname(fn)
     if not os.path.exists(robots_txt_dir):

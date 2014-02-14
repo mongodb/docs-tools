@@ -34,9 +34,12 @@ def image_jobs(conf=None):
     meta_file = os.path.join(paths.images, 'metadata') + '.yaml'
 
     if not os.path.exists(meta_file):
-        return
+        raise StopIteration
 
     images_meta = ingest_yaml_list(meta_file)
+
+    if images_meta is None:
+        raise StopIteration
 
     for image in images_meta:
         image['dir'] = paths.images

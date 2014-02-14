@@ -27,9 +27,6 @@ def make_all_sphinx(config):
     m.newline()
 
     m.comment('content generators')
-    m.target('composites')
-    m.job('fab process.refresh_dependencies')
-
     m.target('api')
     m.job('fab generate.api')
 
@@ -101,7 +98,7 @@ def make_all_sphinx(config):
     m.section_break('meta', block='footer')
     m.newline(block='footer')
     m.target('.PHONY', sphinx_targets, block='footer')
-    m.target('.PHONY', ['composites', 'api', 'toc', 'intersphinx', 'images', 'tables'], block='footer')
+    m.target('.PHONY', [ 'api', 'toc', 'intersphinx', 'images', 'tables'], block='footer')
 
 def sphinx_builder(target):
     b = 'production'

@@ -21,6 +21,8 @@ from utils.contentlib.robots import robots_txt_builder
 from utils.contentlib.includes import write_include_index
 from utils.contentlib.hash import buildinfo_hash
 from utils.contentlib.source import transfer_source
+from utils.contentlib.external import external_jobs
+
 from utils.sphinx.dependencies import refresh_dependencies
 
 def build_prereq_jobs(conf):
@@ -48,6 +50,7 @@ def build_prereq_jobs(conf):
 
 def build_prerequisites(conf):
     jobs = itertools.chain(build_prereq_jobs(conf),
+                           external_jobs(conf),
                            manpage_jobs(conf),
                            table_jobs(conf),
                            api_jobs(conf),
@@ -56,17 +59,17 @@ def build_prerequisites(conf):
                            steps_jobs(conf),
                            release_jobs(conf),
                            intersphinx_jobs(conf),
-                           image_jobs(conf)
-        )
+                           image_jobs(conf))
 
     try:
-        res = runner(jobs)
+        res = runner(jobs, parallel='thread')
         print('[sphinx-prep]: built {0} pieces of content'.format(len(res)))
     except PoolResultsError:
         print('[WARNING]: sphinx prerequisites encountered errors. '
               'See output above. Continuing as a temporary measure.')
 
     buildinfo_hash(conf)
+
     if conf.project.name != 'mms':
         # we copy source manually for mms in makefile.mms, avoiding this
         # operation to clarify the artifacts directory
