@@ -5,11 +5,6 @@ import imp
 from utils.config import lazy_conf
 from utils.files import expand_tree
 
-def pprint(doc):
-    import json
-    
-    print(json.dumps(doc, indent=3))
-
 def external_jobs(conf=None):
     conf = lazy_conf(conf)
 
@@ -22,7 +17,7 @@ def external_jobs(conf=None):
     for mod in expand_tree(ext_mod_path, 'py'):
         path, name = os.path.split(mod)
         name, _ = os.path.splitext(name)
-        
+
         file, filename, data = imp.find_module(name, [path])
 
         imp.load_module(name, file, mod, data)
@@ -33,4 +28,3 @@ def external_jobs(conf=None):
         if 'jobs' in dir(mod) and 'stage' in dir(mod) and mod.stage.startswith('pre'):
             for task in mod.jobs(conf):
                 yield task
-
