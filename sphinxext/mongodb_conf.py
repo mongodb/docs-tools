@@ -167,6 +167,13 @@ conf['directives'] = [
         'description': 'replica set state',
         'prepend': True,
         'callable': False,
+    },
+    {
+        'name': 'variable',
+        'tag': 'variable',
+        'description': 'system variable available in aggregation',
+        'prepend': True,
+        'callable': False,
     }
 ]
 
