@@ -724,10 +724,6 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     padding: 20px 30px;
 }
 
-.content .right-column {
-    width: 295px;
-    padding: 20px 0;
-}
 
 /* Header styles */
 
@@ -1205,3 +1201,34 @@ div.sphinxsidebarwrapper div.idxcontents {
     font-weight: bold;
     line-height: 0.914;
 }
+
+/* Right column TOC */
+
+.content .right-column {
+    width: 295px;
+    padding: 20px 0;
+}
+
+.right-column > .toc {
+    padding: 20px;
+    background-color: rgb( 245, 246, 247 );
+    margin-bottom: 20px;
+}
+
+.right-column > .toc > ul,
+.right-column > .toc > ul > li > ul {
+    padding-left: 0;
+}
+
+.right-column > .toc > ul > li > a {
+    display: none;
+}
+
+.right-column > .toc > ul ul {
+    padding-left: 20px;
+}
+
+.right-column ul {
+    list-style: none;
+}
+
