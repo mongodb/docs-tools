@@ -13,7 +13,7 @@ from utils.sphinx.config import compute_sphinx_config, get_sphinx_args
 def build_worker_wrapper(builder, sconf, conf, finalize_fun):
     sconf = compute_sphinx_config(builder, sconf, conf)
 
-    build_worker(builder, sconf, conf, finalize_fun)
+    return build_worker(builder, sconf, conf, finalize_fun)
 
 def sphinx_build(targets, conf, sconf, finalize_fun):
     build_prerequisites(conf)
@@ -37,6 +37,8 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
     else:
         res = runner(target_jobs, pool=len(target_jobs)+2, parallel='threads')
 
+    output_sphinx_stream('\n'.join([r for r in res if r is not None]), conf)
+
     print('[sphinx]: build {0} sphinx targets'.format(len(res)))
 
 def build_worker(builder, sconf, conf, finalize_fun):
@@ -58,9 +60,16 @@ def build_worker(builder, sconf, conf, finalize_fun):
 
     out = command(sphinx_cmd, capture=True)
     # out = sphinx_native_worker(sphinx_cmd)
-
-    output_sphinx_stream('\n'.join( [ out.err, out.out ] ), builder, conf)
-
     print('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
-    finalize_fun(builder, sconf, conf)
+    output = '\n'.join([out.err, out.out])
+    
+    if out.return_code == 0:
+        print('[sphinx]: successfully completed {0} build at {1}!'.format(builder, timestamp()))
+        finalize_fun(builder, sconf, conf)
+        print('[sphinx]: finalized {0} build at {1}'.format(builder, timestamp()))
+        return output
+    else:
+        print('[sphinx]: the {0} build was not successful. not running finalize steps'.format(builder))
+        output_sphinx_stream(output, conf)
+        return None

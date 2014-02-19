@@ -3,11 +3,11 @@ import os.path
 
 from utils.config import lazy_conf
 
-def output_sphinx_stream(out, builder, conf=None):
+def output_sphinx_stream(out, conf=None):
     if conf is None:
         conf = lazy_conf(conf)
 
-    out = ( l for l in out.split('\n') if l != '' )
+    out = [ o for o in out.split('\n') if o != '' ] 
 
     full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
 
@@ -15,7 +15,8 @@ def output_sphinx_stream(out, builder, conf=None):
 
     printable = []
     for idx, l in enumerate(out):
-        if builder.startswith('epub') and not epub_msg_worthy(l):
+        if is_msg_worthy(l) is not True:
+            printable.append(None)
             continue
 
         f1 = regx.match(l)
@@ -23,6 +24,7 @@ def output_sphinx_stream(out, builder, conf=None):
             g = f1.groups()
 
             if g[1].endswith(g[0]):
+                printable.append(None)
                 continue
 
         l = path_normalization(l, full_path, conf)
@@ -40,9 +42,7 @@ def output_sphinx_stream(out, builder, conf=None):
     print_build_messages(printable)
 
 def print_build_messages(messages):
-    messages = ( l for l in messages if l is not None )
-
-    for l in messages:
+    for l in ( l for l in messages if l is not None ):
         print(l)
 
 def path_normalization(l, full_path, conf):
@@ -51,7 +51,7 @@ def path_normalization(l, full_path, conf):
     elif l.startswith(full_path):
         l = l[len(full_path)+1:]
     elif l.startswith('source'):
-        pass
+        return l
 
     if conf.project.name == 'mms':
         if l.startswith('source-saas'):
@@ -61,7 +61,7 @@ def path_normalization(l, full_path, conf):
 
     return l
 
-def epub_msg_worthy(l):
+def is_msg_worthy(l):
     if l.startswith('WARNING: unknown mimetype'):
         return False
     elif len(l) == 0:
