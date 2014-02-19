@@ -42,7 +42,7 @@
 
 {%- macro sidebar() %}
   <div class="sphinxsidebar">
-    <div class="sphinxsidebarwrapper">
+    <div class="sphinxsidebarwrapper" style="display: none;">
       {%- if sidebars != None %}
         {%- for sidebartemplate in sidebars %}
           {%- include sidebartemplate %}
@@ -226,9 +226,9 @@
   {%- block header %}
     <header id="header-db" class="row" role="navigation">
       <div class="col-md-12">
-        <span class="logo">MongoDB Docs</span>
+        <div class="logo pull-left">MongoDB Docs</div>
         {%- block searchbox %}
-        <span class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></span>
+        <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
         {% endblock %}
       </div>
     </header>
