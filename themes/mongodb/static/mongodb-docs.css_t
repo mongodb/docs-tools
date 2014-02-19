@@ -21,6 +21,10 @@ body {
 
 hr { border: 1px solid #B1B4B6; }
 
+.content {
+    line-height: 25px;
+}
+
 div.body {
     overflow-x: auto;
 }
@@ -64,14 +68,16 @@ a:hover {
 
 div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
     font-weight: bold;
-    margin: 2px 0px 0px 0px;
+    margin: 0;
     padding: 0;
 }
 
 div.body h1 {
     border-top: none;
-    margin-top: 0;
     font-size: 200%;
+    line-height: 34px;
+    padding: 3px 0;
+    margin: 4px 0;
 }
 div.body h2 { font-size: 150%; }
 div.body h3 {
@@ -85,10 +91,8 @@ div.body h6 { font-size: 100%; }
 
 div.body h1 + p,  div.body h2 + p, div.body h3 + p, div.body h4 + p,
 div.body h1 + dl, div.body h2 + dl, div.body h3 + dl,  div.body h4 + dl {
-    padding-top:0.4em;
-    margin-top: 0em;
+    padding: 0;
     text-indent:0;
-    padding-bottom: 0.3em;
 }
 
 div.body h1 + ul, div.body h2 + ul, div.body h3 + ul, div.body  h4 + ul,
@@ -111,10 +115,9 @@ a.headerlink:hover {
     color: white;
 }
 
-div.body p, div.body dd { line-height: 1.8; }
+div.body p, div.body dd { }
 div.body li {
     padding-top: .2em;
-    line-height: 1.3em;
 }
 div.admonition p.admonition-title + p { display: inline; }
 div.highlight{ background-color: white; }
@@ -122,10 +125,10 @@ dl.binary { display: none; }
 div.topic { background-color: #eee; }
 
 div.admonition {
-    margin:1.5em auto;
+    margin: 25px 0;
     width:auto;
     max-width:100%;
-    padding: .5em 1em;
+    padding: 7px 15px;
 }
 
 div.seealso {
@@ -513,13 +516,10 @@ div.section > h1 + dl.projection > dt {display: none;}
 div.section {cursor: default;}
 
 div.body p {
-    line-height: 1.3em;
-    margin: 0.2em 0 0.8em 0!important
-}
+    margin: 25px 0 0 0;}
 
 div.body li>p {
-    line-height: 1.3em;
-    margin-bottom: 0.2em !important;
+    margin: 0;
 }
 
 div.highlight pre {
@@ -532,9 +532,7 @@ div.highlight pre {
 }
 
 div.section > h2, div.section > h3,div.section > h4 {
-    margin-top: 1.4em;
-    padding-top:0;
-    margin-bottom: 0.2em;
+    margin: 25px 0;
 }
 
 div.admonition p {
@@ -583,7 +581,7 @@ div.admonition.note table.docutils tr:last-child td {
 
 div.body > div.section > div.section {
     margin-left:0;
-    margin-top:2em;
+    margin-top: 25px;
 }
 
 table.docutils {
@@ -601,19 +599,20 @@ div.highlight-powershell pre { background-color: #F5F5F5; }
 
 div.admonition-example pre { background-color: #FBFBFB; }
 
-li p.first { margin-bottom: 0em; }
+div.body li > p.first { margin-bottom: 0; }
 h4#vnd {padding:0;margin:0;line-height:1.5;padding-left:10px;}
 div.body div.bc {
-    padding-bottom: 10px;
+    padding: 4px 0;
     background:white;
     cursor: default;
+    margin-bottom: 12.5px;
 }
 div.body div.bc.hide {
     display: none;
 }
 div.body div.bc li.jr { float: right; display:none; }
 div.body div.bc ul { padding:0; margin:0 }
-div.body div.bc ul li { list-style: none; font-size: 0.9em; display:inline; }
+div.body div.bc ul li { list-style: none; font-size: 13px; display:inline; }
 div.body div.bc ul li a { color: #003594; }
 div.dc span.bcpoint { font-weight: bold; font-size:0.9em; color: #343434; }
 div.body div.contents { max-width: 30%; float: right; padding: 0 0.5em 0.5em; margin-left: 1em; }
@@ -654,7 +653,7 @@ div.hidden { display: none; }
 
 a > em { font-style: normal; }
 
-dl.toc dt {
+/*dl.toc dt {
    margin-left: 2em;
    font-weight: bold;
    line-height: 1.3;
@@ -702,7 +701,7 @@ dl.method dd table.docutils td, dl.dbcommand dd table.docutils td {
 dl.method > dt, dl.dbcommand > dt {
     background-color: lavender;
 }
-
+*/
 div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p > span {
     font-style: italic;
 }
@@ -712,7 +711,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    width: 1000px;
+    width: 1100px;
     margin-top: 49px; /* header height */
     margin-bottom: 32px; /* footer height (?) */
     margin-left: 293px; /* sidebar width */
@@ -720,8 +719,12 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 
 .content .main-column {
     min-height: 600px;
-    width: 705px;
-    padding: 20px 30px;
+    width: 800px;
+    padding: 25px 30px;
+}
+
+#see-also > p {
+    margin-top: 12.5px;
 }
 
 
@@ -729,12 +732,12 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 
 #header-db {
     position: fixed;
-    height: 49px;
+    height: 50px;
     width: 100%;
     font-size: 31px;
     background-color: #402817;
     color: white;
-    margin: -49px 0 0 0;
+    margin: -50px 0 0 0;
     padding: 0;
 }
 
@@ -789,12 +792,16 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     -webkit-box-sizing: content-box;
 }
 
+#header-db .logo {
+    padding: 5px 0;
+}
+
 #header-db .search-db {
     transition: width 0.3s linear;
     -webkit-transition: width 0.3s linear;
     -moz-transition: width 0.3s linear;
     -o-transition: width 0.3s linear;
-    padding: 11px 0 11px 0;
+    padding: 11px 0;
     margin-left: 10px;
 }
 
@@ -974,15 +981,16 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 
 div.sphinxsidebarwrapper {
     padding: 0; /* overwrites basic.css rules */
+    margin-top: 12.5px;
     margin-bottom: 50px;
 }
 
 div.sphinxsidebar h3 {
     padding: 14px 12px;
-    font-size: 1.2em;
+    font-size: 14px;
     font-weight: bold;
-    line-height: 2;
     margin:0;
+    height: 50px;
 }
 
 div.sphinxsidebar h3 a.showlink {
@@ -990,14 +998,17 @@ div.sphinxsidebar h3 a.showlink {
 }
 
 .sphinxsidebarwrapper > ul > .toctree-l1 {
-
-    padding: 12.5px 0;
+    min-height: 50px;
+    padding: 14px 0;
 
     transition: background-color 0.4s cubic-bezier(.02,.01,.47,1);
     -moz-transition: background-color 0.4s cubic-bezier(.02,.01,.47,1);
     -webkit-transition: background-color 0.4s cubic-bezier(.02,.01,.47,1);
     border-top: 1px solid rgb( 222, 224, 227 );
+}
 
+.sphinxsidebarwrapper > ul > .toctree-l1.current {
+    background-color: white;
 }
 
 .sphinxsidebarwrapper li.toctree-l1 ul > li > a {
@@ -1007,18 +1018,6 @@ div.sphinxsidebar h3 a.showlink {
 
 .sphinxsidebarwrapper > ul > .toctree-l1:last-child {
     border-bottom: 1px solid rgb( 222, 224, 227 );
-}
-
-.sphinxsidebarwrapper > ul > .toctree-l1.current {
-    background-color: white;
-}
-
-.sphinxsidebarwrapper > ul > .toctree-l1:not(.current) > ul,
-.sphinxsidebarwrapper > ul .toctree-l2:not(.current) > ul,
-.sphinxsidebarwrapper > ul .toctree-l3:not(.current) > ul,
-.sphinxsidebarwrapper > ul .toctree-l4:not(.current) > ul,
-.sphinxsidebarwrapper > ul .toctree-l5:not(.current) > ul {
-    display: none;
 }
 
 .sphinxsidebarwrapper .toctree-l1 li.current.leaf-item {
@@ -1077,6 +1076,10 @@ div.sphinxsidebar ul {
     color: #000;
 }
 
+div.sphinxsidebar ul.extra-contents {
+    margin-top: -1px;
+}
+
 div.sphinxsidebar a { color: #333; }
 
 div.sphinxsidebar input {
@@ -1100,9 +1103,6 @@ div.sphinxsidebar tt.literal .pre {
 div.sphinxsidebarwrapper ul {
     margin: 0;
     padding: 0;
-}
-div.sphinxsidebarwrapper > ul {
-    margin-bottom: 6px;
 }
 div.sphinxsidebarwrapper ul li a tt span {
     font-size:inherit;
@@ -1205,19 +1205,24 @@ div.sphinxsidebarwrapper div.idxcontents {
 /* Right column TOC */
 
 .content .right-column {
-    width: 295px;
-    padding: 20px 0;
+    width: 300px;
+    padding: 25px 0;
 }
 
 .right-column > .toc {
-    padding: 20px;
+    padding: 25px 20px;
     background-color: rgb( 245, 246, 247 );
     margin-bottom: 20px;
 }
 
+.right-column > .toc a {
+    font-size: 13px;
+}
+
 .right-column > .toc > ul,
 .right-column > .toc > ul > li > ul {
-    padding-left: 0;
+    padding: 0;
+    margin: 0;
 }
 
 .right-column > .toc > ul > li > a {

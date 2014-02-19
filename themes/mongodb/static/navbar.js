@@ -5,9 +5,19 @@ $(function() {
         $(el).css('display', 'block');
     });
 
-    $('.toctree-l1').on('click', 'a', function(e) {
+
+    $('.sphinxsidebarwrapper > ul li:not(.leaf-item) > ul:not(.current)').hide();
+    $('.sphinxsidebarwrapper').show();
+    // window.setTimeout(function() {
+    //     var marginTop = 62.5,
+    //         rowHeight = 50;
+    //     var scrollHeight = $('.sphinxsidebarwrapper .toctree-l1.current').index() * rowHeight + marginTop;
+    //     $('.sidebar').scrollTop(scrollHeight);
+    // });
+
+    $('.sphinxsidebarwrapper .toctree-l1').on('click', 'a', function(e) {
         var $target = $(e.currentTarget);
-        if ($target.siblings('.simple').length) {
+        if (!$target.siblings('ul:not(.simple)').length) {
             return; // Do a full page reload on leaf nodes
         }
 
@@ -15,36 +25,28 @@ $(function() {
 
         if ($target.parent().hasClass('current')) {
             // collapse target node
-            $target.removeClass('current');
-            $target.siblings('ul').slideUp(function() {
-                $target.parent().removeClass('current leaf-item');
-            });
+            $target.removeClass('current').parent().removeClass('current leaf-item');
+            $target.siblings('ul').slideUp();
         } else {
             $current.removeClass('current');
             $current.parent().removeClass('leaf-item');
-            // collapse current node if we're opening a new node
-            if (!$current.parent().has(e.currentTarget).length) {
-                $current.siblings('ul').slideUp();
-            }
-            // roll up everything up to the most common ancestor
-            $current.parents().each(function(index, el) {
+            // roll up all navigation up to the common ancestor
+            $current.parents().add($current.siblings('ul')).each(function(index, el) {
                 var $el = $(el);
                 if ($el.has(e.currentTarget).length) {
                     return;
+                }
+
+                if ($el.is('ul')) {
+                    $el.removeClass('current').slideUp();
                 } else {
-                    if ($el.is('ul')) {
-                        $el.slideUp(function() {
-                            $el.removeClass('current');
-                        });
-                    } else {
-                        $el.removeClass('current');
-                    }
+                    $el.removeClass('current');
                 }
             });
             // add css classes for the new 'current' nav item
-            $target.addClass('current');
+            $target.addClass('current').parent().addClass('current');
             $target.siblings('ul').slideDown(function() {
-                $target.parent().addClass('current leaf-item');
+                $target.parent().addClass('leaf-item');
             });
             // set new $current
             $current = $target;
@@ -58,4 +60,9 @@ $(function() {
         $target.parent().toggleClass('closed');
         $target.find('.fa-angle-down, .fa-angle-up').toggleClass('fa-angle-down fa-angle-up');
     });
+
+    /* Hide toc if there aren't any items */
+    if (!$('.toc > ul > li > ul > li').length) {
+        $('.right-column .toc').hide();
+    }
 });
