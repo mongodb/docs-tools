@@ -1,23 +1,23 @@
 $(function() {
+    function isLeafNode($node) {
+        return !$node.siblings('ul:not(.simple)').length;
+    }
+
     var $current = $('.sidebar a.current');
-    $current.parent('li').addClass('leaf-item');
+    if (isLeafNode($current)) {
+        $current.parent('li').addClass('leaf-item');
+    }
     $current.parents('ul').each(function(index, el) {
         $(el).css('display', 'block');
     });
 
 
-    $('.sphinxsidebarwrapper > ul li:not(.leaf-item) > ul:not(.current)').hide();
+    $('.sphinxsidebarwrapper > ul li:not(.current) > ul:not(.current)').hide();
     $('.sphinxsidebarwrapper').show();
-    // window.setTimeout(function() {
-    //     var marginTop = 62.5,
-    //         rowHeight = 50;
-    //     var scrollHeight = $('.sphinxsidebarwrapper .toctree-l1.current').index() * rowHeight + marginTop;
-    //     $('.sidebar').scrollTop(scrollHeight);
-    // });
 
     $('.sphinxsidebarwrapper .toctree-l1').on('click', 'a', function(e) {
         var $target = $(e.currentTarget);
-        if (!$target.siblings('ul:not(.simple)').length) {
+        if (isLeafNode($target)) {
             return; // Do a full page reload on leaf nodes
         }
 
@@ -46,7 +46,9 @@ $(function() {
             // add css classes for the new 'current' nav item
             $target.addClass('current').parent().addClass('current');
             $target.siblings('ul').slideDown(function() {
-                $target.parent().addClass('leaf-item');
+                if (isLeafNode($target)) {
+                    $target.parent('li').addClass('leaf-item');
+                }
             });
             // set new $current
             $current = $target;
@@ -61,8 +63,29 @@ $(function() {
         $target.find('.fa-angle-down, .fa-angle-up').toggleClass('fa-angle-down fa-angle-up');
     });
 
+    /* Open options panel when clicking the version */
+    $('.sphinxsidebarwrapper h3 a.version').on('click', function(e) {
+        e.preventDefault();
+        $('.option-popup').removeClass('closed');
+    });
+
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {
         $('.right-column .toc').hide();
     }
+
+    $('a.headerlink').on('click', function(e) {
+        e.stopPropagation();
+    });
+
+    /* Collapse/expand sections */
+    $('.section > h1, .section > h2, .section > h3, .section > h4').on('click', function(e) {
+        var $currentTarget = $(e.currentTarget);
+        if (!$currentTarget.hasClass('collapsed')) {
+            $currentTarget.nextAll().slideUp();
+        } else {
+            $currentTarget.nextAll().slideDown();
+        }
+        $currentTarget.toggleClass('collapsed');
+    });
 });
