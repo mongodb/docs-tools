@@ -14,16 +14,18 @@
   {%- endblock -%}
 {%- endmacro -%}
 
-{%- macro editlink() -%}
-  {%- block editlink %}
-    <a class="edit-link" href="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub">Edit on Github</a>
-  {%- endblock -%}
+{%- macro editlink(type) -%}
+  <a class="edit-link" href="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub">
+    {% if type == 'icon' %}
+      <span class="icon-edit"></span>
+    {% else %}
+      <span>Edit on Github</span>
+    {% endif %}
+  </a>
 {%- endmacro -%}
 
 {%- macro jiralink() -%}
-  {%- block jiralink %}
-    <a class="jira-link" id="jirafeedback" href="https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira">Report a Problem</a>
-  {%- endblock -%}
+  <a class="jira-link" id="jirafeedback" href="https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira">Report a Problem</a>
 {%- endmacro -%}
 
 {%- macro relbar() %}
@@ -255,6 +257,7 @@
             <div class="documentwrapper">
               {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
               <div class="body">
+                {{ editlink('icon') }}
                 {{ relbar() }}
                 {% block body %}
                   {{ body }}
@@ -267,7 +270,7 @@
         </div>
       {%- endblock %}
     </div>
-    <div class="right-column pull-right">
+    <div class="right-column">
       <div class="toc">
         <span class="toc-header">ON THIS PAGE</span>
         {{ toc }}

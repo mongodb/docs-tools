@@ -70,6 +70,7 @@ div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
     font-weight: bold;
     margin: 0;
     padding: 0;
+    cursor: pointer;
 }
 
 div.body h1 {
@@ -78,6 +79,7 @@ div.body h1 {
     line-height: 34px;
     padding: 3px 0;
     margin: 4px 0;
+
 }
 div.body h2 { font-size: 150%; }
 div.body h3 {
@@ -104,10 +106,13 @@ div.section h1 + ul, div.section h2 + ul, div.section h3 + ul, div.section  h4 +
 }
 
 a.headerlink {
+
     color: #c60f0f;
     font-size: 0.8em;
     padding: 0 4px 0 4px;
     text-decoration: none;
+
+
 }
 
 a.headerlink:hover {
@@ -185,7 +190,7 @@ pre {
     color: #222;
     line-height: 1.2em;
     font-size: 1.25em;
-    margin: 20px 0px;
+    margin: 20px 0 0 0;
 }
 
 tt {
@@ -513,8 +518,6 @@ div.section > h1 + dl.group > dt {display: none;}
 div.section > h1 + dl.expression > dt {display: none;}
 div.section > h1 + dl.projection > dt {display: none;}
 
-div.section {cursor: default;}
-
 div.body p {
     margin: 25px 0 0 0;}
 
@@ -579,11 +582,6 @@ div.admonition.note table.docutils tr:last-child td {
     border-bottom: 0;
 }
 
-div.body > div.section > div.section {
-    margin-left:0;
-    margin-top: 25px;
-}
-
 table.docutils {
     margin-top: 1.1em;
     margin-bottom: 1.1em;
@@ -628,12 +626,14 @@ div.hidden { display: none; }
 .document .body .jira-link,
 .document .body .jira-link:hover,
 .document .body .translation-link,
-.document .body translation-link:hover,
-.document .body edit-link,
-.document .body edit-link:hover {
+.document .body .translation-link:hover,
+.document .body .edit-link,
+.document .body .edit-link:hover {
     float: right;
     margin-left: 7px;
     text-decoration: none;
+    margin-top: 11px;
+    font-size: 18px;
 }
 
 .document .body jira-link {
@@ -653,71 +653,19 @@ div.hidden { display: none; }
 
 a > em { font-style: normal; }
 
-/*dl.toc dt {
-   margin-left: 2em;
-   font-weight: bold;
-   line-height: 1.3;
-}
-
-dl.toc > dt {
-   margin-left: 0em;
-}
-
-dl.toc dd {
-   margin-left: 4em;
-   max-width: 38em;
-   line-height: 1.3;
-}
-
-dl.toc > dd {
-   margin-left: 2em;
-   font-size: 85%;
-}
-
-dl.toc dd p {
-   line-height: 1.3;
-}
-
-dd > dl.toc > dd {
-   font-size: 100%;
-}
-
-dl.toc dl dt {
-   margin-left: 0em;
-}
-
-dl.toc dl dd {
-   margin-left: 2em;
-}
-
-dl.method dd p, dl.dbcommand dd p {
-  padding-top: 5px;
-}
-
-dl.method dd table.docutils td, dl.dbcommand dd table.docutils td {
-    line-height: 1.3em;
-}
-
-dl.method > dt, dl.dbcommand > dt {
-    background-color: lavender;
-}
-*/
 div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p > span {
     font-style: italic;
 }
 
 /* Content */
 .content {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
     width: 1100px;
-    margin-top: 49px; /* header height */
-    margin-bottom: 32px; /* footer height (?) */
-    margin-left: 293px; /* sidebar width */
 }
 
 .content .main-column {
+    margin-top: 50px;
+    margin-left: 293px;
     min-height: 600px;
     width: 800px;
     padding: 25px 30px;
@@ -733,11 +681,13 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 #header-db {
     position: fixed;
     height: 50px;
+    top: 0;
+    left: 0;
     width: 100%;
     font-size: 31px;
     background-color: #402817;
     color: white;
-    margin: -50px 0 0 0;
+    margin: 0;
     padding: 0;
 }
 
@@ -943,6 +893,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     display: table;
     width: 100%;
     table-layout: fixed;
+    margin: 25px 0;
 }
 
 .sequence-block > .bullet-block {
@@ -959,11 +910,14 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     font-weight: bold;
     height: 24px;
     border-radius: 12px;
-    padding-top: 2px;
 }
 
 .sequence-block > .section {
     display: table-cell;
+}
+
+.sequence-block > .section > h4 {
+    margin: 0;
 }
 
 /* Collapsible sidebar styles */
@@ -972,7 +926,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     background-color: #F1F2F5;
     width: 293px;
     height: auto;
-    top: 49px;
+    top: 50px;
     bottom: 0;
     left: 0;
     overflow: auto;
@@ -993,13 +947,17 @@ div.sphinxsidebar h3 {
     height: 50px;
 }
 
+div.sphinxsidebar h3 a.index-link {
+    text-transform: uppercase;
+}
+
 div.sphinxsidebar h3 a.showlink {
     color: #003594;
 }
 
 .sphinxsidebarwrapper > ul > .toctree-l1 {
     min-height: 50px;
-    padding: 14px 0;
+    padding: 12px 0;
 
     transition: background-color 0.4s cubic-bezier(.02,.01,.47,1);
     -moz-transition: background-color 0.4s cubic-bezier(.02,.01,.47,1);
@@ -1033,7 +991,7 @@ div.sphinxsidebar h3 a.showlink {
 }
 
 .sphinxsidebarwrapper > ul > .toctree-l1 > a {
-    font-size: 15px;
+    font-size: 18px;
     padding: 0 12px;
 }
 
@@ -1207,6 +1165,10 @@ div.sphinxsidebarwrapper div.idxcontents {
 .content .right-column {
     width: 300px;
     padding: 25px 0;
+
+    position: fixed;
+    left: 1093px;
+    top: 50px;
 }
 
 .right-column > .toc {
