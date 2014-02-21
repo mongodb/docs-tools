@@ -141,8 +141,13 @@ class Option(object):
 
 
     def replace(self):
-        template = Template(self.description)
-        self.description = template.render(**self.replacement)
+        for i in range(10):
+            template = Template(self.description)
+            self.description = template.render(**self.replacement)
+
+            if "{{" not in self.description:
+                break
+
 
 class OptionRendered(object):
     def __init__(self, option):
