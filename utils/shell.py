@@ -31,34 +31,31 @@ class DevNull(object):
 def command(command, capture=False, ignore=False):
     if capture is False:
         tmp_out = DevNull()
-        tmp_err = DevNull()
     else:
         tmp_out = NamedTemporaryFile()
-        tmp_err = NamedTemporaryFile()
 
     with open(tmp_out.name, 'w') as tout:
-        with open(tmp_err.name, 'w') as terr:
-            p = subprocess.Popen(command, stdout=tout,
-                                 stderr=terr, shell=True)
-
-            p.wait()
+        try:
+            stdout = subprocess.check_output(command, stderr=tout, shell=True)
+            returncode = 0
+        except subprocess.CalledProcessError as e:
+            returncode = e.returncode
+            stdout = e.output
 
     if capture is False:
         stdout = ""
         stderr = ""
     else:
         with open(tmp_out.name, 'r') as f:
-            stdout = ''.join(f.readlines())
-        with open(tmp_err.name, 'r') as f:
             stderr = ''.join(f.readlines())
 
     out = {
         'cmd': command,
         'err': stderr,
         'out': stdout,
-        'return_code': p.returncode,
-        'succeeded': True if p.returncode == 0 else False,
-        'failed': False if p.returncode == 0 else True
+        'return_code': returncode,
+        'succeeded': True if returncode == 0 else False,
+        'failed': False if returncode == 0 else True
     }
 
     out = AttributeDict(out)
