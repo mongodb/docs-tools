@@ -227,11 +227,20 @@
 
   {%- block header %}
     <header id="header-db" class="row" role="navigation">
-      <div class="col-md-12">
+      <div class="header-content">
         <div class="logo pull-left">MongoDB Docs</div>
-        {%- block searchbox %}
-        <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
-        {% endblock %}
+        <div>
+          {%- block searchbox %}
+          <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
+          {% endblock %}
+          <div class="nav-items pull-right">
+            {%- block subnav %}
+            <a href="http://www.mongodb.org/downloads">Downloads</a>
+            <a href="http://www.mongodb.org/get-involved">Community</a>
+            <a href="http://blog.mongodb.org">Blog</a>
+            {% endblock %}
+          </div>
+        </div>
       </div>
     </header>
   {%- endblock %}
@@ -263,6 +272,19 @@
                   {{ body }}
                 {% endblock %}
                 {{- render_nextprev() -}}
+                {%- block footer %}
+                  <div class="footer">
+                    <div class="copyright col-xs-10">
+                      <p>Copyright &copy; 2013 <a class="smalltext" href="http://www.mongodb.com">MongoDB, Inc</a>. Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/ ">Creative Commons</a>. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
+                    </div>
+                    <div class="social">
+                      <a class="twitter-icon" href="https://twitter.com/mongodbinc"><div class="img"></div></a>
+                      <a class="youtube-icon" href="http://www.youtube.com/user/MongoDB"><div class="img"></div></a>
+                      <a class="facebook-icon" href="https://www.facebook.com/mongodb"><div class="img"></div></a>
+                      <a class="gplus-icon" href="https://plus.google.com/u/1/101024085748034940765/posts?cfem=1"><div class="img"></div></a>
+                    </div>
+                  </div>
+                {%- endblock %}
               </div>
               {%- if render_sidebar %}</div>{%- endif %}
             </div>
@@ -277,8 +299,6 @@
       </div>
       {%- block adblock %}{% endblock %}
     </div>
-    {%- block footer %}
-    {%- endblock %}
   </div>
 
   {%- block analytics %}
