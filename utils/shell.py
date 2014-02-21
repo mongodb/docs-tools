@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+from tempfile import NamedTemporaryFile
 
 try:
     from structures import AttributeDict
@@ -24,24 +25,37 @@ def shell_value(args, path=None):
 
 class CommandError(Exception): pass
 
+class DevNull(object):
+    name = os.devnull
+
 def command(command, capture=False, ignore=False):
-    with open(os.devnull, 'w+') as dev_null:
-        if capture is True:
-            out_stream = subprocess.PIPE
-            err_stream = subprocess.PIPE
-        else:
-            out_stream = dev_null
-            err_stream = dev_null
+    if capture is False:
+        tmp_out = DevNull()
+        tmp_err = DevNull()
+    else:
+        tmp_out = NamedTemporaryFile()
+        tmp_err = NamedTemporaryFile()
 
-        p = subprocess.Popen(command, shell=True, stdout=out_stream,
-                             stderr=err_stream)
+    with open(tmp_out.name, 'w') as tout:
+        with open(tmp_err.name, 'w') as terr:
+            p = subprocess.Popen(command, stdout=tout,
+                                 stderr=terr, shell=True)
 
-        (stdout, stderr) = p.communicate()
+            p.wait()
+
+    if capture is False:
+        stdout = ""
+        stderr = ""
+    else:
+        with open(tmp_out.name, 'r') as f:
+            stdout = ''.join(f.readlines())
+        with open(tmp_err.name, 'r') as f:
+            stderr = ''.join(f.readlines())
 
     out = {
         'cmd': command,
-        'err': stderr.strip() if stdout is not None else "",
-        'out': stdout.strip() if stdout is not None else "",
+        'err': stderr,
+        'out': stdout,
         'return_code': p.returncode,
         'succeeded': True if p.returncode == 0 else False,
         'failed': False if p.returncode == 0 else True
