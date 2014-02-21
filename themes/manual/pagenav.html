@@ -2,7 +2,7 @@
   <a class="index-link" href="{{ pathto('index') }}">{{ shorttitle }}</a>
   {% for v in theme_version_selector %}
     {% if v.current %}
-      <a class="version pull-right">{{ v.text }}</a>
+      <a class="version pull-right" href="">{{ v.text }}</a>
     {% endif %}
   {% endfor %}
 </h3>
