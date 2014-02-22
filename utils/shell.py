@@ -1,5 +1,4 @@
 import os
-import re
 import subprocess
 from tempfile import NamedTemporaryFile
 
@@ -8,20 +7,6 @@ try:
 except ImportError:
     # support for bootstrapping
     from utils.structures import AttributeDict
-
-
-def shell_value(args, path=None):
-    if path is None:
-        path = os.getcwd()
-
-    if isinstance(args , str):
-        r = re.compile("\s+")
-        args = r.split(args)
-
-    p = subprocess.Popen(args, cwd=path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    r = p.communicate()
-
-    return str(r[0].decode().rstrip())
 
 class CommandError(Exception): pass
 
@@ -49,27 +34,21 @@ def command(command, capture=False, ignore=False):
         stderr = ""
     else:
         with open(tmp_out.name, 'r') as f:
-            stdout = ''.join(f.readlines())
+            stdout = ''.join(f.readlines()).strip()
         with open(tmp_err.name, 'r') as f:
-            stderr = ''.join(f.readlines())
+            stderr = ''.join(f.readlines()).strip()
 
-    out = {
+    out = AttributeDict({
         'cmd': command,
         'err': stderr,
         'out': stdout,
         'return_code': p.returncode,
         'succeeded': True if p.returncode == 0 else False,
-        'failed': False if p.returncode == 0 else True
-    }
+        'failed': False if p.returncode == 0 else True,
+        'captured': capture,
+    })
 
-    out = AttributeDict(out)
-
-    if ignore is True:
+    if out.succeeded is True or ignore is True:
         return out
-    elif out.succeeded is True:
-        if capture is True:
-            return out
-        else:
-            return None
     else:
         raise CommandError('[ERROR]: "{0}" returned {1}'.format(out.cmd, out.return_code))
