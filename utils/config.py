@@ -1,5 +1,6 @@
 import os.path
 import yaml
+import json
 
 try:
     from utils.structures import AttributeDict
@@ -53,7 +54,10 @@ def crawl_up_tree(path, base_len=-1):
     return path
 
 def get_conf():
-    project_root_dir, conf_file, conf = discover_config_file()
+    project_root_dir, conf_file, conf, cached = discover_config_file()
+
+    if cached is True:
+        return conf
 
     conf = schema_migration_0(conf)
 
@@ -86,6 +90,11 @@ def get_conf():
     conf.system.dependency_cache = os.path.join(conf.paths.projectroot,
                                                 conf.paths.branch_output,
                                                 'dependencies.json')
+
+
+    conf_cache = os.path.join(conf.paths.projectroot, conf.paths.branch_output, 'conf-cache.json')
+    with open(conf_cache, 'w') as f:
+        json.dump(conf, f)
 
     return conf
 

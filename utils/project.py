@@ -2,11 +2,13 @@ import itertools
 import os.path
 
 try:
-    from utils.git import get_branch
+    from utils.git import get_branch, get_commit
     from utils.structures import BuildConfiguration, AttributeDict
+    from utils.serialization import ingest_json
 except ImportError:
-    from git import get_branch
+    from git import get_branch, get_commit
     from structures import BuildConfiguration, AttributeDict
+    from serialization import ingest_json
 
 # duplicated from config.py to avoid circular import
 def lazy_conf(conf=None):
@@ -87,33 +89,42 @@ def get_versions(conf=None):
 
 #### Discovery and Compatibility #####
 
+class ConfigurationError(Exception): pass
+
 def discover_config_file():
     root_dirs = [
                   os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')),
-
                   os.path.abspath(os.path.join(os.path.dirname(__file__), '..')),
-
                   os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')),
-
                   os.path.abspath(os.path.dirname(__file__)),
-
                 ]
 
     conf_dirs = [ 'config', 'bin' ]
 
     conf_file_names = ['build_conf.yaml', 'docs_meta.yaml']
 
+    cur_branch = get_branch()
     for project_root_dir in root_dirs:
-        for path, filename in itertools.product(conf_dirs, conf_file_names):
-            conf_file = os.path.join(path, filename)
-            abs_conf_file = os.path.join(project_root_dir, conf_file)
+        cached_file = os.path.join(project_root_dir, 'build', cur_branch, 'conf-cache.json')
 
-            if not os.path.exists(abs_conf_file):
-                continue
-            else:
-                conf = BuildConfiguration(abs_conf_file)
+        if os.path.exists(cached_file):
+            cached_conf = BuildConfiguration(cached_file)
 
-                return project_root_dir, conf_file, conf
+            if cached_conf.git.commit == get_commit():
+                return None, None, cached_conf, True
+        else:
+            for path, filename in itertools.product(conf_dirs, conf_file_names):
+                conf_file = os.path.join(path, filename)
+                abs_conf_file = os.path.join(project_root_dir, conf_file)
+
+                if not os.path.exists(abs_conf_file):
+                    continue
+                else:
+                    conf = BuildConfiguration(abs_conf_file)
+
+                    return project_root_dir, conf_file, conf, False
+
+    raise ConfigurationError('no conf file found')
 
 ##### Configuration Object Transformations #####
 
