@@ -92,7 +92,12 @@ def get_conf():
                                                 'dependencies.json')
 
 
-    conf_cache = os.path.join(conf.paths.projectroot, conf.paths.branch_output, 'conf-cache.json')
+    conf_cache_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
+    conf_cache = os.path.join(conf_cache_dir, 'conf-cache.json')
+
+    if not os.path.exists(conf_cache_dir)
+        os.makedirs(conf_cache_dir)
+
     with open(conf_cache, 'w') as f:
         json.dump(conf, f)
 
