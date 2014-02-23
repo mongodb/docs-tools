@@ -7,7 +7,7 @@ from fabric.api import task
 from fabfile.utils.config import lazy_conf
 from fabfile.utils.project import mms_should_migrate
 from fabfile.utils.files import (create_link, copy_if_needed,
-                                 decode_lines_from_file, encode_write_lines_to_file)
+                                 decode_lines_from_file, encode_lines_to_file)
 from fabfile.utils.serialization import ingest_yaml_list
 
 from fabfile.utils.jobs.context_pools import ProcessPool, ThreadPool

@@ -9,7 +9,7 @@ from utils.project import mms_should_migrate
 from utils.serialization import ingest_yaml_list
 from utils.jobs.dependency import check_dependency
 from utils.files import (expand_tree, create_link, copy_if_needed,
-                         decode_lines_from_file, encode_write_lines_to_file)
+                         decode_lines_from_file, encode_lines_to_file)
 from utils.transformations import munge_page
 
 def manual_single_html(input_file, output_file):
