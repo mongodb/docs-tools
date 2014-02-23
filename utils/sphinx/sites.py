@@ -24,14 +24,14 @@ def manual_single_html(input_file, output_file):
 
     regexes = [
         (re.compile('href="contents.html'), 'href="index.html'),
-        (re.compile('name="robots" content="index"'), 'name="robots" content="noindex"')
+        (re.compile('name="robots" content="index"'), 'name="robots" content="noindex"'),
         (re.compile('(href=")genindex.html'), '\1../genindex/')
     ]
 
     for regex, subst in regexes:
         text_lines = [ regex.sub(subst, text) for text in text_lines ]
 
-    encode_write_lines_to_file(output_file, text_lines)
+    encode_lines_to_file(output_file, text_lines)
 
     print('[process] [single]: processed singlehtml file.')
 

@@ -20,7 +20,7 @@ def _clean_sphinx_latex(fn, regexes):
     for regex, subst in regexes:
         tex_lines = [ regex.sub(subst, tex) for tex in tex_lines ]
 
-    encode_write_lines_to_file(fn, tex_lines)
+    encode_lines_to_file(fn, tex_lines)
 
     print('[pdf]: processed Sphinx latex format for {0}'.format(fn))
 

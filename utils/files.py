@@ -118,7 +118,7 @@ def create_link(input_fn, output_fn):
 
 def decode_lines_from_file(fn):
     with open(fn, 'r') as f:
-        return [ line.decode('utf-8').strip for line in f.readlines() ]
+        return [ line.decode('utf-8').strip() for line in f.readlines() ]
 
 def encode_lines_to_file(fn, lines):
     with open(fn, 'w') as f:
