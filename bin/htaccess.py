@@ -2,10 +2,12 @@ import os.path
 import sys
 import argparse
 import yaml
-import utils
+
+from utils.serialization import ingest_yaml
+from utils.config import lazy_conf
 
 def process_redirect(redirect, conf=None):
-    conf = utils.config.lazy_conf(conf)
+    conf = lazy_conf(conf)
 
     if 'all' in redirect['outputs']:
         redirect['outputs'].remove('all')
@@ -34,7 +36,7 @@ def process_redirect(redirect, conf=None):
     return redirect
 
 def generate_match_rule(redir, base, conf=None):
-    conf = utils.config.lazy_conf(conf)
+    conf = lazy_conf(conf)
 
     o = 'RedirectMatch {0} /({1}){2} {3}/$1{4}'
 
@@ -42,7 +44,7 @@ def generate_match_rule(redir, base, conf=None):
                     conf.project.url, redir['url-base'])
 
 def generate_simple_rule(redir, base=None, conf=None):
-    conf = utils.config.lazy_conf(conf)
+    conf = lazy_conf(conf)
 
     if base is None:
         base = redir['outputs'][0]
@@ -61,7 +63,7 @@ def generate_simple_rule(redir, base=None, conf=None):
                         conf.project.url, redir['url-base'])
 
 def generate_external_rule(redir, base=None, conf=None):
-    conf = utils.config.lazy_conf(conf)
+    conf = lazy_conf(conf)
 
     if base is None:
         base = redir['outputs'][0]
@@ -78,7 +80,7 @@ def determine_is_multi(targets):
         return False
 
 def generate_redirects(redirect, match=False, conf=None):
-    conf = utils.config.lazy_conf(conf)
+    conf = lazy_conf(conf)
 
     multi = determine_is_multi(redirect['outputs'])
 
@@ -119,11 +121,10 @@ def user_input():
 def main():
     ui = user_input()
 
-    conf = utils.config.lazy_conf()
-
+    conf = lazy_conf()
 
     lines = []
-    for doc in utils.ingest_yaml(ui.data):
+    for doc in ingest_yaml(ui.data):
         if doc['type'] == 'redirect':
             lines.append(generate_redirects(process_redirect(doc, conf=conf), match=ui.match, conf=conf))
         if doc['type'] == 'redirect-draft':
