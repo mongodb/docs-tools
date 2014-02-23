@@ -9,19 +9,19 @@ from fabfile.utils.project import mms_should_migrate
 from fabfile.utils.files import create_link, copy_if_needed
 from fabfile.utils.serialization import ingest_yaml_list
 
-from fabfile.make import runner
+from fabfile.utils.jobs.context_pools import ProcessPool, ThreadPool
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 
 def _clean_sphinx_latex(fn, regexes):
     with open(fn, 'r') as f:
-        tex = f.read()
+        tex_lines = [ line.decode('utf-8').strip() for line in f.readlines() ]
 
     for regex, subst in regexes:
-        tex = regex.sub(subst, tex)
+        tex_lines = [ regex.sub(subst, tex) for tex in tex_lines ]
 
     with open(fn, 'w') as f:
-        f.write(tex)
+        f.write('\n'.join(tex_lines).encode('utf-8'))
 
     print('[pdf]: processed Sphinx latex format for {0}'.format(fn))
 
@@ -65,6 +65,7 @@ def _render_tex_into_pdf(fn, path):
 @task
 def pdfs():
     "Processes '.tex' files and runs 'pdflatex' to generate all PDFs."
+
     pdf_worker()
 
 def pdf_worker(target=None, conf=None):
@@ -73,9 +74,13 @@ def pdf_worker(target=None, conf=None):
     if target is None:
         target = 'latex'
 
-    for it, queue in enumerate(pdf_jobs(target, conf)):
-        res = runner(queue, parallel='thread', pool=16)
-        print("[pdf]: completed {0} pdf jobs, in stage {1}".format(len(res), it))
+    force = False
+    with ProcessPool() as p:
+        res = []
+        for it, queue in enumerate(pdf_jobs(target, conf)):
+            res.extend(p.runner(queue))
+
+            print("[pdf]: completed {0} pdf jobs, in stage {1}".format(len(queue), it))
 
 def pdf_jobs(target, conf):
     pdfs = ingest_yaml_list(os.path.join(conf.paths.builddata, 'pdfs.yaml'))
