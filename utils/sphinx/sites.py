@@ -25,7 +25,7 @@ def manual_single_html(input_file, output_file):
     regexes = [
         (re.compile('href="contents.html'), 'href="index.html'),
         (re.compile('name="robots" content="index"'), 'name="robots" content="noindex"'),
-        (re.compile('(href=")genindex.html'), '\1../genindex/')
+        (re.compile('href="genindex.html'), 'href="../genindex/')
     ]
 
     for regex, subst in regexes:
