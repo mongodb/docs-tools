@@ -6,7 +6,8 @@ from fabric.api import task
 
 from fabfile.utils.config import lazy_conf
 from fabfile.utils.project import mms_should_migrate
-from fabfile.utils.files import create_link, copy_if_needed
+from fabfile.utils.files import (create_link, copy_if_needed,
+                                 decode_lines_from_file, encode_write_lines_to_file)
 from fabfile.utils.serialization import ingest_yaml_list
 
 from fabfile.utils.jobs.context_pools import ProcessPool, ThreadPool
@@ -14,14 +15,12 @@ from fabfile.utils.jobs.context_pools import ProcessPool, ThreadPool
 #################### PDFs from Latex Produced by Sphinx  ####################
 
 def _clean_sphinx_latex(fn, regexes):
-    with open(fn, 'r') as f:
-        tex_lines = [ line.decode('utf-8').strip() for line in f.readlines() ]
+    tex_lines = decode_lines_from_file(fn)
 
     for regex, subst in regexes:
         tex_lines = [ regex.sub(subst, tex) for tex in tex_lines ]
 
-    with open(fn, 'w') as f:
-        f.write('\n'.join(tex_lines).encode('utf-8'))
+    encode_write_lines_to_file(fn, tex_lines)
 
     print('[pdf]: processed Sphinx latex format for {0}'.format(fn))
 

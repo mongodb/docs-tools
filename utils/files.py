@@ -115,3 +115,11 @@ def create_link(input_fn, output_fn):
         symlink(out_base, input_fn)
         os.rename(out_base, output_fn)
         print('[{0}] created symbolic link pointing to "{1}" named "{2}"'.format('symlink', input_fn, out_base))
+
+def decode_lines_from_file(fn):
+    with open(fn, 'r') as f:
+        return [ line.decode('utf-8').strip for line in f.readlines() ]
+
+def econde_write_lines_to_file(fn, lines):
+    with open(fn, 'w') as f:
+        f.write('\n'.join(lines).encode('utf-8'))

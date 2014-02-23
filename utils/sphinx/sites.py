@@ -8,7 +8,8 @@ from utils.structures import BuildConfiguration
 from utils.project import mms_should_migrate
 from utils.serialization import ingest_yaml_list
 from utils.jobs.dependency import check_dependency
-from utils.files import expand_tree, create_link, copy_if_needed
+from utils.files import (expand_tree, create_link, copy_if_needed,
+                         decode_lines_from_file, encode_write_lines_to_file)
 from utils.transformations import munge_page
 
 def manual_single_html(input_file, output_file):
@@ -19,15 +20,18 @@ def manual_single_html(input_file, output_file):
         print('[process] [single]: singlehtml not changed, not reprocessing.')
         return False
 
-    with open(input_file, 'r') as f:
-        text = f.read()
+    text_lines = decode_lines_from_file(input_file)
 
-    text = re.sub('href="contents.html', 'href="index.html', text)
-    text = re.sub('name="robots" content="index"', 'name="robots" content="noindex"', text)
-    text = re.sub('(href=")genindex.html', '\1../genindex/', text)
+    regexes = [
+        (re.compile('href="contents.html'), 'href="index.html'),
+        (re.compile('name="robots" content="index"'), 'name="robots" content="noindex"')
+        (re.compile('(href=")genindex.html'), '\1../genindex/')
+    ]
 
-    with open(output_file, 'w') as f:
-        f.write(text)
+    for regex, subst in regexes:
+        text_lines = [ regex.sub(subst, text) for text in text_lines ]
+
+    encode_write_lines_to_file(output_file, text_lines)
 
     print('[process] [single]: processed singlehtml file.')
 
