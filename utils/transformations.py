@@ -4,30 +4,29 @@ import collections
 
 try:
     from utils.jobs.runners import runner
-    from utils.files import copy_always
+    from utils.files import copy_always, encode_lines_to_file, decode_lines_from_file
     from utils.errors import ProcessingError
     from utils.config import lazy_conf
     from utils.serialization import ingest_yaml
 except ImportError:
     from jobs.runners import runner
-    from files import copy_always
+    from files import copy_always, encode_lines_to_file, decode_lines_from_file
     from errors import ProcessingError
     from serialization import ingest_yaml
     from config import lazy_conf
 
 def munge_page(fn, regex, out_fn=None,  tag='build'):
-    with open(fn, 'r') as f:
-        page = f.read()
-
-    page = munge_content(page, regex)
-
     if out_fn is None:
         out_fn = fn
 
-    with open(out_fn, 'w') as f:
-        f.write(page)
+    page_lines = [ munge_content(ln, regex) for ln in decode_lines_from_file(fn)
+                   if ln is not None ]
 
-    print('[{0}]: processed {1}'.format(tag, fn))
+    if len(page_lines) > 0:
+        encode_lines_to_file(out_fn, page_lines)
+        print('[{0}]: processed {1}'.format(tag, fn))
+    else:
+        print('[{0}] [warning]: did not write {1}'.format(tag, out_fn))
 
 def munge_content(content, regex):
     if isinstance(regex, list):

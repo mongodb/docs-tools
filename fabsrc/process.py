@@ -9,20 +9,13 @@ from fabfile.utils.project import mms_should_migrate
 from fabfile.utils.files import (create_link, copy_if_needed,
                                  decode_lines_from_file, encode_lines_to_file)
 from fabfile.utils.serialization import ingest_yaml_list
-
+from fabfile.utils.transformations import munge_page
 from fabfile.utils.jobs.context_pools import ProcessPool, ThreadPool
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 
 def _clean_sphinx_latex(fn, regexes):
-    tex_lines = decode_lines_from_file(fn)
-
-    for regex, subst in regexes:
-        tex_lines = [ regex.sub(subst, tex) for tex in tex_lines ]
-
-    encode_lines_to_file(fn, tex_lines)
-
-    print('[pdf]: processed Sphinx latex format for {0}'.format(fn))
+    munge_page(fn, regexes, tag='pdf')
 
 def _render_tex_into_pdf(fn, path):
     pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
