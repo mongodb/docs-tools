@@ -84,6 +84,7 @@ def process_async_results(results, force):
                 errors.append(e)
                 print(e)
 
+
         if has_errors is True:
             raise PoolResultsError(errors)
         else:
