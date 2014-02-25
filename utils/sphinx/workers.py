@@ -35,7 +35,7 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
     if len(target_jobs) <= 1:
         res = runner(target_jobs, pool=1)
     else:
-        res = runner(target_jobs, pool=len(target_jobs)+2, parallel='threads')
+        res = runner(target_jobs, pool=len(target_jobs), parallel='threads')
 
     output_sphinx_stream('\n'.join([r for r in res if r is not None]), conf)
 
@@ -63,11 +63,12 @@ def build_worker(builder, sconf, conf, finalize_fun):
     print('[build]: completed {0} build at {1}'.format(builder, timestamp()))
 
     output = '\n'.join([out.err, out.out])
-    
+
     if out.return_code == 0:
         print('[sphinx]: successfully completed {0} build at {1}!'.format(builder, timestamp()))
-        finalize_fun(builder, sconf, conf)
-        print('[sphinx]: finalized {0} build at {1}'.format(builder, timestamp()))
+        if finalize_fun is not None:
+            finalize_fun(builder, sconf, conf)
+            print('[sphinx]: finalized {0} build at {1}'.format(builder, timestamp()))
         return output
     else:
         print('[sphinx]: the {0} build was not successful. not running finalize steps'.format(builder))
