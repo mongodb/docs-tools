@@ -9,14 +9,8 @@
 
 {{ toctree( collapse=false, titles_only=1) }}
 
-<ul class="extra-contents">
-    <li class="toctree-l1">
-        <a href="{{pathto('about')}}">{{_('About')}}</a>
-    </li>
-    <li class="toctree-l1">
-        <a href="{{ pathto(master_doc) }}">{{ _('Contents') }}</a>
-    </li>
-    <li class="toctree-l1">
-        <a href="{{ pathto('genindex') }}">{{ _('Index') }}</a>
-    </li>
-</ul>
+<div class="nav-footer">
+  <a href="{{pathto('about')}}">{{_('About')}}</a> |
+  <a href="{{ pathto(master_doc) }}">{{ _('Contents') }}</a> |
+  <a href="{{ pathto('genindex') }}">{{ _('Index') }}</a>
+</div>
