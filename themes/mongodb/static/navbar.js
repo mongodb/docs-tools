@@ -15,10 +15,21 @@ $(function() {
     $('.sphinxsidebarwrapper > ul li:not(.current) > ul:not(.current)').hide();
     $('.sphinxsidebarwrapper').show();
 
+    // There should really be a less fragile selector for the relaese notes list item
+    var $lastNode = $('.sphinxsidebarwrapper .toctree-l1:last-child');
+    function isReleaseNotesChild($node) {
+        return $lastNode.has($node.parent()).length;
+    }
+
     $('.sphinxsidebarwrapper .toctree-l1').on('click', 'a', function(e) {
         var $target = $(e.currentTarget);
         if (isLeafNode($target)) {
             return; // Do a full page reload on leaf nodes
+        }
+
+        // Release notes has special behavior to click through
+        if (!$target.parent().hasClass('current') && isReleaseNotesChild($target)) {
+            return;
         }
 
         e.preventDefault();
@@ -28,6 +39,7 @@ $(function() {
             $target.removeClass('current').parent().removeClass('current leaf-item');
             $target.siblings('ul').slideUp();
         } else {
+
             $current.removeClass('current');
             $current.parent().removeClass('leaf-item');
             // roll up all navigation up to the common ancestor
@@ -87,5 +99,24 @@ $(function() {
             $currentTarget.nextAll().slideDown();
         }
         $currentTarget.toggleClass('collapsed');
+    });
+
+    /* Expand/collapse navbar on narrower viewports */
+    $('.expand-toc-icon').on('click', function(e) {
+        e.preventDefault();
+        $('.sidebar').toggleClass('reveal');
+    });
+
+    /* Reset the sidebar when the viewport is wider than tablet size */
+    var $window = $(window),
+        $sidebar = $('.sidebar'),
+        isTabletWidth = $window.width() <= 1093;
+    $window.resize(function(e) {
+        if (isTabletWidth && $window.width() > 1093) {
+            isTabletWidth = false;
+            $sidebar.removeClass('reveal');
+        } else if (!isTabletWidth && $window.width() <= 1093) {
+            isTabletWidth = true;
+        }
     });
 });

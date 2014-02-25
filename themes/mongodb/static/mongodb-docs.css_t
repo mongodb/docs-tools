@@ -524,9 +524,7 @@ div.highlight pre {
 }
 
 div.section > h2, div.section > h3,div.section > h4 {
-    margin-top: -50px;
-    padding-top: 75px;
-    margin-bottom: 0;
+    margin: 25px 0;
 }
 
 #btnv {
@@ -640,6 +638,10 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     min-height: 600px;
     width: 800px;
     padding: 0 30px;
+
+    transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
+    -moz-transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
+    -webkit-transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
 }
 
 #see-also > p {
@@ -665,6 +667,10 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 #header-db .header-content {
     width: 1393px;
     padding-left: 12px;
+
+    transition: width 0.4s cubic-bezier(.02,.01,.47,1);
+    -moz-transition: width 0.4s cubic-bezier(.02,.01,.47,1);
+    -webkit-transition: width 0.4s cubic-bezier(.02,.01,.47,1);
 }
 
 #header-db .nav-items {
@@ -919,6 +925,11 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     left: 0;
     overflow: auto;
     font-size: 0.85em;
+    z-index: 100;
+
+    transition: left 0.4s cubic-bezier(.02,.01,.47,1);
+    -moz-transition: left 0.4s cubic-bezier(.02,.01,.47,1);
+    -webkit-transition: left 0.4s cubic-bezier(.02,.01,.47,1);
 }
 
 div.sphinxsidebar {
@@ -987,6 +998,10 @@ div.sphinxsidebar h3 a.showlink {
     font-size: 18px;
     line-height: 24px;
     padding: 0 12px;
+}
+
+.sphinxsidebarwrapper .nav-footer {
+    padding: 50px 12px 12px 12px;
 }
 
 div.sphinxsidebar li.toctree-l2 > a {
@@ -1083,6 +1098,7 @@ div.sphinxsidebarwrapper div.idxcontents {
     bottom: 0;
     left: 0;
     box-shadow: 0 -2px 3px rgba(0,0,0,0.15);
+    z-index: 100;
 
     transition: bottom 300ms cubic-bezier(.02,.01,.47,1);
     -moz-transition: bottom 300ms cubic-bezier(.02,.01,.47,1);
@@ -1303,3 +1319,48 @@ div.admonition.note table.docutils tr:last-child td {
     border-bottom: 0;
 }
 
+@media (max-width: 1393px) {
+    #header-db .header-content {
+        width: 1068px;
+    }
+
+    .content .right-column {
+        display: none;
+    }
+}
+
+.expand-toc-icon {
+    display: none;
+}
+
+@media (max-width: 1093px) {
+    .expand-toc-icon {
+        display: block;
+        padding-top: 10px;
+        padding-right: 10px;
+        color: white;
+    }
+
+    .expand-toc-icon:hover,
+    .expand-toc-icon:active {
+        color: white;
+        text-decoration: none;
+    }
+
+    #header-db .header-content {
+        width: 775px;
+        padding-left: 25px;
+    }
+
+    .sidebar {
+        left: -293px;
+    }
+
+    .sidebar.reveal {
+        left: 0;
+    }
+
+    .content .main-column {
+        margin-left: 0;
+    }
+}
