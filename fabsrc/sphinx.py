@@ -31,7 +31,7 @@ def target(*targets):
 
     conf = lazy_conf()
 
-    sconf = get_sconf()
+    sconf = get_sconf(conf)
 
     primer_migrate_pages(conf)
 

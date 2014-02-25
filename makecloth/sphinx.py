@@ -138,7 +138,12 @@ def sphinx_builder(target):
         m.target(target, 'generate-source', block=b)
     else:
         m.target(target, block=b)
-    m.job('{0} sphinx.target:{1}'.format(fab_prefix, target), block=b)
+
+    if target == 'gettext' or 'gettext' in target:
+        m.job('{0} tx.update'.format(fab_prefix), block=b)
+    else:
+        m.job('{0} sphinx.target:{1}'.format(fab_prefix, target), block=b)
+
     m.job(build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
 
     return ret_value
