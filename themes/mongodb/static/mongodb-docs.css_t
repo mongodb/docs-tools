@@ -632,7 +632,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 /* Content */
 .content {
     box-sizing: border-box;
-    width: 1100px;
+    width: 1092px;
 }
 
 .content .main-column {
@@ -668,7 +668,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 
 #header-db .header-content {
-    width: 1393px;
+    width: 1385px;
     padding-left: 12px;
 
     transition: width 0.4s cubic-bezier(.02,.01,.47,1);
@@ -840,10 +840,10 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 .social {
     float: right;
     height: 21px;
-    margin-top: 30px;
+    margin-top: 15px;
 }
 
-.footer .social .img {
+.right-column .social .img {
     background-repeat: no-repeat;
     background-size: 21px 21px;
     width: 21px;
@@ -851,36 +851,36 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     display: inline-block;
 }
 
-.footer .social .twitter-icon .img {
+.right-column .social .twitter-icon .img {
     background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-twitter.png);
 }
 
-.footer .social .youtube-icon .img {
+.right-column .social .youtube-icon .img {
     background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-youtube.png);
 }
 
-.footer .social .facebook-icon .img {
+.right-column .social .facebook-icon .img {
     background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-facebook.png);
 }
 
-.footer .social .gplus-icon .img {
+.right-column .social .gplus-icon .img {
     background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-gplus.png);
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2) {
-    .footer .social .twitter-icon .img {
+    .right-column .social .twitter-icon .img {
         background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-twitter@2x.png);
     }
 
-    .footer .social .youtube-icon .img {
+    .right-column .social .youtube-icon .img {
         background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-youtube@2x.png);
     }
 
-    .footer .social .facebook-icon .img {
+    .right-column .social .facebook-icon .img {
         background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-facebook@2x.png);
     }
 
-    .footer .social .gplus-icon .img {
+    .right-column .social .gplus-icon .img {
         background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-gplus@2x.png);
     }
 }
@@ -965,9 +965,6 @@ div.sphinxsidebar h3 a.showlink {
     padding: 11px 0;
     line-height: 24px;
 
-    /*transition: background-color 200ms cubic-bezier(.02,.01,.47,1);
-    -moz-transition: background-color 200ms cubic-bezier(.02,.01,.47,1);
-    -webkit-transition: background-color 200ms cubic-bezier(.02,.01,.47,1);*/
     border-top: 1px solid rgb( 222, 224, 227 );
 }
 
@@ -1177,7 +1174,7 @@ div.sphinxsidebarwrapper div.idxcontents {
 /* Right column TOC */
 
 .content .right-column {
-    width: 300px;
+    width: 292px;
     padding: 0;
     position: fixed;
     left: 1093px;
@@ -1203,7 +1200,7 @@ div.sphinxsidebarwrapper div.idxcontents {
 
 /*hack for correct line height*/
 .right-column > .toc li {
-    line-height: 23px; 
+    line-height: 23px;
 }
 .right-column > .toc li a {
     line-height: 24px;
