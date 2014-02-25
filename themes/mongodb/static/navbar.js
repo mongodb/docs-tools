@@ -91,7 +91,7 @@ $(function() {
     });
 
     /* Collapse/expand sections */
-    $('.section > h1, .section > h2, .section > h3, .section > h4').on('click', function(e) {
+    $('.section > h2, .section > h3, .section > h4').on('click', function(e) {
         var $currentTarget = $(e.currentTarget);
         if (!$currentTarget.hasClass('collapsed')) {
             $currentTarget.nextAll().slideUp();

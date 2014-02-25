@@ -90,6 +90,9 @@ div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
     color: #313030;
     margin: 0;
     padding: 0;
+}
+
+div.body h2, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
     cursor: pointer;
 }
 
