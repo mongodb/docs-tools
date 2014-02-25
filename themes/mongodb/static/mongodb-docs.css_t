@@ -10,7 +10,7 @@
  */
 @import url("basic.css");
 
-@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:500,700);
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700);
 
 /* -- page layout ----------------------------------------------------------- */
 
@@ -87,6 +87,7 @@ a:hover {
 div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
     font-family: "PT Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: normal;
+    line-height: 24px;
     color: #313030;
     margin: 0;
     padding: 0;
@@ -105,13 +106,20 @@ div.body h1 {
     margin-top: -72px;
     padding-top: 72px;
 }
-div.body h2 { font-size: 150%; }
+div.body h2 {
+    font-size: 24px;
+}
 div.body h3 {
-    font-size: 135%;
-    font-weight: normal !important;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 0;
 }
 
-div.body h4 { font-size: 110%; }
+div.body h4 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 0;
+}
 div.body h5 { font-size: 100%; }
 div.body h6 { font-size: 100%; }
 
@@ -171,11 +179,11 @@ pre {
 
 tt {
     color: #000;
-    font-family: 'Inconsolata', monospace;
+    font-family: 'Source Code Pro', monospace;
 }
 
 a>tt {
-    color: #003594;
+    color: #006cbc;
 }
 
 tt.xref, a tt {
@@ -486,12 +494,28 @@ div#docs-header { width: 950px; }
 div#main-db.hidden { display: none; }
 
 tt,tt  span.pre {
-    font-family: 'Inconsolata', monospace;
-    font-size: 1.05em;
-    letter-spacing: .5px;
+    font-family: 'Source Code Pro', monospace;
 }
-tt.descname {
-    font-size: 1.15em;
+tt.descname,
+tt.descclassname {
+    font-size: 16px;
+    font-weight: 300;
+}
+
+dl.method dt {
+    margin-bottom: 24px;
+}
+
+dl.method > dt big {
+   font-family: 'Source Code Pro', monospace;
+   font-weight: 300;
+   font-size: 16px;
+}
+
+dl.method > dt em {
+   font-family: 'Source Code Pro', monospace;
+   font-weight: 700;
+   font-style: normal;
 }
 div.section > h1 + dl.dbcommand > dt {display: none;}
 div.section > h1 + dl.operator > dt {display: none;}
@@ -502,7 +526,10 @@ div.section > h1 + dl.expression > dt {display: none;}
 div.section > h1 + dl.projection > dt {display: none;}
 
 .body p {
-    margin: 24px 0;
+    margin: 0 0 24px 0;
+}
+.body dd {
+    margin-left: 0;
 }
 
 .body li>p {
@@ -534,17 +561,20 @@ div.section {
     margin-top: 48px;
 }
 
-div.section > h2 + div.section,
-div.section > h3 + div.section,
-div.section > h4 + div.section,
-div.section > h5 + div.section {
+div.section > h2, div.section > h3,div.section > h4 {
+h2 + div.section {
     margin-top: 0;
 }
 
-div.section > h2, div.section > h3,div.section > h4 {
+div.section > h2, div.section > h4 {
     margin: 24px 0;
     margin-top: -72px;
     padding-top: 72px;
+}
+
+div.section > h3,
+div.section > h4 {
+    margin-bottom: 0;
 }
 
 #btnv {
@@ -577,11 +607,6 @@ div.section > h2, div.section > h3,div.section > h4 {
     width: 270px;
 }
 
-table.docutils {
-    margin-top: 1.1em;
-    margin-bottom: 1.1em;
-}
-
 table.docutils tbody tr td div.highlight pre { background-color: inherit; }
 
 /* somehow, powershell commands starting with a directory reference does not include a div.highlight */
@@ -601,7 +626,7 @@ div.body div.bc.hide {
 div.body div.bc li.jr { float: right; display:none; }
 div.body div.bc ul { padding:0; margin:0 }
 div.body div.bc ul li { list-style: none; font-size: 13px; display:inline; }
-div.body div.bc ul li a { color: #003594; }
+div.body div.bc ul li a { color: #006cbc; }
 div.dc span.bcpoint { font-weight: bold; font-size:0.9em; color: #343434; }
 div.body div.contents { max-width: 30%; float: right; padding: 0 0.5em 0.5em; margin-left: 1em; }
 div.body div.contents.long-toc { max-width: 100%; float: none; margin-left: 0; }
@@ -990,7 +1015,8 @@ div.sphinxsidebar h3 a.showlink {
 .sphinxsidebarwrapper .toctree-l1 li.current.leaf-item {
      background-color: rgb( 110, 124, 159 );
 }
-.sphinxsidebarwrapper .toctree-l1 li.current.leaf-item > a {
+.sphinxsidebarwrapper .toctree-l1 li.current.leaf-item > a,
+.sphinxsidebarwrapper .toctree-l1 li.current.leaf-item > a > tt {
     color: white;
 }
 
@@ -1082,17 +1108,6 @@ div.sphinxsidebarwrapper ul {
 }
 div.sphinxsidebarwrapper ul li a tt span {
     font-size:inherit;
-}
-div.sphinxsidebarwrapper ul li a:active tt span,
-div.sphinxsidebarwrapper ul li a:hover tt span,
-div.sphinxsidebarwrapper ul li a:focus tt span {
-    font-weight:900
-}
-
-div.sphinxsidebar a:active tt.literal .pre,
-div.sphinxsidebar a:focus tt.literal .pre,
-div.sphinxsidebar a:hover tt.literal .pre {
-    font-weight:900;
 }
 div.sphinxsidebarwrapper div.idxcontents {
     margin-left: 8px;
@@ -1270,6 +1285,7 @@ div.admonition {
 
 .admonition.admonition-platform-support,
 .admonition.tip,
+.admonition.admonition-tip,
 .admonition.note {
     background-color: #edf4e8;
     border-color: #6ba442;
