@@ -15,6 +15,7 @@
 /* -- page layout ----------------------------------------------------------- */
 
 #baselineOverlay {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -25,7 +26,6 @@
     z-index: 2000;
     opacity: 0.5;
     background: url(24px-baseline-overlay.png) 0 0 repeat;
-
 }
 
 body {
@@ -102,7 +102,8 @@ div.body h1 {
     line-height: 48px;
     padding: 0;
     margin: -24px 0 24px 0;
-
+    margin-top: -72px;
+    padding-top: 72px;
 }
 div.body h2 { font-size: 150%; }
 div.body h3 {
@@ -521,8 +522,8 @@ div.highlight pre {
     white-space: pre;
 }
 
-@media (-webkit-min-device-pixel-ratio: 2), 
-(min-resolution: 192dpi) { 
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
     div.highlight pre {
         background: #f5f6f7 url(code-block-bg@2x.png) 0 0 repeat;
         background-size: 12px 12px;
@@ -533,8 +534,17 @@ div.section {
     margin-top: 48px;
 }
 
+div.section > h2 + div.section,
+div.section > h3 + div.section,
+div.section > h4 + div.section,
+div.section > h5 + div.section {
+    margin-top: 0;
+}
+
 div.section > h2, div.section > h3,div.section > h4 {
     margin: 24px 0;
+    margin-top: -72px;
+    padding-top: 72px;
 }
 
 #btnv {
@@ -607,9 +617,9 @@ div.hidden { display: none; }
 .document .body .edit-link:hover {
     position: relative;
     float: right;
+    bottom: -9px;
     text-decoration: none;
     font-size: 24px;
-    bottom: -60px;
     color: #313030;
 }
 
@@ -655,6 +665,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     color: white;
     margin: 0;
     padding: 0;
+    z-index: 100;
 }
 
 #header-db .header-content {
@@ -927,12 +938,15 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 
 div.sphinxsidebar {
     font-size: 14px;
+    height: 100%;
 }
 
 div.sphinxsidebarwrapper {
     padding: 0; /* overwrites basic.css rules */
-    margin-top: 48px;
-    margin-bottom: 48px;
+    padding-top: 48px;
+    padding-bottom: 130px;
+    min-height: 100%;
+    position: relative;
 }
 
 div.sphinxsidebar h3 {
@@ -966,6 +980,7 @@ div.sphinxsidebar h3 a.showlink {
 .sphinxsidebarwrapper li.toctree-l1 ul > li > a {
     line-height: 24px;
     display: inline-block;
+    width: 100%;
 }
 
 .sphinxsidebarwrapper > ul > .toctree-l1:last-child {
@@ -988,10 +1003,14 @@ div.sphinxsidebar h3 a.showlink {
     font-size: 18px;
     line-height: 24px;
     padding: 0 12px;
+    width: 100%;
+    display: inline-block;
 }
 
 .sphinxsidebarwrapper .nav-footer {
     padding: 50px 12px 12px 12px;
+    position: absolute;
+    bottom: 48px;
 }
 
 div.sphinxsidebar li.toctree-l2 > a {
@@ -1169,7 +1188,7 @@ div.sphinxsidebarwrapper div.idxcontents {
     position: fixed;
     left: 1093px;
     top: 72px;
-    bottom: 24px;
+    bottom: 0;
     overflow: auto;
 }
 
@@ -1349,6 +1368,7 @@ div.admonition.note table.docutils tr:last-child td {
 
     .sidebar {
         left: -293px;
+        box-shadow: 0 0 13px rgba(0,0,0,0.3);
     }
 
     .sidebar.reveal {
