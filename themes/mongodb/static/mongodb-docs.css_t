@@ -10,19 +10,37 @@
  */
 @import url("basic.css");
 
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:500,700);
+
 /* -- page layout ----------------------------------------------------------- */
 
+#baselineOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    opacity: 0.5;
+    background: url(24px-baseline-overlay.png) 0 0 repeat;
+
+}
+
 body {
-    font-family: PT Sans,helvetica neue,helvetica,arial,sans-serif;
+    font-family: "PT Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
-    letter-spacing: .3px;
+    color: #494747;
+    -webkit-font-smoothing: antialiased;
 }
 
 hr { border: 1px solid #B1B4B6; }
 
 .content {
-    line-height: 25px;
+    font-size: 16px;
+    line-height: 24px;
 }
 
 div.body {
@@ -67,7 +85,9 @@ a:hover {
 }
 
 div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
-    font-weight: bold;
+    font-family: "PT Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    color: #313030;
     margin: 0;
     padding: 0;
     cursor: pointer;
@@ -75,10 +95,10 @@ div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
 
 div.body h1 {
     border-top: none;
-    font-size: 200%;
-    line-height: 34px;
+    font-size: 36px;
+    line-height: 48px;
     padding: 0;
-    margin: 0;
+    margin: 24px 0;
 
 }
 div.body h2 { font-size: 150%; }
@@ -144,12 +164,9 @@ div.note {
 }
 
 pre {
-    padding: 10px;
-    background-color: White;
+    padding: 24px 12px;
     color: #222;
-    line-height: 1.2em;
-    font-size: 1.25em;
-    margin: 20px 0 0 0;
+    margin: 24px 0;
 }
 
 tt {
@@ -478,24 +495,32 @@ div.section > h1 + dl.expression > dt {display: none;}
 div.section > h1 + dl.projection > dt {display: none;}
 
 .body p {
-    margin: 25px 0 0 0;}
+    margin: 24px 0;
+}
 
 .body li>p {
     margin: 0;
 }
 
 div.highlight pre {
-    background-color: #F5F5F5;
-    font-family: 'Inconsolata', monospace;
-    font-size: 1.1em;
+    background: #f5f6f7 url(code-block-bg.png) 0 0 repeat;
+    border-radius: 0;
+    border: none;
+    border-left: 5px solid #494747;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    line-height: 24px;
     overflow: auto;
     word-wrap: normal;
     white-space: pre;
 }
 
-div.section > h1 {
-    margin-top: -75px;
-    padding-top: 75px;
+@media (-webkit-min-device-pixel-ratio: 2), 
+(min-resolution: 192dpi) { 
+    div.highlight pre {
+        background: #f5f6f7 url(code-block-bg@2x.png) 0 0 repeat;
+        background-size: 12px 12px;
+    }
 }
 
 div.section > h2, div.section > h3,div.section > h4 {
@@ -550,7 +575,6 @@ h4#vnd {padding:0;margin:0;line-height:1.5;padding-left:10px;}
 div.body div.bc {
     background:white;
     cursor: default;
-    margin-bottom: 12.5px;
 }
 div.body div.bc.hide {
     display: none;
@@ -611,11 +635,11 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 
 .content .main-column {
-    margin-top: 50px;
+    margin-top: 96px;
     margin-left: 293px;
     min-height: 600px;
     width: 800px;
-    padding: 25px 30px;
+    padding: 0 30px;
 }
 
 #see-also > p {
@@ -632,7 +656,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     left: 0;
     width: 100%;
     font-size: 31px;
-    background-color: #402817;
+    background-color: #3b291f;
     color: white;
     margin: 0;
     padding: 0;
@@ -897,18 +921,22 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     font-size: 0.85em;
 }
 
+div.sphinxsidebar {
+    font-size: 14px;
+}
+
 div.sphinxsidebarwrapper {
     padding: 0; /* overwrites basic.css rules */
-    margin-top: 12.5px;
-    margin-bottom: 50px;
+    margin-top: 48px;
+    margin-bottom: 48px;
 }
 
 div.sphinxsidebar h3 {
-    padding: 14px 12px;
+    padding: 0 12px;
     font-size: 14px;
+    line-height: 24px;
     font-weight: bold;
-    margin:0;
-    height: 50px;
+    margin: 0;
 }
 
 div.sphinxsidebar h3 a.index-link {
@@ -920,21 +948,22 @@ div.sphinxsidebar h3 a.showlink {
 }
 
 .sphinxsidebarwrapper > ul > .toctree-l1 {
-    min-height: 50px;
-    padding: 12px 0;
+    padding: 11px 0;
+    line-height: 24px;
 
-    transition: background-color 0.4s cubic-bezier(.02,.01,.47,1);
-    -moz-transition: background-color 0.4s cubic-bezier(.02,.01,.47,1);
-    -webkit-transition: background-color 0.4s cubic-bezier(.02,.01,.47,1);
+    /*transition: background-color 200ms cubic-bezier(.02,.01,.47,1);
+    -moz-transition: background-color 200ms cubic-bezier(.02,.01,.47,1);
+    -webkit-transition: background-color 200ms cubic-bezier(.02,.01,.47,1);*/
     border-top: 1px solid rgb( 222, 224, 227 );
 }
 
 .sphinxsidebarwrapper > ul > .toctree-l1.current {
-    background-color: white;
+    background-color: #fff;
+    border-right: 1px solid #f5f6f7;
 }
 
 .sphinxsidebarwrapper li.toctree-l1 ul > li > a {
-    line-height: 25px;
+    line-height: 24px;
     display: inline-block;
 }
 
@@ -956,6 +985,7 @@ div.sphinxsidebar h3 a.showlink {
 
 .sphinxsidebarwrapper > ul > .toctree-l1 > a {
     font-size: 18px;
+    line-height: 24px;
     padding: 0 12px;
 }
 
@@ -1023,7 +1053,7 @@ div.sphinxsidebar tt.literal .pre {
 }
 
 div.sphinxsidebarwrapper ul {
-    margin: 0;
+    margin: 12px 0 0 0;
     padding: 0;
 }
 div.sphinxsidebarwrapper ul li a tt span {
@@ -1052,10 +1082,11 @@ div.sphinxsidebarwrapper div.idxcontents {
     height: 303px;
     bottom: 0;
     left: 0;
+    box-shadow: 0 -2px 3px rgba(0,0,0,0.15);
 
-    transition: bottom 0.4s cubic-bezier(.02,.01,.47,1);
-    -moz-transition: bottom 0.4s cubic-bezier(.02,.01,.47,1);
-    -webkit-transition: bottom 0.4s cubic-bezier(.02,.01,.47,1);
+    transition: bottom 300ms cubic-bezier(.02,.01,.47,1);
+    -moz-transition: bottom 300ms cubic-bezier(.02,.01,.47,1);
+    -webkit-transition: bottom 300ms cubic-bezier(.02,.01,.47,1);
 }
 
 .option-popup.closed {
@@ -1129,23 +1160,36 @@ div.sphinxsidebarwrapper div.idxcontents {
 .content .right-column {
     width: 300px;
     padding: 0;
-
     position: fixed;
     left: 1093px;
-    top: 75px;
-    bottom: 25px;
+    top: 72px;
+    bottom: 24px;
     overflow: auto;
 }
 
 .right-column > .toc {
-    padding: 25px 20px;
+    padding: 24px 20px;
     background-color: rgb( 245, 246, 247 );
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+}
+
+.right-column > .toc .toc-header{
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .right-column > .toc a {
     font-size: 13px;
 }
+
+/*hack for correct line height*/
+.right-column > .toc li {
+    line-height: 23px; 
+}
+.right-column > .toc li a {
+    line-height: 24px;
+}
+/*end hack*/
 
 .right-column > .toc > ul,
 .right-column > .toc > ul > li > ul {
@@ -1154,7 +1198,7 @@ div.sphinxsidebarwrapper div.idxcontents {
 }
 
 .right-column > .toc > ul > li > ul > li {
-    margin-top: 5px;
+    /*margin-top: 5px;*/
 }
 
 .right-column > .toc > ul > li > a {
@@ -1170,16 +1214,20 @@ div.sphinxsidebarwrapper div.idxcontents {
 }
 
 /* Admonition styles */
-.admonition {
-    margin: 25px 0;
-    width:auto;
-    max-width:100%;
-    padding: 20px;
-    border-left: 3px solid transparent;
+div.admonition {
+    margin: 24px 0;
+    width: auto;
+    max-width: 100%;
+    padding: 2px 12px 22px 12px;
+    border-left: 5px solid transparent;
 }
 
 .admonition .admonition-title {
     margin-bottom: 0;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: 24px;
 }
 
 .admonition .admonition-title:after {
@@ -1195,9 +1243,15 @@ div.sphinxsidebarwrapper div.idxcontents {
     margin-bottom: 0;
 }
 
-.admonition.admonition-platform-support {
-    background-color: #BBBBAA;
-    border-color: #999980;
+.admonition.admonition-platform-support,
+.admonition.tip {
+    background-color: #edf4e8;
+    border-color: #6ba442;
+}
+
+.admonition.admonition-platform-support .admonition-title,
+.admonition.tip .admonition-title{
+    color: #89b668;
 }
 
 .admonition.important {
@@ -1205,10 +1259,10 @@ div.sphinxsidebarwrapper div.idxcontents {
     border-color: #f4c158;
 }
 
-.admonition.tip, .admonition-tip {
+/*.admonition.tip, .admonition-tip {
     background-color: #a6c88e;
     border-color: #507b32;
-}
+}*/
 
 .admonition.admonition-optional {
     background-color: inherit;
@@ -1221,8 +1275,12 @@ div.sphinxsidebarwrapper div.idxcontents {
 }
 
 .admonition.warning {
-    background-color: #eebbaa;
-    border-color: #a83f1d;
+    background-color: #fae6e5;
+    border-color: #ed271c;
+}
+
+.admonition.warning .admonition-title {
+    color: #ed271c;
 }
 
 div.admonition pre {
