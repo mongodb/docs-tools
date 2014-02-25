@@ -1,5 +1,13 @@
+import os.path
 from multiprocessing import cpu_count
 import pkg_resources
+
+from utils.structures import BuildConfiguration
+
+def get_sconf(conf):
+    return BuildConfiguration(filename='sphinx.yaml',
+                              directory=os.path.join(conf.paths.projectroot,
+                                                     conf.paths.builddata))
 
 def is_parallel_sphinx(version):
     if version in [ '1.2b1-xgen', '1.2b2', '1.2b3', '1.2', '1.2.1']:

@@ -12,6 +12,7 @@ from fabfile.utils.contentlib.links import create_manual_symlink
 from fabfile.utils.sphinx.prepare import build_prerequisites
 from fabfile.utils.sphinx.workers import sphinx_build, build_worker_wrapper
 from fabfile.utils.sphinx.archives import man_tarball, html_tarball
+from fabfile.utils.sphinx.config import get_sconf
 from fabfile.utils.sphinx.sites import finalize_single_html_jobs, finalize_dirhtml_build
 
 from fabfile.intersphinx import intersphinx
@@ -30,9 +31,8 @@ def target(*targets):
 
     conf = lazy_conf()
 
-    sconf = BuildConfiguration(filename='sphinx.yaml',
-                               directory=os.path.join(conf.paths.projectroot,
-                                                      conf.paths.builddata))
+    sconf = get_sconf()
+
     primer_migrate_pages(conf)
 
     sphinx_build(targets, conf, sconf, finalize_build)
