@@ -122,7 +122,7 @@ $(function() {
 
     /* Adjust the scroll location to account for our fixed header */
     function offsetHashLink() {
-        if (location.hash) {
+        if (location.hash && $(location.hash).length) {
             $(window).scrollTop(window.scrollY - 75);
         }
     }
