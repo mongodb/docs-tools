@@ -112,17 +112,17 @@ def discover_config_file():
 
             if cached_conf.git.commit == get_commit():
                 return None, None, cached_conf, True
-        else:
-            for path, filename in itertools.product(conf_dirs, conf_file_names):
-                conf_file = os.path.join(path, filename)
-                abs_conf_file = os.path.join(project_root_dir, conf_file)
 
-                if not os.path.exists(abs_conf_file):
-                    continue
-                else:
-                    conf = BuildConfiguration(abs_conf_file)
+        for path, filename in itertools.product(conf_dirs, conf_file_names):
+            conf_file = os.path.join(path, filename)
+            abs_conf_file = os.path.join(project_root_dir, conf_file)
 
-                    return project_root_dir, conf_file, conf, False
+            if not os.path.exists(abs_conf_file):
+                continue
+            else:
+                conf = BuildConfiguration(abs_conf_file)
+
+                return project_root_dir, conf_file, conf, False
 
     raise ConfigurationError('no conf file found')
 
