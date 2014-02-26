@@ -154,7 +154,7 @@
   {%- endblock -%}
 
   <link rel="shortcut icon" href="http://media.mongodb.org/favicon.ico" />
-  <meta name="viewport" content="width=device-width; initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
   <meta name="robots" content="index" />
   <meta name="release" content="{{release}}"/>
@@ -233,7 +233,7 @@
     <header id="header-db" class="row" role="navigation">
       <div class="header-content">
         <a class="fa fa-bars expand-toc-icon pull-left" href="#"></a>
-        <div class="logo pull-left">MongoDB Docs</div>
+        <a href="{{ url_root }}"><div class="logo pull-left">MongoDB Docs</div></a>
         <div>
           {%- block searchbox %}
           <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>

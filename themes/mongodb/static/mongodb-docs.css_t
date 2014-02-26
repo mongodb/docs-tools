@@ -103,8 +103,6 @@ div.body h1 {
     line-height: 48px;
     padding: 0;
     margin: -24px 0 24px 0;
-    margin-top: -72px;
-    padding-top: 72px;
 }
 div.body h2 {
     font-size: 24px;
@@ -247,15 +245,20 @@ table.docutils td, table.docutils th {
 table.index-table td {
     text-align: left;
     border-bottom: none;
-    border-right: 3px solid white;
-    padding-left: 15px;
-    padding-right: 15px;
+    border-right: 1px solid #ebebed;
+    padding-left: 25px;
+    padding-right: 0px;
     padding-bottom: 0px;
     padding-top: 5px;
 }
 
+table.index-table td:last-child {
+    border-right: 0;
+}
+
 table.index-table tr.row-even td p {
-    line-height: 1.3em;
+    line-height: 24px;
+    margin-bottom: 10px;
 }
 
 table.index-table tr.row-odd td {
@@ -270,14 +273,12 @@ table.index-table tr.row-odd td {
 
 table.index-table  {
    margin: auto;
-   background-color: #F3F4EB;
+   width: 98%; /* hack to prevent horizontal scrolling in index.html */
 }
 
-table.index-table th.head {
+table.index-table > thead th.head {
     text-align: left;
-    padding-top: 15px;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 0 0 5px 24px;
     border-bottom: none;
 }
 
@@ -549,9 +550,15 @@ div.highlight pre {
 @media (-webkit-min-device-pixel-ratio: 2),
 (min-resolution: 192dpi) {
     div.highlight pre {
-        background: #f5f6f7 url(code-block-bg@2x.png) 0 0 repeat;
+        background: #f5f6f7 url(http://media.mongodb.org.s3.amazonaws.com/code-block-bg@2x.png) 0 0 repeat;
         background-size: 12px 12px;
     }
+}
+
+table.docutils td div.highlight pre {
+    background: none;
+    border: none;
+    padding: 0;
 }
 
 div.section {
@@ -566,8 +573,6 @@ h4 + div.section {
 
 div.section > h2, div.section > h3, div.section > h4 {
     margin: 24px 0;
-    margin-top: -72px;
-    padding-top: 72px;
 }
 
 div.section > h3,
@@ -680,6 +685,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 
 #header-db {
     position: fixed;
+    -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
     height: 50px;
     top: 0;
     left: 0;
@@ -707,6 +713,9 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 
 #header-db .nav-items > a {
     font-size: 14px;
+}
+
+#header-db a {
     color: white;
 }
 
@@ -952,6 +961,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 /* Collapsible sidebar styles */
 .sidebar {
     position: fixed;
+    -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
     background-color: #f5f6f7;
     width: 293px;
     height: auto;
@@ -1000,7 +1010,7 @@ div.sphinxsidebar h3 a.showlink {
     padding: 11px 0;
     line-height: 24px;
 
-    border-top: 1px solid rgb( 222, 224, 227 );
+    border-top: 1px solid #ebebed;
 }
 
 .sphinxsidebarwrapper > ul > .toctree-l1.current {
@@ -1123,6 +1133,7 @@ div.sphinxsidebarwrapper div.idxcontents {
 /* Options panel */
 .option-popup {
     position: fixed;
+    -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
     width: 293px;
     height: 303px;
     bottom: 0;
@@ -1207,51 +1218,54 @@ div.sphinxsidebarwrapper div.idxcontents {
     width: 292px;
     padding: 0;
     position: fixed;
+    -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
     left: 1093px;
     top: 72px;
     bottom: 0;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-.right-column > .toc {
+.right-column .toc {
     padding: 24px 20px;
     background-color: rgb( 245, 246, 247 );
     margin-bottom: 24px;
 }
 
-.right-column > .toc .toc-header{
+.right-column .toc .toc-header{
     font-size: 14px;
     font-weight: bold;
 }
 
-.right-column > .toc a {
+.right-column .toc a {
     font-size: 13px;
 }
 
 /*hack for correct line height*/
-.right-column > .toc li {
+.right-column .toc li {
     line-height: 23px;
 }
-.right-column > .toc li a {
+.right-column .toc li a {
     line-height: 24px;
 }
 /*end hack*/
 
-.right-column > .toc > ul,
-.right-column > .toc > ul > li > ul {
+.right-column .toc > ul,
+.right-column .toc > ul > li > ul {
     padding: 0;
     margin: 0;
 }
 
-.right-column > .toc > ul > li > ul > li {
-    /*margin-top: 5px;*/
-}
-
-.right-column > .toc > ul > li > a {
+.right-column .toc > ul > li > a {
     display: none;
 }
 
-.right-column > .toc > ul ul {
+/* hack to hide toc items that are more than 2 levels deep */
+.right-column .toc > ul > li > ul > li > ul > li > ul {
+    display: none;
+}
+
+.right-column .toc > ul ul {
     padding-left: 20px;
 }
 
