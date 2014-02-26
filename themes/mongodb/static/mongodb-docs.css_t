@@ -25,7 +25,7 @@
     height: 100%;
     z-index: 2000;
     opacity: 0.5;
-    background: url(24px-baseline-overlay.png) 0 0 repeat;
+    background: url(http://media.mongodb.org.s3.amazonaws.com/24px-baseline-overlay.png) 0 0 repeat;
 }
 
 body {
@@ -528,16 +528,13 @@ div.section > h1 + dl.projection > dt {display: none;}
 .body p {
     margin: 0 0 24px 0;
 }
-.body dd {
-    margin-left: 0;
-}
 
 .body li>p {
     margin: 0;
 }
 
 div.highlight pre {
-    background: #f5f6f7 url(code-block-bg.png) 0 0 repeat;
+    background: #f5f6f7 url(http://media.mongodb.org.s3.amazonaws.com/code-block-bg.png) 0 0 repeat;
     border-radius: 0;
     border: none;
     border-left: 5px solid #494747;
