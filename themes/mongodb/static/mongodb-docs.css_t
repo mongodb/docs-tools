@@ -866,9 +866,16 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 }
 
 .social {
-    float: right;
     height: 21px;
-    margin-top: 15px;
+    position: absolute;
+    right: 0;
+    bottom: 43px;
+}
+
+.right-column .wrapper {
+    min-height: 100%;
+    position: relative;
+    padding-bottom: 100px;
 }
 
 .right-column .social .img {
