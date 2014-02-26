@@ -29,7 +29,8 @@
 {%- endmacro -%}
 
 {%- macro relbar() %}
-  <div class="bc{% if not parents %} hide{% endif %}">
+  <div class="bc">
+    {% if parents %}
     <ul>
       {%- block rootrellink %}
       {%- endblock %}
@@ -39,6 +40,9 @@
       {%- endfor %}
       {%- block relbaritems %} {% endblock %}
     </ul>
+    {% else %}
+    <i class="fa fa-home"></i>
+    {% endif %}
   </div>
 {%- endmacro %}
 
