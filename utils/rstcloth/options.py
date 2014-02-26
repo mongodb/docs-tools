@@ -137,8 +137,12 @@ class Option(object):
             if 'program' not in self.replacement:
                 self.replacement['program'] = ':program:`{0}`'.format(self.program)
             if 'role' not in self.replacement:
-                self.replacement['role'] = ':program:`{0}`'.format(self.program)
-
+                if self.directive == 'describe': 
+                    self.replacement['role'] = "``{0}``".format(self.name)
+                elif self.directive == 'option': 
+                    self.replacement['role'] = ":{0}:`--{1}`".format(self.directive, self.name)
+                else:
+                    self.replacement['role'] = ":{0}:`{1}`".format(self.directive, self.name)
 
     def replace(self):
         for i in range(10):
@@ -219,7 +223,7 @@ class OptionRendered(object):
 
         if self.option.post is not None:
             self.rst.content(self.option.post.split('\n'), indent=3, wrap=False)
-            self.rst.newlin()
+            self.rst.newline()
 
         output_file = self.resolve_output_path(path)
         self.rst.write(output_file)
