@@ -293,7 +293,7 @@
     </div>
     <div class="right-column">
       <div class="wrapper">
-        {%- if builder != 'singlehtml' %}
+        {%- if builder != 'singlehtml' or pagename != 'index' %}
           <div class="toc">
             <span class="toc-header">ON THIS PAGE</span>
             {{ toc }}
