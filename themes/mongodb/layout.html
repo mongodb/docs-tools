@@ -293,10 +293,12 @@
     </div>
     <div class="right-column">
       <div class="wrapper">
-        <div class="toc">
-          <span class="toc-header">ON THIS PAGE</span>
-          {{ toc }}
-        </div>
+        {%- if builder != 'singlehtml' %}
+          <div class="toc">
+            <span class="toc-header">ON THIS PAGE</span>
+            {{ toc }}
+          </div>
+        {%- endif %}
         {%- block adblock %}{% endblock %}
         <div class="social">
           <a class="twitter-icon" href="https://twitter.com/mongodbinc"><div class="img"></div></a>
