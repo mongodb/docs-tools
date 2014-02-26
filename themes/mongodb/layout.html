@@ -29,7 +29,8 @@
 {%- endmacro -%}
 
 {%- macro relbar() %}
-  <div class="bc{% if not parents %} hide{% endif %}">
+  <div class="bc">
+    {% if parents %}
     <ul>
       {%- block rootrellink %}
       {%- endblock %}
@@ -39,6 +40,9 @@
       {%- endfor %}
       {%- block relbaritems %} {% endblock %}
     </ul>
+    {% else %}
+    <i class="fa fa-home"></i>
+    {% endif %}
   </div>
 {%- endmacro %}
 
@@ -150,7 +154,7 @@
   {%- endblock -%}
 
   <link rel="shortcut icon" href="http://media.mongodb.org/favicon.ico" />
-  <meta name="viewport" content="width=device-width; initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
   <meta name="robots" content="index" />
   <meta name="release" content="{{release}}"/>
@@ -229,7 +233,7 @@
     <header id="header-db" class="row" role="navigation">
       <div class="header-content">
         <a class="fa fa-bars expand-toc-icon pull-left" href="#"></a>
-        <div class="logo pull-left">MongoDB Docs</div>
+        <a href="{{ url_root }}"><div class="logo pull-left">MongoDB Docs</div></a>
         <div>
           {%- block searchbox %}
           <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
@@ -288,18 +292,21 @@
       {%- endblock %}
     </div>
     <div class="right-column">
-      <div class="toc">
-        <span class="toc-header">ON THIS PAGE</span>
-        {{ toc }}
-      </div>
-      {%- block adblock %}{% endblock %}
-      <div class="social">
-        <a class="twitter-icon" href="https://twitter.com/mongodbinc"><div class="img"></div></a>
-        <a class="youtube-icon" href="http://www.youtube.com/user/MongoDB"><div class="img"></div></a>
-        <a class="facebook-icon" href="https://www.facebook.com/mongodb"><div class="img"></div></a>
-        <a class="gplus-icon" href="https://plus.google.com/u/1/101024085748034940765/posts?cfem=1"><div class="img"></div></a>
+      <div class="wrapper">
+        <div class="toc">
+          <span class="toc-header">ON THIS PAGE</span>
+          {{ toc }}
+        </div>
+        {%- block adblock %}{% endblock %}
+        <div class="social">
+          <a class="twitter-icon" href="https://twitter.com/mongodbinc"><div class="img"></div></a>
+          <a class="youtube-icon" href="http://www.youtube.com/user/MongoDB"><div class="img"></div></a>
+          <a class="facebook-icon" href="https://www.facebook.com/mongodb"><div class="img"></div></a>
+          <a class="gplus-icon" href="https://plus.google.com/u/1/101024085748034940765/posts?cfem=1"><div class="img"></div></a>
+        </div>
       </div>
     </div>
+    <div class="clearfix"></div>
   </div>
 
   {%- block analytics %}
