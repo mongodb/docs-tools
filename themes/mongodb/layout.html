@@ -238,7 +238,13 @@
     <header id="header-db" class="row" role="navigation">
       <div class="header-content">
         <a class="fa fa-bars expand-toc-icon pull-left" href="#"></a>
-        <a href="{{ url_root }}"><div class="logo pull-left">{{ theme_sitename }}</div></a>
+        {%- block header_logo %}
+           <div class="logo pull-left">
+             <a href="{{ url_root }}">
+               <img src="http://media.mongodb.org.s3.amazonaws.com/logo-mongodb-header.png", alt="MongoDB Logo" />
+             </a>
+           </div>
+        {% endblock %}
         <div>
           {%- block searchbox %}
           <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>

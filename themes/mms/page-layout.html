@@ -1,7 +1,11 @@
 {%- extends "layout.html" -%}
 
-{%- block logo %}
-  <a href="http://mms.mongodb.com/"><img class="mms-logo" src="http://media.mongodb.org/logo-mms-white-landing.png" alt="MongoDB Logo"/></a>
+{%- block header_logo %}
+    <div class="logo pull-left">
+      <a href="{{ url_root }}">
+        {{ theme_sitename }}
+      </a>
+    </div>
 {%- endblock -%}
 
 {%- block googlecse_opensearch -%} {%- endblock -%}
