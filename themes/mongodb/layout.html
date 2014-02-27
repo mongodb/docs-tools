@@ -57,59 +57,6 @@
   </div>
 {%- endmacro -%}
 
-{% macro optionbody() %}
-  <ul>
-    {% block version_selector %}
-       <!-- version selector -->
-       <li>
-         <label>Version</label>
-         <select class="version-selector pull-right">
-           {% for v in theme_version_selector %}
-              <option data-path="{{ v.path }}" {% if v.current %}selected="selected"{% endif %}>
-                {{ v.text }}
-              </option>
-           {% endfor %}
-         </select>
-       </li>
-    {% endblock %}
-    {% block language_selector %}
-       <!-- language selector -->
-       <li>
-         <label>Language</label>
-         <select class="language-selector pull-right">
-           {%- for lc,lang in theme_translations -%}
-               <option data-path="http://{{lc}}.docs.mongodb.org/{{ page_url }}">
-                 {{lang}}
-               </option>
-           {% endfor -%}
-          </select>
-       </li>
-    {% endblock %}
-    {% block format_selector %}
-       <!-- format selector -->
-       <li>
-         <label>{{ _('Formats') }}</label>
-         <ul class="formats-list">
-           {%- if show_source and has_source and sourcename %}
-               <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow">{{ _("This Page's Source") }}</a></li>
-           {%- endif %}
-           <li><a href="/{{ theme_manual_path }}/single/">HTML</span></a></li>
-           <li><a href="{{ theme_pdfpath }}" rel="nofollow">PDF</a></li>
-           <li><a href="{{ theme_epubpath }}" rel="nofollow">EPUB</a></li>
-         </ul>
-       </li>
-    {% endblock %}
-    <!-- contribute -->
-    <li>
-      <label>Contribute</label>
-      <ul class="contribute-list">
-        <li>{{ jiralink() }}</li>
-        <li>{{ editlink() }}</li>
-      </ul>
-    </li>
-  </ul>
-{% endmacro %}
-
 {%- macro script() %}
   <script type="text/javascript">
     var DOCUMENTATION_OPTIONS = {
@@ -264,7 +211,9 @@
   {%- endblock %}
 
   <aside class="sidebar">
-    {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
+    {%- block sidebar2 %}
+       {{ sidebar() }}
+    {% endblock %}
   </aside>
   <div class="option-popup closed">
     <div class="option-header">
@@ -273,7 +222,56 @@
       <i class="fa fa-angle-up pull-right"></i>
     </div>
     <div class="option-body">
-      {{ optionbody() }}
+      <ul>
+        {% block version_selector %}
+           <!-- version selector -->
+           <li>
+             <label>Version</label>
+             <select class="version-selector pull-right">
+               {% for v in theme_version_selector %}
+                  <option data-path="{{ v.path }}" {% if v.current %}selected="selected"{% endif %}>
+                    {{ v.text }}
+                  </option>
+               {% endfor %}
+             </select>
+           </li>
+        {% endblock %}
+        {% block language_selector %}
+           <!-- language selector -->
+           <li>
+             <label>Language</label>
+             <select class="language-selector pull-right">
+               {%- for lc,lang in theme_translations -%}
+                   <option data-path="http://{{lc}}.docs.mongodb.org/{{ page_url }}">
+                     {{lang}}
+                   </option>
+               {% endfor -%}
+              </select>
+           </li>
+        {% endblock %}
+        {% block format_selector %}
+           <!-- format selector -->
+           <li>
+             <label>{{ _('Formats') }}</label>
+             <ul class="formats-list">
+               {%- if show_source and has_source and sourcename %}
+                   <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow">{{ _("This Page's Source") }}</a></li>
+               {%- endif %}
+               <li><a href="/{{ theme_manual_path }}/single/">HTML</span></a></li>
+               <li><a href="{{ theme_pdfpath }}" rel="nofollow">PDF</a></li>
+               <li><a href="{{ theme_epubpath }}" rel="nofollow">EPUB</a></li>
+             </ul>
+           </li>
+        {% endblock %}
+        <!-- contribute -->
+        <li>
+          <label>Contribute</label>
+          <ul class="contribute-list">
+            <li>{{ jiralink() }}</li>
+            <li>{{ editlink() }}</li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
   <div class="content">
