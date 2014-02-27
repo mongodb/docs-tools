@@ -236,20 +236,22 @@
              </select>
            </li>
         {% endblock %}
-        {% block language_selector %}
-           <!-- language selector -->
-           <li>
-             <label>Language</label>
-             <select class="language-selector pull-right">
-               {%- for lc,lang in theme_translations -%}
-                   <option data-path="http://{{lc}}.docs.mongodb.org/{{ page_url }}">
-                     {{lang}}
-                   </option>
-               {% endfor -%}
-              </select>
-           </li>
+        {%- block language_selector %}
+           {#
+              <!-- language selector -->
+              <li>
+                <label>Language</label>
+                <select class="language-selector pull-right">
+                  {%- for lc,lang in theme_translations -%}
+                      <option data-path="http://{{lc}}.docs.mongodb.org/{{ page_url }}">
+                        {{lang}}
+                      </option>
+                  {% endfor -%}
+                 </select>
+              </li>
+           #}
         {% endblock %}
-        {% block format_selector %}
+        {%- block format_selector %}
            <!-- format selector -->
            <li>
              <label>{{ _('Formats') }}</label>
@@ -257,7 +259,11 @@
                {%- if show_source and has_source and sourcename %}
                    <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow">{{ _("This Page's Source") }}</a></li>
                {%- endif %}
-               <li><a href="/{{ theme_manual_path }}/single/">HTML</span></a></li>
+               {%- if builder != 'singlehtml' %}
+                   <li><a href="/{{ theme_manual_path }}/single/">HTML</span></a></li>
+               {%- else %}
+                   <li><a href="/{{ theme_manual_path }}">SITE</span></a></li>
+               {%- endif %}
                <li><a href="{{ theme_pdfpath }}" rel="nofollow">PDF</a></li>
                <li><a href="{{ theme_epubpath }}" rel="nofollow">EPUB</a></li>
              </ul>
@@ -304,11 +310,13 @@
     </div>
     <div class="right-column">
       <div class="wrapper">
-        {%- if builder == 'singlehtml' or pagename != 'index' %}
-          <div class="toc">
-            <span class="toc-header">ON THIS PAGE</span>
-            {{ toc }}
-          </div>
+        {%- if builder != 'singlehtml' %}
+           {%- if pagename != 'index' %}
+             <div class="toc">
+               <span class="toc-header">ON THIS PAGE</span>
+               {{ toc }}
+             </div>
+           {%- endif %}
         {%- endif %}
         {%- block adblock %}{% endblock %}
         {%- block social %}
