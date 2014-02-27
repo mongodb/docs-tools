@@ -719,6 +719,10 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     color: white;
 }
 
+#header-db .logo img {
+    height: 36px;
+    vertical-align: top;
+}
 #header-db .nav-items > a:not(:last-child) {
     margin-right: 15px;
 }
