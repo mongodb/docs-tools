@@ -15,10 +15,12 @@ $(function() {
     $('.sphinxsidebarwrapper > ul li:not(.current) > ul:not(.current)').hide();
     $('.sphinxsidebarwrapper').show();
 
-    // There should really be a less fragile selector for the relaese notes list item
-    var $lastNode = $('.sphinxsidebarwrapper .toctree-l1:last-child');
+    // Special case the behavior for the Release Notes node
+    var $releaseNode = $('.sphinxsidebarwrapper .toctree-l1').filter(function(index, el) {
+        return $(el).children('a').text().toLowerCase() == "release notes";
+    });
     function isReleaseNotesChild($node) {
-        return $lastNode.has($node.parent()).length;
+        return $releaseNode && $releaseNode.has($node.parent()).length;
     }
 
     $('.sphinxsidebarwrapper .toctree-l1').on('click', 'a', function(e) {

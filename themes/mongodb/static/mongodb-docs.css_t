@@ -989,7 +989,7 @@ div.sphinxsidebar {
 div.sphinxsidebarwrapper {
     padding: 0; /* overwrites basic.css rules */
     padding-top: 24px;
-    padding-bottom: 130px;
+    padding-bottom: 130px; /* Extra padding for the footer items at the bottom */
     min-height: 100%;
     position: relative;
 }
@@ -1029,7 +1029,7 @@ div.sphinxsidebar h3 a.showlink {
 }
 
 .sphinxsidebarwrapper > ul > .toctree-l1:last-child {
-    border-bottom: 1px solid rgb( 222, 224, 227 );
+    border-bottom: 1px solid #ebebed;
 }
 
 .sphinxsidebarwrapper .toctree-l1 li.current.leaf-item {
@@ -1051,6 +1051,10 @@ div.sphinxsidebar h3 a.showlink {
     padding: 0 12px;
     width: 100%;
     display: inline-block;
+}
+
+.sphinxsidebarwrapper .mms-hosted-search {
+    margin-top: 15px;
 }
 
 .sphinxsidebarwrapper .nav-footer {
