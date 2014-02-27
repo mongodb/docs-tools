@@ -665,7 +665,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 
 .content .main-column {
-    margin-top: 96px;
+    margin-top: 72px;
     margin-left: 293px;
     min-height: 600px;
     width: 800px;
@@ -984,7 +984,7 @@ div.sphinxsidebar {
 
 div.sphinxsidebarwrapper {
     padding: 0; /* overwrites basic.css rules */
-    padding-top: 48px;
+    padding-top: 24px;
     padding-bottom: 130px;
     min-height: 100%;
     position: relative;

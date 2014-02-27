@@ -29,19 +29,18 @@
 {%- endmacro -%}
 
 {%- macro relbar() %}
-  <div class="bc">
-    {% if parents %}
-    <ul>
-      {%- block rootrellink %}
-      {%- endblock %}
-      {%- for parent in parents %}
-        <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
-        {% if loop.last %}<li>{{title}}</li>{% endif %}
-      {%- endfor %}
-      {%- block relbaritems %} {% endblock %}
-    </ul>
+   <div class="bc">
+     {% if parents %}
+       <ul>
+        {%- block rootrellink %}{%- endblock %}
+        {%- for parent in parents %}
+          <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
+          {% if loop.last %}<li>{{title}}</li>{% endif %}
+        {%- endfor %}
+        {%- block relbaritems %} {% endblock %}
+      </ul>
     {% else %}
-    <i class="fa fa-home"></i>
+      {# <i class="fa fa-home"></i> #}
     {% endif %}
   </div>
 {%- endmacro %}
@@ -60,40 +59,46 @@
 
 {% macro optionbody() %}
   <ul>
-    <!-- version selector -->
-    <li>
-      <label>Version</label>
-      <select class="version-selector pull-right">
-        {% for v in theme_version_selector %}
-        <option data-path="{{ v.path }}" {% if v.current %}selected="selected"{% endif %}>
-          {{ v.text }}
-        </option>
-        {% endfor %}
-      </select>
-    </li>
-    <!-- language selector -->
-    <li>
-      <label>Language</label>
-      <select class="language-selector pull-right">
-      {%- for lc,lang in theme_translations -%}
-        <option data-path="http://{{lc}}.docs.mongodb.org/{{ page_url }}">
-          {{lang}}
-        </option>
-      {% endfor -%}
-      </select>
-    </li>
-    <!-- format selector -->
-    <li>
-      <label>{{ _('Formats') }}</label>
-      <ul class="formats-list">
-        {%- if show_source and has_source and sourcename %}
-        <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow">{{ _("This Page's Source") }}</a></li>
-        {%- endif %}
-        <li><a href="/{{ theme_manual_path }}/single/">HTML</span></a></li>
-        <li><a href="{{ theme_pdfpath }}" rel="nofollow">PDF</a></li>
-        <li><a href="{{ theme_epubpath }}" rel="nofollow">EPUB</a></li>
-      </ul>
-    </li>
+    {% block version_selector %}
+       <!-- version selector -->
+       <li>
+         <label>Version</label>
+         <select class="version-selector pull-right">
+           {% for v in theme_version_selector %}
+              <option data-path="{{ v.path }}" {% if v.current %}selected="selected"{% endif %}>
+                {{ v.text }}
+              </option>
+           {% endfor %}
+         </select>
+       </li>
+    {% endblock %}
+    {% block language_selector %}
+       <!-- language selector -->
+       <li>
+         <label>Language</label>
+         <select class="language-selector pull-right">
+           {%- for lc,lang in theme_translations -%}
+               <option data-path="http://{{lc}}.docs.mongodb.org/{{ page_url }}">
+                 {{lang}}
+               </option>
+           {% endfor -%}
+          </select>
+       </li>
+    {% endblock %}
+    {% block format_selector %}
+       <!-- format selector -->
+       <li>
+         <label>{{ _('Formats') }}</label>
+         <ul class="formats-list">
+           {%- if show_source and has_source and sourcename %}
+               <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow">{{ _("This Page's Source") }}</a></li>
+           {%- endif %}
+           <li><a href="/{{ theme_manual_path }}/single/">HTML</span></a></li>
+           <li><a href="{{ theme_pdfpath }}" rel="nofollow">PDF</a></li>
+           <li><a href="{{ theme_epubpath }}" rel="nofollow">EPUB</a></li>
+         </ul>
+       </li>
+    {% endblock %}
     <!-- contribute -->
     <li>
       <label>Contribute</label>
@@ -233,16 +238,16 @@
     <header id="header-db" class="row" role="navigation">
       <div class="header-content">
         <a class="fa fa-bars expand-toc-icon pull-left" href="#"></a>
-        <a href="{{ url_root }}"><div class="logo pull-left">MongoDB Docs</div></a>
+        <a href="{{ url_root }}"><div class="logo pull-left">{{ theme_sitename }}</div></a>
         <div>
           {%- block searchbox %}
           <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
           {% endblock %}
           <div class="nav-items pull-right">
             {%- block subnav %}
-            <a href="http://www.mongodb.org/downloads">Downloads</a>
-            <a href="http://www.mongodb.org/get-involved">Community</a>
-            <a href="http://blog.mongodb.org">Blog</a>
+               <a href="http://www.mongodb.org/downloads">Downloads</a>
+               <a href="http://www.mongodb.org/get-involved">Community</a>
+               <a href="http://blog.mongodb.org">Blog</a>
             {% endblock %}
           </div>
         </div>
@@ -280,7 +285,7 @@
                 {%- block footer %}
                   <div class="footer">
                     <div class="copyright">
-                      <p>Copyright &copy; 2013 <a class="smalltext" href="http://www.mongodb.com">MongoDB, Inc</a>. Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/ ">Creative Commons</a>. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
+                      <p>Copyright &copy; {{copyright}} <a class="smalltext" href="http://www.mongodb.com">MongoDB, Inc</a>. Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/ ">Creative Commons</a>. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
                     </div>
                   </div>
                 {%- endblock %}
@@ -300,12 +305,14 @@
           </div>
         {%- endif %}
         {%- block adblock %}{% endblock %}
-        <div class="social">
-          <a class="twitter-icon" href="https://twitter.com/mongodbinc"><div class="img"></div></a>
-          <a class="youtube-icon" href="http://www.youtube.com/user/MongoDB"><div class="img"></div></a>
-          <a class="facebook-icon" href="https://www.facebook.com/mongodb"><div class="img"></div></a>
-          <a class="gplus-icon" href="https://plus.google.com/u/1/101024085748034940765/posts?cfem=1"><div class="img"></div></a>
-        </div>
+        {%- block social %}
+           <div class="social">
+             <a class="twitter-icon" href="https://twitter.com/mongodbinc"><div class="img"></div></a>
+             <a class="youtube-icon" href="http://www.youtube.com/user/MongoDB"><div class="img"></div></a>
+             <a class="facebook-icon" href="https://www.facebook.com/mongodb"><div class="img"></div></a>
+             <a class="gplus-icon" href="https://plus.google.com/u/1/101024085748034940765/posts?cfem=1"><div class="img"></div></a>
+           </div>
+        {% endblock %}
       </div>
     </div>
     <div class="clearfix"></div>
