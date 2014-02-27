@@ -2,6 +2,9 @@
   <a href="{{ pathto('index') }}">{{ shorttitle }}</a>
 </h3>
 
-<div class="site-contents"><a href="{{ pathto(master_doc) }}">{{ _('Contents') }}</a></div>
+{{ toctree( collapse=false, titles_only=1) }}
 
-{{ toctree( titles_only=1) }}
+<div class="nav-footer">
+  <a href="{{ pathto(master_doc) }}">{{ _('Contents') }}</a>
+</div>
+
