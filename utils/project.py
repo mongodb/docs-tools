@@ -76,10 +76,10 @@ def get_versions(conf=None):
 
         v['text'] = version
         if version == conf.version.stable:
-            v['text'] += ' (<em>current</em>)'
+            v['text'] += ' (current)'
 
         if version == conf.version.upcoming:
-            v['text'] += ' (<em>upcoming</em>)'
+            v['text'] += ' (upcoming)'
 
         v['current'] = True if idx == current_version_index else False
 
