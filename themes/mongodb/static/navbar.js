@@ -1,37 +1,14 @@
 $(function() {
     var docsExcludedNav = window.docsExcludedNav;
 
-    function relativeToAbsolute(url) {
-        var arr = url.split("/");
-        while (arr.indexOf("..") > -1) {
-            arr.splice(arr.indexOf("..") - 1, 2);
-        }
-        return arr.join("/");
-    }
-
     /* Checks a whitelist for non-leaf nodes that should trigger a full page reload */
     function requiresPageload($node) {
         if (!docsExcludedNav || !docsExcludedNav.length) {
             return false;
         }
 
-        var href = $node.attr('href');
-
-        var pathname;
-        if (!href) {
-            pathname = location.pathname;
-        } else {
-            var currentDirectory = location.pathname.split("/").slice(0, -1).concat("").join("/");
-            pathname = relativeToAbsolute(currentDirectory + href);
-        }
-
-        // splice off optional file extension
-        if (pathname.match(/\.html$/)) {
-            pathname = pathname.slice(0, -5);
-        }
-
         for (var i = 0; i < docsExcludedNav.length; i++) {
-            if (docsExcludedNav[i].indexOf(pathname) !== -1) {
+            if ($node[0].href.indexOf(docsExcludedNav[i]) !== -1) {
                 return true;
             }
         }

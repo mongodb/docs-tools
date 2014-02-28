@@ -527,7 +527,11 @@ div.section > h1 + dl.expression > dt {display: none;}
 div.section > h1 + dl.projection > dt {display: none;}
 
 .body p {
-    margin: 0 0 24px 0;
+    margin: 24px 0;
+}
+
+.body p.caption {
+    margin-top: 0;
 }
 
 .body li>p {
@@ -1281,16 +1285,18 @@ div.sphinxsidebarwrapper div.idxcontents {
     display: none;
 }
 
-.right-column .toc > ul ul {
+.right-column .toc > ul > li > ul {
     padding-left: 1px;
 }
 
-.right-column .toc li > a:before,
-.right-column .toc li > a:before:hover {
+.right-column .toc > ul > li > ul > li > ul {
+    padding-left: 13px;
+}
+
+.right-column .toc li > a:before {
     content: '\2022';
     color: #333;
     opacity: 0.5;
-    text-decoration: none;
     display: inline-block;
 }
 
