@@ -108,7 +108,7 @@ div.body h2 {
     font-size: 24px;
 }
 div.body h3 {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     margin-bottom: 0;
 }
@@ -118,8 +118,13 @@ div.body h4 {
     font-weight: bold;
     margin-bottom: 0;
 }
-div.body h5 { font-size: 100%; }
-div.body h6 { font-size: 100%; }
+div.body h5 { 
+    font-size: 16px;
+}
+div.body h6 { 
+    font-size: 16px;
+    font-weight: 300;
+ }
 
 div.body h1 + p,  div.body h2 + p, div.body h3 + p, div.body h4 + p,
 div.body h1 + dl, div.body h2 + dl, div.body h3 + dl,  div.body h4 + dl {
@@ -582,6 +587,11 @@ div.section > h2, div.section > h3, div.section > h4 {
 div.section > h3,
 div.section > h4 {
     margin-bottom: 0;
+}
+
+.body h3 + p,
+.body h4 + p {
+    margin-top: 0;
 }
 
 #btnv {
