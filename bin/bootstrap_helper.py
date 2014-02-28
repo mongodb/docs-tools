@@ -1,7 +1,7 @@
 import os
 from shutil import rmtree, copyfile
 
-reset_ref = 'HEAD~40'
+reset_ref = 'HEAD~4'
 
 def symlink(name, target):
     if not os.path.islink(name):
