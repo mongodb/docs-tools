@@ -6,8 +6,8 @@
  * -------------------------- */
 @font-face {
   font-family: 'FontAwesome';
-  src: url('http://media.mongodb.org.s3.amazonaws.com/fonts/fontawesome-webfont.eot?v=4.0.3');
-  src: url('http://media.mongodb.org.s3.amazonaws.com/fonts/fontawesome-webfont.eot?#iefix&v=4.0.3') format('embedded-opentype'), url('http://media.mongodb.org.s3.amazonaws.com/fonts/fontawesome-webfont.woff?v=4.0.3') format('woff'), url('http://media.mongodb.org.s3.amazonaws.com/fonts/fontawesome-webfont.ttf?v=4.0.3') format('truetype'), url('http://media.mongodb.org.s3.amazonaws.com/fonts/fontawesome-webfont.svg?v=4.0.3#fontawesomeregular') format('svg');
+  src: url('http://docs.mongodb.org/fontawesome-webfont.eot?v=4.0.3');
+  src: url('http://docs.mongodb.org/fontawesome-webfont.eot?#iefix&v=4.0.3') format('embedded-opentype'), url('http://docs.mongodb.org/fontawesome-webfont.woff?v=4.0.3') format('woff'), url('http://docs.mongodb.org/fontawesome-webfont.ttf?v=4.0.3') format('truetype'), url('http://docs.mongodb.org/fontawesome-webfont.svg?v=4.0.3#fontawesomeregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
