@@ -1032,15 +1032,15 @@ div.sphinxsidebar h3 a.showlink {
     border-bottom: 1px solid #ebebed;
 }
 
-.sphinxsidebarwrapper .toctree-l1 li.current.leaf-item {
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item {
      background-color: rgb( 110, 124, 159 );
 }
-.sphinxsidebarwrapper .toctree-l1 li.current.leaf-item > a,
-.sphinxsidebarwrapper .toctree-l1 li.current.leaf-item > a > tt {
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a,
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > tt {
     color: white;
 }
 
-.sphinxsidebarwrapper .toctree-l1 li.current.leaf-item > ul {
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > ul {
     background-color: white;
     color: #333;
 }
@@ -1064,16 +1064,20 @@ div.sphinxsidebar h3 a.showlink {
 }
 
 div.sphinxsidebar li.toctree-l2 > a {
-    padding-left: 24px;
+    text-indent: -12px;
+    padding-left: 37px;
 }
 div.sphinxsidebar li.toctree-l3 > a {
-    padding-left: 36px;
-}
-div.sphinxsidebar li.toctree-l4 > a {
+    text-indent: -12px;
     padding-left: 48px;
 }
-div.sphinxsidebar li.toctree-l5 > a {
+div.sphinxsidebar li.toctree-l4 > a {
+    text-indent: -12px;
     padding-left: 60px;
+}
+div.sphinxsidebar li.toctree-l5 > a {
+    text-indent: -12px;
+    padding-left: 72px;
 }
 
 div.sphinxsidebar p {

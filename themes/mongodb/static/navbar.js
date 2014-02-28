@@ -1,11 +1,50 @@
 $(function() {
+    var docsExcludedNav = window.docsExcludedNav;
+
+    function relativeToAbsolute(url) {
+        var arr = url.split("/");
+        while (arr.indexOf("..") > -1) {
+            arr.splice(arr.indexOf("..") - 1, 2);
+        }
+        return arr.join("/");
+    }
+
+    /* Checks a whitelist for non-leaf nodes that should trigger a full page reload */
+    function requiresPageload($node) {
+        if (!docsExcludedNav || !docsExcludedNav.length) {
+            return false;
+        }
+
+        var href = $node.attr('href');
+
+        var pathname;
+        if (!href) {
+            pathname = location.pathname;
+        } else {
+            var currentDirectory = location.pathname.split("/").slice(0, -1).concat("").join("/");
+            pathname = relativeToAbsolute(currentDirectory + href);
+        }
+
+        // splice off optional file extension
+        if (pathname.match(/\.html$/)) {
+            pathname = pathname.slice(0, -5);
+        }
+
+        for (var i = 0; i < docsExcludedNav.length; i++) {
+            if (docsExcludedNav[i].indexOf(pathname) !== -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function isLeafNode($node) {
         return !$node.siblings('ul:not(.simple)').length;
     }
 
     var $current = $('.sidebar a.current');
-    if (isLeafNode($current)) {
-        $current.parent('li').addClass('leaf-item');
+    if (isLeafNode($current) || requiresPageload($current)) {
+        $current.parent('li').addClass('selected-item');
     }
     $current.parents('ul').each(function(index, el) {
         $(el).css('display', 'block');
@@ -15,14 +54,6 @@ $(function() {
     $('.sphinxsidebarwrapper > ul li:not(.current) > ul:not(.current)').hide();
     $('.sphinxsidebarwrapper').show();
 
-    // Special case the behavior for the Release Notes node
-    var $releaseNode = $('.sphinxsidebarwrapper .toctree-l1').filter(function(index, el) {
-        return $(el).children('a').text().toLowerCase() == "release notes";
-    });
-    function isReleaseNotesChild($node) {
-        return $releaseNode && $releaseNode.has($node.parent()).length;
-    }
-
     $('.sphinxsidebarwrapper .toctree-l1').on('click', 'a', function(e) {
         var $target = $(e.currentTarget);
         if (isLeafNode($target)) {
@@ -30,7 +61,7 @@ $(function() {
         }
 
         // Release notes has special behavior to click through
-        if (!$target.parent().hasClass('current') && isReleaseNotesChild($target)) {
+        if (!$target.parent().hasClass('selected-item') && requiresPageload($target)) {
             return;
         }
 
@@ -38,12 +69,12 @@ $(function() {
 
         if ($target.parent().hasClass('current')) {
             // collapse target node
-            $target.removeClass('current').parent().removeClass('current leaf-item');
+            $target.removeClass('current').parent().removeClass('current selected-item');
             $target.siblings('ul').slideUp();
         } else {
 
             $current.removeClass('current');
-            $current.parent().removeClass('leaf-item');
+            $current.parent().removeClass('selected-item');
             // roll up all navigation up to the common ancestor
             $current.parents().add($current.siblings('ul')).each(function(index, el) {
                 var $el = $(el);
@@ -60,8 +91,8 @@ $(function() {
             // add css classes for the new 'current' nav item
             $target.addClass('current').parent().addClass('current');
             $target.siblings('ul').slideDown(function() {
-                if (isLeafNode($target)) {
-                    $target.parent('li').addClass('leaf-item');
+                if (isLeafNode($target) || requiresPageload($target)) {
+                    $target.parent('li').addClass('selected-item');
                 }
             });
             // set new $current
@@ -124,7 +155,7 @@ $(function() {
 
     /* Adjust the scroll location to account for our fixed header */
     function offsetHashLink() {
-        if (location.hash && $(location.hash).length) {
+        if (location.hash && document.getElementById(location.hash.substr(1))) {
             $(window).scrollTop(window.scrollY - 75);
         }
     }
