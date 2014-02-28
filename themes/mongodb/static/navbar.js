@@ -31,7 +31,7 @@ $(function() {
         }
 
         for (var i = 0; i < docsExcludedNav.length; i++) {
-            if (docsExcludedNav[i].indexOf(pathname) !== -1) {
+            if (pathname.indexOf(docsExcludedNav[i]) !== -1) {
                 return true;
             }
         }
