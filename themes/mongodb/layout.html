@@ -162,9 +162,6 @@
            };
            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
            })();
-        $(function() {
-          $('.translation-link').add('.jira-link').add('.edit-link').tipsy({gravity: 's'});
-        });
       </script>
     {%- endif %}
   {%- endblock -%}
@@ -357,6 +354,9 @@
     });
 
   });
+
+  // Bootstrap array of links that should trigger a full page reload
+  window.docsExcludedNav = {{ theme_nav_excluded }};
   </script>
   {%- endblock -%}
 
