@@ -15,22 +15,34 @@ $(function() {
         return false;
     }
 
+    /* currently open page */
+    function isCurrentNode($node) {
+        return $node.hasClass('current');
+    }
+
     function isLeafNode($node) {
         return !$node.siblings('ul:not(.simple)').length;
     }
 
     var $current = $('.sidebar a.current');
-    if (isLeafNode($current) || requiresPageload($current)) {
+    if (isLeafNode($current) || requiresPageload($current) || isCurrentNode($current)) {
         $current.parent('li').addClass('selected-item');
     }
     $current.parents('ul').each(function(index, el) {
         $(el).css('display', 'block');
     });
 
-
     $('.sphinxsidebarwrapper > ul li:not(.current) > ul:not(.current)').hide();
     $('.sphinxsidebarwrapper').show();
 
+    /*
+     * This event handler defines the left-column navigation's behavior
+     * The logic conforms to how sphinx generates the markup
+     * The rules are:
+     *  $('a.current') is the title of the content that is currently rendered (this should never be changed client-side)
+     *  $('ul.current, li.current') are the set of lists that are currently expanded
+     *  $('li.selected-item') is the currently highlighted item
+     */
     $('.sphinxsidebarwrapper .toctree-l1').on('click', 'a', function(e) {
         var $target = $(e.currentTarget);
         if (isLeafNode($target)) {
@@ -46,11 +58,10 @@ $(function() {
 
         if ($target.parent().hasClass('current')) {
             // collapse target node
-            $target.removeClass('current').parent().removeClass('current selected-item');
+            $target.parent().removeClass('current selected-item');
             $target.siblings('ul').slideUp();
         } else {
 
-            $current.removeClass('current');
             $current.parent().removeClass('selected-item');
             // roll up all navigation up to the common ancestor
             $current.parents().add($current.siblings('ul')).each(function(index, el) {
@@ -66,9 +77,9 @@ $(function() {
                 }
             });
             // add css classes for the new 'current' nav item
-            $target.addClass('current').parent().addClass('current');
+            $target.parent().addClass('current');
             $target.siblings('ul').slideDown(function() {
-                if (isLeafNode($target) || requiresPageload($target)) {
+                if (isLeafNode($target) || requiresPageload($target) || isCurrentNode($current)) {
                     $target.parent('li').addClass('selected-item');
                 }
             });
