@@ -1,0 +1,16 @@
+<h3>
+  <a class="index-link" href="{{ pathto('index') }}">{{ shorttitle }}</a>
+  {% for v in theme_version_selector %}
+    {% if v.current %}
+      <a class="version pull-right" href="">{{ v.text }}</a>
+    {% endif %}
+  {% endfor %}
+</h3>
+
+{{ toctree( collapse=false, titles_only=1) }}
+
+<div class="nav-footer">
+  <a href="{{pathto('about')}}">{{_('About')}}</a> |
+  <a href="{{ pathto(master_doc) }}">{{ _('Contents') }}</a> |
+  <a href="{{ pathto('genindex') }}">{{ _('Index') }}</a>
+</div>
