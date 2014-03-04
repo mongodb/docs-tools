@@ -145,7 +145,10 @@ class Steps(object):
 
     def get_step(self, ref):
         if ref in self.source:
-            return self.source[ref]
+            step = self.source[ref].copy()
+            if 'stepnum' in step:
+                del step['stepnum']
+            return step
 
 
 class StepsOutput(object):
