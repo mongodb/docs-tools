@@ -270,7 +270,9 @@
           <label>Contribute</label>
           <ul class="contribute-list">
             <li>{{ jiralink() }}</li>
-            <li>{{ editlink() }}</li>
+            {%- block editlink %}
+               <li>{{ editlink() }}</li>
+            {%- endblock %}
           </ul>
         </li>
       </ul>
