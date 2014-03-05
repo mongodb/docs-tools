@@ -79,15 +79,6 @@ def build_process_prerequsites(conf):
     buildinfo_hash(conf)
 
 def build_job_prerequsites(conf, sconf):
-    jobs = toc_jobs(conf)
-
-    try: 
-        res = runner(jobs, parallel='process')
-        print('[sphinx-prep]: built {0} pieces of content'.format(len(res)))
-    except PoolResultsError:
-        print('[WARNING]: sphinx prerequisites encountered errors. '
-              'See output above. Continuing as a temporary measure.')
-
     runner(external_jobs(conf), parallel='thread')
 
     if conf.project.name == 'mms':
@@ -100,6 +91,15 @@ def build_job_prerequsites(conf, sconf):
             print(o.out)
     else:
         transfer_source(sconf, conf)
+
+    jobs = toc_jobs(sconf.builder, conf)
+
+    try: 
+        res = runner(jobs, parallel='process')
+        print('[sphinx-prep]: built {0} pieces of content'.format(len(res)))
+    except PoolResultsError:
+        print('[WARNING]: sphinx prerequisites encountered errors. '
+              'See output above. Continuing as a temporary measure.')
 
     print('[sphinx-prep]: resolving all intra-source dependencies now. (takes several seconds)')
     dep_count = refresh_dependencies(conf)

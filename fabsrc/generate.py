@@ -33,13 +33,6 @@ def api():
     print('[api]: generated {0} tables for api items'.format(len(res)))
 
 @task
-def toc():
-    conf = lazy_conf()
-    res = runner( toc_jobs(conf), retval=True )
-
-    print('[toc]: built {0} tables of contents'.format(len(res)))
-
-@task
 def tables():
     res = runner( table_jobs(), retval=True )
 

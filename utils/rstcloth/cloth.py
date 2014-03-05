@@ -35,7 +35,7 @@ def write_file(list, filename):
     """
     dirpath = filename.rsplit('/', 1)[0]
     if os.path.isdir(dirpath) is False:
-        os.mkdir(dirpath)
+        os.makedirs(dirpath)
 
     with open(filename, 'w') as f:
         for line in list:

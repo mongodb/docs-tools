@@ -37,7 +37,7 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
     if len(target_jobs) <= 1:
         res = runner(target_jobs, pool=1)
     else:
-        res = runner(target_jobs, pool=len(target_jobs), parallel='threads')
+        res = runner(target_jobs, parallel='threads')
 
     output_sphinx_stream('\n'.join([r for r in res if r is not None]), conf)
 
