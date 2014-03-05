@@ -59,8 +59,10 @@ def check_hashed_dependency(target, dependency, dep_map, conf):
         dependency = normalize_fn(dependency)
         return needs_rebuild(target, dependency)
 
-def dump_file_hashes(output, conf=None):
+def dump_file_hashes(conf=None):
     conf = lazy_conf(conf)
+
+    output = conf.system.dependency_cache
 
     o = { 'conf': conf,
           'time': datetime.datetime.utcnow().strftime("%s"),

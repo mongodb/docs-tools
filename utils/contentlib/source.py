@@ -3,8 +3,8 @@ import os.path
 from utils.shell import command
 from utils.errors import InvalidFile
 
-def transfer_source(conf):
-    target = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
+def transfer_source(sconf, conf):
+    target = '-'.join([os.path.join(conf.paths.projectroot, conf.paths.branch_source), sconf.builder])
 
     if not os.path.exists(target):
         os.makedirs(target)
@@ -14,5 +14,5 @@ def transfer_source(conf):
 
     source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
 
-    command('rsync --checksum --recursive --delete {0} {1}'.format(source_dir, target))
+    command('rsync --checksum --recursive --delete {0}/ {1}'.format(source_dir, target))
     print('[sphinx-prep]: updated source in {0}'.format(target))

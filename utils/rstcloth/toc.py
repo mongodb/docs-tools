@@ -6,10 +6,13 @@ import argparse
 from utils.rstcloth.table import TableData
 from utils.rstcloth.rstcloth import RstCloth, fill
 
+from utils.config import lazy_conf
+
 class CustomTocTree(object):
-    def __init__(self, filename, sort=False):
+    def __init__(self, filename, conf=None, sort=False):
         self.spec = self._process_spec(filename, sort)
 
+        self.conf = lazy_conf(conf)
 
         if "ref-toc" in filename:
             self._is_ref = True
@@ -63,6 +66,12 @@ class CustomTocTree(object):
     def finalize(self):
         if not self.final:
             for ref in self.spec:
+                if 'edition' not in ref:
+                    pass
+                elif 'edition' in self.conf.project and ref['edition'] != self.conf.project.edition:
+                    print(ref['name'])
+                    continue 
+
                 if self.table is not None:
                     if 'text' in ref:
                         if ref['name'] is None:
@@ -108,7 +117,8 @@ class CustomTocTree(object):
 
 
 class AggregatedTocTree(CustomTocTree):
-    def __init__(self, filename):
+    def __init__(self, filename, conf):
+        self.conf = conf
 
         self.table = None
         self.contents = None

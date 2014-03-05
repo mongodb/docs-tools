@@ -54,10 +54,7 @@ def crawl_up_tree(path, base_len=-1):
     return path
 
 def get_conf():
-    project_root_dir, conf_file, conf, cached = discover_config_file()
-
-    if cached is True:
-        return conf
+    project_root_dir, conf_file, conf = discover_config_file()
 
     conf = schema_migration_0(conf)
 

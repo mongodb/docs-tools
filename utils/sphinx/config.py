@@ -1,6 +1,8 @@
 import os.path
-from multiprocessing import cpu_count
 import pkg_resources
+
+from multiprocessing import cpu_count
+from copy import deepcopy
 
 from utils.structures import BuildConfiguration
 
@@ -37,10 +39,10 @@ def get_sphinx_args(sconf, conf):
 
 def compute_sphinx_config(builder, sconf, conf):
     if 'inherit' in sconf[builder]:
-        computed_config = sconf[sconf[builder]['inherit']]
+        computed_config = deepcopy(sconf[sconf[builder]['inherit']])
         computed_config.update(sconf[builder])
     else:
-        computed_config = sconf[builder]
+        computed_config = deepcopy(sconf[builder])
 
     if conf.project.name == 'mms':
         computed_config.builder = builder.split('-')[0]

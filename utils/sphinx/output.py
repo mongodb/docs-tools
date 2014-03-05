@@ -50,14 +50,16 @@ def path_normalization(l, full_path, conf):
         l = l[len(conf.paths.branch_output)+1:]
     elif l.startswith(full_path):
         l = l[len(full_path)+1:]
-    elif l.startswith('source'):
-        return l
+
+    if l.startswith('source'):
+        l = os.path.sep.join(['source', l.split(os.path.sep, 1)[1]])
 
     if conf.project.name == 'mms':
         if l.startswith('source-saas'):
             l = l.replace('source-saas', 'source')
         elif l.startswith('source-hosted'):
             l = l.replace('source-hosted', 'source')
+        
 
     return l
 

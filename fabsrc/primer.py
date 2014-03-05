@@ -45,7 +45,10 @@ def verbose_remove(path):
         os.remove(path)
 
 @task
-def migrate(conf=None):
+def migrate():
+    primer_migrate_pages()
+
+def primer_migrate_pages(conf=None):
     "Migrates all manual files to primer according to the spec. As needed."
 
     conf = lazy_conf(conf)

@@ -1,6 +1,8 @@
 import itertools
 import os.path
 
+from copy import deepcopy
+
 try:
     from utils.git import get_branch, get_commit
     from utils.structures import BuildConfiguration, AttributeDict
@@ -105,14 +107,6 @@ def discover_config_file():
 
     cur_branch = get_branch()
     for project_root_dir in root_dirs:
-        cached_file = os.path.join(project_root_dir, 'build', cur_branch, 'conf-cache.json')
-
-        if os.path.exists(cached_file):
-            cached_conf = BuildConfiguration(cached_file)
-
-            if cached_conf.git.commit == get_commit():
-                return None, None, cached_conf, True
-
         for path, filename in itertools.product(conf_dirs, conf_file_names):
             conf_file = os.path.join(path, filename)
             abs_conf_file = os.path.join(project_root_dir, conf_file)
@@ -122,7 +116,7 @@ def discover_config_file():
             else:
                 conf = BuildConfiguration(abs_conf_file)
 
-                return project_root_dir, conf_file, conf, False
+                return project_root_dir, conf_file, conf
 
     raise ConfigurationError('no conf file found')
 
@@ -160,16 +154,15 @@ def mangle_paths(conf):
         conf.system.processed.project_paths = True
         return conf
 
-
 def mangle_configuration(conf):
     if is_processed('project', conf) is True:
         return conf
     else:
         if 'branched' not in conf.system:
-            if conf.project.name in ['manual', 'mms', 'meta-driver']:
+            conf.system.branched = False
+            
+            if conf.project.name in ['manual', 'meta-driver']:
                 conf.system.branched = True
-            else:
-                conf.system.branched = False
 
         if conf.project.name == 'primer':
             conf.git.branches = AttributeDict()
@@ -184,7 +177,10 @@ def mangle_configuration(conf):
         conf.system.processed.project_conf = True
         return conf
 
+
 def edition_setup(edition, conf):
+    conf = deepcopy(conf)
+
     if is_processed('edition', conf) is True:
         return conf
     else:
@@ -198,9 +194,11 @@ def edition_setup(edition, conf):
                                                               conf.paths.source), edition])
             if edition == 'saas':
                 conf.project.basepath = 'help'
+                conf.system.branched = False
             elif edition == 'hosted':
                 conf.project.tag = 'help-hosted'
                 conf.project.basepath = get_manual_path(conf)
+                conf.system.branched = True
 
         conf.system.processed.edition = True
         return conf

@@ -6,18 +6,13 @@ from fabfile.utils.shell import command
 
 from fabfile.make import runner
 
-from utils.sphinx.prepare import build_prerequisites
-from utils.sphinx.output import output_sphinx_stream
-from utils.sphinx.config import compute_sphinx_config, get_sphinx_args
+from fabfile.primer import primer_migrate_pages
 
-def build_worker_wrapper(builder, sconf, conf, finalize_fun):
-    sconf = compute_sphinx_config(builder, sconf, conf)
-
-    return build_worker(builder, sconf, conf, finalize_fun)
+from fabfile.utils.sphinx.prepare import build_job_prerequsites, build_process_prerequsites
+from fabfile.utils.sphinx.output import output_sphinx_stream
+from fabfile.utils.sphinx.config import compute_sphinx_config, get_sphinx_args, get_sconf
 
 def sphinx_build(targets, conf, sconf, finalize_fun):
-    build_prerequisites(conf)
-
     if len(targets) == 0:
         targets.append('html')
 
@@ -25,13 +20,20 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
 
     for target in targets:
         if target in sconf:
+            lsconf = compute_sphinx_config(target, sconf, conf)
+            lconf = edition_setup(lsconf.edition, conf)
+
             target_jobs.append({
-                'job': build_worker_wrapper,
-                'args': [ target, sconf, conf, finalize_fun]
+                'job': build_worker,
+                'args': [ target, lsconf, lconf, finalize_fun]
             })
         else:
             print('[sphinx] [warning]: not building {0} without configuration.'.format(target))
 
+    # a batch of prereq jobs go here.
+    primer_migrate_pages(conf)
+    build_process_prerequsites(conf)
+    
     if len(target_jobs) <= 1:
         res = runner(target_jobs, pool=1)
     else:
@@ -42,12 +44,13 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
     print('[sphinx]: build {0} sphinx targets'.format(len(res)))
 
 def build_worker(builder, sconf, conf, finalize_fun):
-    conf = edition_setup(sconf.edition, conf)
-
     dirpath = os.path.join(conf.paths.branch_output, builder)
     if not os.path.exists(dirpath):
         os.makedirs(dirpath)
         print('[{0}]: created {1}/{2}'.format(builder, conf.paths.branch_output, builder))
+
+    # a batch of prereq jobs go here. 
+    build_job_prerequsites(conf, sconf)
 
     print('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
 
@@ -55,7 +58,7 @@ def build_worker(builder, sconf, conf, finalize_fun):
     sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output),
                             builder,
-                            os.path.join(conf.paths.projectroot, conf.paths.branch_source),
+                            '-'.join([os.path.join(conf.paths.projectroot, conf.paths.branch_source), sconf.builder]),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder))
 
     out = command(sphinx_cmd, capture=True)

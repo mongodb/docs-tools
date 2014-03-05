@@ -88,8 +88,11 @@ def make_all_sphinx(config):
             targets.append(builder)
 
     if 'sphinx_builders' in config:
+
         for target in config['sphinx_builders']:
-            m.target(target, [target + '-hosted', target + '-saas'])
+            m.target(target)
+            m.job('fab sphinx.target:{0}'.format(','.join([target + '-hosted', target + '-saas'])))
+
         m.newline()
 
     for builder in targets:
@@ -134,10 +137,10 @@ def sphinx_builder(target):
 
     # m.target(target, 'sphinx-prerequisites', block=b)
     # m.job(fab_prefix + ' sphinx.build:' + ','.join(fab_arg), block=b)
-    if target.endswith('saas') or target.endswith('hosted'):
-        m.target(target, 'generate-source', block=b)
-    else:
-        m.target(target, block=b)
+    # if target.endswith('saas') or target.endswith('hosted'):
+    #     m.target(target, 'generate-source', block=b)
+    # else:
+    m.target(target, block=b)
 
     if target == 'gettext' or 'gettext' in target:
         m.job('{0} tx.update'.format(fab_prefix), block=b)

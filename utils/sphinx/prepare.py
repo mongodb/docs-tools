@@ -1,7 +1,10 @@
 import os
 import itertools
 
+from threading import Lock
+
 from fabfile.intersphinx import intersphinx_jobs
+from fabfile.primer import primer_migrate_pages
 from fabfile.make import runner
 
 from utils.jobs.dependency import dump_file_hashes
@@ -24,6 +27,9 @@ from utils.contentlib.source import transfer_source
 from utils.contentlib.external import external_jobs
 
 from utils.sphinx.dependencies import refresh_dependencies
+from utils.sphinx.config import get_sconf
+
+mms_makefile_lock = Lock()
 
 def build_prereq_jobs(conf):
     jobs = []
@@ -40,6 +46,10 @@ def build_prereq_jobs(conf):
            {
                'job': write_include_index,
                'args': [conf]
+           },
+           {
+               'job': primer_migrate_pages,
+               'args': [conf]
            }
         ])
     else:
@@ -48,12 +58,11 @@ def build_prereq_jobs(conf):
     for job in jobs:
         yield job
 
-def build_prerequisites(conf):
+def build_process_prerequsites(conf):
     jobs = itertools.chain(build_prereq_jobs(conf),
                            manpage_jobs(conf),
                            table_jobs(conf),
                            api_jobs(conf),
-                           toc_jobs(conf),
                            option_jobs(conf),
                            steps_jobs(conf),
                            release_jobs(conf),
@@ -67,14 +76,29 @@ def build_prerequisites(conf):
         print('[WARNING]: sphinx prerequisites encountered errors. '
               'See output above. Continuing as a temporary measure.')
 
-    runner(external_jobs(conf), parallel='thread')
-
     buildinfo_hash(conf)
 
-    if conf.project.name != 'mms':
-        # we copy source manually for mms in makefile.mms, avoiding this
-        # operation to clarify the artifacts directory
-        transfer_source(conf)
+def build_job_prerequsites(conf, sconf):
+    jobs = toc_jobs(conf)
+
+    try: 
+        res = runner(jobs, parallel='process')
+        print('[sphinx-prep]: built {0} pieces of content'.format(len(res)))
+    except PoolResultsError:
+        print('[WARNING]: sphinx prerequisites encountered errors. '
+              'See output above. Continuing as a temporary measure.')
+
+    runner(external_jobs(conf), parallel='thread')
+
+    if conf.project.name == 'mms':
+        cmd = 'make -C {0} {1}-source-dir={0}{2}{3}-{4} EDITION={1} generate-source-{1}'
+        cmd = cmd.format(conf.paths.projectroot, sconf.edition, os.path.sep,
+                         conf.paths.branch_source, sconf.builder)
+        with mms_makefile_lock:
+            o = command(cmd, capture=True)
+        print(o.out)
+    else:
+        transfer_source(sconf, conf)
 
     print('[sphinx-prep]: resolving all intra-source dependencies now. (takes several seconds)')
     dep_count = refresh_dependencies(conf)
@@ -82,7 +106,11 @@ def build_prerequisites(conf):
 
     command(build_platform_notification('Sphinx', 'Build in progress pastb critical phase.'), ignore=True)
 
-    print('[sphinx-prep]: INFO - Build in progress past critical phase.')
+    print('[sphinx-prep]: INFO - Build in progress past critical phase for {0} build'.format(sconf.builder))
 
-    dump_file_hashes(conf.system.dependency_cache, conf)
+    dump_file_hashes(conf)
     print('[sphinx-prep]: build environment prepared for sphinx.')
+
+def build_prerequisites(conf):
+    build_process_prerequsites(conf)
+    build_job_prerequsites(conf, get_sconf(conf))

@@ -5,12 +5,11 @@ from fabric.api import task
 
 from fabfile.make import runner
 from fabfile.process import pdf_worker
-from fabfile.primer import migrate as primer_migrate_pages
 
 from fabfile.utils.contentlib.links import create_manual_symlink
 
 from fabfile.utils.sphinx.prepare import build_prerequisites
-from fabfile.utils.sphinx.workers import sphinx_build, build_worker_wrapper
+from fabfile.utils.sphinx.workers import sphinx_build
 from fabfile.utils.sphinx.archives import man_tarball, html_tarball
 from fabfile.utils.sphinx.config import get_sconf
 from fabfile.utils.sphinx.sites import finalize_single_html_jobs, finalize_dirhtml_build
@@ -25,15 +24,12 @@ from fabfile.utils.contentlib.manpage import manpage_url_jobs
 
 intersphinx = task(intersphinx)
 
-@task
+@task(aliases=['build'])
 def target(*targets):
-    "Builds a sphinx target with prerequisites and post-processing."
+    "Builds one or more sphinx targets with prerequisites and post-processing."
 
     conf = lazy_conf()
-
     sconf = get_sconf(conf)
-
-    primer_migrate_pages(conf)
 
     sphinx_build(targets, conf, sconf, finalize_build)
 
@@ -48,20 +44,6 @@ def prereq():
     conf = lazy_conf()
 
     build_prerequisites(conf)
-
-@task
-def build(builder='html'):
-    "Build a single sphinx target. Does not build prerequisites."
-
-    conf = lazy_conf()
-
-    sconf = BuildConfiguration(filename='sphinx.yaml',
-                               directory=os.path.join(conf.paths.projectroot,
-                                                      conf.paths.builddata))
-
-    primer_migrate_pages(conf)
-
-    build_worker_wrapper(builder, sconf, conf, finalize_build)
 
 ############################## Build Finalizing ##############################
 
@@ -128,3 +110,4 @@ def finalize_build(builder, sconf, conf):
     print('[sphinx] [post] [{0}]: running post-processing steps.'.format(builder))
     res = runner(itertools.chain(jobs[builder], jobs['all']), pool=1)
     print('[sphinx] [post] [{0}]: completed {1} post-processing steps'.format(builder, len(res)))
+
