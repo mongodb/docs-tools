@@ -206,11 +206,11 @@ class OptionRendered(object):
         self.rst.newline()
 
         if self.option.default is not None:
-            self.content('*Default*: {0}'.format(self.option.default))
+            self.rst.content('*Default*: {0}'.format(self.option.default), indent=3)
             self.rst.newline()
 
         if self.option.type is not None:
-            self.content('*Type*: {0}'.format(self.option.type))
+            self.rst.content('*Type*: {0}'.format(self.option.type), indent=3)
             self.rst.newline()
 
         if self.option.pre is not None:
