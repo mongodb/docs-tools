@@ -177,7 +177,6 @@ def mangle_configuration(conf):
         conf.system.processed.project_conf = True
         return conf
 
-
 def edition_setup(edition, conf):
     conf = deepcopy(conf)
 

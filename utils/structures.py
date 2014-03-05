@@ -44,6 +44,16 @@ class AttributeDict(dict):
     __setattr__ = __setitem__
     __getattr__ = __getitem__
 
+class StateAttributeDict(AttributeDict):
+    def satisfied(self, key):
+        if key not in self:
+            return False
+
+        if self[key] is False:
+            return False
+
+        return True
+
 class BuildConfiguration(AttributeDict):
     def __init__(self, filename, directory=None):
         if directory is not  None:

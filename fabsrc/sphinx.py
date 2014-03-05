@@ -101,7 +101,7 @@ def finalize_build(builder, sconf, conf):
         jobs[builder] = []
 
     if conf.system.branched is True and conf.git.branches.current == 'master':
-        jobs['all'].append(
+        jobs['dirhtml'].append(
             { 'job': create_manual_symlink,
               'args': [conf]
             }

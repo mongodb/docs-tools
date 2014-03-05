@@ -4,7 +4,7 @@ from utils.shell import command
 from utils.errors import InvalidFile
 
 def transfer_source(sconf, conf):
-    target = '-'.join([os.path.join(conf.paths.projectroot, conf.paths.branch_source), sconf.builder])
+    target = os.path.join(conf.paths.projectroot, conf.paths.branch_source)
 
     if not os.path.exists(target):
         os.makedirs(target)

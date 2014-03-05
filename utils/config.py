@@ -179,9 +179,6 @@ def get_sphinx_builders(conf=None):
                 del sconf[i]
         return sconf.keys()
 
-def get_build_sourcedir(builder, conf):
-    return '-'.join([os.path.join(conf.paths.projectroot, conf.paths.branch_source), builder])
-
 #### Configuration Object Schema Migration Code ####
 
 def schema_migration_0(conf):

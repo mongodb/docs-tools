@@ -4,7 +4,6 @@ from copy import copy
 from utils.files import expand_tree
 from utils.rstcloth.toc import CustomTocTree, AggregatedTocTree
 from utils.rstcloth.table import TableBuilder, RstTable
-from utils.config import get_build_sourcedir
 
 #################### Table of Contents Generator ####################
 
@@ -24,7 +23,7 @@ def _get_toc_output_name(name, type, paths):
     else:
         return os.path.join(paths.branch_source, 'includes', 'toc', '{0}-{1}.rst'.format(type, name))
 
-def _generate_toc_tree(fn, fmt, base_name, builder, paths, conf):
+def _generate_toc_tree(fn, fmt, base_name, paths, conf):
     print('[toc]: generating {0} toc'.format(fn))
 
     if fmt == 'spec':
@@ -72,9 +71,8 @@ def _generate_toc_tree(fn, fmt, base_name, builder, paths, conf):
 
     print('[toc]: compiled toc output for {0}'.format(fn))
 
-def toc_jobs(builder, conf):
+def toc_jobs(conf):
     paths = copy(conf.paths)
-    paths.branch_source = get_build_sourcedir(builder, conf)
 
     for fn in expand_tree(paths.includes, 'yaml'):
         if fn.startswith(os.path.join(paths.includes, 'table')):
@@ -92,7 +90,7 @@ def toc_jobs(builder, conf):
                   'dependency': os.path.join(paths.projectroot, fn),
                   'job': _generate_toc_tree,
                   'target': [],
-                  'args': [fn, fmt, base_name, builder, paths, conf]
+                  'args': [fn, fmt, base_name, paths, conf]
                 }
 
             if fmt != 'spec':
