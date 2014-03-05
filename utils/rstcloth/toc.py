@@ -66,10 +66,10 @@ class CustomTocTree(object):
     def finalize(self):
         if not self.final:
             for ref in self.spec:
-                if 'edition' not in ref:
-                    pass
-                elif 'edition' in self.conf.project and ref['edition'] != self.conf.project.edition:
-                    continue 
+                if 'edition' in ref:
+                    if 'edition' in self.conf.project:
+                        if ref['edition'] != self.conf.project.edition:
+                            continue
 
                 if self.table is not None:
                     if 'text' in ref:

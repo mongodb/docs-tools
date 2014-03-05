@@ -102,5 +102,5 @@ def toc_jobs(conf):
                 o['target'].append(_get_toc_output_name(base_name, 'dfn-list', paths))
             elif fmt == 'ref' or is_ref_spec:
                 o['target'].append(_get_toc_output_name(base_name, 'table', paths))
-
+           
             yield o

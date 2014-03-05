@@ -52,7 +52,7 @@ def build_worker(builder, sconf, conf, sync, finalize_fun):
         os.makedirs(dirpath)
         print('[{0}]: created {1}'.format(builder, dirpath))
 
-    # a batch of prereq jobs go here. 
+    # a batch of prereq jobs go here. (if they need the modified conf.)
     build_job_prerequsites(sync, sconf, conf)
 
     print('[{0}]: starting {0} build {1}'.format(builder, timestamp()))

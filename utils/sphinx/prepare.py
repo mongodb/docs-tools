@@ -68,7 +68,6 @@ def build_process_prerequsites(conf):
                            option_jobs(conf),
                            steps_jobs(conf),
                            release_jobs(conf),
-                           toc_jobs(conf),
                            intersphinx_jobs(conf),
                            image_jobs(conf))
 
@@ -89,8 +88,10 @@ def build_job_prerequsites(sync, sconf, conf):
             if sync.satisfied('transfered_source') is False:
                 transfer_source(sconf, conf)
                 sync.transfered_source = True
+            cond_toc = "build_toc"
         else:
             cond_name = 'transfered_' + sconf.edition
+            cond_toc = 'build_toc_' + sconf.edition
             if sync.satisfied(cond_name) is False:
                 cmd = 'make -C {0} {1}-source-dir={0}{2}{3} EDITION={1} generate-source-{1}'
                 cmd = cmd.format(conf.paths.projectroot, sconf.edition, os.path.sep,
@@ -100,6 +101,12 @@ def build_job_prerequsites(sync, sconf, conf):
                     print(o.out)
 
                 sync[cond_name] = True
+
+        if sync.satisfied(cond_toc) is False:
+            # this has to go here so that MMS can generate different toc trees for
+            # each edition.
+            runner(toc_jobs(conf), parallel='process')
+            sync[cond_toc] = True
 
     with update_deps_lock:
         if sync.satisfied('updated_deps') is False:
