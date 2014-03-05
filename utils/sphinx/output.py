@@ -60,7 +60,6 @@ def path_normalization(l, full_path, conf):
         elif l.startswith('source-hosted'):
             l = l.replace('source-hosted', 'source')
         
-
     return l
 
 def is_msg_worthy(l):

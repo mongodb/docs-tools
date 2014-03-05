@@ -96,7 +96,8 @@ def build_job_prerequsites(conf, sconf):
                          conf.paths.branch_source, sconf.builder)
         with mms_makefile_lock:
             o = command(cmd, capture=True)
-        print(o.out)
+        if len(o.out.strip()) > 0:
+            print(o.out)
     else:
         transfer_source(sconf, conf)
 
