@@ -7,6 +7,7 @@
 {%- set url_root = pathto('', 1) %}
 {%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.tipsy.js", "_static/navbar.js"] %}
 {%  set css_files = css_files + ["_static/bootstrap-custom.css", "_static/lib/icomoon.css", "_static/lib/font-awesome.css", "_static/lib/tipsy.css"] %}
+{%- set github_organization = "mongodb" %}
 
 {%- macro translationslink() -%}
   {%- block translationslink %}
@@ -15,7 +16,7 @@
 {%- endmacro -%}
 
 {%- macro editlink(type) -%}
-  <a class="edit-link" href="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub">
+  <a class="edit-link" href="https://github.com/{{ github_organization }}/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub">
     {% if type == 'icon' %}
       <span class="icon-edit"></span>
     {% else %}
@@ -286,7 +287,9 @@
             <div class="documentwrapper">
               {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
               <div class="body">
-                {{ editlink('icon') }}
+                {%- block editlink_icon %}
+                   {{ editlink('icon') }}
+                {% endblock %}
                 {{ relbar() }}
                 {% block body %}
                   {{ body }}
