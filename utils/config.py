@@ -3,6 +3,7 @@ import yaml
 import json
 
 try:
+    import utils.bootstrap as bootstrap
     from utils.structures import AttributeDict
     from utils.git import get_branch, get_commit, get_file_from_branch
     from utils.project import (discover_config_file, get_manual_path, is_processed, mangle_paths,
@@ -10,6 +11,7 @@ try:
     from utils.shell import CommandError, command
     from utils.serialization import ingest_yaml
 except ImportError:
+    import bootstrap
     from serialization import ingest_yaml
     from structures import AttributeDict
     from git import get_branch, get_commit, get_file_from_branch
@@ -53,6 +55,25 @@ def crawl_up_tree(path, base_len=-1):
 
     return path
 
+def safe_bootstrap(conf):
+    conf_artifact_project = os.path.realpath(os.path.join(conf.paths.buildsystem,
+                                                   'config')).split(os.path.sep)[-2]
+
+    if conf.paths.projectroot.endswith(conf_artifact_project):
+        return conf
+    else:
+        conf_path = os.path.join(conf.paths.projectroot, conf.system.conf_file)
+        build_tools_path = conf.paths.buildsystem
+
+        bootstrap.fabric(build_tools_path, conf_path)
+        bootstrap.config(build_tools_path, conf_path)
+        bootstrap.utils(build_tools_path, conf_path)
+
+        conf = get_conf()
+        conf.system.processed.bootstrap = True
+        print('[bootstrap]: automatically ran safe tools bootstrapping procedures.')
+        return conf
+
 def get_conf():
     project_root_dir, conf_file, conf = discover_config_file()
 
@@ -69,11 +90,13 @@ def get_conf():
 
     conf.system.processed = AttributeDict()
     conf.system.processed.paths = False
+    conf.system.processed.bootstrap = False
     conf.system.processed.edition = False
     conf.system.processed.project_paths = False
     conf.system.processed.project_conf = False
     conf.system.processed.versions = False
 
+    conf = safe_bootstrap(conf)
     conf = mangle_configuration(conf)
     conf = render_versions(conf)
 

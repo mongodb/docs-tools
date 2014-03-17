@@ -5,10 +5,10 @@ from shutil import rmtree
 
 try:
     from utils.files import symlink
-    from utils.config import lazy_conf
+    from utils.git import GitRepo
 except:
     from files import symlink
-    from config import lazy_conf
+    from git import GitRepo
 
 def primer():
     os.remove(os.path.join(os.getcwd(), 'fabfile'))
@@ -46,11 +46,7 @@ def primer():
 
     print('[bootstrap]: initialized "primer" project.')
 
-def makefile_meta():
-    # because this is typically called by bootstrap.py, projectroot is the
-    # doctools directory.
-    conf = lazy_conf(None)
-
+def makefile_meta(conf):
     # re/generate the makefile.meta
 
     script_path = os.path.join(conf.paths.projectroot,
@@ -69,6 +65,28 @@ def makefile_meta():
                                                       os.path.join('build', 'makefile.meta')))
     finally:
         return
+
+def pin_tools(conf):
+    if 'tools' in conf.system:
+        if conf.system.tools.pinned is True:
+            print('[bootstrap]: tool pinning engaged.')
+            if 'ref' not in conf.system.tools or conf.system.tools.ref == 'HEAD':
+                print('[bootstrap]: Cannot pin tools to HEAD, '
+                      'which is the default for non-pinned projects.')
+            else:
+                repo = GitRepo(path=conf.paths.buildsystem)
+
+                if repo.sha() == conf.system.tools.ref:
+                    print('[bootstrap]: tools already pinned to {0}. '
+                          'Continuing without action.'.format(conf.system.tools.ref))
+                else:
+                    repo.checkout(conf.system.tools.ref)
+                    print("[bootstrap]: pinned tools repo to: {0}".format(conf.system.tools.ref))
+        else:
+            print('[bootstrap]: tool pinning is not enabled.')
+
+    else:
+        print('[bootstrap]: tool pinning is not supported by this project.')
 
 def fabric(buildsystem, conf_file):
     fab_dir = 'fabfile'

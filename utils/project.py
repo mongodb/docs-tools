@@ -118,7 +118,7 @@ def discover_config_file():
 
                 return project_root_dir, conf_file, conf
 
-    raise ConfigurationError('no conf file found')
+    raise ConfigurationError('no conf file found in {0}'.format(os.getcwd()))
 
 ##### Configuration Object Transformations #####
 
@@ -160,7 +160,7 @@ def mangle_configuration(conf):
     else:
         if 'branched' not in conf.system:
             conf.system.branched = False
-            
+
             if conf.project.name in ['manual', 'meta-driver']:
                 conf.system.branched = True
 

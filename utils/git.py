@@ -19,3 +19,41 @@ def get_file_from_branch(path, branch='master'):
     cmd = 'git show {branch}:{path}'.format(branch=branch, path=path)
 
     return command(command=cmd, capture=True, ignore=False).out
+
+class GitRepo(object):
+    def __init__(self, path=None):
+        if path is None:
+            self.path = os.getcwd()
+        else:
+            self.path = path
+
+    def cmd(self, *args):
+        args = ' '.join(args)
+
+        return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True)
+
+    def checkout(self, ref):
+        return self.cmd('checkout', ref)
+
+    def hard_reset(self, ref='HEAD'):
+        return self.cmd('reset', '--hard', ref)
+
+    def reset(self, ref='HEAD'):
+        return self.cmd('reset', ref)
+
+    def fetch(self, remote='origin'):
+        return self.cmd('fetch', remote)
+
+    def pull(self, remote='origin', branch='master'):
+        return self.cmd('pull', ref, branch)
+
+    def sha(self, ref='HEAD'):
+        return self.cmd('rev-parse', '--verify', ref).out
+
+    def clone(self, remote, path=None):
+        args = ['clone', remote]
+
+        if path is not None:
+            args.append(path)
+
+        return self.cmd(*args)

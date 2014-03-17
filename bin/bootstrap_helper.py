@@ -57,8 +57,12 @@ def bootstrap(**kwargs):
               'Please update as soon as possible.')
 
     import utils.bootstrap
+    from utils.config import lazy_conf
 
-    utils.bootstrap.makefile_meta()
+    conf = lazy_conf(None)
+
+    utils.bootstrap.pin_tools(conf)
+    utils.bootstrap.makefile_meta(conf)
 
     if 'primer' in os.path.split(os.getcwd()):
         utils.bootstrap.primer()
