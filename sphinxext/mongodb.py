@@ -108,7 +108,7 @@ class MongoDBObject(ObjectDescription):
             fullname = name_obj[0]
 
         signode['names'].append(fullname)
-        signode['ids'].append(fullname.replace('$', '_S_'))
+        signode['ids'].append(fullname.replace('$', '_S_').replace(' ', '-'))
         signode['first'] = not self.names
         self.state.document.note_explicit_target(signode)
 
@@ -294,8 +294,9 @@ class MongoDBDomain(Domain):
                 # point to report on links that fail to resolve
                 return None
 
-        return make_refnode(builder, fromdocname, obj[0],
-                            name.replace('$', '_S_'), contnode, target)
+        name = name.replace('$', '_S_').replace(' ', '-')
+
+        return make_refnode(builder, fromdocname, obj[0], name, contnode, target)
 
     def get_objects(self):
         for refname, (docname, type) in self.data['objects'].items():
