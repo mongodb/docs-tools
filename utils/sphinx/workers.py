@@ -64,6 +64,7 @@ def build_worker(builder, sconf, conf, sync, finalize_fun):
                             os.path.join(conf.paths.projectroot, conf.paths.branch_source),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder))
 
+    print('[sphinx-build]: running sphinx command: ' + sphinx_cmd)
     out = command(sphinx_cmd, capture=True, ignore=True)
     # out = sphinx_native_worker(sphinx_cmd)
     print('[build]: completed {0} build at {1}'.format(builder, timestamp()))

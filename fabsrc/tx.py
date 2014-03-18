@@ -17,13 +17,15 @@ def update():
 
     conf = lazy_conf(None)
     sconf = get_sconf(conf)
-
     sconf.builder = sphinx_builder
+    sync = StateAttributeDict()
 
     if 'edition' in sconf:
         conf = edition_setup(sconf.edition, conf)
 
-    sync = StateAttributeDict()
+    # includes_file = os.path.join(conf.paths.branch_source, 'meta', 'includes.txt')
+    # if os.path.exists(includes_file):
+    #     os.remove(includes_file)
 
     sphinx_build(builder=sphinx_builder, conf=conf, sconf=sconf, sync=sync, finalize_fun=None)
 
