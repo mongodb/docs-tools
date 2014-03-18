@@ -36,7 +36,7 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
     # a batch of prereq jobs go here.
     primer_migrate_pages(conf)
     build_process_prerequsites(conf)
-    
+
     if len(target_jobs) <= 1:
         res = runner(target_jobs, pool=1)
     else:
@@ -61,7 +61,7 @@ def build_worker(builder, sconf, conf, sync, finalize_fun):
     sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output),
                             builder,
-                            os.path.join(conf.paths.projectroot, conf.paths.branch_source), 
+                            os.path.join(conf.paths.projectroot, conf.paths.branch_source),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder))
 
     out = command(sphinx_cmd, capture=True, ignore=True)

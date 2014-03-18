@@ -2,6 +2,7 @@ import os.path
 
 from fabfile.utils.sphinx.config import get_sconf
 from fabfile.utils.sphinx.workers import build_worker as sphinx_build
+from fabfile.utils.structures import StateAttributeDict
 
 from fabfile.utils.config import lazy_conf
 from fabfile.utils.shell import command
@@ -16,9 +17,15 @@ def update():
 
     conf = lazy_conf(None)
     sconf = get_sconf(conf)
-    conf = edition_setup(sconf.edition, conf)
 
-    sphinx_build(builder=sphinx_builder, conf=conf, sconf=sconf, finalize_fun=None)
+    sconf.builder = sphinx_builder
+
+    if 'edition' in sconf:
+        conf = edition_setup(sconf.edition, conf)
+
+    sync = StateAttributeDict()
+
+    sphinx_build(builder=sphinx_builder, conf=conf, sconf=sconf, sync=sync, finalize_fun=None)
 
     print('[tx] [sphinx]: rebuild gettext targets')
 
