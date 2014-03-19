@@ -115,7 +115,7 @@ def build_job_prerequsites(sync, sconf, conf):
             print('[sphinx-prep]: bumped timestamps of {0} files'.format(dep_count))
             sync.updated_deps = True
 
-            command(build_platform_notification('Sphinx', 'Build in progress pastb critical phase.'), ignore=True)
+            command(build_platform_notification('Sphinx', 'Build in progress past critical phase.'), ignore=True)
             print('[sphinx-prep]: INFO - Build in progress past critical phase ({0})'.format(conf.paths.branch_source))
             dump_file_hashes(conf)
 
