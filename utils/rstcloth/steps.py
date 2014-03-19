@@ -133,6 +133,12 @@ class Steps(object):
                     self.agg_sources[source_file] = steps
                     self.agg_sources.update(steps.agg_sources)
 
+                if current_step is None:
+                    msg = 'Missing ref for {0}:"{1}" in step file "{2}"'.format(source_file, source_ref, os.path.basename(self.source_fn))
+
+                    print("[steps]: " + msg)
+                    raise InvalidStep(msg)
+
                 current_step.update(step)
 
                 self.source_list[idx] = current_step
