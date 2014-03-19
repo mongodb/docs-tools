@@ -12,12 +12,7 @@ def get_sconf(conf):
                                                      conf.paths.builddata))
 
 def is_parallel_sphinx(version):
-    if version in [ '1.2b1-xgen', '1.2b2', '1.2b3', '1.2', '1.2.1']:
-        return True
-    elif [ int(n) for n in version.split('.') ][1] >= 2:
-        return True
-
-    return False
+    return version >= '1.2'
 
 def get_sphinx_args(sconf, conf):
     o = []
