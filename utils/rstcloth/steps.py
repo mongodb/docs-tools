@@ -194,7 +194,6 @@ class StepsOutput(object):
             step = self.annotate_optional(step)
             self.heading(step)
             self.pre(step)
-            self.content(step)
 
             self.current_step = step['stepnum']
 
@@ -204,6 +203,8 @@ class StepsOutput(object):
                         self.code_step(block)
                 else:
                     self.code_step(step['action'])
+
+            self.content(step)
 
             self.post(step)
 
@@ -272,7 +273,7 @@ class StepsOutput(object):
             self.rst.newline()
 
         if 'content' in block:
-            self.content(block['content'], indent=self.indent)
+            self.content(block['content'])
 
         self.post(block, code_step=True)
 
