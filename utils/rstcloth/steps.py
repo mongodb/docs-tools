@@ -209,17 +209,17 @@ class StepsOutput(object):
 
     def content(self, doc):
         if 'content' in doc and doc['content'] is not None:
-            self.rst.content(doc['content'], indent=self.indent)
+            self.rst.content(doc['content'], wrap=False, indent=self.indent)
             self.rst.newline()
 
     def pre(self, doc):
         if 'pre' in doc and doc['pre'] is not None:
-            self.rst.content(doc['pre'], indent=self.indent)
+            self.rst.content(doc['pre'], wrap=False, indent=self.indent)
             self.rst.newline()
 
     def post(self, doc, code_step=False):
         if 'post' in doc and doc['post'] is not None:
-            self.rst.content(doc['post'], indent=self.indent)
+            self.rst.content(doc['post'], wrap=False, indent=self.indent)
             self.rst.newline()
 
         if code_step is False:
@@ -346,10 +346,6 @@ class WebStepsOutput(StepsOutput):
         self._heading(block={ 'heading': doc['title'] },
                       override_char='~',
                       indent=3)
-
-        # self.rst.directive(name="class",
-        #                    arg="step-" + str(doc['stepnum']),
-        #                    indent=3)
 
         self.indent = 3
         self.rst.newline()
