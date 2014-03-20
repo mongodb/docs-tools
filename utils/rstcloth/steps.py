@@ -194,6 +194,8 @@ class StepsOutput(object):
             step = self.annotate_optional(step)
             self.heading(step)
             self.pre(step)
+            self.content(step)
+
             self.current_step = step['stepnum']
 
             if 'action' in step:
@@ -204,6 +206,11 @@ class StepsOutput(object):
                     self.code_step(step['action'])
 
             self.post(step)
+
+    def content(self, doc):
+        if 'content' in doc and doc['content'] is not None:
+            self.rst.content(doc['content'], indent=self.indent)
+            self.rst.newline()
 
     def pre(self, doc):
         if 'pre' in doc and doc['pre'] is not None:
@@ -334,11 +341,6 @@ class WebStepsOutput(StepsOutput):
                            content=h_content.format(doc['stepnum']),
                            indent=3)
 
-        self.rst.newline()
-
-        self.rst.ref_target('step-{0}-{1}-{2}'.format(doc['stepnum'],
-                                                      self.key_name(), doc['ref']),
-                                                      indent=3)
         self.rst.newline()
 
         self._heading(block={ 'heading': doc['title'] },
