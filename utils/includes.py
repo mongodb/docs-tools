@@ -38,12 +38,13 @@ def include_files(files=None, conf=None):
 
         files = dict()
 
-        for i in groupby(s, itemgetter(1) ):
+        for i in groupby(s, itemgetter(1)):
             files[i[0]] = set()
             for src in i[1]:
-                if not src[0].endswith('~'):
+                if not src[0].endswith('~') and not src[0].endswith('overview.rst'):
                     files[i[0]].add(src[0])
             files[i[0]] = list(files[i[0]])
+            files[i[0]].sort()
 
         files.update(generated_includes(conf))
 
