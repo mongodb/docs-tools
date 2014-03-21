@@ -146,7 +146,12 @@ def render_versions(conf=None):
                 return conf
 
             if 'config-upstream' not in remotes:
-                command('git remote add config-upstream git://github.com/{0}.git'.format(conf.git.remote.upstream))
+                if conf.git.remote.upstream.startswith('10gen'):
+                    git_url = 'git@github.com:'
+                else:
+                    git_url = 'git://github.com/'
+
+                command('git remote add config-upstream {0}{1}.git'.format(git_url, conf.git.remote.upstream))
 
             command('git fetch config-upstream')
 
