@@ -20,7 +20,7 @@ def refresh_dependency_jobs(conf):
         dep_map = None
     else:
         with open(conf.system.dependency_cache, 'r') as f:
-            try: 
+            try:
                 dep_cache = json.load(f)
                 dep_map = dep_cache['files']
             except ValueError:
@@ -50,5 +50,4 @@ def refresh_dependencies(conf=None):
     conf = lazy_conf(conf)
 
     results = runner(refresh_dependency_jobs(conf), pool=4, parallel='process', force=False)
-
     return sum(results)

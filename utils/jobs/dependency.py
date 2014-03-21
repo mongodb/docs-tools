@@ -74,7 +74,8 @@ def dump_file_hashes(conf=None):
     fmap = o['files']
 
     for fn in files:
-        fmap[fn] = md5_file(fn)
+        if os.path.exists(fn):
+            fmap[fn] = md5_file(fn)
 
     output_dir = os.path.dirname(output)
 
