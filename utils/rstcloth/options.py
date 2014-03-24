@@ -137,9 +137,9 @@ class Option(object):
             if 'program' not in self.replacement:
                 self.replacement['program'] = ':program:`{0}`'.format(self.program)
             if 'role' not in self.replacement:
-                if self.directive == 'describe': 
+                if self.directive == 'describe':
                     self.replacement['role'] = "``{0}``".format(self.name)
-                elif self.directive == 'option': 
+                elif self.directive == 'option':
                     self.replacement['role'] = ":{0}:`--{1}`".format(self.directive, self.name)
                 else:
                     self.replacement['role'] = ":{0}:`{1}`".format(self.directive, self.name)
@@ -152,6 +152,21 @@ class Option(object):
             if "{{" not in self.description:
                 break
 
+        if self.pre is not None:
+            for i in range(10):
+                template = Template(self.pre)
+                self.pre = template.render(**self.replacement)
+
+                if "{{" not in self.pre:
+                    break
+
+        if self.post is not None:
+            for i in range(10):
+                template = Template(self.post)
+                self.post = template.render(**self.replacement)
+
+                if "{{" not in self.post:
+                    break
 
 class OptionRendered(object):
     def __init__(self, option):
