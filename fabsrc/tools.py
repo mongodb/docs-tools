@@ -19,13 +19,20 @@ def bootstrap(action='setup'):
 
     cmd = ['python bootstrap.py']
 
-    if action in ['setup', 'clean']:
+    if action in ['setup', 'clean', 'safe']:
         cmd.append(action)
+
+
     else:
         abort('[docs-tools]: invalid bootstrap action')
 
     with lcd(get_conf().build.paths.projectroot):
         local(' '.join(cmd))
+
+
+
+
+
 
 @task
 def conf(edition=None, conf=None):

@@ -1,6 +1,11 @@
 import sys
 import os.path
+import logging
 
+logger = logging.getLogger() # define root logger
+logging.basicConfig(level=logging.INFO) # set basic default log level
+
+import log
 import stage
 import clean
 import git
