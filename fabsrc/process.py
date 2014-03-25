@@ -107,7 +107,7 @@ def pdf_jobs(target, conf):
                 deploy_fn = tagged_name + '.pdf'
                 link_name = deploy_fn
         else:
-            deploy_path = conf.paths.branch_staging
+            deploy_path = conf.paths.public_site_output
 
         i['source'] = os.path.join(latex_dir, i['output'])
         i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')

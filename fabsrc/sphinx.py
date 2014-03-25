@@ -12,7 +12,7 @@ from fabfile.utils.sphinx.prepare import build_prerequisites
 from fabfile.utils.sphinx.workers import sphinx_build
 from fabfile.utils.sphinx.archives import man_tarball, html_tarball
 from fabfile.utils.sphinx.config import get_sconf
-from fabfile.utils.sphinx.sites import finalize_single_html_jobs, finalize_dirhtml_build
+from fabfile.utils.sphinx.sites import finalize_epub_build, finalize_single_html_jobs, finalize_dirhtml_build
 
 from fabfile.intersphinx import intersphinx
 from fabfile.utils.config import lazy_conf, render_paths
@@ -76,6 +76,9 @@ def finalize_build(builder, sconf, conf):
               'args': [target, conf]
             }
         ],
+        'epub': [ { 'job': finalize_epub_build,
+                    'args': [conf] }
+        ],
         'json': json_output_jobs(conf),
         'singlehtml': finalize_single_html_jobs(target, conf),
         'latex': [
@@ -110,4 +113,3 @@ def finalize_build(builder, sconf, conf):
     print('[sphinx] [post] [{0}]: running post-processing steps.'.format(builder))
     res = runner(itertools.chain(jobs[builder], jobs['all']), pool=1)
     print('[sphinx] [post] [{0}]: completed {1} post-processing steps'.format(builder, len(res)))
-

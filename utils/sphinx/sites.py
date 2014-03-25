@@ -38,12 +38,12 @@ def manual_single_html(input_file, output_file):
 #################### Sphinx Post-Processing ####################
 
 def finalize_epub_build(conf):
-    epub_name = '-'.join(conf.project.title.lower().split())
-    epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
-    epub_src_filename = epub_name + '.epub'
-
-    if conf.project.name == 'mms' and mms_should_migrate(builder, conf) is False:
+    if conf.project.name in ['mms', 'about', 'meta-driver'] and mms_should_migrate(builder, conf) is False:
         return False
+    else:
+        epub_name = '-'.join(conf.project.title.lower().split())
+        epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
+        epub_src_filename = epub_name + '.epub'
 
     copy_if_needed(source_file=os.path.join(conf.paths.projectroot,
                                             conf.paths.branch_output,

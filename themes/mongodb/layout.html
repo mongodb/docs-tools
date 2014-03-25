@@ -223,7 +223,7 @@
         {% block version_selector %}
            <!-- version selector -->
            <li>
-             <label>Version</label>
+             <label>{{ _('Version') }}</label>
              <select class="version-selector pull-right">
                {% for v in theme_version_selector %}
                   <option data-path="{{ v.path }}" {% if v.current %}selected="selected"{% endif %}>
@@ -237,7 +237,7 @@
            {#
               <!-- language selector -->
               <li>
-                <label>Language</label>
+                <label>{{ _('Langauges') }}</label>
                 <select class="language-selector pull-right">
                   {%- for lc,lang in theme_translations -%}
                       <option data-path="http://{{lc}}.docs.mongodb.org/{{ page_url }}">
@@ -251,7 +251,7 @@
         {%- block format_selector %}
            <!-- format selector -->
            <li>
-             <label>{{ _('Format') }}</label>
+             <label>{{ _('Formats') }}</label>
              <ul class="formats-list">
                {%- if show_source and has_source and sourcename %}
                    <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow">{{ _("This Page's Source") }}</a></li>
@@ -268,7 +268,7 @@
         {% endblock %}
         <!-- contribute -->
         <li>
-          <label>Contribute</label>
+          <label>{{ _('Contribute' ) }}</label>
           <ul class="contribute-list">
             <li>{{ jiralink() }}</li>
             {%- block editlink %}
