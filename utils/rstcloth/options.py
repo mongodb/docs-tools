@@ -152,21 +152,19 @@ class Option(object):
             if "{{" not in self.description:
                 break
 
-        if self.pre is not None:
-            for i in range(10):
-                template = Template(self.pre)
-                self.pre = template.render(**self.replacement)
+        for i in range(10):
+            template = Template(self.pre)
+            self.pre = template.render(**self.replacement)
 
-                if "{{" not in self.pre:
-                    break
+            if "{{" not in self.pre:
+                break
 
-        if self.post is not None:
-            for i in range(10):
-                template = Template(self.post)
-                self.post = template.render(**self.replacement)
+        for i in range(10):
+            template = Template(self.post)
+            self.post = template.render(**self.replacement)
 
-                if "{{" not in self.post:
-                    break
+            if "{{" not in self.post:
+                break
 
 class OptionRendered(object):
     def __init__(self, option):
