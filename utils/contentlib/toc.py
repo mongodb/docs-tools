@@ -28,9 +28,9 @@ def _get_toc_output_name(name, type, paths):
         return os.path.join(paths.branch_source, 'includes', 'toc', '{0}-{1}.rst'.format(type, name))
 
 def _generate_toc_tree(fn, fmt, base_name, paths, conf):
-    logger.info('generating {0} toc'.format(fn))
-
     if fmt == 'spec':
+        logger.debug('generating spec toc {0}'.format(fn))
+
         toc = AggregatedTocTree(fn, conf)
         fmt = toc._first_source[0:3]
         toc.build_dfn()
@@ -47,8 +47,9 @@ def _generate_toc_tree(fn, fmt, base_name, paths, conf):
             outfn = _get_toc_output_name(base_name, 'dfn-list', paths)
             toc.dfn.write(outfn)
             logger.debug('wrote spec toc: '  + outfn)
-
     else:
+        logger.debug('generating toc {0}'.format(fn))
+
         toc = CustomTocTree(fn, conf)
         toc.build_contents()
 
@@ -73,8 +74,6 @@ def _generate_toc_tree(fn, fmt, base_name, paths, conf):
             toc.dfn.write(outfn)
             logger.debug('wrote toc file: '  + outfn)
 
-    logger.info('compiled toc output for {0}'.format(fn))
-
 def toc_jobs(conf):
     paths = copy(conf.paths)
 
@@ -94,7 +93,8 @@ def toc_jobs(conf):
                   'dependency': os.path.join(paths.projectroot, fn),
                   'job': _generate_toc_tree,
                   'target': [],
-                  'args': [fn, fmt, base_name, paths, conf]
+                  'args': [fn, fmt, base_name, paths, conf],
+                  'description': 'generating {0} toc from {0}'.format(fmt, fn)
                 }
 
             if fmt != 'spec':

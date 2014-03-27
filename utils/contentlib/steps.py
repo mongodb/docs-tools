@@ -20,4 +20,6 @@ def steps_jobs(conf):
             yield { 'dependency': fn,
                     'target': out_fn,
                     'job': render_step_file,
-                    'args': [fn, out_fn] }
+                    'args': [fn, out_fn],
+                    'description': 'generating step file {0} from {1}'.format(out_fn, fn)
+                  }

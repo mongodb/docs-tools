@@ -59,7 +59,8 @@ def release_jobs(conf=None):
                 'target': target,
                 'dependency': deps,
                 'job': _generate_release_core,
-                'args': [ rel, target, release_version ]
+                'args': [ rel, target, release_version ],
+                'description': 'generating release info page {0}'.format(target)
               }
 
         target = os.path.join(conf.paths.projectroot,
@@ -69,7 +70,8 @@ def release_jobs(conf=None):
                 'target': target,
                 'dependency': deps,
                 'job': _generate_untar_core,
-                'args': [ rel, target, release_version ]
+                'args': [ rel, target, release_version ],
+                'description': 'generating release info page {0}'.format(target)
               }
 
         target = os.path.join(conf.paths.projectroot,
@@ -79,7 +81,8 @@ def release_jobs(conf=None):
                 'target': target,
                 'dependency': deps,
                 'job': _generate_copy_core,
-                'args': [ rel, target, release_version ]
+                'args': [ rel, target, release_version ],
+                'description': 'generating release info page {0}'.format(target)
               }
 
     for rel in rel_data['subscription-build']:
@@ -89,5 +92,6 @@ def release_jobs(conf=None):
                 'target': target,
                 'dependency': deps,
                 'job': _generate_release_ent,
-                'args': [ rel, target, release_version ]
+                'args': [ rel, target, release_version ],
+                'description': 'generating release info page {0}'.format(target)
               }

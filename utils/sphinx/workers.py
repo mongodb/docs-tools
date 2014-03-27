@@ -31,7 +31,8 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
 
             target_jobs.append({
                 'job': build_worker,
-                'args': [ target, lsconf, lconf, sync, finalize_fun]
+                'args': [ target, lsconf, lconf, sync, finalize_fun],
+                'description': "sphinx build worker for {0}".format(target)
             })
         else:
             logger.warning('not building sphinx target {0} without configuration.'.format(target))
@@ -40,10 +41,7 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
     primer_migrate_pages(conf)
     build_process_prerequsites(conf)
 
-    if len(target_jobs) <= 1:
-        res = runner(target_jobs, pool=1)
-    else:
-        res = runner(target_jobs, parallel='threads')
+    res = runner(target_jobs, parallel='threads')
 
     output_sphinx_stream('\n'.join([r for r in res if r is not None]), conf)
 

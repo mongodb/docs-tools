@@ -88,4 +88,5 @@ def manpage_jobs(conf=None):
                 'dependency': input_fn,
                 'job': process_page,
                 'args': [ input_fn, output_fn, regex, 'manpage' ],
+                'description': "generating manpage {0} from {1}".format(output_fn, input_fn)
               }

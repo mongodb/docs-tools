@@ -24,5 +24,6 @@ def option_jobs(conf):
 
     for opt in options.iterator():
         yield { 'job': render_option_page,
-                'args': [ opt, output_path ]
+                'args': [ opt, output_path ],
+                'description': 'generating option {0}'.format(output_path)
               }

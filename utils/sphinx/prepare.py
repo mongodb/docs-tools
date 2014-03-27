@@ -10,6 +10,8 @@ from fabfile.intersphinx import intersphinx_jobs
 from fabfile.primer import primer_migrate_pages
 from fabfile.make import runner
 
+from utils.jobs.runners import runner as base_runner
+
 from utils.jobs.dependency import dump_file_hashes
 from utils.jobs.errors import PoolResultsError
 from utils.output import build_platform_notification
@@ -34,7 +36,6 @@ from utils.sphinx.dependencies import refresh_dependencies
 from utils.sphinx.config import get_sconf
 
 update_source_lock = Lock()
-update_deps_lock = Lock()
 
 def build_prereq_jobs(conf):
     jobs = []
@@ -105,13 +106,17 @@ def build_job_prerequsites(sync, sconf, conf):
 
                 sync[cond_name] = True
 
+
         if sync.satisfied(cond_toc) is False:
             # this has to go here so that MMS can generate different toc trees for
             # each edition.
-            runner(toc_jobs(conf), parallel='process')
+
+            # even if this fails we don't want it to run more than once
             sync[cond_toc] = True
 
-    with update_deps_lock:
+            r = base_runner(toc_jobs(conf), pool=8, parallel='process', force=False)
+            logger.info('generated {0} toc files'.format(len(r)))
+
         if sync.satisfied('updated_deps') is False:
             logger.debug('using update deps lock.')
 

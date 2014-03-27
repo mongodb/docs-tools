@@ -20,7 +20,7 @@ def robots_txt_builder(fn, conf, override=False):
     if not os.path.exists(input_fn):
         logger.warning('[robots]: {0} does not exist. not generating robots.txt'.format(input_fn))
         return False
-    
+
     suppressed = ingest_yaml_list(input_fn)
 
 
@@ -46,4 +46,4 @@ def robots_txt_builder(fn, conf, override=False):
                         f.write('Disallow: /{0}{1}'.format(branch,page))
                         f.write('\n')
 
-    logger.info('[robots]: regenerated robots.txt file.')
+    logger.info('regenerated robots.txt file.')

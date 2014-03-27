@@ -25,4 +25,4 @@ def buildinfo_hash(conf):
     with open(release_fn, 'w') as f:
         f.write(conf.git.commit)
 
-    logger.info('[build]: generated "{0}" with current release hash.'.format(release_fn))
+    logger.info('generated "{0}" with current release hash.'.format(release_fn))

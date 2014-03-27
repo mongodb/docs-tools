@@ -20,5 +20,6 @@ def gettext_jobs(conf=None):
     for fn in expand_tree(branch_output, None):
         yield {
             'job': copy_if_needed,
-            'args': [ fn, os.path.join(locale_dirs, fn[path_offset:]), None]
+            'args': [ fn, os.path.join(locale_dirs, fn[path_offset:]), None],
+            'description': "migrating po file {0} if needed".format(fn)
         }

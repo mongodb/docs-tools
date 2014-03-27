@@ -63,5 +63,6 @@ def table_jobs(conf=None):
                     'target': [ target, list_target ],
                     'dependency': source,
                     'job': _generate_tables,
-                    'args': [ source, target, list_target ]
+                    'args': [ source, target, list_target ],
+                    'description': 'generating tables: {0}, {1} from'.format(target, list_target, source)
                   }

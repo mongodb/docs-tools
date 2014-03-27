@@ -19,7 +19,8 @@ def api_jobs(conf=None):
                 'target': target,
                 'dependency': source,
                 'job': _generate_api_param,
-                'args': [source, target, conf]
+                'args': [source, target, conf],
+                'description': 'generating api param table for {0}'.format(target)
               }
 
 

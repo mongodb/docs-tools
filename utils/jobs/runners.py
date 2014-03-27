@@ -1,6 +1,9 @@
+import logging
+import os.path
 import multiprocessing.dummy
-
 from multiprocessing import cpu_count
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 try:
     from utils.jobs.dependency import check_dependency
@@ -59,14 +62,16 @@ def async_job_loop(jobs, force, p):
         if force is True or check_dependency(job['target'], job['dependency']):
             if 'callback' in job:
                 if isinstance(job['args'], dict):
-                    results.append(p.apply_async(job['job'], kwds=job['args'], callback=job['callback']))
+                    r = p.apply_async(job['job'], kwds=job['args'], callback=job['callback'])
                 else:
-                    results.append(p.apply_async(job['job'], args=job['args'], callback=job['callback']))
+                    r = p.apply_async(job['job'], args=job['args'], callback=job['callback'])
             else:
                 if isinstance(job['args'], dict):
-                    results.append(p.apply_async(job['job'], kwds=job['args']))
+                    r = p.apply_async(job['job'], kwds=job['args'])
                 else:
-                    results.append(p.apply_async(job['job'], args=job['args']))
+                    r = p.apply_async(job['job'], args=job['args'])
+
+            results.append( ( job, r ) )
 
     return results
 
@@ -76,21 +81,27 @@ def process_async_results(results, force):
         has_errors = False
 
         errors = []
-        for ret in results:
+        for job, ret in results:
             try:
                 retval.append(ret.get())
             except Exception as e:
                 has_errors = True
-                errors.append(e)
-                logger.error(e)
-
+                errors.append((job, e))
 
         if has_errors is True:
-            raise PoolResultsError(errors)
+            error_list = []
+            for job, e in errors:
+                error_list.append(e)
+                if 'description' in job:
+                    logger.error("'{0}' encountered error: {1}, exiting.".format(job['description'], e))
+                else:
+                    logger.error("encountered error in {0} with args ({1})".format(job['job'], job['args']))
+
+            raise PoolResultsError(error_list)
         else:
             results = retval
     else:
-        results = [ o.get() for o in results ]
+        results = [ o.get() for job, o in results ]
 
     return results
 
@@ -117,9 +128,10 @@ def sync_runner(jobs, force):
             else:
                 r = job['job'](*job['args'])
 
-            results.append(r)
             if 'callback' in job:
                 job['callback'](r)
+
+            results.append( (job, r ) )
 
     return results
 

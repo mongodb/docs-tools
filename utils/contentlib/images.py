@@ -56,7 +56,8 @@ def image_jobs(conf=None):
                 'target': rst_file,
                 'dependency': [ meta_file, os.path.join(paths.buildsystem, 'utils', 'rstcloth', 'images.py') ],
                 'job': generate_image_pages,
-                'args': image
+                'args': image,
+                'description': "generating rst include file {0} for {1}".format(rst_file, source_file)
               }
 
         for output in image['output']:
@@ -80,4 +81,5 @@ def image_jobs(conf=None):
                               target_img,
                               source_file
                             ],
+                    'description': 'generating image file {0} from {1}'.format(target_img, source_file)
                   }

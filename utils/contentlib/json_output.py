@@ -62,19 +62,21 @@ def json_output_jobs(conf=None):
             if not os.path.exists(fjson):
                 continue
 
-        yield dict(target=json,
-                   dependency=fjson,
-                   job=process_json_file,
-                   args=(fjson, json, regexes, conf))
+        yield { 'target': json,
+                'dependency': fjson,
+                'job': process_json_file,
+                'description': "processing json file".format(json),
+                'args': (fjson, json, regexes, conf) }
 
         outputs.append(json)
 
     list_file = os.path.join(conf.paths.branch_staging, 'json-file-list')
 
-    yield dict(target=list_file,
-               dependency=None,
-               job=generate_list_file,
-               args=(outputs, list_file, conf))
+    yield { 'target': list_file,
+            'dependency': None,
+            'description': 'generating json index list {0}'.format(list_file),
+            'job': generate_list_file,
+            'args': (outputs, list_file, conf) }
 
 def process_json_file(input_fn, output_fn, regexes, conf=None):
     with open(input_fn, 'r') as f:

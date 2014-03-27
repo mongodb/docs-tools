@@ -1,4 +1,8 @@
+import logging
+import os.path
 from multiprocessing import cpu_count
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from fabric.api import lcd, local, task, env
 
@@ -51,4 +55,10 @@ def runner(jobs, pool=None, parallel='process', force=False, retval=True):
     if env.PARALLEL is False or pool == 1:
         parallel = False
 
-    return base_runner(jobs, pool, parallel, force, retval)
+    try:
+        r = base_runner(jobs, pool, parallel, force, retval)
+    except Exception as e:
+        logger.error(e)
+        exit(1)
+
+    return r
