@@ -71,7 +71,7 @@ def is_msg_worthy(l):
         return False
     elif l.endswith('source/reference/sharding-commands.txt'):
         return False
-    elif l.endswith("Duplicate ID: "cmdoption-h"."):
+    elif l.endswith('Duplicate ID: "cmdoption-h".'):
         return False
     elif l.endswith('should look like "opt", "-opt args", "--opt args" or "/opt args"'):
         return False
