@@ -86,6 +86,9 @@ class Timer():
     def __enter__(self):
         self.start = time.time()
     def __exit__(self, *args):
+        message = '[build] [timer]: time elapsed for {0} was: {1}'
+        message = message.format(self.name, str(time.time() - self.start))
+
+        logger.debug(message) 
         if self.report is True:
-            message = '[build] [timer]: time elapsed for {0} was: {1}'
-            print(message.format(self.name, str(time.time() - self.start)) )
+            print(message)

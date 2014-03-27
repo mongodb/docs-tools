@@ -1,4 +1,9 @@
+import logging
+import os.path
 from urllib2 import urlopen
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 from fabric.api import env, task
 
 from fabfile.utils.git import get_commit, get_branch
@@ -23,4 +28,4 @@ def check(site, conf=None):
     if get_commit() == r:
         raise PublicationError('ERROR: the current published version of is the same as the current commit. Make a new commit before publishing.')
     else:
-        print('[build]: the current commit is different than the published version on.')
+        logger.warning('[build]: the current commit is different than the published version on.')

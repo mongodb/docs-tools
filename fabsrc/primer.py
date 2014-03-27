@@ -37,11 +37,11 @@ def clean(conf=None):
         targets.append(os.path.join(conf.paths.projectroot, conf.paths.source, page['target']))
 
     map(verbose_remove, targets)
-    print('[clean] [primer]: removed {0} files'.format(len(targets)))
+    logger.info('clean: removed {0} files'.format(len(targets)))
 
 def verbose_remove(path):
     if os.path.exists(path):
-        print('[clean] [primer]: removing {0}'.format(path))
+        logger.debug('clean: removing {0}'.format(path))
         os.remove(path)
 
 @task
@@ -96,8 +96,8 @@ def primer_migrate_pages(conf=None):
             truncate_res = p.runner(truncate_jobs)
             append_res = p.runner(append_jobs)
 
-        msg = '[primer]: migrated {0}, munged {1}, truncated {2}, and appended to {3} pages.'
-        print(msg.format(len(migration_res), len(munge_res), len(truncate_res), len(append_res)))
+        msg = 'migrated {0}, munged {1}, truncated {2}, and appended to {3} pages.'
+        logger.info(msg.format(len(migration_res), len(munge_res), len(truncate_res), len(append_res)))
 
         return True
 
@@ -106,8 +106,8 @@ def fix_migration_paths(page):
         page['target'] = page['source']
 
     if page['target'].endswith('.txt'):
-        msg = '[primer] [warning]: ({0}) imported files cannot end with ".txt", changing to ".rst"'
-        print(msg.format(page['source']))
+        msg = '({0}) imported files cannot end with ".txt", changing to ".rst"'
+        logger.warning(msg.format(page['source']))
         page['target'] = page['target'].replace('.txt', '.rst')
 
     for field  in ['source', 'target']:

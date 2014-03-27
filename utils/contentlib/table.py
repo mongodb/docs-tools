@@ -33,10 +33,10 @@ def _generate_tables(source, target, list_target):
 
     list_table = TableBuilder(ListTable(table_data))
     list_table.write(list_target)
-    print('[table]: rebuilt {0}'.format(list_target))
+    logger.debug('rebuilt rendered table {0}'.format(list_target))
 
     list_table.write(target)
-    print('[table]: rebuilt {0} as (a list table)'.format(target))
+    logger.debug('rebuilt rendered list table {0}'.format(target))
 
     # if build_all or table_data.format == 'list':
     #     list_table = TableBuilder(ListTable(table_data))
@@ -49,7 +49,7 @@ def _generate_tables(source, target, list_target):
 
     #     print('[table]: rebuilt {0} as (a list table)'.format(target))
 
-    print('[table]: rebuilt table output for {0}'.format(source))
+    logger.info('rebuilt rendered table output for {0}'.format(source))
 
 def table_jobs(conf=None):
     conf = lazy_conf(conf)

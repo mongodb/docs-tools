@@ -1,5 +1,8 @@
 import itertools
 import os.path
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from fabric.api import task
 
@@ -52,7 +55,7 @@ def prereq():
 # we're not there yet so this will remain here.'
 
 def printer(string):
-    print(string)
+    logger.info(string)
 
 def finalize_build(builder, sconf, conf):
     if 'language' in sconf:
@@ -68,7 +71,7 @@ def finalize_build(builder, sconf, conf):
     jobs = {
         'linkcheck': [
             { 'job': printer,
-              'args': ['[{0}]: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)]
+              'args': ['{0}: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)]
             }
         ],
         'dirhtml': [
@@ -110,6 +113,6 @@ def finalize_build(builder, sconf, conf):
             }
         )
 
-    print('[sphinx] [post] [{0}]: running post-processing steps.'.format(builder))
+    logger.info('{0}: running sphinx post-processing steps.'.format(builder))
     res = runner(itertools.chain(jobs[builder], jobs['all']), pool=1)
-    print('[sphinx] [post] [{0}]: completed {1} post-processing steps'.format(builder, len(res)))
+    logger.info('{0}: completed {1} sphinx post-processing steps'.format(builder, len(res)))

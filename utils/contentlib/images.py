@@ -1,5 +1,9 @@
 import sys
 import os.path
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 
 from utils.strings import dot_concat
 from utils.config import lazy_conf
@@ -25,7 +29,7 @@ def _generate_images(cmd, dpi, width, target, source):
                        width=width,
                        target=target,
                        source=source))
-    print('[image]: generated image file {0}'.format(target))
+    logger.info('generated image file {0}'.format(target))
 
 def image_jobs(conf=None):
     conf = lazy_conf(None)

@@ -1,6 +1,9 @@
 import os
 import subprocess
+import logging
 from tempfile import NamedTemporaryFile
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 try:
     from structures import AttributeDict
@@ -14,6 +17,7 @@ class DevNull(object):
     name = os.devnull
 
 def command(command, capture=False, ignore=False):
+    logger.debug("running '{0}'".format(command))
     if capture is False:
         tmp_out = DevNull()
         tmp_err = DevNull()

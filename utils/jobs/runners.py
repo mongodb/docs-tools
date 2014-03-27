@@ -32,7 +32,7 @@ def async_thread_runner(jobs, force, pool):
     try:
         p = multiprocessing.dummy.Pool(pool)
     except:
-        print('[ERROR]: can\'t start pool, falling back to sync ')
+        logger.warning(' can\'t start pool, falling back to synchronous pool.')
         return sync_runner(jobs, force)
 
     return async_runner(jobs, force, pool, p)
@@ -41,7 +41,7 @@ def async_process_runner(jobs, force, pool):
     try:
         p = NestedPool(pool)
     except:
-        print('[ERROR]: can\'t start pool, falling back to sync ')
+        logger.warning(' can\'t start pool, falling back to synchronous pool.')
         return sync_runner(jobs, force)
 
     return async_runner(jobs, force, pool, p)
@@ -82,7 +82,7 @@ def process_async_results(results, force):
             except Exception as e:
                 has_errors = True
                 errors.append(e)
-                print(e)
+                logger.error(e)
 
 
         if has_errors is True:

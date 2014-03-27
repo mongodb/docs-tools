@@ -1,5 +1,8 @@
 import os
 import sys
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from jinja2 import Template
 
@@ -20,6 +23,7 @@ class Options(object):
             self.source_dirname = fn
 
         if fn is not None:
+            logger.debug("reading options from {0}".format(fn))
             self.ingest(fn)
 
     def ingest(self, fn):
@@ -65,6 +69,9 @@ class Options(object):
                     del base_opt.doc['inherit']
 
                 opt = Option(base_opt.doc)
+                logmsg = 'cached option while rendering {0}, program "{1}" name "{2}"'
+                logger.debug(logmsg.format(self.source_dirname, opt.program, opt.name))
+
                 self.cache_option(opt, fn)
 
         self.unresolved = list()
@@ -123,6 +130,8 @@ class Option(object):
 
         # add auto-populated replacements here
         self.add_replacements()
+        logmsg = 'creation option representation for the {0} option for {1}'
+        logger.debug(logmsg.format(self.name, self.program))
 
     @property
     def directive(self):
@@ -242,6 +251,7 @@ class OptionRendered(object):
 
         output_file = self.resolve_output_path(path)
         self.rst.write(output_file)
+        logger.debug('wrote option to file {0}'.format(output_file))
 
 def main(files):
     options = Options()

@@ -1,5 +1,8 @@
 import os
 import itertools
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from threading import Lock
 
@@ -73,10 +76,10 @@ def build_process_prerequsites(conf):
 
     try:
         res = runner(jobs, parallel='process')
-        print('[sphinx-prep]: built {0} pieces of content'.format(len(res)))
+        logger.info('built {0} pieces of content to prep for sphinx build'.format(len(res)))
     except PoolResultsError:
-        print('[WARNING]: sphinx prerequisites encountered errors. '
-              'See output above. Continuing as a temporary measure.')
+        logger.error('sphinx prerequisites encountered errors. '
+                     'See output. Continuing as a temporary measure.')
 
     buildinfo_hash(conf)
 
@@ -98,7 +101,7 @@ def build_job_prerequsites(sync, sconf, conf):
                                  conf.paths.branch_source)
                 o = command(cmd, capture=True)
                 if len(o.out.strip()) > 0:
-                    print(o.out)
+                    logger.info(o.out)
 
                 sync[cond_name] = True
 
@@ -110,16 +113,21 @@ def build_job_prerequsites(sync, sconf, conf):
 
     with update_deps_lock:
         if sync.satisfied('updated_deps') is False:
-            print('[sphinx-prep]: resolving all intra-source dependencies now. (takes several seconds)')
+            logger.debug('using update deps lock.')
+
+            logger.info('resolving all intra-source dependencies now. for sphinx build. (takes several seconds)')
             dep_count = refresh_dependencies(conf)
-            print('[sphinx-prep]: bumped timestamps of {0} files'.format(dep_count))
+            logger.info('bumped {0} dependencies'.format(dep_count))
             sync.updated_deps = True
 
             command(build_platform_notification('Sphinx', 'Build in progress past critical phase.'), ignore=True)
-            print('[sphinx-prep]: INFO - Build in progress past critical phase ({0})'.format(conf.paths.branch_source))
+            logger.info('sphinx build in progress past critical phase ({0})'.format(conf.paths.branch_source))
             dump_file_hashes(conf)
+        else:
+            logger.debug('dependencies already updated, lock unneeded.')
+        logger.debug('releasing dependency update lock.')
 
-    print('[sphinx-prep]: build environment prepared for sphinx.')
+    logging.info('build environment prepared for sphinx build {0}.'.format(sconf.builder))
 
 def build_prerequisites(conf):
     sync = StateAttributeDict()

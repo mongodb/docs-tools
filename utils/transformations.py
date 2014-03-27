@@ -1,6 +1,9 @@
 import os.path
 import re
 import collections
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 try:
     from utils.jobs.runners import runner
@@ -24,9 +27,9 @@ def munge_page(fn, regex, out_fn=None,  tag='build'):
 
     if len(page_lines) > 0:
         encode_lines_to_file(out_fn, page_lines)
-        print('[{0}]: processed {1}'.format(tag, fn))
+        logger.info('{0}: processed {1}'.format(tag, fn))
     else:
-        print('[{0}] [warning]: did not write {1}'.format(tag, out_fn))
+        logger.warning('{0}: did not write {1}'.format(tag, out_fn))
 
 def munge_content(content, regex):
     if isinstance(regex, list):

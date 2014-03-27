@@ -2,6 +2,9 @@ import hashlib
 import os
 import shutil
 import tarfile
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 def tarball(name, path, sourcep=None, newp=None, cdir=None):
     tarball_path = os.path.dirname(name)
@@ -19,7 +22,7 @@ def tarball(name, path, sourcep=None, newp=None, cdir=None):
 
         t.add(name=path, arcname=arcname)
 
-    print('[tarball]: created {0}'.format(name))
+    logger.info('created tarball: {0}'.format(name))
 
 def symlink(name, target):
     if not os.path.islink(name):
@@ -29,7 +32,8 @@ def symlink(name, target):
             from win32file import CreateSymbolicLink
             CreateSymbolicLink(name, target)
         except ImportError:
-            exit('ERROR: platform does not contain support for symlinks. Windows users need to pywin32.')
+            logger.error("platform does not contain support for symlinks. Windows users need to pywin32.")
+            exit(1)
 
 def expand_tree(path, input_extension='yaml'):
     file_list = []
@@ -67,14 +71,14 @@ class FileOperationError(Exception): pass
 
 def copy_always(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False:
-        print("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
+        logger.error("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
         raise FileOperationError
     else:
         if not os.path.exists(os.path.dirname(target_file)):
             os.makedirs(os.path.dirname(target_file))
         shutil.copyfile(source_file, target_file)
 
-    print('[{0}]: copied {1} to {2}'.format(name, source_file, target_file))
+    logger.debug('{0}: copied {1} to {2}'.format(name, source_file, target_file))
 
 def copy_if_needed(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False or os.path.isdir(source_file):
@@ -85,16 +89,16 @@ def copy_if_needed(source_file, target_file, name='build'):
         shutil.copyfile(source_file, target_file)
 
         if name is not None:
-            print('[{0}]: created "{1}" which did not exist.'.format(name, target_file))
+            logger.debug('{0}: created "{1}" which did not exist.'.format(name, target_file))
     else:
         if md5_file(source_file) == md5_file(target_file):
             if name is not None:
-                print('[{0}]: "{1}" not changed.'.format(name, source_file))
+                logger.debug('{0}: "{1}" not changed.'.format(name, source_file))
         else:
             shutil.copyfile(source_file, target_file)
 
             if name is not None:
-                print('[{0}]: "{1}" changed. Updated: {2}'.format(name, source_file, target_file))
+                logger.debug('{0}: "{1}" changed. Updated: {2}'.format(name, source_file, target_file))
 
 def create_link(input_fn, output_fn):
     out_dirname = os.path.dirname(output_fn)
@@ -114,7 +118,7 @@ def create_link(input_fn, output_fn):
     else:
         symlink(out_base, input_fn)
         os.rename(out_base, output_fn)
-        print('[{0}] created symbolic link pointing to "{1}" named "{2}"'.format('symlink', input_fn, out_base))
+        logger.debug('{0} created symbolic link pointing to "{1}" named "{2}"'.format('symlink', input_fn, out_base))
 
 def decode_lines_from_file(fn):
     with open(fn, 'r') as f:

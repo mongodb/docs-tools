@@ -1,4 +1,7 @@
+import logging
 import os.path
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.config import lazy_conf
 from utils.serialization import ingest_yaml
@@ -13,22 +16,22 @@ from utils.rstcloth.releases import (generate_release_output,
 def _generate_release_ent(rel, target, release):
     r = generate_release_output( rel['type'], rel['type'].split('-')[0], rel['system'], release )
     r.write(target)
-    print('[release]: wrote: ' + target)
+    logger.info('wrote release info file: ' + target)
 
 def _generate_release_core(rel, target, release):
     r = generate_release_output( rel, rel.split('-')[0], 'core', release )
     r.write(target)
-    print('[release]: wrote: ' + target)
+    logger.info('wrote release info file: ' + target)
 
 def _generate_untar_core(rel, target, release):
     r = generate_release_untar(rel, release)
     r.write(target)
-    print('[release]: wrote: ' + target)
+    logger.info('wrote release info file: ' + target)
 
 def _generate_copy_core(rel, target, release):
     r = generate_release_copy(rel, release)
     r.write(target)
-    print('[release]: wrote: ' + target)
+    logger.info('wrote release info file: ' + target)
 
 def release_jobs(conf=None):
     conf = lazy_conf(conf)

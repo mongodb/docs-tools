@@ -1,6 +1,9 @@
 import os.path
 import yaml
 import json
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 try:
     import utils.bootstrap as bootstrap
@@ -71,7 +74,7 @@ def safe_bootstrap(conf):
 
         conf = get_conf()
         conf.system.processed.bootstrap = True
-        print('[bootstrap]: automatically ran safe tools bootstrapping procedures.')
+        logger.info('automatically ran safe tools bootstrapping procedures.')
         return conf
 
 def get_conf():

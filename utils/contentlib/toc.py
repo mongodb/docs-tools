@@ -1,4 +1,8 @@
+import logging
 import os.path
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 from copy import copy
 
 from utils.files import expand_tree
@@ -24,7 +28,7 @@ def _get_toc_output_name(name, type, paths):
         return os.path.join(paths.branch_source, 'includes', 'toc', '{0}-{1}.rst'.format(type, name))
 
 def _generate_toc_tree(fn, fmt, base_name, paths, conf):
-    print('[toc]: generating {0} toc'.format(fn))
+    logger.info('generating {0} toc'.format(fn))
 
     if fmt == 'spec':
         toc = AggregatedTocTree(fn, conf)
@@ -38,11 +42,11 @@ def _generate_toc_tree(fn, fmt, base_name, paths, conf):
                 outfn = _get_toc_output_name(base_name, 'table', paths)
                 t = TableBuilder(RstTable(toc.table))
                 t.write(outfn)
-                print('[toc-spec]: wrote: '  + outfn)
+                logger.debug('wrote spec ref-toc: '  + outfn)
         elif fmt == 'toc':
             outfn = _get_toc_output_name(base_name, 'dfn-list', paths)
             toc.dfn.write(outfn)
-            print('[toc-spec]: wrote: '  + outfn)
+            logger.debug('wrote spec toc: '  + outfn)
 
     else:
         toc = CustomTocTree(fn, conf)
@@ -57,19 +61,19 @@ def _generate_toc_tree(fn, fmt, base_name, paths, conf):
 
         outfn = _get_toc_output_name(base_name, 'toc', paths)
         toc.contents.write(outfn)
-        print('[toc]: wrote: '  + outfn)
+        logger.debug('wrote toc: '  + outfn)
 
         if fmt == 'ref':
             outfn = _get_toc_output_name(base_name, 'table', paths)
             t = TableBuilder(RstTable(toc.table))
             t.write(outfn)
-            print('[ref-toc]: wrote: '  + outfn)
+            logger.debug('wrote ref toc: '  + outfn)
         elif fmt == 'toc':
             outfn = _get_toc_output_name(base_name, 'dfn-list', paths)
             toc.dfn.write(outfn)
-            print('[toc]: wrote: '  + outfn)
+            logger.debug('wrote toc file: '  + outfn)
 
-    print('[toc]: compiled toc output for {0}'.format(fn))
+    logger.info('compiled toc output for {0}'.format(fn))
 
 def toc_jobs(conf):
     paths = copy(conf.paths)
@@ -102,5 +106,7 @@ def toc_jobs(conf):
                 o['target'].append(_get_toc_output_name(base_name, 'dfn-list', paths))
             elif fmt == 'ref' or is_ref_spec:
                 o['target'].append(_get_toc_output_name(base_name, 'table', paths))
-           
+
+            o['dependency'] = None
             yield o
+

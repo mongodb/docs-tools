@@ -1,21 +1,24 @@
 import os
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.serialization import ingest_yaml_list
 
 def robots_txt_builder(fn, conf, override=False):
     if override is False:
         if conf.git.branches.current != 'master':
-            print('[robots]: cowardly refusing to regenerate robots.txt on non-master branch.')
+            logger.info('cowardly refusing to regenerate robots.txt on non-master branch.')
             return False
     else:
-        print('[robots]: regenerating robots.txt on non-master branch with override.')
+        logger.info('regenerating robots.txt on non-master branch with override.')
 
     input_fn = os.path.join(conf.paths.projectroot,
                             conf.paths.builddata,
                             'robots.yaml')
 
     if not os.path.exists(input_fn):
-        print('[robots]: {0} does not exist. not generating robots.txt'.format(input_fn))
+        logger.warning('[robots]: {0} does not exist. not generating robots.txt'.format(input_fn))
         return False
     
     suppressed = ingest_yaml_list(input_fn)
@@ -43,4 +46,4 @@ def robots_txt_builder(fn, conf, override=False):
                         f.write('Disallow: /{0}{1}'.format(branch,page))
                         f.write('\n')
 
-    print('[robots]: regenerated robots.txt file.')
+    logger.info('[robots]: regenerated robots.txt file.')

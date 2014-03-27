@@ -1,4 +1,8 @@
 import os
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 
 try:
     from utils.shell import command
@@ -26,6 +30,8 @@ class GitRepo(object):
             self.path = os.getcwd()
         else:
             self.path = path
+
+        logger.debug("created git repository management object for {0}".format(self.path))
 
     def cmd(self, *args):
         args = ' '.join(args)

@@ -1,4 +1,7 @@
 import os.path
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from fabfile.utils.project import edition_setup
 from fabfile.utils.strings import timestamp
@@ -31,7 +34,7 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
                 'args': [ target, lsconf, lconf, sync, finalize_fun]
             })
         else:
-            print('[sphinx] [warning]: not building {0} without configuration.'.format(target))
+            logger.warning('not building sphinx target {0} without configuration.'.format(target))
 
     # a batch of prereq jobs go here.
     primer_migrate_pages(conf)
@@ -44,18 +47,18 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
 
     output_sphinx_stream('\n'.join([r for r in res if r is not None]), conf)
 
-    print('[sphinx]: build {0} sphinx targets'.format(len(res)))
+    logger.info('build {0} sphinx targets'.format(len(res)))
 
 def build_worker(builder, sconf, conf, sync, finalize_fun):
     dirpath = os.path.join(conf.paths.branch_output, builder)
     if not os.path.exists(dirpath):
         os.makedirs(dirpath)
-        print('[{0}]: created {1}'.format(builder, dirpath))
+        logger.info('created directories "{1}" for sphinx builder {0}'.format(builder, dirpath))
 
     # a batch of prereq jobs go here. (if they need the modified conf.)
     build_job_prerequsites(sync, sconf, conf)
 
-    print('[{0}]: starting {0} build {1}'.format(builder, timestamp()))
+    logger.info('starting sphinx build {0} at {1}'.format(builder, timestamp()))
 
     cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {4}' # per-builder-doctreea
     sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
@@ -64,20 +67,19 @@ def build_worker(builder, sconf, conf, sync, finalize_fun):
                             os.path.join(conf.paths.projectroot, conf.paths.branch_source),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder))
 
-    print('[sphinx-build]: running sphinx command: ' + sphinx_cmd)
     out = command(sphinx_cmd, capture=True, ignore=True)
     # out = sphinx_native_worker(sphinx_cmd)
-    print('[build]: completed {0} build at {1}'.format(builder, timestamp()))
+    logger.info('completed sphinx build {0} at {1}'.format(builder, timestamp()))
 
     output = '\n'.join([out.err, out.out])
 
     if out.return_code == 0:
-        print('[sphinx]: successfully completed {0} build at {1}!'.format(builder, timestamp()))
+        logger.info('successfully completed {0} sphinx build at {1}!'.format(builder, timestamp()))
         if finalize_fun is not None:
             finalize_fun(builder, sconf, conf)
-            print('[sphinx]: finalized {0} build at {1}'.format(builder, timestamp()))
+            logger.info('finalized sphinx {0} build at {1}'.format(builder, timestamp()))
         return output
     else:
-        print('[sphinx]: the {0} build was not successful. not running finalize steps'.format(builder))
+        logger.warning('the sphinx build {0} was not successful. not running finalize steps'.format(builder))
         output_sphinx_stream(output, conf)
         return None

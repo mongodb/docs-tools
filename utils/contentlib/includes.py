@@ -1,4 +1,7 @@
+import logging
 import os.path
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.files import expand_tree
 from utils.structures import BuildConfiguration
@@ -28,7 +31,7 @@ def write_include_index(conf):
                              'generated',
                              'overview.rst'))
 
-        print('[includes]: generated /meta/includes source page.')
+        logger.info('includes: generated /meta/includes source page.')
 
 
 def include_file_data(conf):

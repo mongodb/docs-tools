@@ -1,6 +1,9 @@
 import sys
 import os.path
 import json
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from docutils.core import publish_parts
 
@@ -72,7 +75,7 @@ def generate_image_pages(dir, name, alt, output, conf=None):
         r.newline(block=b)
 
     r.write(image + '.rst')
-    print('[image]: generated include file {0}.rst'.format(image))
+    logger.info('generated include file {0}.rst'.format(image))
 
 def main():
     image = json.loads(sys.argv[1])

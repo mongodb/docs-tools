@@ -1,6 +1,9 @@
 import os
 import json
 import datetime
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 try:
     from utils.files import md5_file, expand_tree
@@ -85,7 +88,7 @@ def dump_file_hashes(conf=None):
     with open(output, 'w') as f:
         json.dump(o, f)
 
-    print('[build]: wrote dependency cache to: {0}'.format(output))
+    logger.info('wrote dependency cache to: {0}'.format(output))
 
 ############### Dependency Checking ###############
 

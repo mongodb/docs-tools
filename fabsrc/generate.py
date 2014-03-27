@@ -1,5 +1,8 @@
-import os.path
 import sys
+import logging
+import os.path
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from fabric.api import task
 
@@ -30,13 +33,13 @@ from fabfile.utils.contentlib.options import option_jobs
 def api():
     res = runner( api_jobs(), retval=True )
 
-    print('[api]: generated {0} tables for api items'.format(len(res)))
+    logging.info('generated {0} tables for api items'.format(len(res)))
 
 @task
 def tables():
     res = runner( table_jobs(), retval=True )
 
-    print('[table]: built {0} tables'.format(len(res)))
+    logging.info('built {0} tables'.format(len(res)))
 
 #################### Generate Images and Related Content  ####################
 
@@ -45,13 +48,12 @@ def tables():
 @task
 def images():
     res = runner( image_jobs(), retval=True)
-
-    print('[image]: rebuilt {0} rst and image files'.format(len(res)))
+    logging.info('rebuilt {0} rst and image files'.format(len(res)))
 
 @task
 def releases():
     res = runner( release_jobs(), retval=True )
-    print('[releases]: completed regenerating {0} release files.'.format(len(res)))
+    logging.info('completed regenerating {0} release files.'.format(len(res)))
 
 #################### Copy of Source Directory for Build  ####################
 
@@ -91,7 +93,7 @@ def htaccess(fn='.htaccess'):
                        '   Header set Access-Control-Allow-Origin "*"', '\n'
                        '</FilesMatch>', '\n'] )
 
-    print('[redirect]: regenerated {0} with {1} redirects ({2} lines)'.format(fn, len(sources), len(lines)))
+    logging.info('redirect: regenerated {0} with {1} redirects ({2} lines)'.format(fn, len(sources), len(lines)))
 
 @task
 def robots(fn):
@@ -108,7 +110,7 @@ def options():
 
     res = runner( option_jobs(conf), retval=True )
 
-    print('[options]: rendered {0} options'.format(len(res)))
+    logging.info('options: rendered {0} options'.format(len(res)))
 
 @task
 def steps():
@@ -116,7 +118,7 @@ def steps():
 
     res = runner(steps_jobs(conf))
 
-    print('[steps]: rendered {0} step files'.format(len(res)))
+    logging.info('rendered {0} step files'.format(len(res)))
 
 @task
 def include_index():

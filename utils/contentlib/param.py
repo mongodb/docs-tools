@@ -1,4 +1,7 @@
 import os.path
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.config import lazy_conf
 from utils.strings import dot_concat
@@ -24,4 +27,4 @@ def _generate_api_param(source, target, conf):
     r = generate_params(ingest_yaml_list(source), source, conf)
     r.write(target)
 
-    print('[api]: rebuilt {0}'.format(target))
+    logger.info('rebuilt {0}'.format(target))

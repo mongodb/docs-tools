@@ -1,5 +1,8 @@
 import sys
 import os.path
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.rstcloth.rstcloth import RstCloth
 from utils.git import get_commit
@@ -19,12 +22,12 @@ def generate_hash_file(fn):
 
     try:
         if r.get_block('_all')[0] == existing[:-1]:
-            print('[build]: no new commit(s), not updating {0} ({1})'.format(fn, commit[:10]))
+            logger.info('[build]: no new commit(s), not updating {0} ({1})'.format(fn, commit[:10]))
             return True
     except TypeError:
-        print('[ERROR] [build]: problem generating {0}, continuing'.format(fn))
+        logger.warning('problem generating {0}, continuing'.format(fn))
         with file(fn, 'a'):
             os.utime(fn, times)
     else:
         r.write(fn)
-        print('[build]: regenerated {0} with new commit hash: {1}'.format(fn, commit[:10]))
+        logger.info('[build]: regenerated {0} with new commit hash: {1}'.format(fn, commit[:10]))

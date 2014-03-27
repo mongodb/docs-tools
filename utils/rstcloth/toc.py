@@ -2,6 +2,10 @@ import os.path
 import yaml
 import textwrap
 import argparse
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 
 from utils.rstcloth.table import TableData
 from utils.rstcloth.rstcloth import RstCloth, fill
@@ -114,7 +118,8 @@ class CustomTocTree(object):
 
                     self.dfn.newline()
 
-
+class TocError(Exception): pass
+    
 class AggregatedTocTree(CustomTocTree):
     def __init__(self, filename, conf):
         self.conf = conf
@@ -165,7 +170,9 @@ class AggregatedTocTree(CustomTocTree):
                     obj['level'] = level
                     self.spec.append(obj)
                 except KeyError:
-                    raise Exception('[ERROR] [toc]: KeyError "{0}" in file: {1}'.format(fn, filename))
+                    msg = 'toc: KeyError "{0}" in file: {1}'.format(fn, filename)
+                    logger.error(msg)
+                    raise TocError(msg)
             else:
                 # translation
                 if isinstance(fn, tuple):

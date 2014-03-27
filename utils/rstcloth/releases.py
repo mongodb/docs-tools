@@ -3,6 +3,9 @@
 import sys
 import os
 import argparse
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.rstcloth.rstcloth import RstCloth
 
@@ -104,6 +107,8 @@ def main():
     r = generate_output(interface['builder'], interface['platform'], release, interface['release'])
 
     r.write(interface['outputfile'])
+    logger.info('wrote release file to {0}'.format(interface))
+
 
 if __name__ == '__main__':
     main()

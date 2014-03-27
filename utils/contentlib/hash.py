@@ -1,4 +1,7 @@
+import logging
 import os
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.rstcloth.hash import generate_hash_file
 
@@ -22,4 +25,4 @@ def buildinfo_hash(conf):
     with open(release_fn, 'w') as f:
         f.write(conf.git.commit)
 
-    print('[build]: generated "{0}" with current release hash.'.format(release_fn))
+    logger.info('[build]: generated "{0}" with current release hash.'.format(release_fn))

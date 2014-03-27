@@ -75,13 +75,13 @@ invalid:
 
 """
 
-import yaml
 import sys
 import os
 import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
-logging.basicConfig(level=logging.ERROR)
+
+import yaml
 
 from utils.rstcloth.rstcloth import RstCloth
 from utils.serialization import ingest_yaml_list
@@ -122,21 +122,34 @@ class Steps(object):
 
                 if source_file in self.agg_sources:
                     current_step = self.agg_sources[source_file].get_step(source_ref)
+                    msg = 'resolved ref "{0}" from file "{1}" using step cache'
+                    logger.debug(msg.format(source_ref, source_file))
                 else:
+                    msg = 'could *not* resolved ref "{0}" from file "{1}" with step cache'
+                    logger.debug(msg.format(source_ref, source_file))
                     if not os.path.exists(fn):
-                        raise Exception('[ERROR]: file {0} does not exist'.format(fn))
+                        msg = 'file {0} does not exist'.format(fn)
+                        logger.error(msg)
+                        raise InvalidStep(msg)
                     elif fn in self.agg_sources or source_file in self.agg_sources:
-                        raise Exception('[ERROR]: hitting recursion issue on {0}'.format(fn))
+                        msg = 'hitting recursion issue on {0}'.format(fn)
+                        logger.error(msg)
+                        raise InvalidStep(msg)
+                    else: 
+                        msg = "reading and caching step {0} from {1} and caching"
+                        logger.debug(msg.format(source_ref, source_file))
 
-                    steps = Steps(os.path.join(self.source_dir, source_file), self.agg_sources)
-                    current_step = steps.get_step(source_ref)
-                    self.agg_sources[source_file] = steps
-                    self.agg_sources.update(steps.agg_sources)
+                        steps = Steps(os.path.join(self.source_dir, source_file), self.agg_sources)
+                        current_step = steps.get_step(source_ref)
+                        self.agg_sources[source_file] = steps
+                        self.agg_sources.update(steps.agg_sources)
+                        
+                        logger.debug('successfully cached {0}'.format(source_file))
+
 
                 if current_step is None:
                     msg = 'Missing ref for {0}:"{1}" in step file "{2}"'.format(source_file, source_ref, os.path.basename(self.source_fn))
-
-                    print("[steps]: " + msg)
+                    logger.error(msg)
                     raise InvalidStep(msg)
 
                 current_step.update(step)
@@ -358,26 +371,31 @@ class WebStepsOutput(StepsOutput):
                            indent=3)
         self.rst.newline()
 
-
 def render_step_file(input_fn, output_fn=None):
+    input_fn_base = os.path.basename(input_fn)
+    logger.debug('generating step file for {0}'.format(input_fn_base))
     steps = Steps(input_fn)
+    logger.debug('resolved step file input for {0}'.format(input_fn_base))
+
     r = RstCloth()
 
     web_output = WebStepsOutput(steps)
     web_output.render()
     r.content(web_output.rst.get_block(), indent=0, wrap=False)
+    logger.debug('generated web output for {0}'.format(input_fn_base))
 
     r.directive('only', 'latex')
     r.newline()
     print_output = PrintStepsOutput(steps)
     print_output.render()
     r.content(print_output.rst.get_block(), indent=3, wrap=False)
+    logger.debug('generated print output for {0}'.format(input_fn_base))
 
     if output_fn is None:
         output_fn = os.path.splitext(input_fn)[0] + '.rst'
 
     r.write(output_fn)
-    print('[steps]: rendered step include at ' + output_fn)
+    logger.info('wrote step include at {0}'.format(output_fn))
 
 if __name__ == '__main__':
     render_step_file(sys.argv[1], sys.argv[2])

@@ -1,6 +1,9 @@
 import os
 import re
 import subprocess
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from fabric.api import task
 
@@ -24,35 +27,35 @@ def _render_tex_into_pdf(fn, path):
         with open(os.devnull, 'w') as f:
             subprocess.check_call(pdflatex, shell=True, stdout=f, stderr=f)
     except subprocess.CalledProcessError:
-        print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
+        logger.error('tex: {0} file has errors, regenerate and try again'.format(fn))
         return False
 
-    print('[pdf]: completed pdf rendering stage 1 of 4 for: {0}'.format(fn))
+    logger.info('pdf: completed pdf rendering stage 1 of 4 for: {0}'.format(fn))
 
     try:
         with open(os.devnull, 'w') as f:
             subprocess.check_call("makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, os.path.basename(fn)[:-4]), shell=True, stdout=f, stderr=f)
     except subprocess.CalledProcessError:
-        print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
-    print('[pdf]: completed pdf rendering stage 2 of 4 (indexing) for: {0}'.format(fn))
+        logger.warning('tex-indexing: {0} file has errors, regenerate and try again'.format(fn))
+    logger.info('pdf: completed pdf rendering stage 2 of 4 (indexing) for: {0}'.format(fn))
 
     try:
         with open(os.devnull, 'w') as f:
             subprocess.check_call(pdflatex, shell=True, stdout=f, stderr=f)
     except subprocess.CalledProcessError:
-        print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
+        logger.error('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
         return False
-    print('[pdf]: completed pdf rendering stage 3 of 4 for: {0}'.format(fn))
+    logger.info('pdf: completed pdf rendering stage 3 of 4 for: {0}'.format(fn))
 
     try:
         with open(os.devnull, 'w') as f:
             subprocess.check_call(pdflatex, shell=True, stdout=f, stderr=f)
     except subprocess.CalledProcessErro:
-        print('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
+        logger.error('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
         return False
-    print('[pdf]: completed pdf rendering stage 4 of 4 for: {0}'.format(fn))
+    logger.info('pdf: completed pdf rendering stage 4 of 4 for: {0}'.format(fn))
 
-    print('[pdf]: rendered {0}.{1}'.format(os.path.basename(fn), 'pdf'))
+    logger.info('pdf: rendered {0}.{1}'.format(os.path.basename(fn), 'pdf'))
 
 @task
 def pdfs():
@@ -72,7 +75,7 @@ def pdf_worker(target=None, conf=None):
         for it, queue in enumerate(pdf_jobs(target, conf)):
             res.extend(p.runner(queue))
 
-            print("[pdf]: completed {0} pdf jobs, in stage {1}".format(len(queue), it))
+            logger.info("pdf: completed {0} pdf jobs, in stage {1}".format(len(queue), it))
 
 def pdf_jobs(target, conf):
     pdfs = ingest_yaml_list(os.path.join(conf.paths.builddata, 'pdfs.yaml'))

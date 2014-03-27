@@ -1,5 +1,8 @@
 import re
 import os
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.files import expand_tree
 from utils.config import lazy_conf
@@ -20,7 +23,7 @@ def manpage_url(regex_obj, input_file):
     with open(input_file, 'w') as f:
         f.write(manpage)
 
-    print("[{0}]: fixed urls in {1}".format('man', input_file))
+    logger.info("fixed urls in {0}".format(input_file))
 
 def manpage_url_jobs(conf):
     project_source = os.path.join(conf.paths.projectroot,

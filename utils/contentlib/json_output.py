@@ -1,6 +1,9 @@
 import json
 import re
 import os
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.config import lazy_conf
 from utils.shell import command
@@ -21,13 +24,14 @@ def json_output(conf=None):
     json_dst = os.path.join(conf.paths.public_site_output, 'json')
 
     if not os.path.exists(json_dst):
+        logger.debug('created directories for {0}'.foramt(json_dst))
         os.makedirs(json_dst)
 
     command(cmd.format(src=os.path.join(conf.paths.branch_output, 'json') + '/',
                        dst=json_dst))
 
     copy_if_needed(list_file, public_list_file)
-    print('[json]: deployed json files to local staging.')
+    logger.info('deployed json files to local staging.')
 
 def json_output_jobs(conf=None):
     conf = lazy_conf(conf)
@@ -113,4 +117,4 @@ def generate_list_file(outputs, path, conf=None):
             f.write( '/'.join([ url, fn.split('/', 3)[3:][0]]) )
             f.write('\n')
 
-    print('[json]: rebuilt inventory of json output.')
+    logger.info('rebuilt inventory of json output.')

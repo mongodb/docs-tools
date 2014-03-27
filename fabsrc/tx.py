@@ -1,4 +1,7 @@
+import logging
 import os.path
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from fabfile.utils.sphinx.config import get_sconf
 from fabfile.utils.sphinx.workers import build_worker as sphinx_build
@@ -29,14 +32,14 @@ def update():
 
     sphinx_build(builder=sphinx_builder, conf=conf, sconf=sconf, sync=sync, finalize_fun=None)
 
-    print('[tx] [sphinx]: rebuild gettext targets')
+    logger.info('rebuilt gettext targets')
 
-    tx_cmd = "sphinx-intl update-txconfig-resources --pot-dir {path} --transifex-project-name={name}"
+    tx_cmd = "sphinx-intl update-txconfig-resources --whot-dir {path} --transifex-project-name={name}"
 
     command(tx_cmd.format(path=os.path.join(conf.paths.branch_output, sphinx_builder),
                         name='-'.join(conf.project.title.lower().split())))
 
-    print('[tx] [sphinx-intl]: updated pot directory')
+    logger.info('sphinx-intl: updated pot directory')
 
 @task
 def push():

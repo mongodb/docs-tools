@@ -1,8 +1,11 @@
 import os
 import shutil
 import time
+import logging
 
 from multiprocessing import cpu_count
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from fabric.api import task
 
@@ -28,7 +31,7 @@ def sphinx(builder='html', conf=None):
     cleaner([ os.path.join(root, 'doctrees' + '-' + builder),
               os.path.join(root, builder) ] )
 
-    print('[clean-{0}]: removed all files supporting the {0} build'.format(builder))
+    logger.warning('removed all files supporting the {0} build'.format(builder))
 
 @task
 def builds(days=14):
@@ -54,7 +57,7 @@ def builds(days=14):
         elif os.stat(build).st_mtime < days:
             _rm_rf(build)
             _rm_rf(path + "public/" + branch)
-            print('[clean]: removed stale build artifact: ' + build)
+            logger.warning('removed stale build artifact: ' + build)
 
 def cleaner(paths):
     if len(paths) <= cpu_count() + 1:

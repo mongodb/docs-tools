@@ -1,6 +1,9 @@
 import sys
 import os.path
 import re
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.shell import command
 from utils.config import lazy_conf
@@ -14,26 +17,24 @@ from utils.transformations import munge_page
 
 def manual_single_html(input_file, output_file):
     # don't rebuild this if its not needed.
-    if check_dependency(output_file, input_file) is True:
-        pass
-    else:
-        print('[process] [single]: singlehtml not changed, not reprocessing.')
+    if check_dependency(output_file, input_file) is False:
+        logging.info('singlehtml not changed, not reprocessing.')
         return False
+    else:
+        text_lines = decode_lines_from_file(input_file)
 
-    text_lines = decode_lines_from_file(input_file)
+        regexes = [
+            (re.compile('href="contents.html'), 'href="index.html'),
+            (re.compile('name="robots" content="index"'), 'name="robots" content="noindex"'),
+            (re.compile('href="genindex.html'), 'href="../genindex/')
+        ]
 
-    regexes = [
-        (re.compile('href="contents.html'), 'href="index.html'),
-        (re.compile('name="robots" content="index"'), 'name="robots" content="noindex"'),
-        (re.compile('href="genindex.html'), 'href="../genindex/')
-    ]
+        for regex, subst in regexes:
+            text_lines = [ regex.sub(subst, text) for text in text_lines ]
 
-    for regex, subst in regexes:
-        text_lines = [ regex.sub(subst, text) for text in text_lines ]
+        encode_lines_to_file(output_file, text_lines)
 
-    encode_lines_to_file(output_file, text_lines)
-
-    print('[process] [single]: processed singlehtml file.')
+        logging.info('processed singlehtml file.')
 
 #################### Sphinx Post-Processing ####################
 
@@ -113,7 +114,7 @@ def error_pages(conf=None):
                                 'meta', error, 'index.html')
             munge_page(fn=page, regex=sub, tag='error-pages')
 
-        print('[error-pages]: rendered {0} error pages'.format(len(error_pages)))
+        logging.info('error-pages: rendered {0} error pages'.format(len(error_pages)))
 
 def finalize_dirhtml_build(builder, conf):
     pjoin = os.path.join
@@ -136,7 +137,7 @@ def finalize_dirhtml_build(builder, conf):
                                                                  builder),
                                                     destination=dest))
 
-    print('[{0}]: migrated build to {1}'.format(builder, dest))
+    logger.info('{0}: migrated build to {1}'.format(builder, dest))
 
     if conf.git.branches.current in conf.git.branches.published:
         sitemap_exists = sitemap(config_path=None, conf=conf)
@@ -159,7 +160,7 @@ def finalize_dirhtml_build(builder, conf):
                 for fn in sconf.dirhtml.excluded_files ]
 
         cleaner(fns)
-        print('[dirhtml] [clean]: removed excluded files from output directory')
+        logging.info('removed excluded files from dirhtml output directory')
 
 def sitemap(config_path=None, conf=None):
     conf = lazy_conf(conf)
@@ -172,16 +173,16 @@ def sitemap(config_path=None, conf=None):
         config_path = os.path.join(paths.projectroot, 'conf-sitemap.xml')
 
     if not os.path.exists(config_path):
-        print('[ERROR] [sitemap]: configuration file {0} does not exist. Returning early'.format(config_path))
+        logger.error('sitemap: configuration file {0} does not exist. Returning early'.format(config_path))
         return False
 
     sitemap = sitemap_gen.CreateSitemapFromFile(configpath=config_path,
                                                 suppress_notify=True)
     if sitemap is None:
-        print('[ERROR] [sitemap]: failed to generate the sitemap due to encountered errors.')
+        logger.error('sitemap: failed to generate the sitemap due to encountered errors.')
         return False
 
     sitemap.Generate()
 
-    print('[sitemap]: generated sitemap according to the config file {0}'.format(config_path))
+    logger.error('sitemap: generated sitemap according to the config file {0}'.format(config_path))
     return True
