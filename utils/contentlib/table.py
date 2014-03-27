@@ -1,4 +1,8 @@
 import os.path
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 
 from utils.config import lazy_conf
 from utils.strings import dot_concat, hyph_concat
