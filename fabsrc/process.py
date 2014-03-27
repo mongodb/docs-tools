@@ -70,7 +70,7 @@ def pdf_worker(target=None, conf=None):
         target = 'latex'
 
     force = False
-    with ProcessPool() as p:
+    with ThreadPool() as p:
         res = []
         for it, queue in enumerate(pdf_jobs(target, conf)):
             res.extend(p.runner(queue))
