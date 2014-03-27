@@ -19,23 +19,34 @@ def generate_integration_targets(conf):
     m.target('_publish')
     m.job('fab sphinx.target:{0}'.format(','.join(conf['targets'])))
 
-    dependencies = [ '_publish']
+    m.target('_publish-debug')
+    m.job('fab log.set:debug sphinx.target:{0}'.format(','.join(conf['targets'])))
 
+    dependencies = [ '_publish']
+    dependencies_debug = [ '_publish-debug']
+    
     if 'doc-root' in conf:
         for dep in conf['doc-root']:
             dependencies.append(os.path.join(paths['public'], dep))
+            dependencies_debug.append(os.path.join(paths['public'], dep))
 
     dependencies.extend(proccess_branch_root(conf))
+    dependencies_debug.extend(proccess_branch_root(conf))
 
     m.target('publish', dependencies)
+    m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
+    m.newline()
+    
+    m.target('publish-debug', dependencies_debug)
     m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
     m.newline()
 
     m.target('package')
     m.job('fab stage.package')
+    m.target('package-debug')
+    m.job('fab log.set:debug stage.package')
 
     m.target('.PHONY', ['_publish', 'publish', 'package'])
-
 
 def proccess_branch_root(conf):
     dependencies = []
@@ -54,6 +65,7 @@ def proccess_branch_root(conf):
 
 def gennerate_translation_integration_targets(language, conf):
     dependencies = [ l + '-' + language for l in conf['targets'] ]
+    dependencies_debug = [ dep + "-debug" for dep in dependencies ]
 
     for dep in conf['doc-root']:
         dependencies.append(os.path.join(paths['public'], dep))
@@ -66,11 +78,16 @@ def gennerate_translation_integration_targets(language, conf):
     m.target(package_target)
     m.job('fab stage.package:' + language)
 
+    m.target(package_target + '-debug')
+    m.job('fab log.set:debug stage.package:' + language)
+
+    m.target(publish_target + '-debug', dependencies_debug)
+
     m.target(publish_target, dependencies)
     m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
     m.newline()
 
-    m.target('.PHONY', [publish_target, package_target])
+    m.target('.PHONY', [publish_target + '-debug', package_target + '-debug', publish_target, package_target])
 
 def main():
     conf_file = get_conf_file(__file__)

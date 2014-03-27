@@ -28,42 +28,42 @@ def make_all_sphinx(config):
 
     m.comment('content generators')
     m.target('api')
-    m.job('fab generate.api')
+    m.job('fab log.set:debug generate.api')
 
     m.target('steps')
-    m.job('fab generate.steps')
+    m.job('fab log.set:debug generate.steps')
 
     m.target('intersphinx')
-    m.job('fab sphinx.intersphinx')
+    m.job('fab log.set:debug sphinx.intersphinx')
 
     m.target('toc')
-    m.job('fab generate.toc')
+    m.job('fab log.set:debug generate.toc')
 
     m.target('tables')
-    m.job('fab generate.tables')
+    m.job('fab log.set:debug generate.tables')
 
     m.target('images')
-    m.job('fab generate.images')
+    m.job('fab log.set:debug generate.images')
 
     m.target('releases')
-    m.job('fab generate.releases')
+    m.job('fab log.set:debug generate.releases')
 
     m.target('manual-pdfs', 'latex')
-    m.job('fab process.pdfs')
+    m.job('fab log-set:debug process.pdfs')
 
     m.target('json-output', 'json')
-    m.job('fab process.json_output')
+    m.job('fab log.set:debug process.json_output')
 
     m.newline()
     m.comment('sphinx prereq integration.')
     m.target(['prereq', 'sphinx-prerequisites'], block=b)
-    m.job('fab sphinx.prereq', block=b)
+    m.job('fab log.set:debug sphinx.prereq', block=b)
 
     build_source_dir = conf.paths.branch_output + '/source'
 
     if 'generate-source' in config and config['generate-sourced']:
         m.target('generate-source', ['setup'], config['generate-sourced'], block=b)
-        m.job('fab generate.source')
+        m.job('fab log.set:debug generate.source')
 
     m.section_break('sphinx targets', block=b)
     m.newline(block=b)
@@ -92,12 +92,14 @@ def make_all_sphinx(config):
         for target in config['sphinx_builders']:
             m.target(target)
             m.job('fab sphinx.target:{0}'.format(','.join([target + '-hosted', target + '-saas'])))
+            m.target(target + '-debug')
+            m.job('fab log.set:debug sphinx.target:{0}'.format(','.join([target + '-hosted', target + '-saas'])))
 
         m.newline()
 
     for builder in targets:
         sphinx_targets.extend(sphinx_builder(builder))
-
+        
     m.section_break('meta', block='footer')
     m.newline(block='footer')
     m.target('.PHONY', sphinx_targets, block='footer')
@@ -135,17 +137,22 @@ def sphinx_builder(target):
             elif target[1] == 'saas':
                 fab_arg.append('root=' + os.path.join(paths['output'], target[1]))
 
-    # m.target(target, 'sphinx-prerequisites', block=b)
-    # m.job(fab_prefix + ' sphinx.build:' + ','.join(fab_arg), block=b)
-    # if target.endswith('saas') or target.endswith('hosted'):
-    #     m.target(target, 'generate-source', block=b)
-    # else:
     m.target(target, block=b)
-
+    
     if target == 'gettext' or 'gettext' in target:
         m.job('{0} tx.update'.format(fab_prefix), block=b)
     else:
         m.job('{0} sphinx.target:{1}'.format(fab_prefix, target), block=b)
+
+    m.job(build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
+
+    m.target(target + '-debug', block=b)
+    ret_value.append(target + '-debug')
+
+    if target == 'gettext' or 'gettext' in target:
+        m.job('{0} log.set:debug tx.update'.format(fab_prefix), block=b)
+    else:
+        m.job('{0} log.set:debug sphinx.target:{1}'.format(fab_prefix, target), block=b)
 
     m.job(build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
 
