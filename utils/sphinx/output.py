@@ -7,7 +7,7 @@ def output_sphinx_stream(out, conf=None):
     if conf is None:
         conf = lazy_conf(conf)
 
-    out = [ o for o in out.split('\n') if o != '' ] 
+    out = [ o for o in out.split('\n') if o != '' ]
 
     full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
 
@@ -59,7 +59,7 @@ def path_normalization(l, full_path, conf):
             l = l.replace('source-saas', 'source')
         elif l.startswith('source-hosted'):
             l = l.replace('source-hosted', 'source')
-        
+
     return l
 
 def is_msg_worthy(l):
@@ -70,6 +70,10 @@ def is_msg_worthy(l):
     elif l.startswith('WARNING: search index'):
         return False
     elif l.endswith('source/reference/sharding-commands.txt'):
+        return False
+    elif l.endswith("Duplicate ID: "cmdoption-h"."):
+        return False
+    elif l.endswith('should look like "opt", "-opt args", "--opt args" or "/opt args"'):
         return False
     else:
         return True
