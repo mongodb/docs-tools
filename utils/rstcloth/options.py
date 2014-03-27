@@ -229,12 +229,12 @@ class OptionRendered(object):
         self.rst.directive(self.option.directive, self.resolve_option_name())
         self.rst.newline()
 
-        if self.option.default is not None:
-            self.rst.content('*Default*: {0}'.format(self.option.default), indent=3)
-            self.rst.newline()
-
         if self.option.type is not None:
             self.rst.content('*Type*: {0}'.format(self.option.type), indent=3)
+            self.rst.newline()
+
+        if self.option.default is not None:
+            self.rst.content('*Default*: {0}'.format(self.option.default), indent=3)
             self.rst.newline()
 
         if self.option.pre is not None:
