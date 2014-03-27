@@ -135,7 +135,7 @@ class Steps(object):
                         msg = 'hitting recursion issue on {0}'.format(fn)
                         logger.error(msg)
                         raise InvalidStep(msg)
-                    else: 
+                    else:
                         msg = "reading and caching step {0} from {1} and caching"
                         logger.debug(msg.format(source_ref, source_file))
 
@@ -143,9 +143,8 @@ class Steps(object):
                         current_step = steps.get_step(source_ref)
                         self.agg_sources[source_file] = steps
                         self.agg_sources.update(steps.agg_sources)
-                        
-                        logger.debug('successfully cached {0}'.format(source_file))
 
+                        logger.debug('successfully cached {0}'.format(source_file))
 
                 if current_step is None:
                     msg = 'Missing ref for {0}:"{1}" in step file "{2}"'.format(source_file, source_ref, os.path.basename(self.source_fn))
@@ -154,9 +153,13 @@ class Steps(object):
 
                 current_step.update(step)
 
+                self._validate_step(current_step, ['ref', 'title'])
+
                 self.source_list[idx] = current_step
                 self.source[source_ref] = current_step
             else:
+                self._validate_step(step, ['ref', 'title'])
+
                 self.source[step['ref']] = step
 
         if sort_needed is True:
@@ -169,6 +172,20 @@ class Steps(object):
                 del step['stepnum']
             return step
 
+    def _validate_step(self, step, keys):
+        "cursory checks a step object to make sure it's valid, errors otherwise."
+
+        valid = True
+        for i in keys:
+            if i not in step or step[i] is None:
+                valid = False
+                if i == 'ref':
+                    logger.error('a step in {0} is missing a ref'.format(self.source_fn))
+                else:
+                    logger.error('invalid step in {0}, with ref {1}, missing {2}'.format(self.source_fn, step['ref'], i))
+
+        if valid is False:
+            raise InvalidStep('invalid steps in {0}'.format(self.source_fn))
 
 class StepsOutput(object):
     """
