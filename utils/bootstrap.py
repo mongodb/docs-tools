@@ -1,5 +1,8 @@
 import os.path
 import subprocess
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from shutil import rmtree
 
@@ -19,7 +22,9 @@ def primer():
     if not os.path.exists(main_build):
         os.makedirs(main_build)
     elif not os.path.isdir(main_build):
-        raise Exception("[ERROR]: {0} is not a directory".format(main_build))
+        msg = "{0} is not a directory".format(main_build)
+        logger.critical(msg)
+        raise Exception(msg)
 
     if not os.path.islink(primer_build):
         rmtree(primer_build)
@@ -44,7 +49,7 @@ def primer():
         symlink(name=os.path.join(primer_conf, conf_fn),
                 target=os.path.abspath(os.path.join(main_build, '..', '..', 'config', conf_fn)))
 
-    print('[bootstrap]: initialized "primer" project.')
+    logger.info('initialized "primer" project.')
 
 def makefile_meta(conf):
     # re/generate the makefile.meta
@@ -69,24 +74,24 @@ def makefile_meta(conf):
 def pin_tools(conf):
     if 'tools' in conf.system:
         if conf.system.tools.pinned is True:
-            print('[bootstrap]: tool pinning engaged.')
+            logger.info('tool pinning engaged.')
             if 'ref' not in conf.system.tools or conf.system.tools.ref == 'HEAD':
-                print('[bootstrap]: Cannot pin tools to HEAD, '
-                      'which is the default for non-pinned projects.')
+                logger.warning( 'Cannot pin tools to HEAD, '
+                        'which is the default for non-pinned projects.')
             else:
                 repo = GitRepo(path=conf.paths.buildsystem)
 
                 if repo.sha() == conf.system.tools.ref:
-                    print('[bootstrap]: tools already pinned to {0}. '
-                          'Continuing without action.'.format(conf.system.tools.ref))
+                    logger.warning('tools already pinned to {0}. '
+                                   'Continuing without action.'.format(conf.system.tools.ref))
                 else:
                     repo.checkout(conf.system.tools.ref)
-                    print("[bootstrap]: pinned tools repo to: {0}".format(conf.system.tools.ref))
+                    logger.info("pinned tools repo to: {0}".format(conf.system.tools.ref))
         else:
-            print('[bootstrap]: tool pinning is not enabled.')
+            logger.info('tool pinning is not enabled.')
 
     else:
-        print('[bootstrap]: tool pinning is not supported by this project.')
+        loggger.warning('tool pinning is not supported by this project.')
 
 def fabric(buildsystem, conf_file):
     fab_dir = 'fabfile'
@@ -105,8 +110,7 @@ def fabric(buildsystem, conf_file):
     symlink(name=os.path.join(buildsystem, 'fabsrc', 'docs_meta.py'),
             target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
 
-    print('[bootstrap]: initialized fabric/ directory.')
-
+    logger.info('initialized fabric/ directory.')
 
 def config(buildsystem, conf_file):
     # config file injection
@@ -124,8 +128,8 @@ def config(buildsystem, conf_file):
         os.remove(conf_dir_link)
 
     symlink(name=conf_dir_link, target=os.path.dirname(conf_file))
-
-    print('[bootstrap]: initialized config/ directory.')
+    
+    logger.info('initialized config/ directory.')
 
 def utils(buildsystem, conf_file):
     # utils linking, the first should be redundant.
@@ -138,5 +142,5 @@ def utils(buildsystem, conf_file):
 
     symlink(name=os.path.join(buildsystem, 'utils', 'docs_meta.py'),
             target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
-
-    print('[bootstrap]: initialized utils/ directory.')
+    
+    logger.info('initialized utils/ directory.')
