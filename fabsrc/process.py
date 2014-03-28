@@ -15,6 +15,8 @@ from fabfile.utils.serialization import ingest_yaml_list
 from fabfile.utils.transformations import munge_page
 from fabfile.utils.jobs.context_pools import ProcessPool, ThreadPool
 
+from fabfile.utils.shell import command
+
 #################### PDFs from Latex Produced by Sphinx  ####################
 
 def _clean_sphinx_latex(fn, regexes):
@@ -23,39 +25,24 @@ def _clean_sphinx_latex(fn, regexes):
 def _render_tex_into_pdf(fn, path):
     pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
 
-    try:
-        with open(os.devnull, 'w') as f:
-            subprocess.check_call(pdflatex, shell=True, stdout=f, stderr=f)
-    except subprocess.CalledProcessError:
-        logger.error('tex: {0} file has errors, regenerate and try again'.format(fn))
-        return False
+    base_fn = os.path.basename(fn)
+    cmds = [ pdflatex,
+             "makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, base_fn[:-4])
+             pdflatex, 
+             pdflatex ]
 
-    logger.info('pdf: completed pdf rendering stage 1 of 4 for: {0}'.format(fn))
+    for idx, cmd in enumerate(cmds): 
+        r = command(command=cmd, ignore=True)
 
-    try:
-        with open(os.devnull, 'w') as f:
-            subprocess.check_call("makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, os.path.basename(fn)[:-4]), shell=True, stdout=f, stderr=f)
-    except subprocess.CalledProcessError:
-        logger.warning('tex-indexing: {0} file has errors, regenerate and try again'.format(fn))
-    logger.info('pdf: completed pdf rendering stage 2 of 4 (indexing) for: {0}'.format(fn))
-
-    try:
-        with open(os.devnull, 'w') as f:
-            subprocess.check_call(pdflatex, shell=True, stdout=f, stderr=f)
-    except subprocess.CalledProcessError:
-        logger.error('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
-        return False
-    logger.info('pdf: completed pdf rendering stage 3 of 4 for: {0}'.format(fn))
-
-    try:
-        with open(os.devnull, 'w') as f:
-            subprocess.check_call(pdflatex, shell=True, stdout=f, stderr=f)
-    except subprocess.CalledProcessErro:
-        logger.error('[ERROR]: {0} file has errors, regenerate and try again'.format(fn))
-        return False
-    logger.info('pdf: completed pdf rendering stage 4 of 4 for: {0}'.format(fn))
-
-    logger.info('pdf: rendered {0}.{1}'.format(os.path.basename(fn), 'pdf'))
+        if r.succeeded is True: 
+            loger.info('pdf completed rendering stage {0} of {1} successfully.'.format(idx, len(cmds)))
+        else: 
+            if idx <= 1: 
+                logger.warning('pdf build encountered error early on {0}, continuing cautiously.'.format(base_fn))
+                continue
+            else:
+                logger.error('pdf build encountered error running pdflatex, investigate on {0}. terminating'.format(base_fn))
+                return False
 
 @task
 def pdfs():
