@@ -18,7 +18,7 @@ def robots_txt_builder(fn, conf, override=False):
                             'robots.yaml')
 
     if not os.path.exists(input_fn):
-        logger.warning('[robots]: {0} does not exist. not generating robots.txt'.format(input_fn))
+        logger.warning('{0} does not exist. not generating robots.txt'.format(input_fn))
         return False
 
     suppressed = ingest_yaml_list(input_fn)

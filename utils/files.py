@@ -71,7 +71,7 @@ class FileOperationError(Exception): pass
 
 def copy_always(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False:
-        logger.error("[{0}]: Input file '{1}' does not exist.".format(name, source_file))
+        logger.error("{0}: Input file '{1}' does not exist.".format(name, source_file))
         raise FileOperationError
     else:
         if not os.path.exists(os.path.dirname(target_file)):

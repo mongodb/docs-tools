@@ -22,7 +22,7 @@ def generate_hash_file(fn):
 
     try:
         if r.get_block('_all')[0] == existing[:-1]:
-            logger.info('[build]: no new commit(s), not updating {0} ({1})'.format(fn, commit[:10]))
+            logger.info('no new commit(s), not updating {0} ({1})'.format(fn, commit[:10]))
             return True
     except TypeError:
         logger.warning('problem generating {0}, continuing'.format(fn))
@@ -30,4 +30,4 @@ def generate_hash_file(fn):
             os.utime(fn, times)
     else:
         r.write(fn)
-        logger.info('[build]: regenerated {0} with new commit hash: {1}'.format(fn, commit[:10]))
+        logger.info('regenerated {0} with new commit hash: {1}'.format(fn, commit[:10]))

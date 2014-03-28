@@ -26,6 +26,8 @@ def check(site, conf=None):
 
     r = urlopen(env.release_info_url).readlines()[0].split('\n')[0]
     if get_commit() == r:
-        raise PublicationError('ERROR: the current published version of is the same as the current commit. Make a new commit before publishing.')
+        msg = 'ERROR: the current published version of is the same as the current commit. Make a new commit before publishing.'
+        logger.critical(msg)
+        raise PublicationError(msg)
     else:
-        logger.warning('[build]: the current commit is different than the published version on.')
+        logger.info('the current commit is different than the published version on.')
