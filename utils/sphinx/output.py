@@ -73,7 +73,7 @@ def is_msg_worthy(l):
         return False
     elif l.endswith('Duplicate ID: "cmdoption-h".'):
         return False
-    elif l.endswith('should look like "opt", "-opt args", "--opt args" or "/opt args"'):
+    elif l.endswith('should look like "-opt args", "--opt args" or "/opt args"'):
         return False
     else:
         return True
