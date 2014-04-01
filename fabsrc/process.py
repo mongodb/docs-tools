@@ -28,16 +28,16 @@ def _render_tex_into_pdf(fn, path):
     base_fn = os.path.basename(fn)
     cmds = [ pdflatex,
              "makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, base_fn[:-4]),
-             pdflatex, 
+             pdflatex,
              pdflatex ]
 
-    for idx, cmd in enumerate(cmds): 
+    for idx, cmd in enumerate(cmds):
         r = command(command=cmd, ignore=True)
 
-        if r.succeeded is True: 
-            loger.info('pdf completed rendering stage {0} of {1} successfully.'.format(idx, len(cmds)))
-        else: 
-            if idx <= 1: 
+        if r.succeeded is True:
+            loginfo('pdf completed rendering stage {0} of {1} successfully.'.format(idx, len(cmds)))
+        else:
+            if idx <= 1:
                 logger.warning('pdf build encountered error early on {0}, continuing cautiously.'.format(base_fn))
                 continue
             else:
