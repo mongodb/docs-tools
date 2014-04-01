@@ -122,7 +122,7 @@ def create_link(input_fn, output_fn):
     if out_base == "":
         msg = 'could not create a symlink at {1}.'.format('link', output_fn)
         logger.critical(msg)
-       raise FileOperationError(msg)
+        raise FileOperationError(msg)
     else:
         symlink(out_base, input_fn)
         os.rename(out_base, output_fn)

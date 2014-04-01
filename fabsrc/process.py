@@ -27,7 +27,7 @@ def _render_tex_into_pdf(fn, path):
 
     base_fn = os.path.basename(fn)
     cmds = [ pdflatex,
-             "makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, base_fn[:-4])
+             "makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, base_fn[:-4]),
              pdflatex, 
              pdflatex ]
 
