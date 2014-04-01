@@ -9,6 +9,7 @@ from threading import Lock
 from fabfile.intersphinx import intersphinx_jobs
 from fabfile.primer import primer_migrate_pages
 from fabfile.make import runner
+from fabfile.tools import Timer
 
 from utils.jobs.runners import runner as base_runner
 
@@ -72,8 +73,10 @@ def build_process_prerequsites(conf):
                            option_jobs(conf),
                            steps_jobs(conf),
                            release_jobs(conf),
-                           intersphinx_jobs(conf),
-                           image_jobs(conf))
+                           intersphinx_jobs(conf))
+
+    image_res = runner(image_jobs(conf), parallel='process')
+    logger.info('build {0} images and associated files'.format(len(image_res)))
 
     try:
         res = runner(jobs, parallel='process')
@@ -105,7 +108,6 @@ def build_job_prerequsites(sync, sconf, conf):
                     logger.info(o.out)
 
                 sync[cond_name] = True
-
 
         if sync.satisfied(cond_toc) is False:
             # this has to go here so that MMS can generate different toc trees for

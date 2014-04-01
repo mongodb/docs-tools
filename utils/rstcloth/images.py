@@ -75,7 +75,7 @@ def generate_image_pages(dir, name, alt, output, conf=None):
         r.newline(block=b)
 
     r.write(image + '.rst')
-    logger.info('generated include file {0}.rst'.format(image))
+    logger.debug('generated include file {0}.rst'.format(image))
 
 def main():
     image = json.loads(sys.argv[1])

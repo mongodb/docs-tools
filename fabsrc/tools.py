@@ -2,6 +2,9 @@ import os.path
 import re
 import json
 import time
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from fabric.api import task, local, puts, lcd, env, abort
 
@@ -89,6 +92,6 @@ class Timer():
         message = '[build] [timer]: time elapsed for {0} was: {1}'
         message = message.format(self.name, str(time.time() - self.start))
 
-        logger.debug(message) 
+        logger.debug(message)
         if self.report is True:
             print(message)

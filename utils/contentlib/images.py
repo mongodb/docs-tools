@@ -29,7 +29,7 @@ def _generate_images(cmd, dpi, width, target, source):
                        width=width,
                        target=target,
                        source=source))
-    logger.info('generated image file {0}'.format(target))
+    logger.debug('generated image file {0}'.format(target))
 
 def image_jobs(conf=None):
     conf = lazy_conf(None)
