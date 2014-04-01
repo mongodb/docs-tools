@@ -35,7 +35,7 @@ def _render_tex_into_pdf(fn, path):
         r = command(command=cmd, ignore=True)
 
         if r.succeeded is True:
-            loginfo('pdf completed rendering stage {0} of {1} successfully.'.format(idx, len(cmds)))
+            logger.info('pdf completed rendering stage {0} of {1} successfully.'.format(idx, len(cmds)))
         else:
             if idx <= 1:
                 logger.warning('pdf build encountered error early on {0}, continuing cautiously.'.format(base_fn))

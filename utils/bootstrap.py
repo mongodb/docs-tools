@@ -91,7 +91,7 @@ def pin_tools(conf):
             logger.info('tool pinning is not enabled.')
 
     else:
-        loggger.warning('tool pinning is not supported by this project.')
+        logger.warning('tool pinning is not supported by this project.')
 
 def fabric(buildsystem, conf_file):
     fab_dir = 'fabfile'
@@ -128,7 +128,7 @@ def config(buildsystem, conf_file):
         os.remove(conf_dir_link)
 
     symlink(name=conf_dir_link, target=os.path.dirname(conf_file))
-    
+
     logger.info('initialized config/ directory.')
 
 def utils(buildsystem, conf_file):
@@ -142,5 +142,5 @@ def utils(buildsystem, conf_file):
 
     symlink(name=os.path.join(buildsystem, 'utils', 'docs_meta.py'),
             target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
-    
+
     logger.info('initialized utils/ directory.')
