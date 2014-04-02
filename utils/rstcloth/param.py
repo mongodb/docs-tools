@@ -99,6 +99,7 @@ def process_description(content, optional=False):
             o = 'Optional. '
         else:
             o = ''
+
         return fill(o + content, hanging=3, wrap=False)
 
 def process_type_cell(type_data, output):

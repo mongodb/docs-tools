@@ -17,14 +17,14 @@ class Options(object):
         self.cache = dict()
         self.source_files = list()
         self.unresolved = list()
+
         if fn is not None:
             self.source_dirname = os.path.dirname(os.path.abspath(fn))
+            logger.debug("reading options from {0}".format(fn))
+            self.ingest(fn)
         else:
             self.source_dirname = fn
 
-        if fn is not None:
-            logger.debug("reading options from {0}".format(fn))
-            self.ingest(fn)
 
     def ingest(self, fn):
         if self.source_dirname is None:
@@ -154,12 +154,13 @@ class Option(object):
                     self.replacement['role'] = ":{0}:`{1}`".format(self.directive, self.name)
 
     def replace(self):
-        for i in range(10):
-            template = Template(self.description)
-            self.description = template.render(**self.replacement)
+        if self.description is not None:
+            for i in range(10):
+                template = Template(self.description)
+                self.description = template.render(**self.replacement)
 
-            if "{{" not in self.description:
-                break
+                if "{{" not in self.description:
+                    break
 
         if self.pre is not None:
             for i in range(10):
@@ -192,7 +193,6 @@ class OptionRendered(object):
                 prefix = ''
             else:
                 prefix = '--'
-
 
             if hasattr(self.option, 'aliases'):
                 if hasattr(self.option, 'arguments'):
@@ -250,7 +250,9 @@ class OptionRendered(object):
             self.rst.newline()
 
         output_file = self.resolve_output_path(path)
+
         self.rst.write(output_file)
+
         logger.debug('wrote option to file {0}'.format(output_file))
 
 def main(files):
