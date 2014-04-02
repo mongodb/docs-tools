@@ -212,8 +212,10 @@ class StepsOutput(object):
             if isinstance(step['title'], dict):
                 step['title']['text'] = 'Optional. ' + step['title']['text']
             else:
-                if 'heading' in step:
+                if 'title' in step:
                     step['title'] = 'Optional. ' + step['title']
+                elif 'heading' in step:
+                    step['heading'] = 'Optional. ' + step['heading']
 
             del step['optional']
             return step
