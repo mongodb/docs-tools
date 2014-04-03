@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+from copy import deepcopy
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -68,6 +69,11 @@ class Options(object):
                 if 'inherit' in base_opt.doc:
                     del base_opt.doc['inherit']
 
+                if base_opt.name == 'verbose':
+                    print(base_opt.program, base_opt.directive)
+                    opt_test = Option(base_opt.doc)
+                    print(opt_test.doc['directive'], opt_test.directive)
+
                 opt = Option(base_opt.doc)
                 logmsg = 'cached option while rendering {0}, program "{1}" name "{2}"'
                 logger.debug(logmsg.format(self.source_dirname, opt.program, opt.name))
@@ -77,7 +83,7 @@ class Options(object):
         self.unresolved = list()
 
     def resolve_inherited(self, spec):
-        return self.cache[spec.file][spec.program][spec.name]
+        return deepcopy(self.cache[spec.file][spec.program][spec.name])
 
     def iterator(self):
         for item in self.data:
@@ -89,11 +95,10 @@ optional_source_fields = ['default', 'type', 'pre', 'description', 'post', 'dire
 class Option(object):
     def __init__(self, doc):
         self.doc = doc
+        self._directive = None
 
         self.name = doc['name']
         self.program = doc['program']
-
-        self._directive = 'describe'
 
         for k in optional_source_fields:
             if k in doc:
@@ -130,12 +135,15 @@ class Option(object):
 
         # add auto-populated replacements here
         self.add_replacements()
-        logmsg = 'creation option representation for the {0} option for {1}'
+        logmsg = 'created option representation for the {0} option for {1}'
         logger.debug(logmsg.format(self.name, self.program))
 
     @property
     def directive(self):
-        return self._directive
+        if self._directive is None:
+            return 'describe'
+        else:
+            return self._directive
 
     @directive.setter
     def directive(self, value):
