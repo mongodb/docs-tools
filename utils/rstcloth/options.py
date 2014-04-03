@@ -69,11 +69,6 @@ class Options(object):
                 if 'inherit' in base_opt.doc:
                     del base_opt.doc['inherit']
 
-                if base_opt.name == 'verbose':
-                    print(base_opt.program, base_opt.directive)
-                    opt_test = Option(base_opt.doc)
-                    print(opt_test.doc['directive'], opt_test.directive)
-
                 opt = Option(base_opt.doc)
                 logmsg = 'cached option while rendering {0}, program "{1}" name "{2}"'
                 logger.debug(logmsg.format(self.source_dirname, opt.program, opt.name))
