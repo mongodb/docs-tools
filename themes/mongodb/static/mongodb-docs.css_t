@@ -119,6 +119,12 @@ div.body h4:hover:before {
     -moz-osx-font-smoothing: grayscale;
 }
 
+div.body .sequence-block h2:hover:before,
+div.body .sequence-block h3:hover:before,
+div.body .sequence-block h4:hover:before {
+    left: -46px;
+}
+
 div.body h2.collapsed:hover:before,
 div.body h3.collapsed:hover:before,
 div.body h4.collapsed:hover:before {
