@@ -150,6 +150,8 @@ def mangle_paths(conf):
                 'hosted': os.path.join(conf.paths.public, 'hosted', get_branch()),
                 'saas': os.path.join(conf.paths.public, 'saas')
             })
+            if conf.git.branches.current not in conf.git.branches.published:
+                conf.paths.mms.saas = '-'.join([conf.paths.mms.saas, conf.git.branches.current])
 
         conf.system.processed.project_paths = True
         return conf

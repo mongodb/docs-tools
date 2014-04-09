@@ -8,7 +8,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 from utils.shell import command
 from utils.config import lazy_conf
 from utils.structures import BuildConfiguration
-from utils.project import mms_should_migrate
 from utils.serialization import ingest_yaml_list
 from utils.jobs.dependency import check_dependency
 from utils.files import (expand_tree, create_link, copy_if_needed,
@@ -39,12 +38,9 @@ def manual_single_html(input_file, output_file):
 #################### Sphinx Post-Processing ####################
 
 def finalize_epub_build(conf):
-    if conf.project.name in ['mms', 'about', 'meta-driver'] and mms_should_migrate(builder, conf) is False:
-        return False
-    else:
-        epub_name = '-'.join(conf.project.title.lower().split())
-        epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
-        epub_src_filename = epub_name + '.epub'
+    epub_name = '-'.join(conf.project.title.lower().split())
+    epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
+    epub_src_filename = epub_name + '.epub'
 
     copy_if_needed(source_file=os.path.join(conf.paths.projectroot,
                                             conf.paths.branch_output,
@@ -62,9 +58,6 @@ def get_single_html_dir(conf):
     return os.path.join(conf.paths.public_site_output, 'single')
 
 def finalize_single_html_jobs(builder, conf):
-    if conf.project.name == 'mms' and mms_should_migrate(builder, conf) is False:
-        raise StopIteration
-
     pjoin = os.path.join
 
     single_html_dir = get_single_html_dir(conf)
@@ -123,9 +116,6 @@ def finalize_dirhtml_build(builder, conf):
 
     single_html_dir = get_single_html_dir(conf)
     search_page = pjoin(conf.paths.branch_output, builder, 'index.html')
-
-    if conf.project.name == 'mms' and mms_should_migrate(builder, conf) is False:
-        return False
 
     if os.path.exists(search_page):
         copy_if_needed(source_file=search_page,

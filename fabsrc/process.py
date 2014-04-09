@@ -8,7 +8,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 from fabric.api import task
 
 from fabfile.utils.config import lazy_conf
-from fabfile.utils.project import mms_should_migrate
 from fabfile.utils.files import (create_link, copy_if_needed,
                                  decode_lines_from_file, encode_lines_to_file)
 from fabfile.utils.serialization import ingest_yaml_list
@@ -83,17 +82,17 @@ def pdf_jobs(target, conf):
         latex_dir = os.path.join(conf.paths.branch_output, target)
 
         if 'edition' in i:
-            deploy_path = os.path.join(conf.paths.public, i['edition'])
+            deploy_path = conf.paths.mms[i['edition']]
 
             target_split = target.split('-')
 
             if len(target_split) > 1:
                 if target_split[1] != i['edition']:
+                    logger.debug('not making pdf {0}, because {1} is not {2}'.format(link_name, target_split[1], i['edition']))
                     continue
 
-            if i['edition'] == 'hosted':
-                deploy_path = os.path.join(deploy_path,  conf.git.branches.current)
-            else:
+
+            if i['edition'] != 'hosted':
                 deploy_fn = tagged_name + '.pdf'
                 link_name = deploy_fn
         else:
@@ -123,18 +122,15 @@ def pdf_jobs(target, conf):
                              job=_render_tex_into_pdf,
                              args=(i['processed'], i['path'])))
 
-        if conf.project.name == 'mms' and mms_should_migrate(target, conf) is False:
-            pass
-        else:
-            queue[3].append(dict(dependency=i['pdf'],
-                                 target=i['deployed'],
-                                 job=copy_if_needed,
-                                 args=(i['pdf'], i['deployed'], 'pdf')))
+        queue[3].append(dict(dependency=i['pdf'],
+                             target=i['deployed'],
+                             job=copy_if_needed,
+                             args=(i['pdf'], i['deployed'], 'pdf')))
 
-            if i['link'] != i['deployed']:
-                queue[4].append(dict(dependency=i['deployed'],
-                                     target=i['link'],
-                                     job=create_link,
-                                     args=(deploy_fn, i['link'])))
+        if i['link'] != i['deployed']:
+            queue[4].append(dict(dependency=i['deployed'],
+                                 target=i['link'],
+                                 job=create_link,
+                                 args=(deploy_fn, i['link'])))
 
     return queue

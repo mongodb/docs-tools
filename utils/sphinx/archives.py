@@ -1,12 +1,8 @@
 import os.path
 
-from utils.project import mms_should_migrate
 from utils.files import copy_if_needed, create_link, tarball
 
 def html_tarball(builder, conf):
-    if conf.project.name == 'mms' and mms_should_migrate(builder, conf) is False:
-        return False
-
     copy_if_needed(os.path.join(conf.paths.projectroot,
                                 conf.paths.includes, 'hash.rst'),
                    os.path.join(conf.paths.projectroot,
