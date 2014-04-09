@@ -16,6 +16,7 @@ import includes
 import generate
 import sphinx
 import tx
+import transform
 
 from make import make, force, serial, pool
 from deploy import deploy
