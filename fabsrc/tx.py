@@ -112,9 +112,9 @@ def check():
     for fn in files:
         fqfn = os.path.join(conf.paths.projectroot, fn)
 
-        if not os.path.exists(fn):
+        if not os.path.exists(fqfn):
             errs += 1
-            logger.error(fn + " does not exist.")
+            logger.error(fqfn + " does not exist.")
 
     if errs != 0:
         logger.warning("{0} files configured that don't exist.")
