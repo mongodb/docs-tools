@@ -59,23 +59,18 @@ def crawl_up_tree(path, base_len=-1):
     return path
 
 def safe_bootstrap(conf):
-    conf_artifact_project = os.path.realpath(os.path.join(conf.paths.buildsystem,
-                                                   'config')).split(os.path.sep)[-2]
+    conf_path = os.path.join(conf.paths.projectroot, conf.system.conf_file)
+    build_tools_path = os.path.join(conf.paths.projectroot, conf.paths.buildsystem)
 
-    if conf.paths.projectroot.endswith(conf_artifact_project):
-        return conf
-    else:
-        conf_path = os.path.join(conf.paths.projectroot, conf.system.conf_file)
-        build_tools_path = conf.paths.buildsystem
+    bootstrap.fabric(build_tools_path, conf_path)
+    bootstrap.config(build_tools_path, conf_path)
+    bootstrap.utils(build_tools_path, conf_path)
 
-        bootstrap.fabric(build_tools_path, conf_path)
-        bootstrap.config(build_tools_path, conf_path)
-        bootstrap.utils(build_tools_path, conf_path)
+    conf = get_conf()
+    conf.system.processed.bootstrap = True
+    logger.info('automatically ran safe tools bootstrapping procedures.')
 
-        conf = get_conf()
-        conf.system.processed.bootstrap = True
-        logger.info('automatically ran safe tools bootstrapping procedures.')
-        return conf
+    return conf
 
 def get_conf():
     project_root_dir, conf_file, conf = discover_config_file()
@@ -99,7 +94,12 @@ def get_conf():
     conf.system.processed.project_conf = False
     conf.system.processed.versions = False
 
-    conf = safe_bootstrap(conf)
+    conf_artifact_project = os.path.realpath(os.path.join(conf.paths.buildsystem,
+                                                   'config')).split(os.path.sep)[-2]
+
+    if not conf.paths.projectroot.endswith(conf_artifact_project):
+        return conf
+
     conf = mangle_configuration(conf)
     conf = render_versions(conf)
 
