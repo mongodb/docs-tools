@@ -35,6 +35,8 @@ def get_sphinx_args(sconf, conf):
 def compute_sphinx_config(builder, sconf, conf):
     if 'inherit' in sconf[builder]:
         computed_config = deepcopy(sconf[sconf[builder]['inherit']])
+        if 'inherit' in computed_config:
+            computed_config.update(deepcopy(sconf[computed_config['inherit']]))
         computed_config.update(sconf[builder])
     else:
         computed_config = deepcopy(sconf[builder])
