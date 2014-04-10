@@ -109,6 +109,14 @@ def build_job_prerequsites(sync, sconf, conf):
 
                 sync[cond_name] = True
 
+        if 'excluded' in sconf:
+            logger.info('removing excluded files')
+            for fn in sconf.excluded:
+                fqfn = os.path.join(conf.paths.projectroot, conf.paths.branch_source, fn[1:])
+                if os.path.exists(fqfn):
+                    os.remove(fqfn)
+                    logger.info('removed {0}'.format(fqfn))
+
         if sync.satisfied(cond_toc) is False:
             # this has to go here so that MMS can generate different toc trees for
             # each edition.
@@ -132,6 +140,7 @@ def build_job_prerequsites(sync, sconf, conf):
             dump_file_hashes(conf)
         else:
             logger.debug('dependencies already updated, lock unneeded.')
+
         logger.debug('releasing dependency update lock.')
 
     logging.info('build environment prepared for sphinx build {0}.'.format(sconf.builder))
