@@ -98,7 +98,7 @@ def get_conf():
                                                    'config')).split(os.path.sep)[-2]
 
     if not conf.paths.projectroot.endswith(conf_artifact_project):
-        return conf
+        return safe_bootstrap(conf)
 
     conf = mangle_configuration(conf)
     conf = render_versions(conf)

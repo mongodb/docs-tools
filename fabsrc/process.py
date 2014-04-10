@@ -91,7 +91,6 @@ def pdf_jobs(target, conf):
                     logger.debug('not making pdf {0}, because {1} is not {2}'.format(link_name, target_split[1], i['edition']))
                     continue
 
-
             if i['edition'] != 'hosted':
                 deploy_fn = tagged_name + '.pdf'
                 link_name = deploy_fn
