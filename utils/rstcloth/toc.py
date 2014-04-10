@@ -140,6 +140,10 @@ class AggregatedTocTree(CustomTocTree):
 
             for dfn in definition['files']:
                 if isinstance(dfn, dict):
+                    if 'edition' in dfn:
+                        if dfn['edition'] != self.conf.project.edition:
+                            continue
+
                     if 'file' in dfn:
                         filter_specs.append( (dfn['file'],  dfn['level'], True) )
                     elif 'text' in dfn:
