@@ -5,6 +5,7 @@ import logging
 logger = logging.getLogger(os.path.basename(__file__))
 
 from threading import Lock
+from shutil import rmtree
 
 from fabfile.intersphinx import intersphinx_jobs
 from fabfile.primer import primer_migrate_pages
@@ -91,30 +92,28 @@ def build_job_prerequsites(sync, sconf, conf):
     runner(external_jobs(conf), parallel='thread')
 
     with update_source_lock:
-        if conf.project.name != 'mms':
-            if sync.satisfied('transfered_source') is False:
-                transfer_source(sconf, conf)
-                sync.transfered_source = True
-            cond_toc = "build_toc"
-        else:
-            cond_name = 'transfered_' + sconf.edition
-            cond_toc = 'build_toc_' + sconf.edition
-            if sync.satisfied(cond_name) is False:
-                cmd = 'make -C {0} {1}-source-dir={0}{2}{3} EDITION={1} generate-source-{1}'
-                cmd = cmd.format(conf.paths.projectroot, sconf.edition, os.path.sep,
-                                 conf.paths.branch_source)
-                o = command(cmd, capture=True)
-                if len(o.out.strip()) > 0:
-                    logger.info(o.out)
+        cond_toc = "build_toc"
+        cond_name = 'transfered_source'
+        cond_dep = 'updated_deps'
 
-                sync[cond_name] = True
+        if conf.project.name == 'mms':
+            cond_name += '_' + sconf.edition
+            cond_toc += '_' + sconf.edition
+            cond_dep += '_' + sconf.edition
+
+        if sync.satisfied(cond_name) is False:
+            transfer_source(sconf, conf)
+            sync[cond_name] = True
 
         if 'excluded' in sconf:
             logger.info('removing excluded files')
             for fn in sconf.excluded:
                 fqfn = os.path.join(conf.paths.projectroot, conf.paths.branch_source, fn[1:])
                 if os.path.exists(fqfn):
-                    os.remove(fqfn)
+                    if os.path.isdir(fqfn):
+                        rmtree(fqfn)
+                    else:
+                        os.remove(fqfn)
                     logger.info('removed {0}'.format(fqfn))
 
         if sync.satisfied(cond_toc) is False:
@@ -127,13 +126,13 @@ def build_job_prerequsites(sync, sconf, conf):
             r = base_runner(toc_jobs(conf), pool=8, parallel='process', force=False)
             logger.info('generated {0} toc files'.format(len(r)))
 
-        if sync.satisfied('updated_deps') is False:
+        if sync.satisfied(cond_dep) is False:
             logger.debug('using update deps lock.')
 
             logger.info('resolving all intra-source dependencies now. for sphinx build. (takes several seconds)')
             dep_count = refresh_dependencies(conf)
             logger.info('bumped {0} dependencies'.format(dep_count))
-            sync.updated_deps = True
+            sync[cond_dep] = True
 
             command(build_platform_notification('Sphinx', 'Build in progress past critical phase.'), ignore=True)
             logger.info('sphinx build in progress past critical phase ({0})'.format(conf.paths.branch_source))
