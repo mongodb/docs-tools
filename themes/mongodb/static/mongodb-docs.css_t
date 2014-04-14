@@ -540,7 +540,7 @@ tt,tt  span.pre {
 tt.descname,
 tt.descclassname {
     font-size: 16px;
-    font-weight: 300;
+    font-weight: normal;
 }
 
 dl.method dt {
