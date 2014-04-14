@@ -114,6 +114,9 @@ $(function() {
     /* Open options panel when clicking the version */
     $('.sphinxsidebarwrapper h3 a.version').on('click', function(e) {
         e.preventDefault();
+
+        // stop propagation to prevent reclosing of the option panel
+        e.stopPropagation();
         $('.option-popup').removeClass('closed');
     });
 
