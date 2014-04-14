@@ -11,6 +11,10 @@ from utils.serialization import ingest_yaml
 from utils.config import lazy_conf
 
 def redirect_schema_migration(redir):
+    """
+    Translate redirection documents to use more sensible field names.
+    """
+
     o = {}
 
     if 'url-base' in redir:
@@ -22,11 +26,12 @@ def redirect_schema_migration(redir):
 
     o.update(redir)
 
-    logger.info("before: {0}".format(redir))
-    logger.info("after: {0}".format(o))
     return o
 
 def process_redirect(redirect, conf=None):
+    """Given a redirection document, returns a properly formatted string for an
+    Apache htaccess redirect statement."""
+
     conf = lazy_conf(conf)
 
     redirect = redirect_schema_migration(redirect)
