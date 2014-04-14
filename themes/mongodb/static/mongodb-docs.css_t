@@ -98,6 +98,10 @@ div.body h2:hover, div.body h3:hover, div.body h4:hover {
     margin-left: -13px;
 }
 
+div.body h2:hover:before {
+    top: -2px;
+}
+
 div.body h2:hover:before,
 div.body h3:hover:before,
 div.body h4:hover:before {
