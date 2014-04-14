@@ -19,7 +19,7 @@ jQuery.ajax({
 	});
 window.ATL_JQ_PAGE_PROPS =  {
 	"triggerFunction": function(showCollectorDialog) {
-		jQuery("#jirafeedback").click(function(e) {e.preventDefault();showCollectorDialog();});},
+		jQuery(".jirafeedback").click(function(e) {e.preventDefault();showCollectorDialog();});},
 		fieldValues: {component: '{{component}}', summary: 'Comment on: "{{theme_project}}/{{pagename}}.txt"'},
 		environment: {'repo': '{{theme_repo_name|e}}','source': '{{pagename|e}}'}
 		};
