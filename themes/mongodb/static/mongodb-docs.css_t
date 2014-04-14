@@ -956,38 +956,10 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     display: inline-block;
 }
 
-.right-column .social .twitter-icon .img {
-    background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-twitter.png);
-}
-
-.right-column .social .youtube-icon .img {
-    background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-youtube.png);
-}
-
-.right-column .social .facebook-icon .img {
-    background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-facebook.png);
-}
-
-.right-column .social .gplus-icon .img {
-    background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-gplus.png);
-}
-
-@media only screen and (-webkit-min-device-pixel-ratio: 2) {
-    .right-column .social .twitter-icon .img {
-        background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-twitter@2x.png);
-    }
-
-    .right-column .social .youtube-icon .img {
-        background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-youtube@2x.png);
-    }
-
-    .right-column .social .facebook-icon .img {
-        background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-facebook@2x.png);
-    }
-
-    .right-column .social .gplus-icon .img {
-        background-image: url(http://media.mongodb.org.s3.amazonaws.com/social-gplus@2x.png);
-    }
+.right-column .social a {
+    margin-right: 2px;
+    font-size: 22px;
+    color: #615f5f;
 }
 
 /* Numbered steps directive */
