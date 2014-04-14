@@ -1,13 +1,35 @@
+import argparse
+import logging
 import os.path
 import sys
-import argparse
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 import yaml
 
 from utils.serialization import ingest_yaml
 from utils.config import lazy_conf
 
+def redirect_schema_migration(redir):
+    o = {}
+
+    if 'url-base' in redir:
+        o['to'] = redir['url-base']
+        del redir['url-base']
+    if 'redirect-path' in redir:
+        o['from'] = redir['redirect-path']
+        del redir['redirect-path']
+
+    o.update(redir)
+
+    logger.info("before: {0}".format(redir))
+    logger.info("after: {0}".format(o))
+    return o
+
 def process_redirect(redirect, conf=None):
     conf = lazy_conf(conf)
+
+    redirect = redirect_schema_migration(redirect)
 
     if 'all' in redirect['outputs']:
         redirect['outputs'].remove('all')
@@ -40,8 +62,8 @@ def generate_match_rule(redir, base, conf=None):
 
     o = 'RedirectMatch {0} /({1}){2} {3}/$1{4}'
 
-    return o.format(redir['code'], base, redir['redirect-path'],
-                    conf.project.url, redir['url-base'])
+    return o.format(redir['code'], base, redir['from'],
+                    conf.project.url, redir['to'])
 
 def generate_simple_rule(redir, base=None, conf=None):
     conf = lazy_conf(conf)
@@ -54,13 +76,13 @@ def generate_simple_rule(redir, base=None, conf=None):
 
         o = 'Redirect {0} /{1}{2} {3}/{4}{5}'
 
-        return o.format(redir['code'], left, redir['redirect-path'],
-                        conf.project.url, right, redir['url-base'])
+        return o.format(redir['code'], left, redir['from'],
+                        conf.project.url, right, redir['to'])
     else:
         o = 'Redirect {0} /{1}{2} {3}/{1}{4}'
 
-        return o.format(redir['code'], base, redir['redirect-path'],
-                        conf.project.url, redir['url-base'])
+        return o.format(redir['code'], base, redir['from'],
+                        conf.project.url, redir['to'])
 
 def generate_external_rule(redir, base=None, conf=None):
     conf = lazy_conf(conf)
@@ -70,8 +92,8 @@ def generate_external_rule(redir, base=None, conf=None):
 
     o = 'Redirect {0} /{1}{2} {3}/{4}{5}'
 
-    return o.format(redir['code'], base, redir['redirect-path'],
-                    conf.project.url, redir['external'], redir['url-base'])
+    return o.format(redir['code'], base, redir['from'],
+                    conf.project.url, redir['external'], redir['to'])
 
 def determine_is_multi(targets):
     if len(targets) > 1:
@@ -127,7 +149,7 @@ def main():
     for doc in ingest_yaml(ui.data):
         if doc['type'] == 'redirect':
             lines.append(generate_redirects(process_redirect(doc, conf=conf), match=ui.match, conf=conf))
-        if doc['type'] == 'redirect-draft':
+        if doc['type'] == 'draft':
             print(generate_redirects(process_redirect(doc, conf=conf), match=ui.match, conf=conf))
 
     if lines:
