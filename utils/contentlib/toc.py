@@ -23,9 +23,9 @@ def _get_toc_base_name(fn):
 
 def _get_toc_output_name(name, type, paths):
     if type == 'toc':
-        return os.path.join(paths.branch_source, 'includes', 'toc', '{0}.rst'.format(name))
+        return os.path.join(paths.projectroot, paths.branch_source, 'includes', 'toc', '{0}.rst'.format(name))
     else:
-        return os.path.join(paths.branch_source, 'includes', 'toc', '{0}-{1}.rst'.format(type, name))
+        return os.path.join(paths.projectroot, paths.branch_source, 'includes', 'toc', '{0}-{1}.rst'.format(type, name))
 
 def _generate_toc_tree(fn, fmt, base_name, paths, conf):
     if fmt == 'spec':
@@ -107,6 +107,4 @@ def toc_jobs(conf):
             elif fmt == 'ref' or is_ref_spec:
                 o['target'].append(_get_toc_output_name(base_name, 'table', paths))
 
-            o['dependency'] = None
             yield o
-

@@ -85,6 +85,7 @@ import yaml
 
 from utils.rstcloth.rstcloth import RstCloth
 from utils.serialization import ingest_yaml_list
+from utils.config import lazy_conf
 
 class InvalidStep(Exception):
     pass
@@ -154,12 +155,10 @@ class Steps(object):
                 current_step.update(step)
 
                 self._validate_step(current_step, ['ref', 'title'])
-
-                self.source_list[idx] = current_step
                 self.source[source_ref] = current_step
+                self.source_list[idx] = current_step
             else:
                 self._validate_step(step, ['ref', 'title'])
-
                 self.source[step['ref']] = step
 
         if sort_needed is True:
@@ -193,18 +192,27 @@ class StepsOutput(object):
     the internal RstCloth object.
     """
 
-    def __init__(self, steps):
+    def __init__(self, steps, conf=None):
         if not isinstance(steps, Steps):
             raise TypeError
         else:
             self.steps = steps
 
+        self.conf = lazy_conf(conf)
         self.current_step = 1
         self.rst = RstCloth()
         self.hook()
 
     def hook(self):
         self.indent = 3
+
+    def edition_check(self, step):
+        if 'edition' in step:
+            if 'edition' in self.conf.project:
+                if step['edition'] != self.conf.project.edition:
+                    return False
+        else:
+            return True
 
     @staticmethod
     def annotate_optional(step):
@@ -224,6 +232,9 @@ class StepsOutput(object):
 
     def render(self):
         for step in self.steps.source_list:
+            if self.edition_check(step) is False:
+                continue
+
             step = self.annotate_optional(step)
             self.heading(step)
             self.pre(step)
@@ -391,7 +402,7 @@ class WebStepsOutput(StepsOutput):
                            indent=3)
         self.rst.newline()
 
-def render_step_file(input_fn, output_fn=None):
+def render_step_file(input_fn, output_fn=None, conf=None):
     input_fn_base = os.path.basename(input_fn)
     logger.debug('generating step file for {0}'.format(input_fn_base))
     steps = Steps(input_fn)
@@ -399,14 +410,14 @@ def render_step_file(input_fn, output_fn=None):
 
     r = RstCloth()
 
-    web_output = WebStepsOutput(steps)
+    web_output = WebStepsOutput(steps, conf=conf)
     web_output.render()
     r.content(web_output.rst.get_block(), indent=0, wrap=False)
     logger.debug('generated web output for {0}'.format(input_fn_base))
 
     r.directive('only', 'latex')
     r.newline()
-    print_output = PrintStepsOutput(steps)
+    print_output = PrintStepsOutput(steps, conf=conf)
     print_output.render()
     r.content(print_output.rst.get_block(), indent=3, wrap=False)
     logger.debug('generated print output for {0}'.format(input_fn_base))

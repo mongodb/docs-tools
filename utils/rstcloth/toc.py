@@ -119,7 +119,7 @@ class CustomTocTree(object):
                     self.dfn.newline()
 
 class TocError(Exception): pass
-    
+
 class AggregatedTocTree(CustomTocTree):
     def __init__(self, filename, conf):
         self.conf = conf

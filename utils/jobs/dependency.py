@@ -112,30 +112,35 @@ def check_dependency(target, dependency):
         return True
 
     if isinstance(target, list):
-        return check_multi_dependency(target, dependency)
+        if len(target) == 1:
+            target = target[0]
+        else:
+            return check_multi_dependency(target, dependency)
 
-    if not os.path.exists(target):
+    if os.path.exists(target) is False:
         return True
 
+
     def needs_rebuild(targ_t, dep_f):
-        if targ_t < os.stat(dep_f).st_mtime:
+        if targ_t < os.path.getmtime(dep_f):
             return True
         else:
             return False
 
-    target_time = os.stat(target).st_mtime
+    target_time = os.path.getmtime(target)
     if isinstance(dependency, list):
-        ret = False
         for dep in dependency:
-            if needs_rebuild(target_time, dep):
-                ret = True
-                break
-        return ret
+            if needs_rebuild(target_time, dep) is True:
+                return True
+        return False
     else:
-        return needs_rebuild(target_time, dependency)
+        if needs_rebuild(target_time, dependency) is True:
+            return True
+        else:
+            return False
 
 def check_multi_dependency(target, dependency):
-    for t in target:
+    for idx, t in enumerate(target):
         if check_dependency(t, dependency) is True:
             return True
 

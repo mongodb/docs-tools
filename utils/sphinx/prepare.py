@@ -12,10 +12,9 @@ from fabfile.primer import primer_migrate_pages
 from fabfile.make import runner
 from fabfile.tools import Timer
 
-from utils.jobs.runners import runner as base_runner
-
 from utils.jobs.dependency import dump_file_hashes
 from utils.jobs.errors import PoolResultsError
+from utils.jobs.context_pools import ProcessPool
 from utils.output import build_platform_notification
 from utils.shell import command
 from utils.structures import StateAttributeDict
@@ -72,7 +71,6 @@ def build_process_prerequsites(conf):
                            table_jobs(conf),
                            api_jobs(conf),
                            option_jobs(conf),
-                           steps_jobs(conf),
                            release_jobs(conf),
                            intersphinx_jobs(conf))
 
@@ -95,11 +93,13 @@ def build_job_prerequsites(sync, sconf, conf):
         cond_toc = "build_toc"
         cond_name = 'transfered_source'
         cond_dep = 'updated_deps'
+        cond_steps = 'build_step_files'
 
         if conf.project.name == 'mms':
             cond_name += '_' + sconf.edition
             cond_toc += '_' + sconf.edition
             cond_dep += '_' + sconf.edition
+            cond_steps += '_' + sconf.edition
 
         if sync.satisfied(cond_name) is False:
             transfer_source(sconf, conf)
@@ -116,15 +116,20 @@ def build_job_prerequsites(sync, sconf, conf):
                         os.remove(fqfn)
                     logger.info('removed {0}'.format(fqfn))
 
-        if sync.satisfied(cond_toc) is False:
-            # this has to go here so that MMS can generate different toc trees for
+        with ProcessPool() as p:
+            # these must run here so that MMS can generate different toc/steps/etc for
             # each edition.
 
-            # even if this fails we don't want it to run more than once
-            sync[cond_toc] = True
+            if sync.satisfied(cond_toc) is False:
+                # even if this fails we don't want it to run more than once
+                sync[cond_toc] = True
+                tr = p.runner(toc_jobs(conf))
+                logger.info('generated {0} toc files'.format(len(tr)))
 
-            r = base_runner(toc_jobs(conf), pool=8, parallel='process', force=False)
-            logger.info('generated {0} toc files'.format(len(r)))
+            if sync.satisfied(cond_steps) is False:
+                sync[cond_steps] = True
+                sr = p.runner(steps_jobs(conf))
+                logger.info('generated {0} step files'.format(len(sr)))
 
         if sync.satisfied(cond_dep) is False:
             logger.debug('using update deps lock.')

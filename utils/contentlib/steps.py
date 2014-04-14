@@ -1,4 +1,7 @@
+import logging
 import os.path
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.files import expand_tree
 from utils.rstcloth.steps import render_step_file
@@ -8,7 +11,7 @@ from utils.rstcloth.steps import render_step_file
 def _get_steps_output_fn(fn, paths):
     root_name = os.path.splitext(os.path.basename(fn).split('-', 1)[1])[0] + '.rst'
 
-    return os.path.join(paths.projectroot, paths.includes, 'steps', root_name)
+    return os.path.join(paths.projectroot, paths.branch_source, 'includes', 'steps', root_name)
 
 def steps_jobs(conf):
     paths = conf.paths
@@ -20,6 +23,6 @@ def steps_jobs(conf):
             yield { 'dependency': fn,
                     'target': out_fn,
                     'job': render_step_file,
-                    'args': [fn, out_fn],
+                    'args': [fn, out_fn, conf],
                     'description': 'generating step file {0} from {1}'.format(out_fn, fn)
                   }
