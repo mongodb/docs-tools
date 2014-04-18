@@ -186,8 +186,6 @@ class Option(object):
 
         if self.default is not None and not (isinstance(self.default, bool) or
                                              isinstance(self.default, int)):
-
-             
             for i in attempts:
                 template = Template(self.default)
                 self.efault = template.render(**self.replacement)

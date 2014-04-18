@@ -426,7 +426,7 @@ def render_step_file(input_fn, output_fn=None, conf=None):
         output_fn = os.path.splitext(input_fn)[0] + '.rst'
 
     r.write(output_fn)
-    logger.info('wrote step include at {0}'.format(output_fn))
+    logger.debug('wrote step include at {0}'.format(output_fn))
 
 if __name__ == '__main__':
     render_step_file(sys.argv[1], sys.argv[2])
