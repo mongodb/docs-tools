@@ -9,6 +9,7 @@ import yaml
 
 from utils.serialization import ingest_yaml
 from utils.config import lazy_conf
+from utils.strings import slash_concat
 
 def redirect_schema_migration(redir):
     """
@@ -52,13 +53,13 @@ def process_redirect(redirect, conf=None):
                     idx = conf.git.branches.published.index(source.split('-', 1)[1])
 
                     for out in conf.git.branches.published[:idx]:
-                        redirect['outputs'].append({ left + out: right + out })
+                        redirect['outputs'].append({ slash_concat(left, out): slash_concat(right,out) })
                 elif source.startswith('before-'):
                     redirect['outputs'].remove(output)
                     idx = conf.git.branches.published.index(source.split('-', 1)[1])
 
                     for out in conf.git.branches.published[idx:]:
-                        redirect['outputs'].append({ left + out: right + out })
+                        redirect['outputs'].append({ slash_concat(left, out): slash_concat(right,out) })
                 else:
                     logger.error("{0} is invalid source for redirect: {1}".format(source, redirect))
             else:

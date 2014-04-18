@@ -10,6 +10,9 @@ def dot_concat(*args):
 def hyph_concat(*args):
     return '-'.join(args)
 
+def slash_concat(*args):
+    return '/'.join(args)
+
 def path_concat(*args):
     return os.path.sep.join(args)
 
