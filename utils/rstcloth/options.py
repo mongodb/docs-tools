@@ -31,9 +31,10 @@ class Options(object):
         if self.source_dirname is None:
             self.source_dirname = os.path.dirname(os.path.abspath(fn))
 
-        self.source_files.append(fn)
         input_sources = ingest_yaml_list(os.path.join(self.source_dirname, os.path.basename(fn)))
         self.cache[fn] = dict()
+
+        self.source_files.append(input_sources)
 
         for option in input_sources:
             opt = Option(option)
@@ -157,8 +158,10 @@ class Option(object):
                     self.replacement['role'] = ":{0}:`{1}`".format(self.directive, self.name)
 
     def replace(self):
+        attempts = range(10)
+
         if self.description is not None:
-            for i in range(10):
+            for i in attempts:
                 template = Template(self.description)
                 self.description = template.render(**self.replacement)
 
@@ -166,7 +169,7 @@ class Option(object):
                     break
 
         if self.pre is not None:
-            for i in range(10):
+            for i in attempts:
                 template = Template(self.pre)
                 self.pre = template.render(**self.replacement)
 
@@ -174,11 +177,22 @@ class Option(object):
                     break
 
         if self.post is not None:
-            for i in range(10):
+            for i in attempts:
                 template = Template(self.post)
                 self.post = template.render(**self.replacement)
 
                 if "{{" not in self.post:
+                    break
+
+        if self.default is not None and not (isinstance(self.default, bool) or
+                                             isinstance(self.default, int)):
+
+             
+            for i in attempts:
+                template = Template(self.default)
+                self.efault = template.render(**self.replacement)
+
+                if "{{" not in self.default:
                     break
 
 class OptionRendered(object):
