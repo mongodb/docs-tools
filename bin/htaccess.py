@@ -38,12 +38,31 @@ def process_redirect(redirect, conf=None):
 
     if 'all' in redirect['outputs']:
         redirect['outputs'].remove('all')
-        for branch in conf.git.branches.published:
-            redirect['outputs'].append(branch)
+        redirect['outputs'].extend(conf.git.branches.published)
 
     for output in redirect['outputs']:
         if isinstance(output, dict):
-            continue
+            source, target = output.items()[0]
+
+            if isinstance(target, dict):
+                left, right = target.items()[0]
+
+                if source.startswith('after-'):
+                    redirect['outputs'].remove(output)
+                    idx = conf.git.branches.published.index(source.split('-', 1)[1])
+
+                    for out in conf.git.branches.published[:idx]:
+                        redirect['outputs'].append({ left + out: right + out })
+                elif source.startswith('before-'):
+                    redirect['outputs'].remove(output)
+                    idx = conf.git.branches.published.index(source.split('-', 1)[1])
+
+                    for out in conf.git.branches.published[idx:]:
+                        redirect['outputs'].append({ left + out: right + out })
+                else:
+                    logger.error("{0} is invalid source for redirect: {1}".format(source, redirect))
+            else:
+                continue
         elif output.startswith('after-'):
             idx = conf.git.branches.published.index(output.split('-', 1)[1])
 
@@ -58,7 +77,9 @@ def process_redirect(redirect, conf=None):
     if redirect['code'] in [ 301, 302, 303 ]:
         redirect['code'] = str(redirect['code'])
     else:
-        raise Exception(str(redirect['code']) + ' is not a supported redirect code')
+        msg = str(redirect['code']) + ' is not a supported redirect code'
+        logger.critical(msg)
+        raise Exception(msg)
 
     return redirect
 
