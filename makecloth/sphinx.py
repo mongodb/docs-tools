@@ -88,12 +88,16 @@ def make_all_sphinx(config):
             targets.append(builder)
 
     if 'sphinx_builders' in config:
+        if 'editions' in config: 
+            builder_string = ','.join(['{0}-' + ed for ed in config['editions']])
+        else:
+            builder_string = ['{0}-hosted', '{0}-saas']
 
         for target in config['sphinx_builders']:
             m.target(target)
-            m.job('fab sphinx.target:{0}'.format(','.join([target + '-hosted', target + '-saas'])))
+            m.job('fab sphinx.target:{0}'.format(builder_string.format(target)))
             m.target(target + '-debug')
-            m.job('fab log.set:debug sphinx.target:{0}'.format(','.join([target + '-hosted', target + '-saas'])))
+            m.job('fab log.set:debug sphinx.target:{0}'.format(builder_string.format(target)))
 
         m.newline()
 
@@ -109,7 +113,6 @@ def sphinx_builder(target):
     b = 'production'
     m.comment(target, block=b)
 
-    fab_prefix = 'fab'
     ret_value = [ target ]
     fab_arg = [target]
 
@@ -126,23 +129,14 @@ def sphinx_builder(target):
         m.job('fab clean.sphinx:{0}'.format(builder), block=b)
         m.newline(block=b)
     elif len(target_parts) <= 3 and len(target_parts) > 1:
-        if target[1] == 'hosted' or target[1] == 'saas':
-            fab_prefix += " sphinx.edition:" + target[1]
-
-            builder = target[0]
-
-            fab_arg.append('tag=' + target[1])
-            if target[1] == 'hosted':
-                fab_arg.append('root=' + os.path.join(paths['output'], target[1], utils.get_branch()))
-            elif target[1] == 'saas':
-                fab_arg.append('root=' + os.path.join(paths['output'], target[1]))
+        builder = target[0]
 
     m.target(target, block=b)
     
     if target == 'gettext' or 'gettext' in target:
-        m.job('{0} tx.update'.format(fab_prefix), block=b)
+        m.job('fab tx.update', block=b)
     else:
-        m.job('{0} sphinx.target:{1}'.format(fab_prefix, target), block=b)
+        m.job('fab sphinx.target:{0}'.format(target), block=b)
 
     m.job(build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
 
@@ -150,9 +144,9 @@ def sphinx_builder(target):
     ret_value.append(target + '-debug')
 
     if target == 'gettext' or 'gettext' in target:
-        m.job('{0} log.set:debug tx.update'.format(fab_prefix), block=b)
+        m.job('fab log.set:debug tx.update', block=b)
     else:
-        m.job('{0} log.set:debug sphinx.target:{1}'.format(fab_prefix, target), block=b)
+        m.job('fab log.set:debug sphinx.target:{0}'.format(target), block=b)
 
     m.job(build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
 
