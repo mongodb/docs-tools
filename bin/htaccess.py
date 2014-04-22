@@ -117,10 +117,15 @@ def generate_external_rule(redir, base=None, conf=None):
     if base is None:
         base = redir['outputs'][0]
 
-    o = 'Redirect {0} /{1}{2} {3}/{4}{5}'
+    if redir['external'].startswith('http'):
+        o = 'Redirect {0} /{1}{2} {3}/{4}'
+        return o.format(redir['code'], base, redir['from'],
+                        redir['external'], redir['to'])
+    else:
+        o = 'Redirect {0} /{1}{2} {3}/{4}{5}'
 
-    return o.format(redir['code'], base, redir['from'],
-                    conf.project.url, redir['external'], redir['to'])
+        return o.format(redir['code'], base, redir['from'],
+                        conf.project.url, redir['external'], redir['to'])
 
 def determine_is_multi(targets):
     if len(targets) > 1:
