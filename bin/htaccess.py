@@ -118,11 +118,11 @@ def generate_external_rule(redir, base=None, conf=None):
         base = redir['outputs'][0]
 
     if redir['external'].startswith('http'):
-        o = 'Redirect {0} /{1}{2} {3}/{4}'
+        o = 'Redirect {0} /{1}{2} {3}{4}'
         return o.format(redir['code'], base, redir['from'],
                         redir['external'], redir['to'])
     else:
-        o = 'Redirect {0} /{1}{2} {3}/{4}{5}'
+        o = 'Redirect {0} /{1}{2} {3}{4}{5}'
 
         return o.format(redir['code'], base, redir['from'],
                         conf.project.url, redir['external'], redir['to'])

@@ -43,7 +43,9 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
 
     res = runner(target_jobs, parallel='threads')
 
-    output_sphinx_stream('\n'.join([r for r in res if r is not None]), conf)
+    output_sphinx_stream('\n'.join([r[1] if isinstance(r, tuple) else r
+                                    for r in res
+                                    if r is not None]), conf)
 
     logger.info('build {0} sphinx targets'.format(len(res)))
 
