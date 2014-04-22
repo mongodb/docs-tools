@@ -138,6 +138,7 @@ def mangle_paths(conf):
             'ecosystem': conf.paths.public,
             'about': conf.paths.public,
             'mms': conf.paths.public,
+            'training': conf.paths.public,
         }
 
         try:
@@ -152,6 +153,11 @@ def mangle_paths(conf):
             })
             if conf.git.branches.current not in conf.git.branches.published:
                 conf.paths.mms.saas = '-'.join([conf.paths.mms.saas, conf.git.branches.current])
+        elif conf.project.name == 'training':
+            conf.paths.training = AttributeDict({
+                'instructor': os.path.join(conf.paths.public, 'instructor'),
+                'student': os.path.join(conf.paths.public, 'student')
+            })
 
         conf.system.processed.project_paths = True
         return conf
@@ -200,6 +206,16 @@ def edition_setup(edition, conf):
                 conf.project.tag = 'help-hosted'
                 conf.project.basepath = get_manual_path(conf)
                 conf.system.branched = True
+        elif conf.project.name == 'training':
+            conf.system.branched = False
+
+            conf.paths.public_site_output = conf.paths.training[edition]
+            conf.paths.branch_source = '-'.join([os.path.join(conf.paths.output,
+                                                              conf.paths.source), edition])
+            if edition == 'student':
+                conf.project.basepath = 'training-student'
+            elif edition == 'instructor':
+                conf.project.basepath = 'training-instructor'
 
         conf.system.processed.edition = True
         return conf

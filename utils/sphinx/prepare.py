@@ -40,7 +40,7 @@ update_source_lock = Lock()
 
 def build_prereq_jobs(conf):
     jobs = []
-    if conf.project.name not in [ "mms", "ecosystem", "primer"]:
+    if conf.project.name not in [ "mms", "ecosystem", "primer", "training"]:
         jobs.extend([
             {
                 'job': robots_txt_builder,
@@ -95,7 +95,7 @@ def build_job_prerequsites(sync, sconf, conf):
         cond_dep = 'updated_deps'
         cond_steps = 'build_step_files'
 
-        if conf.project.name == 'mms':
+        if conf.project.name in ['mms', 'training']:
             cond_name += '_' + sconf.edition
             cond_toc += '_' + sconf.edition
             cond_dep += '_' + sconf.edition
