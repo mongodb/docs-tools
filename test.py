@@ -24,7 +24,7 @@ def user_input():
     parser = argparse.ArgumentParser()
     parser.add_argument('--branch', '-b', default='master')
     parser.add_argument('--repo', '-r', default='git@github.com:mongodb/docs.git')
-    parser.add_argument('--project', '-p', default='manual', choices=['manual', 'mms', 'ecosystem'])
+    parser.add_argument('--project', '-p', default='manual', choices=['docs-training', 'manual', 'mms', 'ecosystem'])
 
     parser.add_argument('--silent', action='store_const', const=logging.NOTSET, dest='level',
                         help='disable all logging output.')
@@ -76,7 +76,7 @@ def main():
         logger.error('branch name {0} does not exist in remote'.format(user.branch))
         exit(1)
 
-    command('git reset --hard HEAD~12')
+    command('git reset --hard HEAD~3')
     logger.debug('re-set testing head 12 commits')
     command('git pull')
     logger.debug('ran "git pull" on testing repo')
@@ -84,6 +84,7 @@ def main():
     bootstrapped_tools_path = os.path.join('build', 'docs-tools')
 
     if not os.path.exists(bootstrapped_tools_path):
+        os.makedirs('build')
         logger.debug("{0} does not exist".format(bootstrapped_tools_path))
         symlink(name=bootstrapped_tools_path, target=root_path)
         logger.debug('created tools symlink')
@@ -109,7 +110,7 @@ def main():
 def print_build_output(task):
     if len(task.out) > 0:
         logger.debug('returning all standard output, now:')
-        
+
         for l in task.out.split('\n'):
             logger.info(l)
 
