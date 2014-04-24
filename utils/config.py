@@ -183,9 +183,7 @@ def render_versions(conf=None):
 
         vconf = AttributeDict(yaml.load(vconf_data))
         conf.version.update(vconf.version)
-        logger.info(conf.git.branches)
         conf.git.branches.update(vconf.git.branches)
-        logger.info(conf.git.branches)
         conf.system.processed.versions = True
 
         return conf
@@ -229,7 +227,6 @@ def render_paths(conf=None, language=None):
             public_path = os.path.join('public', language)
 
         conf.project.basepath = get_manual_path(conf)
-
         conf.paths.public = os.path.join(conf.paths.output, public_path)
         conf.paths.branch_output = os.path.join(conf.paths.output, get_branch())
         conf.paths.branch_source = os.path.join(conf.paths.branch_output, 'source')
