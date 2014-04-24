@@ -39,7 +39,7 @@ from utils.sphinx.config import get_sconf
 
 update_source_lock = Lock()
 
-def build_prereq_jobs(conf):
+def build_prereq_jobs(sync, conf):
     jobs = []
     if conf.project.name not in [ "mms", "ecosystem", "primer", "training"]:
         jobs.extend([
@@ -61,7 +61,7 @@ def build_prereq_jobs(conf):
            }
         ])
 
-    if 'assets' in conf:
+    if 'assets' in conf and not sync.satisfied('assets'):
         for asset in conf.assets:
             jobs.append(
                 {
@@ -72,6 +72,7 @@ def build_prereq_jobs(conf):
                   'description': 'cloning assets repository'.format(asset.repository)
                 }
             )
+        sync.assets = True
 
     if len(jobs) > 0:
         for job in jobs:
@@ -80,26 +81,29 @@ def build_prereq_jobs(conf):
         raise StopIteration
 
 
-def build_process_prerequsites(conf):
-    jobs = itertools.chain(build_prereq_jobs(conf),
-                           manpage_jobs(conf),
-                           table_jobs(conf),
-                           api_jobs(conf),
-                           option_jobs(conf),
-                           release_jobs(conf),
-                           intersphinx_jobs(conf))
+def build_process_prerequsites(sync, conf):
+    pjobs = itertools.chain(manpage_jobs(conf),
+                            table_jobs(conf),
+                            api_jobs(conf),
+                            option_jobs(conf),
+                            release_jobs(conf),
+                            intersphinx_jobs(conf))
 
-    image_res = runner(image_jobs(conf), parallel='process')
-    logger.info('build {0} images and associated files'.format(len(image_res)))
+    tjobs = itertools.chain(build_prereq_jobs(sync, conf),
+                            image_jobs(conf))
+
+    tres = runner(tjobs, parallel='threads')
 
     try:
-        res = runner(jobs, parallel='process')
-        logger.info('built {0} pieces of content to prep for sphinx build'.format(len(res)))
+        pres = runner(pjobs, parallel='process')
+        logger.info('built {0} pieces of content to prep for sphinx build'.format(len(pres) + len(tres)))
     except PoolResultsError:
         logger.error('sphinx prerequisites encountered errors. '
                      'See output. Continuing as a temporary measure.')
 
-    buildinfo_hash(conf)
+    if not sync.satisfied('buildhash'):
+        buildinfo_hash(conf)
+        sync.buildhash = True
 
 def build_job_prerequsites(sync, sconf, conf):
     runner(external_jobs(conf), parallel='thread')
@@ -168,5 +172,5 @@ def build_job_prerequsites(sync, sconf, conf):
 
 def build_prerequisites(conf):
     sync = StateAttributeDict()
-    build_process_prerequsites(conf)
+    build_process_prerequsites(sync, conf)
     build_job_prerequsites(sync, get_sconf(conf), conf)

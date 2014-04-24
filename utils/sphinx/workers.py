@@ -39,7 +39,7 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
 
     # a batch of prereq jobs go here.
     primer_migrate_pages(conf)
-    build_process_prerequsites(conf)
+    build_process_prerequsites(sync, conf)
 
     res = runner(target_jobs, parallel='threads')
 
