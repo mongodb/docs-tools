@@ -9,7 +9,7 @@ def assets_setup(path, branch, repo):
 
     if os.path.exists(path):
         g = GitRepo(path)
-        g.pull()
+        g.pull(branch=branch)
         logger.info('updated {0} repository'.format(path))
     else:
         base, name = os.path.split(path)
