@@ -38,6 +38,12 @@ class GitRepo(object):
 
         return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True)
 
+    def remotes(self):
+        return self.cmd('remote').out.split('\n')
+
+    def branch_file(self, path, branch='master'):
+        return self.cmd('show {branch}:{path}'.format(branch=branch, path=path)).out
+
     def checkout(self, ref):
         return self.cmd('checkout', ref)
 
@@ -51,15 +57,18 @@ class GitRepo(object):
         return self.cmd('fetch', remote)
 
     def pull(self, remote='origin', branch='master'):
-        return self.cmd('pull', ref, branch)
+        return self.cmd('pull', remote, branch)
 
     def sha(self, ref='HEAD'):
         return self.cmd('rev-parse', '--verify', ref).out
 
-    def clone(self, remote, path=None):
+    def clone(self, remote, repo_path=None, branch=None):
         args = ['clone', remote]
 
-        if path is not None:
-            args.append(path)
+        if branch is not None:
+            args.extend(['--branch', branch])
+
+        if repo_path is not None:
+            args.append(repo_path)
 
         return self.cmd(*args)

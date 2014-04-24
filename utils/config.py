@@ -7,7 +7,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 try:
     import utils.bootstrap as bootstrap
-    from utils.structures import AttributeDict
+    from utils.structures import AttributeDict, BuildConfiguration
     from utils.git import get_branch, get_commit, get_file_from_branch
     from utils.project import (discover_config_file, get_manual_path, is_processed, mangle_paths,
                                mangle_configuration)
@@ -16,7 +16,7 @@ try:
 except ImportError:
     import bootstrap
     from serialization import ingest_yaml
-    from structures import AttributeDict
+    from structures import AttributeDict, BuildConfiguration
     from git import get_branch, get_commit, get_file_from_branch
     from project import (discover_config_file, get_manual_path, is_processed, mangle_paths,
                          mangle_configuration)
@@ -93,6 +93,9 @@ def get_conf():
     conf.system.processed.project_paths = False
     conf.system.processed.project_conf = False
     conf.system.processed.versions = False
+    conf.system.processed.assets = False
+    conf.system.processed.git_info = False
+    conf.system.processed.cached = False
 
     conf_artifact_project = os.path.realpath(os.path.join(conf.paths.buildsystem,
                                                    'config')).split(os.path.sep)[-2]
@@ -100,31 +103,61 @@ def get_conf():
     if not conf.paths.projectroot.endswith(conf_artifact_project):
         return safe_bootstrap(conf)
 
+    # order matters here:
     conf = mangle_configuration(conf)
+    conf = render_git_info(conf)
     conf = render_versions(conf)
-
-    conf.git.branches.current = get_branch()
-    conf.git.commit = get_commit()
-    conf.project.basepath = get_manual_path(conf)
+    conf = render_assets(conf)
 
     conf = render_paths(conf)
     conf = mangle_paths(conf)
-
-    conf.system.dependency_cache = os.path.join(conf.paths.projectroot,
-                                                conf.paths.branch_output,
-                                                'dependencies.json')
-
-
-    conf_cache_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
-    conf_cache = os.path.join(conf_cache_dir, 'conf-cache.json')
-
-    if not os.path.exists(conf_cache_dir):
-        os.makedirs(conf_cache_dir)
-
-    with open(conf_cache, 'w') as f:
-        json.dump(conf, f)
+    conf = render_cache(conf)
+    conf = render_deploy_info(conf)
 
     return conf
+
+def render_cache(conf):
+    if is_processed('cached', conf):
+        return conf
+    else:
+        conf.system.dependency_cache = os.path.join(conf.paths.projectroot,
+                                                    conf.paths.branch_output,
+                                                    'dependencies.json')
+
+        conf_cache_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
+        conf_cache = os.path.join(conf_cache_dir, 'conf-cache.json')
+
+        if not os.path.exists(conf_cache_dir):
+            os.makedirs(conf_cache_dir)
+
+        with open(conf_cache, 'w') as f:
+            json.dump(conf, f)
+
+        conf.system.processed.cached = True
+        return conf
+
+def render_git_info(conf):
+    if is_processed('git_info', conf):
+        return conf
+    else:
+        if 'branches' not in conf.git:
+            conf.git.branches = AttributeDict()
+        conf.git.branches.current = get_branch()
+        conf.git.commit = get_commit()
+        conf.project.basepath = get_manual_path(conf)
+        conf.system.processed.git_info = True
+
+        return conf
+
+def render_assets(conf):
+    if is_processed('assets', conf):
+        return conf
+    else:
+        if not isinstance(conf.assets, list):
+            conf.assets = [ conf.assets ]
+
+        conf.system.processed.assets = True
+        return conf
 
 def render_versions(conf=None):
     if is_processed('versions', conf):
@@ -132,46 +165,51 @@ def render_versions(conf=None):
     else:
         conf = lazy_conf(conf)
 
-        if 'branches' not in conf.git:
-            conf.git.branches = AttributeDict()
-
         version_config_file = os.path.join(conf.paths.builddata,
                                            'published_branches.yaml')
+
+        if conf.git.branches.current == 'master'and not os.path.exists(version_config_file):
+            return conf
 
         try:
             vconf_data = get_file_from_branch(version_config_file, 'master')
         except CommandError:
-            if get_branch() == 'master':
-                return conf
-
-            remotes = command('git remote', capture=True).out.split('\n')
-            if 'origin' in remotes:
-                return conf
-
-            if 'config-upstream' not in remotes:
-                if conf.git.remote.upstream.startswith('10gen'):
-                    git_url = 'git@github.com:'
-                else:
-                    git_url = 'git://github.com/'
-
-                command('git remote add config-upstream {0}{1}.git'.format(git_url, conf.git.remote.upstream))
-
-            command('git fetch config-upstream')
-
-            if 'master' not in command('git branch', capture=True).out.split('\n'):
-                command('git branch master config-upstream/master')
-
+            setup_config_remote('master', conf)
             vconf_data = get_file_from_branch(version_config_file, 'master')
         except CommandError:
             return conf
 
         vconf = AttributeDict(yaml.load(vconf_data))
-
         conf.version.update(vconf.version)
-
         conf.git.branches.update(vconf.git.branches)
-
         conf.system.processed.versions = True
+
+        return conf
+
+def setup_config_remote(branch_name, conf):
+    remotes = command('git remote', capture=True).out.split('\n')
+
+    if 'config-upstream' not in remotes:
+        if conf.git.remote.upstream.startswith('10gen'):
+            git_url = 'git@github.com:'
+        else:
+            git_url = 'git://github.com/'
+
+        command('git remote add config-upstream {0}{1}.git'.format(git_url, conf.git.remote.upstream))
+
+        command('git fetch config-upstream')
+
+        if branch_name not in command('git branch', capture=True).out.split('\n'):
+            command('git branch {0} config-upstream/{0}'.format(branch_name))
+
+def render_deploy_info(conf):
+    if is_processed('deploy', conf):
+        return conf
+    else:
+        deploy_conf_file = os.path.join(conf.paths.global_config, 'deploy.yaml')
+
+        conf.deploy = BuildConfiguration(deploy_conf_file)
+        conf.system.processed.deploy = True
 
         return conf
 
@@ -191,6 +229,7 @@ def render_paths(conf=None, language=None):
         conf.paths.branch_source = os.path.join(conf.paths.branch_output, 'source')
         conf.paths.branch_staging = os.path.join(conf.paths.public, get_branch())
         conf.paths.buildarchive = os.path.join(conf.paths.output, 'archive')
+        conf.paths.global_config = os.path.join(conf.paths.buildsystem, 'data')
 
         conf.system.processed.paths = True
         return conf
@@ -230,5 +269,8 @@ def schema_migration_0(conf):
 
     if 'build' in conf:
         del conf['build']
+
+    if 'branches' not in conf.git:
+        conf.git.branches = AttributeDict()
 
     return conf

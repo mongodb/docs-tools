@@ -32,6 +32,7 @@ from utils.contentlib.includes import write_include_index
 from utils.contentlib.hash import buildinfo_hash
 from utils.contentlib.source import transfer_source
 from utils.contentlib.external import external_jobs
+from utils.contentlib.assets import assets_setup
 
 from utils.sphinx.dependencies import refresh_dependencies
 from utils.sphinx.config import get_sconf
@@ -59,11 +60,25 @@ def build_prereq_jobs(conf):
                'args': [conf]
            }
         ])
+
+    if 'assets' in conf:
+        for asset in conf.assets:
+            jobs.append(
+                {
+                  'job': assets_setup,
+                  'args': { 'path': os.path.join(conf.paths.projectroot, asset.path),
+                            'branch': asset.branch,
+                            'repo': asset.repository },
+                  'description': 'cloning assets repository'.format(asset.repository)
+                }
+            )
+
+    if len(jobs) > 0:
+        for job in jobs:
+            yield job
     else:
         raise StopIteration
 
-    for job in jobs:
-        yield job
 
 def build_process_prerequsites(conf):
     jobs = itertools.chain(build_prereq_jobs(conf),
@@ -114,7 +129,9 @@ def build_job_prerequsites(sync, sconf, conf):
                         rmtree(fqfn)
                     else:
                         os.remove(fqfn)
-                    logger.info('removed {0}'.format(fqfn))
+                    logger.debug('removed {0}'.format(fqfn))
+
+            logger.info('removed {0} files'.format(len(sconf.excluded)))
 
         with ProcessPool() as p:
             # these must run here so that MMS can generate different toc/steps/etc for

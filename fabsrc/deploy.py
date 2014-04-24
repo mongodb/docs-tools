@@ -158,7 +158,6 @@ def static_deploy(args, static_path, hosts, conf, pconf):
 
     args['local_path'] = os.path.join(conf.paths.output, pconf.paths.local, static_path)
 
-
     for host in hosts:
         args['host_string'] = host
         yield { 'job': static_worker,
