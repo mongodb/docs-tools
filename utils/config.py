@@ -142,15 +142,17 @@ def render_git_info(conf):
     else:
         if 'branches' not in conf.git:
             conf.git.branches = AttributeDict()
+
         conf.git.branches.current = get_branch()
         conf.git.commit = get_commit()
-        conf.project.basepath = get_manual_path(conf)
         conf.system.processed.git_info = True
 
         return conf
 
 def render_assets(conf):
     if is_processed('assets', conf):
+        return conf
+    elif 'assets' not in conf:
         return conf
     else:
         if not isinstance(conf.assets, list):
@@ -181,7 +183,9 @@ def render_versions(conf=None):
 
         vconf = AttributeDict(yaml.load(vconf_data))
         conf.version.update(vconf.version)
+        logger.info(conf.git.branches)
         conf.git.branches.update(vconf.git.branches)
+        logger.info(conf.git.branches)
         conf.system.processed.versions = True
 
         return conf
@@ -223,6 +227,8 @@ def render_paths(conf=None, language=None):
             public_path = 'public'
         else:
             public_path = os.path.join('public', language)
+
+        conf.project.basepath = get_manual_path(conf)
 
         conf.paths.public = os.path.join(conf.paths.output, public_path)
         conf.paths.branch_output = os.path.join(conf.paths.output, get_branch())

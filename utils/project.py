@@ -27,9 +27,7 @@ def mms_should_migrate(builder, conf):
 
 #### Project-Specific Configuration Generation #####
 
-def get_manual_path(conf=None):
-    conf = lazy_conf(conf)
-
+def get_manual_path(conf):
     if conf.system.branched is False:
         return conf.project.tag
     else:
