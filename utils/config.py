@@ -210,8 +210,9 @@ def render_deploy_info(conf):
     else:
         deploy_conf_file = os.path.join(conf.paths.global_config, 'deploy.yaml')
 
-        conf.deploy = BuildConfiguration(deploy_conf_file)
-        conf.system.processed.deploy = True
+        if os.path.exists(deploy_conf_file):
+            conf.deploy = BuildConfiguration(deploy_conf_file)
+            conf.system.processed.deploy = True
 
         return conf
 
