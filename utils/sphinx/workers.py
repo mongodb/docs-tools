@@ -61,6 +61,7 @@ def build_worker(builder, sconf, conf, sync, finalize_fun):
     logger.info('starting sphinx build {0} at {1}'.format(builder, timestamp()))
 
     cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {4}' # per-builder-doctreea
+
     sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output),
                             builder,

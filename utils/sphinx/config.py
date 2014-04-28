@@ -46,8 +46,10 @@ def compute_sphinx_config(builder, sconf, conf):
         if 'edition' not in computed_config:
             raise Exception('[sphinx] [error]: builds with editions must specify an edition.')
     else:
-        computed_config.builder = builder
         computed_config.edition = None
+
+    if 'builder' not in computed_config:
+        computed_config.builder = builder
 
     return computed_config
 
