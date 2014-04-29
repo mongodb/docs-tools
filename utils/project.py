@@ -192,6 +192,12 @@ def edition_setup(edition, conf):
         if 'editions' in conf.project and edition in conf.project.editions:
             conf.project.edition = edition
 
+        dep_fn = "dependencies-{0}.json".format(edition)
+        conf.system.dependency_cache = os.path.join(conf.paths.projectroot,
+                                                    conf.paths.branch_output,
+                                                    dep_fn)
+
+
         if conf.project.name == 'mms':
             conf.paths.public_site_output = conf.paths.mms[edition]
             conf.paths.branch_source = '-'.join([os.path.join(conf.paths.output,
