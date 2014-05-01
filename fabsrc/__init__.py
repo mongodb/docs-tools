@@ -11,7 +11,13 @@ import clean
 import git
 import process
 import tools
-import stats
+
+try:
+    import stats
+except ImportError:
+    logger.info('optional dependency "Droopy" not installed.')
+    pass
+
 import includes
 import generate
 import sphinx
