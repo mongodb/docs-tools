@@ -1,7 +1,13 @@
+import logging
+import os
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 import json
 
 from fabric.api import task
 
+from fabfile.utils.config import lazy_conf
 from fabfile.utils.includes import (included_once, included_recusively,
                             includes_masked, include_files,
                             include_files_unused, changed_includes)
@@ -48,6 +54,18 @@ def filter(mask):
 def changed():
     "Returns a list of all files that include a file that has changed since the last commit."
     render_for_console(changed_includes())
+
+@task
+def cleanup():
+    conf = lazy_conf(None)
+
+    for fn in include_files_unused(conf):
+        fn = os.path.join(conf.paths.source, fn[1:])
+        if os.path.exists(fn):
+            os.remove(fn)
+            logger.info("removed {0}, which was an unused include file.".format(fn))
+        else:
+            logger.error('{0} does not exist'.format(fn))
 
 ########## Helper Functions ##########
 

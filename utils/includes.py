@@ -129,7 +129,7 @@ def include_files_unused(inc_files=None, conf=None):
     conf = lazy_conf(conf)
 
     inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.paths.includes), None) ]
-    mapping = include_files(conf)
+    mapping = include_files(conf=conf)
 
     results = []
     for fn in inc_files:
