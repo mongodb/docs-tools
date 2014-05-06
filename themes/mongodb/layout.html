@@ -262,8 +262,8 @@
                {%- else %}
                    <li><a href="/{{ theme_manual_path }}" target="_blank">SITE</span></a></li>
                {%- endif %}
-               <li><a href="{{ theme_pdfpath }}" target="_blank" rel="nofollow">PDF</a></li>
-               <li><a href="{{ theme_epubpath }}" target="_blank" rel="nofollow">EPUB</a></li>
+               {%- block pdflink %}<li><a href="{{ theme_pdfpath }}" target="_blank" rel="nofollow">PDF</a></li>{%- endblock %}
+               {%- block epublink %}<li><a href="{{ theme_epubpath }}" target="_blank" rel="nofollow">EPUB</a></li>{%- endblock %}
              </ul>
            </li>
         {% endblock %}
