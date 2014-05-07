@@ -191,8 +191,10 @@ def edition_setup(edition, conf):
     else:
         if 'editions' in conf.project and edition in conf.project.editions:
             conf.project.edition = edition
+            dep_fn = "dependencies-{0}.json".format(edition)
+        else:
+            dep_fn = "dependencies.json"
 
-        dep_fn = "dependencies-{0}.json".format(edition)
         conf.system.dependency_cache = os.path.join(conf.paths.projectroot,
                                                     conf.paths.branch_output,
                                                     dep_fn)
