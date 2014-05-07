@@ -41,7 +41,7 @@ update_source_lock = Lock()
 
 def build_prereq_jobs(sync, conf):
     jobs = []
-    if conf.project.name not in [ "mms", "ecosystem", "primer", "training"]:
+    if conf.project.name not in [ "mms", "primer", "training"]:
         jobs.extend([
             {
                 'job': robots_txt_builder,
