@@ -140,10 +140,14 @@ class Steps(object):
                         msg = "reading and caching step {0} from {1} and caching"
                         logger.debug(msg.format(source_ref, source_file))
 
-                        steps = Steps(os.path.join(self.source_dir, source_file), self.agg_sources)
-                        current_step = steps.get_step(source_ref)
-                        self.agg_sources[source_file] = steps
-                        self.agg_sources.update(steps.agg_sources)
+                        if source_file == os.path.basename(self.source_fn):
+                            current_step = self.get_step(source_ref)
+                        else:
+                            steps = Steps(os.path.join(self.source_dir, source_file), self.agg_sources)
+
+                            current_step = steps.get_step(source_ref)
+                            self.agg_sources[source_file] = steps
+                            self.agg_sources.update(steps.agg_sources)
 
                         logger.debug('successfully cached {0}'.format(source_file))
 
