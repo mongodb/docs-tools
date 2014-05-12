@@ -5,6 +5,8 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+from copy import copy
+
 try:
     import utils.bootstrap as bootstrap
     from utils.structures import AttributeDict, BuildConfiguration
@@ -245,13 +247,37 @@ def get_sphinx_builders(conf=None):
 
     sconf = ingest_yaml(path)
 
+    sconf = render_sphinx_config(sconf)
+
     if 'builders' in sconf:
         return sconf['builders']
     else:
-        for i in ['prerequisites', 'generated-source']:
+        for i in ['prerequisites', 'generated-source', 'root-base', 'web-base', 'print-base']:
             if i in sconf:
                 del sconf[i]
         return sconf.keys()
+
+def render_sphinx_config(conf):
+    computed = {}
+    for k,v in conf.items():
+        while 'inherit' in v:
+            old = copy(v)
+            if 'inherit' in old:
+                del old['inherit']
+
+            v = conf[v['inherit']]
+            v.update(old)
+
+        computed[k] = v
+        if 'languages' in v:
+            for lang in v['languages']:
+                logger.debug('{} {}'.format(lang, k))
+                computed['-'.join([k,lang])] = { 'inherit': k,
+                                                 'language': lang,
+                                                 'builder': k }
+
+    return computed
+
 
 #### Configuration Object Schema Migration Code ####
 

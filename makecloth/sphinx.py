@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/
 
 from utils.output import build_platform_notification
 from utils.serialization import ingest_yaml
-from utils.config import get_conf, get_conf_file, get_sphinx_builders
+from utils.config import get_conf, get_conf_file, get_sphinx_builders, render_sphinx_config
 
 from makecloth import MakefileCloth
 
@@ -72,10 +72,14 @@ def make_all_sphinx(config):
 
     targets = []
     for builder in get_sphinx_builders():
+        if builder.endswith('base'):
+            continue
+
         if 'tags' in config:
             builder_targets = []
             for tag in config['tags']:
                 tag_target = '-'.join([builder, tag])
+
 
                 builder_targets.append(tag_target)
                 targets.append(tag_target)
@@ -88,7 +92,7 @@ def make_all_sphinx(config):
             targets.append(builder)
 
     if 'sphinx_builders' in config:
-        if 'editions' in config: 
+        if 'editions' in config:
             builder_string = ','.join(['{0}-' + ed for ed in config['editions']])
         else:
             builder_string = ['{0}-hosted', '{0}-saas']
@@ -103,7 +107,7 @@ def make_all_sphinx(config):
 
     for builder in targets:
         sphinx_targets.extend(sphinx_builder(builder))
-        
+
     m.section_break('meta', block='footer')
     m.newline(block='footer')
     m.target('.PHONY', sphinx_targets, block='footer')
@@ -132,7 +136,7 @@ def sphinx_builder(target):
         builder = target[0]
 
     m.target(target, block=b)
-    
+
     if target == 'gettext' or 'gettext' in target:
         m.job('fab tx.update', block=b)
     else:
@@ -154,6 +158,8 @@ def sphinx_builder(target):
 
 def main():
     config = ingest_yaml(get_conf_file(file=__file__, directory=conf.paths.builddata))
+
+    config = render_sphinx_config(config)
 
     make_all_sphinx(config)
 

@@ -1,6 +1,5 @@
 import sys
 import os.path
-from copy import copy
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -24,7 +23,7 @@ def generate_integration_targets(conf):
 
     dependencies = [ '_publish']
     dependencies_debug = [ '_publish-debug']
-    
+
     if 'doc-root' in conf:
         for dep in conf['doc-root']:
             dependencies.append(os.path.join(paths['public'], dep))
@@ -36,7 +35,7 @@ def generate_integration_targets(conf):
     m.target('publish', dependencies)
     m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
     m.newline()
-    
+
     m.target('publish-debug', dependencies_debug)
     m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
     m.newline()
