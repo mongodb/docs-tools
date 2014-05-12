@@ -199,7 +199,6 @@ def edition_setup(edition, conf):
                                                     conf.paths.branch_output,
                                                     dep_fn)
 
-
         if conf.project.name == 'mms':
             conf.paths.public_site_output = conf.paths.mms[edition]
             conf.paths.branch_source = '-'.join([os.path.join(conf.paths.output,
@@ -222,6 +221,10 @@ def edition_setup(edition, conf):
                 conf.project.basepath = 'training-student'
             elif edition == 'instructor':
                 conf.project.basepath = 'training-instructor'
+        elif conf.project.name == 'primer':
+            conf.project.edition = 'primer'
+        elif conf.project.name == 'manual':
+            conf.project.edition = 'manual'
 
         conf.system.processed.edition = True
         return conf

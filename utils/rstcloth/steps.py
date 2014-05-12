@@ -139,7 +139,6 @@ class Steps(object):
                     else:
                         msg = "reading and caching step {0} from {1} and caching"
                         logger.debug(msg.format(source_ref, source_file))
-
                         if source_file == os.path.basename(self.source_fn):
                             current_step = self.get_step(source_ref)
                         else:

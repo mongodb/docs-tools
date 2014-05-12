@@ -1,4 +1,8 @@
 import os
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 
 from fabfile.utils.config import lazy_conf
 from fabfile.utils.serialization import ingest_yaml_list
