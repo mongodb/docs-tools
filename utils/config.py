@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from copy import copy
+from copy import deepcopy
 
 try:
     import utils.bootstrap as bootstrap
@@ -96,6 +96,7 @@ def get_conf():
     conf.system.processed.project_conf = False
     conf.system.processed.versions = False
     conf.system.processed.assets = False
+    conf.system.processed.language = False
     conf.system.processed.git_info = False
     conf.system.processed.cached = False
 
@@ -252,29 +253,41 @@ def get_sphinx_builders(conf=None):
     if 'builders' in sconf:
         return sconf['builders']
     else:
-        for i in ['prerequisites', 'generated-source', 'root-base', 'web-base', 'print-base']:
-            if i in sconf:
-                del sconf[i]
-        return sconf.keys()
+
+        return [ i for i in sconf.keys()
+                 if i not in ['prerequisites', 'generated-source', 'root-base',
+                               'web-base', 'print-base'] ]
 
 def render_sphinx_config(conf):
-    computed = {}
-    for k,v in conf.items():
-        while 'inherit' in v:
-            old = copy(v)
-            if 'inherit' in old:
-                del old['inherit']
+    computed = AttributeDict()
 
-            v = conf[v['inherit']]
-            v.update(old)
+    def resolver(v, conf):
+        while 'inherit' in v:
+            base = deepcopy(conf[v['inherit']])
+            del v['inherit']
+            base.update(v)
+            v = base
+
+        return v
+
+    to_compute = []
+
+    for k,v in conf.items():
+        v = resolver(v, conf)
 
         computed[k] = v
+
+        if 'languages' in v:
+            to_compute.append((k,v))
+
+    for k, v in to_compute:
+        if k in ['prerequisites', 'generated_source', 'root_base', 'web_base', 'print_base']:
+            continue
+
         if 'languages' in v:
             for lang in v['languages']:
-                logger.debug('{} {}'.format(lang, k))
-                computed['-'.join([k,lang])] = { 'inherit': k,
-                                                 'language': lang,
-                                                 'builder': k }
+                computed['-'.join([k,lang])] = resolver({ 'inherit': k,
+                                                          'language': lang }, computed)
 
     return computed
 

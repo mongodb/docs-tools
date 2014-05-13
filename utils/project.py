@@ -184,11 +184,11 @@ def mangle_configuration(conf):
         return conf
 
 def edition_setup(edition, conf):
-    conf = deepcopy(conf)
-
     if is_processed('edition', conf) is True:
         return conf
     else:
+        conf = deepcopy(conf)
+
         if 'editions' in conf.project and edition in conf.project.editions:
             conf.project.edition = edition
             dep_fn = "dependencies-{0}.json".format(edition)
@@ -227,4 +227,17 @@ def edition_setup(edition, conf):
             conf.project.edition = 'manual'
 
         conf.system.processed.edition = True
+        return conf
+
+
+def language_setup(sconf, conf):
+    if 'language' not in sconf or is_processed('language', conf) is True:
+        return conf
+    else:
+        conf = deepcopy(conf)
+        suffix = '-' + sconf.language
+        conf.paths.public_site_output += suffix
+        conf.paths.branch_staging += suffix
+
+        conf.system.processed.language = True
         return conf

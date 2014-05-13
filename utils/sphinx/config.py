@@ -1,10 +1,14 @@
 import os.path
 import pkg_resources
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 from multiprocessing import cpu_count
 from copy import deepcopy
 
-from utils.structures import BuildConfiguration
+from utils.structures import BuildConfiguration, AttributeDict
+from utils.config import render_sphinx_config
 
 def get_sconf(conf):
     return BuildConfiguration(filename='sphinx.yaml',
@@ -19,7 +23,8 @@ def get_sphinx_args(sconf, conf):
 
     o.append(get_tags(sconf.builder, sconf))
     o.append('-q')
-    o.append('-b {0}'.format(sconf.builder))
+
+    o.append('-b {0}'.format(sconf[sconf.builder].builder))
 
     if (is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version) and
         'editions' not in sconf):
@@ -27,19 +32,16 @@ def get_sphinx_args(sconf, conf):
 
     o.append(' '.join( [ '-c', conf.paths.projectroot ] ))
 
-    if 'language' in sconf:
-        o.append("-D language='{0}'".format(sconf.language))
+    if 'language' in sconf[sconf.builder]:
+        o.append("-D language='{0}'".format(sconf[sconf.builder].language))
 
     return ' '.join(o)
 
 def compute_sphinx_config(builder, sconf, conf):
-    if 'inherit' in sconf[builder]:
-        computed_config = deepcopy(sconf[sconf[builder]['inherit']])
-        if 'inherit' in computed_config:
-            computed_config.update(deepcopy(sconf[computed_config['inherit']]))
-        computed_config.update(sconf[builder])
-    else:
-        computed_config = deepcopy(sconf[builder])
+    # vestigial. most of the logic of this function was moved into
+    # utils.config.render_sphinx_config
+
+    computed_config = deepcopy(sconf)
 
     if 'editions' in sconf:
         computed_config.builder = builder.split('-')[0]
@@ -49,7 +51,7 @@ def compute_sphinx_config(builder, sconf, conf):
         computed_config.edition = None
 
     if 'builder' not in computed_config:
-        computed_config.builder = builder
+        computed_config['builder'] = builder
 
     return computed_config
 

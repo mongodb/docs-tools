@@ -37,14 +37,14 @@ def manual_single_html(input_file, output_file):
 
 #################### Sphinx Post-Processing ####################
 
-def finalize_epub_build(conf):
+def finalize_epub_build(builder, conf):
     epub_name = '-'.join(conf.project.title.lower().split())
     epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
     epub_src_filename = epub_name + '.epub'
 
     copy_if_needed(source_file=os.path.join(conf.paths.projectroot,
                                             conf.paths.branch_output,
-                                            'epub', epub_src_filename),
+                                            builder, epub_src_filename),
                    target_file=os.path.join(conf.paths.projectroot,
                                             conf.paths.public_site_output,
                                             epub_branched_filename))
@@ -89,9 +89,7 @@ def finalize_single_html_jobs(builder, conf):
             'dependency': None
         }
 
-def error_pages(conf=None):
-    conf = lazy_conf(conf)
-
+def error_pages(builder, conf):
     error_conf = os.path.join(conf.paths.builddata, 'errors.yaml')
 
     if not os.path.exists(error_conf):
@@ -103,7 +101,7 @@ def error_pages(conf=None):
 
         for error in error_pages:
             page = os.path.join(conf.paths.projectroot,
-                                conf.paths.branch_output, 'dirhtml',
+                                conf.paths.branch_output, builder,
                                 'meta', error, 'index.html')
             munge_page(fn=page, regex=sub, tag='error-pages')
 
@@ -111,8 +109,6 @@ def error_pages(conf=None):
 
 def finalize_dirhtml_build(builder, conf):
     pjoin = os.path.join
-
-    error_pages(conf)
 
     single_html_dir = get_single_html_dir(conf)
     search_page = pjoin(conf.paths.branch_output, builder, 'index.html')
@@ -152,8 +148,7 @@ def finalize_dirhtml_build(builder, conf):
         cleaner(fns)
         logging.info('removed excluded files from dirhtml output directory')
 
-def sitemap(config_path=None, conf=None):
-    conf = lazy_conf(conf)
+def sitemap(config_path, conf):
     paths = conf.paths
 
     sys.path.append(os.path.join(paths.projectroot, paths.buildsystem, 'bin'))

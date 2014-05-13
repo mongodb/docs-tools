@@ -3,10 +3,9 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from fabfile.utils.project import edition_setup
+from fabfile.utils.project import edition_setup, language_setup
 from fabfile.utils.strings import timestamp
 from fabfile.utils.shell import command
-
 from fabfile.make import runner
 
 from fabfile.primer import primer_migrate_pages
@@ -15,12 +14,13 @@ from utils.structures import StateAttributeDict
 
 from fabfile.utils.sphinx.prepare import build_job_prerequsites, build_process_prerequsites
 from fabfile.utils.sphinx.output import output_sphinx_stream
-from fabfile.utils.sphinx.config import compute_sphinx_config, get_sphinx_args, get_sconf
+from fabfile.utils.sphinx.config import compute_sphinx_config, get_sphinx_args, get_sconf, render_sphinx_config
 
 def sphinx_build(targets, conf, sconf, finalize_fun):
     if len(targets) == 0:
         targets.append('html')
 
+    sconf = render_sphinx_config(sconf)
     target_jobs = []
 
     sync = StateAttributeDict()
@@ -28,6 +28,7 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
         if target in sconf:
             lsconf = compute_sphinx_config(target, sconf, conf)
             lconf = edition_setup(lsconf.edition, conf)
+            lconf = language_setup(lsconf[target], conf)
 
             target_jobs.append({
                 'job': build_worker,

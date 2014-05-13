@@ -15,7 +15,7 @@ from fabfile.utils.sphinx.prepare import build_prerequisites
 from fabfile.utils.sphinx.workers import sphinx_build
 from fabfile.utils.sphinx.archives import man_tarball, html_tarball
 from fabfile.utils.sphinx.config import get_sconf
-from fabfile.utils.sphinx.sites import finalize_epub_build, finalize_single_html_jobs, finalize_dirhtml_build
+from fabfile.utils.sphinx.sites import finalize_epub_build, finalize_single_html_jobs, finalize_dirhtml_build, error_pages
 
 from fabfile.intersphinx import intersphinx
 from fabfile.utils.config import lazy_conf, render_paths
@@ -59,8 +59,6 @@ def printer(string):
 
 def finalize_build(builder, sconf, conf):
     if 'language' in sconf:
-        # reinitialize conf and builders for internationalization
-        conf.paths = render_paths(conf, sconf.language)
         builder = sconf.builder
         target = builder
     else:
@@ -76,11 +74,12 @@ def finalize_build(builder, sconf, conf):
         ],
         'dirhtml': [
             { 'job': finalize_dirhtml_build,
-              'args': [target, conf]
-            }
+              'args': [target, conf] },
+            { 'job': error_pages,
+              'args': [target, conf] }
         ],
         'epub': [ { 'job': finalize_epub_build,
-                    'args': [conf] }
+                    'args': [target, conf] }
         ],
         'json': json_output_jobs(conf),
         'singlehtml': finalize_single_html_jobs(target, conf),
@@ -89,9 +88,9 @@ def finalize_build(builder, sconf, conf):
               'args': [target, conf]
             }
         ],
-        'man': itertools.chain(manpage_url_jobs(conf), [
+        'man': itertools.chain(manpage_url_jobs(target, conf), [
             { 'job': man_tarball,
-              'args': [conf]
+              'args': [target, conf]
             }
         ]),
         'html': [

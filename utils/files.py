@@ -6,11 +6,12 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-def tarball(name, path, sourcep=None, newp=None, cdir=None):
+def tarball(name, path, newp=None, cdir=None):
     tarball_path = os.path.dirname(name)
     if not os.path.exists(tarball_path):
         os.makedirs(tarball_path)
 
+    logger.debug('creating tarball: {0}'.format(name))
     with tarfile.open(name, 'w:gz') as t:
         if newp is not None:
             arcname = os.path.join(newp, os.path.basename(path))
@@ -19,6 +20,8 @@ def tarball(name, path, sourcep=None, newp=None, cdir=None):
 
         if cdir is not None:
             path = os.path.join(cdir, path)
+
+        logger.debug('tarball internal path {0}'.format(path))
 
         t.add(name=path, arcname=arcname)
 

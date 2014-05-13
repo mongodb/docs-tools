@@ -82,7 +82,8 @@ def gennerate_translation_integration_targets(language, conf):
 
     m.target(publish_target + '-debug', dependencies_debug)
 
-    m.target(publish_target, dependencies)
+    m.target(publish_target)
+    m.job('fab sphinx.target:{0}'.format(','.join(dependencies)))
     m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
     m.newline()
 

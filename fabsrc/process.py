@@ -43,19 +43,7 @@ def _render_tex_into_pdf(fn, path):
                 logger.error('pdf build encountered error running pdflatex, investigate on {0}. terminating'.format(base_fn))
                 return False
 
-@task
-def pdfs():
-    "Processes '.tex' files and runs 'pdflatex' to generate all PDFs."
-
-    pdf_worker()
-
-def pdf_worker(target=None, conf=None):
-    conf = lazy_conf(conf)
-
-    if target is None:
-        target = 'latex'
-
-    force = False
+def pdf_worker(target, conf):
     with ThreadPool() as p:
         res = []
         for it, queue in enumerate(pdf_jobs(target, conf)):

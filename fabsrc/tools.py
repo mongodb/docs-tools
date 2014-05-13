@@ -12,7 +12,8 @@ from fabfile.utils.transformations import munge_page
 
 from fabfile.utils.files import expand_tree
 from fabfile.utils.config import get_conf
-from fabfile.utils.project import edition_setup
+from fabfile.utils.project import edition_setup, language_setup
+from fabfile.utils.structures import AttributeDict
 
 env.dev_repo = os.path.abspath(os.path.join(os.path.split(os.path.abspath(__file__))[0], '..', '..', 'docs-tools'))
 
@@ -24,8 +25,6 @@ def bootstrap(action='setup'):
 
     if action in ['setup', 'clean', 'safe']:
         cmd.append(action)
-
-
     else:
         abort('[docs-tools]: invalid bootstrap action')
 
@@ -33,18 +32,25 @@ def bootstrap(action='setup'):
         local(' '.join(cmd))
 
 
-
-
-
-
 @task
-def conf(edition=None, conf=None):
+def conf(modification=None, conf=None):
     "Returns the build configuration object for visual introspection. Optionally specify 'edition' argument."
 
     if conf is None:
         conf = get_conf()
-    if edition is not None:
-        conf = edition_setup(edition, conf)
+
+    if modification is not None:
+        if isinstance(modification, list) and len(modifcation) <= 2:
+            pass
+        else:
+            modification = [modification]
+
+        for mod in modification:
+            if len(mod) == 2:
+                sconf = AttributeDict({'language': mod})
+                conf = language_setup(sconf, conf)
+            else:
+                conf = edition_setup(edition, conf)
 
     puts(json.dumps(conf, indent=3))
 

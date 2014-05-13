@@ -25,7 +25,7 @@ def manpage_url(regex_obj, input_file):
 
     logger.info("fixed urls in {0}".format(input_file))
 
-def manpage_url_jobs(conf):
+def manpage_url_jobs(builder, conf):
     project_source = os.path.join(conf.paths.projectroot,
                                   conf.paths.source)
 
@@ -48,7 +48,7 @@ def manpage_url_jobs(conf):
     for manpage in expand_tree(os.path.join(conf.paths.projectroot,
                                             conf.paths.output,
                                             conf.git.branches.current,
-                                            'man'), ['1', '5']):
+                                            builder), ['1', '5']):
         yield dict(target=manpage,
                    dependency=None,
                    job=manpage_url,
