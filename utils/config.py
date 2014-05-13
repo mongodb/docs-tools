@@ -290,7 +290,8 @@ def render_sphinx_config(conf):
         if 'languages' in v:
             for lang in v['languages']:
                 computed['-'.join([k,lang])] = resolver({ 'inherit': k,
-                                                          'language': lang }, computed)
+                                                          'language': lang },
+                                                        conf, computed)
 
     logger.error(computed.keys())
     return computed
