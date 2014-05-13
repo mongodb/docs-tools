@@ -293,7 +293,6 @@ def render_sphinx_config(conf):
                                                           'language': lang },
                                                         conf, computed)
 
-    logger.error(computed.keys())
     return computed
 
 
