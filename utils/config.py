@@ -253,17 +253,20 @@ def get_sphinx_builders(conf=None):
     if 'builders' in sconf:
         return sconf['builders']
     else:
-
         return [ i for i in sconf.keys()
                  if i not in ['prerequisites', 'generated-source', 'root-base',
                                'web-base', 'print-base'] ]
 
 def render_sphinx_config(conf):
-    computed = AttributeDict()
+    computed = {}
 
-    def resolver(v, conf):
+    def resolver(v, conf, computed):
         while 'inherit' in v:
-            base = deepcopy(conf[v['inherit']])
+            if v['inherit'] in computed:
+                base = deepcopy(computed[v['inherit']])
+            else:
+                base = deepcopy(conf[v['inherit']])
+
             del v['inherit']
             base.update(v)
             v = base
@@ -273,15 +276,15 @@ def render_sphinx_config(conf):
     to_compute = []
 
     for k,v in conf.items():
-        v = resolver(v, conf)
-
+        v = resolver(v, conf, computed)
         computed[k] = v
 
         if 'languages' in v:
             to_compute.append((k,v))
 
     for k, v in to_compute:
-        if k in ['prerequisites', 'generated_source', 'root_base', 'web_base', 'print_base']:
+        if k in ['prerequisites', 'generated-source', 'editions',
+                 'prerequsites', 'sphinx-builders']:
             continue
 
         if 'languages' in v:
@@ -289,6 +292,7 @@ def render_sphinx_config(conf):
                 computed['-'.join([k,lang])] = resolver({ 'inherit': k,
                                                           'language': lang }, computed)
 
+    logger.error(computed.keys())
     return computed
 
 

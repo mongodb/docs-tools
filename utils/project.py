@@ -187,6 +187,12 @@ def edition_setup(edition, conf):
     if is_processed('edition', conf) is True:
         return conf
     else:
+        if isinstance(edition, AttributeDict) or isinstance(edition, dict):
+            if 'edition' not in edition:
+                return conf
+            else:
+                edition = edition['edition']
+
         conf = deepcopy(conf)
 
         if 'editions' in conf.project and edition in conf.project.editions:

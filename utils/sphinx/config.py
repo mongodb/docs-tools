@@ -7,13 +7,13 @@ logger = logging.getLogger(os.path.basename(__file__))
 from multiprocessing import cpu_count
 from copy import deepcopy
 
-from utils.structures import BuildConfiguration, AttributeDict
+from utils.structures import AttributeDict
+from utils.serialization import ingest_yaml_doc
 from utils.config import render_sphinx_config
 
 def get_sconf(conf):
-    return BuildConfiguration(filename='sphinx.yaml',
-                              directory=os.path.join(conf.paths.projectroot,
-                                                     conf.paths.builddata))
+    return ingest_yaml_doc(os.path.join(conf.paths.projectroot,
+                                        conf.paths.builddata, 'sphinx.yaml'))
 
 def is_parallel_sphinx(version):
     return version >= '1.2'
@@ -24,7 +24,7 @@ def get_sphinx_args(sconf, conf):
     o.append(get_tags(sconf.builder, sconf))
     o.append('-q')
 
-    o.append('-b {0}'.format(sconf[sconf.builder].builder))
+    o.append('-b {0}'.format(sconf.builder))
 
     if (is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version) and
         'editions' not in sconf):
@@ -32,8 +32,8 @@ def get_sphinx_args(sconf, conf):
 
     o.append(' '.join( [ '-c', conf.paths.projectroot ] ))
 
-    if 'language' in sconf[sconf.builder]:
-        o.append("-D language='{0}'".format(sconf[sconf.builder].language))
+    if 'language' in sconf:
+        o.append("-D language='{0}'".format(sconf.language))
 
     return ' '.join(o)
 
@@ -44,16 +44,19 @@ def compute_sphinx_config(builder, sconf, conf):
     computed_config = deepcopy(sconf)
 
     if 'editions' in sconf:
-        computed_config.builder = builder.split('-')[0]
-        if 'edition' not in computed_config:
-            raise Exception('[sphinx] [error]: builds with editions must specify an edition.')
+        if 'builder' not in computed_config:
+            sp_builder = builder.split('-')[0]
+            logger.debug('set builder for {0} to {1}'.format(builder, sp_builder))
+            computed_config[builder]['builder'] = sp_builder
+
+        logger.debug(computed_config[builder])
+
+        if 'edition' not in computed_config[builder]:
+            logger.critical('[sphinx] [error]: builds with editions must specify an edition.')
     else:
-        computed_config.edition = None
+        computed_config['edition'] = None
 
-    if 'builder' not in computed_config:
-        computed_config['builder'] = builder
-
-    return computed_config
+    return AttributeDict(computed_config[builder])
 
 def get_tags(target, sconf):
     ret = set()

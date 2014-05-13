@@ -21,14 +21,15 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
         targets.append('html')
 
     sconf = render_sphinx_config(sconf)
+
     target_jobs = []
 
     sync = StateAttributeDict()
     for target in targets:
         if target in sconf:
             lsconf = compute_sphinx_config(target, sconf, conf)
-            lconf = edition_setup(lsconf.edition, conf)
-            lconf = language_setup(lsconf[target], conf)
+            lconf = edition_setup(lsconf, conf)
+            lconf = language_setup(lsconf, conf)
 
             target_jobs.append({
                 'job': build_worker,
