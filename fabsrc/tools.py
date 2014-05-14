@@ -11,7 +11,7 @@ from fabric.api import task, local, puts, lcd, env, abort
 from fabfile.utils.transformations import munge_page
 
 from fabfile.utils.files import expand_tree
-from fabfile.utils.config import get_conf
+from fabfile.utils.config import lazy_conf
 from fabfile.utils.project import edition_setup, language_setup
 from fabfile.utils.structures import AttributeDict
 
@@ -33,24 +33,23 @@ def bootstrap(action='setup'):
 
 
 @task
-def conf(modification=None, conf=None):
+def conf(*modifications):
     "Returns the build configuration object for visual introspection. Optionally specify 'edition' argument."
 
-    if conf is None:
-        conf = get_conf()
+    conf = lazy_conf(None)
 
-    if modification is not None:
-        if isinstance(modification, list) and len(modifcation) <= 2:
+    if modifications:
+        if isinstance(modifications, tuple) and len(modifications) <= 2:
             pass
         else:
-            modification = [modification]
+            modifications = [modifications]
 
-        for mod in modification:
+        for mod in modifications:
             if len(mod) == 2:
                 sconf = AttributeDict({'language': mod})
                 conf = language_setup(sconf, conf)
             else:
-                conf = edition_setup(modification, conf)
+                conf = edition_setup(mod, conf)
 
     puts(json.dumps(conf, indent=3))
 
