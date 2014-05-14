@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'b
 
 from utils.config import get_conf
 from utils.git import get_branch
-from utils.serialization import ingest_yaml
+from utils.serialization import ingest_yaml_list
 from utils.structures import get_conf_file
 
 from makecloth import MakefileCloth
@@ -57,7 +57,7 @@ def generate_new_deploy_system(push_conf):
     m.target('.PHONY', phony)
 
 def main():
-    push_conf = ingest_yaml(get_conf_file(file=__file__, directory=conf.paths.builddata))
+    push_conf = ingest_yaml_list(get_conf_file(file=__file__, directory=conf.paths.builddata))
 
     generate_new_deploy_system(push_conf)
 
