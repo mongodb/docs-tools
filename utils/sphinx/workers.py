@@ -29,7 +29,7 @@ def sphinx_build(targets, conf, sconf, finalize_fun):
         if target in sconf:
             lsconf = compute_sphinx_config(target, sconf, conf)
             lconf = edition_setup(lsconf, conf)
-            lconf = language_setup(lsconf, conf)
+            lconf = language_setup(lsconf, lconf)
 
             target_jobs.append({
                 'job': build_worker,

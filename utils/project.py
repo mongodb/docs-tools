@@ -187,16 +187,15 @@ def edition_setup(edition, conf):
     if is_processed('edition', conf) is True:
         return conf
     else:
-        if isinstance(edition, AttributeDict) or isinstance(edition, dict):
-            if 'edition' not in edition:
-                return conf
-            else:
-                edition = edition['edition']
+        if ((isinstance(edition, AttributeDict) or isinstance(edition, dict)) and
+            'edition' in edition):
+            edition = edition['edition']
 
         conf = deepcopy(conf)
 
+        conf.project.edition = edition
+
         if 'editions' in conf.project and edition in conf.project.editions:
-            conf.project.edition = edition
             dep_fn = "dependencies-{0}.json".format(edition)
         else:
             dep_fn = "dependencies.json"
@@ -209,7 +208,7 @@ def edition_setup(edition, conf):
             conf.paths.public_site_output = conf.paths.mms[edition]
             conf.paths.branch_source = '-'.join([os.path.join(conf.paths.output,
                                                               conf.git.branches.current,
-                                                              conf.paths.source), edition])
+                                                              conf.paths.source), conf.project.edition])
             if edition == 'saas':
                 conf.project.basepath = 'help'
                 conf.system.branched = False
@@ -234,7 +233,6 @@ def edition_setup(edition, conf):
 
         conf.system.processed.edition = True
         return conf
-
 
 def language_setup(sconf, conf):
     if 'language' not in sconf or is_processed('language', conf) is True:

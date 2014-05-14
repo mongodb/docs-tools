@@ -50,7 +50,7 @@ def conf(modification=None, conf=None):
                 sconf = AttributeDict({'language': mod})
                 conf = language_setup(sconf, conf)
             else:
-                conf = edition_setup(edition, conf)
+                conf = edition_setup(modification, conf)
 
     puts(json.dumps(conf, indent=3))
 

@@ -106,6 +106,8 @@ def make_all_sphinx(config):
         m.newline()
 
     for builder in targets:
+        if 'base' in builder:
+            continue
         sphinx_targets.extend(sphinx_builder(builder))
 
     m.section_break('meta', block='footer')
@@ -123,7 +125,7 @@ def sphinx_builder(target):
     target_parts = target.split('-')
 
     if len(target_parts) > 3:
-        raise Exception('[meta-build]: Invalid sphinx builder: ' + target)
+        print('[meta-build]: Invalid sphinx builder: ' + target)
     elif len(target_parts) == 1:
         builder = target
         clean_target = '-'.join(['clean', builder])
