@@ -100,16 +100,10 @@ $(function() {
         $target.find('.fa-angle-down, .fa-angle-up').toggleClass('fa-angle-down fa-angle-up');
     });
 
-    $('body').on('click', ':not(.option-popup)', $u.throttle(function(e) {
-        var $target = $(e.currentTarget);
-        // Don't close the popup when the user clicks the option panel itself
-        if ($target.parents().is('.option-popup')) {
-            e.stopPropagation();
-            return false;
-        }
+    $('body').on('click', '#header-db, .sidebar, .content', function(e) {
         $('.option-popup').addClass('closed')
             .find('.fa-angle-down, .fa-angle-up').toggleClass('fa-angle-down fa-angle-up');
-    }));
+    });
 
     /* Open options panel when clicking the version */
     $('.sphinxsidebarwrapper h3 a.version').on('click', function(e) {
