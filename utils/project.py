@@ -57,6 +57,13 @@ def get_path(conf, branch):
 
     return '/'.join(o)
 
+def get_current_path(conf):
+    branch = get_branch()
+    if branch not in conf.git.branches.published:
+        branch = conf.git.branches.published[0]
+
+    return get_path(conf, branch)
+
 def get_versions(conf=None):
     conf = lazy_conf(conf)
 

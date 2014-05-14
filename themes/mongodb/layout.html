@@ -359,36 +359,37 @@
 
   {%- block versionnav %}
   <script type="text/javascript">
-  $(document).ready(function(){
-    var pagename = '{{pagename}}';
-    if (pagename == 'index') {
-      pagename = '';
-    }
+  var pagename = '{{pagename}}';
+  if (pagename == 'index') {
+    pagename = '';
+  }
+  window.basePath = '{{theme_basepath}}';
 
+  window.fullDocsPath = function(base) {
+    var path = pagename;
+
+    // skip if pagename is undefined (index.html)
+    if (path) {
+      path = pagename + '/';
+    }
+    return '/' + base + '/' + path;
+  }
+  // Bootstrap array of links that should trigger a full page reload
+  window.docsExcludedNav = {{ theme_nav_excluded }};
+
+  $(document).ready(function(){
     $(".version-selector").on('click', function(e) {
       e.preventDefault();
       var base = $(e.currentTarget).data('path');
-      docsRedirect(base);
+      window.location.href = fullDocsPath(base);
     });
 
     $("select.language-selector").on('change', function(e) {
       var path = $(e.currentTarget).find('option:selected').data('path');
       window.location.href = path;
     });
-
-    window.docsRedirect = function(base) {
-      var path = pagename;
-
-      // skip if pagename is undefined (index.html)
-      if (path) {
-        path = pagename + '/';
-      }
-      window.location.href = '/' + base + '/' + path;
-    }
   });
 
-  // Bootstrap array of links that should trigger a full page reload
-  window.docsExcludedNav = {{ theme_nav_excluded }};
   </script>
   {%- endblock -%}
 

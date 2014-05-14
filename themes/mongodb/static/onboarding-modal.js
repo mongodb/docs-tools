@@ -9,8 +9,12 @@ $(function() {
     var $onboardingModal = $('#onboarding-modal');
 
     var mmsPath = $.cookie('mms_path');
+
     if (!mmsPath) {
         $onboardingModal.modal(modalOptions);
+    } else if (window.basePath != mmsPath) {
+        var docsPath = window.fullDocsPath(mmsPath);
+        window.location.href = docsPath;
     }
 
     $('.is-hosted, .is-on-prem').on('click', function(e) {
@@ -28,8 +32,8 @@ $(function() {
         $('.option-popup .saving-copy').removeClass('hide');
         $('.mms-version-btn-group').addClass('hide');
         window.setTimeout(function() {
-            window.docsRedirect(path);
-        }, 1500);
+            window.location.href = window.fullDocsPath(path);
+        }, 1000);
     });
 
     var saveSelection = function(path, isCurrent) {
@@ -46,10 +50,10 @@ $(function() {
         } else {
             $('#onboarding-modal .redirect-copy').removeClass('hide');
             fn = function() {
-                window.docsRedirect(path);
+                window.location.href = window.fullDocsPath(path);
             };
         }
 
-        window.setTimeout(fn, 1500);
+        window.setTimeout(fn, 1000);
     };
 });
