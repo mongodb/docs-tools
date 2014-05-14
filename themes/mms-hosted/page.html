@@ -44,3 +44,32 @@
     {%- endif %}
   {%- endif %}
 {%- endblock -%}
+
+{% block version_selector %}
+  <li>
+    <label>{{ _('Version') }}</label>
+    <p class="pull-right saving-copy hide"><i class="fa fa-spin fa-spinner"></i> Saving your settings...</p>
+    <div class="btn-group btn-group-xs pull-right mms-version-btn-group">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        {% for v in theme_version_selector %}
+          {% if v.current %}{{ v.text }}{% endif %}
+        {% endfor %}
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li>
+          <a href="#" data-path="{{ theme_saas_base }}" class="is-hosted mms-version-selector">Cloud</a>
+        </li>
+        {% for v in theme_version_selector %}
+          {% if not v.current %}
+          <li>
+            <a href="#" data-path="{{ v.path }}" class="is-on-prem mms-version-selector">
+            {{ v.text }}
+            </a>
+          </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </li>
+{% endblock %}
