@@ -127,7 +127,7 @@ def truncate_file(fn, start_after=None, end_before=None):
 
     for idx, ln in enumerate(source_lines):
         if start_after is not None:
-            if start_idx != 0 and ln.startswith(start_after):
+            if start_idx == 0 and ln.startswith(start_after):
                 start_idx = idx - 1
                 start_after = None
 
