@@ -245,3 +245,10 @@ def language_setup(sconf, conf):
 
         conf.system.processed.language = True
         return conf
+
+def get_current_path(conf):
+    branch = get_branch()
+    if branch not in conf.git.branches.published:
+        branch = conf.git.branches.published[0]
+
+    return get_path(conf, branch)
