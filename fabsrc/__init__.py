@@ -24,7 +24,7 @@ import sphinx
 import tx
 import transform
 
-from make import make, force, serial, pool
+from make import make, force, serial, pool, parallel
 from deploy import deploy
 
 import fabric

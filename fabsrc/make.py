@@ -23,6 +23,12 @@ def serial():
 
     env.PARALLEL = False
 
+@task
+def parallel():
+    "Sets a flag that adds parallelism from the build process. (The default.)"
+
+    env.PARALLEL = True
+
 env.POOL = None
 @task
 def pool(value):

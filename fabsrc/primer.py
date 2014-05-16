@@ -45,7 +45,7 @@ def clean(conf=None):
 
 def verbose_remove(path):
     if os.path.exists(path):
-        logger.debug('clean: removing {0}'.format(path))
+        logger.info('clean: removing {0}'.format(path))
         os.remove(path)
 
 @task
