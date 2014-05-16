@@ -41,15 +41,20 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="onboarding-modal-title">Onboarding</h4>
+          <h4 class="modal-title" id="onboarding-modal-title">Welcome to the MMS Docs</h4>
         </div>
         <div class="modal-body">
-          <p>Welcome to the MMS Docs. Which version of MMS are you using?</p>
+          <p>Help us route your question correctly. Which version of MMS are you looking for?<br/>
+          You can always change your setting later from the Options panel in bottom right.</p>
           <p class="saving-copy hide"><i class="fa fa-spin fa-spinner"></i> Saving your settings...</p>
           <p class="redirect-copy hide"><i class="fa fa-spin fa-spinner"></i> Redirecting you to the correct page...</p>
           <div class="row action-buttons">
-            <div class="col-md-12">
+            <div class="modal-column-1 col-xs-4 col-sm-offset-2">
               <button data-path="{{ theme_saas_base }}" type="button" class="btn btn-default is-hosted{% if theme_edition == 'saas' %} current{% endif %}">Cloud</button>
+              <div class="circle"></div>
+              <span class="divider-text">or</span>
+            </div>
+            <div class="modal-column-2 col-xs-4 col-sm-offset-2">
               <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                   On-Prem <span class="caret"></span>
@@ -66,6 +71,9 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="cancel pull-right">No Thanks</a>
         </div>
       </div>
     </div>
