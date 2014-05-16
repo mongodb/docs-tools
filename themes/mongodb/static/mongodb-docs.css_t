@@ -1470,3 +1470,100 @@ div.admonition.note table.docutils tr:last-child td {
         margin-left: 0;
     }
 }
+
+/* Modal styles */
+.modal-content {
+    border-radius: 0;
+    padding: 24px 18px 18px 18px;
+    color: #494747;
+}
+
+.modal-content h4 {
+    color: #494747;
+}
+
+/*.modal-content > form {
+    margin-bottom: 0;
+}
+*/
+.modal-body {
+    padding: 0;
+    margin-top: 25px;
+}
+
+.modal-header {
+    border-bottom: 1px solid #ebebed;
+    padding: 0 0 18px 0;
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.modal-header h3,
+h4.modal-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: normal;
+    color: #6e7c9f;
+}
+
+.modal-header .close {
+    font-size: 24px;
+    color: #615f5f;
+    position: relative;
+    top: -6px;
+}
+
+.modal-header .close:hover,
+.modal-header .close:focus {
+    color: #494747;
+}
+
+.modal-footer {
+    border-top: 1px solid #ebebed;
+    padding: 18px 0 0 0;
+    margin-top: 0;
+    background-color: none;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+       -moz-box-shadow: none;
+            box-shadow: none;
+}
+
+.action-buttons .modal-column-1 {
+    position: relative;
+    border-right: 1px solid #ebebed;
+}
+
+.action-buttons .modal-column-2 > .btn-group {
+    margin-left: -9px;
+}
+
+.action-buttons .modal-column-1,
+.action-buttons .modal-column-2 {
+    padding-top: 25px;
+    padding-bottom: 40px;
+}
+
+.action-buttons .circle {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    right: -12px;
+    top: 29px;
+    border-radius: 14px;
+    border: 1px solid #dee0e3;
+    background-color: white;
+}
+
+.action-buttons .divider-text {
+    cursor: default;
+    position: absolute;
+    right: -5px;
+    top: 32px;
+    font-size: 13px;
+    color: #333;
+}
+
+.saving-copy, .redirect-copy {
+    height: 100px;
+}

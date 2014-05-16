@@ -9,10 +9,9 @@ $(function() {
     var $onboardingModal = $('#onboarding-modal');
 
     var mmsPath = $.cookie('mms_path');
-
     if (!mmsPath) {
         $onboardingModal.modal(modalOptions);
-    } else if (window.basePath != mmsPath) {
+    } else if (mmsPath !== "false" && window.basePath != mmsPath) {
         var docsPath = window.fullDocsPath(mmsPath);
         window.location.href = docsPath;
     }
@@ -34,6 +33,12 @@ $(function() {
         window.setTimeout(function() {
             window.location.href = window.fullDocsPath(path);
         }, 1000);
+    });
+
+    $('#onboarding-modal .cancel').on('click', function(e) {
+        e.preventDefault();
+        $.cookie('mms_path', false);
+        $onboardingModal.modal('hide');
     });
 
     var saveSelection = function(path, isCurrent) {
