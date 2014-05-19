@@ -220,6 +220,9 @@ def missing_reference(app, env, node, contnode):
                 node['reftype'] = 'binary'
 
     target = node['reftarget']
+    if target.endswith('()'):
+        target = target[:-2]
+
     objtypes = env.domains[domain].objtypes_for_role(node['reftype'])
     if not objtypes:
         return
