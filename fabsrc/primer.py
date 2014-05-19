@@ -3,7 +3,6 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-
 from fabfile.utils.config import lazy_conf
 from fabfile.utils.serialization import ingest_yaml_list
 from fabfile.utils.files import copy_if_needed, copy_always, expand_tree
@@ -78,7 +77,7 @@ def primer_migrate_pages(conf=None):
 
             page = fix_migration_paths(page)
 
-            fq_target = os.path.join(conf.paths.projectroot, conf.paths.source, page['target'])
+            fq_target = os.path.join(conf.paths.projectroot, conf.paths.branch_source, page['target'])
             fq_source = os.path.join(conf.paths.manual_source, page['source'])
 
             migration_jobs.append(build_migration_job(fq_target, fq_source))

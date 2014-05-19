@@ -107,6 +107,9 @@ def fabric(buildsystem, conf_file):
     symlink(name=os.path.join(buildsystem, 'fabsrc', 'utils'),
             target=os.path.join(os.path.abspath(buildsystem), 'utils'))
 
+    symlink(name=os.path.join(buildsystem, 'fabsrc', 'giza'),
+            target=os.path.join(os.path.abspath(buildsystem), 'giza'))
+
     symlink(name=os.path.join(buildsystem, 'fabsrc', 'docs_meta.py'),
             target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
 
@@ -138,6 +141,9 @@ def utils(buildsystem, conf_file):
             target=os.path.join(os.path.abspath(buildsystem), 'utils'))
 
     symlink(name=os.path.join(buildsystem, 'makecloth', 'utils'),
+            target=os.path.join(os.path.abspath(buildsystem), 'utils'))
+
+    symlink(name=os.path.join(buildsystem, 'giza', 'utils'),
             target=os.path.join(os.path.abspath(buildsystem), 'utils'))
 
     symlink(name=os.path.join(buildsystem, 'utils', 'docs_meta.py'),
