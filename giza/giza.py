@@ -18,14 +18,11 @@ def test(arg):
     r = RuntimeStateConfig()
     c.runstate = r
 
-    print(hasattr(c, 'project'))
     dynamics = [ c.git.commit, c.paths.public, c.git.branches.current, c.git.branches.manual,
                  c.git.branches.published, c.paths.branch_output, c.paths.buildarchive,
                  c.paths.branch_source, c.paths.branch_staging, c.version.published,
-                 c.version.stable, c.version.upcoming,
+                 c.version.stable, c.version.upcoming, c.project.edition, c.deploy,
                  c.paths.global_config ]
-
-    print(dynamics)
 
 
     # print('--- ' + "dir of rendered object >>>")

@@ -4,5 +4,6 @@ production:
     - 'www-c2.10gen.cc'
   args: ['--rsh="ssh"', '--rsync-path="sudo -u www rsync"']
 staging:
-  - 'public@test.docs.10gen.cc'
+  hosts:
+    - 'public@test.docs.10gen.cc'
 ...

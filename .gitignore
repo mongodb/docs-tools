@@ -14,4 +14,5 @@ meta.yaml
 TAGS
 utils/docs_meta.py
 config
+!giza/config
 fabsrc/giza
