@@ -63,6 +63,8 @@ class ConfigurationBase(object):
         for k,v in self.state.items():
             if isinstance(v, ConfigurationBase):
                 d[k] = v.dict()
+            elif isinstance(v, list) and isinstance(v[0], ConfigurationBase):
+                d[k] = [i.dict() for i in v ]
             else:
                 d[k] = v
         return d

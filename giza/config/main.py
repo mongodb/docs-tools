@@ -3,6 +3,7 @@ import os.path
 from utils.serialization import ingest_yaml_doc
 
 from config.base import ConfigurationBase, RecursiveConfigurationBase
+from config.assets import AssetsConfig
 from config.project import ProjectConfig
 from config.paths import PathsConfig
 from config.git import GitConfig
@@ -84,9 +85,9 @@ class Configuration(ConfigurationBase):
     @assets.setter
     def assets(self, value):
         if isinstance(value, list):
-            self.state['assets'] = value
+            self.state['assets'] = [AssetsConfig(v) for v in value]
         else:
-            self.state['assets'] = [value]
+            self.state['assets'] = [AssetsConfig(value)]
 
     @property
     def deploy(self):
