@@ -8,13 +8,14 @@ logging.basicConfig(level=logging.INFO) # set basic default log level
 import argh
 
 from app import BuildApp
-from configuration import Configuration, RuntimeStateConfiguration
+from config.main import Configuration
+from config.runtime import RuntimeStateConfig
 
 @argh.arg('--confp')
 def test(arg):
     c = Configuration()
     c.ingest(arg.confp)
-    r = RuntimeStateConfiguration()
+    r = RuntimeStateConfig()
     c.runstate = r
 
     print(hasattr(c, 'project'))

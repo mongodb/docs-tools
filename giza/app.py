@@ -7,7 +7,7 @@ from collections import deque
 
 from utils.jobs.dependency import check_dependency
 from pool import ThreadPool, ProcessPool
-from configuration import ConfigurationBase
+from config.base import ConfigurationBase
 
 class Task(object):
     def __init__(self, job, args, description=None, target=None, dependency=None):
