@@ -2,14 +2,22 @@ import logging
 import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
+logging.basicConfig(level=logging.INFO) # set basic default log level
 
 import argh
 
 from app import BuildApp
 from configuration import Configuration
 
+@argh.arg('--confp')
 def test(arg):
-    print arg
+    c = Configuration(arg.confp)
+
+    print(dir(Configuration))
+    print(dir(c))
+    print('---')
+    print(c)
+
 
 def main():
     parser = argh.ArghParser()
