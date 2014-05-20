@@ -15,6 +15,6 @@ class TestGiza(TestCase):
         self.assertEqual(self.result, self.conf.baseline)
 
     def test_subdoc_type(self):
-        self.conf.base.foo = 1
-        print(type(self.conf))
-        self.assertEqual(self.conf.base, True)
+        self.conf.base = 1
+
+        self.assertEqual(self.conf.base, 1)

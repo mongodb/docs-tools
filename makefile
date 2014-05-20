@@ -1,4 +1,4 @@
 .PHONY: test
 
 test:
-	@nosetests2 -w test/ giza
+	@nosetests2 -w giza test
