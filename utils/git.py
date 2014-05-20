@@ -3,7 +3,6 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-
 try:
     from utils.shell import command
 except ImportError:
@@ -58,6 +57,9 @@ class GitRepo(object):
 
     def pull(self, remote='origin', branch='master'):
         return self.cmd('pull', remote, branch)
+
+    def current_branch(self):
+        return self.cmd('symbolic-ref', 'HEAD').out.split('/')[2]
 
     def sha(self, ref='HEAD'):
         return self.cmd('rev-parse', '--verify', ref).out
