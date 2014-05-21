@@ -15,7 +15,40 @@ class SystemConfig(ConfigurationBase):
 
     @tools.setter
     def tools(self, value):
-        self.state['tools'] = value
+        self.state['tools'] = SystemToolsConfig(value)
+
+    @property
+    def conf_file(self):
+        if 'conf_file' not in self.state:
+            self.conf_file = None
+
+        return self.state['conf_file']
+
+    @conf_file.setter
+    def conf_file(self, value):
+        pass
+
+    @property
+    def branched(self):
+        if 'branched' not in self.state:
+            self.branched = None
+
+        return self.state['branched']
+
+    @branched.setter
+    def branched(self, value):
+        pass
+
+    @property
+    def dependency_cache(self):
+        if 'dependency_cache' not in self.state:
+            self.dependency_cache = None
+
+        return self.state['dependency_cache']
+
+    @dependency_cache.setter
+    def dependency_cache(self, value):
+        pass
 
 class SystemToolsConfig(ConfigurationBase):
     @property

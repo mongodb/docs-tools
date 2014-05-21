@@ -40,7 +40,7 @@ class ProjectConfig(RecursiveConfigurationBase):
     @editions.setter
     def editions(self, value):
         if isinstance(value, list):
-            self.state['editions'] = value
+            self.state['editions'] = EditionListConfig(value)
         else:
             logger.critical('editions must be a list')
             raise TypeError
@@ -57,3 +57,23 @@ class ProjectConfig(RecursiveConfigurationBase):
             self.state['edition'] = self.conf.runstate.edition
         else:
             self.state['edition'] = None
+
+class EditionListConfig(ConfigurationBase):
+    @property
+    def name(self):
+        return self.state['name']
+
+    @name.setter
+    def name(self, value):
+        self.state['name'] = value
+
+    @property
+    def branched(self):
+        return self.state['branched']
+
+    @branched.setter
+    def branched(self, value):
+        if isinstance(value, bool):
+            self.state['branched'] = value
+        else:
+            raise TypeError
