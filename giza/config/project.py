@@ -53,7 +53,7 @@ class ProjectConfig(RecursiveConfigurationBase):
 
     @edition.setter
     def edition(self, value):
-        if self.conf.runstate.edition in self.state['editions']:
+        if 'editions' in self.state and self.conf.runstate.edition in self.state['editions']:
             self.state['edition'] = self.conf.runstate.edition
         else:
             self.state['edition'] = None

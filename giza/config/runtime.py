@@ -71,3 +71,37 @@ class RuntimeStateConfig(ConfigurationBase):
                 return
 
             self._branch_conf = yaml.load(data)
+
+    @property
+    def conf_path(self):
+        return self.state['conf_path']
+
+    @conf_path.setter
+    def conf_path(self, value):
+        self.state['conf_path'] = value
+
+    @property
+    def level(self):
+        return self.state['level']
+
+    @conf_path.setter
+    def level(self, value):
+        levels = {
+            'debug': logging.DEBUG,
+            'info': logging.INFO,
+            'warning': logging.WARNING,
+            'error': logging.ERROR,
+            'critical': logging.critical
+        }
+        if value in levels:
+            level = levels[value]
+            logging.basicConfig(level=level)
+            self.state['level'] = value
+
+    @property
+    def function(self):
+        return self.state['_entry_point']
+
+    @function.setter
+    def function(self, value):
+        self.state['_entry_point'] = value

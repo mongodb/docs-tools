@@ -3,7 +3,6 @@ import os.path
 import json
 
 logger = logging.getLogger(os.path.basename(__file__))
-logging.basicConfig(level=logging.INFO) # set basic default log level
 
 import argh
 
@@ -11,12 +10,13 @@ from app import BuildApp
 from config.main import Configuration
 from config.runtime import RuntimeStateConfig
 
-@argh.arg('--confp')
-def test(arg):
+@argh.arg('--conf_path', '-c')
+@argh.arg('--edition', '-e')
+@argh.arg('--language', '-l')
+def test(args):
     c = Configuration()
-    c.ingest(arg.confp)
-    r = RuntimeStateConfig()
-    c.runstate = r
+    c.ingest(args.conf_path)
+    c.runstate = args
 
     dynamics = [ c.git.commit, c.paths.public, c.git.branches.current, c.git.branches.manual,
                  c.git.branches.published, c.paths.branch_output, c.paths.buildarchive,
@@ -25,19 +25,20 @@ def test(arg):
                  c.paths.global_config ]
 
 
-    # print('--- ' + "dir of rendered object >>>")
-    # print(dir(c))
     print('--- ' + "str of object >>>")
     print(json.dumps(c.dict(), indent=3))
     print('---  >>>')
 
 def main():
     parser = argh.ArghParser()
-    parser.add_argument('--level', choices=['debug', 'warning'])
+    parser.add_argument('--level', '-l',
+                        choices=['debug', 'warning', 'info', 'critical', 'error'],
+                        default='info')
 
     argh.add_commands(parser, [test])
 
-    argh.dispatch(parser)
+    args = RuntimeStateConfig()
+    argh.dispatch(parser, namespace=args)
 
 if __name__ == '__main__':
     main()
