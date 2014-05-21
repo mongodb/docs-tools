@@ -195,8 +195,16 @@ def edition_setup(edition, conf):
 
         conf.project.edition = edition
 
-        if 'editions' in conf.project and edition in conf.project.editions:
-            dep_fn = "dependencies-{0}.json".format(edition)
+        if 'editions' in conf.project:
+            if edition in conf.project.editions:
+                dep_fn = "dependencies-{0}.json".format(edition)
+            else:
+                editions_list = [ e['name'] for e in conf.project.editions
+                                  if isinstance(e, dict) ]
+                if edition in editions_list:
+                    dep_fn = "dependencies-{0}.json".format(edition)
+                else:
+                    dep_fn = "dependencies.json"
         else:
             dep_fn = "dependencies.json"
 
