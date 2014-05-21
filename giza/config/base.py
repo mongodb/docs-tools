@@ -65,9 +65,9 @@ class ConfigurationBase(object):
                 continue
             elif isinstance(v, ConfigurationBase):
                 d[k] = v.dict()
-            elif isinstance(v, list) and isinstance(v[0], ConfigurationBase):
+            elif isinstance(v, list) and len(v) > 0 and isinstance(v[0], ConfigurationBase):
                 d[k] = [i.dict() for i in v ]
-            else:
+            elif self._is_value_type(v):
                 d[k] = v
         return d
 
@@ -87,5 +87,5 @@ class RecursiveConfigurationBase(ConfigurationBase):
             self._conf = value
         else:
             m = 'invalid configuration object: {0}'.format(value)
-            m.error(m)
+            logger.error(m)
             raise TypeError(m)

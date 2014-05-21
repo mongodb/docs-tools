@@ -178,6 +178,7 @@ def mangle_configuration(conf):
             conf.version.published = ['master']
             conf.version.stable = None
             conf.version.upcoming = None
+            # manual source is deprecated
             conf.paths.manual_source = os.path.abspath(os.path.join(conf.paths.projectroot, '..', 'source'))
 
         conf.system.processed.project_conf = True

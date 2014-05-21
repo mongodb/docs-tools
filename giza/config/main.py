@@ -76,7 +76,7 @@ class Configuration(ConfigurationBase):
 
     @system.setter
     def system(self, value):
-        self.state['system'] = SystemConfig(value)
+        self.state['system'] = SystemConfig(value, self)
 
     @property
     def assets(self):

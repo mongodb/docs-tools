@@ -1,6 +1,11 @@
-from config.base import ConfigurationBase
+import logging
+import os.path
 
-class SystemConfig(ConfigurationBase):
+logger = logging.getLogger(os.path.basename(__file__))
+
+from config.base import RecursiveConfigurationBase, ConfigurationBase
+
+class SystemConfig(RecursiveConfigurationBase):
     @property
     def make(self):
         return self.state['make']
@@ -30,14 +35,11 @@ class SystemConfig(ConfigurationBase):
 
     @property
     def branched(self):
-        if 'branched' not in self.state:
-            self.branched = None
-
-        return self.state['branched']
+        return self.conf.project.branched
 
     @branched.setter
     def branched(self, value):
-        pass
+        logger.warning('branched state is stored in system not project.')
 
     @property
     def dependency_cache(self):
@@ -48,7 +50,16 @@ class SystemConfig(ConfigurationBase):
 
     @dependency_cache.setter
     def dependency_cache(self, value):
-        pass
+        if value is not None:
+            self.state['dependency_cache'] = value
+        else:
+            p = [ self.conf.paths.projectroot, self.conf.paths.branch_output ]
+            if self.conf.project.edition is None:
+                p.append('dependencies.json')
+            else:
+                p.append('dependencies-' + self.conf.project.edition + '.json')
+
+            self.state['dependency_cache'] = os.path.sep.join(p)
 
 class SystemToolsConfig(ConfigurationBase):
     @property

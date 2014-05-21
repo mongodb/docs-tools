@@ -3,21 +3,9 @@ import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from config.base import ConfigurationBase
+from config.base import RecursiveConfigurationBase
 
-class PathsConfig(ConfigurationBase):
-    def __init__(self, obj, conf):
-        super(PathsConfig, self).__init__(obj)
-        self._conf = conf
-
-    @property
-    def conf(self):
-        return self._conf
-
-    @conf.setter
-    def conf(self, value):
-        logger.error("cannot set conf at this level")
-
+class PathsConfig(RecursiveConfigurationBase):
     @property
     def output(self):
         return self.state['output']
@@ -142,7 +130,11 @@ class PathsConfig(ConfigurationBase):
 
     @branch_source.setter
     def branch_source(self, value):
-        self.state['branch_source'] = os.path.join(self.branch_output, self.source)
+        p = os.path.join(self.branch_output, self.source)
+        if self.conf.project.edition is not None:
+            p += '-' + self.conf.project.edition
+
+        self.state['branch_source'] = p
 
     @property
     def branch_staging(self):
@@ -165,3 +157,29 @@ class PathsConfig(ConfigurationBase):
     @global_config.setter
     def global_config(self, value):
         self.state['global_config'] = os.path.join(self.buildsystem, 'data')
+
+    @property
+    def public_site_output(self):
+        if 'public_site_output' not in self.state:
+            self.public_site_output = None
+
+        return self.state['public_site_output']
+
+    @public_site_output.setter
+    def public_site_output(self, value):
+        p = [ self.conf.paths.public ]
+
+        if self.conf.project.edition is not None:
+            p.append(self.conf.project.edition)
+
+        if self.conf.project.branched is True:
+            p.append(self.conf.git.branches.current)
+
+        p = os.path.sep.join(p)
+
+        if (self.conf.project.branched is False and
+            self.conf.project.edition is not None and
+            self.conf.git.branches.current != self.conf.git.branches.published[0]):
+            p += '-' + self.conf.git.branches.current
+
+        self.state['public_site_output'] = p

@@ -26,7 +26,7 @@ class VersionConfig(RecursiveConfigurationBase):
 
     @published.setter
     def published(self, value):
-        if 'published' in self.conf.runstate.branch_conf['version']:
+        if 'version' in self.conf.runstate.branch_conf and 'published' in self.conf.runstate.branch_conf['version']:
             p = self.conf.runstate.branch_conf['version']['published']
 
             if not isinstance(p, list):
@@ -47,7 +47,7 @@ class VersionConfig(RecursiveConfigurationBase):
 
     @upcoming.setter
     def upcoming(self, value):
-        if 'upcoming' in self.conf.runstate.branch_conf['version']:
+        if 'version' in self.conf.runstate.branch_conf and 'upcoming' in self.conf.runstate.branch_conf['version']:
             self.state['upcoming'] = self.conf.runstate.branch_conf['version']['upcoming']
         else:
             self.state['upcoming'] = None
@@ -61,7 +61,7 @@ class VersionConfig(RecursiveConfigurationBase):
 
     @stable.setter
     def stable(self, value):
-        if 'stable' in self.conf.runstate.branch_conf['version']:
+        if 'version' in self.conf.runstate.branch_conf and 'stable' in self.conf.runstate.branch_conf['version']:
             self.state['stable'] = self.conf.runstate.branch_conf['version']['stable']
         else:
             self.state['stable'] = None

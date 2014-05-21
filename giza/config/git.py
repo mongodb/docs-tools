@@ -77,8 +77,11 @@ class GitBranchConfig(GitConfigBase):
 
     @manual.setter
     def manual(self, value):
-        if 'manual' in self.conf.runstate.branch_conf['git']['branches']:
-            self.state['manual'] = self.conf.runstate.branch_conf['git']['branches']['manual']
+        if 'git' in self.conf.runstate.branch_conf and 'branches' in self.conf.runstate.branch_conf['git']:
+            if 'manual' in self.conf.runstate.branch_conf['git']['branches']:
+                self.state['manual'] = self.conf.runstate.branch_conf['git']['branches']['manual']
+            else:
+                self.state['manual'] = None
         else:
             self.state['manual'] = None
 
@@ -91,18 +94,26 @@ class GitBranchConfig(GitConfigBase):
 
     @published.setter
     def published(self, value):
-        if 'published' in self.conf.runstate.branch_conf['git']['branches']:
-            p = self.conf.runstate.branch_conf['git']['branches']['published']
+        if 'git' in self.conf.runstate.branch_conf and 'branches' in self.conf.runstate.branch_conf['git']:
+            if 'published' in self.conf.runstate.branch_conf['git']['branches']:
+                p = self.conf.runstate.branch_conf['git']['branches']['published']
 
-            if not isinstance(p, list):
-                msg = "published branches must be a list"
-                logger.critical(msg)
-                raise TypeError(msg)
+                if not isinstance(p, list):
+                    msg = "published branches must be a list"
+                    logger.critical(msg)
+                    raise TypeError(msg)
+                elif p[0] != 'master':
+                    msg = "right now, we must publish master"
+                    logger.critical(msg)
+                    raise TypeError(msg)
 
-            self.state['published'] = p
+
+                self.state['published'] = p
+
+            else:
+                self.state['published'] = []
         else:
-            self.state['published'] = []
-
+            self.state['published'] = 'master'
 class GitRemoteConfig(ConfigurationBase):
     @property
     def upstream(self):
