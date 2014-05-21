@@ -99,6 +99,40 @@ class RuntimeStateConfig(ConfigurationBase):
             self.state['level'] = value
 
     @property
+    def runner(self):
+        if 'runner' not in self.state:
+            self.runner = None
+
+        return self.state['runner']
+
+    @runner.setter
+    def runner(self, value):
+        supported_runners = ['process', 'thread', 'serial']
+
+        if value is None:
+            self.state['runner'] = 'process'
+        elif value in supported_runners:
+            self.state['runner'] = value
+        else:
+            m = '{0} is not a supported runner type, choose from: {1}'.format(vale, supported_runners)
+            logger.error(m)
+            raise TypeError(m)
+
+    @property
+    def force(self):
+        if 'force' in self.state:
+            return self.state['force']
+        else:
+            return False
+
+    @force.setter
+    def force(self, value):
+        if isinstance(value, bool):
+            self.state['force'] = value
+        else:
+            raise TypeError
+
+    @property
     def function(self):
         return self.state['_entry_point']
 

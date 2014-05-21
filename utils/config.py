@@ -284,7 +284,7 @@ def render_sphinx_config(conf):
 
     for k, v in to_compute:
         if k in ['prerequisites', 'generated-source', 'editions',
-                 'prerequsites', 'sphinx-builders']:
+                 'sphinx-builders']:
             continue
 
         if 'languages' in v:

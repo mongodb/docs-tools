@@ -13,6 +13,9 @@ class WorkerPool(object):
         self.p.join()
 
     def runner(self, jobs):
+        return self.get_results(self.async_runner(jobs))
+
+    def async_runner(self, jobs):
         results = []
         if len(jobs) == 1:
             results.append((job, jobs[0].run()))
@@ -53,6 +56,24 @@ class WorkerPool(object):
 
         return retval
 
+class SerialPool(object):
+    def __init__(self, conf=None):
+        self.p = None
+        self.conf = conf
+        logger.debug('new phony "serial" pool object')
+
+    def get_results(self, results):
+        return results
+
+    def runner(self, jobs):
+        results = []
+        for job in jobs:
+            results.append(job.run())
+
+        return results
+
+    async_runner = runner
+
 class ThreadPool(WorkerPool):
     def __init__(self, conf=None):
         self.p = multiprocessing.dummy.pool.Pool()
@@ -60,6 +81,7 @@ class ThreadPool(WorkerPool):
         logger.debug('new thread pool object')
 
 class ProcessPool(WorkerPool):
-    def __init__(self):
+    def __init__(self, conf=None):
+        self.conf = conf
         self.p = multiprocessing.Pool()
         logger.debug('new process pool object')

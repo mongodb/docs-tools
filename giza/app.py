@@ -6,8 +6,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 from collections import deque
 
 from utils.jobs.dependency import check_dependency
-from pool import ThreadPool, ProcessPool
-from config.base import ConfigurationBase
+from pool import ThreadPool, ProcessPool, SerialPool
+from config.main import Configuration
 
 class Task(object):
     def __init__(self, job, args, description=None, target=None, dependency=None):
@@ -26,7 +26,7 @@ class Task(object):
 
     @conf.setter
     def conf(self, value):
-        if isinstance(value, BaseConfiguration):
+        if isinstance(value, Configuration):
             self._conf = value
 
     @property
@@ -66,7 +66,7 @@ class Task(object):
 
     @property
     def needs_rebuild(self):
-        if (self.target is None or self.dependency is None or self.conf.build.settings.force is True):
+        if (self.target is None or self.dependency is None or self.conf.runstate.force is True):
             return True
         else:
             return check_dependency(self.target, self.dependency)
@@ -88,7 +88,8 @@ class BuildApp(object):
         self.conf = conf
         self.queue = deque()
         self.worker_pool = None
-        self.default_pool = 'process'
+        self.defualt_pool = self.conf.runstate.runner
+
 
     @property
     def pool(self):
@@ -102,7 +103,7 @@ class BuildApp(object):
         if value is not None and self.is_pool(self.worker_pool):
             self.close_pool()
 
-        if self.is_pool(value):
+        if self.is_pool(value) or isinstance(value, SerialPool):
             self.worker_pool = value
             return
 
@@ -115,17 +116,19 @@ class BuildApp(object):
             self.worker_pool = ThreadPool(self.conf)
         elif self.default_pool == 'process':
             self.worker_pool = ProcessPool(self.conf)
+        elif self.default_pool == 'serial':
+            self.worker_pool = SerialPool(self.conf)
 
     @staticmethod
     def is_pool(pool):
-        if isinstance(WorkerPool):
+        if isinstance(pool, WorkerPool):
             return True
         else:
             return False
 
     @staticmethod
     def is_pool_type(value):
-        if value in ('thread', 'process'):
+        if value in ('thread', 'process', 'serial'):
             return True
         else:
             return False
@@ -176,7 +179,7 @@ class BuildApp(object):
                     self.queue.popleft()
                 else:
                     if len(group) > 1:
-                        results.extend(self.pool.get_results(self.pool.runner(group)))
+                        results.extend(self.pool.runner(group))
                         group = []
                     elif len(group) == 1:
                         results.append(group[0].run())
@@ -189,4 +192,4 @@ class BuildApp(object):
 
             return results
         else:
-            return self.pool.get_results(self.pool.runner(self.queue))
+            return self.pool.runner(self.queue)
