@@ -174,6 +174,13 @@ conf['directives'] = [
         'description': 'system variable available in aggregation',
         'prepend': True,
         'callable': False,
+    },
+    {
+        'name': 'alert',
+        'tag': 'alert',
+        'description': 'MMS Alert',
+        'prepend': False,
+        'callable': False,
     }
 ]
 
