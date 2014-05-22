@@ -9,10 +9,35 @@ from utils.shell import CommandError
 from config.base import ConfigurationBase
 
 class RuntimeStateConfig(ConfigurationBase):
+    _option_registry = [ 'length', 'conf_path', 'days_to_save', 'builder_to_delete' ]
+
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
-        self._branch_conf = None
         self._conf = None
+        self._branch_conf = None
+
+    def __setattr__(self, key, value):
+        if key in self._option_registry:
+            self.state[key] = value
+        else:
+            ConfigurationBase.__setattr__(self, key, value)
+
+    def __getattr__(self, key):
+        try:
+            return object.__getattr__(self, key)
+        except AttributeError as e:
+            if key in self._option_registry:
+                return self.state[key]
+            else:
+                raise e
+
+    @property
+    def function(self):
+        return self.state['_entry_point']
+
+    @function.setter
+    def function(self, value):
+        self.state['_entry_point'] = value
 
     @property
     def conf(self):
@@ -28,63 +53,10 @@ class RuntimeStateConfig(ConfigurationBase):
             raise TypeError(m)
 
     @property
-    def language(self):
-        if 'language' not in self.state:
-            return 'en'
-        else:
-            return self.state['language']
-
-    @language.setter
-    def language(self, value):
-        self.state['language'] = value
-
-    @property
-    def edition(self):
-        if 'edition' not in self.state:
-            return False
-        else:
-            return self.state['edition']
-
-    @edition.setter
-    def edition(self, value):
-        self.state['edition'] = value
-
-    @property
-    def branch_conf(self):
-        if self._branch_conf is None:
-            self.branch_conf = None
-
-        return self._branch_conf
-
-    @branch_conf.setter
-    def branch_conf(self, value):
-        fn = os.path.join(self.conf.paths.builddata, 'published_branches.yaml')
-
-        if self.conf.git.branches.current == 'master'and not os.path.exists(fn):
-            self._branch_conf = {}
-        else:
-            try:
-                data = self.conf.git.repo.branch_file(path=fn, branch='master')
-            except CommandError:
-                logger.critical('giza not configured to work with buildbot repos')
-                self._branch_conf = {}
-                return
-
-            self._branch_conf = yaml.load(data)
-
-    @property
-    def conf_path(self):
-        return self.state['conf_path']
-
-    @conf_path.setter
-    def conf_path(self, value):
-        self.state['conf_path'] = value
-
-    @property
     def level(self):
         return self.state['level']
 
-    @conf_path.setter
+    @level.setter
     def level(self, value):
         levels = {
             'debug': logging.DEBUG,
@@ -133,9 +105,63 @@ class RuntimeStateConfig(ConfigurationBase):
             raise TypeError
 
     @property
-    def function(self):
-        return self.state['_entry_point']
+    def language(self):
+        if 'language' not in self.state:
+            return 'en'
+        else:
+            return self.state['language']
 
-    @function.setter
-    def function(self, value):
-        self.state['_entry_point'] = value
+    @language.setter
+    def language(self, value):
+        self.state['language'] = value
+
+    @property
+    def edition(self):
+        if 'edition' not in self.state:
+            return False
+        else:
+            return self.state['edition']
+
+    @edition.setter
+    def edition(self, value):
+        self.state['edition'] = value
+
+    @property
+    def branch_conf(self):
+        if self._branch_conf is None:
+            self.branch_conf = None
+
+        return self._branch_conf
+
+    @branch_conf.setter
+    def branch_conf(self, value):
+        fn = os.path.join(self.conf.paths.builddata, 'published_branches.yaml')
+
+        if self.conf.git.branches.current == 'master'and not os.path.exists(fn):
+            self._branch_conf = {}
+        else:
+            try:
+                data = self.conf.git.repo.branch_file(path=fn, branch='master')
+            except CommandError:
+                logger.critical('giza not configured to work with buildbot repos')
+                self._branch_conf = {}
+                return
+
+            self._branch_conf = yaml.load(data)
+
+    @property
+    def builder(self):
+        if 'builder' not in self.state:
+            self.state['builder'] = 'html'
+
+        return self.state['builder']
+
+    @builder.setter
+    def builder(self, value):
+        #todo: make following validation list more dynamically assembled.
+        #todo ensure this value is always a list.
+
+        if value in [None, 'dirhtml', 'html', 'json', 'epub', 'latex', 'singlehtml']:
+            self.state['builder'] = value
+        elif value == 'pdf':
+            self.state['builder'] = 'latex'

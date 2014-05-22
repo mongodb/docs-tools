@@ -6,100 +6,27 @@ logger = logging.getLogger(os.path.basename(__file__))
 from collections import deque
 
 from utils.jobs.dependency import check_dependency
-from pool import ThreadPool, ProcessPool, SerialPool
+from pool import ThreadPool, ProcessPool, SerialPool, WorkerPool
 from config.main import Configuration
 
-class Task(object):
-    def __init__(self, job, args, description=None, target=None, dependency=None):
-        self.spec = {}
-        self._conf = None
-        self.job = job
-        self.args = args
-        self.description = description
-        self.target = target
-        self.dependency = dependency
-        logger.debug('created task object calling {0}, for {1}'.format(job, description))
-
-    @property
-    def conf(self):
-        return self._conf
-
-    @conf.setter
-    def conf(self, value):
-        if isinstance(value, Configuration):
-            self._conf = value
-
-    @property
-    def job(self):
-        return self.spec['job']
-
-    @job.setter
-    def job(self, value):
-        if 1 == 1: # assert value is callable
-            self.spec['job'] = value
-
-    @property
-    def args(self):
-        return self.args['job']
-
-    @args.setter
-    def args(self, value):
-        if isinstance(value, dict):
-            self.args_type == 'kwargs'
-            self.args['args'] = value
-        elif isinstance(value, list):
-            self.args_type == 'args'
-            self.args['args'] = value
-
-    @property
-    def args(self):
-        return self.args['job']
-
-    @args.setter
-    def args(self, value):
-        if isinstance(value, dict):
-            self.args_type == 'kwargs'
-            self.args['args'] = value
-        elif isinstance(value, list):
-            self.args_type == 'args'
-            self.args['args'] = value
-
-    @property
-    def needs_rebuild(self):
-        if (self.target is None or self.dependency is None or self.conf.runstate.force is True):
-            return True
-        else:
-            return check_dependency(self.target, self.dependency)
-
-    def run(self):
-        task_id = hash(self.job) + hash(self.args)
-        logger.debug('({0}) calling {1} with args {2}'.format(task_id, self.job, self.args))
-        if self.args_type == 'kwargs':
-            self.job(**self.args)
-        elif self.args_type == 'args':
-            self.job(*self.args)
-        else:
-            self.job()
-        logger.debug('(completed running task {0}'.format(task_id))
-
+from task import Task
 
 class BuildApp(object):
     def __init__(self, conf):
         self.conf = conf
         self.queue = deque()
         self.worker_pool = None
-        self.defualt_pool = self.conf.runstate.runner
-
+        self.default_pool = self.conf.runstate.runner
 
     @property
     def pool(self):
         if self.worker_pool is None:
-            self.create_pool()
+            self.pool = None
 
         return self.worker_pool
 
     @pool.setter
-    def create_pool(self, value=None):
+    def pool(self, value=None):
         if value is not None and self.is_pool(self.worker_pool):
             self.close_pool()
 
@@ -121,7 +48,7 @@ class BuildApp(object):
 
     @staticmethod
     def is_pool(pool):
-        if isinstance(pool, WorkerPool):
+        if isinstance(pool, (WorkerPool, SerialPool)):
             return True
         else:
             return False
@@ -172,7 +99,7 @@ class BuildApp(object):
         elif len([ t for t in self.queue if isinstance(t, BuildApp)]) >= 1:
             results = [ ]
             group = [ ]
-            self.create_pool()
+            self.pool = None
             for task in self.queue:
                 if not isinstance(task, BuildApp):
                     group.append(task)

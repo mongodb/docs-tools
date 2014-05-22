@@ -1,8 +1,18 @@
 import multiprocessing
+import multiprocessing.dummy
 import logging
 import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
+from task import Task
+
+class PoolResultsError(Exception):
+    pass
+
+def run_task(task):
+    "helper to call run method on task so entire operation can be pickled for process pool support"
+
+    return task.run()
 
 class WorkerPool(object):
     def __enter__(self):
@@ -17,15 +27,16 @@ class WorkerPool(object):
 
     def async_runner(self, jobs):
         results = []
+
         if len(jobs) == 1:
             results.append((job, jobs[0].run()))
 
         for job in jobs:
-            if not isinstance(Task):
+            if not isinstance(job, Task):
                 raise TypeError('task "{0}" is not a valid Task'.format(job))
 
             if job.needs_rebuild is True:
-                results.append((job, self.p.apply_async(job.run)))
+                results.append((job, self.p.apply_async(run_task, args=[job])))
 
         logger.debug('all tasks running in a worker pool')
         return results
@@ -48,7 +59,7 @@ class WorkerPool(object):
             for job, err in errors:
                 error_list.append(e)
                 if job.description is None:
-                    logger.error("encountered error {0} in {1} with args ({2})".format(e, job.job, job.args))
+                    logger.error("encountered error '{0}' in {1} with args ({2})".format(e, job.job, job.args))
                 else:
                     logger.error("'{0}' encountered error: {1}, exiting.".format(job.description, e))
 
@@ -76,7 +87,7 @@ class SerialPool(object):
 
 class ThreadPool(WorkerPool):
     def __init__(self, conf=None):
-        self.p = multiprocessing.dummy.pool.Pool()
+        self.p = multiprocessing.dummy.Pool()
         self.conf = conf
         logger.debug('new thread pool object')
 

@@ -42,8 +42,8 @@ class ConfigurationBase(object):
             object.__setattr__(self, key, value)
         else:
             msg = 'configuration object {0} lacks support for "{1}" value'.format(type(self), key)
-            logger.critical(msg)
-            # raise TypeError(msg)
+            logger.error(msg)
+            raise TypeError(msg)
 
     @staticmethod
     def _is_value_type(value):
