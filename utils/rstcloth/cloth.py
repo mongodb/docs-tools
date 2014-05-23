@@ -13,33 +13,9 @@
 # limitations under the License.
 
 import os
-import os.path
+import logging
 
-def print_output(list):
-    """
-    :param list list: A list of strings to print.
-
-    Takes a list as a single argument and prints each line.
-    """
-    for line in list:
-        print(line)
-
-def write_file(list, filename):
-    """
-    :param list list: A list of strings to write.
-    :param string filename: The name of the file to write with ``list``.
-
-    Write all items in ``list`` to the file specified by ``filename``. Creates
-    enclosing directories if needed, and overwrite an existing file of the same
-    name if it exists.
-    """
-    dirpath = filename.rsplit('/', 1)[0]
-    if os.path.isdir(dirpath) is False:
-        os.makedirs(dirpath)
-
-    with open(filename, 'w') as f:
-        for line in list:
-            f.write(line + '\n')
+logger = logging.getLogger("rstcloth.cloth")
 
 class AttributeDict(dict):
     def __getattr__(self, attr):
@@ -48,44 +24,26 @@ class AttributeDict(dict):
         self[attr] = value
 
 class Cloth(object):
-    def get_block(self, block='_all'):
-        if block not in self.docs:
-            raise Exception('Error: ' + block + ' not specified in buildfile')
-        else:
-            return self.docs[block]
+    def print_content(self, block_order=None):
+        if block_order is not None:
+            logger.warning('block_order "{0}" is no longer supported'.format(block_order))
 
-    def print_content(self, block_order=['_all']):
-        output = []
-
-        if type(block_order) is not list:
-            raise Exception('Cannot print blocks not specified as a list.')
-        else:
-            for block in block_order:
-                output.append(self.docs[block])
-
-            output = [item for sublist in output for item in sublist]
-            print_output(output)
+        print('\n'.join(self._data))
 
     def print_block(self, block='_all'):
-        if block not in self.docs:
-            raise MissingBlock('Error: ' + block + ' not specified.')
-        else:
-            print_output(self.docs[block])
+        logger.warning('print_block is no longer supported')
 
-    def write(self, filename, block_order=['_all']):
-        output = []
+    def write(self, filename, block_order=None):
+        if block_order is not None:
+            logger.warning('block_order "{0}" is no longer supported'.format(block_order))
 
-        if type(block_order) is not list:
-            raise Exception('Cannot write blocks not specified as a list.')
-        else:
-            for block in block_order:
-                output.append(self.docs[block])
+        dirpath = filename.rsplit('/', 1)[0]
+        if os.path.isdir(dirpath) is False:
+            os.makedirs(dirpath)
 
-            output = [item for sublist in output for item in sublist]
-            write_file(output, filename)
+        with open(filename, 'w') as f:
+            f.write('\n'.join(list))
+            f.write('\n')
 
     def write_block(self, filename, block='_all'):
-        if block not in self.docs:
-            raise Exception('Error: ' + block + ' not specified.')
-        else:
-            write_file(self.docs[block], filename)
+        logger.warning('write_block is no longer supported')

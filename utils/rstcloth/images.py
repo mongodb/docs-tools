@@ -1,6 +1,4 @@
-import sys
 import os.path
-import json
 import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -76,10 +74,3 @@ def generate_image_pages(dir, name, alt, output, conf=None):
 
     r.write(image + '.rst')
     logger.debug('generated include file {0}.rst'.format(image))
-
-def main():
-    image = json.loads(sys.argv[1])
-    generate_image_pages(**image)
-
-if __name__ == '__main__':
-    main()

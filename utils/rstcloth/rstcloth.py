@@ -13,8 +13,11 @@
 # limitations under the License.
 
 import textwrap
+import logging
 
 from utils.rstcloth.cloth import Cloth
+
+logger = logging.getLogger("rstcloth")
 
 def fill(string, first=0, hanging=0, wrap=True):
     first_indent = ' ' * first
@@ -53,36 +56,28 @@ def _indent(content, indent):
 
 class RstCloth(Cloth):
     def __init__(self):
-        self.docs = dict()
-        self.docs['_all'] = [ ]
+        self._data = []
 
-    def _add(self, content, block='_all'):
-        def _add_line(line):
-            self.docs['_all'].append(line)
-
-            if block != '_all':
-                if block not in self.docs:
-                    self.docs[block] = []
-
-                self.docs[block].append(line)
+    def _add(self, content, block=None):
+        if block is not None:
+            logger.warning('block "{0}" is no longer supported'.format(block))
 
         if isinstance(content, list):
-            for string in content:
-                _add_line(string)
+            self._data.extend(content)
         else:
-            _add_line(content)
+            self._data.append(content)
 
-    def newline(self, count=1, block='_all'):
+    def newline(self, count=1, block=None):
         if isinstance(count, int):
             if count == 1:
-                self._add('', block=block)
+                self._add('')
             else:
                 # subtract one because every item gets one \n for free.
-                self._add('\n' * (count - 1), block=block)
+                self._add('\n' * (count - 1))
         else:
             raise Exception("Count of newlines must be a positive int.")
 
-    def directive(self, name, arg=None, fields=None, content=None, indent=0, wrap=True, block='_all'):
+    def directive(self, name, arg=None, fields=None, content=None, indent=0, wrap=True, block=None):
         o = [ ]
 
         o.append('.. {0}::'.format(name))
@@ -103,7 +98,7 @@ class RstCloth(Cloth):
             else:
                 o.append(_indent(content, 3))
 
-        self._add(_indent(o, indent), block)
+        self._add(_indent(o, indent))
 
     @staticmethod
     def role(name, value, text=None):
@@ -139,22 +134,21 @@ class RstCloth(Cloth):
     def _paragraph(content, wrap=True):
         return [ i.strip() for i in fill(content, wrap=wrap).split('\n') ]
 
-    def replacement(self, name, value, indent=0, block='_all'):
+    def replacement(self, name, value, indent=0, block=None):
         output = '.. |{0}| replace:: {1}'.format(name, value)
-        self._add(_indent(output, indent), block)
+        self._add(_indent(output, indent))
 
-    def codeblock(self, content, indent=0, wrap=True, language=None, block='_all'):
+    def codeblock(self, content, indent=0, wrap=True, language=None, block=None):
         if language is None:
             o = [ '::', _indent(content, 3) ]
-            self._add(_indent(o, indent), block=block)
+            self._add(_indent(o, indent))
         else:
-            self.directive(name='code-block', arg=language, content=content, indent=indent, block=block)
+            self.directive(name='code-block', arg=language, content=content, indent=indent)
 
-    def footnote(self, ref, text, indent=0, wrap=True, block='_all'):
-        self._add(fill('.. [#{0}] {1}'.format(ref, text), indent, indent + 3, wrap), block=block)
-        self._add(fill('.. [#{0}] {1}'.format(ref, text), indent, indent + 3, wrap), block='_footnotes')
+    def footnote(self, ref, text, indent=0, wrap=True, block=None):
+        self._add(fill('.. [#{0}] {1}'.format(ref, text), indent, indent + 3, wrap))
 
-    def definition(self, name, text, indent=0, wrap=True, bold=False, block='_all'):
+    def definition(self, name, text, indent=0, wrap=True, bold=False, block=None):
         o = []
 
         if bold is True:
@@ -163,21 +157,21 @@ class RstCloth(Cloth):
         o.append(_indent(name, indent))
         o.append(fill(text, indent + 3, indent + 3, wrap=wrap))
 
-        self._add(o, block)
+        self._add(o)
 
-    def li(self, content, bullet='-', indent=0, wrap=True, block='_all'):
+    def li(self, content, bullet='-', indent=0, wrap=True, block=None):
         bullet = bullet + ' '
         hanging_indent_len = indent + len(bullet)
         hanging_indent = ' ' * hanging_indent_len
 
         if isinstance(content, list):
             content = bullet + '\n'.join(content)
-            self._add(fill(content, indent, indent + hanging_indent_len, wrap), block)
+            self._add(fill(content, indent, indent + hanging_indent_len, wrap))
         else:
             content = bullet + fill(content, 0, len(bullet), wrap)
-            self._add(fill(content, indent, indent, wrap), block)
+            self._add(fill(content, indent, indent, wrap))
 
-    def field(self, name, value, indent=0, wrap=True, block='_all'):
+    def field(self, name, value, indent=0, wrap=True, block=None):
         output = [ ':{0}:'.format(name) ]
 
         if len(name) + len(value) < 60:
@@ -196,43 +190,43 @@ class RstCloth(Cloth):
             output.append(_indent(value, 3))
 
         for line in output:
-            self._add(_indent(line, indent), block)
+            self._add(_indent(line, indent))
 
-    def ref_target(self, name, indent=0, block='_all'):
+    def ref_target(self, name, indent=0, block=None):
         o = '.. _{0}:'.format(name)
-        self._add(_indent(o, indent), block)
+        self._add(_indent(o, indent))
 
-    def content(self, content, indent=0, wrap=True, block='_all'):
+    def content(self, content, indent=0, wrap=True, block=None):
         if isinstance(content, list):
             for line in content:
-                self._add(_indent(line, indent), block)
+                self._add(_indent(line, indent))
         else:
             lines = self._paragraph(content, wrap)
 
             for line in lines:
-                self._add(_indent(line, indent), block)
+                self._add(_indent(line, indent))
 
-    def title(self, text, char='=', block='_all'):
+    def title(self, text, char='=', block=None):
         line = char * len(text)
-        self._add([line, text, line], block)
+        self._add([line, text, line])
 
-    def heading(self, text, char, indent, block='_all'):
-        self._add(_indent([text, char * len(text)], indent), block=block)
+    def heading(self, text, char, indent, block=None):
+        self._add(_indent([text, char * len(text)], indent))
 
-    def h1(self, text, indent=0, block='_all'):
-        self.heading(text, char='=', indent=indent, block=block)
+    def h1(self, text, indent=0, block=None):
+        self.heading(text, char='=', indent=indent)
 
-    def h2(self, text, indent=0, block='_all'):
-        self.heading(text, char='-', indent=indent, block=block)
+    def h2(self, text, indent=0, block=None):
+        self.heading(text, char='-', indent=indent)
 
-    def h3(self, text, indent=0, block='_all'):
-        self.heading(text, char='~', indent=indent, block=block)
+    def h3(self, text, indent=0, block=None):
+        self.heading(text, char='~', indent=indent)
 
-    def h4(self, text, indent=0, block='_all'):
-        self.heading(text, char='+', indent=indent, block=block)
+    def h4(self, text, indent=0, block=None):
+        self.heading(text, char='+', indent=indent)
 
-    def h5(self, text, indent=0, block='_all'):
-        self.heading(text, char='^', indent=indent, block=block)
+    def h5(self, text, indent=0, block=None):
+        self.heading(text, char='^', indent=indent)
 
-    def h6(self, text, indent=0, block='_all'):
-        self.heading(text, char=';', indent=indent, block=block)
+    def h6(self, text, indent=0, block=None):
+        self.heading(text, char=';', indent=indent)

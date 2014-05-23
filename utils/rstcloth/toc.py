@@ -6,7 +6,6 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-
 from utils.rstcloth.table import TableData
 from utils.rstcloth.rstcloth import RstCloth, fill
 
