@@ -39,7 +39,7 @@ def builds(days=14):
 
     days = time.time() - 60*60*24 * int(days)
 
-    path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../build/')) + '/'
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'build'))
 
     builds = [ path + o for o in os.listdir(path) if os.path.isdir(path + o)]
 

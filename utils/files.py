@@ -6,6 +6,12 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+def rm_rf(path):
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    elif os.path.exists(path):
+        os.remove(path)
+
 def tarball(name, path, newp=None, cdir=None):
     tarball_path = os.path.dirname(name)
     if not os.path.exists(tarball_path):
