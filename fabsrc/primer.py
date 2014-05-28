@@ -77,8 +77,8 @@ def primer_migrate_pages(conf=None):
 
             page = fix_migration_paths(page)
 
-            fq_target = os.path.join(conf.paths.projectroot, conf.paths.branch_source, page['target'])
-            fq_source = os.path.join(conf.paths.projectroot, '..', 'source', page['source'])
+            fq_target = os.path.join(conf.paths.projectroot, conf.paths.source, page['target'])
+            fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, '..', 'source', page['source']))
 
             migration_jobs.append(build_migration_job(fq_target, fq_source))
 
