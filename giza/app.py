@@ -78,7 +78,9 @@ class BuildApp(object):
             return t
         else:
             if isinstance(task, Task):
-                task.conf = self.conf
+                if t.conf is None:
+                    task.conf = self.conf
+
                 self.queue.append(task)
                 return task
             elif isinstance(task, BuildApp):

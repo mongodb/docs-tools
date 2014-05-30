@@ -74,7 +74,9 @@ def clean(args):
         t = app.add()
         t.job = rm_rf
         t.args = fn
-        logger.critical('removing artifact: {0}'.format(fn))
+        m = 'removing artifact: {0}'.format(fn)
+        t.description = m
+        logger.critical(m)
 
     app.run()
 
