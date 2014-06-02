@@ -1,4 +1,4 @@
-from config.base import ConfigurationBase
+from giza.config.base import ConfigurationBase
 
 class AssetsConfig(ConfigurationBase):
     @property

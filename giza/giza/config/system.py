@@ -3,7 +3,7 @@ import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from config.base import RecursiveConfigurationBase, ConfigurationBase
+from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 
 class SystemConfig(RecursiveConfigurationBase):
     @property

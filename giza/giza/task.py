@@ -3,7 +3,7 @@ import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from config.main import Configuration
+from giza.config.main import Configuration
 
 class Task(object):
     def __init__(self, job=None, description=None, target=None, dependency=None):

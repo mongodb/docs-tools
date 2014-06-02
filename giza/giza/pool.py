@@ -4,7 +4,8 @@ import logging
 import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
-from task import Task
+
+from giza.task import Task
 
 class PoolResultsError(Exception):
     pass

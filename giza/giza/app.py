@@ -5,11 +5,10 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 from collections import deque
 
-from utils.jobs.dependency import check_dependency
-from pool import ThreadPool, ProcessPool, SerialPool, WorkerPool
-from config.main import Configuration
+from giza.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool
+from giza.config.main import Configuration
 
-from task import Task
+from giza.task import Task
 
 class BuildApp(object):
     def __init__(self, conf):

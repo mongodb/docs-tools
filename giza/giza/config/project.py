@@ -1,4 +1,4 @@
-from config.base import RecursiveConfigurationBase, ConfigurationBase
+from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 
 class ProjectConfig(RecursiveConfigurationBase):
     @property

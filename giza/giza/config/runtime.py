@@ -4,9 +4,9 @@ import yaml
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from utils.shell import CommandError
+from giza.tools.shell import CommandError
 
-from config.base import ConfigurationBase
+from giza.config.base import ConfigurationBase
 
 class RuntimeStateConfig(ConfigurationBase):
     _option_registry = [ 'length', 'conf_path', 'days_to_save', 'builder_to_delete' ]

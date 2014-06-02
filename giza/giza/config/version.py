@@ -1,4 +1,4 @@
-from config.base import RecursiveConfigurationBase
+from giza.config.base import RecursiveConfigurationBase
 
 class VersionConfig(RecursiveConfigurationBase):
     @property

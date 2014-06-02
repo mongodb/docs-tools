@@ -3,8 +3,8 @@ import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from utils.git import GitRepo
-from config.base import ConfigurationBase
+from giza.tools.git import GitRepo
+from giza.config.base import ConfigurationBase
 
 class GitConfigBase(ConfigurationBase):
     def __init__(self, obj, conf, repo=None):
@@ -114,6 +114,7 @@ class GitBranchConfig(GitConfigBase):
                 self.state['published'] = []
         else:
             self.state['published'] = 'master'
+
 class GitRemoteConfig(ConfigurationBase):
     @property
     def upstream(self):

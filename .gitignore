@@ -1,4 +1,5 @@
 build/
+dist/
 *pyc
 .DS_Store
 .#*
@@ -14,5 +15,6 @@ meta.yaml
 TAGS
 utils/docs_meta.py
 config
-!giza/config
+!giza/giza/config
 fabsrc/giza
+*.egg-info

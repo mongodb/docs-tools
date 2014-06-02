@@ -1,16 +1,16 @@
 import os.path
 
-from utils.serialization import ingest_yaml_doc
+from giza.tools.serialization import ingest_yaml_doc
 
-from config.base import ConfigurationBase, RecursiveConfigurationBase
-from config.assets import AssetsConfig
-from config.project import ProjectConfig
-from config.paths import PathsConfig
-from config.git import GitConfig
-from config.system import SystemConfig
-from config.runtime import RuntimeStateConfig
-from config.version import VersionConfig
-from config.deploy import DeployConfig
+from giza.config.base import ConfigurationBase, RecursiveConfigurationBase
+from giza.config.assets import AssetsConfig
+from giza.config.project import ProjectConfig
+from giza.config.paths import PathsConfig
+from giza.config.git import GitConfig
+from giza.config.system import SystemConfig
+from giza.config.runtime import RuntimeStateConfig
+from giza.config.version import VersionConfig
+from giza.config.deploy import DeployConfig
 
 class Configuration(ConfigurationBase):
     @property
