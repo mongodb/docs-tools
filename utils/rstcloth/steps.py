@@ -415,14 +415,14 @@ def render_step_file(input_fn, output_fn=None, conf=None):
 
     web_output = WebStepsOutput(steps, conf=conf)
     web_output.render()
-    r.content(web_output.rst.get_block(), indent=0, wrap=False)
+    r.content(web_output.rst.data, indent=0, wrap=False)
     logger.debug('generated web output for {0}'.format(input_fn_base))
 
     r.directive('only', 'latex')
     r.newline()
     print_output = PrintStepsOutput(steps, conf=conf)
     print_output.render()
-    r.content(print_output.rst.get_block(), indent=3, wrap=False)
+    r.content(print_output.rst.data, indent=3, wrap=False)
     logger.debug('generated print output for {0}'.format(input_fn_base))
 
     if output_fn is None:

@@ -42,8 +42,16 @@ class Cloth(object):
             os.makedirs(dirpath)
 
         with open(filename, 'w') as f:
-            f.write('\n'.join(list))
+            f.write('\n'.join(self._data))
             f.write('\n')
 
     def write_block(self, filename, block='_all'):
         logger.warning('write_block is no longer supported')
+
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self):
+        raise AttributeError('cannot set the RstCloth.data attribute directly')

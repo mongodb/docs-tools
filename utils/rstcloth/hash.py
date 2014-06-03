@@ -21,7 +21,7 @@ def generate_hash_file(fn):
     r.directive('|commit| replace', '``{0}``'.format(commit))
 
     try:
-        if r.get_block('_all')[0] == existing[:-1]:
+        if r.data == existing[:-1]:
             logger.info('no new commit(s), not updating {0} ({1})'.format(fn, commit[:10]))
             return True
     except TypeError:
