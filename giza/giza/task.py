@@ -1,5 +1,6 @@
 import logging
 import os.path
+import collections
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -33,8 +34,7 @@ class Task(object):
 
     @job.setter
     def job(self, value):
-        #todo: assert value is callable
-        if 1 == 1:
+        if isinstance(value, collections.Callable):
             self.spec['job'] = value
 
     @property
@@ -53,7 +53,7 @@ class Task(object):
             self.args_type = 'args'
             self._args = [value]
         else:
-            logger.critical(type(value))
+            logger.critical("task doesn't support args of type {0}".format(type(value)))
 
     @property
     def needs_rebuild(self):
