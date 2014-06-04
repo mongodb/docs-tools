@@ -16,7 +16,7 @@ from utils.transformations import munge_content
 def json_output(conf=None):
     conf = lazy_conf(conf)
 
-    list_file = os.path.join(conf.paths.branch_staging, 'json-file-list')
+    list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
     public_list_file = os.path.join(conf.paths.public_site_output,
                                     'json', '.file_list')
 
@@ -24,7 +24,7 @@ def json_output(conf=None):
     json_dst = os.path.join(conf.paths.public_site_output, 'json')
 
     if not os.path.exists(json_dst):
-        logger.debug('created directories for {0}'.foramt(json_dst))
+        logger.debug('created directories for {0}'.format(json_dst))
         os.makedirs(json_dst)
 
     command(cmd.format(src=os.path.join(conf.paths.branch_output, 'json') + '/',
@@ -77,6 +77,8 @@ def json_output_jobs(conf=None):
             'description': 'generating json index list {0}'.format(list_file),
             'job': generate_list_file,
             'args': (outputs, list_file, conf) }
+
+    json_output(conf)
 
 def process_json_file(input_fn, output_fn, regexes, conf=None):
     with open(input_fn, 'r') as f:
