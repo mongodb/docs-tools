@@ -70,7 +70,7 @@ def json_output_jobs(conf=None):
 
         outputs.append(json)
 
-    list_file = os.path.join(conf.paths.branch_staging, 'json-file-list')
+    list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
 
     yield { 'target': list_file,
             'dependency': None,
