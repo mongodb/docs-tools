@@ -42,6 +42,9 @@ class RuntimeStateConfig(ConfigurationBase):
 
     @property
     def conf_path(self):
+        if 'conf_path' not in self.state:
+            self.conf_path = None
+
         return self.state['conf_path']
 
     @conf_path.setter

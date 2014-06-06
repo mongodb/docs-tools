@@ -12,12 +12,12 @@ logger = logging.getLogger('git-operations')
 @argh.arg('--patch', '-p', nargs='*', dest='git_objects')
 @argh.arg('--signoff', '-s', default=False, action='store_true', dest='git_sign_patch')
 @argh.named('am')
-def apply_patch(arg):
+def apply_patch(args):
     c = Configuration()
     c.ingest(args.conf_path)
     c.runstate = args
 
-    g = GitRepo(conf.paths.projectroot)
+    g = GitRepo(c.paths.projectroot)
 
     if c.runstate.git_branch is None:
         c.runstate.git_branch = g.current_branch
@@ -29,12 +29,12 @@ def apply_patch(arg):
 
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.named('update')
-def pull_rebase(arg):
+def pull_rebase(args):
     c = Configuration()
     c.ingest(args.conf_path)
     c.runstate = args
 
-    g = GitRepo(conf.paths.projectroot)
+    g = GitRepo(c.paths.projectroot)
 
     if c.runstate.git_branch is None:
         c.runstate.git_branch = g.current_branch
@@ -45,12 +45,12 @@ def pull_rebase(arg):
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.arg('--commits', '-c', nargs='*', dest='git_objects')
 @argh.named('cp')
-def cherry_pick(arg):
+def cherry_pick(args):
     c = Configuration()
     c.ingest(args.conf_path)
     c.runstate = args
 
-    g = GitRepo(conf.paths.projectroot)
+    g = GitRepo(c.paths.projectroot)
 
     if c.runstate.git_branch is None:
         c.runstate.git_branch = g.current_branch

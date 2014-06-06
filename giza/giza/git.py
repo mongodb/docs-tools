@@ -63,8 +63,12 @@ class GitRepo(object):
         return self.cmd(*args)
 
     def cherry_pick(self, *args):
+        if len(args) == 1:
+            args = args[0]
+
         for commit in args:
             self.cmd('cherry-pick', commit)
+            logger.info('cherry picked ' + commit )
 
     def am(self, patches, repo=None, sign=False):
         cmd_base = 'curl {path} | git am --3way'
