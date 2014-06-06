@@ -9,7 +9,8 @@ from giza.tools.shell import CommandError
 from giza.config.base import ConfigurationBase
 
 class RuntimeStateConfig(ConfigurationBase):
-    _option_registry = [ 'length', 'days_to_save', 'builder_to_delete' ]
+    _option_registry = [ 'length', 'days_to_save', 'builder_to_delete',
+                         'git_branch', 'git_sign_patch']
 
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
@@ -209,3 +210,14 @@ class RuntimeStateConfig(ConfigurationBase):
             self.state['builder'] = value
         elif value == 'pdf':
             self.state['builder'] = 'latex'
+
+    @property
+    def git_objects(self):
+        return self.state['git_objects']
+
+    @git_objects.setter
+    def git_objects(self,value):
+        if isinstance(value, list):
+            self.state['git_objects'] = value
+        else:
+            self.state['git_objects'] = [value]

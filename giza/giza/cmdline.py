@@ -10,6 +10,7 @@ from giza.config.runtime import RuntimeStateConfig
 
 from giza.operations.configuration import render_config
 from giza.operations.clean import clean
+from giza.operations.git import apply_patch, pull_rebase, cherry_pick
 
 def main():
     commands = [
@@ -25,6 +26,7 @@ def main():
     parser.add_argument('--force', '-f', default=False, action='store_true')
 
     argh.add_commands(parser, commands)
+    argh.add_commands(parser, [apply_patch, pull_rebase, cherry_pick], namespace='git')
 
     args = RuntimeStateConfig()
     argh.dispatch(parser, namespace=args)
