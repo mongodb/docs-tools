@@ -9,7 +9,7 @@ from giza.tools.shell import CommandError
 from giza.config.base import ConfigurationBase
 
 class RuntimeStateConfig(ConfigurationBase):
-    _option_registry = [ 'length', 'conf_path', 'days_to_save', 'builder_to_delete' ]
+    _option_registry = [ 'length', 'days_to_save', 'builder_to_delete' ]
 
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
@@ -38,6 +38,50 @@ class RuntimeStateConfig(ConfigurationBase):
     @function.setter
     def function(self, value):
         self.state['_entry_point'] = value
+
+    @property
+    def conf_path(self):
+        return self.state['conf_path']
+
+    @conf_path.setter
+    def conf_path(self, value):
+        if value is not None and os.path.exists(value):
+            self.state['conf_path'] = value
+        else:
+            conf_file_name = 'build_conf.yaml'
+
+            cur = os.path.abspath(os.getcwd())
+            if 'config' in os.listdir(cur):
+                fq_conf_file = os.path.join(cur, 'config', conf_file_name)
+                if os.path.exists(fq_conf_file):
+                    self.state['conf_path'] = fq_conf_file
+                else:
+                    m = '"{0}" file does not exist'.format(fq_conf_file)
+                    logger.error(m)
+                    raise OSError(m)
+            else:
+                self.state['conf_path'] = None
+
+                cur = cur.split(os.path.sep)
+                for i in range(len(cur)):
+                    current_attempt = os.path.sep + os.path.join(*cur[:len(cur) - i])
+
+                    contents = os.listdir(current_attempt)
+
+                    if conf_file_name in contents:
+                        fq_conf_file = os.path.join(current_attempt, conf_file_name)
+                        self.state['conf_path'] = fq_conf_file
+                        break
+                    elif 'config' in contents:
+                        fq_conf_file = os.path.join(current_attempt, 'config', conf_file_name)
+                        if os.path.exists(fq_conf_file):
+                            self.state['conf_path'] = fq_conf_file
+                            break
+
+                if self.state['conf_path'] is None:
+                    m = 'cannot locate config file'
+                    logger.error(m)
+                    raise OSError(m)
 
     @property
     def conf(self):
