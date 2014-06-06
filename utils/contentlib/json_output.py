@@ -13,28 +13,30 @@ from utils.transformations import munge_content
 
 ########## Process Sphinx Json Output ##########
 
-def json_output(conf=None):
-    conf = lazy_conf(conf)
-
+def json_output(conf):
     list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
     public_list_file = os.path.join(conf.paths.public_site_output,
                                     'json', '.file_list')
 
     cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {src} {dst}'
+
     json_dst = os.path.join(conf.paths.public_site_output, 'json')
 
     if not os.path.exists(json_dst):
         logger.debug('created directories for {0}'.format(json_dst))
         os.makedirs(json_dst)
 
-    command(cmd.format(src=os.path.join(conf.paths.branch_output, 'json') + '/',
+    builder = 'json'
+    if 'edition' in conf.project:
+        builder += '-' + conf.project.edition
+
+    command(cmd.format(src=os.path.join(conf.paths.branch_output, builder) + '/',
                        dst=json_dst))
 
     copy_if_needed(list_file, public_list_file)
     logger.info('deployed json files to local staging.')
 
-def json_output_jobs(conf=None):
-    conf = lazy_conf(conf)
+def json_output_jobs(conf):
 
     regexes = [
         (re.compile(r'<a class=\"headerlink\"'), '<a'),
@@ -106,10 +108,8 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
     with open(output_fn, 'w') as f:
         f.write(json.dumps(doc))
 
-def generate_list_file(outputs, path, conf=None):
+def generate_list_file(outputs, path, conf):
     dirname = os.path.dirname(path)
-
-    conf = lazy_conf(conf)
 
     url = '/'.join([ conf.project.url, conf.project.basepath, 'json' ])
 
