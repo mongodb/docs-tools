@@ -11,11 +11,13 @@ from giza.config.runtime import RuntimeStateConfig
 from giza.operations.configuration import render_config
 from giza.operations.clean import clean
 from giza.operations.git import apply_patch, pull_rebase, cherry_pick
+from giza.operations.sphinx import sphinx
 
 def main():
     commands = [
         render_config,
-        clean
+        clean,
+        sphinx
     ]
 
     parser = argh.ArghParser()

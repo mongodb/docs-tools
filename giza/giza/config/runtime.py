@@ -10,7 +10,7 @@ from giza.config.base import ConfigurationBase
 
 class RuntimeStateConfig(ConfigurationBase):
     _option_registry = [ 'length', 'days_to_save', 'builder_to_delete',
-                         'git_branch', 'git_sign_patch']
+                         'git_branch', 'git_sign_patch', 'sphinx_builder' ]
 
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
@@ -224,3 +224,36 @@ class RuntimeStateConfig(ConfigurationBase):
             self.state['git_objects'] = value
         else:
             self.state['git_objects'] = [value]
+
+    @property
+    def sphinx_builders(self):
+        return self.state['sphinx_builders']
+
+    @sphinx_builders.setter
+    def sphinx_builders(self, value):
+        if isinstance(value, list):
+            self.state['sphinx_builders'] = value
+        else:
+            self.state['sphinx_builders'] = [value]
+
+    @property
+    def editions_to_build(self):
+        return self.state['editions_to_build']
+
+    @editions_to_build.setter
+    def editions_to_build(self, value):
+        if isinstance(value, list):
+            self.state['editions_to_build'] = value
+        else:
+            self.state['editions_to_build'] = [value]
+
+    @property
+    def languages_to_build(self):
+        return self.state['languages_to_build']
+
+    @languages_to_build.setter
+    def languages_to_build(self, value):
+        if isinstance(value, list):
+            self.state['languages_to_build'] = value
+        else:
+            self.state['languages_to_build'] = [value]
