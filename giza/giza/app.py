@@ -66,12 +66,12 @@ class BuildApp(object):
             self.worker_pool = None
 
     def add(self, task=None):
-        if task is None or task == Task:
+        if task is None or task in (Task, 'task'):
             t = Task()
             t.conf = self.conf
             self.queue.append(t)
             return t
-        elif task == BuildApp:
+        elif task in (BuildApp, 'app'):
             t = BuildApp(self.conf)
             self.queue.append(t)
             return t
