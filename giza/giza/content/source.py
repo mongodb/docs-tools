@@ -21,3 +21,11 @@ def transfer_source(conf):
 
     command('rsync --checksum --recursive --delete {0}/ {1}'.format(source_dir, target))
     logger.info('prepared source for sphinx build in {0}'.format(target))
+
+
+def source_tasks(conf, app):
+    t = app.add('task')
+    t.job = transfer_source
+    t.args = [conf]
+    t.description = 'transferring source to {0}'.format(conf.paths.branch_source)
+    logger.info('adding task to migrate source to {0}'.format(conf.paths.branch_source))

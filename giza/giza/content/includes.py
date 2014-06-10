@@ -217,3 +217,11 @@ def add_meta(r, page_name, record):
         if record[i] is True:
             r.content(meta_strs[i].format(page_name))
             r.newline()
+
+def includes_tasks(conf, app):
+    if (os.path.exists(os.path.join(conf.paths.projectroot, conf.paths.includes)) and
+        os.path.exists(os.path.join(conf.paths.projectroot, conf.paths.source, 'meta'))):
+
+        t = build_setup.add('task')
+        t.job = write_include_index
+        t.args = [ c ]

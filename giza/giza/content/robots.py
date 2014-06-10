@@ -23,7 +23,6 @@ def robots_txt_builder(fn, conf, override=False):
 
     suppressed = ingest_yaml_list(input_fn)
 
-
     robots_txt_dir = os.path.dirname(fn)
     if not os.path.exists(robots_txt_dir):
         os.makedirs(robots_txt_dir)
@@ -47,3 +46,11 @@ def robots_txt_builder(fn, conf, override=False):
                         f.write('\n')
 
     logger.info('regenerated robots.txt file.')
+
+def robots_txt_tasks(conf, app):
+    if os.path.exists(os.path.join(conf.paths.projectroot, conf.paths.builddata, 'robots.yaml')):
+        t = app.add('task')
+        t.job = robots_txt_builder
+        t.args = [ os.path.join(conf.paths.projectroot,
+                                conf.paths.public,
+                                'robots.txt'), conf ]

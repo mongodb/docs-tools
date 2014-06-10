@@ -17,3 +17,16 @@ def assets_setup(path, branch, repo):
 
         g.clone(repo, repo_path=name, branch=branch)
         logger.info('cloned {0} branch from repo {1}'.format(branch, repo))
+
+def assets_tasks(conf, app):
+    if conf.assets is not None:
+        for asset in conf.assets:
+            path = os.path.join(conf.paths.projectroot, asset.path)
+
+            logger.info('adding asset resolution job for {0}'.format(path))
+
+            t = app.add('task')
+            t.job = assets_setup
+            t.args = { 'path': path,
+                       'branch': asset.branch,
+                       'repo': asset.repository }
