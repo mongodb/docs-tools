@@ -3,7 +3,7 @@ from giza.config.base import ConfigurationBase
 class AssetsConfig(ConfigurationBase):
     @property
     def path(self):
-        self.state['path']
+        return self.state['path']
 
     @path.setter
     def path(self, value):
@@ -11,7 +11,7 @@ class AssetsConfig(ConfigurationBase):
 
     @property
     def branch(self):
-        self.state['branch']
+        return self.state['branch']
 
     @branch.setter
     def branch(self, value):
@@ -19,7 +19,7 @@ class AssetsConfig(ConfigurationBase):
 
     @property
     def repository(self):
-        self.state['repository']
+        return self.state['repository']
 
     @repository.setter
     def repository(self, value):

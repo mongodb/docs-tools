@@ -5,19 +5,19 @@ import collections
 logger = logging.getLogger(os.path.basename(__file__))
 
 from giza.config.main import Configuration
+from giza.tools.jobs.dependency import check_dependency
 
 class Task(object):
-    def __init__(self, job=None, description=None, target=None, dependency=None):
+    def __init__(self):
         self.spec = {}
         self._conf = None
         self._args = None
         self.default_pool = 'process'
-        self.job = job
+        self.job = None
         self.args_type = None
-        self.description = description
-        self.target = target
-        self.dependency = dependency
-        logger.debug('created task object calling {0}, for {1}'.format(job, description))
+        self.description = None
+        self.target = None
+        self.dependency = None
 
     @property
     def conf(self):
@@ -34,8 +34,11 @@ class Task(object):
 
     @job.setter
     def job(self, value):
-        if isinstance(value, collections.Callable):
+        if isinstance(value, collections.Callable) or value is None:
             self.spec['job'] = value
+        else:
+            logger.error('{0} is not callable'.format(self.spec['job']))
+            raise TypeError
 
     @property
     def args(self):

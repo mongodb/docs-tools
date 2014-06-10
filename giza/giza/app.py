@@ -104,7 +104,6 @@ class BuildApp(object):
             for task in self.queue:
                 if not isinstance(task, BuildApp):
                     group.append(task)
-                    self.queue.popleft()
                 else:
                     if len(group) > 1:
                         results.extend(self.pool.runner(group))

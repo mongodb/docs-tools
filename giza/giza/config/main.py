@@ -81,7 +81,10 @@ class Configuration(ConfigurationBase):
 
     @property
     def assets(self):
-        return self.state['assets']
+        if 'assets' in self.state:
+            return self.state['assets']
+        else:
+            return None
 
     @assets.setter
     def assets(self, value):
