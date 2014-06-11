@@ -50,7 +50,10 @@ class WorkerPool(object):
 
         for job, ret in results:
             try:
-                retval.append(ret.get())
+                if ret is None:
+                    retval.append(ret)
+                else:
+                    retval.append(ret.get())
             except Exception as e:
                 has_errors = True
                 errors.append((job, e))
