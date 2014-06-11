@@ -3,7 +3,7 @@ import os.path
 import argh
 import itertools
 
-from giza.config.main import Configuration
+from giza.config.helper import fetch_config
 from giza.app import BuildApp
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -31,71 +31,46 @@ from giza.tools.serialization import ingest_yaml_doc
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
 @argh.arg('--builder', '-b', nargs='*', default='html', dest='sphinx_builders')
 def sphinx(args):
-    c = Configuration()
-    c.ingest(args.conf_path)
-    c.runstate = args
-
+    c = fetch_config(args)
     app = BuildApp(c)
 
-    # run this once per entire build
     build_setup = app.add('app')
     build_setup.pool = 'thread'
-
-    robots_txt_tasks(c, build_setup)
-    assets_tasks(c, build_setup)
-    image_tasks(c, build_setup)
-    includes_tasks(c, build_setup)
-
-    # TODO: add primer migration here (build_setup)
+    build_prep_tasks(c, build_setup)
 
     # content generation
     content_gen = app.add('app')
     content_gen.pool = 'process'
-    intersphinx_tasks(c, content_gen)
-    release_tasks(c, content_gen)
-    option_tasks(c, content_gen)
-    api_tasks(c, content_gen)
-    table_tasks(c, content_gen)
-    hash_tasks(c, content_gen)
+    source_content_generation_tasks(c, content_gen)
 
     # this loop will produce an app for each language/edition/builder combination
-    build_source_copies = []
+    build_source_copies = set()
     for lang, edition, builder in itertools.product(c.runstate.editions_to_build,
                                                     c.runstate.languages_to_build,
                                                     c.runstate.sphinx_builders):
         args.language = lang
         args.edition = edition
         args.sphinx_builder = builder
-
-        build_config = Configuration()
-        build_config.ingest(args.conf_path)
-        build_config.runstate = args
+        build_config = fetch_config(args)
 
         build_app = BuildApp(build_config)
         build_app.pool = 'thread'
+        # primer_migrate_tasks(build_config, build_app)
         prep_app = build_app.add('app')
         prep_app.pool = 'process'
 
-        sconf_base = render_sphinx_config(ingest_yaml_doc(os.path.join(c.paths.projectroot, c.paths.builddata, 'sphinx.yaml')))
-        sconf = sconf_base[builder]
-        sconf['edition'] = edition
-        sconf['builder'] = builder
-        if lang is not None:
-            sconf['language'] = lang
+        sconf = render_sconf(edition, builder, language, build_config)
 
         if build_config.paths.branch_source not in build_source_copies:
-            build_source_copies.append(build_config.paths.branch_source)
+            build_source_copies.add(build_config.paths.branch_source)
             source_tasks(build_config, prep_app)
 
             source_app = prep_app.add('app')
-            toc_tasks(build_config, source_app)
-            steps_tasks(build_config, source_app)
-            exclusion_tasks(build_config, sconf, source_app)
+            build_content_generation_tasks(sconf, build_config, source_app)
 
             refresh_dependency_tasks(build_config, prep_app)
 
         sphinx_tasks(sconf, build_config, build_app)
-
         # TODO: add sphinx finalize to a new app (finalize_app)
 
         logger.info("adding builder job for {0} ({1}, {2})".format(builder, lang, edition))
@@ -104,3 +79,36 @@ def sphinx(args):
     logger.info("sphinx build setup, running now.")
     app.run()
     logger.info("sphinx build complete.")
+
+def render_sconf(edition, builder, language, conf):
+    sconf_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, 'sphinx.yaml')
+
+    sconf_base = render_sphinx_config(ingest_yaml_doc(sconf_path))
+    sconf = sconf_base[builder]
+
+    sconf['edition'] = edition
+    sconf['builder'] = builder
+
+    if lang is not None:
+        sconf['language'] = language
+
+    return sconf
+
+def build_prep_tasks(conf, app):
+    robots_txt_tasks(conf, app)
+    assets_tasks(conf, app)
+    image_tasks(conf, app)
+    includes_tasks(conf, app)
+
+def source_content_generation_tasks(conf, app):
+    intersphinx_tasks(conf, app)
+    release_tasks(conf, app)
+    option_tasks(conf, app)
+    api_tasks(conf, app)
+    table_tasks(conf, app)
+    hash_tasks(conf, app)
+
+def build_content_generation_tasks(sconf, conf, app):
+    toc_tasks(conf, app)
+    steps_tasks(conf, app)
+    exclusion_tasks(conf, sconf, app)
