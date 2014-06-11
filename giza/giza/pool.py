@@ -30,14 +30,14 @@ class WorkerPool(object):
         results = []
 
         if len(jobs) == 1:
-            results.append((job, jobs[0].run()))
+            results.append((jobs[0], jobs[0].run()))
+        else:
+            for job in jobs:
+                if not isinstance(job, Task):
+                    raise TypeError('task "{0}" is not a valid Task'.format(job))
 
-        for job in jobs:
-            if not isinstance(job, Task):
-                raise TypeError('task "{0}" is not a valid Task'.format(job))
-
-            if job.needs_rebuild is True:
-                results.append((job, self.p.apply_async(run_task, args=[job])))
+                if job.needs_rebuild is True:
+                    results.append((job, self.p.apply_async(run_task, args=[job])))
 
         logger.debug('all tasks running in a worker pool')
         return results

@@ -105,17 +105,20 @@ class BuildApp(object):
                 if not isinstance(task, BuildApp):
                     group.append(task)
                 else:
-                    if len(group) > 1:
-                        results.extend(self.pool.runner(group))
-                        group = []
-                    elif len(group) == 1:
+                    if len(group) == 1:
                         results.append(group[0].run())
+                        group = []
+                    elif len(group) > 1:
+                        results.extend(self.pool.runner(group))
                         group = []
 
                     if task.worker_pool is None:
                         task.pool = self.pool
 
                     results.extend(task.run())
+
+            if len(group) != 0:
+                results.extend(self.pool.runner(group))
 
             return results
         else:
