@@ -81,8 +81,7 @@ def build_prereq_jobs(sync, conf):
         raise StopIteration
 
 def build_process_prerequsites(sync, conf):
-    pjobs = itertools.chain(manpage_jobs(conf),
-                            table_jobs(conf),
+    pjobs = itertools.chain(table_jobs(conf),
                             api_jobs(conf),
                             option_jobs(conf),
                             release_jobs(conf),

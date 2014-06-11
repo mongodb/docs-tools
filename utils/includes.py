@@ -105,7 +105,11 @@ def generated_includes(conf=None):
     path_prefix = conf.paths.includes[len(conf.paths.source):]
     mapping = {}
     for spec_file in toc_spec_files:
-        data = ingest_yaml_doc(spec_file)
+        if os.path.exists(spec_file):
+            data = ingest_yaml_doc(spec_file)
+        else:
+            continue
+
         deps = [ os.path.join(path_prefix, i ) for i in data['sources']]
 
         mapping[spec_file[maskl:]] = deps

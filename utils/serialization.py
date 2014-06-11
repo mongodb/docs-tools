@@ -25,7 +25,9 @@ def ingest_yaml_doc(filename, force=False):
     if force is True or len(data) == 1:
         return data[0]
     else:
-        if len(data) > 1:
+        if len(data) == 0:
+            return {}
+        elif len(data) > 1:
             raise Exception('{0} has more than one document.'.format(filename))
         else:
             return data[0]

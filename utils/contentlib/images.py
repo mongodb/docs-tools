@@ -4,7 +4,6 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-
 from utils.strings import dot_concat
 from utils.config import lazy_conf
 from utils.shell import command

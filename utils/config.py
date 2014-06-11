@@ -284,7 +284,7 @@ def render_sphinx_config(conf):
 
     for k, v in to_compute:
         if k in ['prerequisites', 'generated-source', 'editions',
-                 'sphinx-builders']:
+                 'sphinx-builders'] or 'base' in k:
             continue
 
         if 'languages' in v:
@@ -292,6 +292,11 @@ def render_sphinx_config(conf):
                 computed['-'.join([k,lang])] = resolver({ 'inherit': k,
                                                           'language': lang },
                                                         conf, computed)
+
+    for i in computed.keys():
+        if i in ['prerequisites', 'generated-source', 'editions',
+                 'sphinx-builders'] or 'base' in i:
+            del computed[i]
 
     return computed
 

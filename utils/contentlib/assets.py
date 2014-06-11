@@ -6,7 +6,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 from utils.git import GitRepo
 
 def assets_setup(path, branch, repo):
-
     if os.path.exists(path):
         g = GitRepo(path)
         g.pull(branch=branch)
