@@ -24,7 +24,7 @@ def assets_tasks(conf, app):
         for asset in conf.assets:
             path = os.path.join(conf.paths.projectroot, asset.path)
 
-            logger.info('adding asset resolution job for {0}'.format(path))
+            logger.debug('adding asset resolution job for {0}'.format(path))
 
             t = app.add('task')
             t.job = assets_setup

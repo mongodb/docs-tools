@@ -1,6 +1,6 @@
 from giza.config.main import Configuration
 
-def configuration(args):
+def fetch_config(args):
     c = Configuration()
     c.ingest(args.conf_path)
     c.runstate = args

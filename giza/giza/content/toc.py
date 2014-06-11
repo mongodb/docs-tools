@@ -286,4 +286,4 @@ def toc_tasks(conf, app):
 
             task.target = target
 
-            logger.info('added task for generating toc from {0}'.format(fn))
+            logger.debug('added task for generating toc from {0}'.format(fn))

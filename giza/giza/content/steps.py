@@ -373,4 +373,4 @@ def steps_tasks(conf, app):
             task.target = out_fn
             task.job = render_step_file
             task.args = [fn, out_fn, conf]
-            logger.info('added task to generate step: {0}'.format(out_fn))
+            logger.debug('added task to generate step: {0}'.format(out_fn))

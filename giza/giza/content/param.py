@@ -222,4 +222,4 @@ def api_tasks(conf, app):
         t.args = [source, target, conf]
         t.description ='generating api param table for {0}'.format(target)
 
-        logger.info('adding task to build param table: {0}'.format(target))
+        logger.debug('adding task to build param table: {0}'.format(target))

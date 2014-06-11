@@ -22,7 +22,8 @@ from giza.content.source import source_tasks, exclusion_tasks
 from giza.content.toc import toc_tasks
 from giza.content.steps import steps_tasks
 from giza.content.dependencies import refresh_dependency_tasks
-from giza.content.sphinx import run_sphinx
+from giza.content.sphinx import sphinx_tasks
+from giza.content.primer import primer_migration_tasks
 
 from giza.tools.config import render_sphinx_config
 from giza.tools.serialization import ingest_yaml_doc
@@ -45,17 +46,16 @@ def sphinx(args):
 
     # this loop will produce an app for each language/edition/builder combination
     build_source_copies = set()
-    for lang, edition, builder in itertools.product(c.runstate.editions_to_build,
-                                                    c.runstate.languages_to_build,
-                                                    c.runstate.sphinx_builders):
-        args.language = lang
+    jobs = itertools.product(args.editions_to_build, args.languages_to_build, args.sphinx_builders)
+    for language, edition, builder in jobs:
+        args.language = language
         args.edition = edition
         args.sphinx_builder = builder
         build_config = fetch_config(args)
 
         build_app = BuildApp(build_config)
         build_app.pool = 'thread'
-        # primer_migrate_tasks(build_config, build_app)
+        primer_migration_tasks(build_config, build_app)
         prep_app = build_app.add('app')
         prep_app.pool = 'process'
 
@@ -73,7 +73,7 @@ def sphinx(args):
         sphinx_tasks(sconf, build_config, build_app)
         # TODO: add sphinx finalize to a new app (finalize_app)
 
-        logger.info("adding builder job for {0} ({1}, {2})".format(builder, lang, edition))
+        logger.info("adding builder job for {0} ({1}, {2})".format(builder, language, edition))
         app.add(build_app)
 
     logger.info("sphinx build setup, running now.")
@@ -83,13 +83,15 @@ def sphinx(args):
 def render_sconf(edition, builder, language, conf):
     sconf_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, 'sphinx.yaml')
 
+    # this operation is really expensive relative to what we need and how often
+    # we have to do it:
     sconf_base = render_sphinx_config(ingest_yaml_doc(sconf_path))
     sconf = sconf_base[builder]
 
     sconf['edition'] = edition
     sconf['builder'] = builder
 
-    if lang is not None:
+    if language is not None:
         sconf['language'] = language
 
     return sconf

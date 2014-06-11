@@ -77,7 +77,7 @@ def generate_image_pages(dir, name, alt, output, conf):
         r.newline(block=b)
 
     r.write(image + '.rst')
-    logger.debug('generated include file {0}.rst'.format(image))
+    logger.info('generated include file {0}.rst'.format(image))
 
 def _get_inkscape_cmd():
     if sys.platform in ['linux', 'linux2']:
@@ -95,7 +95,7 @@ def _generate_images(cmd, dpi, width, target, source):
                        width=width,
                        target=target,
                        source=source))
-    logger.debug('generated image file {0}'.format(target))
+    logger.info('generated image file {0}'.format(target))
 
 def image_tasks(conf, app):
     paths = conf.paths
@@ -103,12 +103,12 @@ def image_tasks(conf, app):
     meta_file = os.path.join(paths.images, 'metadata') + '.yaml'
 
     if not os.path.exists(meta_file):
-        raise StopIteration
+        return
 
     images_meta = ingest_yaml_list(meta_file)
 
     if images_meta is None:
-        raise StopIteration
+        return
 
     for image in images_meta:
         image['dir'] = paths.images
@@ -124,7 +124,7 @@ def image_tasks(conf, app):
         t.description = "generating rst include file {0} for {1}".format(rst_file, source_file)
         t.target = rst_file
         t.depdendency = [ meta_file, os.path.join(paths.buildsystem, 'utils', 'rstcloth', 'images.py') ],
-        logger.info('adding task for image rst file: {0}'.format(rst_file))
+        logger.debug('adding task for image rst file: {0}'.format(rst_file))
 
         for output in image['output']:
             if 'tag' in output:
@@ -143,4 +143,4 @@ def image_tasks(conf, app):
             t.target = rst_file
             t.depdendency = [ meta_file, os.path.join(paths.buildsystem, 'utils', 'rstcloth', 'images.py') ],
             t.description = 'generating image file {0} from {1}'.format(target_img, source_file)
-            logger.info('adding image creation job for {0}'.format(target_img))
+            logger.debug('adding image creation job for {0}'.format(target_img))

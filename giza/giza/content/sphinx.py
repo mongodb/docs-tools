@@ -146,7 +146,6 @@ def run_sphinx(builder, sconf, conf):
 
     output = '\n'.join([out.err, out.out])
 
-
     if out.return_code == 0:
         logger.info('successfully completed {0} sphinx build at {1}!'.format(builder, timestamp()))
         logger.critical('finalizing builds is not implemented')
@@ -161,5 +160,5 @@ def run_sphinx(builder, sconf, conf):
 def sphinx_tasks(sconf, conf, app):
     task = app.add('task')
     task.job = run_sphinx
-    task.args = [sconf['builder'], sconf, build_config]
-    task.description = 'building {0} with sphinx'.format(builder)
+    task.args = [sconf['builder'], sconf, conf]
+    task.description = 'building {0} with sphinx'.format(sconf['builder'])

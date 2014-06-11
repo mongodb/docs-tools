@@ -69,4 +69,4 @@ def intersphinx_tasks(conf, app):
         t.args = { 'f': f, 's': s }
         t.description = 'download intersphinx inventory from {0}'.format(s)
 
-        logger.info('added job for {0}'.format(s))
+        logger.debug('added job for {0}'.format(s))

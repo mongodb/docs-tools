@@ -67,4 +67,4 @@ def table_tasks(conf, app):
             t.args = [ source, target, list_target ]
             t.description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
 
-            logger.info('adding table job to build: {0}'.format(target))
+            logger.debug('adding table job to build: {0}'.format(target))
