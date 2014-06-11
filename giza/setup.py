@@ -2,7 +2,7 @@ import giza
 
 from setuptools import setup, find_packages
 
-REQUIRES = ['argh', 'pyyaml', 'rstcloth', 'docutils', 'jinja2']
+REQUIRES = ['argh', 'pyyaml', 'rstcloth', 'docutils', 'jinja2', 'sphinx']
 
 setup(
     name='giza',

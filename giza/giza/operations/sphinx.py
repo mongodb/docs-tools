@@ -18,7 +18,14 @@ from giza.content.options import option_tasks
 from giza.content.param import api_tasks
 from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
-from giza.content.source import source_tasks
+from giza.content.source import source_tasks, exclusion_tasks
+from giza.content.toc import toc_tasks
+from giza.content.steps import steps_tasks
+from giza.content.dependencies import refresh_dependency_tasks
+from giza.content.sphinx import run_sphinx
+
+from giza.tools.config import render_sphinx_config
+from giza.tools.serialization import ingest_yaml_doc
 
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
@@ -32,22 +39,24 @@ def sphinx(args):
 
     # run this once per entire build
     build_setup = app.add('app')
+    build_setup.pool = 'thread'
 
     robots_txt_tasks(c, build_setup)
     assets_tasks(c, build_setup)
     image_tasks(c, build_setup)
     includes_tasks(c, build_setup)
 
+    # TODO: add primer migration here (build_setup)
+
     # content generation
     content_gen = app.add('app')
+    content_gen.pool = 'process'
     intersphinx_tasks(c, content_gen)
     release_tasks(c, content_gen)
     option_tasks(c, content_gen)
     api_tasks(c, content_gen)
     table_tasks(c, content_gen)
     hash_tasks(c, content_gen)
-
-    # TODO: add primer migration here (build_setup)
 
     # this loop will produce an app for each language/edition/builder combination
     build_source_copies = []
@@ -63,22 +72,31 @@ def sphinx(args):
         build_config.runstate = args
 
         build_app = BuildApp(build_config)
+        build_app.pool = 'thread'
         prep_app = build_app.add('app')
+        prep_app.pool = 'process'
 
-        # TODO: make the sphinx config (sconf) a thing here
+        sconf_base = render_sphinx_config(ingest_yaml_doc(os.path.join(c.paths.projectroot, c.paths.builddata, 'sphinx.yaml')))
+        sconf = sconf_base[builder]
+        sconf['edition'] = edition
+        if lang is not None:
+            sconf['language'] = lang
 
         if build_config.paths.branch_source not in build_source_copies:
             build_source_copies.append(build_config.paths.branch_source)
             source_tasks(build_config, prep_app)
 
             source_app = prep_app.add('app')
-            # TODO: build TOCs (in source_prep)
-            # TODO: build steps (in source_prep)
-            # TODO: remove excluded files (in source_prep)
-            # TODO: refresh_dependencies(build_conf) (task in prep_app)
+            toc_tasks(build_config, source_app)
+            steps_tasks(build_config, source_app)
+            exclusion_tasks(build_config, sconf, source_app)
 
-        # TODO: port logic from utils.sphinx.workers.sphinx_build() adding
-        # sphinx-build Task() to (build_app)
+            refresh_dependency_tasks(build_config, prep_app)
+
+        sphinx_task = build_app.add('task')
+        sphinx_task.job = run_sphinx
+        sphinx_task.args = [builder, sconf, build_config]
+        sphinx_task.description = 'building {0} with sphinx'.format(builder)
 
         # TODO: add sphinx finalize to a new app (finalize_app)
 

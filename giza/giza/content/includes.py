@@ -222,6 +222,6 @@ def includes_tasks(conf, app):
     if (os.path.exists(os.path.join(conf.paths.projectroot, conf.paths.includes)) and
         os.path.exists(os.path.join(conf.paths.projectroot, conf.paths.source, 'meta'))):
 
-        t = build_setup.add('task')
+        t = app.add('task')
         t.job = write_include_index
-        t.args = [ c ]
+        t.args = [ conf ]
