@@ -79,6 +79,7 @@ def sphinx(args):
         sconf_base = render_sphinx_config(ingest_yaml_doc(os.path.join(c.paths.projectroot, c.paths.builddata, 'sphinx.yaml')))
         sconf = sconf_base[builder]
         sconf['edition'] = edition
+        sconf['builder'] = builder
         if lang is not None:
             sconf['language'] = lang
 
@@ -93,10 +94,7 @@ def sphinx(args):
 
             refresh_dependency_tasks(build_config, prep_app)
 
-        sphinx_task = build_app.add('task')
-        sphinx_task.job = run_sphinx
-        sphinx_task.args = [builder, sconf, build_config]
-        sphinx_task.description = 'building {0} with sphinx'.format(builder)
+        sphinx_tasks(sconf, build_config, build_app)
 
         # TODO: add sphinx finalize to a new app (finalize_app)
 

@@ -163,3 +163,9 @@ def run_sphinx(builder, sconf, conf):
     else:
         logger.warning('the sphinx build {0} was not successful. not running finalize steps'.format(builder))
         output_sphinx_stream(output, conf)
+
+def sphinx_tasks(sconf, conf, app):
+    task = app.add('task')
+    task.job = run_sphinx
+    task.args = [sconf['builder'], sconf, build_config]
+    task.description = 'building {0} with sphinx'.format(builder)
