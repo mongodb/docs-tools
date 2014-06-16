@@ -215,12 +215,14 @@ def _generate_toc_tree(fn, fmt, base_name, paths, conf):
         toc.build_table()
         toc.finalize()
 
+        if toc.table is not None:
+            logger.critical('{0} is has a null value. investigate'.format(fn))
+
         if fmt == 'ref':
-            if toc.table is not None:
-                outfn = _get_toc_output_name(base_name, 'table', paths)
-                t = TableBuilder(RstTable(toc.table))
-                t.write(outfn)
-                logger.debug('wrote spec ref-toc: '  + outfn)
+            outfn = _get_toc_output_name(base_name, 'table', paths)
+            t = TableBuilder(RstTable(toc.table))
+            t.write(outfn)
+            logger.debug('wrote spec ref-toc: '  + outfn)
         elif fmt == 'toc':
             outfn = _get_toc_output_name(base_name, 'dfn-list', paths)
             toc.dfn.write(outfn)
@@ -256,9 +258,8 @@ def toc_tasks(conf, app):
     paths = conf.paths
 
     for fn in expand_tree(paths.includes, 'yaml'):
-        if fn.startswith(os.path.join(paths.includes, 'table')):
-            continue
-        elif fn.startswith(os.path.join(paths.includes, 'step')):
+        if not (fn.startswith(os.path.join(paths.includes, 'toc')) or
+                fn.startswith(os.path.join(paths.includes, 'ref-toc'))):
             continue
         elif len(fn) >= 24:
             task = app.add('task')
@@ -272,7 +273,7 @@ def toc_tasks(conf, app):
             task.dependency = os.path.join(paths.projectroot, fn)
             task.job = _generate_toc_tree
             task.args = [fn, fmt, base_name, paths, conf]
-            task.description = 'generating {0} toc from {0}'.format(fmt, fn)
+            task.description = 'generating {0} toc from {1}'.format(fmt, fn)
 
             if fmt != 'spec':
                 target.append(_get_toc_output_name(base_name, 'toc', paths))
