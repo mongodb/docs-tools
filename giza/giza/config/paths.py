@@ -131,7 +131,8 @@ class PathsConfig(RecursiveConfigurationBase):
     @branch_source.setter
     def branch_source(self, value):
         p = os.path.join(self.branch_output, self.source)
-        if self.conf.project.edition is not None:
+        if (self.conf.project.edition is not None and
+            self.conf.project.edition != self.conf.project.name):
             p += '-' + self.conf.project.edition
 
         self.state['branch_source'] = p
