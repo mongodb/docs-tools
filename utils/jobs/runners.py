@@ -1,6 +1,7 @@
 import logging
 import os.path
 import multiprocessing.dummy
+import multiprocessing.pool
 from multiprocessing import cpu_count
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -42,7 +43,7 @@ def async_thread_runner(jobs, force, pool):
 
 def async_process_runner(jobs, force, pool):
     try:
-        p = NestedPool(pool)
+        p = multiprocessing.pool.Pool(pool)
     except:
         logger.warning(' can\'t start pool, falling back to synchronous pool.')
         return sync_runner(jobs, force)
