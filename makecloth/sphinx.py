@@ -72,14 +72,13 @@ def make_all_sphinx(config):
 
     targets = []
     for builder in get_sphinx_builders():
-        if builder.endswith('base'):
+        if builder.endswith('base') or builder.startswith('editions'):
             continue
 
         if 'tags' in config:
             builder_targets = []
             for tag in config['tags']:
                 tag_target = '-'.join([builder, tag])
-
 
                 builder_targets.append(tag_target)
                 targets.append(tag_target)
@@ -92,10 +91,7 @@ def make_all_sphinx(config):
             targets.append(builder)
 
     if 'sphinx_builders' in config:
-        if 'editions' in config:
-            builder_string = ','.join(['{0}-' + ed for ed in config['editions']])
-        else:
-            builder_string = ['{0}-hosted', '{0}-saas']
+        builder_string = ','.join(['{0}-' + ed for ed in config['editions']])
 
         for target in config['sphinx_builders']:
             m.target(target)

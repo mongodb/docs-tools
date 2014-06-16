@@ -283,7 +283,7 @@ def render_sphinx_config(conf):
             to_compute.append((k,v))
 
     for k, v in to_compute:
-        if k in ['prerequisites', 'generated-source', 'editions',
+        if k in ['prerequisites', 'generated-source',
                  'sphinx-builders'] or 'base' in k:
             continue
 
@@ -294,7 +294,7 @@ def render_sphinx_config(conf):
                                                         conf, computed)
 
     for i in computed.keys():
-        if i in ['prerequisites', 'generated-source', 'editions',
+        if i in ['prerequisites', 'generated-source',
                  'sphinx-builders'] or 'base' in i:
             del computed[i]
 
