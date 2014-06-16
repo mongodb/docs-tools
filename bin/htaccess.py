@@ -160,6 +160,9 @@ def generate_redirects(redirect, match=False, conf=None):
         o = generate_simple_rule(redirect, conf=conf)
         o += '\n'
 
+    o = o.replace('http:/', 'http://')
+    o = o.replace('//', '/')
+
     return o
 
 def user_input():
