@@ -27,7 +27,7 @@ def json_output(conf):
         os.makedirs(json_dst)
 
     builder = 'json'
-    if 'edition' in conf.project:
+    if 'edition' in conf.project and conf.project.edition != conf.project.name:
         builder += '-' + conf.project.edition
 
     command(cmd.format(src=os.path.join(conf.paths.branch_output, builder) + '/',
