@@ -178,7 +178,7 @@ conf['directives'] = [
     {
         'name': 'alert',
         'tag': 'alert',
-        'description': 'MMS Alert',
+        'description': 'system alert',
         'prepend': False,
         'callable': False,
     }
