@@ -134,10 +134,7 @@ def check_dependency(target, dependency):
                 return True
         return False
     else:
-        if needs_rebuild(target_time, dependency) is True:
-            return True
-        else:
-            return False
+        return needs_rebuild(target_time, dependency)
 
 def check_multi_dependency(target, dependency):
     for idx, t in enumerate(target):
