@@ -26,7 +26,7 @@ $(function() {
     $(".mms-version-selector").on('click', function(e) {
         e.preventDefault();
         var path = $(e.currentTarget).data('path');
-        $.cookie('mms_path', path);
+        $.cookie('mms_path', path, {path: '/'});
 
         $('.option-popup .saving-copy').removeClass('hide');
         $('.mms-version-btn-group').addClass('hide');
@@ -37,14 +37,14 @@ $(function() {
 
     $('#onboarding-modal .cancel').on('click', function(e) {
         e.preventDefault();
-        $.cookie('mms_path', false);
+        $.cookie('mms_path', false, {path: '/'});
         $onboardingModal.modal('hide');
     });
 
     var saveSelection = function(path, isCurrent) {
         var fn;
 
-        $.cookie('mms_path', path);
+        $.cookie('mms_path', path, {path: '/'});
 
         $('#onboarding-modal .action-buttons').addClass('hide');
         if (isCurrent) {
