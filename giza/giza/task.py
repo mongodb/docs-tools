@@ -1,23 +1,39 @@
 import logging
 import os.path
-import collections
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.config.main import Configuration
 from giza.tools.jobs.dependency import check_dependency
+from giza.config.main import Configuration
 
 class Task(object):
-    def __init__(self):
+    def __init__(self, job=None, description=None, target=None, dependency=None):
         self.spec = {}
         self._conf = None
         self._args = None
         self.default_pool = 'process'
-        self.job = None
+        self.job = job
         self.args_type = None
-        self.description = None
-        self.target = None
-        self.dependency = None
+        self.description = description
+        self.target = target
+        self.dependency = dependency
+        logger.debug('created task object calling {0}, for {1}'.format(job, description))
+
+    @property
+    def dependency(self):
+        return self._dependency
+
+    @dependency.setter
+    def dependency(self, value):
+        self._dependency = value
+
+    @property
+    def target(self):
+        return self._target
+
+    @target.setter
+    def target(self, value):
+        self._target = value
 
     @property
     def conf(self):
@@ -34,11 +50,9 @@ class Task(object):
 
     @job.setter
     def job(self, value):
-        if isinstance(value, collections.Callable) or value is None:
+        #todo: assert value is callable
+        if 1 == 1:
             self.spec['job'] = value
-        else:
-            logger.error('{0} is not callable'.format(self.spec['job']))
-            raise TypeError
 
     @property
     def args(self):
@@ -56,7 +70,7 @@ class Task(object):
             self.args_type = 'args'
             self._args = [value]
         else:
-            logger.critical("task doesn't support args of type {0}".format(type(value)))
+            logger.critical(type(value))
 
     @property
     def needs_rebuild(self):
@@ -67,11 +81,14 @@ class Task(object):
 
     def run(self):
         task_id = hash(str(self.job)) + hash(str(self.args))
-        logger.debug('({0}) calling {1} with args {2}'.format(task_id, self.job, self.args))
-        if self.args_type == 'kwargs':
-            self.job(**self.args)
-        elif self.args_type == 'args':
-            self.job(*self.args)
+        if self.needs_rebuild:
+            logger.debug('({0}) calling {1} with args {2}'.format(task_id, self.job, self.args))
+            if self.args_type == 'kwargs':
+                self.job(**self.args)
+            elif self.args_type == 'args':
+                self.job(*self.args)
+            else:
+                self.job()
+            logger.debug('(completed running task {0}'.format(task_id))
         else:
-            self.job()
-        logger.debug('(completed running task {0}'.format(task_id))
+            logger.warning('not running task {0} ({1}) because rebuild not needed'.format(task_id, self.job))

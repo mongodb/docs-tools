@@ -100,7 +100,7 @@ def _generate_images(cmd, dpi, width, target, source):
 def image_tasks(conf, app):
     paths = conf.paths
 
-    meta_file = os.path.join(paths.images, 'metadata') + '.yaml'
+    meta_file = os.path.join(paths.projectroot, paths.images, 'metadata') + '.yaml'
 
     if not os.path.exists(meta_file):
         return
@@ -112,7 +112,7 @@ def image_tasks(conf, app):
 
     for image in images_meta:
         image['dir'] = paths.images
-        source_base = os.path.join(image['dir'], image['name'])
+        source_base = os.path.join(paths.projectroot, image['dir'], image['name'])
         source_file = dot_concat(source_base, 'svg')
         rst_file = dot_concat(source_base, 'rst')
         image['conf'] = conf
@@ -123,7 +123,7 @@ def image_tasks(conf, app):
         t.args = image
         t.description = "generating rst include file {0} for {1}".format(rst_file, source_file)
         t.target = rst_file
-        t.depdendency = [ meta_file, os.path.join(paths.buildsystem, 'utils', 'rstcloth', 'images.py') ],
+        t.dependency = meta_file
         logger.debug('adding task for image rst file: {0}'.format(rst_file))
 
         for output in image['output']:
@@ -140,7 +140,7 @@ def image_tasks(conf, app):
             t.conf = conf
             t.job = _generate_images
             t.args = [ inkscape_cmd, output['dpi'], output['width'], target_img, source_file ]
-            t.target = rst_file
-            t.depdendency = [ meta_file, os.path.join(paths.buildsystem, 'utils', 'rstcloth', 'images.py') ],
+            t.target = target_img
+            t.dependency = [ meta_file, source_file ]
             t.description = 'generating image file {0} from {1}'.format(target_img, source_file)
             logger.debug('adding image creation job for {0}'.format(target_img))

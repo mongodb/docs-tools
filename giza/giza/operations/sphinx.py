@@ -22,7 +22,7 @@ from giza.content.source import source_tasks, exclusion_tasks
 from giza.content.toc import toc_tasks
 from giza.content.steps import steps_tasks
 from giza.content.dependencies import refresh_dependency_tasks
-from giza.content.sphinx import sphinx_tasks
+from giza.content.sphinx import sphinx_tasks, output_sphinx_stream
 from giza.content.primer import primer_migration_tasks
 
 from giza.tools.config import render_sphinx_config
@@ -34,18 +34,14 @@ from giza.tools.serialization import ingest_yaml_doc
 def sphinx(args):
     c = fetch_config(args)
     app = BuildApp(c)
+    app.pool = 'thread'
 
-    build_setup = app.add('app')
-    build_setup.pool = 'thread'
-    build_prep_tasks(c, build_setup)
-
-    # content generation
-    content_gen = app.add('app')
-    content_gen.pool = 'process'
-    source_content_generation_tasks(c, content_gen)
+    build_prep_tasks(c, app)
 
     # this loop will produce an app for each language/edition/builder combination
     build_source_copies = set()
+    sphinx_app = BuildApp(c)
+    sphinx_app.pool = app.pool
     jobs = itertools.product(args.editions_to_build, args.languages_to_build, args.sphinx_builders)
     for language, edition, builder in jobs:
         args.language = language
@@ -53,11 +49,11 @@ def sphinx(args):
         args.sphinx_builder = builder
         build_config = fetch_config(args)
 
-        build_app = BuildApp(build_config)
-        build_app.pool = 'thread'
-        primer_migration_tasks(build_config, build_app)
-        prep_app = build_app.add('app')
-        prep_app.pool = 'process'
+        prep_app = app.add('app')
+        prep_app.conf = build_config
+
+        primer_app = prep_app.add('app')
+        primer_migration_tasks(build_config, primer_app)
 
         sconf = render_sconf(edition, builder, language, build_config)
 
@@ -70,11 +66,11 @@ def sphinx(args):
 
             refresh_dependency_tasks(build_config, prep_app)
 
-        sphinx_tasks(sconf, build_config, build_app)
+        sphinx_tasks(sconf, build_config, sphinx_app)
         # TODO: add sphinx finalize to a new app (finalize_app)
-
         logger.info("adding builder job for {0} ({1}, {2})".format(builder, language, edition))
-        app.add(build_app)
+
+    app.add(sphinx_app)
 
     logger.info("sphinx build setup, running now.")
     app.run()
@@ -97,12 +93,10 @@ def render_sconf(edition, builder, language, conf):
     return sconf
 
 def build_prep_tasks(conf, app):
+    image_tasks(conf, app)
     robots_txt_tasks(conf, app)
     assets_tasks(conf, app)
-    image_tasks(conf, app)
     includes_tasks(conf, app)
-
-def source_content_generation_tasks(conf, app):
     intersphinx_tasks(conf, app)
     release_tasks(conf, app)
     option_tasks(conf, app)

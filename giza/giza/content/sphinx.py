@@ -53,10 +53,7 @@ def get_sphinx_args(sconf, conf):
 
 #################### Output Management ####################
 
-def output_sphinx_stream(out, conf=None):
-    if conf is None:
-        conf = lazy_conf(conf)
-
+def output_sphinx_stream(out, conf):
     out = [ o for o in out.split('\n') if o != '' ]
 
     full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
@@ -157,8 +154,11 @@ def run_sphinx(builder, sconf, conf):
         logger.warning('the sphinx build {0} was not successful. not running finalize steps'.format(builder))
         output_sphinx_stream(output, conf)
 
+    return output
+
 def sphinx_tasks(sconf, conf, app):
     task = app.add('task')
     task.job = run_sphinx
+    task.conf = conf
     task.args = [sconf['builder'], sconf, conf]
     task.description = 'building {0} with sphinx'.format(sconf['builder'])

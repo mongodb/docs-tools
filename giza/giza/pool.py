@@ -33,7 +33,7 @@ class WorkerPool(object):
             results.append((jobs[0], jobs[0].run()))
         else:
             for job in jobs:
-                if not isinstance(job, Task):
+                if not hasattr(job, 'run'):
                     raise TypeError('task "{0}" is not a valid Task'.format(job))
 
                 if job.needs_rebuild is True:

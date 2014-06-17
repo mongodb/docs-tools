@@ -207,7 +207,7 @@ def _get_toc_output_name(name, type, paths):
 
 def _generate_toc_tree(fn, fmt, base_name, paths, conf):
     if fmt == 'spec':
-        logger.info('generating spec toc {0}'.format(fn))
+        logger.debug('generating spec toc {0}'.format(fn))
 
         toc = AggregatedTocTree(fn, conf)
         fmt = toc._first_source[0:3]
@@ -228,7 +228,7 @@ def _generate_toc_tree(fn, fmt, base_name, paths, conf):
             toc.dfn.write(outfn)
             logger.debug('wrote spec toc: '  + outfn)
     else:
-        logger.info('generating toc {0}'.format(fn))
+        logger.debug('generating toc {0}'.format(fn))
 
         toc = CustomTocTree(fn, conf)
         toc.build_contents()

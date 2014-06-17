@@ -3,8 +3,6 @@ import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from collections import deque
-
 from giza.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool
 from giza.config.main import Configuration
 
@@ -13,9 +11,11 @@ from giza.task import Task
 class BuildApp(object):
     def __init__(self, conf):
         self.conf = conf
-        self.queue = deque()
+        self.queue = []
         self.worker_pool = None
         self.default_pool = self.conf.runstate.runner
+        self.needs_rebuild = True
+        self.root_app = True
 
     @property
     def pool(self):
@@ -60,9 +60,9 @@ class BuildApp(object):
             return False
 
     def close_pool(self):
-        if self.is_pool(self.worker_pool):
-            self.worker_pool.join()
-            self.worker_pool.close()
+        if self.is_pool(self.worker_pool) and not isinstance(self.worker_pool, SerialPool):
+            self.worker_pool.p.join()
+            self.worker_pool.p.close()
             self.worker_pool = None
 
     def add(self, task=None):
@@ -73,6 +73,7 @@ class BuildApp(object):
             return t
         elif task in (BuildApp, 'app'):
             t = BuildApp(self.conf)
+            t.root_app = False
             self.queue.append(t)
             return t
         else:
@@ -83,6 +84,7 @@ class BuildApp(object):
                 self.queue.append(task)
                 return task
             elif isinstance(task, BuildApp):
+                task.root_app = False
                 self.queue.append(task)
                 return task
             else:
@@ -122,4 +124,6 @@ class BuildApp(object):
 
             return results
         else:
-            return self.pool.runner(self.queue)
+            results = self.pool.runner(self.queue)
+
+            return results

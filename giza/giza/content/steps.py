@@ -352,7 +352,7 @@ def render_step_file(input_fn, output_fn, conf):
         output_fn = os.path.splitext(input_fn)[0] + '.rst'
 
     r.write(output_fn)
-    logger.info('wrote step include at {0}'.format(output_fn))
+    logger.debug('wrote step include at {0}'.format(output_fn))
 
 #################### step workers ####################
 
