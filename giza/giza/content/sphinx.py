@@ -9,6 +9,15 @@ logger = logging.getLogger(os.path.basename(__file__))
 from giza.tools.strings import timestamp
 from giza.tools.shell import command
 
+
+from giza.content.links import create_manual_symlink
+from giza.content.manpages import manpage_url_tasks
+
+from giza.content.post.archives import man_tarball, html_tarball
+from giza.content.post.sites import (finalize_epub_build,
+                                     finalize_single_html_jobs,
+                                     finalize_dirhtml_build, error_pages)
+
 #################### Config Resolution ####################
 
 def is_parallel_sphinx(version):
@@ -119,6 +128,9 @@ def is_msg_worthy(l):
     else:
         return True
 
+def printer(string):
+    logger.info(string)
+
 #################### Builder Operation ####################
 
 def run_sphinx(builder, sconf, conf):
@@ -162,3 +174,50 @@ def sphinx_tasks(sconf, conf, app):
     task.conf = conf
     task.args = [sconf['builder'], sconf, conf]
     task.description = 'building {0} with sphinx'.format(sconf['builder'])
+
+    finalize_sphinx_build(sconf, conf, app.add('app'))
+
+
+def finalize_sphinx_build(sconf, conf, app):
+    app.pool = 'serial'
+    target = sconf['builder']
+
+    if target == 'linkcheck':
+        task = app.add('task')
+        task.job = printer
+        task.args = '{0}: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)
+    elif target == 'dirhtml':
+        for job in (finalize_dirhtml, error_pages):
+            task = app.add('task')
+            task.job = job
+            task.args = [target, conf]
+
+        if conf.system.branched is True and conf.git.branches.current == 'master':
+            link_task = app.add('task')
+            link_task.job = create_manual_symlink
+            link_task.args = [conf]
+            link_task.description = "create the 'manual' symlink"
+    elif target == 'epub':
+        task = app.add('task')
+        task.job = finalize_epub_build
+        task.args = [target, conf]
+        task.description = 'finalizing epub build'
+    elif target == 'man':
+        manpage_url_tasks(target, conf, app)
+        task = app.add('task')
+        task.job = man_tarball
+        task.args = [target, conf]
+        task.description = "creating tarball for manpages"
+    elif target == 'html':
+        task = app.add('task')
+        task.job = html_tarball
+        task.args = [target, conf]
+        task.description = "creating tarball for html archive"
+    elif target == 'json':
+        logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
+    elif target == 'singlehtml':
+        logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
+    elif target == 'latex':
+        logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
+    elif target == 'gettext':
+        logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))

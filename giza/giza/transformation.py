@@ -77,7 +77,6 @@ def process_page(fn, output_fn, regex, app, builder='processor'):
 
     logger.info('added tasks to process file: {0}'.format(fn))
 
-
 def post_process_tasks(app, tasks=None, source_fn=None):
     """
     input documents should be:

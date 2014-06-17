@@ -67,7 +67,6 @@ def sphinx(args):
             refresh_dependency_tasks(build_config, prep_app)
 
         sphinx_tasks(sconf, build_config, sphinx_app)
-        # TODO: add sphinx finalize to a new app (finalize_app)
         logger.info("adding builder job for {0} ({1}, {2})".format(builder, language, edition))
 
     app.add(sphinx_app)
