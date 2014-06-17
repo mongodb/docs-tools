@@ -16,6 +16,12 @@ $(function() {
         window.location.href = docsPath;
     }
 
+    $('.open-version-modal').on('click', function(e) {
+        e.preventDefault();
+
+        $onboardingModal.modal(modalOptions);
+    });
+
     $('.is-hosted, .is-on-prem').on('click', function(e) {
         e.preventDefault();
 
