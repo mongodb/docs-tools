@@ -5,7 +5,7 @@
 
 {%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
 {%- set url_root = pathto('', 1) %}
-{%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.tipsy.js", "_static/navbar.js"] %}
+{%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.tipsy.js", "_static/lib/jquery.cookie.js", "_static/navbar.js"] %}
 {%  set css_files = css_files + ["_static/bootstrap-custom.css", "_static/lib/icomoon.css", "_static/lib/font-awesome.css", "_static/lib/tipsy.css"] %}
 {%- set github_organization = "mongodb" %}
 
@@ -222,17 +222,26 @@
     <div class="option-body">
       <ul>
         {% block version_selector %}
-           <!-- version selector -->
-           <li>
-             <label>{{ _('Version') }}</label>
-             <select class="version-selector pull-right">
-               {% for v in theme_version_selector %}
-                  <option data-path="{{ v.path }}" {% if v.current %}selected="selected"{% endif %}>
-                    {{ v.text }}
-                  </option>
-               {% endfor %}
-             </select>
-           </li>
+          <!-- version selector -->
+          <li>
+            <label>{{ _('Version') }}</label>
+            <div class="btn-group btn-group-xs pull-right">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Select Version <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                {% for v in theme_version_selector %}
+                  {% if v.current %}
+                  <li class="active">
+                  {% else %}
+                  <li>
+                  {% endif %}
+                    <a {% if not v.current %}class="version-selector" {% endif %}href="#" data-path="{{ v.path }}">{{ v.text }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </li>
         {% endblock %}
         {%- block language_selector %}
            {#
@@ -338,6 +347,7 @@
     </div>
     <div class="clearfix"></div>
   </div>
+  {% block onboarding_modal %}{% endblock %}
 
   {%- block analytics %}
     {%- include "analytics.html" %}
@@ -349,25 +359,37 @@
 
   {%- block versionnav %}
   <script type="text/javascript">
-  $(document).ready(function(){
-    var pagename = '{{pagename}}';
-    if (pagename == 'index') {
-      pagename = '';
+  var pagename = '{{pagename}}';
+  if (pagename == 'index') {
+    pagename = '';
+  }
+  window.basePath = '{{theme_basepath}}';
+
+  window.fullDocsPath = function(base) {
+    var path = pagename;
+
+    // skip if pagename is undefined (index.html)
+    if (path) {
+      path = pagename + '/';
     }
-    $("select.version-selector").on('change', function(e) {
-      var base = $(e.currentTarget).find('option:selected').data('path');
-      window.location.href = '/' + base + '/' + pagename + '/';
+    return '/' + base + '/' + path;
+  }
+  // Bootstrap array of links that should trigger a full page reload
+  window.docsExcludedNav = {{ theme_nav_excluded }};
+
+  $(document).ready(function(){
+    $(".version-selector").on('click', function(e) {
+      e.preventDefault();
+      var base = $(e.currentTarget).data('path');
+      window.location.href = fullDocsPath(base);
     });
 
     $("select.language-selector").on('change', function(e) {
       var path = $(e.currentTarget).find('option:selected').data('path');
       window.location.href = path;
     });
-
   });
 
-  // Bootstrap array of links that should trigger a full page reload
-  window.docsExcludedNav = {{ theme_nav_excluded }};
   </script>
   {%- endblock -%}
 
