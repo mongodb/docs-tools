@@ -1,11 +1,10 @@
 import multiprocessing.dummy
+import multiprocessing.pool
 from multiprocessing import cpu_count
 
 try:
-    from utils.jobs.pool import NestedPool
     from utils.jobs.runners import async_job_loop, process_async_results
 except ImportError:
-    from pool import NestedPool
     from runners import async_job_loop, process_async_results
 
 class WorkerPool(object):
@@ -33,7 +32,7 @@ class ThreadPool(WorkerPool):
 
 class ProcessPool(WorkerPool):
     def __enter__(self):
-        self.p = NestedPool(self.size)
+        self.p = multiprocessing.pool.Pool(self.size)
         self.p.runner = self.runner
 
         return self.p

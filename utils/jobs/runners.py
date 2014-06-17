@@ -8,11 +8,9 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 try:
     from utils.jobs.dependency import check_dependency
-    from utils.jobs.pool import NestedPool
     from utils.jobs.errors import PoolResultsError, JobRunnerError
 except ImportError:
     from dependency import check_dependency
-    from pool import NestedPool
     from errors import PoolResultsError, JobRunnerError
 
 def runner(jobs, pool, parallel, force, retval=True):
@@ -146,7 +144,7 @@ def mapper(func, iter, pool=None, parallel='process'):
         return map(func, iter)
     else:
         if parallel == 'process':
-            p = NestedPool(pool)
+            p = multiprocessing.pool.Pool(pool)
         elif parallel.startswith('thread'):
             p = multiprocessing.dummy.Pool(pool)
         else:
