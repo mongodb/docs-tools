@@ -19,6 +19,16 @@ class BuildApp(object):
         self.root_app = True
 
     @property
+    def worker_pool(self):
+        if self._worker_pool is None:
+            self.pool = None
+        return self._worker_pool
+
+    @worker_pool.setter
+    def worker_pool(self, value):
+        self._worker_pool = value
+
+    @property
     def pool(self):
         if self.worker_pool is None:
             self.pool = None
@@ -62,9 +72,9 @@ class BuildApp(object):
 
     def close_pool(self):
         if self.is_pool(self.worker_pool) and not isinstance(self.worker_pool, SerialPool):
-            self.worker_pool.p.join()
-            self.worker_pool.p.close()
-            self.worker_pool = None
+            self._worker_pool.p.close()
+            self._worker_pool.p.join()
+            self._worker_pool = None
 
     def add(self, task=None):
         if task is None or task in (Task, 'task'):
@@ -108,7 +118,8 @@ class BuildApp(object):
                     group.append(task)
                 else:
                     if len(group) == 1:
-                        self.results.append(group[0].run())
+                        j = group[0]
+                        self.results.append(j.run())
                         group = []
                     elif len(group) > 1:
                         self.results.extend(self.pool.runner(group))

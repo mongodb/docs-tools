@@ -30,7 +30,8 @@ class WorkerPool(object):
         results = []
 
         if len(jobs) == 1:
-            results.append((jobs[0], jobs[0].run()))
+            j = jobs[0]
+            results.append((j, j.run()))
         else:
             for job in jobs:
                 if not hasattr(job, 'run'):
