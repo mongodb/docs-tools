@@ -16,6 +16,7 @@ from giza.content.manpages import manpage_url_tasks
 from giza.content.post.archives import man_tarball, html_tarball
 from giza.content.post.json_output import json_output_tasks
 from giza.content.post.singlehtml import finalize_single_html_tasks
+from giza.content.post.gettext import gettext_tasks
 from giza.content.post.sites import (finalize_epub_build,
                                      finalize_dirhtml_build, error_pages)
 
@@ -177,7 +178,6 @@ def sphinx_tasks(sconf, conf, app):
 
 def finalize_sphinx_build(sconf, conf):
     app = BuildApp(conf)
-    app.pool = 'serial'
     target = sconf['builder']
 
     if target == 'linkcheck':
@@ -212,14 +212,13 @@ def finalize_sphinx_build(sconf, conf):
         task.args = [target, conf]
         task.description = "creating tarball for html archive"
     elif target == 'json':
-        app.pool = 'process'
         json_output_tasks(conf, app)
     elif target == 'singlehtml':
-        app.pool = 'process'
         finalize_single_html_tasks(target, conf, app)
     elif target == 'latex':
+        pdf_tasks(target, conf, app)
         logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
     elif target == 'gettext':
-        logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
+        gettext_tasks(conf, app)
 
-    app.run()
+    return app.run()
