@@ -95,9 +95,9 @@ class BuildApp(object):
         if len(self.queue) == 1:
             j = self.queue[0]
             if isinstance(j, BuildApp):
-                return j.run()
+                self.results.extend(j.run())
             elif isinstance(j, Task):
-                return [ j.run() ]
+                self.results.append(j.run())
             else:
                 raise TypeError
         elif len([ t for t in self.queue if isinstance(t, BuildApp)]) >= 1:

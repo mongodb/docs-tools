@@ -21,7 +21,7 @@ from giza.content.hash import hash_tasks
 from giza.content.source import source_tasks, exclusion_tasks
 from giza.content.toc import toc_tasks
 from giza.content.steps import steps_tasks
-from giza.content.dependencies import refresh_dependency_tasks, dump_file_hashes
+from giza.content.dependencies import refresh_dependency_tasks
 from giza.content.sphinx import sphinx_tasks, output_sphinx_stream
 from giza.content.primer import primer_migration_tasks
 
@@ -65,8 +65,6 @@ def sphinx(args):
             build_content_generation_tasks(sconf, build_config, source_app)
 
             refresh_dependency_tasks(build_config, prep_app)
-
-            dump_file_hashes(build_config)
 
         sphinx_tasks(sconf, build_config, sphinx_app)
         logger.info("adding builder job for {0} ({1}, {2})".format(builder, language, edition))

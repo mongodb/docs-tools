@@ -94,7 +94,6 @@ def output_sphinx_stream(out, conf):
             l = path_normalization(l.split(' ')[-1].strip()[1:-2], full_path, conf)
             printable[idx-1] += ' ' + l
             l = None
-
         printable.append(l)
 
     printable = list(set(printable))
@@ -133,7 +132,9 @@ def is_msg_worthy(l):
         return False
     elif l.endswith('should look like "-opt args", "--opt args" or "/opt args"'):
         return False
-    elif l.startswith('source/includes/generate/overview.rst'):
+    elif l.startswith('source/includes/generated/overview.rst'):
+        return False
+    elif l.startswith('source/meta/includes.txt'):
         return False
     else:
         return True
@@ -168,10 +169,8 @@ def run_sphinx(builder, sconf, conf):
     if out.return_code == 0:
         logger.info('successfully completed {0} sphinx build at {1}'.format(builder, timestamp()))
         finalize_sphinx_build(sconf, conf)
-        # output_sphinx_stream(output, conf)
     else:
         logger.warning('the sphinx build {0} was not successful. not running finalize operation'.format(builder))
-        # output_sphinx_stream(output, conf)
 
     return output
 
@@ -185,6 +184,8 @@ def sphinx_tasks(sconf, conf, app):
 def finalize_sphinx_build(sconf, conf):
     app = BuildApp(conf)
     target = sconf['builder']
+
+    logger.info('starting to finalize the Sphinx build {0}'.format(target))
 
     if target == 'linkcheck':
         task = app.add('task')
