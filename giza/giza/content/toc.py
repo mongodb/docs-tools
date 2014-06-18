@@ -270,6 +270,7 @@ def toc_tasks(conf, app):
             if fmt != 'spec':
                 fmt = fn[16:19]
 
+
             task.dependency = os.path.join(paths.projectroot, fn)
             task.job = _generate_toc_tree
             task.args = [fn, fmt, base_name, paths, conf]
