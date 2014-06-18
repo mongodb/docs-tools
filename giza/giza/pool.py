@@ -39,9 +39,8 @@ class WorkerPool(object):
                 if job.needs_rebuild is True:
                     results.append((job, self.p.apply_async(run_task, args=[job])))
                 else:
-                    logger.debug("{0} does not need a rebuild".format(job.target ))
+                    logger.debug("{0} does not need a rebuild".format(job.target))
 
-        logger.debug('all tasks running in a worker pool')
         return results
 
     def get_results(self, results):

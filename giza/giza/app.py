@@ -12,6 +12,7 @@ class BuildApp(object):
     def __init__(self, conf):
         self.conf = conf
         self.queue = []
+        self.results = []
         self.worker_pool = None
         self.default_pool = self.conf.runstate.runner
         self.needs_rebuild = True
@@ -100,7 +101,6 @@ class BuildApp(object):
             else:
                 raise TypeError
         elif len([ t for t in self.queue if isinstance(t, BuildApp)]) >= 1:
-            results = [ ]
             group = [ ]
             self.pool = None
             for task in self.queue:
@@ -108,22 +108,18 @@ class BuildApp(object):
                     group.append(task)
                 else:
                     if len(group) == 1:
-                        results.append(group[0].run())
+                        self.results.append(group[0].run())
                         group = []
                     elif len(group) > 1:
-                        results.extend(self.pool.runner(group))
+                        self.results.extend(self.pool.runner(group))
                         group = []
 
                     if task.worker_pool is None:
                         task.pool = self.pool
 
-                    results.extend(task.run())
+                    self.results.append(task.run())
 
             if len(group) != 0:
-                results.extend(self.pool.runner(group))
-
-            return results
+                self.results.extend(self.pool.runner(group))
         else:
-            results = self.pool.runner(self.queue)
-
-            return results
+            self.results.extend(self.pool.runner(self.queue))

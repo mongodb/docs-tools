@@ -11,8 +11,9 @@ def transfer_source(conf):
     target = os.path.join(conf.paths.projectroot, conf.paths.branch_source)
 
     for generated_dir in [ os.path.join(conf.paths.projectroot, conf.paths.includes, 'steps'),
-                           os.path.join(conf.paths.projectroot, conf.paths.includes, 'toc')
-        rmtree(generated_dir)
+                           os.path.join(conf.paths.projectroot, conf.paths.includes, 'toc') ]:
+        if os.path.exists(generated_dir):
+            rmtree(generated_dir)
 
     if not os.path.exists(target):
         os.makedirs(target)

@@ -22,7 +22,7 @@ from giza.content.source import source_tasks, exclusion_tasks
 from giza.content.toc import toc_tasks
 from giza.content.steps import steps_tasks
 from giza.content.dependencies import refresh_dependency_tasks
-from giza.content.sphinx import sphinx_tasks
+from giza.content.sphinx import sphinx_tasks, output_sphinx_stream
 from giza.content.primer import primer_migration_tasks
 
 from giza.tools.config import render_sphinx_config
@@ -73,6 +73,7 @@ def sphinx(args):
 
     logger.info("sphinx build setup, running now.")
     app.run()
+    output_sphinx_stream(sphinx_app.results, c)
     logger.info("sphinx build complete.")
 
 def render_sconf(edition, builder, language, conf):

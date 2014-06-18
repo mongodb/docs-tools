@@ -164,10 +164,12 @@ def run_sphinx(builder, sconf, conf):
     if out.return_code == 0:
         logger.info('successfully completed {0} sphinx build at {1}'.format(builder, timestamp()))
         finalize_sphinx_build(sconf, conf)
-        output_sphinx_stream(output, conf)
+        # output_sphinx_stream(output, conf)
     else:
         logger.warning('the sphinx build {0} was not successful. not running finalize operation'.format(builder))
-        output_sphinx_stream(output, conf)
+        # output_sphinx_stream(output, conf)
+
+    return output
 
 def sphinx_tasks(sconf, conf, app):
     task = app.add('task')
