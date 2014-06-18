@@ -10,6 +10,10 @@ from giza.tools.errors import InvalidFile
 def transfer_source(conf):
     target = os.path.join(conf.paths.projectroot, conf.paths.branch_source)
 
+    for generated_dir in [ os.path.join(conf.paths.projectroot, conf.paths.includes, 'steps'),
+                           os.path.join(conf.paths.projectroot, conf.paths.includes, 'toc')
+        rmtree(generated_dir)
+
     if not os.path.exists(target):
         os.makedirs(target)
         logger.debug('created directory for sphinx build: {0}'.format(target))

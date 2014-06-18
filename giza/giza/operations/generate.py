@@ -88,7 +88,6 @@ def primer(args):
         primer_migration_tasks(c, app)
         app.run()
 
-
 def tables(args):
     c = fetch_config(args)
     app = BuildApp(c)
