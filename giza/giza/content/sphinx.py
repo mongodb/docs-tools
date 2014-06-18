@@ -76,7 +76,7 @@ def output_sphinx_stream(out, conf):
 
     printable = []
     for idx, l in enumerate(out):
-        if is_msg_worthy(l) is not True:
+        if is_msg_worthy(l) is False:
             printable.append(None)
             continue
 
@@ -94,6 +94,11 @@ def output_sphinx_stream(out, conf):
             l = path_normalization(l.split(' ')[-1].strip()[1:-2], full_path, conf)
             printable[idx-1] += ' ' + l
             l = None
+        elif l.startswith('source/includes/generated/overview.rst'):
+            continue
+        elif l.startswith('source/meta/includes.txt'):
+            continue
+
         printable.append(l)
 
     printable = list(set(printable))
@@ -131,10 +136,6 @@ def is_msg_worthy(l):
     elif l.endswith('should look like "opt", "-opt args", "--opt args" or "/opt args"'):
         return False
     elif l.endswith('should look like "-opt args", "--opt args" or "/opt args"'):
-        return False
-    elif l.startswith('source/includes/generated/overview.rst'):
-        return False
-    elif l.startswith('source/meta/includes.txt'):
         return False
     else:
         return True
