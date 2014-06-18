@@ -81,15 +81,14 @@ class Task(object):
 
     def run(self):
         task_id = hash(str(self.job)) + hash(str(self.args))
-        if self.needs_rebuild is True:
-            logger.debug('({0}) calling {1} with args {2}'.format(task_id, self.job, self.args))
-            if self.args_type == 'kwargs':
-                r = self.job(**self.args)
-            elif self.args_type == 'args':
-                r = self.job(*self.args)
-            else:
-                r = self.job()
-            logger.debug('completed running task {0}, {1}'.format(task_id, self.description))
-            return r
+
+        logger.debug('({0}) calling {1} with args {2}'.format(task_id, self.job, self.args))
+        if self.args_type == 'kwargs':
+            r = self.job(**self.args)
+        elif self.args_type == 'args':
+            r = self.job(*self.args)
         else:
-            logger.warning('not running task {0} ({1}) because rebuild not needed'.format(task_id, self.job))
+            r = self.job()
+
+        logger.debug('completed running task {0}, {1}'.format(task_id, self.description))
+        return r
