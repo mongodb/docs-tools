@@ -6,7 +6,6 @@ import logging
 logger = logging.getLogger(os.path.basename(__file__))
 
 from utils.shell import command
-from utils.config import lazy_conf
 from utils.structures import BuildConfiguration
 from utils.serialization import ingest_yaml_list
 from utils.jobs.dependency import check_dependency
