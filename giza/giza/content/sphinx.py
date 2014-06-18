@@ -65,6 +65,9 @@ def get_sphinx_args(sconf, conf):
 #################### Output Management ####################
 
 def output_sphinx_stream(out, conf):
+    if isinstance(out, list):
+        out = '\n'.join(out)
+
     out = [ o for o in out.split('\n') if o != '' ]
 
     full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
