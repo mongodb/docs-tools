@@ -9,13 +9,14 @@ logger = logging.getLogger(os.path.basename(__file__))
 from giza.tools.strings import timestamp
 from giza.tools.shell import command
 
-
+from giza.app import BuildApp
 from giza.content.links import create_manual_symlink
 from giza.content.manpages import manpage_url_tasks
 
 from giza.content.post.archives import man_tarball, html_tarball
+from giza.content.post.json_output import json_output_tasks
+from giza.content.post.singlehtml import finalize_single_html_tasks
 from giza.content.post.sites import (finalize_epub_build,
-                                     finalize_single_html_jobs,
                                      finalize_dirhtml_build, error_pages)
 
 #################### Config Resolution ####################
@@ -123,7 +124,11 @@ def is_msg_worthy(l):
         return False
     elif l.endswith('Duplicate ID: "cmdoption-h".'):
         return False
+    elif l.endswith('should look like "opt", "-opt args", "--opt args" or "/opt args"'):
+        return False
     elif l.endswith('should look like "-opt args", "--opt args" or "/opt args"'):
+        return False
+    elif l.startswith('source/includes/generate/overview.rst'):
         return False
     else:
         return True
@@ -156,17 +161,12 @@ def run_sphinx(builder, sconf, conf):
     output = '\n'.join([out.err, out.out])
 
     if out.return_code == 0:
-        logger.info('successfully completed {0} sphinx build at {1}!'.format(builder, timestamp()))
-        logger.critical('finalizing builds is not implemented')
-        # if finalize_fun is not None:
-        #     finalize_fun(builder, sconf, conf)
-        #     logger.info('finalized sphinx {0} build at {1}'.format(builder, timestamp()))
+        logger.info('successfully completed {0} sphinx build at {1}'.format(builder, timestamp()))
+        finalize_sphinx_build(sconf, conf)
         output_sphinx_stream(output, conf)
     else:
-        logger.warning('the sphinx build {0} was not successful. not running finalize steps'.format(builder))
+        logger.warning('the sphinx build {0} was not successful. not running finalize operation'.format(builder))
         output_sphinx_stream(output, conf)
-
-    return output
 
 def sphinx_tasks(sconf, conf, app):
     task = app.add('task')
@@ -175,10 +175,8 @@ def sphinx_tasks(sconf, conf, app):
     task.args = [sconf['builder'], sconf, conf]
     task.description = 'building {0} with sphinx'.format(sconf['builder'])
 
-    finalize_sphinx_build(sconf, conf, app.add('app'))
-
-
-def finalize_sphinx_build(sconf, conf, app):
+def finalize_sphinx_build(sconf, conf):
+    app = BuildApp(conf)
     app.pool = 'serial'
     target = sconf['builder']
 
@@ -187,7 +185,7 @@ def finalize_sphinx_build(sconf, conf, app):
         task.job = printer
         task.args = '{0}: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)
     elif target == 'dirhtml':
-        for job in (finalize_dirhtml, error_pages):
+        for job in (finalize_dirhtml_build, error_pages):
             task = app.add('task')
             task.job = job
             task.args = [target, conf]
@@ -214,9 +212,11 @@ def finalize_sphinx_build(sconf, conf, app):
         task.args = [target, conf]
         task.description = "creating tarball for html archive"
     elif target == 'json':
-        logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
+        app.pool = 'process'
+        json_output_tasks(conf, app)
     elif target == 'singlehtml':
-        logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
+        app.pool = 'process'
+        finalize_single_html_tasks(target, conf, app)
     elif target == 'latex':
         logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
     elif target == 'gettext':
