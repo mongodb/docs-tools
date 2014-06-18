@@ -100,6 +100,7 @@ def output_sphinx_stream(out, conf):
     printable = list(set(printable))
     printable.sort()
 
+    logger.info('sphinx builder has {0} lines of output, processed from {1}'.format(len(printable), len(out)))
     print_build_messages(printable)
 
 def print_build_messages(messages):

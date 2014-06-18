@@ -215,9 +215,6 @@ def _generate_toc_tree(fn, fmt, base_name, paths, conf):
         toc.build_table()
         toc.finalize()
 
-        if toc.table is not None:
-            logger.critical('{0} is has a null value. investigate'.format(fn))
-
         if fmt == 'ref':
             outfn = _get_toc_output_name(base_name, 'table', paths)
             t = TableBuilder(RstTable(toc.table))
@@ -259,7 +256,8 @@ def toc_tasks(conf, app):
 
     for fn in expand_tree(paths.includes, 'yaml'):
         if not (fn.startswith(os.path.join(paths.includes, 'toc')) or
-                fn.startswith(os.path.join(paths.includes, 'ref-toc'))):
+                fn.startswith(os.path.join(paths.includes, 'ref-toc')) or
+                fn.startswith(os.path.join(paths.includes, 'ref-spec'))):
             continue
         elif len(fn) >= 24:
             task = app.add('task')
