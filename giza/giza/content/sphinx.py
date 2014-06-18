@@ -221,3 +221,5 @@ def finalize_sphinx_build(sconf, conf):
         logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
     elif target == 'gettext':
         logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
+
+    app.run()
