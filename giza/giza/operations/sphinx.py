@@ -43,7 +43,7 @@ def sphinx(args):
     sphinx_app = BuildApp(c)
     sphinx_app.pool = app.pool
     jobs = itertools.product(args.editions_to_build, args.languages_to_build, args.sphinx_builders)
-    for language, edition, builder in jobs:
+    for edition, language, builder in jobs:
         args.language = language
         args.edition = edition
         args.sphinx_builder = builder
@@ -82,10 +82,15 @@ def render_sconf(edition, builder, language, conf):
     # this operation is really expensive relative to what we need and how often
     # we have to do it:
     sconf_base = render_sphinx_config(ingest_yaml_doc(sconf_path))
+
+    if edition is not None:
+        builder = '-'.join([builder, edition])
+
     sconf = sconf_base[builder]
 
     sconf['edition'] = edition
-    sconf['builder'] = builder
+    if 'builder' not in sconf:
+        sconf['builder'] = builder
 
     if language is not None:
         sconf['language'] = language

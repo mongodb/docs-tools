@@ -175,6 +175,8 @@ def run_sphinx(builder, sconf, conf):
 
     return output
 
+#################### Application Logic ####################
+
 def sphinx_tasks(sconf, conf, app):
     task = app.add('task')
     task.job = run_sphinx
