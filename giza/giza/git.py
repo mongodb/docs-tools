@@ -3,7 +3,7 @@ import os
 import re
 from contextlib import contextmanager
 
-from giza.tools.shell import command
+from giza.command import command
 
 logger = logging.getLogger(os.path.basename(__file__))
 

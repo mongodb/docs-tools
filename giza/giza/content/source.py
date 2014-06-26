@@ -4,7 +4,7 @@ from shutil import rmtree
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.shell import command
+from giza.command import command
 from giza.tools.errors import InvalidFile
 from giza.content.dependencies import dump_file_hashes
 

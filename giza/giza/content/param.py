@@ -3,7 +3,6 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.config import lazy_conf
 from giza.tools.strings import dot_concat
 from giza.tools.files import expand_tree
 from giza.tools.serialization import ingest_yaml_list

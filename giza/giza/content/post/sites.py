@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.shell import command
+from giza.command import command
 from giza.tools.serialization import ingest_yaml_list
 from giza.tools.jobs.dependency import check_dependency
 from giza.tools.files import (expand_tree, create_link, copy_if_needed,

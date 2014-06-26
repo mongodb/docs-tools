@@ -7,8 +7,9 @@ logger = logging.getLogger(os.path.basename(__file__))
 from docutils.core import publish_parts
 from rstcloth.rstcloth import RstCloth
 
+from giza.command import command
+
 from giza.tools.strings import dot_concat
-from giza.tools.shell import command
 from giza.tools.serialization import ingest_yaml_list
 
 ## Internal Supporting Methods

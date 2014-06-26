@@ -4,7 +4,7 @@ import yaml
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.shell import CommandError
+from giza.command import CommandError
 
 from giza.config.base import ConfigurationBase
 

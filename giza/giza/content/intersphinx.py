@@ -4,8 +4,8 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+from giza.command import command
 from giza.tools.serialization import ingest_yaml_list
-from giza.tools.shell import command
 
 ACCEPTABLE = 864000
 

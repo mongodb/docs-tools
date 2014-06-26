@@ -3,7 +3,7 @@ import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.git import GitRepo
+from giza.git import GitRepo
 from giza.config.base import ConfigurationBase
 
 class GitConfigBase(ConfigurationBase):
