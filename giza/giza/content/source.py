@@ -51,4 +51,4 @@ def exclusion_tasks(conf, sconf, app):
                     os.remove(fqfn)
                 logger.debug('removed {0}'.format(fqfn))
 
-            logger.info('removed {0} files'.format(len(sconf['excluded'])))
+        logger.info('removed {0} files'.format(len(sconf['excluded'])))
