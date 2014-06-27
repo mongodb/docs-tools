@@ -6,6 +6,7 @@ logger = logging.getLogger('giza.content.intersphinx')
 
 from giza.command import command
 from giza.serialization import ingest_yaml_list
+from giza.files import verbose_remove
 
 ACCEPTABLE = 864000
 
@@ -46,15 +47,18 @@ def download(f, s):
                 # download it for a few days.
                 os.utime(f, (newtime, newtime))
 
-def intersphinx_tasks(conf, app):
+def get_intersphinx_metadata(conf):
     data_file = os.path.join(conf.paths.projectroot,
                              conf.paths.builddata,
                              'intersphinx.yaml')
 
     if not os.path.exists(data_file):
-        return
+        return []
+    else:
+        return ingest_yaml_list(data_file)
 
-    intersphinx_mapping = ingest_yaml_list(data_file)
+def intersphinx_tasks(conf, app):
+    intersphinx_mapping = get_intersphinx_metadata(conf)
 
     for i in intersphinx_mapping:
         f = os.path.join(conf.paths.projectroot,
@@ -70,3 +74,15 @@ def intersphinx_tasks(conf, app):
         t.description = 'download intersphinx inventory from {0}'.format(s)
 
         logger.debug('added job for {0}'.format(s))
+
+def intersphinx_clean(conf, app):
+    intersphinx_mapping = get_intersphinx_metadata(conf)
+
+    for inv in intersphinx_mapping:
+        fn = os.path.join(conf.paths.projectroot,
+                          conf.paths.output, inv['path'])
+
+        if os.path.exists(fn):
+            t = app.add('task')
+            t.job = verbose_remove
+            t.args = [fn]

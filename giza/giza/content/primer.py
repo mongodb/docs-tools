@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger('giza.content.primer')
 
 from giza.serialization import ingest_yaml_list
-from giza.files import copy_if_needed, copy_always, expand_tree
+from giza.files import copy_if_needed, copy_always, expand_tree, verbose_remove
 
 from giza.transformation import post_process_tasks, truncate_file, append_to_file
 
@@ -15,11 +15,6 @@ def get_migration_specifications(conf):
 
 def convert_multi_source(page):
     return [ { 'source': source } for source in page['sources'] ]
-
-def verbose_remove(path):
-    if os.path.exists(path):
-        logger.info('clean: removing {0}'.format(path))
-        os.remove(path)
 
 def fix_migration_paths(page):
     if 'target' not in page:

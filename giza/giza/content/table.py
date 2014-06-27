@@ -6,7 +6,7 @@ logger = logging.getLogger('giza.content.table')
 from rstcloth.table import TableBuilder, YamlTable, ListTable
 
 from giza.strings import dot_concat, hyph_concat
-from giza.files import expand_tree
+from giza.files import expand_tree, verbose_remove
 
 #################### Table Builder ####################
 
@@ -54,17 +54,37 @@ def _generate_tables(source, target, list_target):
 
     logger.info('rebuilt rendered table output for {0}'.format(source))
 
-def table_tasks(conf, app):
+
+#################### Table Source Iterators ####################
+
+def table_sources(conf):
     for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.includes), 'yaml'):
         if os.path.basename(source).startswith('table'):
-            target = _get_table_output_name(source)
-            list_target = _get_list_table_output_name(source)
+            yield source
 
-            t = app.add('task')
-            t.target = [ target, list_target ]
-            t.dependency = source
-            t.job = _generate_tables
-            t.args = [ source, target, list_target ]
-            t.description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
+#################### Table Tasks ####################
 
-            logger.debug('adding table job to build: {0}'.format(target))
+
+def table_tasks(conf, app):
+    for source in table_sources(conf):
+        target = _get_table_output_name(source)
+        list_target = _get_list_table_output_name(source)
+
+        t = app.add('task')
+        t.target = [ target, list_target ]
+        t.dependency = source
+        t.job = _generate_tables
+        t.args = [ source, target, list_target ]
+        t.description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
+
+        logger.debug('adding table job to build: {0}'.format(target))
+
+def table_clean(conf, app):
+    for source in table_sources(conf):
+        t = app.add('task')
+        t.job = verbose_remove
+        t.arg = _get_table_output_name(source)
+
+        lt = app.add('task')
+        lt.job = verbose_remove
+        lt.arg = _get_list_table_output_name(source)

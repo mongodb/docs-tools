@@ -15,6 +15,11 @@ class InvalidFile(Exception):
 class FileOperationError(Exception):
     pass
 
+def verbose_remove(path):
+    if os.path.exists(path):
+        logger.info('clean: removing {0}'.format(path))
+        os.remove(path)
+
 def rm_rf(path):
     if os.path.isdir(path):
         shutil.rmtree(path)

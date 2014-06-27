@@ -203,6 +203,18 @@ def generate_params(params, fn, conf):
 
     return r
 
+#################### Source Iterators ####################
+
+def api_sources(conf):
+    return expand_tree(os.path.join(conf.paths.projectroot, conf.paths.source, 'reference'), 'yaml')
+
+def api_target(source):
+    return dot_concat(os.path.splitext(source)[0], 'rst')
+
+def api_targets(conf):
+    for source in api_sources(conf):
+        yield api_target(source)
+
 #################### Workers and Integration ####################
 
 def _generate_api_param(source, target, conf):
@@ -211,8 +223,8 @@ def _generate_api_param(source, target, conf):
     logger.info('rebuilt {0}'.format(target))
 
 def api_tasks(conf, app):
-    for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.source, 'reference'), 'yaml'):
-        target = dot_concat(os.path.splitext(source)[0], 'rst')
+    for source in api_sources(conf):
+        target = api_target(source)
 
         t = app.add('task')
         t.target = target
@@ -222,3 +234,10 @@ def api_tasks(conf, app):
         t.description ='generating api param table for {0}'.format(target)
 
         logger.debug('adding task to build param table: {0}'.format(target))
+
+def api_clean(conf, app):
+    for target in api_targets(conf):
+        t = app.add('task')
+        t.target = target
+        t.job = verbose_remove
+        t.args = [target]

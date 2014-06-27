@@ -7,7 +7,7 @@ logger = logging.getLogger('giza.content.options')
 from jinja2 import Template
 from rstcloth.rstcloth import RstCloth
 
-from giza.files import expand_tree
+from giza.files import expand_tree, rm_rf
 from giza.tools.structures import AttributeDict
 from giza.serialization import ingest_yaml_list
 from giza.files import expand_tree
@@ -272,6 +272,22 @@ class OptionRendered(object):
 
         logger.debug('wrote option to file {0}'.format(output_file))
 
+
+#################### Source Iterators ####################1
+
+def get_option_path(conf):
+    return os.path.join(get_base_path(conf), 'option')
+
+def get_base_path(conf):
+    return os.path.join(paths.projectroot, paths.includes)
+
+def option_sources(conf):
+    output_path = get_option_path(conf)
+
+    for fn in expand_tree(get_base_path(conf), 'yaml'):
+        if fn.startswith(output_path):
+            yield fn
+
 #################### Worker and Integration ####################1
 
 def render_option_page(opt, path):
@@ -280,15 +296,14 @@ def render_option_page(opt, path):
 
 def option_tasks(conf, app):
     paths = conf.paths
+    base_path = get_base_path(conf)
 
     options = Options()
-    options.source_dirname = os.path.join(paths.projectroot, paths.includes)
-    base_path = os.path.join(paths.projectroot, paths.includes)
-    output_path = os.path.join(base_path, 'option')
+    options.source_dirname = base_path
+    output_path = get_option_path(conf)
 
-    for fn in expand_tree(base_path, 'yaml'):
-        if fn.startswith(output_path):
-            options.ingest(fn)
+    for fn in option_sources(conf):
+        options.ingest(fn)
 
     if not os.path.exists(output_path):
         os.makedirs(output_path)
@@ -298,3 +313,7 @@ def option_tasks(conf, app):
         t.job = render_option_page
         t.args = [ opt, output_path ]
         t.description = 'generating option "{0}" for "{1}"'.format(opt.name, opt.program)
+
+def option_clean(conf):
+    rm_rf(get_option_path(conf))
+    logger.info('removed all option output')

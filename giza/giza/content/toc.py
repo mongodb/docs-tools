@@ -191,6 +191,9 @@ class AggregatedTocTree(CustomTocTree):
 
 ### Internal Methods
 
+def _get_toc_output_dir(paths):
+    return os.path.join(paths.projectroot, paths.branch_source, 'includes', 'toc')
+
 def _get_toc_base_name(fn):
     bn = os.path.basename(fn)
 
@@ -200,10 +203,12 @@ def _get_toc_base_name(fn):
         return os.path.splitext(bn)[0][4:]
 
 def _get_toc_output_name(name, type, paths):
+    dirname = _get_toc_output_dir(paths)
+
     if type == 'toc':
-        return os.path.join(paths.projectroot, paths.branch_source, 'includes', 'toc', '{0}.rst'.format(name))
+        return os.path.join(dirname, '{0}.rst'.format(name))
     else:
-        return os.path.join(paths.projectroot, paths.branch_source, 'includes', 'toc', '{0}-{1}.rst'.format(type, name))
+        return os.path.join(dirname, '{0}-{1}.rst'.format(type, name))
 
 def _generate_toc_tree(fn, fmt, base_name, paths, conf):
     if fmt == 'spec':
@@ -286,3 +291,7 @@ def toc_tasks(conf, app):
             task.target = target
 
             logger.debug('added task for generating toc from {0}'.format(fn))
+
+def toc_clean(conf):
+    rm_rf(_get_toc_output_dir(conf.paths))
+    logger.info('removed all generated toc artifacts.')

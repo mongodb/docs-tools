@@ -9,6 +9,7 @@ from rstcloth.rstcloth import RstCloth
 
 from giza.command import command
 
+from giza.files import verbose_remove
 from giza.strings import dot_concat
 from giza.serialization import ingest_yaml_list
 
@@ -98,18 +99,18 @@ def _generate_images(cmd, dpi, width, target, source):
                        source=source))
     logger.info('generated image file {0}'.format(target))
 
-def image_tasks(conf, app):
-    paths = conf.paths
-
+def get_images_metadata(paths):
     meta_file = os.path.join(paths.projectroot, paths.images, 'metadata') + '.yaml'
 
     if not os.path.exists(meta_file):
-        return
+        return []
+    else:
+        return ingest_yaml_list(meta_file)
 
-    images_meta = ingest_yaml_list(meta_file)
+def image_tasks(conf, app):
+    paths = conf.paths
 
-    if images_meta is None:
-        return
+    images_meta = get_images_metadata(paths)
 
     for image in images_meta:
         image['dir'] = paths.images
@@ -135,7 +136,7 @@ def image_tasks(conf, app):
 
             target_img = source_base + tag + '.png'
 
-            inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
+            inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {taarget} {source}'
 
             t = app.add('task')
             t.conf = conf
@@ -145,3 +146,21 @@ def image_tasks(conf, app):
             t.dependency = [ meta_file, source_file ]
             t.description = 'generating image file {0} from {1}'.format(target_img, source_file)
             logger.debug('adding image creation job for {0}'.format(target_img))
+
+def image_clean(conf, app):
+    images_meta = get_images_metadata(conf.paths)
+
+    for image in images_meta:
+        source_base = os.path.join(conf.paths.projectroot, image['dir'], image['name'])
+
+        rm_rst = app.add('task')
+        rm_rst.job = verbose_remove
+        rm_rst.args = dot_concat(source_base, 'rst')
+
+        for output in image['output']:
+            rm_tag_image = app.add('task')
+            rm_tag_image.job = verbose_remove
+            if 'tag' in otuput:
+                rm_tag_image.args = dot_concat(hyph_concat(source_base, tag), 'png')
+            else:
+                rm_tag_image.args = dot_concat(source_base, 'png')

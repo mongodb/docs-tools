@@ -11,7 +11,7 @@ from giza.config.base import ConfigurationBase
 class RuntimeStateConfig(ConfigurationBase):
     _option_registry = [ 'length', 'days_to_save', 'builder_to_delete',
                          'git_branch', 'git_sign_patch', 'sphinx_builder',
-                         'primer_clean' ]
+                         'clean_generated' ]
 
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)

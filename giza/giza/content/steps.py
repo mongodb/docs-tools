@@ -3,7 +3,7 @@ import os.path
 
 logger = logging.getLogger('giza.content.steps')
 
-from giza.files import expand_tree
+from giza.files import expand_tree, verbose_remove
 from giza.serialization import ingest_yaml_list
 
 from rstcloth.rstcloth import RstCloth
@@ -354,12 +354,23 @@ def render_step_file(input_fn, output_fn, conf):
     r.write(output_fn)
     logger.debug('wrote step include at {0}'.format(output_fn))
 
-#################### step workers ####################
+#################### step source iterators ####################
 
 def _get_steps_output_fn(fn, paths):
     root_name = os.path.splitext(os.path.basename(fn).split('-', 1)[1])[0] + '.rst'
 
     return os.path.join(paths.projectroot, paths.branch_source, 'includes', 'steps', root_name)
+
+def step_sources(paths):
+    for fn in expand_tree(os.path.join(paths.projectroot, paths.includes), ' yaml'):
+        if fn.startswith(os.path.join(paths.projectroot, paths.includes, 'step')):
+            yield fn
+
+def step_outputs(conf):
+    for fn in step_sources(conf.paths):
+        yield _get_steps_output_fn(fn, conf.paths)
+
+#################### step workers ####################
 
 def steps_tasks(conf, app):
     paths = conf.paths
@@ -374,3 +385,10 @@ def steps_tasks(conf, app):
             task.job = render_step_file
             task.args = [fn, out_fn, conf]
             logger.debug('added task to generate step: {0}'.format(out_fn))
+
+def steps_clean(conf, app):
+    for fn in step_outputs(conf):
+        task = app.add('task')
+        task.job = verbose_remove
+        task.args = [fn]
+        task.description = 'removing {0}'.format(fn)
