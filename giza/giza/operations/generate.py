@@ -23,14 +23,13 @@ from giza.content.primer import clean as primer_clean
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 def toc(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
     if c.runstate.clean_generated is True:
         toc_clean(c)
     else:
+        app = BuildApp(c)
         toc_tasks(c, app)
-
-    app.run()
+        app.run()
 
 @argh.arg('--edition', '-e')
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
@@ -39,7 +38,7 @@ def steps(args):
     app = BuildApp(c)
 
     if c.runstate.clean_generated is True:
-        steps_clean(conf, app)
+        steps_clean(c, app)
     else:
         steps_tasks(c, app)
 
@@ -48,14 +47,13 @@ def steps(args):
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 def options(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
     if c.runstate.clean_generated is True:
         option_clean(c)
     else:
+        app = BuildApp(c)
         option_tasks(c, app)
-
-    app.run()
+        app.run()
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 def api(args):
