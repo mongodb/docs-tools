@@ -1,6 +1,6 @@
 import os.path
 from giza.files import create_link
-from giza.tools.serialization import ingest_yaml_doc
+from giza.serialization import ingest_yaml_doc
 
 def _link_path(path, conf):
     return os.path.join(conf.paths.projectroot,

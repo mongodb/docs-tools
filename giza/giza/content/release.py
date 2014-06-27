@@ -3,7 +3,7 @@ import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.serialization import ingest_yaml
+from giza.serialization import ingest_yaml
 from rstcloth.rstcloth import RstCloth
 
 def generate_output(builder, platform, version, release):

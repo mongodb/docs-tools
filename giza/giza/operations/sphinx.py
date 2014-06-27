@@ -26,7 +26,7 @@ from giza.content.sphinx import sphinx_tasks, output_sphinx_stream
 from giza.content.primer import primer_migration_tasks
 
 from giza.tools.config import render_sphinx_config
-from giza.tools.serialization import ingest_yaml_doc
+from giza.serialization import ingest_yaml_doc
 
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')

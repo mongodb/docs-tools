@@ -9,7 +9,7 @@ from rstcloth.rstcloth import RstCloth
 
 from giza.files import expand_tree
 from giza.tools.structures import AttributeDict
-from giza.tools.serialization import ingest_yaml_list
+from giza.serialization import ingest_yaml_list
 from giza.files import expand_tree
 
 #################### Rendering ####################

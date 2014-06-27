@@ -3,7 +3,7 @@ import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.serialization import ingest_yaml_doc
+from giza.serialization import ingest_yaml_doc
 
 class ConfigurationBase(object):
     def __init__(self, input_obj=None):

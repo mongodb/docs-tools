@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.serialization import ingest_yaml_list
+from giza.serialization import ingest_yaml_list
 
 def robots_txt_builder(fn, conf, override=False):
     if override is False:
