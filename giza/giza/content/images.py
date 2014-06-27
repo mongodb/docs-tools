@@ -2,7 +2,7 @@ import sys
 import os.path
 import logging
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.images')
 
 from docutils.core import publish_parts
 from rstcloth.rstcloth import RstCloth

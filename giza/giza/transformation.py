@@ -1,9 +1,8 @@
 import collections
 import logging
-import os.path
 import re
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.transformation')
 
 from giza.files import copy_always, encode_lines_to_file, decode_lines_from_file
 from giza.serialization import ingest_yaml

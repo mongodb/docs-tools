@@ -7,7 +7,7 @@ from giza.task import check_hashed_dependency
 from giza.files import expand_tree, md5_file
 from giza.content.includes import include_files
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.dependencies')
 
 ########## Update File Hashes ##########
 

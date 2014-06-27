@@ -3,7 +3,7 @@ import re
 import subprocess
 import logging
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.post.latex')
 
 from giza.command import command
 

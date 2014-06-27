@@ -3,7 +3,7 @@ import re
 import os
 import logging
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.post.json_output')
 
 from giza.command import command
 from giza.strings import dot_concat

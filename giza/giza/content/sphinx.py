@@ -4,7 +4,7 @@ import pkg_resources
 import os.path
 from multiprocessing import cpu_count
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.sphinx')
 
 from giza.strings import timestamp
 

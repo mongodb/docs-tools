@@ -1,9 +1,8 @@
 import multiprocessing
 import multiprocessing.dummy
 import logging
-import os.path
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.pool')
 
 from giza.task import Task
 

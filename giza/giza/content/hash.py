@@ -1,7 +1,7 @@
 import logging
 import os
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.hash')
 
 from rstcloth.rstcloth import RstCloth
 

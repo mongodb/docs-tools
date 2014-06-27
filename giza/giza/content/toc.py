@@ -1,7 +1,7 @@
 import logging
 import os.path
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.toc')
 
 import yaml
 from giza.files import expand_tree

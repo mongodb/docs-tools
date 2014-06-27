@@ -1,7 +1,6 @@
 import logging
-import os.path
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.app')
 
 from giza.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool
 from giza.config.main import Configuration

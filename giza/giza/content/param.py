@@ -1,7 +1,7 @@
 import os.path
 import logging
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.param')
 
 from giza.strings import dot_concat
 from giza.files import expand_tree

@@ -1,7 +1,7 @@
 import logging
 import os.path
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.release')
 
 from giza.serialization import ingest_yaml
 from rstcloth.rstcloth import RstCloth

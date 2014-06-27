@@ -1,4 +1,3 @@
-import os.path
 import logging
 
 import argh
@@ -6,7 +5,7 @@ import argh
 from giza.git import GitRepo
 from giza.config.main import Configuration
 
-logger = logging.getLogger('git-operations')
+logger = logging.getLogger('giza.operations.git')
 
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.arg('--patch', '-p', nargs='*', dest='git_objects')

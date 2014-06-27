@@ -1,7 +1,7 @@
 import logging
 import os.path
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.config.system')
 
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 

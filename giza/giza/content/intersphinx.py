@@ -2,7 +2,7 @@ import time
 import os
 import logging
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.intersphinx')
 
 from giza.command import command
 from giza.serialization import ingest_yaml_list

@@ -1,7 +1,6 @@
 import logging
-import os.path
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.config.git')
 
 from giza.git import GitRepo
 from giza.config.base import ConfigurationBase

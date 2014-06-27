@@ -1,7 +1,7 @@
 import os
 import logging
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.robots')
 
 from giza.serialization import ingest_yaml_list
 

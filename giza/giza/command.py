@@ -3,7 +3,7 @@ import subprocess
 import logging
 from tempfile import NamedTemporaryFile
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.command')
 
 class CommandError(Exception): pass
 

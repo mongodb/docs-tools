@@ -2,7 +2,7 @@ import os
 import logging
 from copy import deepcopy
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.options')
 
 from jinja2 import Template
 from rstcloth.rstcloth import RstCloth

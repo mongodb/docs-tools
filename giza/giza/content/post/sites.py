@@ -1,9 +1,9 @@
-import sys
+import logging
 import os.path
 import re
-import logging
+import sys
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.post.sites')
 
 from giza.command import command
 from giza.serialization import ingest_yaml_list

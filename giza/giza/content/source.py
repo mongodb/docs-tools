@@ -2,7 +2,7 @@ import os.path
 import logging
 from shutil import rmtree
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.source')
 
 from giza.command import command
 from giza.content.dependencies import dump_file_hashes

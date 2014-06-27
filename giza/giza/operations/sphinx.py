@@ -6,7 +6,7 @@ import itertools
 from giza.config.helper import fetch_config
 from giza.app import BuildApp
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.operations.sphinx')
 
 from giza.content.robots import robots_txt_tasks
 from giza.content.includes import includes_tasks

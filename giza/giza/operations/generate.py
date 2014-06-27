@@ -1,7 +1,6 @@
 import logging
-import os.path
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.operations.generate')
 
 import argh
 

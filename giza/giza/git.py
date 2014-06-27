@@ -5,7 +5,7 @@ from contextlib import contextmanager
 
 from giza.command import command
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.git')
 
 class GitRepo(object):
     def __init__(self, path=None):

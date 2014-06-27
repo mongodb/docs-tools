@@ -1,7 +1,7 @@
 import logging
 import os.path
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.task')
 
 from giza.config.main import Configuration
 from giza.files import md5_file

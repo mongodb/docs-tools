@@ -2,7 +2,7 @@ import logging
 import os.path
 import yaml
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.config.runtime')
 
 from giza.command import CommandError
 

@@ -1,7 +1,7 @@
 import os
 import logging
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.content.primer')
 
 from giza.serialization import ingest_yaml_list
 from giza.files import copy_if_needed, copy_always, expand_tree

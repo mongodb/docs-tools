@@ -4,7 +4,7 @@ import shutil
 import tarfile
 import logging
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger('giza.files')
 
 class FileNotFoundError(Exception):
     pass
