@@ -7,7 +7,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 from giza.command import command
 from giza.tools.strings import dot_concat
-from giza.tools.files import expand_tree, copy_if_needed
+from giza.files import expand_tree, copy_if_needed
 from giza.transformation import munge_content
 
 ########## Process Sphinx Json Output ##########

@@ -1,6 +1,6 @@
 import os.path
 
-from giza.tools.files import copy_if_needed, create_link, tarball
+from giza.files import copy_if_needed, create_link, tarball
 
 def html_tarball(builder, conf):
     copy_if_needed(os.path.join(conf.paths.projectroot,

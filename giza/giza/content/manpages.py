@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.files import expand_tree
+from giza.files import expand_tree
 
 #################### Manpage Processing ####################
 

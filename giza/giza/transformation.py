@@ -5,7 +5,7 @@ import re
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.files import copy_always, encode_lines_to_file, decode_lines_from_file
+from giza.files import copy_always, encode_lines_to_file, decode_lines_from_file
 from giza.tools.errors import ProcessingError
 from giza.tools.serialization import ingest_yaml
 
@@ -71,9 +71,9 @@ def process_page(fn, output_fn, regex, app, builder='processor'):
     cp.target = output_fn
     cp.depdency = tmp_fn
     cp.job = copy_always
-    cp.args =  dict(source_file=tmp_fn,
-                    target_file=output_fn,
-                    name=builder)
+    cp.args = dict(source_file=tmp_fn,
+                   target_file=output_fn,
+                   name=builder)
 
     logger.info('added tasks to process file: {0}'.format(fn))
 

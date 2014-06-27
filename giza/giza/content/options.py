@@ -7,10 +7,10 @@ logger = logging.getLogger(os.path.basename(__file__))
 from jinja2 import Template
 from rstcloth.rstcloth import RstCloth
 
-from giza.tools.files import expand_tree
+from giza.files import expand_tree
 from giza.tools.structures import AttributeDict
 from giza.tools.serialization import ingest_yaml_list
-from giza.tools.files import expand_tree
+from giza.files import expand_tree
 
 #################### Rendering ####################
 

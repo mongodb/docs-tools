@@ -7,7 +7,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 from giza.command import command
 
-from giza.tools.files import (create_link, copy_if_needed,
+from giza.files import (create_link, copy_if_needed,
                                  decode_lines_from_file, encode_lines_to_file)
 from giza.tools.serialization import ingest_yaml_list
 from giza.transformation import munge_page

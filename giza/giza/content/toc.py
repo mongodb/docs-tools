@@ -4,7 +4,7 @@ import os.path
 logger = logging.getLogger(os.path.basename(__file__))
 
 import yaml
-from giza.tools.files import expand_tree
+from giza.files import expand_tree
 
 from rstcloth.rstcloth import RstCloth, fill
 from rstcloth.table import TableData, TableBuilder, RstTable

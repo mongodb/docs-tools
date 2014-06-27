@@ -1,6 +1,6 @@
 import os.path
 
-from giza.tools.files import expand_tree, copy_if_needed
+from giza.files import expand_tree, copy_if_needed
 
 def get_single_html_dir(conf):
     return os.path.join(conf.paths.public_site_output, 'single')

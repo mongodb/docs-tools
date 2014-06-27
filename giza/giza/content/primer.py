@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(os.path.basename(__file__))
 
 from giza.tools.serialization import ingest_yaml_list
-from giza.tools.files import copy_if_needed, copy_always, expand_tree
+from giza.files import copy_if_needed, copy_always, expand_tree
 
 from giza.transformation import post_process_tasks, truncate_file, append_to_file
 

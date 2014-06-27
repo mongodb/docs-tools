@@ -3,7 +3,7 @@ import os.path
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.files import expand_tree
+from giza.files import expand_tree
 from giza.tools.structures import BuildConfiguration
 from giza.tools.includes import generated_includes, included_recusively, include_files
 from rstcloth.rstcloth import RstCloth

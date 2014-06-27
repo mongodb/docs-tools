@@ -1,6 +1,6 @@
 import os.path
 
-from giza.tools.files import expand_tree, copy_if_needed
+from giza.files import expand_tree, copy_if_needed
 
 #################### Gettext Processing ####################
 
