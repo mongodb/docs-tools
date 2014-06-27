@@ -6,8 +6,10 @@ import re
 logger = logging.getLogger(os.path.basename(__file__))
 
 from giza.files import copy_always, encode_lines_to_file, decode_lines_from_file
-from giza.tools.errors import ProcessingError
 from giza.serialization import ingest_yaml
+
+class ProcessingError(Exception):
+    pass
 
 def munge_page(fn, regex, out_fn=None,  tag='build'):
     if out_fn is None:

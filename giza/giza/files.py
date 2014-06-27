@@ -6,6 +6,15 @@ import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+class FileNotFoundError(Exception):
+    pass
+
+class InvalidFile(Exception):
+    pass
+
+class FileOperationError(Exception):
+    pass
+
 def rm_rf(path):
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -75,8 +84,6 @@ def md5_file(file, block_size=2**20):
             md5.update(chunk)
 
     return md5.hexdigest()
-
-class FileOperationError(Exception): pass
 
 def copy_always(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False:

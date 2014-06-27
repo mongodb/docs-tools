@@ -59,13 +59,13 @@ class Options(object):
     def resolve(self, fn):
         for opt in self.unresolved:
             if opt.inherited is True:
-                if opt.source.file == fn:
+                if opt.source['file'] == fn:
                     continue
 
-                if opt.source.file in self.cache:
+                if opt.source['file'] in self.cache:
                     base_opt = self.resolve_inherited(opt.source)
                 else:
-                    self.ingest(opt.source.file)
+                    self.ingest(opt.source['file'])
                     base_opt = self.resolve_inherited(opt.source)
 
                 base_opt.doc.update(opt.doc)
@@ -81,7 +81,7 @@ class Options(object):
         self.unresolved = list()
 
     def resolve_inherited(self, spec):
-        return deepcopy(self.cache[spec.file][spec.program][spec.name])
+        return deepcopy(self.cache[spec['file']][spec['program']][spec['name']])
 
     def iterator(self):
         for item in self.data:
@@ -106,10 +106,10 @@ class Option(object):
 
         if 'inherit' in doc:
             self.inherited = True
-            self.source = AttributeDict(doc['inherit'])
+            self.source = doc['inherit']
         else:
             self.inherited = False
-            self.source = AttributeDict()
+            self.source = {}
 
         if 'args' in doc:
             if doc['args'] is None or doc['args'] == '':

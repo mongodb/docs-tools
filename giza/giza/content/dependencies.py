@@ -3,7 +3,7 @@ import json
 import logging
 import datetime
 
-from giza.tools.jobs.dependency import check_hashed_dependency
+from giza.task import check_hashed_dependency
 from giza.files import expand_tree, md5_file
 from giza.content.includes import include_files
 

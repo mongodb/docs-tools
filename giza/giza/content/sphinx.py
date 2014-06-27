@@ -6,7 +6,7 @@ from multiprocessing import cpu_count
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-from giza.tools.strings import timestamp
+from giza.strings import timestamp
 
 from giza.command import command
 from giza.app import BuildApp

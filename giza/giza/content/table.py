@@ -5,7 +5,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 from rstcloth.table import TableBuilder, YamlTable, ListTable
 
-from giza.tools.strings import dot_concat, hyph_concat
+from giza.strings import dot_concat, hyph_concat
 from giza.files import expand_tree
 
 #################### Table Builder ####################

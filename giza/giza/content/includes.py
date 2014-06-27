@@ -4,7 +4,7 @@ import os.path
 logger = logging.getLogger(os.path.basename(__file__))
 
 from giza.files import expand_tree
-from giza.tools.structures import BuildConfiguration
+from giza.serialization import ingest_yaml_doc
 from giza.tools.includes import generated_includes, included_recusively, include_files
 from rstcloth.rstcloth import RstCloth
 
@@ -105,18 +105,20 @@ def build_page(data, conf):
     if not os.path.exists(fn):
         return None
     else:
-        iconf = BuildConfiguration(fn)
+        iconf = ingest_yaml_doc(fn)
 
     r = RstCloth()
 
-    r.title(iconf.title)
+    r.title(iconf['title'])
     r.newline()
-    r.directive('default-domain', iconf.domain)
+    r.directive('default-domain', iconf['domain'])
     r.newline()
 
-    if 'introduction' in iconf:
-        r.content(iconf.introduction)
+    try:
+        r.content(iconf['introduction'])
         r.newline()
+    except KeyError:
+        logger.debug('include meta file lacks an introduction.')
 
     r.directive(name='contents', arg='Included Files',
                 fields=[ ('backlinks', 'none'),

@@ -9,7 +9,7 @@ from rstcloth.rstcloth import RstCloth
 
 from giza.command import command
 
-from giza.tools.strings import dot_concat
+from giza.strings import dot_concat
 from giza.serialization import ingest_yaml_list
 
 ## Internal Supporting Methods

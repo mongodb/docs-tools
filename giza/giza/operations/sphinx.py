@@ -25,7 +25,7 @@ from giza.content.dependencies import refresh_dependency_tasks
 from giza.content.sphinx import sphinx_tasks, output_sphinx_stream
 from giza.content.primer import primer_migration_tasks
 
-from giza.tools.config import render_sphinx_config
+from giza.config.sphinx import render_sphinx_config
 from giza.serialization import ingest_yaml_doc
 
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')

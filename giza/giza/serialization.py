@@ -1,5 +1,4 @@
 import json
-
 import yaml
 
 def ingest_yaml_list(*filenames):
