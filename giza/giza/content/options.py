@@ -279,7 +279,7 @@ def get_option_path(conf):
     return os.path.join(get_base_path(conf), 'option')
 
 def get_base_path(conf):
-    return os.path.join(paths.projectroot, paths.includes)
+    return os.path.join(conf.paths.projectroot, conf.paths.includes)
 
 def option_sources(conf):
     output_path = get_option_path(conf)
@@ -295,7 +295,6 @@ def render_option_page(opt, path):
     renderer.render(path)
 
 def option_tasks(conf, app):
-    paths = conf.paths
     base_path = get_base_path(conf)
 
     options = Options()

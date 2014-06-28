@@ -99,8 +99,11 @@ def _generate_images(cmd, dpi, width, target, source):
                        source=source))
     logger.info('generated image file {0}'.format(target))
 
+def get_images_metadata_file(paths):
+    return os.path.join(paths.projectroot, paths.images, 'metadata') + '.yaml'
+
 def get_images_metadata(paths):
-    meta_file = os.path.join(paths.projectroot, paths.images, 'metadata') + '.yaml'
+    meta_file = get_images_metadata_file(paths)
 
     if not os.path.exists(meta_file):
         return []
@@ -110,6 +113,7 @@ def get_images_metadata(paths):
 def image_tasks(conf, app):
     paths = conf.paths
 
+    meta_file = get_images_metadata_file(paths)
     images_meta = get_images_metadata(paths)
 
     for image in images_meta:
