@@ -30,7 +30,7 @@ class ConfigurationBase(object):
     def state(self):
         return self._state
 
-    @state.setter
+    @state.setter>
     def state(self, value):
         logger.warning('cannot set state record directly')
 

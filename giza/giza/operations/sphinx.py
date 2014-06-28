@@ -25,8 +25,7 @@ from giza.content.dependencies import refresh_dependency_tasks
 from giza.content.sphinx import sphinx_tasks, output_sphinx_stream
 from giza.content.primer import primer_migration_tasks
 
-from giza.config.sphinx import render_sphinx_config
-from giza.serialization import ingest_yaml_doc
+from giza.config.sphinx import render_sconf
 
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
@@ -75,27 +74,6 @@ def sphinx(args):
     app.run()
     output_sphinx_stream(sphinx_app.results, c)
     logger.info("sphinx build complete.")
-
-def render_sconf(edition, builder, language, conf):
-    sconf_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, 'sphinx.yaml')
-
-    # this operation is really expensive relative to what we need and how often
-    # we have to do it:
-    sconf_base = render_sphinx_config(ingest_yaml_doc(sconf_path))
-
-    if edition is not None:
-        builder = '-'.join([builder, edition])
-
-    sconf = sconf_base[builder]
-
-    sconf['edition'] = edition
-    if 'builder' not in sconf:
-        sconf['builder'] = builder
-
-    if language is not None:
-        sconf['language'] = language
-
-    return sconf
 
 def build_prep_tasks(conf, app):
     image_tasks(conf, app)

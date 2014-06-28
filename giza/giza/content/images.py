@@ -140,7 +140,7 @@ def image_tasks(conf, app):
 
             target_img = source_base + tag + '.png'
 
-            inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {taarget} {source}'
+            inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
 
             t = app.add('task')
             t.conf = conf

@@ -136,13 +136,13 @@ def finalize_dirhtml_build(builder, conf):
 
     sconf_path = pjoin(conf.paths.projectroot,
                        conf.paths.builddata, 'sphinx_yaml')
-    sconf = ingest_yaml_doc()
+    sconf = ingest_yaml_doc(sconf_path)
 
     if 'dirhtml' in sconf and 'excluded_files' in sconf['dirhtml']:
         fns = [ pjoin(conf.paths.projectroot,
                       conf.paths.public_site_output,
                       fn)
-                for fn in scont['dirhtml']['excluded_files'] ]
+                for fn in sconf['dirhtml']['excluded_files'] ]
 
         cleaner(fns)
         logging.info('removed excluded files from dirhtml output directory')
