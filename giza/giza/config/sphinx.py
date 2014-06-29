@@ -98,7 +98,7 @@ class SphinxConfig(RecursiveConfigurationBase):
 
     @builder.setter
     def builder(self, value):
-        if True or value in sphinx.builders.BUILTIN_BUIlDERS:
+        if value in sphinx.builders.BUILTIN_BUILDERS:
             self.state['builder'] = value
         else:
             raise Exception('{0} is not a valid sphinx builder'.format(value))
