@@ -15,51 +15,59 @@ from fabfile.utils.includes import (included_once, included_recusively,
 @task
 def names():
     "Returns the names of all included files as a list."
+    conf = lazy_conf()
 
-    render_for_console(include_files().keys())
+    render_for_console(include_files(conf=conf).keys())
 
 @task
 def graph():
     "Returns the full directed dependency graph for a all included files."
 
-    render_for_console(include_files())
+    conf = lazy_conf()
+
+    render_for_console(include_files(conf=conf))
 
 @task
 def recursive():
     "Returns a list of included files that include other files."
+    conf = lazy_conf()
 
-    render_for_console(included_recusively())
+    render_for_console(included_recusively(conf=conf))
 
 @task
 def single():
     "Returns a list of included files that are only used once."
+    conf = lazy_conf()
 
-    render_for_console(included_once())
+    render_for_console(included_once(conf=conf))
 
 @task
 def unused():
     "Returns a list of included files that are never used."
+    conf = lazy_conf()
 
-    render_for_console(include_files_unused())
+    render_for_console(include_files_unused(conf=conf))
 
 @task
 def filter(mask):
     "Returns a subset of the dependency graph based on a required 'mask' argument."
+    conf = lazy_conf()
 
     mask = resolve_mask(mask)
 
-    render_for_console(includes_masked(mask))
+    render_for_console(includes_masked(mask=mask, conf=conf))
 
 @task
 def changed():
     "Returns a list of all files that include a file that has changed since the last commit."
-    render_for_console(changed_includes())
+    conf = lazy_conf()
+    render_for_console(changed_includes(conf))
 
 @task
 def cleanup():
-    conf = lazy_conf(None)
+    conf = lazy_conf()
 
-    for fn in include_files_unused(conf):
+    for fn in include_files_unused(conf=conf):
         fn = os.path.join(conf.paths.source, fn[1:])
         if os.path.exists(fn):
             os.remove(fn)

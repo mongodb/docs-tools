@@ -6,21 +6,17 @@ from operator import itemgetter
 
 try:
     from utils.serialization import ingest_yaml_doc, ingest_yaml_list
-    from utils.config import lazy_conf
     from utils.files import expand_tree
     from utils.shell import command
 except ImportError:
     from serialization import ingest_yaml_doc, ingest_yaml_list
-    from config import lazy_conf
     from files import expand_tree
     from shell import command
 
-def include_files(files=None, conf=None):
+def include_files(conf, files=None):
     if files is not None:
         return files
     else:
-        conf = lazy_conf(conf)
-
         source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
         grep = command('grep -R ".. include:: /" {0} || exit 0'.format(source_dir), capture=True).out
 
@@ -50,15 +46,15 @@ def include_files(files=None, conf=None):
 
         return files
 
-def included_once(inc_files=None):
+def included_once(conf, inc_files=None):
     results = []
-    for file, includes in include_files(inc_files).items():
+    for file, includes in include_files(conf=conf, files=inc_files).items():
         if len(includes) == 1:
             results.append(file)
     return results
 
-def included_recusively(inc_files=None):
-    files = include_files(inc_files)
+def included_recusively(conf, inc_files=None):
+    files = include_files(conf=conf, files=inc_files)
     # included_files is a py2ism, depends on it being an actual list
     included_files = files.keys()
 
@@ -71,8 +67,8 @@ def included_recusively(inc_files=None):
 
     return results
 
-def includes_masked(mask, inc_files=None):
-    files = include_files(inc_files)
+def includes_masked(mask, conf, inc_files=None):
+    files = include_files(conf=conf, files=inc_files)
 
     results = {}
     try:
@@ -86,9 +82,7 @@ def includes_masked(mask, inc_files=None):
     return results
 
 
-def generated_includes(conf=None):
-    conf = lazy_conf(conf)
-
+def generated_includes(conf):
     toc_spec_files = []
     step_files = []
     for fn in expand_tree(os.path.join(conf.paths.includes), input_extension='yaml'):
@@ -129,9 +123,7 @@ def generated_includes(conf=None):
 
     return mapping
 
-def include_files_unused(inc_files=None, conf=None):
-    conf = lazy_conf(conf)
-
+def include_files_unused(conf, inc_files=None):
     inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.paths.includes), None) ]
     mapping = include_files(conf=conf)
 
@@ -144,9 +136,8 @@ def include_files_unused(inc_files=None, conf=None):
 
     return results
 
-def changed_includes(conf=None):
+def changed_includes(conf):
     from pygit2 import Repository, GIT_STATUS_CURRENT, GIT_STATUS_IGNORED
-    conf = lazy_conf(conf)
 
     repo_path = conf.paths.projectroot
 
@@ -156,14 +147,14 @@ def changed_includes(conf=None):
     for path, flag in r.status().items():
         if flag not in [ GIT_STATUS_CURRENT, GIT_STATUS_IGNORED ]:
             if path.startswith('source/'):
-                if path.endswith('.txt'):
+                if path.endswith('.txt') or path.endswith('.rst'):
                     changed.append(path[6:])
 
     source_path = os.path.join(conf.paths.source, conf.paths.output, conf.git.branches.current, 'json')
     changed_report = []
 
-    for report in _generate_report(None):
-        if report['source'][len(source_path):] in changed:
-            changed_report.append(report)
+    for fn in include_files(conf):
+        if fn in changed:
+            changed_report.append(fn)
 
     return changed_report
