@@ -62,7 +62,6 @@ def sphinx(args):
 
             source_app = prep_app.add('app')
             build_content_generation_tasks(sconf, build_config, source_app)
-
             refresh_dependency_tasks(build_config, prep_app)
 
         sphinx_tasks(sconf, build_config, sphinx_app)

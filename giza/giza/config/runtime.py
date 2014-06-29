@@ -24,15 +24,6 @@ class RuntimeStateConfig(ConfigurationBase):
         else:
             ConfigurationBase.__setattr__(self, key, value)
 
-    def __getattr__(self, key):
-        try:
-            return object.__getattr__(self, key)
-        except AttributeError as e:
-            if key in self._option_registry:
-                return self.state[key]
-            else:
-                raise e
-
     @property
     def function(self):
         return self.state['_entry_point']

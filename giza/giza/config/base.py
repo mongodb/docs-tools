@@ -6,6 +6,8 @@ logger = logging.getLogger('giza.config.base')
 from giza.serialization import ingest_yaml_doc
 
 class ConfigurationBase(object):
+    _option_registry = []
+
     def __init__(self, input_obj=None):
         self._state = {}
         self.ingest(input_obj)
@@ -30,12 +32,22 @@ class ConfigurationBase(object):
     def state(self):
         return self._state
 
-    @state.setter>
+    @state.setter
     def state(self, value):
         logger.warning('cannot set state record directly')
 
     def __contains__(self, key):
         return key in self.state
+
+    def __getattr__(self, key):
+        try:
+            return object.__getattr__(self, key)
+        except AttributeError as e:
+            if key in self._option_registry:
+                return self.state[key]
+            else:
+                raise e
+
 
     def __setattr__(self, key, value):
         if key.startswith('_') or key in dir(self):
