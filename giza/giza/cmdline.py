@@ -8,6 +8,7 @@ import argh
 from giza.config.runtime import RuntimeStateConfig
 
 import giza.operations.generate
+import giza.operations.includes
 from giza.operations.configuration import render_config
 from giza.operations.clean import clean
 from giza.operations.git import apply_patch, pull_rebase, cherry_pick
@@ -43,6 +44,18 @@ def main():
     ]
 
     argh.add_commands(parser, generate_commands, namespace='generate')
+
+    include_commands = [
+        giza.operations.includes.recursive,
+        giza.operations.includes.changed,
+        giza.operations.includes.once,
+        giza.operations.includes.unused,
+        giza.operations.includes.list,
+        giza.operations.includes.graph,
+        giza.operations.includes.clean,
+    ]
+
+    argh.add_commands(parser, include_commands, namespace='includes')
 
     args = RuntimeStateConfig()
     argh.dispatch(parser, namespace=args)

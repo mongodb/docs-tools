@@ -5,7 +5,7 @@ logger = logging.getLogger('giza.content.includes')
 
 from giza.files import expand_tree
 from giza.serialization import ingest_yaml_doc
-from giza.tools.includes import generated_includes, included_recusively, include_files
+from giza.includes import generated_includes, included_recusively, include_files
 from rstcloth.rstcloth import RstCloth
 
 suppressed_page_prefixes = [
