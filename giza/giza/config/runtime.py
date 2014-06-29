@@ -18,12 +18,6 @@ class RuntimeStateConfig(ConfigurationBase):
         self._conf = None
         self._branch_conf = None
 
-    def __setattr__(self, key, value):
-        if key in self._option_registry:
-            self.state[key] = value
-        else:
-            ConfigurationBase.__setattr__(self, key, value)
-
     @property
     def function(self):
         return self.state['_entry_point']

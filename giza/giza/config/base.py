@@ -28,6 +28,15 @@ class ConfigurationBase(object):
             setattr(self, key, value)
             logger.debug('setting {0} using default setter in {1} object'.format(key, type(self)))
 
+    def __getattr__(self, key):
+        try:
+            return object.__getattr__(self, key)
+        except AttributeError as e:
+            if key in self._option_registry:
+                return self.state[key]
+            else:
+                raise e
+
     @property
     def state(self):
         return self._state
@@ -39,18 +48,10 @@ class ConfigurationBase(object):
     def __contains__(self, key):
         return key in self.state
 
-    def __getattr__(self, key):
-        try:
-            return object.__getattr__(self, key)
-        except AttributeError as e:
-            if key in self._option_registry:
-                return self.state[key]
-            else:
-                raise e
-
-
     def __setattr__(self, key, value):
-        if key.startswith('_') or key in dir(self):
+        if key in self._option_registry:
+            self.state[key] = value
+        elif key.startswith('_') or key in dir(self):
             object.__setattr__(self, key, value)
         else:
             msg = 'configuration object {0} lacks support for "{1}" value'.format(type(self), key)

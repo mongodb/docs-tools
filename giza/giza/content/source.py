@@ -40,15 +40,13 @@ def source_tasks(conf, app):
     logger.info('adding task to migrate source to {0}'.format(conf.paths.branch_source))
 
 def exclusion_tasks(conf, sconf, app):
-    if 'excluded' in sconf:
-        logger.info('removing excluded files')
-        for fn in sconf['excluded']:
-            fqfn = os.path.join(conf.paths.projectroot, conf.paths.branch_source, fn[1:])
-            if os.path.exists(fqfn):
-                if os.path.isdir(fqfn):
-                    rmtree(fqfn)
-                else:
-                    os.remove(fqfn)
+    for fn in sconf.excluded_files:
+        fqfn = os.path.join(conf.paths.projectroot, conf.paths.branch_source, fn[1:])
+        if os.path.exists(fqfn):
+            if os.path.isdir(fqfn):
+                rmtree(fqfn)
+            else:
+                os.remove(fqfn)
                 logger.debug('removed {0}'.format(fqfn))
 
-        logger.info('removed {0} files'.format(len(sconf['excluded'])))
+    logger.info('removed {0} files'.format(len(sconf.excluded_files)))

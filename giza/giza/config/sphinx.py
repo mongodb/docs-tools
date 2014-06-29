@@ -6,6 +6,7 @@ import sphinx
 from giza.strings import hyph_concat
 from giza.config.base import RecursiveConfigurationBase
 from giza.serialization import ingest_yaml_doc
+from giza.config.base import ConfigurationBase
 
 logger = logging.getLogger('giza.config.sphinx')
 
@@ -25,32 +26,29 @@ def get_sconf_base(conf):
 def render_sconf(edition, builder, language, conf):
     sconf_base = get_sconf_base(conf)
 
-    if is_legacy_sconf(sconf_base):
-        # this operation is really expensive relative to what we need and how often
-        # we have to do it:
-        return resolve_legacy_sphinx_config(sconf_base, edition, builder, language)
-    else:
-        raise NotImplementedError
-        sconf = SphinxConfig()
-        sconf.ingest(sconf_base)
-        sconf.register(builder, langauge, edition)
+    sconf = SphinxConfig(conf, sconf_base)
+    sconf.register(builder, language, edition)
 
-        return sconf
+    return sconf
 
 #################### New-Style Config Object ####################
 
 class SphinxConfig(RecursiveConfigurationBase):
-    _option_registry = [ 'edition', 'language' ]
+    _option_registry = [ 'edition', 'language', 'languages' ]
 
     def __init__(self, conf, input_obj=None):
         # register the global config, but use our ingestion
-        super(SphinxConfig, self).__init__(None, conf)
+        # super(SphinxConfig, self).__init__(None, conf)
+
+        self._conf = None
+        self._state = {}
         self._raw = {}
+        self.conf = conf
         self.ingest(input_obj)
 
     def ingest(self, input_obj=None):
         if input_obj is None:
-            input_obj = get_sconf_base()
+            input_obj = get_sconf_base(self.conf)
 
         if is_legacy_sconf(input_obj):
             self._raw = render_sphinx_config(input_obj)
@@ -63,7 +61,7 @@ class SphinxConfig(RecursiveConfigurationBase):
         self.edition = edition
 
         if edition is None:
-            lookup = self.builer
+            lookup = self.builder
         else:
             lookup = hyph_concat(self.builder, self.edition)
 
@@ -85,7 +83,10 @@ class SphinxConfig(RecursiveConfigurationBase):
 
     @property
     def excluded_files(self):
-        return self.state['excluded_files']
+        if 'excluded_files' not in self.state:
+            return []
+        else:
+            return self.state['excluded_files']
 
     @property
     def tags(self):
@@ -97,10 +98,10 @@ class SphinxConfig(RecursiveConfigurationBase):
 
     @builder.setter
     def builder(self, value):
-        if value not in sphinx.builders.BUILTIN_BUIDLERS:
-            raise Exception('{0} is not a valid sphinx builder'.format(value))
-        else:
+        if True or value in sphinx.builders.BUILTIN_BUIlDERS:
             self.state['builder'] = value
+        else:
+            raise Exception('{0} is not a valid sphinx builder'.format(value))
 
     @excluded_files.setter
     def excluded_files(self, value):

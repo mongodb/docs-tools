@@ -37,7 +37,7 @@ def get_tags(target, sconf):
         ret.add('print')
 
     if 'edition' in sconf:
-        ret.add(sconf['edition'])
+        ret.add(sconf.edition)
 
     return ' '.join([' '.join(['-t', i ])
                      for i in ret
@@ -46,10 +46,10 @@ def get_tags(target, sconf):
 def get_sphinx_args(sconf, conf):
     o = []
 
-    o.append(get_tags(sconf['builder'], sconf))
+    o.append(get_tags(sconf.builder, sconf))
     o.append('-q')
 
-    o.append('-b {0}'.format(sconf['builder']))
+    o.append('-b {0}'.format(sconf.builder))
 
     if (is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version) and
         'editions' not in sconf):
@@ -58,7 +58,7 @@ def get_sphinx_args(sconf, conf):
     o.append(' '.join( [ '-c', conf.paths.projectroot ] ))
 
     if 'language' in sconf:
-        o.append("-D language='{0}'".format(sconf['language']))
+        o.append("-D language='{0}'".format(sconf.language))
 
     return ' '.join(o)
 
@@ -181,12 +181,12 @@ def sphinx_tasks(sconf, conf, app):
     task = app.add('task')
     task.job = run_sphinx
     task.conf = conf
-    task.args = [sconf['builder'], sconf, conf]
-    task.description = 'building {0} with sphinx'.format(sconf['builder'])
+    task.args = [sconf.builder, sconf, conf]
+    task.description = 'building {0} with sphinx'.format(sconf.builder)
 
 def finalize_sphinx_build(sconf, conf):
     app = BuildApp(conf)
-    target = sconf['builder']
+    target = sconf.builder
 
     logger.info('starting to finalize the Sphinx build {0}'.format(target))
 
