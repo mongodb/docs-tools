@@ -7,27 +7,6 @@ logger = logging.getLogger('giza.task')
 from giza.config.main import Configuration
 from giza.files import md5_file
 
-class MapTask(Task):
-    def __init__(self, job=None, description=None, target=None, dependency=None):
-        super(Task, self).__init__(job=job, description=description,
-                                   target=target, dependency=dependency)
-        self._iter = []
-
-    @property
-    def iter(self):
-        return self._iter
-
-    @iter.setter
-    def iter(self, value):
-        if isinstance(value, collections.Iterable):
-            self._iter = value
-        else:
-            raise TypeError
-
-    def run(self):
-        return map(self.job, self.iter)
-
-
 class Task(object):
     def __init__(self, job=None, description=None, target=None, dependency=None):
         self.spec = {}
@@ -144,6 +123,27 @@ def check_dependency(target, dependency):
         return False
     else:
         return needs_rebuild(target_time, dependency)
+
+class MapTask(Task):
+    def __init__(self, job=None, description=None, target=None, dependency=None):
+        super(MapTask, self).__init__(job=job, description=description,
+                                   target=target, dependency=dependency)
+        self._iter = []
+
+    @property
+    def iter(self):
+        return self._iter
+
+    @iter.setter
+    def iter(self, value):
+        if isinstance(value, collections.Iterable):
+            self._iter = value
+        else:
+            raise TypeError
+
+    def run(self):
+        return map(self.job, self.iter)
+
 
 def check_multi_dependency(target, dependency):
     for idx, t in enumerate(target):

@@ -53,6 +53,9 @@ def write_yaml(input, filename):
         else:
             raise Exception('cannot dump $s objects to yaml.' % str(type(input)))
 
+def dict_from_list(key, source):
+    return dict( (item[key], item) for item in source )
+
 def ingest_json(filename):
     o = []
     with open(filename, 'r') as f:
