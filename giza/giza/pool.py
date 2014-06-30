@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger('giza.pool')
 
-from giza.task import Task
+from giza.task import MapTask
 
 class PoolResultsError(Exception):
     pass
@@ -37,7 +37,10 @@ class WorkerPool(object):
                     raise TypeError('task "{0}" is not a valid Task'.format(job))
 
                 if job.needs_rebuild is True:
-                    results.append((job, self.p.apply_async(run_task, args=[job])))
+                    if isinstance(job, MapTask):
+                        results.append((job, self.p.map_async(job.job, job.iter)))
+                    else:
+                        results.append((job, self.p.apply_async(run_task, args=[job])))
                 else:
                     logger.debug("{0} does not need a rebuild".format(job.target))
 

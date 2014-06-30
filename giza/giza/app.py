@@ -5,7 +5,7 @@ logger = logging.getLogger('giza.app')
 from giza.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool
 from giza.config.main import Configuration
 
-from giza.task import Task
+from giza.task import Task, MapTask
 
 class BuildApp(object):
     def __init__(self, conf):
@@ -78,6 +78,11 @@ class BuildApp(object):
     def add(self, task=None):
         if task is None or task in (Task, 'task'):
             t = Task()
+            t.conf = self.conf
+            self.queue.append(t)
+            return t
+        elif task in (MapTask, 'map'):
+            t = MapTask()
             t.conf = self.conf
             self.queue.append(t)
             return t
