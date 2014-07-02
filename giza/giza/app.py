@@ -12,7 +12,7 @@ class BuildApp(object):
         self.conf = conf
         self.queue = []
         self.results = []
-        self.worker_pool = None
+        self._worker_pool = None
         self.default_pool = self.conf.runstate.runner
         self.needs_rebuild = True
         self.root_app = True
@@ -57,7 +57,7 @@ class BuildApp(object):
 
     @staticmethod
     def is_pool(pool):
-        if isinstance(pool, (WorkerPool, SerialPool)):
+        if isinstance(pool, (ThreadPool, WorkerPool, SerialPool)):
             return True
         else:
             return False
@@ -67,7 +67,7 @@ class BuildApp(object):
         if value in ('thread', 'process', 'serial'):
             return True
         else:
-            return False
+           return False
 
     def close_pool(self):
         if self.is_pool(self.worker_pool) and not isinstance(self.worker_pool, SerialPool):
@@ -93,7 +93,7 @@ class BuildApp(object):
             return t
         else:
             if isinstance(task, Task):
-                if t.conf is None:
+                if task.conf is None:
                     task.conf = self.conf
 
                 self.queue.append(task)
