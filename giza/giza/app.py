@@ -14,6 +14,7 @@ class BuildApp(object):
         self.results = []
         self._worker_pool = None
         self.default_pool = self.conf.runstate.runner
+        self.pool_types = (ThreadPool, WorkerPool, SerialPool)
         self.needs_rebuild = True
         self.root_app = True
 
@@ -39,8 +40,11 @@ class BuildApp(object):
         if value is not None and self.is_pool(self.worker_pool):
             self.close_pool()
 
-        if self.is_pool(value) or isinstance(value, SerialPool):
+        if self.is_pool(value):
             self.worker_pool = value
+            return
+        elif value in self.pool_types:
+            self.worker_pool = value()
             return
 
         if (value is not None and
@@ -55,10 +59,22 @@ class BuildApp(object):
         elif self.default_pool == 'serial':
             self.worker_pool = SerialPool(self.conf)
 
-    @staticmethod
-    def is_pool(pool):
-        if isinstance(pool, (ThreadPool, WorkerPool, SerialPool)):
+    def is_pool(self, pool):
+        if isinstance(pool, self.pool_types):
             return True
+        else:
+            return False
+
+    @property
+    def queue_has_apps(self):
+        if len(self.queue) <= 1:
+            return False
+        elif len(self.queue) >= 2:
+            num_apps = len([ t for t in self.queue if isinstance(t, BuildApp)])
+            if num_apps == 0:
+                return False
+            elif num_apps >= 1:
+                return True
         else:
             return False
 
@@ -105,36 +121,46 @@ class BuildApp(object):
             else:
                 raise TypeError('invalid task type')
 
+    def _run_single(self, j):
+        if isinstance(j, BuildApp):
+            self.results.extend(j.run())
+        elif isinstance(j, Task):
+            self.results.append(j.run())
+        else:
+            raise TypeError
+
+    def _run_mixed_queue(self):
+        group = [ ]
+        self.pool = None
+        for task in self.queue:
+            if not isinstance(task, BuildApp):
+                group.append(task)
+            else:
+                if len(group) == 1:
+                    j = group[0]
+                    self.results.append(j.run())
+                    group = []
+                elif len(group) > 1:
+                    self.results.extend(self.pool.runner(group))
+                    group = []
+
+                if task.worker_pool is None:
+                    task.pool = self.pool
+
+                if isinstance(task, Task):
+                    self.results.append(task.run())
+                else:
+                    self.results.extend(task.run())
+
+        if len(group) != 0:
+            self.results.extend(self.pool.runner(group))
+
     def run(self):
         if len(self.queue) == 1:
-            j = self.queue[0]
-            if isinstance(j, BuildApp):
-                self.results.extend(j.run())
-            elif isinstance(j, Task):
-                self.results.append(j.run())
-            else:
-                raise TypeError
-        elif len([ t for t in self.queue if isinstance(t, BuildApp)]) >= 1:
-            group = [ ]
-            self.pool = None
-            for task in self.queue:
-                if not isinstance(task, BuildApp):
-                    group.append(task)
-                else:
-                    if len(group) == 1:
-                        j = group[0]
-                        self.results.append(j.run())
-                        group = []
-                    elif len(group) > 1:
-                        self.results.extend(self.pool.runner(group))
-                        group = []
-
-                    if task.worker_pool is None:
-                        task.pool = self.pool
-
-                    self.results.append(task.run())
-
-            if len(group) != 0:
-                self.results.extend(self.pool.runner(group))
+            self._run_single(self.queue[0])
+        elif self.queue_has_apps is True:
+            self._run_mixed_queue()
         else:
             self.results.extend(self.pool.runner(self.queue))
+
+        return self.results

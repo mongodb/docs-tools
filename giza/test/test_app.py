@@ -1,9 +1,10 @@
+from unittest import TestCase
+
 from giza.app import BuildApp
 from giza.pool import ThreadPool, ProcessPool, SerialPool
 from giza.task import Task
 from giza.config.main import Configuration
 from giza.config.runtime import RuntimeStateConfig
-from unittest import TestCase
 
 class TestBuildApp(TestCase):
     @classmethod
@@ -91,6 +92,24 @@ class TestBuildApp(TestCase):
         self.assertIsNotNone(self.app.worker_pool)
         self.assertIsInstance(self.app.pool, SerialPool)
 
+    def test_pool_setter_process_by_ref(self):
+        self.assertIsNone(self.app._worker_pool)
+        a = self.app.pool = ProcessPool
+        self.assertIsNotNone(self.app.worker_pool)
+        self.assertIsInstance(self.app.pool, ProcessPool)
+
+    def test_pool_setter_thread_by_ref(self):
+        self.assertIsNone(self.app._worker_pool)
+        a = self.app.pool = ThreadPool
+        self.assertIsNotNone(self.app.worker_pool)
+        self.assertIsInstance(self.app.pool, ThreadPool)
+
+    def test_pool_setter_serial_by_ref(self):
+        self.assertIsNone(self.app._worker_pool)
+        a = self.app.pool = SerialPool
+        self.assertIsNotNone(self.app.worker_pool)
+        self.assertIsInstance(self.app.pool, SerialPool)
+
     def test_pool_setter_invalid_input(self):
         self.assertIsNone(self.app._worker_pool)
         a = self.app.pool = 1
@@ -122,38 +141,444 @@ class TestBuildApp(TestCase):
         self.assertIsNone(self.app._worker_pool)
 
     def test_pool_type_checker_thread(self):
-        self.assertTrue(BuildApp.is_pool_type('thread'))
+        self.assertTrue(self.app.is_pool_type('thread'))
 
     def test_pool_type_checker_process(self):
-        self.assertTrue(BuildApp.is_pool_type('process'))
+        self.assertTrue(self.app.is_pool_type('process'))
 
     def test_pool_type_checker_serial(self):
-        self.assertTrue(BuildApp.is_pool_type('serial'))
+        self.assertTrue(self.app.is_pool_type('serial'))
 
     def test_pool_type_checker_serial_invalid(self):
-        self.assertFalse(BuildApp.is_pool_type('serialized'))
+        self.assertFalse(self.app.is_pool_type('serialized'))
 
     def test_pool_type_checker_process_invalid(self):
-        self.assertFalse(BuildApp.is_pool_type('proc'))
+        self.assertFalse(self.app.is_pool_type('proc'))
 
     def test_pool_type_checker_thread_invalid(self):
-        self.assertFalse(BuildApp.is_pool_type('threaded'))
+        self.assertFalse(self.app.is_pool_type('threaded'))
 
     def test_is_pool_predicate_thead(self):
-        self.assertTrue(BuildApp.is_pool(ThreadPool()))
+        self.assertTrue(self.app.is_pool(ThreadPool()))
 
     def test_is_pool_predicate_process(self):
-        self.assertTrue(BuildApp.is_pool(ProcessPool()))
+        self.assertTrue(self.app.is_pool(ProcessPool()))
 
     def test_is_pool_predicate_serial(self):
-        self.assertTrue(BuildApp.is_pool(SerialPool()))
+        self.assertTrue(self.app.is_pool(SerialPool()))
 
     def test_is_pool_predicate_invalid(self):
-        self.assertFalse(BuildApp.is_pool(self.c))
-        self.assertFalse(BuildApp.is_pool(self.app))
+        self.assertFalse(self.app.is_pool(self.c))
+        self.assertFalse(self.app.is_pool(self.app))
 
-    # TODO:
-    #  - test exceptions if adding non-task object.
-    #  - test adding tasks by passing class ref
-    #  - test type error in run, if adding a single non-task object
-    #  - test run method, which might require refactoring
+    def test_add_invalid_object(self):
+        with self.assertRaises(TypeError):
+            self.app.add(1)
+
+    def test_run_invalid_task(self):
+        self.app.queue.append(1)
+        with self.assertRaises(TypeError):
+            self.app.run()
+
+    def test_single_runner_task(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        t = Task(self.c)
+        t.job = sum
+        t.args = [[ 1 , 2 ], 0]
+
+        self.app._run_single(t)
+        self.assertEqual(self.app.results[0], 3)
+
+    def test_single_runner_task_integrated(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        t = self.app.add('task')
+
+        t.job = sum
+        t.args = [[ 1 , 2 ], 0]
+
+        self.app.run()
+
+        self.assertEqual(self.app.results[0], 3)
+
+    def test_single_runner_app(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        app = BuildApp(self.c)
+        t = app.add('task')
+        t.job = sum
+        t.args = [[ 1 , 2 ], 0]
+
+        self.app._run_single(app)
+        self.assertEqual(self.app.results[0], 3)
+
+    def test_single_runner_app_integrated(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        app = self.app.add('app')
+
+        t = app.add('task')
+        t.job = sum
+        t.args = [[ 1 , 2 ], 0]
+
+        self.app.run()
+        self.assertEqual(self.app.results[0], 3)
+
+    def test_single_runner_app_with_many_subtasks(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        app = BuildApp(self.c)
+
+        for _ in range(10):
+            t = app.add('task')
+            t.job = sum
+            t.args = [[ 1 , 2 ], 0]
+
+        self.app._run_single(app)
+        self.assertEqual(len(self.app.results), 10)
+        self.assertEqual(self.app.results[0], 3)
+        self.assertEqual(sum(self.app.results), 30)
+
+    def test_single_runner_app_integrated_with_many_subtasks(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        app = self.app.add('app')
+
+        for _ in range(10):
+            t = app.add('task')
+            t.job = sum
+            t.args = [[ 1 , 2 ], 0]
+
+        self.app.run()
+        self.assertEqual(len(self.app.results), 10)
+        self.assertEqual(self.app.results[0], 3)
+        self.assertEqual(sum(self.app.results), 30)
+
+    def test_has_apps_predicate_single(self):
+        self.assertEqual(self.app.queue, [])
+
+        self.app.queue.append(None)
+        self.assertFalse(self.app.queue_has_apps)
+
+    def test_has_apps_predicate_empty(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertFalse(self.app.queue_has_apps)
+
+    def test_has_apps_predicate_all_tasks(self):
+        self.assertEqual(self.app.queue, [])
+
+        for _ in range(10):
+            self.app.add('task')
+
+        self.assertEqual(len(self.app.queue), 10)
+        self.assertFalse(self.app.queue_has_apps)
+
+    def test_has_apps_predicate_all_apps(self):
+        self.assertEqual(self.app.queue, [])
+
+        for _ in range(10):
+            self.app.add('app')
+
+        self.assertEqual(len(self.app.queue), 10)
+        self.assertTrue(self.app.queue_has_apps)
+
+    def test_has_apps_predicate_mixed(self):
+        self.assertEqual(self.app.queue, [])
+
+        for _ in range(10):
+            self.app.add('task')
+
+        for _ in range(10):
+            self.app.add('app')
+
+        self.assertEqual(len(self.app.queue), 20)
+        self.assertTrue(self.app.queue_has_apps)
+
+
+    def test_running_mixed_queue_all_apps_integrated(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        self.app.pool = 'serial'
+
+        for _ in range(10):
+            app = self.app.add('app')
+            for _ in range(10):
+                t = app.add('task')
+                t.job = sum
+                t.args = [[1,2], 0]
+
+
+        self.app.run()
+
+        self.assertEqual(sum(self.app.results), 300)
+        self.assertEqual(len(self.app.queue), 10)
+
+    def test_running_mixed_queue_mixed_queue_integrated(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        self.app.pool = 'serial'
+
+        for _ in range(10):
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[1,2], 0]
+
+        for _ in range(10):
+            app = self.app.add('app')
+            for _ in range(10):
+                t = app.add('task')
+                t.job = sum
+                t.args = [[1,2], 0]
+
+        self.app.run()
+
+        self.assertEqual(sum(self.app.results), 330)
+        self.assertEqual(len(self.app.queue), 20)
+
+    def test_running_mixed_queue_all_apps_direct(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        self.app.pool = 'serial'
+
+        for _ in range(10):
+            app = self.app.add('app')
+            for _ in range(10):
+                t = app.add('task')
+                t.job = sum
+                t.args = [[1,2], 0]
+
+
+        self.app._run_mixed_queue()
+
+        self.assertEqual(sum(self.app.results), 300)
+        self.assertEqual(len(self.app.queue), 10)
+
+    def test_running_mixed_queue_mixed_queue_direct(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        self.app.pool = 'serial'
+
+        for _ in range(10):
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[1,2], 0]
+
+        for _ in range(10):
+            app = self.app.add('app')
+            for _ in range(10):
+                t = app.add('task')
+                t.job = sum
+                t.args = [[1,2], 0]
+
+        self.app._run_mixed_queue()
+
+        self.assertEqual(sum(self.app.results), 330)
+        self.assertEqual(len(self.app.queue), 20)
+
+
+    def test_running_tasks_ordering_serial(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        self.app.pool = 'serial'
+
+        for _ in range(5):
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[1,2], 0]
+
+        for _ in range(5):
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[2,2], 0]
+
+
+        self.app.run()
+
+        self.assertEqual(len(self.app.queue), 10)
+        self.assertEqual(self.app.results, [ 3, 3, 3, 3, 3, 4, 4, 4, 4, 4 ])
+
+    def test_task_results_ordering_with_apps(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        for _ in range(3):
+            app = self.app.add('app')
+            for _ in range(5):
+                t = app.add('task')
+                t.job = sum
+                t.args = [[1,2], 0]
+            for _ in range(5):
+                t = app.add('task')
+                t.job = sum
+                t.args = [[2,2], 0]
+
+        self.app.run()
+
+        self.assertEqual(self.app.results,
+                         [
+                             3, 3, 3, 3, 3, 4, 4, 4, 4, 4,
+                             3, 3, 3, 3, 3, 4, 4, 4, 4, 4,
+                             3, 3, 3, 3, 3, 4, 4, 4, 4, 4
+                         ])
+
+    def test_task_results_ordering_varried_with_apps(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        app = self.app.add('app')
+        t = app.add('task')
+        t.job = sum
+        t.args = [[1, 8], 0]
+
+        for _ in range(3):
+            app = self.app.add('app')
+            for _ in range(5):
+                t = app.add('task')
+                t.job = sum
+                t.args = [[1,2], 0]
+
+            for _ in range(5):
+                t = app.add('task')
+                t.job = sum
+                t.args = [[2,2], 0]
+
+        app = self.app.add('app')
+        t = app.add('task')
+        t.job = sum
+        t.args = [[2, 8], 0]
+
+        for _ in range(5):
+            t = app.add('task')
+            t.job = sum
+            t.args = [[2,2], 0]
+
+        self.app.run()
+
+        self.assertEqual(self.app.results,
+                         [   9,
+                             3, 3, 3, 3, 3, 4, 4, 4, 4, 4,
+                             3, 3, 3, 3, 3, 4, 4, 4, 4, 4,
+                             3, 3, 3, 3, 3, 4, 4, 4, 4, 4,
+                             10, 4, 4, 4, 4, 4
+                         ])
+
+    def test_task_results_lack_of_order(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        for _ in range(5):
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[1,2], 0]
+        for _ in range(5):
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[2,2], 0]
+
+        self.app.run()
+
+        # there's a small chance that this could randomly fail without
+        # indicating a correctness bug.
+        self.assertNotEqual(self.app.results,
+                            [
+                                3, 3, 3, 3, 3, 4, 4, 4, 4, 4,
+                                3, 3, 3, 3, 3, 4, 4, 4, 4, 4,
+                                3, 3, 3, 3, 3, 4, 4, 4, 4, 4
+                            ])
+
+
+    def test_task_results_task_and_apps0(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        for _ in range(6):
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[1,1], 0]
+
+        for _ in range(3):
+            app0 = self.app.add('app')
+            for _ in range(5):
+                t = app0.add('task')
+                t.job = sum
+                t.args = [[1,2], 0]
+
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[1,1], 0]
+
+            app1 = self.app.add('app')
+            for _ in range(5):
+                t = app1.add('task')
+                t.job = sum
+                t.args = [[2,2], 0]
+
+        for _ in range(10):
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[1,1], 0]
+
+        self.app.run()
+
+        print(self.app.results)
+        self.assertEqual(self.app.results,
+                            [
+                                2, 2, 2, 2, 2, 2,
+                                3, 3, 3, 3, 3, 2, 4, 4, 4, 4, 4,
+                                3, 3, 3, 3, 3, 2, 4, 4, 4, 4, 4,
+                                3, 3, 3, 3, 3, 2, 4, 4, 4, 4, 4,
+                                2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+                            ])
+
+    def test_task_results_task_and_apps1(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        for _ in range(6):
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[1,1], 0]
+
+        for _ in range(3):
+            app = self.app.add('app')
+            for _ in range(5):
+                t = app.add('task')
+                t.job = sum
+                t.args = [[1,2], 0]
+
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[1,1], 0]
+
+            for _ in range(5):
+                t = app.add('task')
+                t.job = sum
+                t.args = [[2,2], 0]
+
+        for _ in range(10):
+            t = self.app.add('task')
+            t.job = sum
+            t.args = [[1,1], 0]
+
+        self.app.run()
+
+        print(self.app.results)
+        self.assertEqual(self.app.results,
+                         [2, 2, 2, 2, 2, 2,
+                          3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 2,
+                          3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 2,
+                          3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 2,
+                          2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+                          ])
