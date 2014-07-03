@@ -1,4 +1,5 @@
 import logging
+import sys
 import os.path
 import collections
 
@@ -6,6 +7,9 @@ logger = logging.getLogger('giza.task')
 
 from giza.config.main import ConfigurationBase
 from giza.files import md5_file
+
+if sys.version_info >= (3, 0):
+    basestring = str
 
 class Task(object):
     def __init__(self, job=None, description=None, target=None, dependency=None):

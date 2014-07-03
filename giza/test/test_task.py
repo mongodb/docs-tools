@@ -124,4 +124,5 @@ class TestMapTask(BaseTaskSuite, TestCase):
         t.iter = [ (i, i+10) for i in range(10) ]
         t.job = sum
 
-        self.assertEqual(t.run(), [10, 12, 14, 16, 18, 20, 22, 24, 26, 28])
+        for a,b in zip(t.run(), [10, 12, 14, 16, 18, 20, 22, 24, 26, 28]):
+            self.assertEqual(a,b)
