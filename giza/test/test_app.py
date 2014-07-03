@@ -33,11 +33,11 @@ class TestBuildApp(TestCase):
 
     def test_add_existing_task_object(self):
         self.assertEqual(self.app.queue, [])
-        t = Task(self.c)
+        t = Task()
         self.app.add(t)
         self.assertIs(t, self.app.queue[0])
-        self.assertIsNot(t, Task(self.c))
-        self.assertIsNot(Task(self.c), self.app.queue[0])
+        self.assertIsNot(t, Task())
+        self.assertIsNot(Task(), self.app.queue[0])
 
     def test_add_existing_app_object(self):
         self.assertEqual(self.app.queue, [])
@@ -184,7 +184,7 @@ class TestBuildApp(TestCase):
         self.assertEqual(self.app.queue, [])
         self.assertEqual(self.app.results, [])
 
-        t = Task(self.c)
+        t = Task()
         t.job = sum
         t.args = [[ 1 , 2 ], 0]
 

@@ -4,7 +4,7 @@ import collections
 
 logger = logging.getLogger('giza.task')
 
-from giza.config.main import Configuration
+from giza.config.main import ConfigurationBase
 from giza.files import md5_file
 
 class Task(object):
@@ -12,8 +12,8 @@ class Task(object):
         self.spec = {}
         self._conf = None
         self._args = None
-        self.default_pool = 'process'
-        self.job = job
+        if job is not None:
+            self.job = job
         self.args_type = None
         self.description = description
         self.target = target
@@ -42,8 +42,10 @@ class Task(object):
 
     @conf.setter
     def conf(self, value):
-        if isinstance(value, Configuration):
+        if isinstance(value, ConfigurationBase):
             self._conf = value
+        else:
+            raise TypeError
 
     @property
     def job(self):
@@ -53,6 +55,8 @@ class Task(object):
     def job(self, value):
         if isinstance(value, collections.Callable):
             self.spec['job'] = value
+        else:
+            raise TypeError
 
     @property
     def args(self):
@@ -63,7 +67,7 @@ class Task(object):
         if isinstance(value, dict):
             self.args_type = 'kwargs'
             self._args = value
-        elif isinstance(value, list):
+        elif isinstance(value, (list, tuple)):
             self.args_type = 'args'
             self._args = value
         elif isinstance(value, basestring):
@@ -143,7 +147,6 @@ class MapTask(Task):
 
     def run(self):
         return map(self.job, self.iter)
-
 
 def check_multi_dependency(target, dependency):
     for idx, t in enumerate(target):
