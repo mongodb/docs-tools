@@ -1,14 +1,14 @@
 import os.path
 import logging
 
-import sphinx
+import sphinx.builders
 
 from giza.strings import hyph_concat
 from giza.config.base import RecursiveConfigurationBase
 from giza.serialization import ingest_yaml_doc
 from giza.config.base import ConfigurationBase
 
-logger = logging.getLogger('giza.config.sphinx')
+logger = logging.getLogger('giza.config.sphinx_config')
 
 #################### Ingestion and Rendering ####################
 

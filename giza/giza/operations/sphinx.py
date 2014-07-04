@@ -25,7 +25,7 @@ from giza.content.dependencies import refresh_dependency_tasks
 from giza.content.sphinx import sphinx_tasks, output_sphinx_stream
 from giza.content.primer import primer_migration_tasks
 
-from giza.config.sphinx import render_sconf
+from giza.config.sphinx_config import render_sconf
 
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')

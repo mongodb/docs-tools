@@ -22,7 +22,6 @@ suppressed_page_prefixes = [
 
 def write_include_index(conf):
     fd = include_file_data(conf)
-
     r = build_page(fd, conf)
 
     if r is not None:
@@ -39,7 +38,7 @@ def include_file_data(conf):
     include_file_list = expand_tree(path=inc_path, input_extension=None)
     include_graph = include_files(conf=conf)
 
-    recursive_use = included_recusively(include_graph)
+    recursive_use = included_recusively(conf, include_graph)
     generated = generated_includes(conf)
 
     omni = {}
@@ -226,4 +225,4 @@ def includes_tasks(conf, app):
 
         t = app.add('task')
         t.job = write_include_index
-        t.args = [ conf ]
+        t.args = [conf]
