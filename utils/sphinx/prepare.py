@@ -51,10 +51,10 @@ def build_prereq_jobs(sync, conf):
                           conf
                         ]
            },
-           {
-               'job': write_include_index,
-               'args': [conf]
-           },
+           # {
+           #     'job': write_include_index,
+           #     'args': [conf]
+           # },
            {
                'job': primer_migrate_pages,
                'args': [conf]
