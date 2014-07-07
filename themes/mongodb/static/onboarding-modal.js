@@ -1,5 +1,16 @@
 $(function() {
 
+    // Only automatically redirect when the referrer is a search engine
+    var searchEngineRegex = /(google\.com)|(duckduckgo\.com)|(bing\.com)|(yahoo\.com)/;
+    var mmsBasepath = 'mms.mongodb.com/';
+    function isReferredBySearchEngine() {
+        return document.referrer.search(searchEngineRegex) != -1;
+    }
+    function isRedirectedFromMMS() {
+        // return true only if redirected from a different version of mms docs
+        return document.referrer.indexOf(mmsBasepath) != -1 && document.referrer.indexOf(window.basePath) == -1;
+    }
+
     var modalOptions = {
         show: true,
         backdrop: 'static',
@@ -9,9 +20,16 @@ $(function() {
     var $onboardingModal = $('#onboarding-modal');
 
     var mmsPath = $.cookie('mms_version_path');
+
     if (!mmsPath) {
         $onboardingModal.modal(modalOptions);
-    } else if (mmsPath !== "false" && window.basePath != mmsPath) {
+    } else if (isRedirectedFromMMS()) {
+        $('.redirect-alert').removeClass('hide');
+        $('.redirect-alert .redirect-link').on('click', function(e) {
+            e.preventDefault();
+            window.location.href = document.referrer;
+        });
+    } else if (mmsPath !== "false" && isReferredBySearchEngine() && window.basePath != mmsPath) {
         var docsPath = window.fullDocsPath(mmsPath);
         window.location.href = docsPath;
     }
@@ -67,4 +85,5 @@ $(function() {
 
         window.setTimeout(fn, 1000);
     };
+
 });
