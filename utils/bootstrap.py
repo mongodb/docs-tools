@@ -107,9 +107,6 @@ def fabric(buildsystem, conf_file):
     symlink(name=os.path.join(buildsystem, 'fabsrc', 'utils'),
             target=os.path.join(os.path.abspath(buildsystem), 'utils'))
 
-    symlink(name=os.path.join(buildsystem, 'fabsrc', 'docs_meta.py'),
-            target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
-
     logger.info('initialized fabric/ directory.')
 
 def config(buildsystem, conf_file):
@@ -139,8 +136,5 @@ def utils(buildsystem, conf_file):
 
     symlink(name=os.path.join(buildsystem, 'makecloth', 'utils'),
             target=os.path.join(os.path.abspath(buildsystem), 'utils'))
-
-    symlink(name=os.path.join(buildsystem, 'utils', 'docs_meta.py'),
-            target=os.path.join(os.path.abspath(buildsystem), 'bin', 'docs_meta.py'))
 
     logger.info('initialized utils/ directory.')
