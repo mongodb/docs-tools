@@ -2,13 +2,12 @@ $(function() {
 
     // Only automatically redirect when the referrer is a search engine
     var searchEngineRegex = /(google\.com)|(duckduckgo\.com)|(bing\.com)|(yahoo\.com)/;
-    var mmsBasepath = 'mms.mongodb.com/';
     function isReferredBySearchEngine() {
         return document.referrer.search(searchEngineRegex) != -1;
     }
     function isRedirectedFromMMS() {
         // return true only if redirected from a different version of mms docs
-        return document.referrer.indexOf(mmsBasepath) != -1 && document.referrer.indexOf(window.basePath) == -1;
+        return document.referrer.indexOf(location.origin) != -1 && document.referrer.indexOf(window.basePath) == -1;
     }
 
     var modalOptions = {
