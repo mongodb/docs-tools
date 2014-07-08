@@ -99,10 +99,16 @@ class RuntimeStateConfig(ConfigurationBase):
             'error': logging.ERROR,
             'critical': logging.critical
         }
-        if value in levels:
-            level = levels[value]
-            logging.basicConfig(level=level)
-            self.state['level'] = value
+        if value not in levels:
+            value = 'info'
+
+        logging.basicConfig()
+        rlogger = logging.getLogger()
+
+        rlogger.setLevel(levels[value])
+        self.state['level'] = value
+
+        logger.debug('set logging level to: ' + value)
 
     @property
     def runner(self):
