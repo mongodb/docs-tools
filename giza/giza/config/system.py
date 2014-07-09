@@ -164,13 +164,17 @@ class SystemConfigData(RecursiveConfigurationBase):
             setattr(self, attr_name, fn)
 
     def __getattr__(self, key):
-        if key in self._option_registry:
-            if not isinstance(self.state[key], list):
-                self._load_file(self.state[key])
+        try:
+            return object.__getattr__(self, key)
+        except AttributeError as e:
+            if key in self._option_registry:
+                if not isinstance(self.state[key], list):
+                    self._load_file(self.state[key])
 
-            return self.state[key]
-        else:
-            return super(SystemConfigData, self).__getattr__(key)
+                return self.state[key]
+            else:
+                logger.debug('key {0} in system data object does not exist'.format(key))
+                raise e
 
     def __contains__(self, value):
         return value in self._option_registry
@@ -199,7 +203,6 @@ class SystemConfigData(RecursiveConfigurationBase):
         # TODO we should make this process lazy with a more custom getter/setter
         self.state[basename] = self._resolve_config_data(full_path)
         logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
-
 
     @staticmethod
     def _resolve_config_data(fn):
