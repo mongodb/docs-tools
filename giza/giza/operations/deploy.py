@@ -3,7 +3,7 @@ import argh
 
 logger = logging.getLogger('giza.operations.deploy')
 
-from giza.command import command
+from giza.command import verbose_command
 from giza.app import BuildApp
 from giza.deploy import Deploy
 from giza.config.helper import fetch_config
@@ -17,7 +17,6 @@ def push(args):
     pconf = c.system.files.data.push
     pconf = dict_from_list('target', pconf)
 
-    logger.info('printing rsync commands rather than running them in test mode.')
     for target in c.runstate.push_targets:
         d = Deploy(c)
 
@@ -31,10 +30,6 @@ def push(args):
         map_task = app.add('map')
         map_task.iter = d.deploy_commands()
 
-        # this will become command() when not in test mode.
-        map_task.job = printer
+        map_task.job = verbose_command
 
     app.run()
-
-def printer(line):
-    print(' '.join(line))

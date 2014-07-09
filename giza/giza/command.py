@@ -106,3 +106,7 @@ def command(command, capture=False, ignore=False):
         return out
     else:
         raise CommandError('[ERROR]: "{0}" returned {1}'.format(out.cmd, out.return_code))
+
+def verbose_command(cmd, capture=False, ignore=False):
+    logger.info("running command: " + cmd)
+    command(cmd, capture, ignore)

@@ -79,29 +79,5 @@ class Deploy(object):
                     yield base + [ os.path.join(self.conf.paths.public_site_output, fn),
                                    host + ':' + self.remote_path ]
 
-    def run(self, p=None):
-        if p is None:
-            map(printer, self.deploy_commands())
-        else:
-            logger.critical('not running commands during test.')
-            return True
-            res = p.map_async(command, self.deploy_commands())
-            logger.info('deployed {0} targets'.format(len(res)))
-
-
-def printer(line):
-    print(' '.join(line))
-
-if __name__ == '__main__':
-    d = {"target": "stage",
-         "paths": {
-             'remote': '/srv/public/test/ecosystem',
-             'local': 'public/',
-             'static': ['a', 'b', 'c', '.htaccess'] },
-        'options': ['recursive'],
-        'env': 'publication',
-        'dependency': 'stage-if-up-to-date' }
-
-    dep = Deploy()
-    dep.load(AttributeDict(d))
-    dep.run()
+    def run(self):
+        map(command, self.deploy_commands())
