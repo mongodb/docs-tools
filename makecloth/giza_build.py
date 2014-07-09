@@ -86,6 +86,13 @@ def main():
         m.newline()
         complete.append(builder)
 
+    m.section_break('deploy targets')
+    for ptarget in conf.system.files.data.push:
+        name = ptarget['target']
+        m.target(hyph_concat('giza', name))
+        m.job('giza push --target ' + name)
+        m.newline()
+
     m.write(output_file)
     print('[meta-build]: built "build/makefile.giza_build" to integrate giza')
 
