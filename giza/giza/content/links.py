@@ -25,10 +25,10 @@ def get_top_level_links(links, conf):
 
     return ret
 
-
 def create_manual_symlink(conf):
     fpath = os.path.join(conf.paths.projectroot,
                          conf.paths.builddata, 'integration.yaml')
+
     if os.path.exists(fpath):
         iconf = ingest_yaml_doc(fpath)
     else:

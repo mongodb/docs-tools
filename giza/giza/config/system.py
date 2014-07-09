@@ -64,7 +64,6 @@ class SystemConfig(RecursiveConfigurationBase):
 
     @dependency_cache.setter
     def dependency_cache(self, value):
-        print(hasattr(self, "conf"))
         if value is not None:
             self.state['dependency_cache'] = value
         else:
@@ -156,17 +155,28 @@ class SystemConfigData(RecursiveConfigurationBase):
     def __init__(self, obj, conf):
         super(SystemConfigData, self).__init__(None, conf)
         self.ingest(obj)
-        self._option_registry = [ os.path.splitext(fn)[0]
-                                  for fn in self.conf.system.files.paths ]
+        for fn in self.conf.system.files.paths:
+            if isinstance(fn, dict):
+                self._option_registry.append(fn.keys()[0])
+            else:
+                self._option_registry.append(os.path.splitext(fn)[0])
 
     def ingest(self, file_list):
         if file_list is None:
             return
 
         for fn in file_list:
-            basename = os.path.splitext(fn)[0]
+            if isinstance(fn, dict):
+                if len(fn) > 1:
+                    raise TypeError
+                else:
+                    key, fn = fn.items()[0]
+                    basename = key
+            else:
+                basename = os.path.splitext(fn)[0]
+
             if fn.startswith('/'):
-                full_path = os.path.join(self.conf.paths.projectroot, fn)
+                full_path = os.path.join(self.conf.paths.projectroot, fn[1:])
             else:
                 full_path = os.path.join(self.conf.paths.projectroot,
                                          self.conf.paths.builddata, fn)
@@ -174,6 +184,8 @@ class SystemConfigData(RecursiveConfigurationBase):
             # TODO we should make this process lazy with a more custom getter/setter
             self.state[basename] = self._resolve_config_data(full_path)
             logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
+
+        logger.info('rendered all subconfig files')
 
     @staticmethod
     def _resolve_config_data(fn):

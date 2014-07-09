@@ -40,7 +40,8 @@ def _render_tex_into_pdf(fn, path):
                 return False
 
 def pdf_tasks(target, conf, app):
-    pdfs = ingest_yaml_list(os.path.join(conf.paths.builddata, 'pdfs.yaml'))
+    if len(conf.system.files.data.pdfs) == 0:
+
     tex_regexes = [ ( re.compile(r'(index|bfcode)\{(.*)--(.*)\}'),
                       r'\1\{\2-\{-\}\3\}'),
                     ( re.compile(r'\\PYGZsq{}'), "'"),
@@ -53,7 +54,7 @@ def pdf_tasks(target, conf, app):
     migrate_app = app.add('app')
     link_app = app.add('app')
 
-    for i in pdfs:
+    for i in conf.system.files.data.pdfs:
         tagged_name = i['output'][:-4] + '-' + i['tag']
         deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
         link_name = deploy_fn.replace('-' + conf.git.branches.current, '')

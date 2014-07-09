@@ -13,15 +13,9 @@ def robots_txt_builder(fn, conf, override=False):
     else:
         logger.info('regenerating robots.txt on non-master branch with override.')
 
-    input_fn = os.path.join(conf.paths.projectroot,
-                            conf.paths.builddata,
-                            'robots.yaml')
-
-    if not os.path.exists(input_fn):
-        logger.warning('{0} does not exist. not generating robots.txt'.format(input_fn))
-        return False
-
-    suppressed = ingest_yaml_list(input_fn)
+    if len(conf.system.files.data.robots) == 0:
+        logger.warning('no robots directives configured. not generating robots.txt')
+        return
 
     robots_txt_dir = os.path.dirname(fn)
     if not os.path.exists(robots_txt_dir):
@@ -30,7 +24,7 @@ def robots_txt_builder(fn, conf, override=False):
     with open(fn, 'w') as f:
         f.write('User-agent: *')
         f.write('\n')
-        for record in suppressed:
+        for record in conf.system.files.data.robots:
             page = record['file']
             if 'branches' not in record:
                 f.write('Disallow: {0}'.format(page))
@@ -48,7 +42,7 @@ def robots_txt_builder(fn, conf, override=False):
     logger.info('regenerated robots.txt file.')
 
 def robots_txt_tasks(conf, app):
-    if os.path.exists(os.path.join(conf.paths.projectroot, conf.paths.builddata, 'robots.yaml')):
+    if len(conf.system.files.data.robots) > 0:
         t = app.add('task')
         t.job = robots_txt_builder
         t.args = [ os.path.join(conf.paths.projectroot,

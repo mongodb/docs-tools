@@ -23,10 +23,8 @@ def render_config(args):
                  c.project.edition, c.deploy, c.paths.global_config,
                  c.project.branched, c.system.dependency_cache,
                  c.paths.public_site_output, c.project.basepath,
-                 c.runstate.runner, c.runstate.force, c.system.files
+                 c.runstate.runner, c.runstate.force, c.system.files,
                 ]
-
-
 
     print('--- ' + "str of config object >>>")
     print(json.dumps(c.dict(), indent=3))

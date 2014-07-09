@@ -47,20 +47,8 @@ def download(f, s):
                 # download it for a few days.
                 os.utime(f, (newtime, newtime))
 
-def get_intersphinx_metadata(conf):
-    data_file = os.path.join(conf.paths.projectroot,
-                             conf.paths.builddata,
-                             'intersphinx.yaml')
-
-    if not os.path.exists(data_file):
-        return []
-    else:
-        return ingest_yaml_list(data_file)
-
 def intersphinx_tasks(conf, app):
-    intersphinx_mapping = get_intersphinx_metadata(conf)
-
-    for i in intersphinx_mapping:
+    for i in conf.system.files.data.intersphinx:
         f = os.path.join(conf.paths.projectroot,
                          conf.paths.output, i['path'])
 
@@ -76,9 +64,7 @@ def intersphinx_tasks(conf, app):
         logger.debug('added job for {0}'.format(s))
 
 def intersphinx_clean(conf, app):
-    intersphinx_mapping = get_intersphinx_metadata(conf)
-
-    for inv in intersphinx_mapping:
+    for inv in conf.system.files.data.intersphinx:
         fn = os.path.join(conf.paths.projectroot,
                           conf.paths.output, inv['path'])
 

@@ -88,22 +88,18 @@ def finalize_single_html_jobs(builder, conf):
         }
 
 def error_pages(builder, conf):
-    error_conf = os.path.join(conf.paths.builddata, 'errors.yaml')
-
-    if not os.path.exists(error_conf):
+    if len(conf.system.files.data.errors) == 0:
         return None
     else:
-        error_pages = ingest_yaml_list(error_conf)
-
         sub = (re.compile(r'\.\./\.\./'), conf.project.url + r'/' + conf.project.tag + r'/')
 
-        for error in error_pages:
+        for idx, error in enumerate(conf.system.files.data.errors):
             page = os.path.join(conf.paths.projectroot,
                                 conf.paths.branch_output, builder,
                                 'meta', error, 'index.html')
             munge_page(fn=page, regex=sub, tag='error-pages')
 
-        logging.info('error-pages: rendered {0} error pages'.format(len(error_pages)))
+        logging.info('error-pages: rendered {0} error pages'.format(idx))
 
 def finalize_dirhtml_build(builder, conf):
     pjoin = os.path.join

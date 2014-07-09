@@ -5,7 +5,7 @@ logger = logging.getLogger('giza.operations.deploy')
 
 from giza.command import command
 from giza.app import BuildApp
-from giza.deploy import Deploy, get_push_config
+from giza.deploy import Deploy
 from giza.config.helper import fetch_config
 from giza.serialization import ingest_yaml_list, dict_from_list
 
@@ -14,7 +14,7 @@ def push(args):
     c = fetch_config(args)
     app = BuildApp(c)
 
-    pconf = ingest_yaml_list(get_push_config(c))
+    pconf = c.system.files.data.push
     pconf = dict_from_list('target', pconf)
 
     logger.info('printing rsync commands rather than running them in test mode.')

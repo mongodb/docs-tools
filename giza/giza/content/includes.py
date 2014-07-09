@@ -97,14 +97,10 @@ def include_file_data(conf):
     return omni
 
 def build_page(data, conf):
-    fn = os.path.join(conf.paths.projectroot,
-                      conf.paths.includes,
-                      'metadata.yaml')
-
-    if not os.path.exists(fn):
-        return None
+    if len(conf.system.files.data.includes) == 0:
+        return
     else:
-        iconf = ingest_yaml_doc(fn)
+        iconf = conf.system.files.data.includes
 
     r = RstCloth()
 

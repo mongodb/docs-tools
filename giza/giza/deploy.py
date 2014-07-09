@@ -15,15 +15,6 @@ from giza.command import command
 
 logger = logging.getLogger('giza.deploy')
 
-def get_push_config(conf):
-    for fn in ('push.yaml', 'deploy.yaml'):
-        p = os.path.join(conf.paths.projectroot,
-                         conf.paths.builddata, fn)
-        if os.path.exists(p):
-            return p
-
-    raise InvalidFile
-
 class Deploy(object):
     def __init__(self, conf):
         self.conf = conf

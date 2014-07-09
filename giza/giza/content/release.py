@@ -90,17 +90,15 @@ def _generate_copy_core(rel, target, release):
     logger.info('wrote release info file: ' + target)
 
 def release_tasks(conf, app):
-    data_file = os.path.join(conf.paths.builddata, 'releases') + '.yaml'
+    if len(conf.system.files.data.releases) == 0:
+        return
 
     if 'release' in conf.version:
         release_version = conf.version.release
     else:
         release_version = conf.version.published[0]
 
-    if not os.path.exists(data_file):
-        return
-
-    rel_data = ingest_yaml(os.path.join(conf.paths.builddata, 'releases') + '.yaml')
+    rel_data = conf.system.files.data.releases
 
     deps = [ os.path.join(conf.paths.projectroot, conf.runstate.conf_path) ]
 

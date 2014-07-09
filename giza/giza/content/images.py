@@ -99,24 +99,36 @@ def _generate_images(cmd, dpi, width, target, source):
                        source=source))
     logger.info('generated image file {0}'.format(target))
 
-def get_images_metadata_file(paths):
-    return os.path.join(paths.projectroot, paths.images, 'metadata') + '.yaml'
+def get_images_metadata_file(conf):
+    base = None
+    for fn in conf.system.files.paths:
+        if isinstance(fn, dict):
+            if 'images' in fn:
+                base = fn['images']
+                break
+        else:
+            if fn.startswith('images'):
+                base = fn
+                break
 
-def get_images_metadata(paths):
-    meta_file = get_images_metadata_file(paths)
-
-    if not os.path.exists(meta_file):
-        return []
+    if base is None:
+        return None
+    elif base.startswith('/'):
+        base = base[1:]
+        return os.path.join(conf.paths.projectroot, base)
     else:
-        return ingest_yaml_list(meta_file)
+        return os.path.join(conf.paths.projectroot, conf.paths.builddata, base)
 
 def image_tasks(conf, app):
     paths = conf.paths
 
-    meta_file = get_images_metadata_file(paths)
-    images_meta = get_images_metadata(paths)
+    meta_file = get_images_metadata_file(conf)
 
-    for image in images_meta:
+    if meta_file is None:
+        logger.info('no images to generate')
+        return
+
+    for image in conf.system.files.data.images:
         image['dir'] = paths.images
         source_base = os.path.join(paths.projectroot, image['dir'], image['name'])
         source_file = dot_concat(source_base, 'svg')
