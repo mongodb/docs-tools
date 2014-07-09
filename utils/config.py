@@ -293,10 +293,15 @@ def render_sphinx_config(conf):
                                                           'language': lang },
                                                         conf, computed)
 
+    to_delete = []
     for i in computed.keys():
         if i in ['prerequisites', 'generated-source',
                  'sphinx-builders'] or 'base' in i:
-            del computed[i]
+            to_delete.append(i)
+
+    # this mess is for python3 support
+    for i in to_delete:
+        del computed[i]
 
     return computed
 

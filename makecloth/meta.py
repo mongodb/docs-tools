@@ -45,6 +45,7 @@ def generate_meta(conf):
 
     m.section_break('generated makefiles')
 
+    conf.system.make.generated.append('giza_build')
     for target in conf.system.make.generated:
         fn = os.path.sep.join([conf.paths.output, "makefile." + target])
         cloth = os.path.join(conf.paths.buildsystem, "makecloth", target + '.py')
@@ -52,10 +53,10 @@ def generate_meta(conf):
         generated_makefiles.append(fn)
 
         if target != 'meta':
-            m.raw(['-include ' + conf.paths.output + '/makefile.' + target])
+            m.include(conf.paths.output + '/makefile.' + target, ignore=True)
 
         m.target(target=fn, dependency=cloth, block='makefiles')
-        m.job(' '.join([conf.system.python, cloth, fn]))
+        m.job(' '.join(['python', cloth, fn]))
         m.newline()
 
     m.newline()

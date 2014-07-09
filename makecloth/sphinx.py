@@ -5,8 +5,8 @@ import os.path
 from multiprocessing import cpu_count
 import pkg_resources
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../bin/')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 
 from utils.output import build_platform_notification
 from utils.serialization import ingest_yaml

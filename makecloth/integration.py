@@ -97,7 +97,7 @@ def main():
     if 'base' in config:
         generate_integration_targets(config['base'])
 
-        for lang, lang_config in config.iteritems():
+        for lang, lang_config in config.items():
             if lang == 'base':
                 continue
 
