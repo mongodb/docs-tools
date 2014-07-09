@@ -182,7 +182,14 @@ class SystemConfigData(RecursiveConfigurationBase):
             return object.__getattr__(self, key)
         except AttributeError as e:
             if key in self._option_registry:
-                if not isinstance(self.state[key], list):
+                if isinstance(self.state[key], list):
+                    return self.state[key]
+                elif isinstance(self.state[key], dict):
+                    if len(self.state[key]) == 1:
+                        self._load_file(self.state[key])
+                    else:
+                        return self.state[key]
+                else:
                     self._load_file(self.state[key])
 
                 return self.state[key]

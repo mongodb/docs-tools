@@ -138,12 +138,16 @@ def image_tasks(conf, app):
 
     meta_file = get_images_metadata_file(conf)
 
-
     if 'images' not in conf.system.files.data:
         logger.info('no images to generate')
         return
 
-    for image in conf.system.files.data.images:
+    if isinstance(conf.system.files.data.images, list):
+        images = conf.system.files.data.images
+    else:
+        images = [ conf.system.files.data.images ]
+
+    for image in images:
         image['dir'] = paths.images
         source_base = os.path.join(paths.projectroot, image['dir'], image['name'])
         source_file = dot_concat(source_base, 'svg')
