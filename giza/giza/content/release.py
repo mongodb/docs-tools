@@ -90,7 +90,7 @@ def _generate_copy_core(rel, target, release):
     logger.info('wrote release info file: ' + target)
 
 def release_tasks(conf, app):
-    if len(conf.system.files.data.releases) == 0:
+    if 'release' not in conf.system.files.data:
         return
 
     if 'release' in conf.version:

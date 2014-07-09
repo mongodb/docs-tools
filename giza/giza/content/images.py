@@ -124,7 +124,8 @@ def image_tasks(conf, app):
 
     meta_file = get_images_metadata_file(conf)
 
-    if meta_file is None:
+
+    if 'images' not in conf.system.files.data:
         logger.info('no images to generate')
         return
 
@@ -164,9 +165,11 @@ def image_tasks(conf, app):
             logger.debug('adding image creation job for {0}'.format(target_img))
 
 def image_clean(conf, app):
-    images_meta = get_images_metadata(conf.paths)
+    if 'images' not in conf.system.files.data:
+        logger.info('no images to clean')
+        return
 
-    for image in images_meta:
+    for image in conf.system.files.data.images:
         source_base = os.path.join(conf.paths.projectroot, image['dir'], image['name'])
 
         rm_rst = app.add('task')

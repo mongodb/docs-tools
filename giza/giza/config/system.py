@@ -154,38 +154,52 @@ class SystemConfigData(RecursiveConfigurationBase):
 
     def __init__(self, obj, conf):
         super(SystemConfigData, self).__init__(None, conf)
-        self.ingest(obj)
         for fn in self.conf.system.files.paths:
             if isinstance(fn, dict):
-                self._option_registry.append(fn.keys()[0])
+                attr_name = fn.keys()[0]
             else:
-                self._option_registry.append(os.path.splitext(fn)[0])
+                attr_name = os.path.splitext(fn)[0]
 
-    def ingest(self, file_list):
-        if file_list is None:
-            return
+            self._option_registry.append(attr_name)
+            setattr(self, attr_name, fn)
 
-        for fn in file_list:
-            if isinstance(fn, dict):
-                if len(fn) > 1:
-                    raise TypeError
-                else:
-                    key, fn = fn.items()[0]
-                    basename = key
+    def __getattr__(self, key):
+        if key in self._option_registry:
+            if not isinstance(self.state[key], list):
+                self._load_file(self.state[key])
+
+            return self.state[key]
+        else:
+            return super(SystemConfigData, self).__getattr__(key)
+
+    def __contains__(self, value):
+        return value in self._option_registry
+
+    def ingest(self, file_list=None):
+        # this needs to be a noop, because some of the base constructors call
+        # it, but we want this class to load data lazily.
+        pass
+
+    def _load_file(self, fn):
+        if isinstance(fn, dict):
+            if len(fn) > 1:
+                raise TypeError
             else:
-                basename = os.path.splitext(fn)[0]
+                key, fn = fn.items()[0]
+                basename = key
+        else:
+            basename = os.path.splitext(fn)[0]
 
-            if fn.startswith('/'):
-                full_path = os.path.join(self.conf.paths.projectroot, fn[1:])
-            else:
-                full_path = os.path.join(self.conf.paths.projectroot,
-                                         self.conf.paths.builddata, fn)
+        if fn.startswith('/'):
+            full_path = os.path.join(self.conf.paths.projectroot, fn[1:])
+        else:
+            full_path = os.path.join(self.conf.paths.projectroot,
+                                     self.conf.paths.builddata, fn)
 
-            # TODO we should make this process lazy with a more custom getter/setter
-            self.state[basename] = self._resolve_config_data(full_path)
-            logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
+        # TODO we should make this process lazy with a more custom getter/setter
+        self.state[basename] = self._resolve_config_data(full_path)
+        logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
 
-        logger.info('rendered all subconfig files')
 
     @staticmethod
     def _resolve_config_data(fn):

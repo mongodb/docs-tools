@@ -88,9 +88,7 @@ class RecursiveConfigurationBase(ConfigurationBase):
     def __init__(self, obj, conf):
         self._conf = None
         self.conf = conf
-
         super(RecursiveConfigurationBase, self).__init__(obj)
-
 
     @property
     def conf(self):

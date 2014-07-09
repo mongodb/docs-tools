@@ -48,6 +48,9 @@ def download(f, s):
                 os.utime(f, (newtime, newtime))
 
 def intersphinx_tasks(conf, app):
+    if 'intersphinx' not in conf.system.files.data:
+        return
+
     for i in conf.system.files.data.intersphinx:
         f = os.path.join(conf.paths.projectroot,
                          conf.paths.output, i['path'])

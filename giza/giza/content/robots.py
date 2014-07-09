@@ -13,7 +13,7 @@ def robots_txt_builder(fn, conf, override=False):
     else:
         logger.info('regenerating robots.txt on non-master branch with override.')
 
-    if len(conf.system.files.data.robots) == 0:
+    if 'robots' not in conf.system.files.data:
         logger.warning('no robots directives configured. not generating robots.txt')
         return
 
@@ -42,7 +42,7 @@ def robots_txt_builder(fn, conf, override=False):
     logger.info('regenerated robots.txt file.')
 
 def robots_txt_tasks(conf, app):
-    if len(conf.system.files.data.robots) > 0:
+    if 'robots' in conf.system.files.data and len(conf.system.files.data.robots) > 0:
         t = app.add('task')
         t.job = robots_txt_builder
         t.args = [ os.path.join(conf.paths.projectroot,

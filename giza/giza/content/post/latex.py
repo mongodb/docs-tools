@@ -40,7 +40,8 @@ def _render_tex_into_pdf(fn, path):
                 return False
 
 def pdf_tasks(target, conf, app):
-    if len(conf.system.files.data.pdfs) == 0:
+    if 'pdfs' not in conf.system.files.data:
+        return
 
     tex_regexes = [ ( re.compile(r'(index|bfcode)\{(.*)--(.*)\}'),
                       r'\1\{\2-\{-\}\3\}'),

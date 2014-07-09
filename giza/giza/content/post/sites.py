@@ -88,7 +88,7 @@ def finalize_single_html_jobs(builder, conf):
         }
 
 def error_pages(builder, conf):
-    if len(conf.system.files.data.errors) == 0:
+    if 'errors' not in conf.system.files.data:
         return None
     else:
         sub = (re.compile(r'\.\./\.\./'), conf.project.url + r'/' + conf.project.tag + r'/')

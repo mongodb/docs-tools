@@ -97,7 +97,7 @@ def include_file_data(conf):
     return omni
 
 def build_page(data, conf):
-    if len(conf.system.files.data.includes) == 0:
+    if 'includes' not in conf.system.files.data:
         return
     else:
         iconf = conf.system.files.data.includes
