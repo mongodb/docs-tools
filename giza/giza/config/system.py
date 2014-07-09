@@ -4,6 +4,7 @@ import os.path
 logger = logging.getLogger('giza.config.system')
 
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
+from giza.serialization import ingest_yaml_list
 
 class SystemConfig(RecursiveConfigurationBase):
     @property
@@ -21,6 +22,19 @@ class SystemConfig(RecursiveConfigurationBase):
     @tools.setter
     def tools(self, value):
         self.state['tools'] = SystemToolsConfig(value)
+
+    @property
+    def files(self):
+        if 'files' not in self.state:
+            self.files = []
+
+        return self.state['files']
+
+    @files.setter
+    def files(self, value):
+        if 'files' not in self.state:
+            self.state['files'] = SystemConfigFiles(self.conf)
+            self.files.paths = value
 
     @property
     def conf_file(self):
@@ -50,6 +64,7 @@ class SystemConfig(RecursiveConfigurationBase):
 
     @dependency_cache.setter
     def dependency_cache(self, value):
+        print(hasattr(self, "conf"))
         if value is not None:
             self.state['dependency_cache'] = value
         else:
@@ -106,3 +121,68 @@ class SystemMakeConfig(ConfigurationBase):
             self.state['static'] = value
         else:
             raise TypeError
+
+class SystemConfigFiles(RecursiveConfigurationBase):
+    def __init__(self, conf):
+        super(SystemConfigFiles, self).__init__(None, conf)
+
+    @property
+    def paths(self):
+        return self.state['paths']
+
+    @paths.setter
+    def paths(self, value):
+        if isinstance(value, list):
+            self.state['paths'] = value
+        else:
+            raise TypeError
+
+    @property
+    def data(self):
+        if 'data' not in self.state:
+            self.data = self.conf.system.files.paths
+
+        return self.state['data']
+
+    @data.setter
+    def data(self, value):
+        if 'data' not in self.state:
+            self.state['data'] = SystemConfigData(value, self.conf)
+
+class SystemConfigData(RecursiveConfigurationBase):
+    ## There shouldn't be any setters in this class. All items in this class
+    ## must exist in SystemConfigPaths() objects.
+
+    def __init__(self, obj, conf):
+        super(SystemConfigData, self).__init__(None, conf)
+        self.ingest(obj)
+        self._option_registry = [ os.path.splitext(fn)[0]
+                                  for fn in self.conf.system.files.paths ]
+
+    def ingest(self, file_list):
+        if file_list is None:
+            return
+
+        for fn in file_list:
+            basename = os.path.splitext(fn)[0]
+            if fn.startswith('/'):
+                full_path = os.path.join(self.conf.paths.projectroot, fn)
+            else:
+                full_path = os.path.join(self.conf.paths.projectroot,
+                                         self.conf.paths.builddata, fn)
+
+            # TODO we should make this process lazy with a more custom getter/setter
+            self.state[basename] = self._resolve_config_data(full_path)
+            logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
+
+    @staticmethod
+    def _resolve_config_data(fn):
+        logger.debug('resolving config data from file ' + fn)
+        if fn is None:
+            return []
+        else:
+            data = ingest_yaml_list(fn)
+            if len(data) == 1:
+                return data[0]
+            else:
+                return data

@@ -17,7 +17,7 @@ class ConfigurationBase(object):
             return
         elif isinstance(input_obj, dict):
             pass
-        elif os.path.exists(input_obj):
+        elif not isinstance(input_obj, ConfigurationBase) and os.path.exists(input_obj):
             input_obj = ingest_yaml_doc(input_obj)
         else:
             msg = 'cannot ingest Configuration obj from object with type {0}'.format(type(input_obj))
@@ -86,9 +86,11 @@ class ConfigurationBase(object):
 
 class RecursiveConfigurationBase(ConfigurationBase):
     def __init__(self, obj, conf):
-        super(RecursiveConfigurationBase, self).__init__(obj)
         self._conf = None
         self.conf = conf
+
+        super(RecursiveConfigurationBase, self).__init__(obj)
+
 
     @property
     def conf(self):

@@ -88,7 +88,10 @@ class RuntimeStateConfig(ConfigurationBase):
 
     @property
     def level(self):
-        return self.state['level']
+        if 'level' not in self.state:
+            return 'info'
+        else:
+            return self.state['level']
 
     @level.setter
     def level(self, value):

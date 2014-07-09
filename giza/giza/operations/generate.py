@@ -6,6 +6,7 @@ import argh
 
 from giza.app import BuildApp
 from giza.config.helper import fetch_config
+from giza.files import rm_rf
 
 from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images import image_tasks, image_clean
@@ -75,7 +76,7 @@ def assets(args):
     if c.runstate.clean_generated is True:
         assets_clean(c, app)
     else:
-        asset_tasks(c, app)
+        assets_tasks(c, app)
 
     app.run()
 
