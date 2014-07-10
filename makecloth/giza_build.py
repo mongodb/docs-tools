@@ -43,7 +43,7 @@ def main():
                                          'sphinx.yaml'))
     builders = [b for b in sconf
                 if not b.endswith('base') and b not in
-                ('prerequisites', 'generated-source', 'languages', 'editions')]
+                ('prerequisites', 'generated-source', 'languages', 'editions', 'sphinx_builders')]
     if 'editions' in sconf:
         editions = sconf['editions']
     else:
@@ -92,6 +92,33 @@ def main():
         m.target(hyph_concat('giza', name))
         m.job('giza push --target ' + name)
         m.newline()
+
+    integration_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, 'integration.yaml')
+    if os.path.exists(integration_path):
+        m.section_break('integration and publish targets')
+        iconf = ingest_yaml_doc(integration_path)
+
+        if 'base' in iconf:
+            languages = [ k for k in iconf.keys() if not k.endswith('base') ]
+            iconf = iconf['base']
+        else:
+            languages = []
+
+        targets = [ target.split('-')[0] for target in iconf['targets'] if '/' not in target ]
+
+        base_job = 'giza sphinx --builder {0}'.format(' '.join(targets))
+
+        if len(editions) > 0:
+            base_job += " --edition " + ' '.join(editions)
+
+        m.target('giza-publish')
+        m.job(base_job)
+
+        m.newline()
+        for lang in languages:
+            m.target('giza-publish-' + lang)
+            m.job(base_job + ' --language ' + lang)
+            m.newline()
 
     m.write(output_file)
     print('[meta-build]: built "build/makefile.giza_build" to integrate giza')
