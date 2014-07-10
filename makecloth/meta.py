@@ -47,8 +47,13 @@ def generate_meta(conf):
 
     conf.system.make.generated.append('giza_build')
     for target in conf.system.make.generated:
+        if target == 'sphinx':
+            generator_fn = 'sphinx_builders'
+        else:
+            generator_fn = target
+
         fn = os.path.sep.join([conf.paths.output, "makefile." + target])
-        cloth = os.path.join(conf.paths.buildsystem, "makecloth", target + '.py')
+        cloth = os.path.join(conf.paths.buildsystem, "makecloth", generator_fn + '.py')
 
         generated_makefiles.append(fn)
 

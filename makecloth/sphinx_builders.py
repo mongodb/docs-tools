@@ -155,7 +155,7 @@ def sphinx_builder(target):
     return ret_value
 
 def main():
-    config = ingest_yaml(get_conf_file(file=__file__, directory=conf.paths.builddata))
+    config = ingest_yaml(get_conf_file(file='sphinx', directory=conf.paths.builddata))
 
     config = render_sphinx_config(config)
 
