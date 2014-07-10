@@ -16,6 +16,8 @@ import logging
 import os.path
 import yaml
 
+import sphinx.builders
+
 logger = logging.getLogger('giza.config.runtime')
 
 from giza.command import CommandError
@@ -24,7 +26,7 @@ from giza.config.base import ConfigurationBase
 
 class RuntimeStateConfig(ConfigurationBase):
     _option_registry = [ 'length', 'days_to_save', 'builder_to_delete',
-                         'git_branch', 'git_sign_patch', 'sphinx_builder',
+                         'git_branch', 'git_sign_patch',
                          'clean_generated', 'include_mask', 'push_targets' ]
 
     def __init__(self, obj=None):
@@ -209,19 +211,24 @@ class RuntimeStateConfig(ConfigurationBase):
     @property
     def builder(self):
         if 'builder' not in self.state:
-            self.state['builder'] = 'html'
-
-        return self.state['builder']
+            return [ ]
+        else:
+            return self.state['builder']
 
     @builder.setter
     def builder(self, value):
-        #todo: make following validation list more dynamically assembled.
-        #todo ensure this value is always a list.
+        if not isinstance(value, list):
+            value = [value]
 
-        if value in [None, 'dirhtml', 'html', 'json', 'epub', 'latex', 'singlehtml']:
-            self.state['builder'] = value
-        elif value == 'pdf':
-            self.state['builder'] = 'latex'
+        for idx, builder in enumerate(value):
+            if builder.startswith('pdf'):
+                builder = 'latex'
+                value[idx] = builder
+
+            if builder not in sphinx.builders.BUILTIN_BUILDERS:
+                raise TypeError
+
+        self.state['builder'] = value
 
     @property
     def git_objects(self):
@@ -233,17 +240,6 @@ class RuntimeStateConfig(ConfigurationBase):
             self.state['git_objects'] = value
         else:
             self.state['git_objects'] = [value]
-
-    @property
-    def sphinx_builders(self):
-        return self.state['sphinx_builders']
-
-    @sphinx_builders.setter
-    def sphinx_builders(self, value):
-        if isinstance(value, list):
-            self.state['sphinx_builders'] = value
-        else:
-            self.state['sphinx_builders'] = [value]
 
     @property
     def editions_to_build(self):

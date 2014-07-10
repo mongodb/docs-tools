@@ -90,10 +90,7 @@ class SphinxConfig(RecursiveConfigurationBase):
 
     @property
     def builder(self):
-        if 'builder' not in self.state['builder']:
-            return 'html'
-        else:
-            return self.state['builder']
+        return self.state['builder']
 
     @property
     def excluded_files(self):

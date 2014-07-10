@@ -29,7 +29,7 @@ from giza.config.sphinx_config import render_sconf
 
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
-@argh.arg('--builder', '-b', nargs='*', default='html', dest='sphinx_builders')
+@argh.arg('--builder', '-b', nargs='*', default='html')
 def sphinx(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -41,11 +41,11 @@ def sphinx(args):
     build_source_copies = set()
     sphinx_app = BuildApp(c)
     sphinx_app.pool = app.pool
-    jobs = itertools.product(args.editions_to_build, args.languages_to_build, args.sphinx_builders)
+    jobs = itertools.product(args.editions_to_build, args.languages_to_build, args.builder)
     for edition, language, builder in jobs:
         args.language = language
         args.edition = edition
-        args.sphinx_builder = builder
+        args.builder = builder
         build_config = fetch_config(args)
 
         prep_app = app.add('app')
