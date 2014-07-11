@@ -106,7 +106,7 @@ def main():
 
         targets = [ target.split('-')[0] for target in iconf['targets']
                     if '/' not in target and
-                    if not target.startswith('htaccess') ]
+                    not target.startswith('htaccess') ]
 
         base_job = 'giza sphinx --builder {0}'.format(' '.join(targets))
 
