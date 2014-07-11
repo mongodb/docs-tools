@@ -97,7 +97,7 @@ class SphinxConfig(RecursiveConfigurationBase):
 
         path = os.path.join(self.conf.paths.projectroot, self.conf.paths.branch_output, dirname)
 
-        if build_output not in self.state:
+        if 'build_output' not in self.state:
             self.state['build_output'] = path
 
         return path
