@@ -67,16 +67,19 @@ def main():
         logger.info('cloned repository')
 
     if user.toolchain == 'giza':
+        os.chdir('giza')
+
         try:
-            command('cd giza; python setup.py install')
+            command('python setup.py install')
         except CommandError:
-            command('cd giza; python setup.py install')
+            command('python setup.py install')
         except CommandError:
-            command('cd giza; python setup.py install')
+            command('python setup.py install')
         except CommandError:
             logger.critical('giza installation failed after three attempts. declaring failure.')
             exit(1)
 
+        os.chdir(root_path)
         logger.info('installed giza')
 
     os.chdir(build_path)
