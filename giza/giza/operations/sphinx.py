@@ -86,7 +86,7 @@ def post_build_operations(results, app):
     logger.info('starting build finalizing')
 
     sphinx_output = []
-    agggregated_return_code = 0
+    aggregated_return_code = 0
 
     for ret_code, ret_sconf, ret_conf, sbuild_output in results:
         sphinx_output.append(sbuild_output)
