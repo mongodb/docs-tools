@@ -104,7 +104,7 @@ class Task(object):
     def run(self):
         task_id = hash(str(self.job)) + hash(str(self.args))
 
-        logger.debug('({0}) calling {1} with args {2}'.format(task_id, self.job, self.args))
+        logger.debug('({0}) calling {1}'.format(task_id, self.job))
         if self.args_type == 'kwargs':
             r = self.job(**self.args)
         elif self.args_type == 'args':

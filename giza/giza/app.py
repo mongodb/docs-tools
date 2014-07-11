@@ -26,58 +26,64 @@ class BuildApp(object):
         self.conf = conf
         self.queue = []
         self.results = []
-        self._worker_pool = None
+        self.worker_pool = None
         self.default_pool = self.conf.runstate.runner
-        self.pool_types = (ThreadPool, WorkerPool, SerialPool)
+
+        self.pool_mapping = {
+            'thread': ThreadPool,
+            'process': ProcessPool,
+            'serial': SerialPool
+        }
+        self.pool_types = tuple([ self.pool_mapping[p] for p in self.pool_mapping ])
+
         self.needs_rebuild = True
         self.root_app = True
 
     @property
-    def worker_pool(self):
-        if self._worker_pool is None:
-            self.pool = None
-        return self._worker_pool
-
-    @worker_pool.setter
-    def worker_pool(self, value):
-        self._worker_pool = value
-
-    @property
     def pool(self):
         if self.worker_pool is None:
-            self.pool = None
+            self.create_pool()
 
         return self.worker_pool
 
     @pool.setter
     def pool(self, value=None):
-        if value is not None and self.is_pool(self.worker_pool):
-            self.close_pool()
+        self.create_pool(value)
 
-        if self.is_pool(value):
-            self.worker_pool = value
+    def create_pool(self, pool=None):
+        if pool is None:
+            if self.worker_pool is None:
+                pool = self.default_pool
+            else:
+                pool = self.worker_pool
+
+        if self.worker_pool is not None:
+            logger.debug('not creating a pool because one already exists. ({0}, {1})'.format(pool, type(pool)))
             return
-        elif value in self.pool_types:
-            self.worker_pool = value()
+
+        if isinstance(self.worker_pool, self.pool_mapping[self.default_pool]):
             return
-
-        if (value is not None and
-            self.default_pool != value and
-            self.is_pool_type(value)):
-            self.default_pool = value
-
-        if self.default_pool == 'thread':
-            self.worker_pool = ThreadPool(self.conf)
-        elif self.default_pool == 'process':
-            self.worker_pool = ProcessPool(self.conf)
-        elif self.default_pool == 'serial':
-            self.worker_pool = SerialPool(self.conf)
+        elif self.worker_pool is None:
+            if self.is_pool(pool) and self.worker_pool is None:
+                self.worker_pool = pool
+            elif self.is_pool_type(pool) and self.worker_pool is None:
+                self.worker_pool = self.pool_mapping[pool](self.conf)
+            else:
+                self.worker_pool = self.pool_mapping[self.default_pool](self.conf)
+        else:
+            raise TypeError("pool {0} of type {1} is invalid".format(pool, type(pool)))
 
     def is_pool(self, pool):
         if isinstance(pool, self.pool_types):
             return True
         else:
             return False
+
+    def is_pool_type(self, value):
+        if value in self.pool_mapping:
+            return True
+        else:
+           return False
 
     @property
     def queue_has_apps(self):
@@ -92,18 +98,10 @@ class BuildApp(object):
         else:
             return False
 
-    @staticmethod
-    def is_pool_type(value):
-        if value in ('thread', 'process', 'serial'):
-            return True
-        else:
-           return False
-
     def close_pool(self):
         if self.is_pool(self.worker_pool) and not isinstance(self.worker_pool, SerialPool):
-            self._worker_pool.p.close()
-            self._worker_pool.p.join()
-            self._worker_pool = None
+            self.worker_pool.close()
+            self.worker_pool = None
 
     def add(self, task=None):
         if task is None or task in (Task, 'task'):
@@ -117,7 +115,9 @@ class BuildApp(object):
             self.queue.append(t)
             return t
         elif task in (BuildApp, 'app'):
+            self.create_pool()
             t = BuildApp(self.conf)
+            t.pool = self.pool
             t.root_app = False
             self.queue.append(t)
             return t
@@ -129,7 +129,9 @@ class BuildApp(object):
                 self.queue.append(task)
                 return task
             elif isinstance(task, BuildApp):
+                self.create_pool()
                 task.root_app = False
+                task.pool = self.pool
                 self.queue.append(task)
                 return task
             else:
@@ -137,6 +139,9 @@ class BuildApp(object):
 
     def _run_single(self, j):
         if isinstance(j, BuildApp):
+            if j.pool is None:
+                j.pool = self.pool
+
             self.results.extend(j.run())
         elif isinstance(j, Task):
             self.results.append(j.run())
@@ -145,7 +150,7 @@ class BuildApp(object):
 
     def _run_mixed_queue(self):
         group = [ ]
-        self.pool = None
+
         for task in self.queue:
             if not isinstance(task, BuildApp):
                 group.append(task)
@@ -158,7 +163,7 @@ class BuildApp(object):
                     self.results.extend(self.pool.runner(group))
                     group = []
 
-                if task.worker_pool is None:
+                if task.pool is None:
                     task.pool = self.pool
 
                 if isinstance(task, Task):
@@ -177,4 +182,5 @@ class BuildApp(object):
         else:
             self.results.extend(self.pool.runner(self.queue))
 
+        self.queue = []
         return self.results

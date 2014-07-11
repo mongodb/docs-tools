@@ -13,11 +13,39 @@
 # limitations under the License.
 
 import os.path
+import logging
+import re
 
-from giza.files import expand_tree, copy_if_needed
+logger = logging.getLogger('giza.content.post.singlehtml')
+
+
+from giza.files import expand_tree, copy_if_needed, decode_lines_from_file, encode_lines_to_file
+from giza.task import check_dependency
 
 def get_single_html_dir(conf):
     return os.path.join(conf.paths.public_site_output, 'single')
+
+def manual_single_html(input_file, output_file):
+    # don't rebuild this if its not needed.
+    if check_dependency(output_file, input_file) is False:
+        logging.info('singlehtml not changed, not reprocessing.')
+        return False
+    else:
+        text_lines = decode_lines_from_file(input_file)
+
+        regexes = [
+            (re.compile('href="contents.html'), 'href="index.html'),
+            (re.compile('name="robots" content="index"'), 'name="robots" content="noindex"'),
+            (re.compile('href="genindex.html'), 'href="../genindex/')
+        ]
+
+        for regex, subst in regexes:
+            text_lines = [ regex.sub(subst, text) for text in text_lines ]
+
+        encode_lines_to_file(output_file, text_lines)
+
+        logging.info('processed singlehtml file.')
+
 
 def finalize_single_html_tasks(builder, conf, app):
     pjoin = os.path.join

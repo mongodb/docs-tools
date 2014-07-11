@@ -33,6 +33,9 @@ class WorkerPool(object):
         return self.p
 
     def __exit__(self, *args):
+        self.close()
+
+    def close(self):
         self.p.close()
         self.p.join()
 
@@ -111,10 +114,10 @@ class ThreadPool(WorkerPool):
     def __init__(self, conf=None):
         self.p = multiprocessing.dummy.Pool()
         self.conf = conf
-        logger.debug('new thread pool object')
+        logger.info('new thread pool object')
 
 class ProcessPool(WorkerPool):
     def __init__(self, conf=None):
         self.conf = conf
         self.p = multiprocessing.Pool()
-        logger.debug('new process pool object')
+        logger.info('new process pool object')

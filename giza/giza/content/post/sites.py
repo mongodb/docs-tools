@@ -20,7 +20,7 @@ import sys
 logger = logging.getLogger('giza.content.post.sites')
 
 from giza.command import command
-from giza.serialization import ingest_yaml_list
+from giza.serialization import ingest_yaml_list, ingest_yaml_doc
 from giza.task import check_dependency
 from giza.files import (expand_tree, create_link, copy_if_needed,
                               decode_lines_from_file, encode_lines_to_file)
@@ -145,7 +145,7 @@ def finalize_dirhtml_build(builder, conf):
                                              'sitemap.xml.gz'))
 
     sconf_path = pjoin(conf.paths.projectroot,
-                       conf.paths.builddata, 'sphinx_yaml')
+                       conf.paths.builddata, 'sphinx.yaml')
     sconf = ingest_yaml_doc(sconf_path)
 
     if 'dirhtml' in sconf and 'excluded_files' in sconf['dirhtml']:

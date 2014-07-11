@@ -43,6 +43,8 @@ def pdf_tasks(target, conf, app):
     if 'pdfs' not in conf.system.files.data:
         return
 
+    app.pool = 'thread'
+
     tex_regexes = [ ( re.compile(r'(index|bfcode)\{(.*)--(.*)\}'),
                       r'\1\{\2-\{-\}\3\}'),
                     ( re.compile(r'\\PYGZsq{}'), "'"),

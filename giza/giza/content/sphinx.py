@@ -31,6 +31,7 @@ from giza.content.post.archives import man_tarball, html_tarball
 from giza.content.post.json_output import json_output_tasks
 from giza.content.post.singlehtml import finalize_single_html_tasks
 from giza.content.post.gettext import gettext_tasks
+from giza.content.post.latex import pdf_tasks
 from giza.content.post.sites import (finalize_epub_build,
                                      finalize_dirhtml_build, error_pages)
 
@@ -183,11 +184,10 @@ def run_sphinx(builder, sconf, conf):
 
     if out.return_code == 0:
         logger.info('successfully completed {0} sphinx build at {1}'.format(builder, timestamp()))
-        finalize_sphinx_build(sconf, conf)
     else:
         logger.warning('the sphinx build {0} was not successful. not running finalize operation'.format(builder))
 
-    return output
+    return out.return_code, sconf, conf, output
 
 #################### Application Logic ####################
 
@@ -198,8 +198,7 @@ def sphinx_tasks(sconf, conf, app):
     task.args = [sconf.builder, sconf, conf]
     task.description = 'building {0} with sphinx'.format(sconf.builder)
 
-def finalize_sphinx_build(sconf, conf):
-    app = BuildApp(conf)
+def finalize_sphinx_build(sconf, conf, app):
     target = sconf.builder
 
     logger.info('starting to finalize the Sphinx build {0}'.format(target))
@@ -241,8 +240,5 @@ def finalize_sphinx_build(sconf, conf):
         finalize_single_html_tasks(target, conf, app)
     elif target == 'latex':
         pdf_tasks(target, conf, app)
-        logger.critical('finalizing for builder "{0}" is not yet implemented.'.format(target))
     elif target == 'gettext':
         gettext_tasks(conf, app)
-
-    return app.run()

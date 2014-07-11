@@ -22,7 +22,7 @@ from giza.content.source import source_tasks, exclusion_tasks
 from giza.content.toc import toc_tasks
 from giza.content.steps import steps_tasks
 from giza.content.dependencies import refresh_dependency_tasks
-from giza.content.sphinx import sphinx_tasks, output_sphinx_stream
+from giza.content.sphinx import sphinx_tasks, output_sphinx_stream, finalize_sphinx_build
 from giza.content.primer import primer_migration_tasks
 
 from giza.config.sphinx_config import render_sconf
@@ -33,8 +33,6 @@ from giza.config.sphinx_config import render_sconf
 def sphinx(args):
     c = fetch_config(args)
     app = BuildApp(c)
-    app.pool = 'thread'
-
     build_prep_tasks(c, app)
 
     # this loop will produce an app for each language/edition/builder combination
@@ -71,8 +69,26 @@ def sphinx(args):
 
     logger.info("sphinx build setup, running now.")
     app.run()
-    output_sphinx_stream(sphinx_app.results, c)
     logger.info("sphinx build complete.")
+
+    sphinx_output = post_build_operations(sphinx_app.results, app)
+    logger.info('builds finalized. sphinx output and errors to follow')
+
+    output_sphinx_stream(sphinx_output, c)
+
+def post_build_operations(results, app):
+    logger.info('starting build finalizing')
+
+    sphinx_output = []
+
+    for ret_code, ret_sconf, ret_conf, sbuild_output in results:
+        sphinx_output.append(sbuild_output)
+        if ret_code == 0:
+            finalize_sphinx_build(ret_sconf, ret_conf, app)
+
+    app.run()
+
+    return sphinx_output
 
 def build_prep_tasks(conf, app):
     image_tasks(conf, app)
