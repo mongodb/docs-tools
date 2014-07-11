@@ -27,7 +27,7 @@ from giza.operations.configuration import render_config
 from giza.operations.clean import clean
 from giza.operations.git import apply_patch, pull_rebase, cherry_pick
 from giza.operations.sphinx import sphinx
-from giza.operations.deploy import push
+from giza.operations.deploy import deploy, push
 
 def main():
     parser = argh.ArghParser()
@@ -41,7 +41,7 @@ def main():
         render_config,
         clean,
         sphinx,
-        push
+        deploy, push
     ]
 
     argh.add_commands(parser, commands)

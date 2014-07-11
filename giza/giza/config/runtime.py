@@ -262,3 +262,17 @@ class RuntimeStateConfig(ConfigurationBase):
             self.state['languages_to_build'] = value
         else:
             self.state['languages_to_build'] = [value]
+
+    @property
+    def dry_run(self):
+        if 'dry_run' not in self.state:
+            return False
+        else:
+            return self.state['dry_run']
+
+    @dry_run.setter
+    def dry_run(self, value):
+        if value in (True, False):
+            self.state['dry_run'] = value
+        else:
+            raise TypeError
