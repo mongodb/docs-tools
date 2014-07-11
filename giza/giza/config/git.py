@@ -120,7 +120,6 @@ class GitBranchConfig(GitConfigBase):
                     logger.critical(msg)
                     raise TypeError(msg)
 
-
                 self.state['published'] = p
 
             else:

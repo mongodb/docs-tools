@@ -176,9 +176,9 @@ def run_sphinx(builder, sconf, conf):
 
     sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output),
-                            builder,
+                            os.path.basename(sconf.build_output),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_source),
-                            os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder))
+                            sconf.build_output)
 
     out = command(sphinx_cmd, capture=True, ignore=True)
     # out = sphinx_native_worker(sphinx_cmd)
