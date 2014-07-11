@@ -45,7 +45,7 @@ class WorkerPool(object):
     def async_runner(self, jobs):
         results = []
 
-        if len(jobs) == 1:
+        if len(jobs) == 1 and not isinstance(jobs[0], MapTask):
             j = jobs[0]
             results.append((j, j.run()))
         else:

@@ -143,6 +143,8 @@ class BuildApp(object):
                 j.pool = self.pool
 
             self.results.extend(j.run())
+        elif isinstance(j, MapTask):
+            self.results.extend(self.pool.runner([j]))
         elif isinstance(j, Task):
             self.results.append(j.run())
         else:
@@ -157,8 +159,11 @@ class BuildApp(object):
             else:
                 if len(group) == 1:
                     j = group[0]
-                    self.results.append(j.run())
-                    group = []
+                    if isinstance(j, MapTask):
+                        self.results.extend(self.pool.runner([j]))
+                    else:
+                        self.results.append(j.run())
+                        group = []
                 elif len(group) > 1:
                     self.results.extend(self.pool.runner(group))
                     group = []
@@ -166,7 +171,9 @@ class BuildApp(object):
                 if task.pool is None:
                     task.pool = self.pool
 
-                if isinstance(task, Task):
+                if isinstance(task, MapTask):
+                    self.results.extend(self.pool.runner([j]))
+                elif isinstance(task, Task):
                     self.results.append(task.run())
                 else:
                     self.results.extend(task.run())

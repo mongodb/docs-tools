@@ -122,5 +122,10 @@ def command(command, capture=False, ignore=False):
         raise CommandError('[ERROR]: "{0}" returned {1}'.format(out.cmd, out.return_code))
 
 def verbose_command(cmd, capture=False, ignore=False):
-    logger.info("running command: " + cmd)
-    command(cmd, capture, ignore)
+    if isinstance(cmd, list):
+        cmd_str = ' '.join(cmd)
+    else:
+        cmd_str = cmd
+
+    logger.info("running command: " + cmd_str)
+    command(cmd_str, capture, ignore)

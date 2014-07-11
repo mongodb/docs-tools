@@ -90,7 +90,7 @@ class Deploy(object):
                     logger.debug('skipping .htaccess files from non-master branch')
                     continue
                 else:
-                    yield base + [ os.path.join(self.conf.paths.public_site_output, fn),
+                    yield base + [ os.path.join(self.conf.paths.public, fn),
                                    host + ':' + self.remote_path ]
 
     def run(self):

@@ -184,7 +184,8 @@ class PathsConfig(RecursiveConfigurationBase):
     def public_site_output(self, value):
         p = [ self.conf.paths.public ]
 
-        if self.conf.project.edition is not None:
+        if (self.conf.project.edition != self.conf.project.name and
+            self.conf.project.edition is not None):
             p.append(self.conf.project.edition)
 
         if self.conf.project.branched is True:

@@ -10,6 +10,7 @@ from giza.config.helper import fetch_config
 from giza.serialization import ingest_yaml_list, dict_from_list
 
 @argh.arg('--target', '-t', nargs='*', dest='push_targets')
+@argh.arg('--dry-run', '-d', action='store_true', default=False, dest='dry_run')
 def push(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -32,4 +33,8 @@ def push(args):
 
         map_task.job = verbose_command
 
-    app.run()
+    if args.dry_run is True:
+        for i in d.deploy_commands():
+            logger.info('dry run: {0}'.format(' '.join(i)))
+    else:
+        app.run()
