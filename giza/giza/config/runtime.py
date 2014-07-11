@@ -226,7 +226,7 @@ class RuntimeStateConfig(ConfigurationBase):
                 value[idx] = builder
 
             if builder not in sphinx.builders.BUILTIN_BUILDERS:
-                raise TypeError
+                raise TypeError("{0} is not a valid builder".format(builder))
 
         self.state['builder'] = value
 
