@@ -69,76 +69,76 @@ class TestBuildApp(TestCase):
         self.assertIs(self.c, t.conf)
 
     def test_pool_setter_default(self):
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
         a = self.app.pool = None
         self.assertIsNotNone(self.app.worker_pool)
         self.assertIsInstance(self.app.pool, ProcessPool)
 
     def test_pool_setter_process(self):
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
         a = self.app.pool = 'process'
         self.assertIsNotNone(self.app.worker_pool)
         self.assertIsInstance(self.app.pool, ProcessPool)
 
     def test_pool_setter_thread(self):
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
         a = self.app.pool = 'thread'
         self.assertIsNotNone(self.app.worker_pool)
         self.assertIsInstance(self.app.pool, ThreadPool)
 
     def test_pool_setter_serial(self):
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
         a = self.app.pool = 'serial'
         self.assertIsNotNone(self.app.worker_pool)
         self.assertIsInstance(self.app.pool, SerialPool)
 
     def test_pool_setter_process_by_ref(self):
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
         a = self.app.pool = ProcessPool
         self.assertIsNotNone(self.app.worker_pool)
         self.assertIsInstance(self.app.pool, ProcessPool)
 
     def test_pool_setter_thread_by_ref(self):
-        self.assertIsNone(self.app._worker_pool)
-        a = self.app.pool = ThreadPool
+        self.assertIsNone(self.app.worker_pool)
+        self.app.pool = ThreadPool
         self.assertIsNotNone(self.app.worker_pool)
         self.assertIsInstance(self.app.pool, ThreadPool)
 
     def test_pool_setter_serial_by_ref(self):
-        self.assertIsNone(self.app._worker_pool)
-        a = self.app.pool = SerialPool
+        self.assertIsNone(self.app.worker_pool)
+        self.app.pool = SerialPool
         self.assertIsNotNone(self.app.worker_pool)
         self.assertIsInstance(self.app.pool, SerialPool)
 
     def test_pool_setter_invalid_input(self):
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
         a = self.app.pool = 1
         self.assertIsInstance(self.app.pool, ProcessPool)
 
     def test_pool_setter_existing_pool_thread(self):
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
         p = ThreadPool(self.c)
         self.app.pool = p
         self.assertIs(self.app.pool, p)
 
     def test_pool_setter_existing_pool_process(self):
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
         p = ProcessPool(self.c)
         self.app.pool = p
         self.assertIs(self.app.pool, p)
 
     def test_pool_setter_existing_pool_serial(self):
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
         p = SerialPool(self.c)
         self.app.pool = p
         self.assertIs(self.app.pool, p)
 
     def test_pool_closer(self):
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
         a = self.app.pool = 'thread'
         self.assertIsInstance(self.app.pool, ThreadPool)
         self.app.close_pool()
-        self.assertIsNone(self.app._worker_pool)
+        self.assertIsNone(self.app.worker_pool)
 
     def test_pool_type_checker_thread(self):
         self.assertTrue(self.app.is_pool_type('thread'))
@@ -301,7 +301,6 @@ class TestBuildApp(TestCase):
         self.assertEqual(len(self.app.queue), 20)
         self.assertTrue(self.app.queue_has_apps)
 
-
     def test_running_mixed_queue_all_apps_integrated(self):
         self.assertEqual(self.app.queue, [])
         self.assertEqual(self.app.results, [])
@@ -318,8 +317,8 @@ class TestBuildApp(TestCase):
 
         self.app.run()
 
+        self.assertEqual(len(self.app.queue), 0)
         self.assertEqual(sum(self.app.results), 300)
-        self.assertEqual(len(self.app.queue), 10)
 
     def test_running_mixed_queue_mixed_queue_integrated(self):
         self.assertEqual(self.app.queue, [])
@@ -341,8 +340,8 @@ class TestBuildApp(TestCase):
 
         self.app.run()
 
+        self.assertEqual(len(self.app.queue), 0)
         self.assertEqual(sum(self.app.results), 330)
-        self.assertEqual(len(self.app.queue), 20)
 
     def test_running_mixed_queue_all_apps_direct(self):
         self.assertEqual(self.app.queue, [])
@@ -383,9 +382,8 @@ class TestBuildApp(TestCase):
 
         self.app._run_mixed_queue()
 
-        self.assertEqual(sum(self.app.results), 330)
         self.assertEqual(len(self.app.queue), 20)
-
+        self.assertEqual(sum(self.app.results), 330)
 
     def test_running_tasks_ordering_serial(self):
         self.assertEqual(self.app.queue, [])
@@ -406,7 +404,7 @@ class TestBuildApp(TestCase):
 
         self.app.run()
 
-        self.assertEqual(len(self.app.queue), 10)
+        self.assertEqual(len(self.app.queue), 0)
         self.assertEqual(self.app.results, [ 3, 3, 3, 3, 3, 4, 4, 4, 4, 4 ])
 
     def test_task_results_ordering_with_apps(self):
