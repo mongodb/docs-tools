@@ -71,6 +71,11 @@ def main():
             command('cd giza; python setup.py install')
         except CommandError:
             command('cd giza; python setup.py install')
+        except CommandError:
+            command('cd giza; python setup.py install')
+        except CommandError:
+            logger.critical('giza installation failed after three attempts. declaring failure.')
+            exit(1)
 
         logger.info('installed giza')
 
