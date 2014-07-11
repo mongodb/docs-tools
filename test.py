@@ -101,7 +101,11 @@ def main():
     bootstrapped_tools_path = os.path.join('build', 'docs-tools')
 
     if user.toolchain == 'giza':
-        shutil.rmtree(bootstrapped_tools_path)
+        if os.path.exists(bootstrapped_tools_path):
+            try:
+                os.remove(bootstrapped_tools_path)
+            except:
+                shutil.rmtree(bootstrapped_tools_path)
     else:
         if not os.path.exists(bootstrapped_tools_path):
             os.makedirs('build')
