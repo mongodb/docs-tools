@@ -91,7 +91,7 @@ class SphinxConfig(RecursiveConfigurationBase):
     @property
     def build_output(self):
         if 'edition' in self.conf.project and self.conf.project.edition != self.conf.project.name:
-            dirname = hyph_concat(builder, edition)
+            dirname = hyph_concat(self.builder, self.edition)
         else:
             dirname = builder
 
