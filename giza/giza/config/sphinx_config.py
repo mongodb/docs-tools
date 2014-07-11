@@ -90,12 +90,12 @@ class SphinxConfig(RecursiveConfigurationBase):
 
     @property
     def build_output(self):
-        if 'edition' in conf.project and conf.project.edition != conf.project.name:
+        if 'edition' in self.conf.project and self.conf.project.edition != self.conf.project.name:
             dirname = hyph_concat(builder, edition)
         else:
             dirname = builder
 
-        path = os.path.join(conf.paths.projectroot, conf.paths.branch_output, dirname)
+        path = os.path.join(self.conf.paths.projectroot, self.conf.paths.branch_output, dirname)
 
         if build_output not in self.state:
             self.state['build_output'] = path
