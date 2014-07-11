@@ -54,7 +54,6 @@ class SphinxConfig(RecursiveConfigurationBase):
         # register the global config, but use our ingestion
         # super(SphinxConfig, self).__init__(None, conf)
 
-        self._conf = None
         self._state = {}
         self._raw = {}
         self.conf = conf
@@ -93,7 +92,7 @@ class SphinxConfig(RecursiveConfigurationBase):
         if 'edition' in self.conf.project and self.conf.project.edition != self.conf.project.name:
             dirname = hyph_concat(self.builder, self.edition)
         else:
-            dirname = builder
+            dirname = self.builder
 
         path = os.path.join(self.conf.paths.projectroot, self.conf.paths.branch_output, dirname)
 
