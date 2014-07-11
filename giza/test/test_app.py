@@ -70,7 +70,7 @@ class TestBuildApp(TestCase):
 
     def test_pool_setter_default(self):
         self.assertIsNone(self.app.worker_pool)
-        a = self.app.pool = None
+        self.app.pool = None
         self.assertIsNotNone(self.app.worker_pool)
         self.assertIsInstance(self.app.pool, ProcessPool)
 
@@ -135,7 +135,7 @@ class TestBuildApp(TestCase):
 
     def test_pool_closer(self):
         self.assertIsNone(self.app.worker_pool)
-        a = self.app.pool = 'thread'
+        self.app.pool = 'thread'
         self.assertIsInstance(self.app.pool, ThreadPool)
         self.app.close_pool()
         self.assertIsNone(self.app.worker_pool)
