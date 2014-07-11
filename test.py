@@ -64,7 +64,11 @@ def main():
         logger.info('cloned repository')
 
     if user.toolchain == 'giza':
-        command('cd giza; python setup.py install')
+        try:
+            command('cd giza; python setup.py install')
+        except CommandError:
+            command('cd giza; python setup.py install')
+
         logger.info('installed giza')
 
     os.chdir(build_path)
