@@ -25,6 +25,7 @@ def user_input():
     parser.add_argument('--branch', '-b', default='master')
     parser.add_argument('--repo', '-r', default='git@github.com:mongodb/docs.git')
     parser.add_argument('--project', '-p', default='manual', choices=['docs-training', 'manual', 'mms', 'ecosystem'])
+    parser.add_argument('--toolchain', '-t', default='giza', choices=['legacy', 'giza'])
 
     parser.add_argument('--silent', action='store_const', const=logging.NOTSET, dest='level',
                         help='disable all logging output.')
@@ -61,6 +62,10 @@ def main():
         logger.info('cloning repository')
         command('git clone {0} {1}'.format(user.repo, build_path))
         logger.info('cloned repository')
+
+    if user.toolchain == 'giza':
+        command('cd giza; python setup.py install')
+        logger.info('installed giza')
 
     os.chdir(build_path)
     logger.debug('script working directory is now {0}'.format(os.getcwd()))
@@ -100,7 +105,11 @@ def main():
     command('python bootstrap.py safe')
     logger.info('moving on to build the publish target.')
 
-    build_task = command('make publish', capture=True, ignore=True)
+    if user.toolchain == 'giza':
+        build_task = command('make giza-publish', capture=True, ignore=True)
+    elif user.toolchain == 'legacy':
+        build_task = command('make publish', capture=True, ignore=True)
+
     logger.info('completed build task, moving to printing output')
 
     print_build_output(build_task)
