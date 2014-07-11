@@ -105,10 +105,14 @@ def output_sphinx_stream(out, conf):
 
         l = path_normalization(l, full_path, conf)
 
-        if l.startswith('InputError: [Errno 2] No such file or directory') and idx != 0:
-            l = path_normalization(l.split(' ')[-1].strip()[1:-2], full_path, conf)
-            printable[idx-1] += ' ' + l
-            l = None
+        if l.startswith('InputError: [Errno 2] No such file or directory'):
+            try:
+                l = path_normalization(l.split(' ')[-1].strip()[1:-2], full_path, conf)
+                printable[idx-1] += ' ' + l
+                l = None
+            except IndexError:
+                logger.error("error processing log: {0}".format(l))
+                continue
         elif l.startswith('source/includes/generated/overview.rst'):
             continue
         elif l.startswith('source/meta/includes.txt'):
