@@ -124,7 +124,7 @@ def finalize_dirhtml_build(builder, conf):
 
     logger.info('{0}: migrated build to {1}'.format(builder, dest))
 
-    if conf.git.branches.current in conf.git.branches.published:
+    if 'published' in conf.git.branches and conf.git.branches.current in conf.git.branches.published:
         sitemap_exists = sitemap(config_path=None, conf=conf)
 
         if sitemap_exists is True:

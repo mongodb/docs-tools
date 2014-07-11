@@ -92,12 +92,16 @@ def make_all_sphinx(config):
 
     if 'sphinx_builders' in config:
         builder_string = ','.join(['{0}-' + ed for ed in config['editions']])
+        base = 'fab'
+
+        if conf.project.name == 'ecosystem':
+            base += " serial"
 
         for target in config['sphinx_builders']:
             m.target(target)
-            m.job('fab sphinx.target:{0}'.format(builder_string.format(target)))
+            m.job('{0} sphinx.target:{1}'.format(base, builder_string.format(target)))
             m.target(target + '-debug')
-            m.job('fab log.set:debug sphinx.target:{0}'.format(builder_string.format(target)))
+            m.job('{0} log.set:debug sphinx.target:{1}'.format(base, builder_string.format(target)))
 
         m.newline()
 
@@ -138,7 +142,11 @@ def sphinx_builder(target):
     if target == 'gettext' or 'gettext' in target:
         m.job('fab tx.update', block=b)
     else:
-        m.job('fab sphinx.target:{0}'.format(target), block=b)
+        base = 'fab'
+        if conf.project.name == 'ecosystem':
+            base += ' serial'
+
+        m.job('{0} sphinx.target:{1}'.format(base, target), block=b)
 
     m.job(build_platform_notification('Sphinx', 'completed {0} build.'.format(target)), ignore=True, block=b)
 

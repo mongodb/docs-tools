@@ -12,14 +12,19 @@ from utils.config import get_conf, get_conf_file
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
-paths = get_conf().paths
+site_conf = get_conf()
+paths = site_conf.paths
 
 def generate_integration_targets(conf):
     m.target('_publish')
-    m.job('fab sphinx.target:{0}'.format(','.join(conf['targets'])))
+    base = 'fab'
+    if site_conf.project.name == 'ecosystem':
+        base += ' serial'
+
+    m.job('{0} sphinx.target:{1}'.format(base, ','.join(conf['targets'])))
 
     m.target('_publish-debug')
-    m.job('fab log.set:debug sphinx.target:{0}'.format(','.join(conf['targets'])))
+    m.job('{0} log.set:debug sphinx.target:{1}'.format(base, ','.join(conf['targets'])))
 
     dependencies = [ '_publish']
     dependencies_debug = [ '_publish-debug']

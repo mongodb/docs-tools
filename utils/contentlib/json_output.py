@@ -27,7 +27,10 @@ def json_output(conf):
 
     builder = 'json'
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
-        builder += '-' + conf.project.edition
+        try:
+            builder += '-' + conf.project.edition
+        except:
+            pass
 
     command(cmd.format(src=os.path.join(conf.paths.branch_output, builder) + '/',
                        dst=json_dst))
