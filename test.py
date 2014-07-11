@@ -56,6 +56,9 @@ def main():
     root_path = os.path.abspath(os.getcwd())
     build_path = os.path.join('build', user.project)
 
+    command('git remote add origin git@github.com:mongodb/docs-tools.git', ignore=True)
+    command('git branch master origin/master', ignore=True)
+
     if os.path.exists(build_path):
         logger.info('build directory exists. continuing with quasi-incremental build.')
     else:
@@ -92,18 +95,21 @@ def main():
 
     bootstrapped_tools_path = os.path.join('build', 'docs-tools')
 
-    if not os.path.exists(bootstrapped_tools_path):
-        os.makedirs('build')
-        logger.debug("{0} does not exist".format(bootstrapped_tools_path))
-        symlink(name=bootstrapped_tools_path, target=root_path)
-        logger.debug('created tools symlink')
-    elif os.path.islink(bootstrapped_tools_path):
-        logger.debug("{0} is a link. continuing.".format(bootstrapped_tools_path))
-    elif os.path.isdir(bootstrapped_tools_path) and not os.path.islink(bootstrapped_tools_path):
-        logger.warning('a tools directory currently exists, removing.')
+    if user.toolchain == 'giza':
         shutil.rmtree(bootstrapped_tools_path)
-        symlink(name=bootstrapped_tools_path, target=root_path)
-        logger.debug('created tools symlink')
+    else:
+        if not os.path.exists(bootstrapped_tools_path):
+            os.makedirs('build')
+            logger.debug("{0} does not exist".format(bootstrapped_tools_path))
+            symlink(name=bootstrapped_tools_path, target=root_path)
+            logger.debug('created tools symlink')
+        elif os.path.islink(bootstrapped_tools_path):
+            logger.debug("{0} is a link. continuing.".format(bootstrapped_tools_path))
+        elif os.path.isdir(bootstrapped_tools_path) and not os.path.islink(bootstrapped_tools_path):
+            logger.warning('a tools directory currently exists, removing.')
+            shutil.rmtree(bootstrapped_tools_path)
+            symlink(name=bootstrapped_tools_path, target=root_path)
+            logger.debug('created tools symlink')
 
     logger.info('bootstrapping.')
     command('python bootstrap.py safe')
