@@ -8,9 +8,10 @@ logger = logging.getLogger('giza.content.post.latex')
 from giza.command import command
 
 from giza.files import (create_link, copy_if_needed,
-                                 decode_lines_from_file, encode_lines_to_file)
+                        decode_lines_from_file, encode_lines_to_file)
 from giza.serialization import ingest_yaml_list
 from giza.transformation import munge_page
+from giza.strings import hyph_concat
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 
@@ -39,7 +40,8 @@ def _render_tex_into_pdf(fn, path):
                 logger.error('pdf build encountered error running pdflatex, investigate on {0}. terminating'.format(base_fn))
                 return False
 
-def pdf_tasks(target, conf, app):
+def pdf_tasks(sconf, conf, app):
+    target = sconf.builder
     if 'pdfs' not in conf.system.files.data:
         return
 
@@ -62,7 +64,13 @@ def pdf_tasks(target, conf, app):
         deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
         link_name = deploy_fn.replace('-' + conf.git.branches.current, '')
 
-        latex_dir = os.path.join(conf.paths.branch_output, target)
+        if 'edition' in conf.project and conf.project.edition != conf.project.name:
+            if conf.project.edition != i['edition']:
+                continue
+            latex_dir = os.path.join(conf.paths.branch_output, hyph_concat(target, conf.project.edition))
+        else:
+            latex_dir = os.path.join(conf.paths.branch_output, target)
+
         deploy_path = conf.paths.public_site_output
 
         i['source'] = os.path.join(latex_dir, i['output'])

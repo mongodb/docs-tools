@@ -243,6 +243,6 @@ def finalize_sphinx_build(sconf, conf, app):
     elif target == 'singlehtml':
         finalize_single_html_tasks(target, conf, app)
     elif target == 'latex':
-        pdf_tasks(target, conf, app)
+        pdf_tasks(sconf, conf, app)
     elif target == 'gettext':
         gettext_tasks(conf, app)
