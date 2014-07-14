@@ -221,9 +221,12 @@ class SystemConfigData(RecursiveConfigurationBase):
             full_path = os.path.join(self.conf.paths.projectroot,
                                      self.conf.paths.builddata, fn)
 
-        # TODO we should make this process lazy with a more custom getter/setter
-        self.state[basename] = self._resolve_config_data(full_path)
-        logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
+        if os.path.exists(full_path):
+            # TODO we should make this process lazy with a more custom getter/setter
+            self.state[basename] = self._resolve_config_data(full_path)
+            logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
+        else:
+            logger.warning('{0} does not exist. continuing.')
 
     @staticmethod
     def _resolve_config_data(fn):
