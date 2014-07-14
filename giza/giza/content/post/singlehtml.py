@@ -18,8 +18,9 @@ import re
 
 logger = logging.getLogger('giza.content.post.singlehtml')
 
-
-from giza.files import expand_tree, copy_if_needed, decode_lines_from_file, encode_lines_to_file
+from giza.files import (expand_tree, copy_if_needed, decode_lines_from_file,
+                        encode_lines_to_file, FileNotFoundError)
+from giza.strings import hyph_concat
 from giza.task import check_dependency
 
 def get_single_html_dir(conf):
@@ -55,17 +56,28 @@ def finalize_single_html_tasks(builder, conf, app):
     if not os.path.exists(single_html_dir):
         os.makedirs(single_html_dir)
 
-    try:
-        manual_single_html(input_file=pjoin(conf.paths.branch_output,
-                                                    builder, 'contents.html'),
+    found_src = False
+    for base_path in (builder, hyph_concat(builder, conf.project.edition)):
+        if found_src is True:
+            break
+
+        for fn in [ pjoin(base_path, f) for f in ('contents.html', 'index.html') ]:
+            src_fn = pjoin(conf.paths.branch_output, fn)
+
+            if os.path.exists(src_fn):
+                manual_single_html(input_file=pjoin(conf.paths.branch_output, fn),
                                    output_file=pjoin(single_html_dir, 'index.html'))
-    except (IOError, OSError):
-        manual_single_html(input_file=pjoin(conf.paths.branch_output,
-                                                    builder, 'index.html'),
-                                   output_file=pjoin(single_html_dir, 'index.html'))
-    copy_if_needed(source_file=pjoin(conf.paths.branch_output,
-                                     builder, 'objects.inv'),
-                   target_file=pjoin(single_html_dir, 'objects.inv'))
+
+                copy_if_needed(source_file=pjoin(conf.paths.branch_output,
+                                                 base_path, 'objects.inv'),
+                               target_file=pjoin(single_html_dir, 'objects.inv'))
+
+            found_src = True
+
+            break
+
+    if found_src is not True:
+        raise FileNotFoundError('singlehtml source file')
 
     single_path = pjoin(single_html_dir, '_static')
 
