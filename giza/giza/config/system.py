@@ -226,7 +226,8 @@ class SystemConfigData(RecursiveConfigurationBase):
             self.state[basename] = self._resolve_config_data(full_path)
             logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
         else:
-            logger.warning('{0} does not exist. continuing.')
+            self.state[basename] = []
+            logger.warning('{0} does not exist. continuing.'.format(full_path))
 
     @staticmethod
     def _resolve_config_data(fn):
