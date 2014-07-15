@@ -22,6 +22,7 @@ def deploy_worker(c, app):
     pconf = c.system.files.data.push
     pconf = dict_from_list('target', pconf)
 
+    cmds = []
     for target in c.runstate.push_targets:
         d = Deploy(c)
 
@@ -37,18 +38,21 @@ def deploy_worker(c, app):
 
         map_task.job = verbose_command
 
+        cmds.extend(d.deploy_commands())
+
     if c.runstate.dry_run is True:
-        for i in d.deploy_commands():
+        for i in cmds:
             logger.info('dry run: {0}'.format(' '.join(i)))
     else:
         app.run()
 
-    logger.info('completed deploy for {0}'.format(target))
+    logger.info('completed deploy for: {0}'.format(' '.join(c.runstate.push_targets)))
 
 @argh.arg('--deploy', '-deploy', nargs='*', dest='push_targets')
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
 @argh.arg('--builder', '-b', nargs='*', default='html')
+@argh.arg('--sphinx_serial', action='store_true', default=False)
 def push(args):
     c = fetch_config(args)
     app = BuildApp(c)
