@@ -104,9 +104,9 @@ def main():
         else:
             languages = []
 
-        targets = [ target.split('-')[0] for target in iconf['targets']
-                    if '/' not in target and
-                    not target.startswith('htaccess') ]
+        targets = set([ target.split('-')[0] for target in iconf['targets']
+                        if '/' not in target and
+                        not target.startswith('htaccess') ])
 
         base_job = 'giza sphinx --builder {0}'.format(' '.join(targets))
 
@@ -130,7 +130,7 @@ def main():
             push_base_job = 'giza push --deploy {0} --builder {1}'.format(ptarget['target'], ' '.join(targets))
 
             if len(editions) > 0:
-                push_base_job += " --edition " + ' '.join(editions)
+                push_base_job += " --serial_sphinx --edition " + ' '.join(editions)
 
             m.target('giza-' + ptarget['target'])
             m.job(push_base_job)
