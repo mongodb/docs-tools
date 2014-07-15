@@ -74,7 +74,7 @@ def get_sphinx_args(sconf, conf):
 
     o.append(' '.join( [ '-c', conf.paths.projectroot ] ))
 
-    if 'language' in sconf:
+    if 'language' in sconf and sconf.langauge is not None:
         o.append("-D language='{0}'".format(sconf.language))
 
     return ' '.join(o)
