@@ -13,7 +13,7 @@ from fabfile.utils.files import (create_link, copy_if_needed,
 from fabfile.utils.serialization import ingest_yaml_list
 from fabfile.utils.transformations import munge_page
 from fabfile.utils.jobs.context_pools import ProcessPool, ThreadPool
-
+from fabfile.utils.strings import hyph_concat
 from fabfile.utils.shell import command
 
 #################### PDFs from Latex Produced by Sphinx  ####################
@@ -67,7 +67,12 @@ def pdf_jobs(target, conf):
         deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
         link_name = deploy_fn.replace('-' + conf.git.branches.current, '')
 
-        latex_dir = os.path.join(conf.paths.branch_output, target)
+        if 'edition' in conf.project and conf.project.edition != conf.project.name:
+            if conf.project.edition != i['edition']:
+                continue
+            latex_dir = os.path.join(conf.paths.branch_output, hyph_concat(target, conf.project.edition))
+        else:
+            latex_dir = os.path.join(conf.paths.branch_output, target)
 
         if 'edition' in i:
             deploy_path = conf.paths.mms[i['edition']]
