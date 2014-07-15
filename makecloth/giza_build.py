@@ -87,11 +87,13 @@ def main():
         complete.append(builder)
 
     m.section_break('deploy targets')
-    for ptarget in conf.system.files.data.push:
-        name = ptarget['target']
-        m.target(hyph_concat('giza-deploy', name))
-        m.job('giza deploy --target ' + name)
-        m.newline()
+    if 'push' in conf.system.files.data:
+        for ptarget in conf.system.files.data.push:
+            name = ptarget['target']
+            m.target(hyph_concat('giza-deploy', name))
+            m.job('giza deploy --target ' + name)
+            m.newline()
+
 
     integration_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, 'integration.yaml')
     if os.path.exists(integration_path):
@@ -122,25 +124,25 @@ def main():
             m.job(base_job + ' --language ' + lang)
             m.newline()
 
-
         # following targets build a group of sphinx targets followed by running
         # one or more deploy actions.
         m.section_break('push targets')
-        for ptarget in conf.system.files.data.push:
-            push_base_job = 'giza push --deploy {0} --builder {1}'.format(ptarget['target'], ' '.join(targets))
+        if 'push' in conf.system.files.data:
+            for ptarget in conf.system.files.data.push:
+                push_base_job = 'giza push --deploy {0} --builder {1}'.format(ptarget['target'], ' '.join(targets))
 
-            if len(editions) > 0:
-                push_base_job += " --serial_sphinx --edition " + ' '.join(editions)
+                if len(editions) > 0:
+                    push_base_job += " --serial_sphinx --edition " + ' '.join(editions)
 
-            m.target('giza-' + ptarget['target'])
-            m.job(push_base_job)
+                m.target('giza-' + ptarget['target'])
+                m.job(push_base_job)
 
-            m.newline()
-
-            for lang in languages:
-                m.target('giza-{0}-{1}'.format(ptarget['target'], lang))
-                m.job(push_base_job + ' --language ' + lang)
                 m.newline()
+
+                for lang in languages:
+                    m.target('giza-{0}-{1}'.format(ptarget['target'], lang))
+                    m.job(push_base_job + ' --language ' + lang)
+                    m.newline()
 
     m.write(output_file)
     print('[meta-build]: built "build/makefile.giza_build" to integrate giza')
