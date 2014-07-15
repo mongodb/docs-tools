@@ -30,7 +30,7 @@ from giza.config.sphinx_config import render_sconf
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
 @argh.arg('--builder', '-b', nargs='*', default='html')
-@argh.arg('--sphinx_serial', action='store_true', default=False)
+@argh.arg('--serial_sphinx', action='store_true', default=False)
 def sphinx(args):
     c = fetch_config(args)
     app = BuildApp(c)
