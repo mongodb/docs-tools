@@ -68,7 +68,7 @@ def pdf_jobs(target, conf):
         link_name = deploy_fn.replace('-' + conf.git.branches.current, '')
 
         if 'edition' in conf.project and conf.project.edition != conf.project.name:
-            if conf.project.edition != i['edition']:
+            if 'edition' in i and conf.project.edition != i['edition']:
                 continue
             latex_dir = os.path.join(conf.paths.branch_output, hyph_concat(target, conf.project.edition))
         else:
