@@ -111,7 +111,7 @@ def main():
         base_job = 'giza sphinx --builder {0}'.format(' '.join(targets))
 
         if len(editions) > 0:
-            base_job += " --edition " + ' '.join(editions)
+            base_job += "--sphinx_serial --edition " + ' '.join(editions)
 
         m.target('giza-publish')
         m.job(base_job)
