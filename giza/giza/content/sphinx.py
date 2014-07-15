@@ -66,9 +66,11 @@ def get_sphinx_args(sconf, conf):
 
     o.append('-b {0}'.format(sconf.builder))
 
-    if (is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version) and
-        'editions' not in sconf):
-        o.append(' '.join( [ '-j', str(cpu_count() + 1) ]))
+    if is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version):
+        if 'serial_sphinx' in conf.runstate and conf.runstate.serial_sphinx is True:
+            pass
+        else:
+            o.append(' '.join( [ '-j', str(cpu_count()) ]))
 
     o.append(' '.join( [ '-c', conf.paths.projectroot ] ))
 
