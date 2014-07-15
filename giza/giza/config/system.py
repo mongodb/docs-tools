@@ -166,6 +166,8 @@ class SystemConfigData(RecursiveConfigurationBase):
     ## There shouldn't be any setters in this class. All items in this class
     ## must exist in SystemConfigPaths() objects.
 
+
+
     def __init__(self, obj, conf):
         super(SystemConfigData, self).__init__(None, conf)
         for fn in self.conf.system.files.paths:
@@ -179,7 +181,7 @@ class SystemConfigData(RecursiveConfigurationBase):
 
     def __getattr__(self, key):
         try:
-            return object.__getattr__(self, key)
+            return object.__getattribute__(self, key)
         except AttributeError as e:
             if key in self._option_registry:
                 if isinstance(self.state[key], list):
@@ -194,8 +196,9 @@ class SystemConfigData(RecursiveConfigurationBase):
 
                 return self.state[key]
             else:
-                logger.debug('key {0} in system data object does not exist'.format(key))
-                raise e
+                m = 'key "{0}" in system.data object does not exist'.format(key)
+                logger.debug(m)
+                raise AttributeError(m)
 
     def __contains__(self, value):
         return value in self._option_registry

@@ -44,12 +44,14 @@ class ConfigurationBase(object):
 
     def __getattr__(self, key):
         try:
-            return object.__getattr__(self, key)
+            return object.__getattribute__(self, key)
         except AttributeError as e:
             if key in self._option_registry:
                 return self.state[key]
             else:
-                raise e
+                m = 'key "{0}" in configuration object does not exist'.format(key)
+                logger.debug(m)
+                raise AttributeError(m)
 
     @property
     def state(self):
