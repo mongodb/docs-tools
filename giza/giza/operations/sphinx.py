@@ -18,7 +18,7 @@ from giza.content.options import option_tasks
 from giza.content.param import api_tasks
 from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
-from giza.content.source import source_tasks, exclusion_tasks
+from giza.content.source import source_tasks
 from giza.content.toc import toc_tasks
 from giza.content.steps import steps_tasks
 from giza.content.dependencies import refresh_dependency_tasks
@@ -61,10 +61,10 @@ def sphinx_publication(c, args, app):
 
         if build_config.paths.branch_source not in build_source_copies:
             build_source_copies.add(build_config.paths.branch_source)
-            source_tasks(build_config, prep_app)
+            source_tasks(build_config, sconf, prep_app)
 
             source_app = prep_app.add('app')
-            build_content_generation_tasks(sconf, build_config, source_app)
+            build_content_generation_tasks(build_config, source_app)
             refresh_dependency_tasks(build_config, prep_app)
 
         sphinx_tasks(sconf, build_config, sphinx_app)
@@ -112,7 +112,6 @@ def build_prep_tasks(conf, app):
     table_tasks(conf, app)
     hash_tasks(conf, app)
 
-def build_content_generation_tasks(sconf, conf, app):
+def build_content_generation_tasks(conf, app):
     steps_tasks(conf, app.add('app'))
     toc_tasks(conf, app)
-    exclusion_tasks(conf, sconf, app)

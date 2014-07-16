@@ -80,7 +80,7 @@ class SphinxConfig(RecursiveConfigurationBase):
 
         base = self._raw[lookup]
 
-        for i in ['excluded_files', 'tags', 'languages']:
+        for i in ['excluded', 'tags', 'languages']:
             if i in base:
                 setattr(self, i, base[i])
 
@@ -106,11 +106,11 @@ class SphinxConfig(RecursiveConfigurationBase):
         return self.state['builder']
 
     @property
-    def excluded_files(self):
-        if 'excluded_files' not in self.state:
+    def excluded(self):
+        if 'excluded' not in self.state:
             return []
         else:
-            return self.state['excluded_files']
+            return self.state['excluded']
 
     @property
     def tags(self):
@@ -127,13 +127,13 @@ class SphinxConfig(RecursiveConfigurationBase):
         else:
             raise Exception('{0} is not a valid sphinx builder'.format(value))
 
-    @excluded_files.setter
-    def excluded_files(self, value):
+    @excluded.setter
+    def excluded(self, value):
         if not isinstance(value, list):
-            logger.error('excluded_files must be a list.')
+            logger.error('excluded files must be a list.')
             raise TypeError
         else:
-            self.state['excluded_files'] = value
+            self.state['excluded'] = value
 
     @tags.setter
     def tags(self, value):
