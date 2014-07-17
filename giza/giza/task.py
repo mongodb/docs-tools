@@ -37,6 +37,14 @@ class Task(object):
         self.target = target
         self.dependency = dependency
         logger.debug('created task object calling {0}, for {1}'.format(job, description))
+        self._task_id = None
+
+    @property
+    def task_id(self):
+        if self._task_id is None:
+            self._task_id = hash(str(self.job)) + hash(str(self.args))
+
+        return self._task_id
 
     @property
     def dependency(self):
@@ -102,9 +110,7 @@ class Task(object):
             return check_dependency(self.target, self.dependency)
 
     def run(self):
-        task_id = hash(str(self.job)) + hash(str(self.args))
-
-        logger.debug('({0}) calling {1}'.format(task_id, self.job))
+        logger.debug('({0}) calling {1}'.format(self.task_id, self.job))
         if self.args_type == 'kwargs':
             r = self.job(**self.args)
         elif self.args_type == 'args':
@@ -112,7 +118,7 @@ class Task(object):
         else:
             r = self.job()
 
-        logger.debug('completed running task {0}, {1}'.format(task_id, self.description))
+        logger.debug('completed running task {0}, {1}'.format(self.task_id, self.description))
         return r
 
 ############### Dependency Checking ###############
@@ -129,7 +135,6 @@ def check_dependency(target, dependency):
 
     if os.path.exists(target) is False:
         return True
-
 
     def needs_rebuild(targ_t, dep_f):
         if targ_t < os.path.getmtime(dep_f):

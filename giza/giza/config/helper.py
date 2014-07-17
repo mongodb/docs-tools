@@ -25,8 +25,4 @@ def fetch_config(args):
 def new_config():
     args = RuntimeStateConfig()
 
-    c = Configuration()
-    c.ingest(args.conf_path)
-    c.runstate = args
-
-    return c
+    return fetch_config(args)

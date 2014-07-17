@@ -85,13 +85,15 @@ class ConfigurationBase(object):
             return False
 
     def __repr__(self):
-        return str(self.state)
+        return str(self.dict())
 
     def dict(self):
         d = {}
         for k,v in self.state.items():
             if k.startswith('_'):
                 continue
+            elif k in ('pass', 'password'):
+                d[k] = 'redacted'
             elif isinstance(v, ConfigurationBase):
                 d[k] = v.dict()
             elif isinstance(v, list) and len(v) > 0 and isinstance(v[0], ConfigurationBase):

@@ -41,7 +41,6 @@ class Configuration(ConfigurationBase):
 
     @paths.setter
     def paths(self, value):
-
         self.state['paths'] = PathsConfig(value, self)
 
     @property

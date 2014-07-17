@@ -13,8 +13,11 @@ setup(
     license='Apache 2.0',
     url='http://github.com/mongodb/docs-tools.git',
     packages=find_packages(),
-    install_requires=REQUIRES,
     test_suite=None,
+    install_requires=REQUIRES,
+    extras_require={
+        'jira': ['jira-python', 'pyOpenSSL', 'ndg-httpsclient', 'pyasn1'],
+    },
     classifiers=[
         'Environment :: Console',
         'Intended Audience :: Developers',
@@ -27,6 +30,7 @@ setup(
     entry_points={
         'console_scripts': [
             'giza = giza.cmdline:main',
-            ],
-        }
+            'scrumpy = giza.scrumpy:main [jira]',
+           ],
+        },
     )

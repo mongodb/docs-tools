@@ -29,13 +29,18 @@ from giza.operations.git import apply_patch, pull_rebase, cherry_pick
 from giza.operations.sphinx import sphinx
 from giza.operations.deploy import deploy, push
 
-def main():
+def get_base_parser():
     parser = argh.ArghParser()
     parser.add_argument('--level', '-l',
                         choices=['debug', 'warning', 'info', 'critical', 'error'],
                         default='info')
     parser.add_argument('--serial', '-s', default=None, dest='runner', const='serial', action='store_const')
     parser.add_argument('--force', '-f', default=False, action='store_true')
+
+    return parser
+
+def main():
+    parser = get_base_parser()
 
     commands = [
         render_config,
