@@ -245,6 +245,24 @@ class TestBuildApp(TestCase):
         self.assertEqual(self.app.results[0], 3)
         self.assertEqual(sum(self.app.results), 30)
 
+    def test_results_ordering(self):
+        expected_results = [12, 13, 14, 15, 7, 17, 18, 10, 20, 12]
+
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        for inc in range(10):
+            t = self.app.add('task')
+            t.job = sum
+            if inc in (4, 7, 9):
+                t.args = [[ 1 , 2, inc ], 0]
+            else:
+                t.args = [[ 20 , 2, inc - 10 ], 0]
+
+        self.app.run()
+
+        self.assertEqual(self.app.results,  expected_results)
+
     def test_single_runner_app_integrated_with_many_subtasks(self):
         self.assertEqual(self.app.queue, [])
         self.assertEqual(self.app.results, [])
