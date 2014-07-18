@@ -192,7 +192,6 @@ def setup(args):
 def setup_credential_file(args):
     setup_credentials(args)
 
-
 #################### scrumpy entry point #####################
 
 def main():

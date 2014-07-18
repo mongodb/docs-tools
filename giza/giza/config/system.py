@@ -166,8 +166,6 @@ class SystemConfigData(RecursiveConfigurationBase):
     ## There shouldn't be any setters in this class. All items in this class
     ## must exist in SystemConfigPaths() objects.
 
-
-
     def __init__(self, obj, conf):
         super(SystemConfigData, self).__init__(None, conf)
         for fn in self.conf.system.files.paths:
@@ -231,6 +229,9 @@ class SystemConfigData(RecursiveConfigurationBase):
         else:
             self.state[basename] = []
             logger.warning('{0} does not exist. continuing.'.format(full_path))
+
+    def keys(self):
+        return self._option_registry
 
     @staticmethod
     def _resolve_config_data(fn):

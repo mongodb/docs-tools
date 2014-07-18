@@ -23,9 +23,12 @@ from giza.config.runtime import RuntimeStateConfig
 
 import giza.operations.generate
 import giza.operations.includes
+import giza.operations.packaging
+import giza.operations.git
+
+
 from giza.operations.configuration import render_config
 from giza.operations.clean import clean
-from giza.operations.git import apply_patch, pull_rebase, cherry_pick
 from giza.operations.sphinx import sphinx
 from giza.operations.deploy import deploy, push
 
@@ -48,9 +51,14 @@ def main():
         sphinx,
         deploy, push
     ]
-
     argh.add_commands(parser, commands)
-    argh.add_commands(parser, [apply_patch, pull_rebase, cherry_pick], namespace='git')
+
+    git_commands = [
+        giza.operations.git.apply_patch,
+        giza.operations.git.pull_rebase,
+        giza.operations.git.cherry_pick,
+    ]
+    argh.add_commands(parser, git_commands, namespace='git')
 
     generate_commands = [
         giza.operations.generate.api,
@@ -63,7 +71,6 @@ def main():
         giza.operations.generate.tables,
         giza.operations.generate.toc,
     ]
-
     argh.add_commands(parser, generate_commands, namespace='generate')
 
     include_commands = [
@@ -75,8 +82,12 @@ def main():
         giza.operations.includes.graph,
         giza.operations.includes.clean,
     ]
-
     argh.add_commands(parser, include_commands, namespace='includes')
+
+    packaging_commands = [
+        giza.operations.packaging.create_package,
+    ]
+    argh.add_commands(parser, packaging_commands, namespace='package')
 
     args = RuntimeStateConfig()
     argh.dispatch(parser, namespace=args)
