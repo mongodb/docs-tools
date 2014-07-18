@@ -18,6 +18,27 @@ logger = logging.getLogger('giza.config.credentials')
 
 from giza.config.base import ConfigurationBase
 
+from giza.config.helper import dump_skel
+
+def setup_credentials(args):
+    skel = {
+        'jira': {
+            'username': None,
+            'password': None,
+        },
+        'corp': {
+            'username': None,
+            'password': None,
+        },
+        'github': {
+            'username': None,
+            'password': None,
+            'token': None,
+        },
+    }
+
+    dump_skel(skel, args)
+
 class CredentialsConfig(ConfigurationBase):
     @property
     def jira(self):

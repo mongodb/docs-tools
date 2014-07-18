@@ -25,6 +25,7 @@ logger = logging.getLogger('giza.scrumpy')
 
 from giza.config.jeerah import fetch_config, JeerahRuntimeStateConfig
 from giza.config.helper import dump_skel
+from giza.config.credentials import setup_credentials
 from giza.cmdline import get_base_parser
 from giza.app import BuildApp
 from giza.jeerah.client import JeerahClient
@@ -187,13 +188,18 @@ def setup(args):
 
     dump_skel(skel, args)
 
+@argh.named('setup-credentials')
+def setup_credential_file(args):
+    setup_credentials(args)
+
 
 #################### scrumpy entry point #####################
 
 def main():
     parser = get_base_parser()
 
-    commands = [setup, config, progress, triage, make_versions, mirror_version, release]
+    commands = [setup, setup_credential_file, config, progress, triage,
+                make_versions, mirror_version, release]
 
     argh.add_commands(parser, commands)
 
