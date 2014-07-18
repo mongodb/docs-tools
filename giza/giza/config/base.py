@@ -34,6 +34,7 @@ class ConfigurationBase(object):
         elif not isinstance(input_obj, ConfigurationBase) and os.path.exists(input_obj):
             input_obj = ingest_yaml_doc(input_obj)
         else:
+            print(input_obj)
             msg = 'cannot ingest Configuration obj from object with type {0}'.format(type(input_obj))
             logger.critical(msg)
             raise TypeError(msg)
@@ -92,7 +93,7 @@ class ConfigurationBase(object):
         for k,v in self.state.items():
             if k.startswith('_'):
                 continue
-            elif k in ('pass', 'password'):
+            elif k in ('pass', 'password', 'token'):
                 d[k] = 'redacted'
             elif isinstance(v, ConfigurationBase):
                 d[k] = v.dict()

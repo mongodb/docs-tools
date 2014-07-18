@@ -129,6 +129,9 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
         cur = os.path.abspath(os.getcwd())
         home_path = os.path.expanduser(os.path.join('~', conf_file_name))
 
+        if 'conf_path' not in self.state:
+            self.state['conf_path'] = None
+
         # first look for files in likely default places:
         if 'config' in os.listdir(cur):
             fq_conf_file = os.path.join(cur, 'config', conf_file_name)
@@ -158,7 +161,6 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
         # If we couldn't find a config file, throw an error.
         if self.state['conf_path'] is None:
-            print('fooo')
             m = 'cannot locate config file'
             logger.error(m)
             raise OSError(m)

@@ -27,22 +27,8 @@ def fetch_config(args):
 
     return c
 
-class JeerahCredentialsConfig(ConfigurationBase):
-    _option_registry = [ 'username', 'password' ]
-
-    @property
-    def corp(self):
-        return self.state['corp']
-
-    @corp.setter
-    def corp(self, value):
-        self.state['corp'] = CorpCredentialsConfig(value)
-
-class CorpCredentialsConfig(ConfigurationBase):
-    _option_registry = [ 'username', 'password' ]
-
 class JeerahRuntimeStateConfig(RuntimeStateConfigurationBase):
-    _option_registry = ['sprint', 'project']
+    _option_registry = ['project', 'user_conf_path']
 
     @property
     def sprint(self):

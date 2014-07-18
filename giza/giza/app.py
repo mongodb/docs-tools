@@ -39,6 +39,10 @@ class BuildApp(object):
         self.needs_rebuild = True
         self.root_app = True
 
+    def reset(self):
+        self.queue = []
+        self.results = []
+
     @property
     def pool(self):
         if self.worker_pool is None:

@@ -8,12 +8,12 @@ logger = logging.getLogger('giza.jeerah.client')
 from jira.client import JIRA
 from jira.resources import Version
 
-from giza.config.jeerah import JeerahCredentialsConfig
+from giza.config.credentials import CredentialsConfig
 
 class JeerahClient(object):
     def __init__(self, conf):
         self.conf = conf
-        self.credentials = JeerahCredentialsConfig(self.conf.site.credentials)
+        self.credentials = CredentialsConfig(self.conf.site.credentials)
         self.c = None
         self.issues_created = []
         self.abort_on_error = True
@@ -23,12 +23,12 @@ class JeerahClient(object):
     def connect(self):
         if self.c is None:
             self.c = JIRA(options={'server': self.conf.site.url},
-                          basic_auth=(self.credentials.username, self.credentials.password))
+                          basic_auth=(self.credentials.jira.username, self.credentials.jira.password))
             logger.debug('created jira connection')
         else:
             logger.debug('jira connection exists')
 
-        logger.debug('configured user: ' + self.credentials.username)
+        logger.debug('configured user: ' + self.credentials.jira.username)
         logger.debug('actual user: ' + self.c.current_user())
 
     def comments(self, issue):

@@ -12,15 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-import itertools
-import argh
 import datetime
+import itertools
+import json
 import logging
+import os
+
+import argh
+import yaml
 
 logger = logging.getLogger('giza.scrumpy')
 
 from giza.config.jeerah import fetch_config, JeerahRuntimeStateConfig
+from giza.config.helper import dump_skel
 from giza.cmdline import get_base_parser
 from giza.app import BuildApp
 from giza.jeerah.client import JeerahClient
@@ -148,12 +152,48 @@ def release(args):
 
     pprint({ 'released': results, 'code': 200 })
 
+
+@argh.arg('--path', dest='user_conf_path', default='.scrumpy.yaml')
+def setup(args):
+    skel = {
+        'site': { 'credentials': "~/.giza-credentials.yaml",
+                  'projects': ['DOCS', 'TOOLS', 'INTERNAL'],
+                  'url': "https://jira.example.net/" },
+        'sprints': { 'previous': [ 'sprint-0', 'release-0' ],
+                     'current': [ 'spirnt-1', 'release-1'],
+                     'next': [ 'spirnt-2', 'release-2'],
+                     'future': [ 'spirnt-3', 'release-3'],
+                     'archived': [
+                         [ 'legacy-0', 'legacy-release-0'],
+                         [ 'legacy-1', 'legacy-release-1']
+                      ],
+        },
+        'buckets': {
+            'next': 'docs-next',
+            'planning': 'docs-planning',
+            'triage': 'docs-triage'
+        },
+        'reporting': {
+            'units': 'days',
+            'format': 'json'
+        },
+        'modification': {
+            'mirroring': {
+                'source': 'DOCS',
+                'target': 'INTERNAL'
+            }
+        }
+    }
+
+    dump_skel(skel, args)
+
+
 #################### scrumpy entry point #####################
 
 def main():
     parser = get_base_parser()
 
-    commands = [config, progress, triage, make_versions, mirror_version, release]
+    commands = [setup, config, progress, triage, make_versions, mirror_version, release]
 
     argh.add_commands(parser, commands)
 

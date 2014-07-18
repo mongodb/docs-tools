@@ -26,3 +26,14 @@ def new_config():
     args = RuntimeStateConfig()
 
     return fetch_config(args)
+
+def dump_skel(skel, args):
+    conf_path = os.path.expanduser(os.path.join("~", args.user_conf_path))
+    if os.path.exists(conf_path) and args.force is False:
+        logger.error('{0} already exists. exiting.'.format(conf_path))
+        exit(1)
+
+    with open(conf_path, 'w') as f:
+        yaml.dump(skel, f, default_flow_style=False)
+        f.write('...')
+        logger.info('wrote scrumpy configuration skeleton to: {0}')

@@ -17,6 +17,7 @@ setup(
     install_requires=REQUIRES,
     extras_require={
         'jira': ['jira-python', 'pyOpenSSL', 'ndg-httpsclient', 'pyasn1'],
+        'github': ['github3.py']
     },
     classifiers=[
         'Environment :: Console',
@@ -31,6 +32,7 @@ setup(
         'console_scripts': [
             'giza = giza.cmdline:main',
             'scrumpy = giza.scrumpy:main [jira]',
+            'mdbpr = giza.github:main [github]'
            ],
         },
     )
