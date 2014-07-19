@@ -28,6 +28,9 @@ import argh
 
 from giza.config.helper import fetch_config
 from giza.serialization import dict_from_list
+from giza.operations.deploy import deploy_worker
+
+############### Helper ###############
 
 def package_filename(archive_path, target, conf):
     fn = [ conf.project.name ]
@@ -45,12 +48,9 @@ def package_filename(archive_path, target, conf):
 
     return fn
 
-@argh.named('create')
-def create_pacakge(args):
-    target = 'push'
-    conf = fetch_config(args)
-    pconf = dict_from_list(conf.system.files.data.push)[target]
+#################### Worker Functions ####################
 
+def dump_config(conf):
     # make sure the object is fully resolved before we put it into storage
     dynamics = [conf.deploy]
     for key in conf.system.files.data.keys():
@@ -58,9 +58,23 @@ def create_pacakge(args):
 
     conf_dump_path = os.path.join(conf.paths.projectroot,
                                   conf.paths.branch_output,
-                                  'conf-dump-{0}.pickle'.format(conf.git.commit))
+                                  'conf.pickle')
+
     with open(conf_dump_path, 'w') as f:
         pickle.dump(conf, f)
+
+    return conf_dump_path
+
+def create_package(target, conf):
+    if target is None:
+        pconf = conf.system.files.data.push[0]
+        target = pconf['target']
+    else:
+        pconf = dict_from_list(conf.system.files.data.push)[target]
+
+    logger.info('creating package for target "{0}"'.format(target))
+
+    conf_dump_path = dump_config(conf)
 
     arc_path = os.path.join(conf.paths.projectroot, conf.paths.buildarchive)
     arc_fn = package_filename(arc_path, target, conf)
@@ -92,3 +106,85 @@ def create_pacakge(args):
                           arcname=path)
 
     logger.info('wrote build package to: {0}'.format(arc_fn))
+
+def extract_package(conf):
+    if conf.runstate.package_path.startswith('http'):
+        path = fetch_package(path, conf)
+    elif os.path.exists(conf.runstate.package_path):
+        path = conf.runstate.package_path
+    else:
+        m = "package {0} does not exist".format(conf.runstate.package_path)
+        logger.critical(m)
+        raise GizaPackagingError(m)
+
+    with tarfile.open(path, "r:gz") as t:
+        t.extractall(os.path.join(conf.paths.projectroot, conf.paths.public))
+
+    conf_extract_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output, 'conf.pickle')
+
+    with open(conf_extract_path, 'rb') as f:
+        new_conf = pickle.load(f)
+
+    if os.path.exists(conf_extract_path):
+        os.remove(conf_extract_path)
+
+    return new_conf
+
+def fetch_package(path, conf):
+    local_path = path.split('/')[-1]
+
+    tar_path = os.path.join(conf.paths.projectroot,
+                            conf.paths.buildarchive,
+                            local_path)
+
+    if not os.path.exists(tar_path):
+        with closing(urllib2.urlopen(path)) as u:
+            with open(tar_path, 'w') as f:
+                f.write(u.read())
+        logger.info('downloaded {0}'.format(local_path))
+    else:
+        logger.info('{0} exists locally, not downloading.'.format(local_path))
+
+    return tar_path
+
+#################### Command Entry Points ####################
+
+@argh.arg('--target', '-t', nargs=1, default=[None], dest='push_targets')
+def create(args):
+    conf = fetch_config(args)
+    target = conf.runstate.push_targets[0]
+
+    create_package(target, conf)
+
+@argh.arg('--path', dest='package_path')
+def unwind(args):
+    conf = fetch_config(args)
+
+    logger.info('extracting package: ' + conf.runstate.package_path)
+    extract_package(conf)
+    logger.info('extracted package')
+
+@argh.arg('--path', dest='package_path')
+@argh.arg('--target', '-t', nargs=1, dest='push_targets')
+@argh.arg('--dry-run', '-d', action='store_true', dest='dry_run')
+def deploy(args):
+    conf = fetch_config(args)
+
+    logger.info('extracting package: ' + conf.runstate.package_path)
+    new_conf = extract_package(conf)
+    logger.info('extracted package')
+
+    app = BuildApp(new_conf)
+
+    logger.info('beginning deploy now.')
+    deploy_worker(conf, app)
+
+@argh.arg('--path', dest='package_path')
+def fetch(args):
+    conf = fetch_config(args)
+
+    if conf.runstate.package_path.startswith('http'):
+        fetch_package(conf.runstate.pacage_path, conf)
+    else:
+        logger.error('{0} is not a url'.format(conf.runstate.package_path))
+        raise SystemExit

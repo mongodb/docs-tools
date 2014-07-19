@@ -26,7 +26,6 @@ import giza.operations.includes
 import giza.operations.packaging
 import giza.operations.git
 
-
 from giza.operations.configuration import render_config
 from giza.operations.clean import clean
 from giza.operations.sphinx import sphinx
@@ -85,7 +84,10 @@ def main():
     argh.add_commands(parser, include_commands, namespace='includes')
 
     packaging_commands = [
-        giza.operations.packaging.create_package,
+        giza.operations.packaging.fetch,
+        giza.operations.packaging.unwind,
+        giza.operations.packaging.create,
+        giza.operations.packaging.deploy,
     ]
     argh.add_commands(parser, packaging_commands, namespace='package')
 

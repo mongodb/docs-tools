@@ -167,7 +167,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
 class RuntimeStateConfig(RuntimeStateConfigurationBase):
     _option_registry = [ 'serial', 'length', 'days_to_save', 'builder_to_delete',
-                         'git_branch', 'git_sign_patch', 'serial_sphinx',
+                         'git_branch', 'git_sign_patch', 'serial_sphinx', 'package_path',
                          'clean_generated', 'include_mask', 'push_targets', 'dry_run' ]
 
     def __init__(self, obj=None):
