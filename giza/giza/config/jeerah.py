@@ -237,6 +237,18 @@ class ReportingConfig(ConfigurationBase):
         else:
             raise TypeError('{0} is not in {1}'.format(value, possible_values))
 
+    @property
+    def format(self):
+        if 'format' not in self.state:
+            return 'json'
+        else:
+            return self.state['format']
+
+    @format.setter
+    def format(self, value):
+        if value in ('json', 'yaml'):
+            self.state['format'] = value
+
 class ModificationConfig(RecursiveConfigurationBase):
     @property
     def mirroring(self):

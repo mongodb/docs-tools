@@ -131,6 +131,9 @@ def extract_package(conf):
     return new_conf
 
 def fetch_package(path, conf):
+    if not path.startswith('http') and os.path.exists(path):
+        return path
+
     local_path = path.split('/')[-1]
 
     tar_path = os.path.join(conf.paths.projectroot,
@@ -160,6 +163,7 @@ def create(args):
 def unwind(args):
     conf = fetch_config(args)
 
+    conf.runstate.package_path = fetch_package(conf.runstate.package_path, conf)
     logger.info('extracting package: ' + conf.runstate.package_path)
     extract_package(conf)
     logger.info('extracted package')
@@ -169,6 +173,8 @@ def unwind(args):
 @argh.arg('--dry-run', '-d', action='store_true', dest='dry_run')
 def deploy(args):
     conf = fetch_config(args)
+
+    conf.runstate.package_path = fetch_package(conf.runstate.package_path, conf)
 
     logger.info('extracting package: ' + conf.runstate.package_path)
     new_conf = extract_package(conf)
