@@ -43,7 +43,7 @@ def unused(args):
 def list(args):
     c = fetch_config(args)
 
-    render_for_console(include_files(conf=conf).keys())
+    render_for_console(include_files(conf=c).keys())
 
 @argh.arg('--filter', '-f', default=None, dest="include_mask")
 def graph(args):
@@ -59,7 +59,7 @@ def graph(args):
         else:
             mask = c.runstate.include_mask
 
-        render_for_console(includes_masked(mask=mask, conf=conf))
+        render_for_console(includes_masked(mask=mask, conf=c))
 
 def clean(args):
     c = fetch_config(args)

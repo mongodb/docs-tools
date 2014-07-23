@@ -112,7 +112,7 @@ class GitRepo(object):
 
     @contextmanager
     def branch(self, name):
-        starting_branch = self.current_branch
+        starting_branch = self.current_branch()
 
         if name != starting_branch:
             self.checkout(name)
