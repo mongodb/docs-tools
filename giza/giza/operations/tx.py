@@ -1,0 +1,156 @@
+# Copyright 2014 MongoDB, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import logging
+import os.path
+
+import argh
+
+logger = logging.getLogger('giza.operations.tx')
+
+from giza.app import BuildApp
+from giza.config.helper import fetch_config
+from giza.command import command
+from giza.strings import hyph_concat
+
+from giza.config.sphinx_config import resolve_builder_path
+
+#################### Helpers ####################
+
+def tx_resources(conf):
+    tx_conf = os.path.join(conf.paths.projectroot,
+                           ".tx", 'config')
+
+    with open(tx_conf, 'r') as f:
+        resources = [ l.strip()[1:-1]
+                      for l in f.readlines()
+                      if l.startswith('[')][1:]
+
+    return resources
+
+def logged_command(verb, cmd):
+    r = command(cmd, capture=True)
+    logger.info('{0}ed {1}'.format(verb, cmd.split(' ')[-1]))
+
+    return r.out
+
+def check_for_orphaned_tx_files(conf):
+    tx_conf = os.path.join(conf.paths.projectroot,
+                           ".tx", 'config')
+
+    with open(tx_conf, 'r') as f:
+        files = [ l.rsplit(' ', 1)[1].strip()
+                  for l in f.readlines()
+                  if l.startswith('source_file')]
+
+    errs = 0
+    for fn in files:
+        fqfn = os.path.join(conf.paths.projectroot, fn)
+
+        if not os.path.exists(fqfn):
+            errs += 1
+            logger.error(fqfn + " does not exist.")
+
+    if errs != 0:
+        logger.warning("{0} files configured that don't exist.")
+    else:
+        logger.info('all configured translation source files exist')
+
+    return errs
+
+#################### Task Generators ####################
+
+def pull_tasks(conf, app):
+    resources = tx_resources(conf)
+
+    for page in resources:
+        t = app.add('task')
+        t.job = logged_command
+        t.args = ('pull', ' '.join([ 'tx', 'pull', '-l', lang, '-r', page]))
+        t.description = 'pulling {0} from transifex client'.format(page)
+
+def push_tasks(conf, app):
+    resources = tx_resources(conf)
+
+    for page in resources:
+        t = app.add('task')
+        t.job = logged_command
+        t.args = ('pull', ' '.join([ 'tx', 'pull', '-l', lang, '-r', page]))
+        t.description = 'pulling {0} from transifex client'.format(page)
+
+def update(conf):
+    tx_cmd = "sphinx-intl update-txconfig-resources --pot-dir {path} --transifex-project-name={name}"
+
+    builder_name = resolve_builder_path('gettext', conf.runstate.edition, None, conf)
+
+    logger.info('updating translation artifacts. Long running.')
+
+    project_name = conf.project.title.lower().split()
+    if conf.project.edition is not None and conf.project.edition != conf.project.name:
+        project_name.append(conf.project.edition)
+
+    project_name = hyph_concat(*project_name)
+
+    cmd = tx_cmd.format(path=os.path.join(conf.paths.branch_output, builder_name),
+                        name=project_name)
+    logger.info(cmd)
+    r = command(cmd, capture=True, ignore=True)
+
+
+    if r.return_code != 0:
+        logger.critical('uploading translations failed.')
+        logger.warning(r.err)
+        raise SystemExit
+    else:
+        logger.info(r.out)
+        logger.info('sphinx_intl completed successfully: translation uploaded.')
+
+    logger.info('sphinx-intl: updated pot directory')
+
+#################### Commands ####################
+
+@argh.named('check')
+def check_orphaned(args):
+    conf = fetch_config(args)
+
+    check_for_orphaned_tx_files(conf)
+
+@argh.arg('--edition', '-e')
+@argh.arg('--language', '-l')
+@argh.named('update')
+def update_translations(args):
+    conf = fetch_config(args)
+
+    update(conf)
+    check_for_orphaned_tx_files(conf)
+
+@argh.named('pull')
+def pull_translations(args):
+    conf = fetch_config(args)
+    app = BuildApp(conf)
+
+    pull_tasks(conf, app)
+    app.run()
+
+@argh.arg('--edition', '-e')
+@argh.arg('--language', '-l')
+@argh.named('push')
+def push_translations(args):
+    conf = fetch_config(args)
+    app = BuildApp(conf)
+
+    push_tasks(conf, app)
+
+    update(conf)
+    app.run()

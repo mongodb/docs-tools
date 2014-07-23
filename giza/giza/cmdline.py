@@ -25,6 +25,7 @@ import giza.operations.generate
 import giza.operations.includes
 import giza.operations.packaging
 import giza.operations.git
+import giza.operations.tx
 
 from giza.operations.configuration import render_config
 from giza.operations.clean import clean
@@ -90,6 +91,14 @@ def main():
         giza.operations.packaging.deploy,
     ]
     argh.add_commands(parser, packaging_commands, namespace='package')
+
+    translation_commands = [
+        giza.operations.tx.check_orphaned,
+        giza.operations.tx.update_translations,
+        giza.operations.tx.pull_translations,
+        giza.operations.tx.push_translations,
+    ]
+    argh.add_commands(parser, translation_commands, namespace='tx')
 
     args = RuntimeStateConfig()
     argh.dispatch(parser, namespace=args)

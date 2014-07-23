@@ -13,8 +13,12 @@
 # limitations under the License.
 
 import os.path
+import logging
+
+logger = logging.getLogger('giza.content.post.gettext')
 
 from giza.files import expand_tree, copy_if_needed
+from giza.config.sphinx_config import resolve_builder_path
 
 #################### Gettext Processing ####################
 
@@ -22,9 +26,11 @@ def gettext_tasks(conf, app):
     locale_dirs = os.path.join(conf.paths.projectroot,
                                conf.paths.locale, 'pot')
 
+    builder_name = resolve_builder_path('gettext', conf.project.edition, None, conf)
+
     branch_output = os.path.join(conf.paths.projectroot,
-                                       conf.paths.branch_output,
-                                       'gettext')
+                                 conf.paths.branch_output,
+                                 builder_name)
 
     path_offset = len(branch_output) + 1
 

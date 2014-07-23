@@ -45,10 +45,24 @@ def render_sconf(edition, builder, language, conf):
 
     return sconf
 
+############### Helpers ###############
+
+def resolve_builder_path(builder, edition, language, conf):
+    dirname = builder
+
+    if edition is not None and edition != conf.project.name:
+        dirname = hyph_concat(dirname, edition)
+
+    if language is not None and langauge != 'en':
+        dirname = hyph_concat(dirname, language)
+
+    return os.path.join(conf.paths.projectroot, conf.paths.branch_output, dirname)
+
+
 #################### New-Style Config Object ####################
 
 class SphinxConfig(RecursiveConfigurationBase):
-    _option_registry = [ 'edition', 'language', 'languages' ]
+    _option_registry = [ 'languages' ]
 
     def __init__(self, conf, input_obj=None):
         # register the global config, but use our ingestion
@@ -89,17 +103,42 @@ class SphinxConfig(RecursiveConfigurationBase):
 
     @property
     def build_output(self):
-        if 'edition' in self.conf.project and self.conf.project.edition != self.conf.project.name:
-            dirname = hyph_concat(self.builder, self.edition)
-        else:
-            dirname = self.builder
-
-        path = os.path.join(self.conf.paths.projectroot, self.conf.paths.branch_output, dirname)
+        path = resolve_builder_path(self.builder, self.edition, self.language, self.conf)
 
         if 'build_output' not in self.state:
             self.state['build_output'] = path
 
         return path
+
+    @build_output.setter
+    def build_output(self, value):
+        if 'build_output' not in self.state:
+            self.state['build_output'] = value
+
+    @property
+    def language(self):
+        if 'language' not in self.state:
+            return 'en'
+        else:
+            return self.state['language']
+
+    @language.setter
+    def language(self, value):
+        self.state['language'] = value
+
+    @property
+    def edition(self):
+        if 'edition' in self.state:
+            return self.state['edition']
+        else:
+            if 'edition' in self.conf.project and self.conf.project.edition != self.conf.project.name:
+                return self.conf.project.edition
+            else:
+                return ''
+
+    @edition.setter
+    def edition(self, value):
+        self.state['edition'] = value
 
     @property
     def builder(self):

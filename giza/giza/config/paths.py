@@ -17,6 +17,7 @@ import os.path
 
 logger = logging.getLogger('giza.config.paths')
 
+from giza.strings import hyph_concat
 from giza.config.base import RecursiveConfigurationBase
 
 class PathsConfig(RecursiveConfigurationBase):
@@ -78,7 +79,10 @@ class PathsConfig(RecursiveConfigurationBase):
 
     @property
     def locale(self):
-        return self.state['locale']
+        if self.conf.project.edition is not None and self.conf.project.edition != self.conf.project.name:
+            return hyph_concat(self.state['locale'], self.conf.project.edition)
+        else:
+            return self.state['locale']
 
     @locale.setter
     def locale(self, value):
