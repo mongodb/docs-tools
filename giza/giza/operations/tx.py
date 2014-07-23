@@ -14,6 +14,7 @@
 
 import logging
 import os.path
+import sys
 
 import argh
 
@@ -23,8 +24,9 @@ from giza.app import BuildApp
 from giza.config.helper import fetch_config
 from giza.command import command
 from giza.strings import hyph_concat
-
+from giza.files import FileLogger
 from giza.config.sphinx_config import resolve_builder_path
+from sphinx_intl.commands import update_txconfig_resources
 
 #################### Helpers ####################
 
@@ -90,10 +92,6 @@ def push_tasks(conf, app):
         t.description = 'pulling {0} from transifex client'.format(page)
 
 def update(conf):
-    tx_cmd = "sphinx-intl update-txconfig-resources --pot-dir {path} --transifex-project-name={name}"
-
-    builder_name = resolve_builder_path('gettext', conf.runstate.edition, None, conf)
-
     logger.info('updating translation artifacts. Long running.')
 
     project_name = conf.project.title.lower().split()
@@ -102,19 +100,13 @@ def update(conf):
 
     project_name = hyph_concat(*project_name)
 
-    cmd = tx_cmd.format(path=os.path.join(conf.paths.branch_output, builder_name),
-                        name=project_name)
-    logger.info(cmd)
-    r = command(cmd, capture=True, ignore=True)
+    logger.info('starting translation upload with sphinx-intl')
 
-
-    if r.return_code != 0:
-        logger.critical('uploading translations failed.')
-        logger.warning(r.err)
-        raise SystemExit
-    else:
-        logger.info(r.out)
-        logger.info('sphinx_intl completed successfully: translation uploaded.')
+    flogger = FileLogger(logger)
+    update_txconfig_resources(transifex_project_name=project_name,
+                              locale_dir=conf.paths.locale,
+                              pot_dir=os.path.join(conf.paths.locale, 'pot'),
+                              out=flogger)
 
     logger.info('sphinx-intl: updated pot directory')
 

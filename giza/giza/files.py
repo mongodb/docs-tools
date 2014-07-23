@@ -29,6 +29,15 @@ class InvalidFile(Exception):
 class FileOperationError(Exception):
     pass
 
+class FileLogger(object):
+    def __init__(self, logger, level=logging.INFO):
+        self.logger = logger
+        self.level = level
+
+    def write(self, message):
+        if message != '\n':
+            self.logger.log(self.level, message)
+
 def verbose_remove(path):
     if os.path.exists(path):
         logger.info('clean: removing {0}'.format(path))
