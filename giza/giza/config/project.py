@@ -59,9 +59,11 @@ class ProjectConfig(RecursiveConfigurationBase):
         if isinstance(value, list):
             if '_edition_list' not in self.state:
                 self.state['_edition_list'] = []
+            if 'editions' not in self.state:
+                self.state['editions'] = []
 
             self.state['_edition_list'].extend( [ v['name'] for v in value ] )
-            self.state['editions'] = [EditionListConfig(v) for v in value]
+            self.state['editions'].extend([EditionListConfig(v) for v in value])
         else:
             logger.critical('editions must be a list')
             raise TypeError

@@ -202,7 +202,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
     @property
     def edition(self):
         if 'edition' not in self.state:
-            return False
+            return None
         else:
             return self.state['edition']
 
