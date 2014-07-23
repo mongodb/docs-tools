@@ -25,7 +25,11 @@ import giza.operations.generate
 import giza.operations.includes
 import giza.operations.packaging
 import giza.operations.git
+<<<<<<< HEAD
 import giza.operations.tx
+=======
+import giza.operations.translate
+>>>>>>> 11b9570... worked on create_corpora
 
 from giza.operations.configuration import render_config
 from giza.operations.clean import clean
@@ -94,6 +98,17 @@ def main():
     ]
     argh.add_commands(parser, packaging_commands, namespace='package')
 
+    translate_commands = [
+            giza.operations.translate.create_corpora,
+            giza.operations.translate.build_translation_model,
+            giza.operations.translate.merge_translations,
+            giza.operations.translate.po_to_corpus,
+            giza.operations.translate.dict_to_corpus,
+            giza.operations.translate.translate_po,
+            giza.operations.translate.translate_text_doc,
+    ]
+    argh.add_commands(parser, translate_commands, namespace='translate')
+    
     translation_commands = [
         giza.operations.tx.check_orphaned,
         giza.operations.tx.update_translations,
@@ -102,6 +117,11 @@ def main():
     ]
     argh.add_commands(parser, translation_commands, namespace='tx')
 
+    translate_commands = [
+            giza.operations.translate.create_corpora,
+            giza.operations.translate.build_model,
+    ]
+    argh.add_commands(parser, translate_commands, namespace='translate')
     args = RuntimeStateConfig()
     argh.dispatch(parser, namespace=args)
 
