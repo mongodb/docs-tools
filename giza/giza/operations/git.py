@@ -3,7 +3,7 @@ import logging
 import argh
 
 from giza.git import GitRepo
-from giza.config.main import Configuration
+from giza.config.helper import fetch_config
 
 logger = logging.getLogger('giza.operations.git')
 
@@ -12,9 +12,7 @@ logger = logging.getLogger('giza.operations.git')
 @argh.arg('--signoff', '-s', default=False, action='store_true', dest='git_sign_patch')
 @argh.named('am')
 def apply_patch(args):
-    c = Configuration()
-    c.ingest(args.conf_path)
-    c.runstate = args
+    c = fetch_config(args)
 
     g = GitRepo(c.paths.projectroot)
 
@@ -29,9 +27,7 @@ def apply_patch(args):
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.named('update')
 def pull_rebase(args):
-    c = Configuration()
-    c.ingest(args.conf_path)
-    c.runstate = args
+    c = fetch_config(args)
 
     g = GitRepo(c.paths.projectroot)
 
@@ -45,9 +41,7 @@ def pull_rebase(args):
 @argh.arg('--commits', '-c', nargs='*', dest='git_objects')
 @argh.named('cp')
 def cherry_pick(args):
-    c = Configuration()
-    c.ingest(args.conf_path)
-    c.runstate = args
+    c = fetch_config(args)
 
     g = GitRepo(c.paths.projectroot)
 
