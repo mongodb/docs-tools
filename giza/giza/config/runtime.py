@@ -16,6 +16,8 @@ import logging
 import os.path
 import yaml
 
+from multiprocessing import cpu_count
+
 import sphinx.builders
 
 logger = logging.getLogger('giza.config.runtime')
@@ -124,6 +126,22 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
             m = '{0} is not a supported runner type, choose from: {1}'.format(vale, supported_runners)
             logger.error(m)
             raise TypeError(m)
+
+    @property
+    def pool_size(self):
+        if 'pool_size' not in self.state:
+            return cpu_count()
+        else:
+            return self.state['pool_size']
+
+    @pool_size.setter
+    def pool_size(self, value):
+        if value == 1:
+            self.serial = True
+        elif value <= 0:
+            raise TypeError('invalid pool size value: ' + value)
+        else:
+            self.state['pool_size'] = value
 
     def _discover_conf_file(self, conf_file_name):
         cur = os.path.abspath(os.getcwd())

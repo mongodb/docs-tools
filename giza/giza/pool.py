@@ -112,12 +112,12 @@ class SerialPool(object):
 
 class ThreadPool(WorkerPool):
     def __init__(self, conf=None):
-        self.p = multiprocessing.dummy.Pool()
         self.conf = conf
+        self.p = multiprocessing.dummy.Pool(self.conf.runstate.pool_size)
         logger.info('new thread pool object')
 
 class ProcessPool(WorkerPool):
     def __init__(self, conf=None):
         self.conf = conf
-        self.p = multiprocessing.Pool()
+        self.p = multiprocessing.Pool(self.conf.runstate.pool_size)
         logger.info('new process pool object')
