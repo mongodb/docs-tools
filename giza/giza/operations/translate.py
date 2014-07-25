@@ -2,6 +2,9 @@ import logging
 import argh
 import shutil
 import os
+import sys
+import yaml
+import itertools
 
 from giza.translate.create_corpora import run_corpora_creation
 from giza.translate.build_model import run_build_model, setup_train, setup_tune, setup_test
@@ -13,9 +16,10 @@ from giza.translate.translate_po import translate_po_files
 from giza.translate.translate_doc import translate_doc
 from giza.serialization import ingest_yaml_doc
 from giza.config.helper import fetch_config
-from giza.config.corpora import CorporaConfig, SourceConfig
+from giza.config.corpora import CorporaConfig
 from giza.config.translate import TranslateConfig
 from giza.app import BuildApp
+from giza.command import command
 logger = logging.getLogger('giza.operations.translate')
 
 @argh.arg('--config', '-c', default=None, dest="corpora_config")
@@ -43,21 +47,14 @@ def build_translation_model(args):
         sys.exit(1)
 
     conf = fetch_config(args)
-    
-    if args.translate_config is None:
-        tconf = conf.system.files.data.translate
-    else: 
-        shutil.copy(translate_config, y.paths['project'])
-        tconf = ingest_yaml_doc(args.translate_config)
 
-    tconf = TranslateConfig(tconf)
     if args.translate_config is not None and 'translate.yaml' in conf.system.files.paths:
         idx = conf.system.files.paths.index('translate.yaml')
         conf.system.files.paths[idx] = { 'translate': args.translate_config } 
 
     tconf = conf.system.files.data.translate
     tconf = TranslateConfig(tconf, conf)
-    
+     
     if os.listdir(tconf.paths.project) != []:
         logger.error(tconf.paths.project+" must be empty")
         sys.exit(1)
@@ -65,12 +62,10 @@ def build_translation_model(args):
     with open(tconf.paths.project+"/translate.yaml", 'w') as f: 
         yaml.dump(tconf.dict(), f, default_flow_style=False)
 
-
     tconf.conf.runstate.pool_size = tconf.settings.pool_size
     run_args = get_run_args(tconf) 
-    app = BuildApp(tconf) 
-    
-    os.environ['IRSTLM'] = y.paths['irstlm']
+    app = BuildApp(conf) 
+    os.environ['IRSTLM'] = tconf.paths.irstlm
 
     setup_train(tconf)
     setup_tune(tconf)
@@ -86,8 +81,6 @@ def build_translation_model(args):
         t.description = "model_" + str(parameter_set[9])
         i += 1
     
-    tconf.runtime.pool_size = tconf.pool_size
-
     app.run()
     write_model_data(tconf.paths.project)
     command('cat {0}/data.csv | mail -s "Output" {1}'.format(tconf.paths.project, tconf.settings.email), capture=True) 
@@ -95,21 +88,15 @@ def build_translation_model(args):
 
 
 def get_run_args(tconf):
-    '''This function creates a list of configuration lists
-    :Parameters:
-        - 'tconf': translation config object
-    :Returns:
-        - list of lists of configuration arguments
-    '''
-    config = itertools.product( tconf.training_parameters['max_phrase_length'],
-                                tconf.training_parameters['order'],
-                                tconf.training_parameters['reordering_language'],
-                                tconf.training_parameters['reordering_directionality'],
-                                tconf.training_parameters['score_options'],
-                                tconf.training_parameters['smoothing'],
-                                tconf.training_parameters['alignment'],
-                                tconf.training_parameters['reordering_orientation'],
-                                tconf.training_parameters['reordering_modeltype'])
+    config = itertools.product( tconf.training_parameters.max_phrase_length,
+                                tconf.training_parameters.order,
+                                tconf.training_parameters.reordering_language,
+                                tconf.training_parameters.reordering_directionality,
+                                tconf.training_parameters.score_options,
+                                tconf.training_parameters.smoothing,
+                                tconf.training_parameters.alignment,
+                                tconf.training_parameters.reordering_orientation,
+                                tconf.training_parameters.reordering_modeltype)
     config = [list(e) for e in config]
     return config
 
