@@ -57,40 +57,6 @@ class Timer():
         self.d[self.name+"_time"] = total_time
         self.d[self.name+"_time_hms"] = str(datetime.timedelta(seconds=total_time))
 
-class CGLogger(logging.Logger):
-    '''This class is responsible for making sure logging works with multiprocessing
-    Essentially it starts a stream handler and allows you to switch it out for other handlers
-    By switching out the handler in different processes you can have each process handle the log in its own way
-    '''
-    def __init__(self,name):
-        logging.Logger.__init__(self,name)
-        self.f = logging.Formatter("%(levelname)s %(asctime)s %(funcName)s %(lineno)d %(processName)s: %(message)s")
-        self.mainhandler = logging.StreamHandler(sys.stdout)
-        self.mainhandler.setFormatter(self.f)
-        self.addHandler(self.mainhandler)
-
-    def stop_main_logging(self):
-        self.removeHandler(self.mainhandler)
-
-    def log_to_file(self, fn):
-        self.filehandler = logging.FileHandler(fn)
-        self.filehandler.setFormatter(self.f)
-        self.addHandler(self.filehandler)
-
-    def stop_logging_to_file(self):
-        self.removeHandler(self.filehandler)
-
-    def restart_main_logging(self):
-        self.addHandler(self.mainhandler)
-
-    def switch_to_file_logging(self, fn):
-        self.stop_main_logging()
-        self.log_to_file(fn)
-
-    def switch_to_main_logging(self):
-        self.stop_logging_to_file()
-        self.restart_main_logging()
-
 def pcommand(c):
     '''This function wraps the command module with logging functionality
     :param string c: command to run and log
@@ -315,13 +281,11 @@ def run_build_model(l_len,
         
     ''' 
 
-    #logging.setLoggerClass(CGLogger)
     run_start = time.time();
     lm_path = "{0}/{1}/lm".format(tconf.paths.project, i)
     working_path = "{0}/{1}/working".format(tconf.paths.project, i)
     
     os.makedirs("{0}/{1}".format(tconf.paths.project, i))
-    #logger.switch_to_file_logging('{0}/{1}/commands.log'.format(tconf.paths.project, i))
      
     # Logs information about the current configuation
     d = {"i": i, 
