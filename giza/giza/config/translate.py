@@ -13,11 +13,12 @@
 # limitations under the License.
 
 import logging
-
+from giza.config.base import ConfigurationBase, RecursiveConfigurationBase
 logger = logging.getLogger('giza.config.translate')
 
 class TranslateConfig(RecursiveConfigurationBase):
     
+
     @property
     def settings(self):
         return self.state['settings']
@@ -69,6 +70,9 @@ class TranslateConfig(RecursiveConfigurationBase):
 
 class SettingsConfig(ConfigurationBase):
     _option_registry = ['foreign', 'threads', 'pool_size', 'email', 'phrase_table_name', 'reordering_name', 'best_run']
+
+class PathsConfig(ConfigurationBase):
+    _option_registry = ['moses', 'irstlm', 'aux_corpus_files', 'project']
 
 class CorpusTypeConfig(ConfigurationBase):
     _option_registry = ['dir', 'name']
