@@ -26,6 +26,7 @@ import giza.operations.includes
 import giza.operations.packaging
 import giza.operations.git
 import giza.operations.tx
+import giza.operations.translate
 
 from giza.operations.configuration import render_config
 from giza.operations.clean import clean
@@ -92,6 +93,17 @@ def main():
     ]
     argh.add_commands(parser, packaging_commands, namespace='package')
 
+    translate_commands = [
+            giza.operations.translate.create_corpora,
+            giza.operations.translate.build_translation_model,
+            giza.operations.translate.merge_translations,
+            giza.operations.translate.po_to_corpus,
+            giza.operations.translate.dict_to_corpus,
+            giza.operations.translate.translate_po,
+            giza.operations.translate.translate_text_doc,
+    ]
+    argh.add_commands(parser, translate_commands, namespace='translate')
+    
     translation_commands = [
         giza.operations.tx.check_orphaned,
         giza.operations.tx.update_translations,

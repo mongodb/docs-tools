@@ -218,6 +218,8 @@ class SystemConfigData(RecursiveConfigurationBase):
 
         if fn.startswith('/'):
             full_path = os.path.join(self.conf.paths.projectroot, fn[1:])
+        elif os.path.exists(os.path.join(os.getcwd(), fn)):
+            full_path = os.path.join(os.getcwd(), fn)
         else:
             full_path = os.path.join(self.conf.paths.projectroot,
                                      self.conf.paths.builddata, fn)
