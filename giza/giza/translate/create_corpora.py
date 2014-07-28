@@ -20,28 +20,26 @@ import logging
 import giza.config.corpora
 ''''
 This module creates the appropriate train, tune, and test corpora
-You must run it one language at a time in case the files don't match up exactly, 
-however it would be easy to modify if you guarenteed they would match up
 It takes a config file similar to corpora.yaml
 '''
 
 logger = logging.getLogger('giza.translate.create_corpora')
 
 
-def append_corpus(percentage, num_copies, base_fn, new_fn, start, final=False):
+def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
     '''This function appends the correct amount of the corpus to the basefile, finishing up the file when necessary so no data goes to waste
     :param int percentage: percentage of the file going into the corpus 
     :param float num_copies: number of copies of the file going into the corpus 
-    :param string base_fn: the name of the base file to append the corpus to 
-    :param string new_fn: the name of the new file to take the data from 
+    :param string out_fn: the name of the base file to append the corpus to 
+    :param string in_fn: the name of the new file to take the data from 
     :param int start: the line to start copying from in the new file 
     :param boolean final: if it's the final section of the file. If True it makes sure to use all of the way to the end of the file
     :returns: the last line it copied until
     '''
-    with open(new_fn, 'r') as f:
+    with open(in_fn, 'r') as f:
         new_content = f.readlines()
     
-    with open(base_fn, 'a') as f:
+    with open(out_fn, 'a') as f:
         tot = int(len(new_content) * percentage / 100)
         i = 1
         while i <= num_copies:
@@ -72,18 +70,20 @@ def get_total_length(conf, corpus_type):
  
 
 def run_corpora_creation(conf):
-    '''This function takes the confiration file and runs through the files, appending them appropriately
+    '''This function takes the configuration file and runs through the files, appending them appropriately
     It first verifies that all of the percentages add up and then it figures out how much of each file should go into each corpus and appends them
     :param config conf: corpora configuration object
     '''
     
-    if os.path.exists(conf.name) is False:
-        os.makedirs(conf.name)
+    if os.path.exists(conf.container_path) is False:
+        os.makedirs(conf.container_path)
      
     #append files appropriately
     for corpus_type in ('train', 'tune', 'test'):
-        outfile = "{0}/{1}.en-{2}.{3}".format(conf.name, corpus_type ,conf.foreign_language ,conf.corpus_language)
-        open(outfile,'w').close()
+        source_outfile = "{0}/{1}.{2}-{3}.{2}".format(conf.container_path, corpus_type, conf.source_language ,conf.target_language)
+        target_outfile = "{0}/{1}.{2}-{3}.{3}".format(conf.container_path, corpus_type, conf.source_language ,conf.target_language)
+        open(source_outfile,'w').close()
+        open(target_outfile,'w').close()
         # finds the total length of the entire corpus
         tot_length = get_total_length(conf, corpus_type)   
         i = 0
@@ -94,6 +94,8 @@ def run_corpora_creation(conf):
             if corpus_type is 'test': 
                 final = True
             #appends the section of the file to the corpus
-            source.end = append_corpus(source.state['percent_'+corpus_type], num_copies, outfile, source.file_path, source.end, final)
+            end = append_corpus(source.state['percent_'+corpus_type], num_copies, source_outfile, source.source_file_path, source.end, final)
+            append_corpus(source.state['percent_'+corpus_type], num_copies, target_outfile, source.target_file_path, source.end, final)
+            source.end = end
             i += 1
              

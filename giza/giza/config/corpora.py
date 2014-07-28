@@ -19,14 +19,14 @@ logger = logging.getLogger('giza.config.corpora')
 from giza.config.base import ConfigurationBase
 
 class SourceConfig(ConfigurationBase):
-    _option_registry = ['file_name', 'file_path', 'percent_train', 'percent_tune', 'percent_test', 'percent_of_train', 'percent_of_tune', 'percent_of_test', 'length', 'end']
+    _option_registry = ['name', 'source_file_path', 'target_file_path', 'percent_train', 'percent_tune', 'percent_test', 'percent_of_train', 'percent_of_tune', 'percent_of_test', 'length', 'end']
 
     def __init__(self, input_obj):
         super(SourceConfig, self).__init__(input_obj)
 
 
 class CorporaConfig(ConfigurationBase):
-    _option_registry = ['name', 'foreign_language', 'corpus_language', 'sources']
+    _option_registry = ['container_path', 'source_language', 'target_language', 'sources']
 
     def __init__(self, input_obj):
         input_obj = self.transform(input_obj)
@@ -54,8 +54,13 @@ class CorporaConfig(ConfigurationBase):
         '''This function adds the file lengths of the files to the configuration dictionary
         '''
         for file_name,source in self.sources.items():
-            with open(source.file_path, 'r') as file:
-                source.length = len(file.readlines())
+            with open(source.source_file_path, 'r') as file:
+                length1 = len(file.readlines())
+            with open(source.target_file_path, 'r') as file:
+                length2 = len(file.readlines())
+            if length1 != length2:
+                raise TypeError("Lengths of files for "+file_name+" are not identical")
+            source.length = length1
 
     def transform(self, input_obj):
         '''This function takes a configuration file object cand creates a dictionary of the useful information.
@@ -66,9 +71,9 @@ class CorporaConfig(ConfigurationBase):
             - a dictionary of the configuration
         '''
         d = dict()
-        d['name'] = input_obj['name']
-        d['foreign_language'] = input_obj['foreign_language']
-        d['corpus_language'] = input_obj['corpus_language']
+        d['container_path'] = input_obj['container_path']
+        d['source_language'] = input_obj['source_language']
+        d['target_language'] = input_obj['target_language']
         d['sources'] = dict()
 
         #handles sources section of config
@@ -82,7 +87,7 @@ class CorporaConfig(ConfigurationBase):
             s.percent_of_tune = 0
             s.percent_of_test = 0
             s.end = 0
-            d['sources'][source['file_name']] = s
+            d['sources'][source['name']] = s
 
         #handles source contributions section of config
         for t in ('train','tune','test'):
@@ -90,6 +95,6 @@ class CorporaConfig(ConfigurationBase):
                 if source['percent_of_corpus'] < 0 or source['percent_of_corpus'] > 100:
                     logger.error("Invalid percentage")
                     raise TypeError("Invalid percentage")
-                d['sources'][source['file_name']].state['percent_of_'+t] = source['percent_of_corpus']
+                d['sources'][source['name']].state['percent_of_'+t] = source['percent_of_corpus']
         return d
             
