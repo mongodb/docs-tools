@@ -61,6 +61,9 @@ def report(data, conf):
         for issue in issues:
             hours = issue.fields.customfield_10855
 
+            if hours is None:
+                hours = 0
+
             if issue.fields.assignee is None:
                 assignee = 'Unassigned'
             else:

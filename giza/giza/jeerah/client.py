@@ -52,10 +52,10 @@ class JeerahClient(object):
                  'description': text,
                  'assignee': {'name': assignee }}
 
-        if report is not None:
+        if reporter is not None:
             issue['reporter'] = { 'name': reporter }
         if tags is not None:
-            issue['labels'] = tags
+            issue['labels'] = [tags]
         if version is not None:
             if project not in self.versions_cache:
                 logger.debug("updating version cache to include {0} versions".format(project))

@@ -33,7 +33,7 @@ class JeerahRuntimeStateConfig(RuntimeStateConfigurationBase):
     @property
     def sprint(self):
         if 'sprint' in self.state:
-            self.state['sprint']
+            return self.state['sprint']
         else:
             return 'current'
 
