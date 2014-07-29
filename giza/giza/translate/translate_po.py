@@ -36,7 +36,7 @@ def write_text_file(text_doc, po_file):
     :param string text_doc: the path to the text document to write the po file sentences to
     :param string po_file: the path to the po_file to write from
     '''
-    logger.info("processing {0}".format(po_file))
+    logger.info("writing out from "+po_file)
     po = polib.pofile(po_file)
     for entry in po.untranslated_entries():
         text_doc.write(entry.msgid.encode('utf-8')+'\n')
@@ -62,6 +62,7 @@ def fill_target(target_po_file, translated_lines, start):
     :param int start: the line to start at when writing out this file
     :returns: The start of the sentences for the next file
     '''
+    logger.info("writing out to "+target_po_file)
     po = polib.pofile(target_po_file)
     i = -1
     for entry in po:
@@ -113,7 +114,6 @@ def translate_po_files(po_path, tconf, protected_file=None):
     '''
     with TempDir() as temp_dir:
         po_file_list = get_file_list(po_path, ["po", "pot"])
-        logger.info(po_file_list)
         # extract untranslated entries to temp_file
         temp_file = extract_untranslated_entries(po_file_list, temp_dir)
         # translate temp_file

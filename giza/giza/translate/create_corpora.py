@@ -88,6 +88,7 @@ def run_corpora_creation(conf):
         tot_length = get_total_length(conf, corpus_type)   
         i = 0
         for fn,source in conf.sources.items():
+            logger.info("Processing "+fn+" for "+corpus_type)
             #finds how many copies of this file will make it the correct percentage of the full corpus
             num_copies = tot_length * source.state['percent_of_'+corpus_type] / 100 / source.length
             final = False

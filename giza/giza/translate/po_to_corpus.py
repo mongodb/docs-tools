@@ -42,7 +42,7 @@ def extract_translated_entries(po_path, source_doc_fn, target_doc_fn):
     :param string target_doc: Name of file to put target lanaguge text in.
     '''
     # path is a directory now
-    logger.info("walking directory "+po_path)
+    logger.info("walking path "+po_path)
     with open(source_doc_fn, "w", 1) as source_doc:
         with open(target_doc_fn, "w", 1) as target_doc:
             file_list = get_file_list(po_path, ["po", "pot"])

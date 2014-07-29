@@ -22,7 +22,7 @@ import os
 '''
 This module translates any text file according the parameters in a config file
 '''
-logger = logging.getLogger('giza.translate.translate_docs')
+logger = logging.getLogger('giza.translate.translate_doc')
 
 class TempDir():
     ''' This class creates a temporary folder in which to put temporary files.
@@ -61,8 +61,8 @@ def decode(in_file, out_file,  tconf, protected_file, super_temp=None):
     :param string super_temp: If you have a TempDir context inside of a TempDir context, this allows you to not create two. Just pass in the directory of the previous temporary directory
     '''
     with TempDir(super_temp=super_temp) as temp:
-        logger.info("tempdir: " + temp)
-        logger.info("decoding: " + in_file)
+        logger.info("tempdir: "+temp)
+        logger.info("decoding: "+in_file)
         if super_temp is None:
             shutil.copy(in_file, temp)
         in_file = os.path.basename(in_file)
