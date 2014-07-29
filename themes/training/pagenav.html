@@ -1,0 +1,15 @@
+<h3>
+  <a href="{{ pathto('index') }}">{{ shorttitle }}</a>
+  {% for v in theme_version_selector %}
+    {% if v.current %}
+      <a class="version" style="display: inline-block;" href="">{{ v.text }}</a>
+    {% endif %}
+  {% endfor %}
+</h3>
+
+{{ toctree( collapse=false, titles_only=1) }}
+
+<div class="nav-footer">
+  <a href="{{ pathto('genindex') }}">{{ _('Index') }}</a> |
+  <a class="open-version-modal" href="#">Change version</a>
+</div>
