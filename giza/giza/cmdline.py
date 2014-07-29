@@ -98,7 +98,7 @@ def main():
     translate_commands = [
             giza.operations.translate.create_corpora,
             giza.operations.translate.build_translation_model,
-            giza.operations.translate.datamine,
+            giza.operations.translate.model_results,
             giza.operations.translate.merge_translations,
             giza.operations.translate.po_to_corpus,
             giza.operations.translate.dict_to_corpus,

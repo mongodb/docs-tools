@@ -1,0 +1,40 @@
+settings:
+    foreign: es
+    threads: 12
+    pool_size: 40
+    email: judah.schvimer@10gen.com
+    phrase_table_name: phrase-table
+    reordering_name: reordering-table
+train: 
+    dir: /home/judah/corpus/run00
+    name: train.en-es
+tune:
+    dir:  /home/judah/corpus/run00
+    name: tune.en-es
+test:
+    dir: /home/judah/corpus/run00
+    name: test.en-es
+paths:
+    moses: /home/judah/mosesdecoder
+    aux_corpus_files: /home/judah/corpus/helper
+    irstlm: /home/judah/irstlm-5.80.03
+    project: /home/judah/archive11
+parameters:
+    order:
+       - 3
+    smoothing:
+       - improved-kneser-ney
+    score_options:
+       - --GoodTuring
+    alignment : 
+       - grow-diag-final-and
+    reordering_modeltype:
+       - wbe
+    reordering_orientation:
+       - msd
+    reordering_directionality:
+       - bidirectional
+    reordering_language:
+       - fe
+    max_phrase_length:
+       - 7

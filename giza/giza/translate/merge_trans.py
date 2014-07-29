@@ -17,6 +17,7 @@ import logging
 '''
 This module prints out all files line by line to compare lines
 Just give it as many files as you want at the start, it'll finish when the first file is empty if they are not the same amount of lines
+It takes in a list of annotations that it uses to more visually see what the different lines are.
 '''
 logger = logging.getLogger('giza.translate.merge_trans')
 

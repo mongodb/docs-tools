@@ -62,6 +62,18 @@ class CorporaConfig(ConfigurationBase):
                 raise TypeError("Lengths of files for "+file_name+" are not identical")
             source.length = length1
 
+    def dict(self):
+        '''This function overrides the default dict() function to transform a corpora object into a dictionary
+        '''
+        d = dict()
+        d['container_path'] = self.container_path
+        d['source_language'] = self.source_language
+        d['target_language'] = self.target_language
+        d['sources'] = []
+        for fn, source in self.sources.items():
+            d['sources'].append(source.dict())
+        return d
+
     def transform(self, input_obj):
         '''This function takes a configuration file object cand creates a dictionary of the useful information.
         It also sets defaults for certain arguments so they do not need to be specified by the user for it to work

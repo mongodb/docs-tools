@@ -21,7 +21,7 @@ import json
 This module is used for extracting the data received from experiments created with build_model.py
 It requires a directory structure similar to that created by build_model.py
 It saves the data in a data.csv file that can easily be viewed in any spreadsheet program
-It should be automatically called by build_model.py but can also be used on it's own
+It should be automatically after build_model.py but can also be used on it's own
 '''
 logger = logging.getLogger('giza.translate.datamine')
 
