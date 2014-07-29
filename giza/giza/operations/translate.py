@@ -100,6 +100,24 @@ def get_run_args(tconf):
     config = [list(e) for e in config]
     return config
 
+@argh.arg('--config', '-c', default=None, dest="translate_config")
+@argh.named('dm')
+def datamine(args):
+    if args.translate_config is not None and os.path.exists(args.translate_config) is False:
+        logger.error(args.translate_config+" doesn't exist")
+        sys.exit(1)
+
+    conf = fetch_config(args)
+
+    if args.translate_config is not None and 'translate.yaml' in conf.system.files.paths:
+        idx = conf.system.files.paths.index('translate.yaml')
+        conf.system.files.paths[idx] = { 'translate': args.translate_config } 
+
+    tconf = conf.system.files.data.translate
+    tconf = TranslateConfig(tconf, conf)
+     
+    write_model_data(tconf.paths.project)
+
 @argh.arg('--output', '-o', default=None, dest='output_file')
 @argh.arg('--input', '-i', default=None, nargs='*', dest='input_file')
 @argh.named('mt')
