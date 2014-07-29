@@ -8,7 +8,7 @@ import itertools
 
 from giza.translate.create_corpora import run_corpora_creation
 from giza.translate.build_model import run_build_model, setup_train, setup_tune, setup_test
-from giza.translate.datamine import write_model_data
+from giza.translate.model_results import write_model_data
 from giza.translate.merge_trans import merge_files
 from giza.translate.po_to_corpus import extract_translated_entries
 from giza.translate.split_dict import split_dict
@@ -101,8 +101,8 @@ def get_run_args(tconf):
     return config
 
 @argh.arg('--config', '-c', default=None, dest="translate_config")
-@argh.named('dm')
-def datamine(args):
+@argh.named('res')
+def model_results(args):
     if args.translate_config is not None and os.path.exists(args.translate_config) is False:
         logger.error(args.translate_config+" doesn't exist")
         sys.exit(1)

@@ -24,11 +24,26 @@ from giza.command import command
 '''
 This module builds the translation model by training, tuning, and then testing
 It also binarizes the model at the end so that it's faster to load the decoder later on
-Using a config file as shown in the translate.yaml, you can customize the build and what settings it uses to experiment
-Best to run this with as many threads as possible
+Using a config file as shown in the translate.yaml, you can customize the build and what settings it uses to experiment. 
+It will run all of the different combinations of parameters that you give it in parallel
+Best to run this with as many threads as possible or else it will take a really long time.
 '''
 
 logger = logging.getLogger("giza.translate.build_model")
+
+def setLogger(logger, logger_id):
+    '''This method sets the formatter to the logger to have a custom field called the logger_id
+    :param logger logger: The logger for the module
+    :param string logger_id: the identifier for the instance of the module
+    '''
+    for handler in logger.handlers:
+        logger.removeHandler(handler)
+    f = logging.Formatter("%(levelname)s|%(asctime)s|%(name)s|{0}: %(message)s".format(logger_id))
+    h = logging.StreamHandler(sys.stdout)
+    h.setFormatter(f)
+    logger.addHandler(h)
+    logger.propagate = False
+
 
 class Timer():
     '''This class is responsible for timing the processes and then both logging them and saving them
@@ -235,9 +250,6 @@ def run_test_filtered(working_path,
         pcommand("{0}/bin/moses -f {1}/filtered/moses.ini  < {2}/{3}.true.en > {1}/{3}.translated.{4} 2> {1}/{3}.out".format(tconf.paths.moses, working_path, tconf.paths.aux_corpus_files, tconf.test.name, tconf.settings.foreign))
         c = pcommand("{0}/scripts/generic/multi-bleu.perl -lc {1}/{2}.true.{4} < {3}/{2}.translated.{4}".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.test.name, working_path, tconf.settings.foreign))
         d["BLEU"] = c.out
-        logger.info(c.out)
-
-
 
 def run_test_binarised(working_path, 
                        tconf,
@@ -252,7 +264,7 @@ def run_test_binarised(working_path,
         pcommand("{0}/bin/moses -f {1}/binarised-model/moses.ini  < {2}/{3}.true.en > {1}/{3}.translated.{4} 2> {1}/{3}.out".format(tconf.paths.moses, working_path, tconf.paths.aux_corpus_files, tconf.test.name, tconf.settings.foreign))
         c = pcommand("{0}/scripts/generic/multi-bleu.perl -lc {1}/{2}.true.{4} < {3}/{2}.translated.{4}".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.test.name, working_path, tconf.settings.foreign))
         d["BLEU"] = c.out
-        logger.info(c.out)
+
 
 def run_build_model(l_len, 
                l_order, 
@@ -280,7 +292,7 @@ def run_build_model(l_len,
     :param config tconf: translate configuration
         
     ''' 
-
+    setLogger(logger, "Process "+str(i))
     run_start = time.time();
     lm_path = "{0}/{1}/lm".format(tconf.paths.project, i)
     working_path = "{0}/{1}/working".format(tconf.paths.project, i)

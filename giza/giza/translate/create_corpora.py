@@ -20,7 +20,9 @@ import logging
 import giza.config.corpora
 ''''
 This module creates the appropriate train, tune, and test corpora
-It takes a config file similar to corpora.yaml
+It takes a config file similar to corpora.yaml with the configuration settings.
+It will copy the config file to the directory with the corpora so that you have a record, but the copy won't be exact.
+This creates both language corpora at the same time in parallel.
 '''
 
 logger = logging.getLogger('giza.translate.create_corpora')
@@ -77,11 +79,13 @@ def run_corpora_creation(conf):
     
     if os.path.exists(conf.container_path) is False:
         os.makedirs(conf.container_path)
+    with open(conf.container_path+"/corpora.yaml", 'w') as f:
+        yaml.dump(conf.dict(), f, default_flow_style=False)
      
     #append files appropriately
     for corpus_type in ('train', 'tune', 'test'):
-        source_outfile = "{0}/{1}.{2}-{3}.{2}".format(conf.container_path, corpus_type, conf.source_language ,conf.target_language)
-        target_outfile = "{0}/{1}.{2}-{3}.{3}".format(conf.container_path, corpus_type, conf.source_language ,conf.target_language)
+        source_outfile = "{0}/{1}.{2}-{3}.{2}".format(conf.container_path, corpus_type, conf.source_language, conf.target_language)
+        target_outfile = "{0}/{1}.{2}-{3}.{3}".format(conf.container_path, corpus_type, conf.source_language, conf.target_language)
         open(source_outfile,'w').close()
         open(target_outfile,'w').close()
         # finds the total length of the entire corpus
