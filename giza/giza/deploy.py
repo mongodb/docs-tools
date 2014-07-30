@@ -40,6 +40,7 @@ class Deploy(object):
         self.env = None
         self.hosts = None
         self.static_files = []
+        self.branched = False
 
     def load(self, pspec):
         if 'target' in pspec:
@@ -56,7 +57,11 @@ class Deploy(object):
         if 'recursive' in pspec['options']:
             self.recursive = True
 
+        if 'branched' in pspec['options']:
+            self.branched = True
+
         self.env = pspec['env']
+
         self.deploy_env = getattr(self.conf.deploy, self.env)
 
         self.hosts = self.deploy_env.hosts
@@ -82,8 +87,12 @@ class Deploy(object):
         base = self._base_cmd()
 
         for host in self.hosts:
-            yield base + [ os.path.join(self.conf.paths.output, self.local_path) + '/',
-                           host + ':' + self.remote_path ]
+            if self.branched is True:
+                yield base + [ os.path.join(self.conf.paths.output, self.local_path, self.conf.git.branches.current),
+                               host + ':' + self.remote_path ]
+            else:
+                yield base + [ os.path.join(self.conf.paths.output, self.local_path) + '/',
+                               host + ':' + self.remote_path ]
 
             for fn in self.static_files:
                 if self.conf.git.branches.current != 'master' and fn == '.htaccess':

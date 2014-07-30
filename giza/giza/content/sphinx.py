@@ -217,7 +217,7 @@ def finalize_sphinx_build(sconf, conf, app):
         for job in (finalize_dirhtml_build, error_pages):
             task = app.add('task')
             task.job = job
-            task.args = [target, conf]
+            task.args = [sconf, conf]
 
         if conf.system.branched is True and conf.git.branches.current == 'master':
             link_task = app.add('task')

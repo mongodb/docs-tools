@@ -101,7 +101,9 @@ def finalize_single_html_jobs(builder, conf):
             'dependency': None
         }
 
-def error_pages(builder, conf):
+def error_pages(sconf, conf):
+    builder = sconf.builder
+
     if 'errors' not in conf.system.files.data:
         return None
     else:
@@ -115,8 +117,9 @@ def error_pages(builder, conf):
 
         logging.info('error-pages: rendered {0} error pages'.format(idx))
 
-def finalize_dirhtml_build(builder, conf):
+def finalize_dirhtml_build(sconf, conf):
     pjoin = os.path.join
+    builder = sconf.builder
 
     single_html_dir = get_single_html_dir(conf)
     search_page = pjoin(conf.paths.branch_output, builder, 'index.html')
@@ -128,10 +131,19 @@ def finalize_dirhtml_build(builder, conf):
     dest = pjoin(conf.paths.projectroot, conf.paths.public_site_output)
     command('rsync -a {source}/ {destination}'.format(source=pjoin(conf.paths.projectroot,
                                                                  conf.paths.branch_output,
-                                                                 builder),
+                                                                 sconf.name),
                                                     destination=dest))
 
-    logger.info('{0}: migrated build to {1}'.format(builder, dest))
+    logger.info('"{0}" migrated build to {1}'.format(sconf.name, dest))
+
+    if 'excluded_files' in sconf:
+        fns = [ pjoin(conf.paths.projectroot,
+                      conf.paths.public_site_output,
+                      fn)
+                for fn in sconf['dirhtml']['excluded_files'] ]
+
+        cleaner(fns)
+        logging.info('removed excluded files from dirhtml output directory')
 
     if conf.git.branches.current in conf.git.branches.published:
         sitemap_exists = sitemap(config_path=None, conf=conf)
@@ -144,18 +156,6 @@ def finalize_dirhtml_build(builder, conf):
                                              conf.paths.public_site_output,
                                              'sitemap.xml.gz'))
 
-    sconf_path = pjoin(conf.paths.projectroot,
-                       conf.paths.builddata, 'sphinx.yaml')
-    sconf = ingest_yaml_doc(sconf_path)
-
-    if 'dirhtml' in sconf and 'excluded_files' in sconf['dirhtml']:
-        fns = [ pjoin(conf.paths.projectroot,
-                      conf.paths.public_site_output,
-                      fn)
-                for fn in sconf['dirhtml']['excluded_files'] ]
-
-        cleaner(fns)
-        logging.info('removed excluded files from dirhtml output directory')
 
 def sitemap(config_path, conf):
     paths = conf.paths

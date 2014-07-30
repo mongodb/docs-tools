@@ -92,6 +92,8 @@ class SphinxConfig(RecursiveConfigurationBase):
         else:
             lookup = hyph_concat(self.builder, self.edition)
 
+        self.name = lookup
+
         base = self._raw[lookup]
 
         for i in ['excluded', 'tags', 'languages']:
@@ -100,6 +102,17 @@ class SphinxConfig(RecursiveConfigurationBase):
 
         m = 'registered language, builder, and edition options: ({0}, {1}, {2})'
         logger.debug(m.format(language, builder, edition))
+
+    @property
+    def name(self):
+        if 'name' in self.state:
+            return self.state['builder']
+        else:
+            return self.builder
+
+    @name.setter
+    def name(self, value):
+        self.state['name'] = value
 
     @property
     def build_output(self):
