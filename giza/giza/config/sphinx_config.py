@@ -174,7 +174,7 @@ class SphinxConfig(RecursiveConfigurationBase):
 
     @builder.setter
     def builder(self, value):
-        if value in sphinx.builders.BUILTIN_BUILDERS:
+        if value in sphinx.builders.BUILTIN_BUILDERS or value == 'slides':
             self.state['builder'] = value
         else:
             raise Exception('{0} is not a valid sphinx builder'.format(value))
