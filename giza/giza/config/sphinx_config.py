@@ -53,7 +53,7 @@ def resolve_builder_path(builder, edition, language, conf):
     if edition is not None and edition != conf.project.name:
         dirname = hyph_concat(dirname, edition)
 
-    if language is not None and langauge != 'en':
+    if language is not None and language != 'en':
         dirname = hyph_concat(dirname, language)
 
     return os.path.join(conf.paths.projectroot, conf.paths.branch_output, dirname)
@@ -169,8 +169,8 @@ class SphinxConfig(RecursiveConfigurationBase):
         return self.state['tags']
 
     @property
-    def langauges(self):
-        return self.state['langauges']
+    def languages(self):
+        return self.state['languages']
 
     @builder.setter
     def builder(self, value):
@@ -195,13 +195,13 @@ class SphinxConfig(RecursiveConfigurationBase):
         else:
             self.state['tags'] = value
 
-    @langauges.setter
-    def langauges(self, value):
+    @languages.setter
+    def languages(self, value):
         if not isinstance(value, list):
-            logger.error('langauges must be a list.')
+            logger.error('languages must be a list.')
             raise TypeError
         else:
-            self.state['langauges'] = value
+            self.state['languages'] = value
 
 
 #################### Rendering for Legacy Config ####################
