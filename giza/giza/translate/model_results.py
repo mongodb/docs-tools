@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import re
-import os.path
+import os
 import sys
 import logging
 import json
@@ -23,7 +23,7 @@ It requires a directory structure similar to that created by build_model.py
 It saves the data in a data.csv file that can easily be viewed in any spreadsheet program
 It should be automatically after build_model.py but can also be used on it's own
 '''
-logger = logging.getLogger('giza.translate.datamine')
+logger = logging.getLogger('giza.translate.model_results')
 
 def grab_data(json_file, out):
     '''This function grabs data from the log and prints it to the outfile
@@ -46,7 +46,7 @@ def grab_data(json_file, out):
     
     out.write("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18}\n".format(d['i'], d['max_phrase_length'], d['order'], d['reordering_language'], d['reordering_directionality'], d['score_options'], d['smoothing'], d['alignment'], d['reordering_orientation'], d['reordering_modeltype'], BLEU_score, gram1, gram2, gram3, gram4, BP, ratio, hyp_len, ref_len))
 
-def write_model_data(project_path):
+def aggregate_model_data(project_path):
     '''This function goes through the different log files and writes the data to the outfile
     :param string project_path: path to the model as specified in the config file 
     '''

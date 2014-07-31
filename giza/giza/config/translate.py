@@ -13,11 +13,17 @@
 # limitations under the License.
 
 import logging
+import sys
+
 from giza.config.base import ConfigurationBase, RecursiveConfigurationBase
 logger = logging.getLogger('giza.config.translate')
 
 class TranslateConfig(RecursiveConfigurationBase):
-    
+    def __init__(self, input_obj, conf):
+        if isinstance(input_obj,list):
+            logger.error("Config doesn't exist")
+            sys.exit(1)
+        super(TranslateConfig, self).__init__(input_obj, conf)
 
     @property
     def settings(self):

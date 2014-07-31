@@ -220,14 +220,16 @@ class SystemConfigData(RecursiveConfigurationBase):
         else:
             basename = os.path.splitext(fn)[0]
 
-        if fn.startswith('/'):
-            full_path = os.path.join(self.conf.paths.projectroot, fn[1:])
+        if os.path.exists(fn):
+            full_path = fn
         elif os.path.exists(os.path.join(os.getcwd(), fn)):
             full_path = os.path.join(os.getcwd(), fn)
+        elif fn.startswith('/'):
+            full_path = os.path.join(self.conf.paths.projectroot, fn[1:])
         else:
             full_path = os.path.join(self.conf.paths.projectroot,
                                      self.conf.paths.builddata, fn)
-
+        
         if os.path.exists(full_path):
             # TODO we should make this process lazy with a more custom getter/setter
             self.state[basename] = self._resolve_config_data(full_path, basename)

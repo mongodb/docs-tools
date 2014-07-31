@@ -18,8 +18,8 @@ import time
 import datetime
 import logging
 import json
-from giza.command import command
 
+from giza.translate.utils import Timer, setLogger, pcommand
 
 '''
 This module builds the translation model by training, tuning, and then testing
@@ -29,60 +29,8 @@ It will run all of the different combinations of parameters that you give it in 
 Best to run this with as many threads as possible or else it will take a really long time.
 '''
 
-logger = logging.getLogger("giza.translate.build_model")
+logger = logging.getLogger("giza.translate.model")
 
-def setLogger(logger, logger_id):
-    '''This method sets the formatter to the logger to have a custom field called the logger_id
-    :param logger logger: The logger for the module
-    :param string logger_id: the identifier for the instance of the module
-    '''
-    for handler in logger.handlers:
-        logger.removeHandler(handler)
-    f = logging.Formatter("%(levelname)s|%(asctime)s|%(name)s|{0}: %(message)s".format(logger_id))
-    h = logging.StreamHandler(sys.stdout)
-    h.setFormatter(f)
-    logger.addHandler(h)
-    logger.propagate = False
-
-
-class Timer():
-    '''This class is responsible for timing the processes and then both logging them and saving them
-    to the process's dictionary object
-    '''
-    def __init__(self, d, name=None):
-        self.d = d
-        if name is None:
-            self.name = 'task'
-        else:
-            self.name = name
-
-    def __enter__(self):
-        self.start = time.time()
-        time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        self.d[self.name+"_start_time"] = time_now 
-        message = '[timer]: {0} started at {1}'
-        message = message.format(self.name, time_now)
-        logger.info(message)
-
-    def __exit__(self, *args):
-        total_time = time.time()-self.start
-        message = '[timer]: time elapsed for {0} was: {1}'
-        message = message.format(self.name, str(datetime.timedelta(seconds=total_time)))
-        logger.info(message)
-        self.d[self.name+"_time"] = total_time
-        self.d[self.name+"_time_hms"] = str(datetime.timedelta(seconds=total_time))
-
-def pcommand(c):
-    '''This function wraps the command module with logging functionality
-    :param string c: command to run and log
-    :returns: a command result object
-    '''
-    
-    logger.info(c)
-    o = command(c, capture=True)
-    if len(o.out) != 0: logger.info(o.out)
-    if len(o.err) != 0: logger.info(o.err)
-    return o
 
 def tokenize_corpus(corpus_dir, corpus_name, tconf):
     '''This function tokenizes a corpus
@@ -143,7 +91,7 @@ def setup_test(tconf):
     tokenize_corpus(tconf.test.dir, tconf.test.name, tconf)
     truecase_corpus(tconf.test.name, tconf)
 
-def run_lm(lm_path,
+def lm(lm_path,
            l_order, 
            l_smoothing, 
            tconf,
@@ -165,7 +113,7 @@ def run_lm(lm_path,
         pcommand("{0}/bin/build_binary -i {3}/{1}.arpa.es {3}/{1}.blm.{2}".format(tconf.paths.moses,tconf.train.name, tconf.settings.foreign, lm_path))
         pcommand("echo 'Is this a Spanish sentance?' | {0}/bin/query {1}/{2}.blm.{3}".format(tconf.paths.moses, lm_path, tconf.train.name, tconf.settings.foreign))
     
-def run_train(working_path,
+def train(working_path,
               lm_path,
               l_len,
               l_order,
@@ -196,7 +144,7 @@ def run_train(working_path,
         os.makedirs(working_path)
         pcommand("{0}/scripts/training/train-model.perl -root-dir {13}/train -corpus {1}/{2}.clean -f en -e {3} --score-options \'{4}\' -alignment {5} -reordering {6}-{7}-{8}-{9} -lm 0:{10}:{11}/{2}.blm.{3}:1 -mgiza -mgiza-cpus {12} -external-bin-dir {0}/tools -cores {12} --parallel --parts 3 2>&1 > {13}/training.out".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.train.name, tconf.settings.foreign, l_score, l_align, l_model, l_orient, l_direct, l_lang, l_order, lm_path, tconf.settings.threads, working_path))
     
-def run_tune(working_path,
+def tune(working_path,
              tconf,
              d):
     '''This function tunes the model made so far.
@@ -207,7 +155,7 @@ def run_tune(working_path,
     with Timer(d, 'tune'):
         pcommand("{0}/scripts/training/mert-moses.pl {1}/{2}.true.en {1}/{2}.true.{3} {0}/bin/moses  {4}/train/model/moses.ini --working-dir {4}/mert-work --mertdir {0}/bin/ 2>&1 > {4}/mert.out".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.tune.name, tconf.settings.foreign, working_path))
 
-def run_binarise(working_path, 
+def binarise(working_path, 
                  l_lang, 
                  l_direct, 
                  l_orient, 
@@ -234,7 +182,7 @@ def run_binarise(working_path,
         pcommand("sed -i 's/train\/model\/{1}.gz/binarised-model\/phrase-table/' {0}/binarised-model/moses.ini".format(working_path, tconf.settings.phrase_table_name))
 
 
-def run_test_filtered(working_path, 
+def test_filtered(working_path, 
                       tconf,
                       d):
     '''This function tests the model made so far.
@@ -251,7 +199,7 @@ def run_test_filtered(working_path,
         c = pcommand("{0}/scripts/generic/multi-bleu.perl -lc {1}/{2}.true.{4} < {3}/{2}.translated.{4}".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.test.name, working_path, tconf.settings.foreign))
         d["BLEU"] = c.out
 
-def run_test_binarised(working_path, 
+def test_binarised(working_path, 
                        tconf,
                        d):
     '''This function tests the model so far with the binarised phrase table 
@@ -266,7 +214,7 @@ def run_test_binarised(working_path,
         d["BLEU"] = c.out
 
 
-def run_build_model(l_len, 
+def build_model(l_len, 
                l_order, 
                l_lang, 
                l_direct, 
@@ -312,11 +260,11 @@ def run_build_model(l_len,
          "reordering_language": l_lang,
          "max_phrase_length": l_len}
 
-    run_lm(lm_path, l_order, l_smoothing, tconf, d)
-    run_train(working_path, lm_path, l_len, l_order, l_lang, l_direct, l_score, l_align, l_orient, l_model, tconf, d)
-    run_tune(working_path, tconf, d)
-    run_binarise(working_path, l_lang, l_direct, l_orient, l_model, tconf, d)
-    run_test_binarised(working_path, tconf, d)
+    lm(lm_path, l_order, l_smoothing, tconf, d)
+    train(working_path, lm_path, l_len, l_order, l_lang, l_direct, l_score, l_align, l_orient, l_model, tconf, d)
+    tune(working_path, tconf, d)
+    binarise(working_path, l_lang, l_direct, l_orient, l_model, tconf, d)
+    test_binarised(working_path, tconf, d)
 
     d["run_time_hms"] = str(datetime.timedelta(seconds=(time.time()-run_start)))
     d["end_time"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")

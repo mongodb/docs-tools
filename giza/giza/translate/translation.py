@@ -12,15 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import polib
 import sys
-import os.path
-from giza.translate.translate_doc import decode, TempDir
-from giza.files import expand_tree
 import logging
+import tempfile
+import shutil
+import os
 
+import polib
+
+from  giza.translate.utils import pcommand, TempDir, get_file_list
+from giza.files import expand_tree
 '''
-This module translates a directory of po files
+This module translates any file as well as a directory of po files
 It takes the directory, writes the source language to a file, then translates that to another file, and then writes that out in the same order as it ingested the directory
 It translates the untranslated entries and empties the translated ones to isolate the machine translated ones
 Thus it is important not to change the directory structure mid running this program
@@ -29,9 +32,44 @@ The goal of this module is to make a directory tree with translations ONLY by Mo
 Then those translations can be looked at separately from approved or human translated sentences
 '''
 
-logger = logging.getLogger('translate_po')
+logger = logging.getLogger('giza.translate.translation')
 
-def write_text_file(text_doc, po_file):
+
+
+def translate_file(in_file, out_file,  tconf, protected_file, super_temp=None):
+    '''This function translates a given file to another file
+    :param string in_file: path to file to be translated 
+    :param string out_file: path to file where translated output should be written 
+    :param config tconf: translateconfig object 
+    :param string protected_file': path to regex file to protect expressions from tokenization
+    :param string super_temp: If you have a TempDir context inside of a TempDir context, this allows you to not create two. Just pass in the directory of the previous temporary directory
+    '''
+    if os.path.isfile(in_file) is False:
+        logger.error(in_file+" doesn't exist")
+        sys.exit(1)
+    if protected_file is not None and os.path.isfile(protected_file) is False:
+        logger.error(protected_file+" doesn't exist")
+        sys.exit(1)
+    
+    if out_fn is None: out_fn = in_fn + ".translated"
+    
+    with TempDir(super_temp=super_temp) as temp:
+        logger.info("tempdir: "+temp)
+        logger.info("decoding: "+in_file)
+        if super_temp is None:
+            shutil.copy(in_file, temp)
+        in_file = os.path.basename(in_file)
+        if protected_file is not None:
+            pcommand("{0}/scripts/tokenizer/tokenizer.perl -l en < {4}/{1} > {4}/{1}.tok.en -threads {2} -protected {3}".format(tconf.paths.moses, in_file, tconf.settings.threads, protected_file, temp))
+        else:
+            pcommand("{0}/scripts/tokenizer/tokenizer.perl -l en < {3}/{1} > {3}/{1}.tok.en -threads {2}".format(tconf.paths.moses, in_file, tconf.settings.threads, temp))
+        pcommand("{0}/scripts/recaser/truecase.perl --model {1}/truecase-model.en < {3}/{2}.tok.en > {3}/{2}.true.en".format(tconf.paths.moses, tconf.paths.aux_corpus_files, in_file, temp))
+        pcommand("{0}/bin/moses -f {1}/{3}/working/binarised-model/moses.ini < {4}/{2}.true.en > {4}/{2}.true.trans".format(tconf.paths.moses, tconf.paths.project, in_file, tconf.settings.best_run, temp))
+        pcommand("{0}/scripts/recaser/detruecase.perl < {2}/{1}.true.trans > {2}/{1}.tok.trans".format(tconf.paths.moses, in_file, temp))
+        pcommand("{0}/scripts/tokenizer/detokenizer.perl -l en < {3}/{1}.tok.trans > {2}".format(tconf.paths.moses, in_file, out_file, temp))
+ 
+
+def po_file_untranslated_to_text(text_doc, po_file):
     '''This function writes a po file out to a text file
     :param string text_doc: the path to the text document to write the po file sentences to
     :param string po_file: the path to the po_file to write from
@@ -41,21 +79,20 @@ def write_text_file(text_doc, po_file):
     for entry in po.untranslated_entries():
         text_doc.write(entry.msgid.encode('utf-8')+'\n')
 
-def extract_untranslated_entries(po_file_list, temp_dir):
+def extract_all_untranslated_po_entries(po_file_list, temp_dir):
     '''This function extracts all of the untranslated entries in the directory structure
     :param list po_file_list: the list of po files
     :param string temp_dir: the path to the temporary directory
     :returns: the path to the temporary source file
     '''
 
-    #extract entries into temp
     with open(temp_dir+"/source", "w") as temp:
         for fn in po_file_list:
-            write_text_file(temp, fn)
+            po_file_untranslated_to_text(temp, fn)
     return temp_dir+"/source"
 
 
-def fill_target(target_po_file, translated_lines, start):
+def fill_po_file(target_po_file, translated_lines, start):
     '''This function fills a new po file with the translated lines
     :param string target_po_file: the path to the current po file
     :param list translated_lines: the list of translated lines
@@ -72,11 +109,10 @@ def fill_target(target_po_file, translated_lines, start):
         else:
             entry.msgstr = ""
 
-    # Save translated po file.
     po.save(target_po_file)
     return start + i + 1
 
-def write_to_po(po_file_list, translated_temp):
+def write_po_files(po_file_list, translated_temp):
     ''' This function writes all of the lines to their po files
     :param list po_file_list: the list of translated lines 
     :param string translated_temp: the temproray translated file
@@ -86,25 +122,7 @@ def write_to_po(po_file_list, translated_temp):
         trans_lines = trans.readlines()
 
     for fn in po_file_list:
-        start = fill_target(fn, trans_lines, start)
-
-def get_file_list(path, input_extension):
-    ''' This function wraps around expand tree to return a list of only 1 file 
-    if the user gives a path to a file and not a directory
-    :param string path: path to the file
-    :param list input_extension: a list (or a single) of extensions that is acceptable
-    '''
-    if os.path.isfile(path):
-        if input_extension != None:
-            if isinstance(input_extension, list):
-                if os.path.splitext(path)[1][1:] not in input_extension:
-                    return []
-            else:
-                if not path.endswith(input_extension):
-                    return []
-        return [path]
-    return expand_tree(path, input_extension)
-
+        start = fill_po_file(fn, trans_lines, start)
 
 def translate_po_files(po_path, tconf, protected_file=None):
     ''' This function first extracts the entries, then translates them, and then fills in all of the files
@@ -112,13 +130,18 @@ def translate_po_files(po_path, tconf, protected_file=None):
     :param config tconf: translation config object
     :param string protected_file: path to file with regexes to protect
     '''
+    
+    if os.path.exists(po_file_list) is False:
+        logger.error(po_file_list+" doesn't exist")
+        sys.exit(1)
+    
+    if args.t_protected_regex is not None and os.path.exists(args.t_protected_regex) is False:
+        logger.error(args.t_protected_regex+" doesn't exist")
+        sys.exit(1)
+    
     with TempDir() as temp_dir:
         po_file_list = get_file_list(po_path, ["po", "pot"])
-        # extract untranslated entries to temp_file
-        temp_file = extract_untranslated_entries(po_file_list, temp_dir)
-        # translate temp_file
-        decode(temp_file, temp_file+'.translated', tconf, protected_file, temp_dir)
-        # put temp_file back in po files
-        write_to_po(po_file_list, temp_file+'.translated')
+        temp_file = extract_all_untranslated_entries(po_file_list, temp_dir)
+        translate_file(temp_file, temp_file+'.translated', tconf, protected_file, temp_dir)
+        write_po_files(po_file_list, temp_file+'.translated')
         
-
