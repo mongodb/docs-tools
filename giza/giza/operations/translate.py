@@ -21,7 +21,7 @@ import argh
 import yaml
 import itertools
 
-from giza.translate.corpora import create_corpora, create_corpus_from_po, create_corpus_from_dictionary
+from giza.translate.corpora import create_hybrid_corpora, create_corpus_from_po, create_corpus_from_dictionary
 from giza.translate.model import build_model, setup_train, setup_tune, setup_test
 from giza.translate.model_results import aggregate_model_data
 from giza.translate.utils import merge_files
@@ -48,7 +48,7 @@ def create_corpora(args):
         cconf = ingest_yaml_doc(args.t_corpora_config)
     cconf = CorporaConfig(cconf)
 
-    create_corpora(cconf)  
+    create_hybrid_corpora(cconf)  
 
 @argh.arg('--config', '-c', default=None, dest="t_translate_config")
 @argh.named('res')
@@ -141,14 +141,13 @@ def build_translation_model(args):
     app = BuildApp(conf) 
     os.environ['IRSTLM'] = tconf.paths.irstlm
 
-    setup_train(tconf)
-    setup_tune(tconf)
-    setup_test(tconf)
+    #setup_train(tconf)
+    #setup_tune(tconf)
+    #setup_test(tconf)
 
     i = 0
     for parameter_set in run_args:
         parameter_set=list(parameter_set)
-        print (parameter_set)
         parameter_set.append(i)
         parameter_set.append(tconf)
         t = app.add()

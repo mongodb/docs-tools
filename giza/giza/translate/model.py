@@ -19,7 +19,7 @@ import datetime
 import logging
 import json
 
-from giza.translate.utils import Timer, setLogger, pcommand
+from giza.translate.utils import Timer, set_logger, pcommand
 
 '''
 This module builds the translation model by training, tuning, and then testing
@@ -92,10 +92,10 @@ def setup_test(tconf):
     truecase_corpus(tconf.test.name, tconf)
 
 def lm(lm_path,
-           l_order, 
-           l_smoothing, 
-           tconf,
-           d):
+       l_order, 
+       l_smoothing, 
+       tconf,
+       d):
     '''This function builds the language model for the goven config 
     :param string lm_path: path to language model directory
     :param int l_order: n-gram order
@@ -110,21 +110,21 @@ def lm(lm_path,
         pcommand("{0}/bin/add-start-end.sh < {1}/{2}.true.{3} > {4}/{2}.sb.{3}".format(tconf.paths.irstlm, tconf.paths.aux_corpus_files, tconf.train.name, tconf.settings.foreign, lm_path))
         pcommand("{0}/bin/build-lm.sh -i {5}/{1}.sb.{4} -t {5}/tmp -p -n {2} -s {3} -o {5}/{1}.ilm.{4}.gz".format(tconf.paths.irstlm, tconf.train.name, l_order, l_smoothing, tconf.settings.foreign, lm_path))
         pcommand("{0}/bin/compile-lm --text  {3}/{1}.ilm.{2}.gz {3}/{1}.arpa.{2}".format(tconf.paths.irstlm, tconf.train.name, tconf.settings.foreign, lm_path))
-        pcommand("{0}/bin/build_binary -i {3}/{1}.arpa.es {3}/{1}.blm.{2}".format(tconf.paths.moses,tconf.train.name, tconf.settings.foreign, lm_path))
+        pcommand("{0}/bin/build_binary -i {3}/{1}.arpa.{2} {3}/{1}.blm.{2}".format(tconf.paths.moses, tconf.train.name, tconf.settings.foreign, lm_path))
         pcommand("echo 'Is this a Spanish sentance?' | {0}/bin/query {1}/{2}.blm.{3}".format(tconf.paths.moses, lm_path, tconf.train.name, tconf.settings.foreign))
     
 def train(working_path,
-              lm_path,
-              l_len,
-              l_order,
-              l_lang, 
-              l_direct, 
-              l_score, 
-              l_align, 
-              l_orient, 
-              l_model,  
-              tconf,
-              d):
+          lm_path,
+          l_len,
+          l_order,
+          l_lang, 
+          l_direct, 
+          l_score, 
+          l_align, 
+          l_orient, 
+          l_model,  
+          tconf,
+          d):
     '''This function does the training for the given configuration 
     :param string working_path: path to working directory
     :param int l_len: max phrase length
@@ -145,8 +145,8 @@ def train(working_path,
         pcommand("{0}/scripts/training/train-model.perl -root-dir {13}/train -corpus {1}/{2}.clean -f en -e {3} --score-options \'{4}\' -alignment {5} -reordering {6}-{7}-{8}-{9} -lm 0:{10}:{11}/{2}.blm.{3}:1 -mgiza -mgiza-cpus {12} -external-bin-dir {0}/tools -cores {12} --parallel --parts 3 2>&1 > {13}/training.out".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.train.name, tconf.settings.foreign, l_score, l_align, l_model, l_orient, l_direct, l_lang, l_order, lm_path, tconf.settings.threads, working_path))
     
 def tune(working_path,
-             tconf,
-             d):
+         tconf,
+         d):
     '''This function tunes the model made so far.
     :param string working_path: path to working directory
     :param config tconf: translate configuration
@@ -156,12 +156,12 @@ def tune(working_path,
         pcommand("{0}/scripts/training/mert-moses.pl {1}/{2}.true.en {1}/{2}.true.{3} {0}/bin/moses  {4}/train/model/moses.ini --working-dir {4}/mert-work --mertdir {0}/bin/ 2>&1 > {4}/mert.out".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.tune.name, tconf.settings.foreign, working_path))
 
 def binarise(working_path, 
-                 l_lang, 
-                 l_direct, 
-                 l_orient, 
-                 l_model,  
-                 tconf,
-                 d):
+             l_lang, 
+             l_direct, 
+             l_orient, 
+             l_model,  
+             tconf,
+             d):
     '''This function binarises the phrase and reoridering tables.
     Binarising them speeds up loading the decoder, though doesn't actually speed up decoding sentences
     :param string working_path: the path to the working directory
@@ -183,8 +183,8 @@ def binarise(working_path,
 
 
 def test_filtered(working_path, 
-                      tconf,
-                      d):
+                  tconf,
+                  d):
     '''This function tests the model made so far.
     It first filters the data to only use those needed for the test file.
     This can speed it  up over the binarised version but has a history of failing on certain corpora
@@ -200,8 +200,8 @@ def test_filtered(working_path,
         d["BLEU"] = c.out
 
 def test_binarised(working_path, 
-                       tconf,
-                       d):
+                   tconf,
+                   d):
     '''This function tests the model so far with the binarised phrase table 
     :param string working_path: path to working directory
     :param config tconf: translate configuration
@@ -215,16 +215,16 @@ def test_binarised(working_path,
 
 
 def build_model(l_len, 
-               l_order, 
-               l_lang, 
-               l_direct, 
-               l_score, 
-               l_smoothing, 
-               l_align, 
-               l_orient, 
-               l_model,  
-               i, 
-               tconf):
+                l_order, 
+                l_lang, 
+                l_direct, 
+                l_score, 
+                l_smoothing, 
+                l_align, 
+                l_orient, 
+                l_model,  
+                i, 
+                tconf):
     '''This function runs one configuration of the training script. 
     This function can be called with different arguments to run multiple configurations in parallel
     :param int l_len: max phrase length
@@ -240,7 +240,7 @@ def build_model(l_len,
     :param config tconf: translate configuration
         
     ''' 
-    setLogger(logger, "Process "+str(i))
+    set_logger(logger, "Process "+str(i))
     run_start = time.time();
     lm_path = "{0}/{1}/lm".format(tconf.paths.project, i)
     working_path = "{0}/{1}/working".format(tconf.paths.project, i)

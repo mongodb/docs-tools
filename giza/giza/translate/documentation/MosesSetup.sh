@@ -2,7 +2,7 @@
 # PLEASE READ ALL INSTRUCTIONS IN TEH COMMENTS
 
 # Install dependencies
-suo apt-get update
+sudo apt-get update
 # for ubunutu 14.04
 sudo apt-get install build-essential g++ git subversion automake autotools-dev libicu-dev libtool zlib1g-dev libboost-all-dev libbz2-dev liblzma-dev python-dev cmake mailutils libtcmalloc-minimal4 
 # for other ubuntus

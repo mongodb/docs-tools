@@ -52,7 +52,7 @@ def aggregate_model_data(project_path):
     '''
     with open("{0}/data.csv".format(project_path), "w", 1) as out:
         out.write("i,max phrase length,order,reordering language,reordering directionality,score options,smoothing,alignment,reordering orientation,reordering modeltype,BLEU Score,1-gram precision,2-gram precision,3-gram precision,4-gram precision,BP,ratio,hyp len,ref len\n") 
-        g=0
+        g = 0
         while True:
             json_path = "{1}/{0}/{0}.json".format(g, project_path)
             if os.path.isfile(json_path) == False:
