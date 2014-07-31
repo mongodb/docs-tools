@@ -14,22 +14,20 @@
 
 import sys
 import logging
-import tempfile
 import shutil
 import os
 
 import polib
 
 from  giza.translate.utils import pcommand, TempDir, get_file_list
-from giza.files import expand_tree
 '''
-This module translates any file as well as a directory of po files
-It takes the directory, writes the source language to a file, then translates that to another file, and then writes that out in the same order as it ingested the directory
-It translates the untranslated entries and empties the translated ones to isolate the machine translated ones
-Thus it is important not to change the directory structure mid running this program
-MAKE SURE TO COPY THE DIRECTORY OF PO FILES BEFORE TRANSLATING THEM, anything that was already translated will be deleted by this, this is intentional
-The goal of this module is to make a directory tree with translations ONLY by Moses.
-Then those translations can be looked at separately from approved or human translated sentences
+This module has functions for translating files.
+It has a function for translating any file given a config and it has a function for translating a directory of po files.
+The po file translator takes the directory, writes the source language to a file, then translates that to another file, and then writes that out in the same order as it ingested the directory.
+It translates the untranslated entries and empties the translated ones to isolate the machine translated ones.
+Thus it is important not to change the directory structure mid running this program.
+MAKE SURE TO COPY THE DIRECTORY OF PO FILES BEFORE TRANSLATING THEM, anything that was already translated will be deleted by this, this is intentional.
+The goal of this module is to make a directory tree with translations ONLY by Moses, because then those translations can be looked at separately from approved or human translated sentences.
 '''
 
 logger = logging.getLogger('giza.translate.translation')
@@ -37,7 +35,7 @@ logger = logging.getLogger('giza.translate.translation')
 
 
 def translate_file(in_file, out_file,  tconf, protected_file, super_temp=None):
-    '''This function translates a given file to another file
+    '''This function translates a given file to another language
     :param string in_file: path to file to be translated 
     :param string out_file: path to file where translated output should be written 
     :param config tconf: translateconfig object 
@@ -51,7 +49,8 @@ def translate_file(in_file, out_file,  tconf, protected_file, super_temp=None):
         logger.error(protected_file+" doesn't exist")
         sys.exit(1)
     
-    if out_fn is None: out_fn = in_fn + ".translated"
+    if out_file is None: 
+        out_file = in_file + ".translated"
     
     with TempDir(super_temp=super_temp) as temp:
         logger.info("tempdir: "+temp)
@@ -59,6 +58,7 @@ def translate_file(in_file, out_file,  tconf, protected_file, super_temp=None):
         if super_temp is None:
             shutil.copy(in_file, temp)
         in_file = os.path.basename(in_file)
+
         if protected_file is not None:
             pcommand("{0}/scripts/tokenizer/tokenizer.perl -l en < {4}/{1} > {4}/{1}.tok.en -threads {2} -protected {3}".format(tconf.paths.moses, in_file, tconf.settings.threads, protected_file, temp))
         else:
@@ -125,23 +125,26 @@ def write_po_files(po_file_list, translated_temp):
         start = fill_po_file(fn, trans_lines, start)
 
 def translate_po_files(po_path, tconf, protected_file=None):
-    ''' This function first extracts the entries, then translates them, and then fills in all of the files
+    ''' This function translates a directory of po files in three steps:
+    First it extracts the untranslated entries from every po file into one big file.
+    Then it translates that file.
+    Lastly it fills in all of the po files in the same order the entries were extracted, removing the text from any translated entries.
     :param string po_path: the path to the top level directory of the po_files
     :param config tconf: translation config object
     :param string protected_file: path to file with regexes to protect
     '''
     
-    if os.path.exists(po_file_list) is False:
-        logger.error(po_file_list+" doesn't exist")
+    if os.path.exists(po_path) is False:
+        logger.error(po_path+" doesn't exist")
         sys.exit(1)
     
-    if args.t_protected_regex is not None and os.path.exists(args.t_protected_regex) is False:
-        logger.error(args.t_protected_regex+" doesn't exist")
+    if protected_file is not None and os.path.exists(protected_file) is False:
+        logger.error(protected_file+" doesn't exist")
         sys.exit(1)
     
     with TempDir() as temp_dir:
         po_file_list = get_file_list(po_path, ["po", "pot"])
-        temp_file = extract_all_untranslated_entries(po_file_list, temp_dir)
+        temp_file = extract_all_untranslated_po_entries(po_file_list, temp_dir)
         translate_file(temp_file, temp_file+'.translated', tconf, protected_file, temp_dir)
         write_po_files(po_file_list, temp_file+'.translated')
         

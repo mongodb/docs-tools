@@ -24,10 +24,9 @@ import polib
 
 import giza.config.corpora
 ''''
-This module creates the appropriate train, tune, and test corpora
-It takes a config file similar to corpora.yaml with the configuration settings.
-It will copy the config file to the directory with the corpora so that you have a record, but the copy won't be exact.
-This creates both language corpora at the same time in parallel.
+This module contains functions that involve creating corpora.
+It has one function that creates the appropriate train, tune, and test hybrid corpora from smaller corpora.
+It has other functions that create corpora from already translated po files as well as from multi-lingual dictionaries
 '''
 
 logger = logging.getLogger('giza.translate.corpora')
@@ -48,11 +47,12 @@ def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
     
     with open(out_fn, 'a') as f:
         tot = int(len(new_content) * percentage / 100)
-        for i in range(num_copies):
+        for i in range(int(math.floor(num_copies))):
             if final is False:
                 f.writelines(new_content[start:start+tot])
             else:
                 f.writelines(new_content[start:])
+
         # if we have a fractional number of copies then we take care of the rest
         f.writelines(new_content[start:start+int(tot*(num_copies-math.floor(num_copies)))])
             
@@ -72,9 +72,12 @@ def get_total_length(conf, corpus_type):
     return tot_length
  
 
-def create_corpora(conf):
+def create_hybrid_corpora(conf):
     '''This function takes the configuration file and runs through the files, appending them appropriately
     It first verifies that all of the percentages add up and then it figures out how much of each file should go into each corpus and appends them
+    The config file should be similar to corpora.yaml.
+    It will copy the config file to the directory with the corpora so that you have a record, but the copy won't be exact.
+    It creates both language corpora at the same time in parallel.
     :param config conf: corpora configuration object
     '''
     
@@ -122,8 +125,8 @@ def write_from_po_file(source_doc, target_doc, po_file_name):
 def create_corpus_from_po(po_path, source_doc_fn, target_doc_fn):
     '''This function opens up the output files and then goes through the files in the file list and writes them all to two corpus files
     :param string po_path: Path to po file or directory of po files
-    :param string source_doc: Name of file to put source lanaguge text in.
-    :param string target_doc: Name of file to put target lanaguge text in.
+    :param string source_doc_fn: Name of file to put source lanaguge text in.
+    :param string target_doc_fn: Name of file to put target lanaguge text in.
     '''
     
     if os.path.exists(po_path) is False:
@@ -152,6 +155,7 @@ def create_corpus_from_dictionary(dict_fn, source_fn, target_fn):
     with open(dict_fn, "r") as dict_f:
         with open(source_fn, "w", 1) as source_f:
             with open(target_fn, "w", 1) as target_f:
+
                 for line in dict_f:
                     if line[0] == '#':
                         continue

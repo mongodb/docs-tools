@@ -15,19 +15,21 @@ import sys
 import logging
 import time
 import datetime
+import tempfile
+import shutil
+import os
 
+from giza.files import expand_tree
 from giza.command import command
 
 '''
-This module prints out all files line by line to compare lines
-Just give it as many files as you want at the start, it'll finish when the first file is empty if they are not the same amount of lines
-It takes in a list of annotations that it uses to more visually see what the different lines are.
+This module contains utility functions used through the translate section of giza that can obviously be used anywhere else
 '''
 logger = logging.getLogger('giza.translate.utils')
 
 def get_file_list(path, input_extension):
     ''' This function wraps around expand tree to return a list of only 1 file 
-    if the user gives a path to a file and not a directory
+    if the user gives a path to a file and not a directory. Otherwise it has the same functionality
     :param string path: path to the file
     :param list input_extension: a list (or a single) of extensions that is acceptable
     '''
@@ -42,7 +44,7 @@ def get_file_list(path, input_extension):
         return [path]
     return expand_tree(path, input_extension)
 
-def setLogger(logger, logger_id):
+def set_logger(logger, logger_id):
     '''This method sets the formatter to the logger to have a custom field called the logger_id
     :param logger logger: The logger for the module
     :param string logger_id: the identifier for the instance of the module
@@ -57,7 +59,7 @@ def setLogger(logger, logger_id):
 
 
 class Timer(object):
-    '''This class is responsible for timing the processes and then both logging them and saving them
+    '''This class is responsible for timing processes and then both logging them and saving them
     to the process's dictionary object
     '''
     def __init__(self, d, name=None):
@@ -82,6 +84,7 @@ class Timer(object):
         logger.info(message)
         self.d[self.name+"_time"] = total_time
         self.d[self.name+"_time_hms"] = str(datetime.timedelta(seconds=total_time))
+i
 
 def pcommand(c):
     '''This function wraps the command module with logging functionality
@@ -98,8 +101,9 @@ def pcommand(c):
     return o
 
 def merge_files(output_file, input_files, annotation_list):
-    '''This function merges all of the files in the file_list into the output file
-    annotations are made in order to help differentiate which line is from which file
+    '''This function merges all of the files in the file_list into the output file.
+    Annotations are made in order to help differentiate which line is from which file.
+    It prints out each file, interlacing their lines so you can compare them line by line.
     :param string output_file: The file path to output the lines to, if None goes to stdout
     :param list input_files: The list of file names to merge
     :param list annotation_list: The list of annotations to use (*,-,+,~...etc.)
@@ -135,14 +139,13 @@ def merge_files(output_file, input_files, annotation_list):
         file.close()
     out.close()
 
+
 class TempDir(object):
     ''' This class creates a temporary folder in which to put temporary files.
     It removes them automatically upon leaving the context
     '''
     def __init__(self, dir=None, super_temp=None):
         ''' This constructs the TempDir object
-        :param string suffix: the string gets added to the end of the temp directory
-        :param string prefix: the string gets added to the beginning of the temp directory
         :param string dir: a directory in which to put the temporary directory in
         :param string super_temp: If you have a TempDir context inside of a TempDir context, this allows you to not create two. Just pass in the directory of the previous temporary directory
         '''
