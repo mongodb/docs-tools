@@ -15,8 +15,13 @@
 from __future__ import division
 import sys
 import os
-import yaml
 import logging
+import re
+import math
+
+import yaml
+import polib
+
 import giza.config.corpora
 ''''
 This module creates the appropriate train, tune, and test corpora
@@ -25,7 +30,7 @@ It will copy the config file to the directory with the corpora so that you have 
 This creates both language corpora at the same time in parallel.
 '''
 
-logger = logging.getLogger('giza.translate.create_corpora')
+logger = logging.getLogger('giza.translate.corpora')
 
 
 def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
@@ -43,15 +48,13 @@ def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
     
     with open(out_fn, 'a') as f:
         tot = int(len(new_content) * percentage / 100)
-        i = 1
-        while i <= num_copies:
+        for i in range(num_copies):
             if final is False:
                 f.writelines(new_content[start:start+tot])
             else:
                 f.writelines(new_content[start:])
-            i += 1   
-        if i!=num_copies: 
-            f.writelines(new_content[start:start+int(tot*(num_copies-i+1))])
+        # if we have a fractional number of copies then we take care of the rest
+        f.writelines(new_content[start:start+int(tot*(num_copies-math.floor(num_copies)))])
             
     return start + tot
 
@@ -63,15 +66,13 @@ def get_total_length(conf, corpus_type):
     :returns: total length of the corpus
     '''
     tot_length=0
-    i=0
     for file_name, source in conf.sources.items():
         if source.state['percent_of_'+corpus_type] > 0 and source.length * 100 / source.state['percent_of_'+corpus_type] > tot_length:
             tot_length = source.length * 100 / source.state['percent_of_'+corpus_type]
-        i += 1
     return tot_length
  
 
-def run_corpora_creation(conf):
+def create_corpora(conf):
     '''This function takes the configuration file and runs through the files, appending them appropriately
     It first verifies that all of the percentages add up and then it figures out how much of each file should go into each corpus and appends them
     :param config conf: corpora configuration object
@@ -88,19 +89,83 @@ def run_corpora_creation(conf):
         target_outfile = "{0}/{1}.{2}-{3}.{3}".format(conf.container_path, corpus_type, conf.source_language, conf.target_language)
         open(source_outfile,'w').close()
         open(target_outfile,'w').close()
-        # finds the total length of the entire corpus
-        tot_length = get_total_length(conf, corpus_type)   
-        i = 0
+
+        tot_length = get_total_length(conf, corpus_type)  
+
         for fn,source in conf.sources.items():
             logger.info("Processing "+fn+" for "+corpus_type)
+
             #finds how many copies of this file will make it the correct percentage of the full corpus
             num_copies = tot_length * source.state['percent_of_'+corpus_type] / 100 / source.length
+
             final = False
             if corpus_type is 'test': 
                 final = True
-            #appends the section of the file to the corpus
+
+            #appends the section of the file to the corpora
             end = append_corpus(source.state['percent_'+corpus_type], num_copies, source_outfile, source.source_file_path, source.end, final)
             append_corpus(source.state['percent_'+corpus_type], num_copies, target_outfile, source.target_file_path, source.end, final)
             source.end = end
-            i += 1
              
+def write_from_po_file(source_doc, target_doc, po_file_name):
+    '''This function writes two files in english and spanish from a po file's translated entries
+    :param string source_doc: Name of file to put source lanaguge text in.
+    :param string target_doc: Name of file to put target lanaguge text in.
+    :param string po_file_name: Path to po file to parse
+    '''
+    logger.info("processing "+po_file_name)
+    po = polib.pofile(po_file_name)
+    for entry in po.translated_entries():
+        source_doc.write(entry.msgid.encode('utf-8')+'\n')
+        target_doc.write(entry.msgstr.encode('utf-8')+'\n')
+
+def create_corpus_from_po(po_path, source_doc_fn, target_doc_fn):
+    '''This function opens up the output files and then goes through the files in the file list and writes them all to two corpus files
+    :param string po_path: Path to po file or directory of po files
+    :param string source_doc: Name of file to put source lanaguge text in.
+    :param string target_doc: Name of file to put target lanaguge text in.
+    '''
+    
+    if os.path.exists(po_path) is False:
+        logger.error(po_path+" doesn't exist")
+        sys.exit(1)
+    
+    # path is a directory now
+    logger.info("walking path "+po_path)
+    with open(source_doc_fn, "w", 1) as source_doc:
+        with open(target_doc_fn, "w", 1) as target_doc:
+            file_list = get_file_list(po_path, ["po", "pot"])
+            for fn in file_list:
+                write_from_po_file(source_doc, target_doc, fn)
+
+def create_corpus_from_dictionary(dict_fn, source_fn, target_fn):
+    '''This function splits a dictionary from http://www.dicts.info/uddl.php and turns it into a parallel corpus 
+    :param string dict_fn: path to dictionary file  
+    :param string source_fn: path to file to write source text to
+    :param string target_fn: path to file to write target text to
+    '''
+
+    if os.path.isfile(dict_fn) is False:
+        logger.error(dict_fn+" doesn't exist")
+        sys.exit(1)
+    
+    with open(dict_fn, "r") as dict_f:
+        with open(source_fn, "w", 1) as source_f:
+            with open(target_fn, "w", 1) as target_f:
+                for line in dict_f:
+                    if line[0] == '#':
+                        continue
+                    halves = re.split(r'\t+', line)
+                    if len(halves) < 2:
+                        continue          
+                    source_words = re.split(r';', halves[0])       
+                    target_words = re.split(r';', halves[1])
+                    for target_word in target_words:
+                        target_word = target_word.strip()
+                        for source_word in source_words:
+                            source_word = source_word.strip()
+                            source_f.write(source_word)
+                            source_f.write("\n")
+                            target_f.write(target_word)
+                            target_f.write("\n")
+    

@@ -19,14 +19,27 @@ logger = logging.getLogger('giza.config.corpora')
 from giza.config.base import ConfigurationBase
 
 class SourceConfig(ConfigurationBase):
-    _option_registry = ['name', 'source_file_path', 'target_file_path', 'percent_train', 'percent_tune', 'percent_test', 'percent_of_train', 'percent_of_tune', 'percent_of_test', 'length', 'end']
+    _option_registry = ['name', 
+                        'source_file_path', 
+                        'target_file_path', 
+                        'percent_train', 
+                        'percent_tune', 
+                        'percent_test', 
+                        'percent_of_train', 
+                        'percent_of_tune', 
+                        'percent_of_test', 
+                        'length', 
+                        'end']
 
     def __init__(self, input_obj):
         super(SourceConfig, self).__init__(input_obj)
 
 
 class CorporaConfig(ConfigurationBase):
-    _option_registry = ['container_path', 'source_language', 'target_language', 'sources']
+    _option_registry = ['container_path', 
+                        'source_language', 
+                        'target_language', 
+                        'sources']
 
     def __init__(self, input_obj):
         input_obj = self.transform(input_obj)
@@ -39,27 +52,31 @@ class CorporaConfig(ConfigurationBase):
         '''
         for file_name, source in self.sources.items():
             if source.percent_train + source.percent_tune + source.percent_test != 100:
-                 logger.error("Source percentages don't add up to 100 for "+file_name)
-                 raise TypeError("Source percentages don't add up to 100 for "+file_name)
+                error = "Source percentages don't add up to 100 for " + file_name
+                logger.error(error)
+                raise TypeError(error)
 
         for t in ('train', 'tune', 'test'):
             tot = 0
             for file_name,source in self.sources.items():
                 tot += source.state['percent_of_'+t]
             if tot != 100:
-                logger.error("Contribution percentages don't add up to 100 for "+t)
-                raise TypeError("Contribution percentages don't add up to 100 for "+t)
+                error = "Contribution percentages don't add up to 100 for " + t
+                logger.error(error)
+                raise TypeError(error)
 
     def get_file_lengths(self):
         '''This function adds the file lengths of the files to the configuration dictionary
         '''
-        for file_name,source in self.sources.items():
+        for file_name, source in self.sources.items():
             with open(source.source_file_path, 'r') as file:
                 length1 = len(file.readlines())
             with open(source.target_file_path, 'r') as file:
                 length2 = len(file.readlines())
             if length1 != length2:
-                raise TypeError("Lengths of files for "+file_name+" are not identical")
+                error = "Lengths of files for "+file_name+" are not identical"
+                logger.error(error)
+                raise TypeError(error)
             source.length = length1
 
     def dict(self):
