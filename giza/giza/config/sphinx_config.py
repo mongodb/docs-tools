@@ -58,6 +58,11 @@ def resolve_builder_path(builder, edition, language, conf):
 
     return os.path.join(conf.paths.projectroot, conf.paths.branch_output, dirname)
 
+def avalible_sphinx_builders():
+    builders = sphinx.builders.BUILTIN_BUILDERS.keys()
+    builders.append('slides')
+
+    return builders
 
 #################### New-Style Config Object ####################
 
@@ -174,10 +179,10 @@ class SphinxConfig(RecursiveConfigurationBase):
 
     @builder.setter
     def builder(self, value):
-        if value in sphinx.builders.BUILTIN_BUILDERS or value == 'slides':
+        if value in avalible_sphinx_builders():
             self.state['builder'] = value
         else:
-            raise Exception('{0} is not a valid sphinx builder'.format(value))
+            raise TypeError('{0} is not a valid sphinx builder'.format(value))
 
     @excluded.setter
     def excluded(self, value):

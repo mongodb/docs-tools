@@ -18,13 +18,12 @@ import yaml
 
 from multiprocessing import cpu_count
 
-import sphinx.builders
-
 logger = logging.getLogger('giza.config.runtime')
 
 from giza.command import CommandError
 
 from giza.config.base import ConfigurationBase
+from giza.config.sphinx_config import avalible_sphinx_builders
 
 class RuntimeStateConfigurationBase(ConfigurationBase):
     def __init__(self, obj=None):
@@ -268,7 +267,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
                 builder = 'latex'
                 value[idx] = builder
 
-            if builder not in sphinx.builders.BUILTIN_BUILDERS:
+            if builder not in avalible_sphinx_builders():
                 raise TypeError("{0} is not a valid builder".format(builder))
 
         self.state['builder'] = value
