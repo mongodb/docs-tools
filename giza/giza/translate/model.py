@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 import os
 import time
 import datetime
@@ -22,11 +21,13 @@ import json
 from giza.translate.utils import Timer, set_logger, pcommand
 
 '''
-This module builds the translation model by training, tuning, and then testing
-It also binarizes the model at the end so that it's faster to load the decoder later on
-Using a config file as shown in the translate.yaml, you can customize the build and what settings it uses to experiment. 
-It will run all of the different combinations of parameters that you give it in parallel
-Best to run this with as many threads as possible or else it will take a really long time.
+This module builds the translation model by training, tuning, and then testing.
+It also binarizes the model at the end so that it's faster to load the decoder
+later on. Using a config file as shown in the translate.yaml, you can customize
+the build and what settings it uses to experiment. It will run all of the
+different combinations of parameters that you give it in parallel
+Best to run this with as many threads as possible or else it will take a really
+long time.
 '''
 
 logger = logging.getLogger("giza.translate.model")
@@ -38,10 +39,11 @@ def tokenize_corpus(corpus_dir, corpus_name, tconf):
     :param string corpus_name: name of the corpus in the directory
     :param config tconf: translate configuration
     '''
-    
+
     cmd = "{0}/scripts/tokenizer/tokenizer.perl -l en < {1}/{3}.{4} > {2}/{3}.tok.{4} -threads {5}"
     pcommand(cmd.format(tconf.paths.moses, corpus_dir, tconf.paths.aux_corpus_files, corpus_name, "en", tconf.settings.threads))
     pcommand(cmd.format(tconf.paths.moses, corpus_dir, tconf.paths.aux_corpus_files, corpus_name, tconf.settings.foreign, tconf.settings.threads))
+
 
 def train_truecaser(corpus_name, tconf):
     '''This function trains the truecaser on a corpus
@@ -52,6 +54,7 @@ def train_truecaser(corpus_name, tconf):
     pcommand(cmd.format(tconf.paths.moses, tconf.paths.aux_corpus_files, corpus_name, "en"))
     pcommand(cmd.format(tconf.paths.moses, tconf.paths.aux_corpus_files, corpus_name, tconf.settings.foreign))
 
+
 def truecase_corpus(corpus_name, tconf):
     '''This function truecases a corpus
     :param string corpus_name: name of the corpus in the directory
@@ -61,12 +64,14 @@ def truecase_corpus(corpus_name, tconf):
     pcommand(cmd.format(tconf.paths.moses, tconf.paths.aux_corpus_files, corpus_name, "en"))
     pcommand(cmd.format(tconf.paths.moses, tconf.paths.aux_corpus_files, corpus_name, tconf.settings.foreign))
 
+
 def clean_corpus(corpus_name, tconf):
     '''This function cleans a corpus to have proper length up to 80 words
     :param string corpus_name: name of the corpus in the directory
     :param config tconf: translate configuration
     '''
     pcommand("{0}/scripts/training/clean-corpus-n.perl {1}/{2}.true {3} en {1}/{2}.clean 1 80".format(tconf.paths.moses, tconf.paths.aux_corpus_files, corpus_name, tconf.settings.foreign))
+
 
 def setup_train(tconf):
     '''This function sets up the training corpus
@@ -77,12 +82,14 @@ def setup_train(tconf):
     truecase_corpus(tconf.train.name, tconf)
     clean_corpus(tconf.train.name, tconf)
 
+
 def setup_tune(tconf):
     '''This function sets up the tuning corpus
     :param config tconf: translate configuration
     '''
     tokenize_corpus(tconf.tune.dir, tconf.tune.name, tconf)
     truecase_corpus(tconf.tune.name, tconf)
+
 
 def setup_test(tconf):
     '''This function sets up the testing corpus
@@ -91,18 +98,19 @@ def setup_test(tconf):
     tokenize_corpus(tconf.test.dir, tconf.test.name, tconf)
     truecase_corpus(tconf.test.name, tconf)
 
+
 def lm(lm_path,
-       l_order, 
-       l_smoothing, 
+       l_order,
+       l_smoothing,
        tconf,
        d):
-    '''This function builds the language model for the goven config 
+    '''This function builds the language model for the goven config
     :param string lm_path: path to language model directory
     :param int l_order: n-gram order
     :param string l_smoothing: smoothing algorithm
     :param config tconf: translate configuration
     :param dict d: output dictionary
-    ''' 
+    '''
 
     # Create language model
     with Timer(d, 'lm'):
@@ -112,20 +120,21 @@ def lm(lm_path,
         pcommand("{0}/bin/compile-lm --text  {3}/{1}.ilm.{2}.gz {3}/{1}.arpa.{2}".format(tconf.paths.irstlm, tconf.train.name, tconf.settings.foreign, lm_path))
         pcommand("{0}/bin/build_binary -i {3}/{1}.arpa.{2} {3}/{1}.blm.{2}".format(tconf.paths.moses, tconf.train.name, tconf.settings.foreign, lm_path))
         pcommand("echo 'Is this a Spanish sentance?' | {0}/bin/query {1}/{2}.blm.{3}".format(tconf.paths.moses, lm_path, tconf.train.name, tconf.settings.foreign))
-    
+
+
 def train(working_path,
           lm_path,
           l_len,
           l_order,
-          l_lang, 
-          l_direct, 
-          l_score, 
-          l_align, 
-          l_orient, 
-          l_model,  
+          l_lang,
+          l_direct,
+          l_score,
+          l_align,
+          l_orient,
+          l_model,
           tconf,
           d):
-    '''This function does the training for the given configuration 
+    '''This function does the training for the given configuration
     :param string working_path: path to working directory
     :param int l_len: max phrase length
     :param int l_order: n-gram order
@@ -137,13 +146,13 @@ def train(working_path,
     :param string l_model: reordering modeltype setting, either wbe, phrase, or hier
     :param config tconf: translate configuration
     :param dict d: output dictionary
-        
-    ''' 
-    
+    '''
+
     with Timer(d, 'train'):
         os.makedirs(working_path)
         pcommand("{0}/scripts/training/train-model.perl -root-dir {13}/train -corpus {1}/{2}.clean -f en -e {3} --score-options \'{4}\' -alignment {5} -reordering {6}-{7}-{8}-{9} -lm 0:{10}:{11}/{2}.blm.{3}:1 -mgiza -mgiza-cpus {12} -external-bin-dir {0}/tools -cores {12} --parallel --parts 3 2>&1 > {13}/training.out".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.train.name, tconf.settings.foreign, l_score, l_align, l_model, l_orient, l_direct, l_lang, l_order, lm_path, tconf.settings.threads, working_path))
-    
+
+
 def tune(working_path,
          tconf,
          d):
@@ -151,15 +160,16 @@ def tune(working_path,
     :param string working_path: path to working directory
     :param config tconf: translate configuration
     :param dict d: output dictionary
-    ''' 
+    '''
     with Timer(d, 'tune'):
         pcommand("{0}/scripts/training/mert-moses.pl {1}/{2}.true.en {1}/{2}.true.{3} {0}/bin/moses  {4}/train/model/moses.ini --working-dir {4}/mert-work --mertdir {0}/bin/ 2>&1 > {4}/mert.out".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.tune.name, tconf.settings.foreign, working_path))
 
-def binarise(working_path, 
-             l_lang, 
-             l_direct, 
-             l_orient, 
-             l_model,  
+
+def binarise(working_path,
+             l_lang,
+             l_direct,
+             l_orient,
+             l_model,
              tconf,
              d):
     '''This function binarises the phrase and reoridering tables.
@@ -171,8 +181,8 @@ def binarise(working_path,
     :param string l_model: reordering modeltype setting, either wbe, phrase, or hier
     :param config tconf: translate configuration
     :param dict d: output dictionary
-        
-    ''' 
+    '''
+
     with Timer(d, 'binarise'):
         pcommand("mkdir -p {0}/binarised-model".format(working_path))
         pcommand("{0}/bin/processPhraseTable  -ttable 0 0 {1}/train/model/{2}.gz -nscores 5 -out {1}/binarised-model/phrase-table".format(tconf.paths.moses, working_path, tconf.settings.phrase_table_name))
@@ -182,7 +192,7 @@ def binarise(working_path,
         pcommand("sed -i 's/train\/model\/{1}.gz/binarised-model\/phrase-table/' {0}/binarised-model/moses.ini".format(working_path, tconf.settings.phrase_table_name))
 
 
-def test_filtered(working_path, 
+def test_filtered(working_path,
                   tconf,
                   d):
     '''This function tests the model made so far.
@@ -191,41 +201,42 @@ def test_filtered(working_path,
     :param string working_path: path to working directory
     :param config tconf: translate configuration
     :param dict d: output dictionary
-    
-    ''' 
+
+    '''
     with Timer(d, 'test'):
         pcommand("{0}/scripts/training/filter-model-given-input.pl {3}/filtered {3}/mert-work/moses.ini {2}/{1}.true.en -Binarizer {0}/bin/processPhraseTable".format(tconf.paths.moses, tconf.test.name, tconf.paths.aux_corpus_files, working_path))
         pcommand("{0}/bin/moses -f {1}/filtered/moses.ini  < {2}/{3}.true.en > {1}/{3}.translated.{4} 2> {1}/{3}.out".format(tconf.paths.moses, working_path, tconf.paths.aux_corpus_files, tconf.test.name, tconf.settings.foreign))
         c = pcommand("{0}/scripts/generic/multi-bleu.perl -lc {1}/{2}.true.{4} < {3}/{2}.translated.{4}".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.test.name, working_path, tconf.settings.foreign))
         d["BLEU"] = c.out
 
-def test_binarised(working_path, 
+
+def test_binarised(working_path,
                    tconf,
                    d):
-    '''This function tests the model so far with the binarised phrase table 
+    '''This function tests the model so far with the binarised phrase table
     :param string working_path: path to working directory
     :param config tconf: translate configuration
     :param dict d: output dictionary
-        
-    ''' 
+
+    '''
     with Timer(d, 'test'):
         pcommand("{0}/bin/moses -f {1}/binarised-model/moses.ini  < {2}/{3}.true.en > {1}/{3}.translated.{4} 2> {1}/{3}.out".format(tconf.paths.moses, working_path, tconf.paths.aux_corpus_files, tconf.test.name, tconf.settings.foreign))
         c = pcommand("{0}/scripts/generic/multi-bleu.perl -lc {1}/{2}.true.{4} < {3}/{2}.translated.{4}".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.test.name, working_path, tconf.settings.foreign))
         d["BLEU"] = c.out
 
 
-def build_model(l_len, 
-                l_order, 
-                l_lang, 
-                l_direct, 
-                l_score, 
-                l_smoothing, 
-                l_align, 
-                l_orient, 
-                l_model,  
-                i, 
+def build_model(l_len,
+                l_order,
+                l_lang,
+                l_direct,
+                l_score,
+                l_smoothing,
+                l_align,
+                l_orient,
+                l_model,
+                i,
                 tconf):
-    '''This function runs one configuration of the training script. 
+    '''This function runs one configuration of the training script.
     This function can be called with different arguments to run multiple configurations in parallel
     :param int l_len: max phrase length
     :param int l_order: n-gram order
@@ -238,17 +249,17 @@ def build_model(l_len,
     :param string l_model: reordering modeltype setting, either wbe, phrase, or hier
     :param int i: configuration number, should be unique for each
     :param config tconf: translate configuration
-        
-    ''' 
+    '''
+
     set_logger(logger, "Process "+str(i))
-    run_start = time.time();
+    run_start = time.time()
     lm_path = "{0}/{1}/lm".format(tconf.paths.project, i)
     working_path = "{0}/{1}/working".format(tconf.paths.project, i)
-    
+
     os.makedirs("{0}/{1}".format(tconf.paths.project, i))
-     
+
     # Logs information about the current configuation
-    d = {"i": i, 
+    d = {"i": i,
          "start_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
          "order": l_order,
          "smoothing": l_smoothing,
@@ -268,6 +279,5 @@ def build_model(l_len,
 
     d["run_time_hms"] = str(datetime.timedelta(seconds=(time.time()-run_start)))
     d["end_time"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    with open("{0}/{1}/{1}.json".format(tconf.paths.project,i),"w",1) as ilog:
-        json.dump(d, ilog, indent=4, separators=(',', ': '))    
-
+    with open("{0}/{1}/{1}.json".format(tconf.paths.project, i), "w", 1) as ilog:
+        json.dump(d, ilog, indent=4, separators=(',', ': '))

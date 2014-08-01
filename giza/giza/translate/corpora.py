@@ -22,29 +22,33 @@ import math
 import yaml
 import polib
 
-import giza.config.corpora
+from giza.translate.utils import get_file_list
+
 ''''
-This module contains functions that involve creating corpora.
-It has one function that creates the appropriate train, tune, and test hybrid corpora from smaller corpora.
-It has other functions that create corpora from already translated po files as well as from multi-lingual dictionaries
+This module contains functions that involve creating corpora. It has one
+function that creates the appropriate train, tune, and test hybrid corpora from
+smaller corpora. It has other functions that create corpora from already
+translated po files as well as from multi-lingual dictionaries
 '''
 
 logger = logging.getLogger('giza.translate.corpora')
 
 
 def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
-    '''This function appends the correct amount of the corpus to the basefile, finishing up the file when necessary so no data goes to waste
-    :param int percentage: percentage of the file going into the corpus 
-    :param float num_copies: number of copies of the file going into the corpus 
-    :param string out_fn: the name of the base file to append the corpus to 
-    :param string in_fn: the name of the new file to take the data from 
-    :param int start: the line to start copying from in the new file 
-    :param boolean final: if it's the final section of the file. If True it makes sure to use all of the way to the end of the file
+    '''This function appends the correct amount of the corpus to the basefile,
+    finishing up the file when necessary so no data goes to waste
+    :param int percentage: percentage of the file going into the corpus
+    :param float num_copies: number of copies of the file going into the corpus
+    :param string out_fn: the name of the base file to append the corpus to
+    :param string in_fn: the name of the new file to take the data from
+    :param int start: the line to start copying from in the new file
+    :param boolean final: if it's the final section of the file. If True it
+    makes sure to use all of the way to the end of the file
     :returns: the last line it copied until
     '''
     with open(in_fn, 'r') as f:
         new_content = f.readlines()
-    
+
     with open(out_fn, 'a') as f:
         tot = int(len(new_content) * percentage / 100)
         for i in range(int(math.floor(num_copies))):
@@ -55,8 +59,9 @@ def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
 
         # if we have a fractional number of copies then we take care of the rest
         f.writelines(new_content[start:start+int(tot*(num_copies-math.floor(num_copies)))])
-            
+
     return start + tot
+
 
 def get_total_length(conf, corpus_type):
     '''This function finds the ideal total length of the corpus
@@ -65,53 +70,72 @@ def get_total_length(conf, corpus_type):
     :param string corpus_type: either train, tune, or test
     :returns: total length of the corpus
     '''
-    tot_length=0
+    tot_length = 0
     for file_name, source in conf.sources.items():
         if source.state['percent_of_'+corpus_type] > 0 and source.length * 100 / source.state['percent_of_'+corpus_type] > tot_length:
             tot_length = source.length * 100 / source.state['percent_of_'+corpus_type]
     return tot_length
- 
+
 
 def create_hybrid_corpora(conf):
-    '''This function takes the configuration file and runs through the files, appending them appropriately
-    It first verifies that all of the percentages add up and then it figures out how much of each file should go into each corpus and appends them
-    The config file should be similar to corpora.yaml.
-    It will copy the config file to the directory with the corpora so that you have a record, but the copy won't be exact.
-    It creates both language corpora at the same time in parallel.
+    '''This function takes the configuration file and runs through the files,
+    appending them appropriately. It first verifies that all of the percentages
+    add up and then it figures out how much of each file should go into each
+    corpus and appends them. The config file should be similar to corpora.yaml.
+    It will copy the config file to the directory with the corpora so that you
+    have a record, but the copy won't be exact. It creates both language
+    corpora at the same time in parallel.
     :param config conf: corpora configuration object
     '''
-    
+
     if os.path.exists(conf.container_path) is False:
         os.makedirs(conf.container_path)
     with open(conf.container_path+"/corpora.yaml", 'w') as f:
         yaml.dump(conf.dict(), f, default_flow_style=False)
-     
-    #append files appropriately
+
+    # append files appropriately
     for corpus_type in ('train', 'tune', 'test'):
-        source_outfile = "{0}/{1}.{2}-{3}.{2}".format(conf.container_path, corpus_type, conf.source_language, conf.target_language)
-        target_outfile = "{0}/{1}.{2}-{3}.{3}".format(conf.container_path, corpus_type, conf.source_language, conf.target_language)
-        open(source_outfile,'w').close()
-        open(target_outfile,'w').close()
+        source_outfile = "{0}/{1}.{2}-{3}.{2}".format(conf.container_path,
+                                                      corpus_type,
+                                                      conf.source_language,
+                                                      conf.target_language)
+        target_outfile = "{0}/{1}.{2}-{3}.{3}".format(conf.container_path,
+                                                      corpus_type,
+                                                      conf.source_language,
+                                                      conf.target_language)
+        open(source_outfile, 'w').close()
+        open(target_outfile, 'w').close()
 
-        tot_length = get_total_length(conf, corpus_type)  
+        tot_length = get_total_length(conf, corpus_type)
 
-        for fn,source in conf.sources.items():
+        for fn, source in conf.sources.items():
             logger.info("Processing "+fn+" for "+corpus_type)
 
-            #finds how many copies of this file will make it the correct percentage of the full corpus
+            # finds how many copies of this file will make it the correct percentage of the full corpus
             num_copies = tot_length * source.state['percent_of_'+corpus_type] / 100 / source.length
 
             final = False
-            if corpus_type is 'test': 
+            if corpus_type is 'test':
                 final = True
 
-            #appends the section of the file to the corpora
-            end = append_corpus(source.state['percent_'+corpus_type], num_copies, source_outfile, source.source_file_path, source.end, final)
-            append_corpus(source.state['percent_'+corpus_type], num_copies, target_outfile, source.target_file_path, source.end, final)
+            # appends the section of the file to the corpora
+            end = append_corpus(source.state['percent_'+corpus_type],
+                                num_copies,
+                                source_outfile,
+                                source.source_file_path,
+                                source.end, final)
+            append_corpus(source.state['percent_'+corpus_type],
+                          num_copies,
+                          target_outfile,
+                          source.target_file_path,
+                          source.end,
+                          final)
             source.end = end
-             
+
+
 def write_from_po_file(source_doc, target_doc, po_file_name):
-    '''This function writes two files in english and spanish from a po file's translated entries
+    '''This function writes two files in english and spanish from a po file's
+    translated entries
     :param string source_doc: Name of file to put source lanaguge text in.
     :param string target_doc: Name of file to put target lanaguge text in.
     :param string po_file_name: Path to po file to parse
@@ -122,17 +146,19 @@ def write_from_po_file(source_doc, target_doc, po_file_name):
         source_doc.write(entry.msgid.encode('utf-8')+'\n')
         target_doc.write(entry.msgstr.encode('utf-8')+'\n')
 
+
 def create_corpus_from_po(po_path, source_doc_fn, target_doc_fn):
-    '''This function opens up the output files and then goes through the files in the file list and writes them all to two corpus files
+    '''This function opens up the output files and then goes through the files
+    in the file list and writes them all to two corpus files.
     :param string po_path: Path to po file or directory of po files
     :param string source_doc_fn: Name of file to put source lanaguge text in.
     :param string target_doc_fn: Name of file to put target lanaguge text in.
     '''
-    
+
     if os.path.exists(po_path) is False:
         logger.error(po_path+" doesn't exist")
         sys.exit(1)
-    
+
     # path is a directory now
     logger.info("walking path "+po_path)
     with open(source_doc_fn, "w", 1) as source_doc:
@@ -141,9 +167,11 @@ def create_corpus_from_po(po_path, source_doc_fn, target_doc_fn):
             for fn in file_list:
                 write_from_po_file(source_doc, target_doc, fn)
 
+
 def create_corpus_from_dictionary(dict_fn, source_fn, target_fn):
-    '''This function splits a dictionary from http://www.dicts.info/uddl.php and turns it into a parallel corpus 
-    :param string dict_fn: path to dictionary file  
+    '''This function splits a dictionary from http://www.dicts.info/uddl.php
+    and turns it into a parallel corpus.
+    :param string dict_fn: path to dictionary file
     :param string source_fn: path to file to write source text to
     :param string target_fn: path to file to write target text to
     '''
@@ -151,7 +179,7 @@ def create_corpus_from_dictionary(dict_fn, source_fn, target_fn):
     if os.path.isfile(dict_fn) is False:
         logger.error(dict_fn+" doesn't exist")
         sys.exit(1)
-    
+
     with open(dict_fn, "r") as dict_f:
         with open(source_fn, "w", 1) as source_f:
             with open(target_fn, "w", 1) as target_f:
@@ -161,8 +189,8 @@ def create_corpus_from_dictionary(dict_fn, source_fn, target_fn):
                         continue
                     halves = re.split(r'\t+', line)
                     if len(halves) < 2:
-                        continue          
-                    source_words = re.split(r';', halves[0])       
+                        continue
+                    source_words = re.split(r';', halves[0])
                     target_words = re.split(r';', halves[1])
                     for target_word in target_words:
                         target_word = target_word.strip()
@@ -172,4 +200,3 @@ def create_corpus_from_dictionary(dict_fn, source_fn, target_fn):
                             source_f.write("\n")
                             target_f.write(target_word)
                             target_f.write("\n")
-    
