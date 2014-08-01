@@ -6,26 +6,26 @@ sources:
       source_file_path: test_files/large.en
       target_file_path: test_files/large.es
       percent_train: 75
-      percent_test: 20
-      percent_tune: 5
+      percent_tune: 20
+      percent_test: 5
     - name: medium
       source_file_path: test_files/medium.en
       target_file_path: test_files/medium.es
       percent_train: 30
-      percent_test: 40
-      percent_tune: 30
+      percent_tune: 40
+      percent_test: 30
 source_contributions:
     train:
         - name: large
           percent_of_corpus: 50
         - name: medium
           percent_of_corpus: 50
-    test:
+    tune:
         - name: large
           percent_of_corpus: 40
         - name: medium
           percent_of_corpus: 60
-    tune:
+    test:
         - name: large
           percent_of_corpus: 40
         - name: medium

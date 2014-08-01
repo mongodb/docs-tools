@@ -36,6 +36,10 @@ def get_file_list(path, input_extension):
     :param string path: path to the file
     :param list input_extension: a list (or a single) of extensions that is acceptable
     '''
+    if os.path.exists(path) is False:
+        logger.error(path+" does not exist")
+        sys.exit(1)
+
     if os.path.isfile(path):
         if input_extension is not None:
             if isinstance(input_extension, list):
@@ -186,4 +190,9 @@ def flip_text_direction(in_fp, out_fp):
     with open(out_fp, "w", 1) as out_file:
         with open(in_fp, "r") as in_file:
             for line in in_file:
-                out_file.write(line[::-1])
+                if line[-1] == '\n':
+                    out_file.write(line[-2::-1])
+                else:
+                    out_file.write(line[::-1])
+                out_file.write('\n')
+                logger.info(line[::-1])

@@ -49,17 +49,26 @@ def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
     with open(in_fn, 'r') as f:
         new_content = f.readlines()
 
-    with open(out_fn, 'a') as f:
+    with open(out_fn, 'a+') as f:
         tot = int(len(new_content) * percentage / 100)
         for i in range(int(math.floor(num_copies))):
             if final is False:
                 f.writelines(new_content[start:start+tot])
             else:
                 f.writelines(new_content[start:])
+            #if there's no new line at the end this adds one
+            f.seek(-1, os.SEEK_END)
+            if f.read(1) != '\n':
+                f.write('\n')
 
         # if we have a fractional number of copies then we take care of the rest
         f.writelines(new_content[start:start+int(tot*(num_copies-math.floor(num_copies)))])
-        f.write('\n')
+
+        #if there's no new line at the end this adds one
+        f.seek(-1, os.SEEK_END)
+        if f.read(1) != '\n':
+            f.write('\n')
+
 
     return start + tot
 
@@ -119,7 +128,6 @@ def create_hybrid_corpora(conf):
             if source.state['percent_'+corpus_type] == 0 or source.state['percent_of_'+corpus_type] == 0:
                 continue
             num_copies = tot_length * source.state['percent_of_'+corpus_type] / source.length / source.state['percent_'+corpus_type]
-
             final = False
             if corpus_type is 'test':
                 final = True
@@ -189,7 +197,6 @@ def create_corpus_from_dictionary(dict_fn, source_fn, target_fn):
     with open(dict_fn, "r") as dict_f:
         with open(source_fn, "w", 1) as source_f:
             with open(target_fn, "w", 1) as target_f:
-
                 for line in dict_f:
                     if line[0] == '#':
                         continue
