@@ -104,9 +104,10 @@ def main():
             giza.operations.translate.dict_to_corpus,
             giza.operations.translate.translate_po,
             giza.operations.translate.translate_text_doc,
+            giza.operations.translate.flip_text,
     ]
     argh.add_commands(parser, translate_commands, namespace='translate')
-    
+
     translation_commands = [
         giza.operations.tx.check_orphaned,
         giza.operations.tx.update_translations,

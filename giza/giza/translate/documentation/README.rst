@@ -1,4 +1,4 @@
-==================== 
+====================
 Translation Pipeline
 ====================
 
@@ -23,11 +23,11 @@ Giza Commands
   * Specify your run settings.
 
     * Threads is the number of threads for multi-threaded moses/irstlm/mgiza commands in any given process. Pool_size is the number of processes that build_model will run at once.
-    * phrase_table_name and reordering_name are a bit trickier. In general they are 'phrase_table' and 'reordering_table' in some cases- mainly when doing factorized or OSM models- this name changes to something like ``phrase_table.0-0,1``. This would be found under ``project/0/working/train/model``. As such you can't actually know exactly what the answer is before you run it. Usually this will just cause an error late in the script (around tuning or testing) and you'll have to fix the name at then rerun the whole script or those sections if you feel like editing the initial script. 
+    * phrase_table_name and reordering_name are a bit trickier. In general they are 'phrase_table' and 'reordering_table' in some cases- mainly when doing factorized or OSM models- this name changes to something like ``phrase_table.0-0,1``. This would be found under ``project/0/working/train/model``. As such you can't actually know exactly what the answer is before you run it. Usually this will just cause an error late in the script (around tuning or testing) and you'll have to fix the name at then rerun the whole script or those sections if you feel like editing the initial script.
 
-  * Specify your training_parameters. If you know what you want to run you can just make a simple yaml attribute. If you make a list, as shown in the example, it will run all combinations of the parameters in parallel using as many processes as the pool-size allows. 
-  * Run the build model command in the background. Expect it to take a long time. It should email you if it succeeds, however make sure to monitor if the process is still running. ``ps aux | grep 'moses'`` usually does the trick. 
-  * Look at ``data.csv`` in the project directory to get the results from the test. The highest BLEU score is the best result. 
+  * Specify your training_parameters. If you know what you want to run you can just make a simple yaml attribute. If you make a list, as shown in the example, it will run all combinations of the parameters in parallel using as many processes as the pool-size allows.
+  * Run the build model command in the background. Expect it to take a long time. It should email you if it succeeds, however make sure to monitor if the process is still running. ``ps aux | grep 'moses'`` usually does the trick.
+  * Look at ``data.csv`` in the project directory to get the results from the test. The highest BLEU score is the best result.
   * To see a sample from the model, look at ``project/0/working/test.en-es.translate.es`` (note es will be your target language).
   * Information about the different configuration options can best be found in the Moses documentation:
 
@@ -41,7 +41,7 @@ Giza Commands
 
 * **model results**
   * ``giza translate model_results --config <corpora.yaml>``
-  * ``giza translate res -c <corpora.yaml>``  
+  * ``giza translate res -c <corpora.yaml>``
   * If for some reason build model doesn't run ``model_results`` or you just want to run it again, this command will run it for you
   * It takes the json file from build model and writes the data to a csv file and then emails the person in the config
 
@@ -52,8 +52,8 @@ Giza Commands
   * The first thing to do is create the config file.
 
     * The container_path is the path to the directory that the corpora will be placed in. If you provide just a name then a directory of that name will be placed in the current directory.
-    * The source section specifies what percentage of a given file goes to each of training, testing, tuning. You provide the name and the path to the source and target corpora and then the percentages that go into each. The percentages must add up to 100. 
-    * The source contributions section specifices the percentage of each corpus that comes from each of the files. create_corpora finds the minimum total length of the corpus such that all of the lines are used at least once. If one corpus has a higher percentage than it has lines, its lines get repeated, emphasizing them more. For example, say ``f1`` is 100 lines, and under sources we allocate 60% to training. Let's say create_corpora finds that the training corpus should be 200 lines and the source_contributions says ``f1`` should comprise 80% of that corpus. Thus 160 lines need to be taken from ``f1``, so ``f1``'s first 60 lines will be put in twice and then we still need to put in 40 more lines so we'll add the first 40 lines in one more time. 
+    * The source section specifies what percentage of a given file goes to each of training, testing, tuning. You provide the name and the path to the source and target corpora and then the percentages that go into each. The percentages must add up to 100.
+    * The source contributions section specifices the percentage of each corpus that comes from each of the files. create_corpora finds the minimum total length of the corpus such that all of the lines are used at least once. If one corpus has a higher percentage than it has lines, its lines get repeated, emphasizing them more. For example, say ``f1`` is 100 lines, and under sources we allocate 60% to training. Let's say create_corpora finds that the training corpus should be 200 lines and the source_contributions says ``f1`` should comprise 80% of that corpus. Thus 160 lines need to be taken from ``f1``, so ``f1``'s first 60 lines will be put in twice and then we still need to put in 40 more lines so we'll add the first 40 lines in one more time.
     * Create corpora creates both languages at the same time, you must specify the paths to each and the script verifies that they are the same length.
 
   * After creating the config just run the command and move the container wherever you'd like if you didn't specify it correctly off the bat.
@@ -86,7 +86,7 @@ Giza Commands
   * ``giza translate d2c --dict <path_to_dictionary> -s <path_for_source_lang_corpus> -t <path_for_target_lang_corpus>``
   * These commands will turn a dictionary into a corpus
   * This can be good for trying to fill in words that don't get translated, though adding dictionaries is not so effective as there are no actual phrases
-  * Dictionaries for this script can be gotten at http://www.dicts.info/uddl.php . 
+  * Dictionaries for this script can be gotten at http://www.dicts.info/uddl.php .
   * This command works almost identically to po_to_corpus, though it doens't work for multiple input files.
 
 * **translate text doc**
@@ -106,7 +106,7 @@ Giza Commands
   * ``giza translate translate_po --config <translate.yaml> --po <po_files_to_translate> --protected <protected_regex_file>``
   * ``giza translate tpo -c <translate.yaml> --po <po_files_to_translate> -p <protected_regex_file>``
   * These commands work just like translate text doc, but rather than translating one text doc they can translate one or more po files
-  * Just provide a link to a po file or a directory of them and it will traverse them all and translate them all. 
+  * Just provide a link to a po file or a directory of them and it will traverse them all and translate them all.
   * The po files will be translated in place so it's important to copy them beforehand. Moreover, the already translated entries will be emptied.
 
     * This is intentional as it makes it so every translation has a known source. It would be bad if we conflated human translations with machine translations. This way each set has a consistent source.
@@ -115,7 +115,7 @@ Giza Commands
 Setup
 -----
 
-* Follow the instructions in MosesSetup.sh. It is not meant to be a script that you simply run, rather go through it line by line or paragraph by paragraph running the commands. 
+* Follow the instructions in MosesSetup.sh. It is not meant to be a script that you simply run, rather go through it line by line or paragraph by paragraph running the commands.
 * Be sure to read the comments as you go along, they may tell you alternate commands to run in certain situations.
 
 Workflow
@@ -132,7 +132,7 @@ Workflow
 
 3. Build your model
 
-  1. Decide what configurations to test and run ``build_model`` with an appropriate config file modeled off of the sample ``translate_full.yaml`` which shows all of the possible settings. Perusing the Moses website will explain a bit more about every setting, but in general most settings either perform faster or perform better. Ones that seem to "do less"- such as by using fewer scoring options, considering only one direction, or considering smaller phrases or words- likely will finish faster but will perform worse. ``translate_best.yaml`` was found to perform very well. ``translate_baseline.yaml`` is the baseline provided by moses. 
+  1. Decide what configurations to test and run ``build_model`` with an appropriate config file modeled off of the sample ``translate_full.yaml`` which shows all of the possible settings. Perusing the Moses website will explain a bit more about every setting, but in general most settings either perform faster or perform better. Ones that seem to "do less"- such as by using fewer scoring options, considering only one direction, or considering smaller phrases or words- likely will finish faster but will perform worse. ``translate_best.yaml`` was found to perform very well. ``translate_baseline.yaml`` is the baseline provided by moses.
   2. Wait a while (and read a good book!) while the test runs
   3. At the end of the test look at the out.csv file for the data on how well each configuration did, the BLEU score is the metric you want to look at.
   4. If for some reason the out.csv file isn't there, use ``model_results`` to create it.
@@ -156,9 +156,11 @@ Workflow
   1. Copy doc directory tree to back it up
   2. Use ``mongo_to_po`` to copy approved translations into the new doc directory tree
   3. This will inject the approved translations into all of the untranslated sentences
-  
+
 Notes
 -----
+If you don't want to accidentally convert backticks (`) into apostrophes (') then comment out line 278 of translation_tools/mosesdecoder/scripts/tokenizer/tokenizer.perl:
+$text =~ s/\`/\'/g;
 
 When running any moses .sh files, run with bash, not just sh
 
@@ -173,7 +175,7 @@ Other corpora can be found here, the News-Commentary corpus was found to do well
 http://www.statmt.org/wmt13/translation-task.html#download
 
 These scripts, especailly the tuning and training phases, can take a long time. Take proper measures to background your processes so that they do not get killed part way.
-``nohup``- makes sure that training is not interrupted when done over SSH 
+``nohup``- makes sure that training is not interrupted when done over SSH
 ``nice``- makes sure the training doens't hold up the entire computer. run with ``nice -n 15``
 ### Explanation of Moses scripts
 
@@ -196,8 +198,8 @@ These scripts, especailly the tuning and training phases, can take a long time. 
   * The Language model ensures fluent output, so it is built with the target language in mind. Perplexity is a measure of how probable the language model is. IRSTLM computes the perplexity of the test set. The language model counts n-gram frequencies and also estimates smoothing parameters.
 
     * ``add-start-end.sh``: adds sentence boundary symbols to make it easier to parse. This creates the ``.sb`` file.
-    * ``build-lm.sh``: generates the language model. ``-i`` is the input ``.sb`` file, ``-o`` is the output LM file, ``-t`` is a directory for temp files, ``-p`` is to prune singleton n-grams, ``-s`` is the smoothing method, ``-n`` is the order of the language model (typically set to 3). The output theoretically is an iARPA file with a ``.ilm.gz`` extension, though moses says to use ``.lm.es``. This step may be run in parallel with ``build-lm-qsub.sh`` 
-    * ``compile-lm``: turns the iARPA into an ARPA file. It appears you need the ``--text`` flag alone (as opposed to ``--text yes``) to make it work properly. 
+    * ``build-lm.sh``: generates the language model. ``-i`` is the input ``.sb`` file, ``-o`` is the output LM file, ``-t`` is a directory for temp files, ``-p`` is to prune singleton n-grams, ``-s`` is the smoothing method, ``-n`` is the order of the language model (typically set to 3). The output theoretically is an iARPA file with a ``.ilm.gz`` extension, though moses says to use ``.lm.es``. This step may be run in parallel with ``build-lm-qsub.sh``
+    * ``compile-lm``: turns the iARPA into an ARPA file. It appears you need the ``--text`` flag alone (as opposed to ``--text yes``) to make it work properly.
     * ``build_binary``: binarizes the ARPA file so it's faster to use
     * More info on IRSTLM here: http://hermes.fbk.eu/people/bertoldi/teaching/lab_2010-2011/img/irstlm-manual.pdf
     * Make sure to export the irstlm environment variable either in your ``.bash_profile`` or in the code itself ``export IRSTLM=/home/judah/irstlm-5.80.03``
@@ -220,7 +222,7 @@ These scripts, especailly the tuning and training phases, can take a long time. 
 
 * **Tuning**
 
-  * Tuning changes the weights of the different scores in the moses.ini file. Tuning takes a long time and is best to do with small tuning corpora as a result. It is best to tune on sentences VERY similar to those you are actually trying to translate.  
+  * Tuning changes the weights of the different scores in the moses.ini file. Tuning takes a long time and is best to do with small tuning corpora as a result. It is best to tune on sentences VERY similar to those you are actually trying to translate.
 
 * **Binarize the model**
 
@@ -236,4 +238,4 @@ These scripts, especailly the tuning and training phases, can take a long time. 
   * Running just uses the ``moses`` script and takes in the ``moses.ini`` file. If the model was filtered, binarised, or tuned, the "most recent" ``moses.ini`` file should be used.
   * ``detruecase.perl``: recapitalizes the beginnings of words appropriately
   * ``detokenizer.perl``: fixes up the tokenization by replacing escaped characters with the original character
-  * Use ``mail -s "{subject}" {email} <<< "{message}"``  to find out when long running processes are done running 
+  * Use ``mail -s "{subject}" {email} <<< "{message}"``  to find out when long running processes are done running

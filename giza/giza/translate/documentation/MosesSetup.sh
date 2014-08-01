@@ -4,9 +4,9 @@
 # Install dependencies
 sudo apt-get update
 # for ubunutu 14.04
-sudo apt-get install build-essential g++ git subversion automake autotools-dev libicu-dev libtool zlib1g-dev libboost-all-dev libbz2-dev liblzma-dev python-dev cmake mailutils libtcmalloc-minimal4 
+sudo apt-get install build-essential g++ git subversion automake autotools-dev libicu-dev libtool zlib1g-dev libboost-all-dev libbz2-dev liblzma-dev python-dev cmake libtcmalloc-minimal4
 # for other ubuntus
-# sudo apt-get install build-essential g++ git subversion automake autotools-dev libicu-dev libtool zlib1g-dev libboost-all-dev libbz2-dev liblzma-dev python-dev cmake mailutils libtcmalloc-minimal0
+# sudo apt-get install build-essential g++ git subversion automake autotools-dev libicu-dev libtool zlib1g-dev libboost-all-dev libbz2-dev liblzma-dev python-dev cmake libtcmalloc-minimal0
 
 # Create directory for all of Moses tools
 mkdir translation_tools
@@ -29,7 +29,7 @@ cd translation_tools
 wget http://sourceforge.net/projects/irstlm/files/latest/download
 tar zxvf download
 cd irstlm-5.80.03/
-./regenerate-makefiles.sh 
+./regenerate-makefiles.sh
 ./configure --prefix=$PWD
 make -j8
 make install
@@ -49,7 +49,7 @@ make install
 # change FIND_PACKAGE( Boost 1.46 COMPONENTS thread) to FIND_PACKAGE( Boost COMPONENTS thread system)
 #
 # also in src/mkcls/myleda.h, line 221 change
-# insert(typename MY_HASH_BASE::value_type(a,init)); 
+# insert(typename MY_HASH_BASE::value_type(a,init));
 # to
 # this->insert(typename MY_HASH_BASE::value_type(a,init));
 
@@ -67,6 +67,9 @@ cp ../mgizapp/scripts/merge_alignment.py tools/
 # ./bjam --with-boost=/home/ubuntu/translation_tools/boost_1_55_0 --with-irstlm=/home/ubuntu/translation_tools/irstlm-5.80.03 --with-giza=/home/ubuntu/translation_tools/mgizapp/bin -j8 -a -q
 #Otherwise use this:
 ./bjam --with-irstlm=/home/ubuntu/translation_tools/irstlm-5.80.03 --with-giza=/home/ubuntu/translation_tools/mgizapp/bin -j8 -a -q
+
+# If you don't want to accidentally turn backticks (`) into apostrophes ('), then comment out line 278 of translation_tools/mosesdecoder/scripts/tokenizer/tokenizer.perl
+# $text =~ s/\`/\'/g;
 
 # Test moses is working properly
 wget http://www.statmt.org/moses/download/sample-models.tgz
