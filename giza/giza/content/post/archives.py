@@ -35,10 +35,16 @@ def html_tarball(builder, conf):
                               conf.paths.branch_output),
             newp=os.path.basename(basename))
 
+
+    link_name = os.path.join(conf.paths.projectroot,
+                             conf.paths.public_site_output,
+                             conf.project.name + '.tar.gz')
+
+    if os.path.exists(link_name):
+        os.remove(link_name)
+
     create_link(input_fn=os.path.basename(tarball_name),
-                 output_fn=os.path.join(conf.paths.projectroot,
-                                        conf.paths.public_site_output,
-                                        conf.project.name + '.tar.gz'))
+                 output_fn=link_name)
 
 def man_tarball(builder, conf):
     basename = os.path.join(conf.paths.projectroot,
@@ -51,7 +57,13 @@ def man_tarball(builder, conf):
             cdir=os.path.join(conf.paths.projectroot, conf.paths.branch_output),
             newp=conf.project.name + '-manpages')
 
+
+    link_name = os.path.join(conf.paths.projectroot,
+                             conf.paths.public_site_output,
+                             'manpages' + '.tar.gz')
+
+    if os.path.exists(link_name):
+        os.remove(link_name)
+
     create_link(input_fn=os.path.basename(tarball_name),
-                 output_fn=os.path.join(conf.paths.projectroot,
-                                        conf.paths.public_site_output,
-                                        'manpages' + '.tar.gz'))
+                 output_fn=link_name)
