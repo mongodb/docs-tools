@@ -146,6 +146,9 @@ Workflow
 
   1. Use ``po_to_mongo`` to move the data into MongoDB
   2. Run this once for every "type" of translation you have. (i.e. Moses, Person1, Person2....), this will make the status and the username correct
+  3. You may need to put some users into your database first. Opening up a shell and running ``db.users.insert({"username": "Moses", "num_reviewed": 0, "num_user_approved": 0, "num_got_approved":0, "trust_level": "basic"})``
+  4. ``python po_to_mongo.py ~/docs Jorge approved es 28000 verifier``
+  5. ``python po_to_mongo.py ~/docsMoses Moses SMT es 28000 verifier``
 
 6. Run the verifier
 
