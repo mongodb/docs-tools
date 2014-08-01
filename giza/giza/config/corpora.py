@@ -19,16 +19,16 @@ logger = logging.getLogger('giza.config.corpora')
 from giza.config.base import ConfigurationBase
 
 class SourceConfig(ConfigurationBase):
-    _option_registry = ['name', 
-                        'source_file_path', 
-                        'target_file_path', 
-                        'percent_train', 
-                        'percent_tune', 
-                        'percent_test', 
-                        'percent_of_train', 
-                        'percent_of_tune', 
-                        'percent_of_test', 
-                        'length', 
+    _option_registry = ['name',
+                        'source_file_path',
+                        'target_file_path',
+                        'percent_train',
+                        'percent_tune',
+                        'percent_test',
+                        'percent_of_train',
+                        'percent_of_tune',
+                        'percent_of_test',
+                        'length',
                         'end']
 
     def __init__(self, input_obj):
@@ -36,9 +36,9 @@ class SourceConfig(ConfigurationBase):
 
 
 class CorporaConfig(ConfigurationBase):
-    _option_registry = ['container_path', 
-                        'source_language', 
-                        'target_language', 
+    _option_registry = ['container_path',
+                        'source_language',
+                        'target_language',
                         'sources']
 
     def __init__(self, input_obj):
@@ -69,10 +69,10 @@ class CorporaConfig(ConfigurationBase):
         '''This function adds the file lengths of the files to the configuration dictionary
         '''
         for file_name, source in self.sources.items():
-            with open(source.source_file_path, 'r') as file:
-                length1 = len(file.readlines())
-            with open(source.target_file_path, 'r') as file:
-                length2 = len(file.readlines())
+            with open(source.source_file_path, 'r') as f:
+                length1 = len(f.readlines())
+            with open(source.target_file_path, 'r') as f:
+                length2 = len(f.readlines())
             if length1 != length2:
                 error = "Lengths of files for "+file_name+" are not identical"
                 logger.error(error)
@@ -126,4 +126,4 @@ class CorporaConfig(ConfigurationBase):
                     raise TypeError("Invalid percentage")
                 d['sources'][source['name']].state['percent_of_'+t] = source['percent_of_corpus']
         return d
-            
+

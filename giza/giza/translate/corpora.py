@@ -59,6 +59,7 @@ def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
 
         # if we have a fractional number of copies then we take care of the rest
         f.writelines(new_content[start:start+int(tot*(num_copies-math.floor(num_copies)))])
+        f.write('\n')
 
     return start + tot
 
@@ -72,8 +73,10 @@ def get_total_length(conf, corpus_type):
     '''
     tot_length = 0
     for file_name, source in conf.sources.items():
-        if source.state['percent_of_'+corpus_type] > 0 and source.length * 100 / source.state['percent_of_'+corpus_type] > tot_length:
-            tot_length = source.length * 100 / source.state['percent_of_'+corpus_type]
+        if source.state['percent_of_'+corpus_type] > 0:
+            temp_length = source.length*source.state['percent_'+corpus_type] / source.state['percent_of_'+corpus_type]
+            if temp_length > tot_length:
+                tot_length = temp_length
     return tot_length
 
 
@@ -88,8 +91,10 @@ def create_hybrid_corpora(conf):
     :param config conf: corpora configuration object
     '''
 
-    if os.path.exists(conf.container_path) is False:
-        os.makedirs(conf.container_path)
+    if os.path.exists(conf.container_path):
+        logger.error(conf.container_path+" already exists. Please delete it or change the container and try again")
+        sys.exit(1)
+    os.makedirs(conf.container_path)
     with open(conf.container_path+"/corpora.yaml", 'w') as f:
         yaml.dump(conf.dict(), f, default_flow_style=False)
 
@@ -112,7 +117,9 @@ def create_hybrid_corpora(conf):
             logger.info("Processing "+fn+" for "+corpus_type)
 
             # finds how many copies of this file will make it the correct percentage of the full corpus
-            num_copies = tot_length * source.state['percent_of_'+corpus_type] / 100 / source.length
+            if source.state['percent_'+corpus_type] == 0 or source.state['percent_of_'+corpus_type] == 0:
+                continue
+            num_copies = tot_length * source.state['percent_of_'+corpus_type] / source.length / source.state['percent_'+corpus_type]
 
             final = False
             if corpus_type is 'test':
