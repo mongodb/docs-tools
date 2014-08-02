@@ -62,6 +62,8 @@ class ConfigurationBase(object):
     def state(self, value):
         logger.warning('cannot set state record directly')
 
+    def update_state(self, )
+
     def __contains__(self, key):
         return key in self.state
 
