@@ -16,19 +16,24 @@ import logging
 
 logger = logging.getLogger('giza.content.examples.models')
 
-from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
+from giza.config.base import ConfigurationBase
+from giza.inheritance import DataCache, DataContentBase, InheritableContentBase
 from giza.serialization import ingest_yaml_doc
 
-class ExampleError(Exception): pass
+from pygments.lexers import get_all_lexers
+
+# get a list of all supported pygment lexers.
+all_languages = []
+[ all_languages.extend(lexers[1]) for lexers in get_all_lexers() ]
 
 class ExampleCollection(InheritableContentBase):
     @property
     def collection(self):
-        return self.state['ref']
+        return self.state['collection']
 
     @collection.setter
     def collection(self, value):
-        self.state['ref'] = value
+        self.state['collection'] = value
 
     @property
     def name(self):
@@ -49,41 +54,47 @@ class ExampleCollection(InheritableContentBase):
         else:
             raise TypeError('{0} is not a list'.format(value))
 
+class ExampleOperationBlock(ConfigurationBase):
+    _option_registry = ['code', 'pre', 'post' ]
+
+    @property
+    def language(self):
+        return self.state['language']
+
+    @language.setter
+    def language(self, value):
+        if value in all_languages:
+            self.state['language'] = value
+        else:
+            m = '{0} is not a supported language'.format(value)
+            logger.error(m)
+            TypeError(m)
+
 class ExampleOperation(InheritableContentBase):
-    pass
-
-class InheritanceReference(RecursiveConfigurationBase):
-    _option_registry = ['ref']
-
     @property
-    def resolved(self):
-        if 'resolved' not in self.state:
-            return False
-        else:
-            return self.state['resolved']
+    def operation(self):
+        return self.state['operation']
 
-    @resolved.setter
-    def resolved(self, value):
-        if isinstance(value, bool):
-            self.state['resolved'] = value
+    @operation.setter
+    def operation(self, value):
+        if isinstance(value, list):
+            self.state['operation'] = [ ExampleOperationBlock(doc)
+                                        for doc in value ]
+        elif isinstance(value, dict):
+            self.state['operation'] = [ ExampleOperationBlock(value) ]
         else:
-            raise TypeError('{0} is not boolean'.format(value))
+            m = 'unable to create operation block from {0}'.format(value)
+            logger.error(m)
+            TypeError(m)
 
+    name = operation
     @property
-    def file(self):
-        return self.state['file']
+    def results(self):
+        return self.state['results']
 
-    @file.setter
-    def file(self, value):
-        fns = [ value,
-                os.path.join(self.conf.paths.projectroot, value),
-                os.path.join(self.conf.paths.projectroot,
-                             self.conf.paths.inclueds, value) ]
-
-        for fn in fns:
-            if os.path.exists(fn):
-                self.state['file'] = fn
-                break
-
-        if 'file' not in self.state:
-            raise TypeError('file named {0} does not exist'.format(value))
+    @results.setter
+    def results(self, value):
+        if isinstance(value, list):
+            self.state['results'] = value
+        else:
+            self.state['results'] = [ value ]

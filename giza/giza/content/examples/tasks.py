@@ -18,25 +18,20 @@ import os.path
 logger = logging.getLogger('giza.content.examples')
 
 from giza.files import expand_tree
+from giza.content.examples.inheritance import ExampleDataCache
 
-def render_example(fn, conf):
-    ExampleData(fn, conf)
-
-    logger.info('--------------------------------')
-    logger.info('would have rendered example for: ' + fn)
-    logger.info('--------------------------------')
-
-def example_tasks(conf, app):
+def example_tasks(conf):
     include_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)
 
     example_sources = [ fn for fn in
                         expand_tree(include_dir, 'yaml')
-                        if fn.startswith('example') ]
+                        if fn.startswith(os.path.join(include_dir, 'example')) ]
 
-    examples = { }
+    d = ExampleDataCache(example_sources, conf)
 
-    for fn in example_sources:
-        examples[fn] = ExampleData(fn, conf)
 
-    for exmp in examples:
-        exmp.resolve(examples)
+    for fn in d.cache.keys():
+        exmpf = d.cache[fn]
+
+        print('Collection:\n\n' + str(exmpf.collection) + '\n\n----\n')
+        print('Examples:\n\n ' + str(exmpf.get_content_only()))

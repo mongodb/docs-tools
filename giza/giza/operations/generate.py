@@ -17,6 +17,8 @@ from giza.content.steps import steps_tasks, steps_clean
 from giza.content.table import table_tasks, table_clean
 from giza.content.toc import toc_tasks, toc_clean
 
+from giza.content.examples.tasks import example_tasks
+
 from giza.content.primer import primer_migration_tasks
 from giza.content.primer import clean as primer_clean
 
@@ -126,3 +128,8 @@ def tables(args):
         table_tasks(c, app)
 
     app.run()
+
+def examples(args):
+    c = fetch_config(args)
+
+    example_tasks(c)

@@ -70,6 +70,7 @@ def main():
         giza.operations.generate.steps,
         giza.operations.generate.tables,
         giza.operations.generate.toc,
+        giza.operations.generate.examples,
     ]
     argh.add_commands(parser, generate_commands, namespace='generate')
 

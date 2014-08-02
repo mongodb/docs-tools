@@ -13,165 +13,97 @@
 # limitations under the License.
 
 import logging
+import os.path
 
-logger = logging.getLogger('giza.content.examples.inheritance')
+logger = logging.getLogger('giza.inheritance')
 
-class ExampleData(RecursiveConfigurationBase):
-    def __init__(self, files, conf):
-        self.cache = {}
-        self._conf = None
+from giza.serialization import ingest_yaml_list
+from giza.config.base import RecursiveConfigurationBase
+from giza.inheritance import InheritableContentError, DataContentBase, DataCache
+from giza.content.examples.models import ExampleCollection, ExampleOperation
+# from giza.content.examples.inheritance import ExampleFile
 
-        self.ingest(files)
+# Example specific inheritance machinery
 
-    def __contains__(self, key):
-        return key in self.cache
-    
-    def ingest(self, files):
-        setup = [ self.cache[fn] = [] 
-                  for fn in files
-                  if fn not in self.cache ]
+class ExampleError(Exception): pass
 
-        logger.debug('setup cache for {0} files'.format(len(setup)))
-
-        for fn in files:
-            self.add_file(fn)
-
-    def add_file(self, fn):
-        if fn not in self.cache or self.cache[fn] == []:
-            data = ingest_yaml_doc(fn)
-            self.cache[fn] = ExampleFile(data, self, conf)
-        else:
-            logger.info('file {0} exists in the cache'.format(fn))
-        
-    def fetch_ref(self, fn, ref):
-        if fn not in self.cache:
-            self.add_file(fn)
-
-        return self.cache[fn].fetch(ref)
-
-class ExampleFile(RecursiveConfigurationBase):
+class ExampleFile(DataContentBase):
     def __init__(self, src, data, conf):
-        self.collection = None
-        self.examples = {}
-        self._conf = None
-        self._has_inheritance = False
-        self.conf = conf
-        self.data = data
+        super(ExampleFile, self).__init__(src, data, conf)
         self.ingest(src)
 
-    def __contains__(self, value):
-        if value in self.examples or value == self.collection.name:
-            return True
-        else:
-            return False
-
     def ingest(self, src):
+        if not isinstance(src, list) and os.path.exists(src):
+            src = ingest_yaml_list(src)
+
         for doc in src:
-            self.add(src)
+            self.add(doc)
 
         if self.collection is None:
             m = 'all examples must have a collection'
             logger.error(m)
+            raise InheritableContentError(m)
+
+    @property
+    def collection(self):
+        if 'collection' not in self.state:
+            return None
+        else:
+            return self.content[self.state['collection']]
+
+    @collection.setter
+    def collection(self, value):
+        if 'collection' in self.state:
+            m = 'example spec "{0}" already exists'.format(self.collection.name)
+            logger.error(m)
             raise ExampleError(m)
+        elif isinstance(value, ExampleCollection):
+            self.content[value.name] = value
+            self.state['collection'] = value.name
+        else:
+            raise TypeError
+
+    def get_content_only(self):
+        return { k:v for k,v in self.content.items() if 'collection' not in v }
 
     def add(self, doc):
         if 'collection' in doc:
-            if self.collection is None:
-                self.collection = ExampleCollection(doc, self.conf)
-                if not self.collection.is_resolved(): 
-                    self.collection.resolve(self.data)
-            else:
-                m = 'example spec "{0}" already exists'.format(self.collection.name)
-                logger.error(m)
-                raise ExampleError(m)
+            self.collection = ExampleCollection(doc, self.conf)
+
+            if not self.collection.is_resolved():
+                self.collection.resolve(self.data)
         elif 'operation' in doc:
-            op = ExamplOperation(doc, self.conf)
-            if op.ref in self.examples:
+            op = ExampleOperation(doc, self.conf)
+            if op.ref in self.content:
                 m = 'example named {0} already exists'.format(op.ref)
                 logger.error(m)
                 raise ExampleError(m)
             else:
-                self.examples[op.ref] = op
+                self.content[op.ref] = op
                 if not op.is_resolved():
                     op.resolve(self.data)
 
                 logger.debug('added operation {0}'.format(op.name))
 
-    def fetch_ref(self, ref):
+    def fetch(self, ref):
         if ref == self.collection.name:
-            if not self.collection.is_resolved(): 
+            if not self.collection.is_resolved():
                 self.collection.resolve(self.data)
 
             return self.colection
 
-        elif ref in self.examples: 
-            content = self.examples[ref]
+        elif ref in self.content:
+            content = self.content[ref]
 
             if not content.is_resolved():
                 content.resolve(self.data)
 
             return content
 
-        else: 
+        else:
             m = 'content with ref "{0}" not found'.format(ref)
             logger.error(m)
             raise ExampleError(m)
 
-    def is_resolved(self):
-        if self.collection.is_resolved() is False:
-            return False
-        else:
-            unresolved = [ 1 for exmp in self.examples.values()
-                           if not exmp.is_resolved() ]
-
-            if sum(unresolved) > 0:
-                return False
-            else: 
-                return True 
-
-    def resolve(self):
-        self.collection.resolve(self.data)
-
-        for exmp in self.examples.values():
-            exmp.resolve(self.data)
-
-class InheritableContentBase(RecursiveConfigurationBase)
-    _option_registry = ['pre', 'post']
-
-    @property
-    def source(self):
-        if 'source' in self.state:
-            return self.state['source']
-        else:
-            return None
-
-    @source.setter
-    def source(self, value):
-        self.state['source'] = InheritanceReference(value, self.conf)
-
-    inherit = source
-    def is_resolved(self):
-        if self.source is None:
-            return True
-        else:
-            return self.source.resolved()
-
-    def resolve(self, data):
-        if (not self.is_resolved() and 
-            self.source.resolved is False and
-            self.source.file in data):
-            try: 
-                base = data.fetch_ref(self.source.file, self.source.ref)
-                base.ingest(self.state)
-
-                self.ingest(base)
-                self.source.resolved = True
-
-                return True
-            except ExampleError as e:
-                logger.error(e)
-
-        if self.source.resolved is False:
-            m = 'cannot find {0} and ref {1} do not  exist'.format(self.source.file, self.source.ref)
-            logger.error(m)
-            raise ExampleError(m)
+class ExampleDataCache(DataCache):
+    content_class = ExampleFile
