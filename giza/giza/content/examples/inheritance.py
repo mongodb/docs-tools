@@ -63,8 +63,12 @@ class ExampleFile(DataContentBase):
         else:
             raise TypeError
 
-    def get_content_only(self):
-        return { k:v for k,v in self.content.items() if 'collection' not in v }
+    @property
+    def examples(self):
+        return [ example
+                 for example in self.content.values()
+                 if 'collection' not in example
+        ]
 
     def add(self, doc):
         if 'collection' in doc:

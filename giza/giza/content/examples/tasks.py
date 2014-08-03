@@ -35,4 +35,4 @@ def example_tasks(conf):
 
         print('---\n' + fn + '\n')
         print('Collection:\n\n' + str(exmpf.collection) + '\n\n')
-        print('Examples:\n\n ' + str(exmpf.get_content_only()))
+        print('Examples:\n\n' + str(exmpf.examples))
