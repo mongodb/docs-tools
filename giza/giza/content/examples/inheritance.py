@@ -90,7 +90,7 @@ class ExampleFile(DataContentBase):
             if not self.collection.is_resolved():
                 self.collection.resolve(self.data)
 
-            return self.colection
+            return self.collection
 
         elif ref in self.content:
             content = self.content[ref]

@@ -24,8 +24,8 @@ class InheritableContentError(Exception): pass
 
 class DataContentBase(RecursiveConfigurationBase):
     def __init__(self, src, data, conf):
-        self._content = {}
-        self._state = {}
+        self._state = { 'content': { } }
+        self._content = self._state['content']
         self._conf = None
         self.conf = conf
         self.data = data
@@ -38,7 +38,7 @@ class DataContentBase(RecursiveConfigurationBase):
 
     @property
     def content(self):
-        return self._content
+        return self.state['content']
 
     @content.setter
     def content(self, value):
@@ -160,24 +160,24 @@ class InheritableContentBase(RecursiveConfigurationBase):
         if self.source is None:
             return True
         else:
-            return self.source.resolved()
+            return self.source.resolved
 
     def resolve(self, data):
         if (not self.is_resolved() and
-            self.source.resolved is False and
+            self.source.resolved in (False, None) and
             self.source.file in data):
             try:
                 base = data.fetch(self.source.file, self.source.ref)
-                base.ingest(self.state)
+                base.resolve(data)
 
-                self.ingest(base)
+                base.state.update(self.state)
+                self.state.update(base.state)
                 self.source.resolved = True
-
                 return True
             except InheritableContentError as e:
                 logger.error(e)
 
-        if self.source.resolved is False:
+        if self.source is not None and self.source.resolved is False:
             m = 'cannot find {0} and ref {1} do not  exist'.format(self.source.file, self.source.ref)
             logger.error(m)
             raise InheritableContentError(m)
@@ -208,7 +208,7 @@ class InheritanceReference(RecursiveConfigurationBase):
         fns = [ value,
                 os.path.join(self.conf.paths.projectroot, value),
                 os.path.join(self.conf.paths.projectroot,
-                             self.conf.paths.inclueds, value) ]
+                             self.conf.paths.includes, value) ]
 
         for fn in fns:
             if os.path.exists(fn):

@@ -33,5 +33,6 @@ def example_tasks(conf):
     for fn in d.cache.keys():
         exmpf = d.cache[fn]
 
-        print('Collection:\n\n' + str(exmpf.collection) + '\n\n----\n')
+        print('---\n' + fn + '\n')
+        print('Collection:\n\n' + str(exmpf.collection) + '\n\n')
         print('Examples:\n\n ' + str(exmpf.get_content_only()))
