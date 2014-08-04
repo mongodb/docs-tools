@@ -1,4 +1,4 @@
- # Copyright 2014 MongoDB, Inc.
+# Copyright 2014 MongoDB, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -137,7 +137,8 @@ class DataCache(RecursiveConfigurationBase):
 
     def fetch(self, fn, ref):
         if fn not in self.cache:
-            self.add_file(fn)
+            logger.error('file "{0}" is not included.'.format(fn))
+            raise InheritableContentError
 
         return self.cache[fn].fetch(ref)
 
