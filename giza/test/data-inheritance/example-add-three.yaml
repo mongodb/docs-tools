@@ -1,29 +1,7 @@
 ref: 1
-title: "Select First Date in a Group"
-pre: |
-  Grouping the documents by the ``item`` field, the following operation
-  uses the :group:`$first` accumulator to compute the first sales date for
-  each item:
-operation:
-  language: javascript
-  code: |
-     db.sales.aggregate(
-        [
-          { $sort: { date: 1, item: 1 } },
-          {
-            $group:
-              {
-                _id: "$item",
-                firstSalesDate: { $first: "$date" }
-              }
-          }
-        ]
-     )
-post: "The operation returns the following results:"
-results:
-  - '{ "_id" : "xyz", "firstSalesDate" : ISODate("2014-03-15T09:00:00Z") }'
-  - '{ "_id" : "jkl", "firstSalesDate" : ISODate("2014-03-01T09:00:00Z") }'
-  - '{ "_id" : "abc", "firstSalesDate" : ISODate("2014-03-01T08:00:00Z") }'
+source:
+  file: example-add-two.yaml
+  ref: 2
 ---
 ref: 2
 title: "Select First Date in a Group"

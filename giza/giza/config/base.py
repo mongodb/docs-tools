@@ -31,7 +31,7 @@ class ConfigurationBase(object):
             return
         elif isinstance(input_obj, dict):
             pass
-        elif not isinstance(input_obj, ConfigurationBase) and os.path.exists(input_obj):
+        elif not isinstance(input_obj, ConfigurationBase) and os.path.isfile(input_obj):
             input_obj = ingest_yaml_doc(input_obj)
         else:
             print(input_obj)

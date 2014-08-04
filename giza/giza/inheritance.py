@@ -22,126 +22,6 @@ from giza.config.base import RecursiveConfigurationBase
 
 class InheritableContentError(Exception): pass
 
-class DataContentBase(RecursiveConfigurationBase):
-    def __init__(self, src, data, conf):
-        self._state = { 'content': { } }
-        self._content = self._state['content']
-        self._conf = None
-        self.conf = conf
-        self.data = data
-
-    def __contains__(self, value):
-        if value in self.content:
-            return True
-        else:
-            return False
-
-    @property
-    def content(self):
-        return self.state['content']
-
-    @content.setter
-    def content(self, value):
-        logger.warning('cannot set content record directly')
-
-    @property
-    def data(self):
-        return self._data
-
-    @data.setter
-    def data(self, value):
-        if isinstance(value, DataCache):
-            self._data = value
-        else:
-            logger.warning('cannot use invalid data cache instance.')
-
-    def ingest(self, src):
-        if not isinstance(src, list) and os.path.exists(src):
-            src = ingest_yaml_list(src)
-
-        for doc in src:
-            self.add(doc)
-
-    def add(self, doc):
-        if doc.ref not in self.content:
-            self.content[doc.ref] = doc
-        else:
-            m = 'content named {0} already exists'.format(doc.ref)
-            logger.error(m)
-            raise InheritableContentError(m)
-
-    def fetch(self, ref):
-        if ref in self.content:
-            content = self.content[ref]
-
-            if not content.is_resolved():
-                content.resolve(self.data)
-
-            return content
-        else:
-            m = 'content with ref "{0}" not found'.format(ref)
-            logger.error(m)
-            raise InheritableContentError(m)
-
-    def is_resolved(self):
-        unresolved = [ 1 for exmp in self.content.values()
-                       if not exmp.is_resolved() ]
-
-        if sum(unresolved) > 0:
-            return False
-        else:
-            return True
-
-    def resolve(self):
-        for exmp in self.content.values():
-            exmp.resolve(self.data)
-
-class DataCache(RecursiveConfigurationBase):
-    content_class = DataContentBase
-
-    def __init__(self, files, conf):
-        self._cache = {}
-        self._conf = conf
-        self.ingest(files)
-
-    @property
-    def cache(self):
-        return self._cache
-
-    @cache.setter
-    def cache(self, value):
-        logger.warning('cannot set cache record directly')
-
-    def __contains__(self, key):
-        return key in self.cache
-
-    def _clear_cache(self, fn):
-        self.cache[fn] = []
-
-    def ingest(self, files):
-        setup = [ self._clear_cache(fn)
-                  for fn in files
-                  if fn not in self.cache ]
-
-        logger.debug('setup cache for {0} files'.format(len(setup)))
-
-        for fn in files:
-            self.add_file(fn)
-
-    def add_file(self, fn):
-        if fn not in self.cache or self.cache[fn] == []:
-            data = ingest_yaml_list(fn)
-            self.cache[fn] = self.content_class(data, self, self.conf)
-        else:
-            logger.info('populated file {0} exists in the cache'.format(fn))
-
-    def fetch(self, fn, ref):
-        if fn not in self.cache:
-            logger.error('file "{0}" is not included.'.format(fn))
-            raise InheritableContentError
-
-        return self.cache[fn].fetch(ref)
-
 class InheritableContentBase(RecursiveConfigurationBase):
     _option_registry = ['pre', 'post', 'ref', 'title', 'edition']
 
@@ -218,3 +98,135 @@ class InheritanceReference(RecursiveConfigurationBase):
 
         if 'file' not in self.state:
             raise TypeError('file named {0} does not exist'.format(value))
+
+
+##############################
+
+class DataContentBase(RecursiveConfigurationBase):
+    content_class = InheritableContentBase
+
+    def __init__(self, src, data, conf):
+        self._state = { 'content': { } }
+        self._content = self._state['content']
+        self._conf = None
+        self.conf = conf
+        self.data = data
+        self.ingest(src)
+
+    def __contains__(self, value):
+        if value in self.content:
+            return True
+        else:
+            return False
+
+    @property
+    def content(self):
+        return self.state['content']
+
+    @content.setter
+    def content(self, value):
+        logger.warning('cannot set content record directly')
+
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, value):
+        if isinstance(value, DataCache):
+            self._data = value
+        else:
+            logger.warning('cannot use invalid data cache instance.')
+
+    def ingest(self, src):
+        if not isinstance(src, list) and os.path.exists(src):
+            src = ingest_yaml_list(src)
+
+        for doc in src:
+            self.add(doc)
+
+    def add(self, doc):
+        if doc['ref'] not in self.content:
+            if isinstance(doc, self.content_class):
+                self.content[doc['ref']] = doc
+            else:
+                try:
+                    self.content[doc['ref']] = self.content_class(doc)
+                except TypeError:
+                    self.content[doc['ref']] = self.content_class(doc, self.conf)
+        else:
+            m = 'content named {0} already exists'.format(doc['ref'])
+            logger.error(m)
+            raise InheritableContentError(m)
+
+    def fetch(self, ref):
+        if ref in self.content:
+            content = self.content[ref]
+
+            if not content.is_resolved():
+                content.resolve(self.data)
+
+            return content
+        else:
+            m = 'content with ref "{0}" not found'.format(ref)
+            logger.error(m)
+            raise InheritableContentError(m)
+
+    def is_resolved(self):
+        unresolved = [ 1 for exmp in self.content.values()
+                       if not exmp.is_resolved() ]
+
+        if sum(unresolved) > 0:
+            return False
+        else:
+            return True
+
+    def resolve(self):
+        for exmp in self.content.values():
+            exmp.resolve(self.data)
+
+class DataCache(RecursiveConfigurationBase):
+    content_class = DataContentBase
+
+    def __init__(self, files, conf):
+        self._cache = {}
+        self._conf = conf
+        self.ingest(files)
+
+    @property
+    def cache(self):
+        return self._cache
+
+    @cache.setter
+    def cache(self, value):
+        logger.warning('cannot set cache record directly')
+
+    def __contains__(self, key):
+        return key in self.cache
+
+    def _clear_cache(self, fn):
+        self.cache[fn] = []
+
+    def ingest(self, files):
+        setup = [ self._clear_cache(fn)
+                  for fn in files
+                  if fn not in self.cache ]
+
+        logger.debug('setup cache for {0} files'.format(len(setup)))
+
+        for fn in files:
+            self.add_file(fn)
+
+    def add_file(self, fn):
+        if fn not in self.cache or self.cache[fn] == []:
+            data = ingest_yaml_list(fn)
+            self.cache[fn] = self.content_class(data, self, self.conf)
+        else:
+            logger.info('populated file {0} exists in the cache'.format(fn))
+
+    def fetch(self, fn, ref):
+        if fn not in self.cache:
+            logger.error('file "{0}" is not included.'.format(fn))
+            raise InheritableContentError
+
+        return self.cache[fn].fetch(ref)
