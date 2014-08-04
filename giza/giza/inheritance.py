@@ -142,7 +142,7 @@ class DataCache(RecursiveConfigurationBase):
         return self.cache[fn].fetch(ref)
 
 class InheritableContentBase(RecursiveConfigurationBase):
-    _option_registry = ['pre', 'post', 'ref', 'title']
+    _option_registry = ['pre', 'post', 'ref', 'title', 'edition']
 
     @property
     def source(self):
