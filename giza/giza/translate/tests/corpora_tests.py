@@ -11,9 +11,6 @@ logger = logging.getLogger('giza.translate.corpora_tests')
 
 class DictToCorpusTestCase(unittest.TestCase):
 
-    def __init__(self, *args, **kwargs):
-        super(DictToCorpusTestCase, self).__init__(*args, **kwargs)
-
     def setUp(self):
         os.makedirs("temp_files")
 
@@ -32,9 +29,6 @@ class DictToCorpusTestCase(unittest.TestCase):
             self.assertEqual(f.read().strip(), "abril\nabril\nagosto\nagosto")
 
 class PoToCorpusTestCase(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        super(PoToCorpusTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
         os.makedirs("temp_files")

@@ -5,12 +5,9 @@ import os
 
 from giza.translate.utils import flip_text_direction, merge_files, get_file_list
 
-logger = logging.getLogger('giza.translate.corpora_tests')
+logger = logging.getLogger('giza.translate.utils_tests')
 
 class ListFilesTestCase(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        super(ListFilesTestCase, self).__init__(*args, **kwargs)
 
     def test_simple(self):
         self.assertEqual(get_file_list("test_files/test_dir", ['txt', 'yaml']), ['test_files/test_dir/f2.txt','test_files/test_dir/f1.txt','test_files/test_dir/f5.yaml','test_files/test_dir/d1/f4.txt'])
@@ -24,9 +21,6 @@ class ListFilesTestCase(unittest.TestCase):
 
 
 class MergeTestCase(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        super(MergeTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
         os.makedirs("temp_files")
@@ -54,9 +48,6 @@ class MergeTestCase(unittest.TestCase):
             merge_files("temp_files/merged.txt", ["test_files/fdafda1"], ["+ "])
 
 class FlipTextTestCase(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        super(FlipTextTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
         os.makedirs("temp_files")
