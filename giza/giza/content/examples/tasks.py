@@ -37,7 +37,7 @@ def example_tasks(conf, app):
 
     d = ExampleDataCache(example_sources, conf)
 
-    if not os.path.exists(fn_prefix):
+    if not os.path.isdir(fn_prefix):
         os.makedirs(fn_prefix)
 
     for fn in d.cache.keys():
@@ -49,6 +49,8 @@ def example_tasks(conf, app):
                               'includes', 'examples', basename) + '.rst'
 
         t = app.add('task')
+        t.target = out_fn
+        t.dependency = fn
         t.job = write_full_example
         t.args = (exmpf.collection, exmpf.examples, out_fn)
         t.description = 'generate an example for ' + basename
