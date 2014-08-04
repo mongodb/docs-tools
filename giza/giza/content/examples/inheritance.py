@@ -20,7 +20,7 @@ logger = logging.getLogger('giza.inheritance')
 from giza.serialization import ingest_yaml_list
 from giza.config.base import RecursiveConfigurationBase
 from giza.inheritance import InheritableContentError, DataContentBase, DataCache
-from giza.content.examples.models import ExampleCollection, ExampleOperation
+from giza.content.examples.models import ExampleData, ExampleCase
 
 # Example specific inheritance machinery
 
@@ -32,7 +32,7 @@ class ExampleFile(DataContentBase):
         self.ingest(src)
 
     def ingest(self, src):
-        if not isinstance(src, list) and os.path.exists(src):
+        if not isinstance(src, list) and os.path.isfile(src):
             src = ingest_yaml_list(src)
 
         for doc in src:
@@ -56,7 +56,7 @@ class ExampleFile(DataContentBase):
             m = 'example spec "{0}" already exists'.format(self.collection.name)
             logger.error(m)
             raise ExampleError(m)
-        elif isinstance(value, ExampleCollection):
+        elif isinstance(value, ExampleData):
             self.content[value.name] = value
             self.state['collection'] = value.name
         else:
@@ -76,12 +76,12 @@ class ExampleFile(DataContentBase):
             return
 
         if 'collection' in doc:
-            self.collection = ExampleCollection(doc, self.conf)
+            self.collection = ExampleData(doc, self.conf)
 
             if not self.collection.is_resolved():
                 self.collection.resolve(self.data)
         elif 'operation' in doc:
-            op = ExampleOperation(doc, self.conf)
+            op = ExampleCase(doc, self.conf)
             if op.ref in self.content:
                 m = 'example named {0} already exists'.format(op.ref)
                 logger.error(m)

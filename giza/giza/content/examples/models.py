@@ -26,7 +26,7 @@ from pygments.lexers import get_all_lexers
 all_languages = []
 [ all_languages.extend(lexers[1]) for lexers in get_all_lexers() ]
 
-class ExampleCollection(InheritableContentBase):
+class ExampleData(InheritableContentBase):
     @property
     def collection(self):
         return self.state['collection']
@@ -81,7 +81,7 @@ class ExampleOperationBlock(ConfigurationBase):
             logger.error(m)
             TypeError(m)
 
-class ExampleOperation(InheritableContentBase):
+class ExampleCase(InheritableContentBase):
     @property
     def operation(self):
         return self.state['operation']
