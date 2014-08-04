@@ -19,20 +19,38 @@ logger = logging.getLogger('giza.content.examples')
 
 from giza.files import expand_tree
 from giza.content.examples.inheritance import ExampleDataCache
+from giza.content.examples.views import full_example
 
-def example_tasks(conf):
+
+def write_full_example(collection, examples, fn):
+    content = full_example(collection, examples)
+    content.write(fn)
+    logger.info('wrote example: ' + fn)
+
+def example_tasks(conf, app):
     include_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)
+    fn_prefix = os.path.join(include_dir, 'example')
 
     example_sources = [ fn for fn in
                         expand_tree(include_dir, 'yaml')
-                        if fn.startswith(os.path.join(include_dir, 'example')) ]
+                        if fn.startswith(fn_prefix) ]
 
     d = ExampleDataCache(example_sources, conf)
 
+    if not os.path.exists(fn_prefix):
+        os.makedirs(fn_prefix)
 
     for fn in d.cache.keys():
         exmpf = d.cache[fn]
+        basename = fn[len(fn_prefix)+1:-5]
 
-        print('---\n' + fn + '\n')
-        print('Collection:\n\n' + str(exmpf.collection) + '\n\n')
-        print('Examples:\n\n' + str(exmpf.examples))
+        out_fn = os.path.join(conf.paths.projectroot,
+                              conf.paths.branch_source,
+                              'includes', 'examples', basename) + '.rst'
+
+        t = app.add('task')
+        t.job = write_full_example
+        t.args = (exmpf.collection, exmpf.examples, out_fn)
+        t.description = 'generate an example for ' + basename
+
+    logger.debug('added all tasks for example generation')

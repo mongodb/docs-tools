@@ -131,5 +131,8 @@ def tables(args):
 
 def examples(args):
     c = fetch_config(args)
+    app = BuildApp(c)
 
-    example_tasks(c)
+    example_tasks(c, app)
+
+    app.run()

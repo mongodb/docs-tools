@@ -55,7 +55,18 @@ class ExampleCollection(InheritableContentBase):
             raise TypeError('{0} is not a list'.format(value))
 
 class ExampleOperationBlock(ConfigurationBase):
-    _option_registry = ['code', 'pre', 'post' ]
+    _option_registry = ['pre', 'post' ]
+
+    @property
+    def code(self):
+        return self.state['code']
+
+    @code.setter
+    def code(self, value):
+        if isinstance(value, list):
+            self.state['code'] = value
+        else:
+            self.state['code'] = value.split('\n')
 
     @property
     def language(self):

@@ -21,7 +21,6 @@ from giza.serialization import ingest_yaml_list
 from giza.config.base import RecursiveConfigurationBase
 from giza.inheritance import InheritableContentError, DataContentBase, DataCache
 from giza.content.examples.models import ExampleCollection, ExampleOperation
-# from giza.content.examples.inheritance import ExampleFile
 
 # Example specific inheritance machinery
 
@@ -71,6 +70,11 @@ class ExampleFile(DataContentBase):
         ]
 
     def add(self, doc):
+        if ('edition' in doc and
+            'edition' in self.conf.project and
+            doc['edition'] != self.conf.project.edition):
+            return
+
         if 'collection' in doc:
             self.collection = ExampleCollection(doc, self.conf)
 
