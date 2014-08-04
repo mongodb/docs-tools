@@ -52,19 +52,19 @@ def get_file_list(path, input_extension):
     return expand_tree(path, input_extension)
 
 
-def set_logger(logger, logger_id):
+def set_logger(lg, logger_id):
     '''This method sets the formatter to the logger to have a custom field
     called the logger_id
     :param logger logger: The logger for the module
     :param string logger_id: the identifier for the instance of the module
     '''
     for handler in logger.handlers:
-        logger.removeHandler(handler)
+        lg.removeHandler(handler)
     f = logging.Formatter("%(levelname)s|%(asctime)s|%(name)s|{0}: %(message)s".format(logger_id))
     h = logging.StreamHandler(sys.stdout)
     h.setFormatter(f)
-    logger.addHandler(h)
-    logger.propagate = False
+    lg.addHandler(h)
+    lg.propagate = False
 
 
 class Timer(object):

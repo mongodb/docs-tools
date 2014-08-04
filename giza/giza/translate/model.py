@@ -18,7 +18,8 @@ import datetime
 import logging
 import json
 
-from giza.translate.utils import Timer, set_logger, pcommand
+from giza.translate.utils import Timer, set_logger
+from giza.command import command
 
 '''
 This module builds the translation model by training, tuning, and then testing.
@@ -32,6 +33,21 @@ long time.
 
 logger = logging.getLogger("giza.translate.model")
 
+def pcommand(c):
+    '''This function wraps the command module with logging functionality
+    This is duplicated from util so that multiple processes can have different
+    loggers.
+    :param string c: command to run and log
+    :returns: a command result object
+    '''
+
+    logger.info(c)
+    o = command(c, capture=True)
+    if len(o.out) != 0:
+        logger.info(o.out)
+    if len(o.err) != 0:
+        logger.info(o.err)
+    return o
 
 def tokenize_corpus(corpus_dir, corpus_name, tconf):
     '''This function tokenizes a corpus
