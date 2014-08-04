@@ -29,7 +29,10 @@ all_languages = []
 class ExampleData(InheritableContentBase):
     @property
     def collection(self):
-        return self.state['collection']
+        if 'collection' not in self.state:
+            return None
+        else:
+            return self.state['collection']
 
     @collection.setter
     def collection(self, value):

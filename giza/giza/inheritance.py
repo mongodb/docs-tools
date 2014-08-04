@@ -23,7 +23,7 @@ from giza.config.base import RecursiveConfigurationBase
 class InheritableContentError(Exception): pass
 
 class InheritableContentBase(RecursiveConfigurationBase):
-    _option_registry = ['pre', 'post', 'ref', 'title', 'edition']
+    _option_registry = ['pre', 'post', 'ref', 'content', 'title', 'edition']
 
     @property
     def source(self):

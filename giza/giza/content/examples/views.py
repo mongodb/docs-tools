@@ -29,24 +29,32 @@ def full_example(collection, examples):
     r.h2(ex_str)
     r.newline()
 
-    if 'pre' in collection:
-        r.content(collection.pre)
-        r.newline()
+    if collection is not None:
+        if 'pre' in collection:
+            r.content(collection.pre)
+            r.newline()
 
-    r.codeblock(content=collection.documents,
-                language='javascript')
-    r.newline()
+        if 'content' in collection:
+            r.content(collection.content)
+            r.newline()
 
-    if 'post' in collection:
-        r.content(collection.post)
-        r.newline()
+        if 'documents' in collection:
+            r.codeblock(content=collection.documents,
+                        language='javascript')
+            r.newline()
+
+        if 'post' in collection:
+            r.content(collection.post)
+            r.newline()
 
     for idx, example in enumerate(examples):
         if idx != 0 :
             r.newline(2)
 
-        r.h3(example.title)
-        r.newline()
+        if len(examples) > 1:
+            r.h3(example.title)
+            r.newline()
+
         r.content(example.pre)
         r.newline()
 
