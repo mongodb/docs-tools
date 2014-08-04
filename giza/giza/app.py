@@ -71,7 +71,7 @@ class BuildApp(object):
             if self.is_pool(pool) and self.worker_pool is None:
                 self.worker_pool = pool
             elif pool in self.pool_types:
-                self.worker_pool = pool()
+                self.worker_pool = pool(self.conf)
             elif self.is_pool_type(pool) and self.worker_pool is None:
                 self.worker_pool = self.pool_mapping[pool](self.conf)
             else:
