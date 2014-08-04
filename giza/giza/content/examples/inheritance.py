@@ -27,10 +27,6 @@ from giza.content.examples.models import ExampleData, ExampleCase
 class ExampleError(Exception): pass
 
 class ExampleFile(DataContentBase):
-    def __init__(self, src, data, conf):
-        super(ExampleFile, self).__init__(src, data, conf)
-        self.ingest(src)
-
     def ingest(self, src):
         if not isinstance(src, list) and os.path.isfile(src):
             src = ingest_yaml_list(src)

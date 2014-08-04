@@ -44,9 +44,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
             return self.source.resolved
 
     def resolve(self, data):
-        if (not self.is_resolved() and
-            self.source.resolved in (False, None) and
-            self.source.file in data):
+        if (not self.is_resolved() and self.source.file in data):
             try:
                 base = data.fetch(self.source.file, self.source.ref)
                 base.resolve(data)
@@ -58,7 +56,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
             except InheritableContentError as e:
                 logger.error(e)
 
-        if self.source is not None and self.source.resolved is False:
+        if self.source is not None and not self.source.is_resolved():
             m = 'cannot find {0} and ref {1} do not  exist'.format(self.source.file, self.source.ref)
             logger.error(m)
             raise InheritableContentError(m)
