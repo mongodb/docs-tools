@@ -66,10 +66,16 @@ def intersphinx_tasks(conf, app):
         return
 
     for i in conf.system.files.data.intersphinx:
-        f = os.path.join(conf.paths.projectroot,
-                         conf.paths.output, i['path'])
+        try:
+            f = os.path.join(conf.paths.projectroot,
+                             conf.paths.output, i.path)
 
-        s = i['url'] + 'objects.inv'
+            s = i.url + 'objects.inv'
+        except AttributeError:
+            f = os.path.join(conf.paths.projectroot,
+                             conf.paths.output, i['path'])
+
+            s = i['url'] + 'objects.inv'
 
         t = app.add('task')
 
@@ -82,8 +88,13 @@ def intersphinx_tasks(conf, app):
 
 def intersphinx_clean(conf, app):
     for inv in conf.system.files.data.intersphinx:
-        fn = os.path.join(conf.paths.projectroot,
-                          conf.paths.output, inv['path'])
+        try:
+            fn = os.path.join(conf.paths.projectroot,
+                              conf.paths.output, inv.path)
+        except AttributeError:
+            fn = os.path.join(conf.paths.projectroot,
+                              conf.paths.output, inv['path'])
+
 
         if os.path.exists(fn):
             t = app.add('task')

@@ -31,7 +31,7 @@ from giza.operations.configuration import render_config
 from giza.operations.clean import clean
 from giza.operations.sphinx import sphinx
 from giza.operations.deploy import deploy, push
-
+from giza.operations.quickstart import make_project
 def get_base_parser():
     parser = argh.ArghParser()
     parser.add_argument('--level', '-l',
@@ -46,6 +46,7 @@ def main():
     parser = get_base_parser()
 
     commands = [
+        make_project,
         render_config,
         clean,
         sphinx,

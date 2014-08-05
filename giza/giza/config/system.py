@@ -18,6 +18,10 @@ import os.path
 logger = logging.getLogger('giza.config.system')
 
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
+from giza.config.sphinx_local import SphinxLocalConfig
+from giza.config.manpage import ManpageConfig
+from giza.config.pdfs import PdfConfig
+from giza.config.intersphinx import IntersphinxConfig
 from giza.serialization import ingest_yaml_list
 
 class SystemConfig(RecursiveConfigurationBase):
@@ -224,7 +228,7 @@ class SystemConfigData(RecursiveConfigurationBase):
 
         if os.path.exists(full_path):
             # TODO we should make this process lazy with a more custom getter/setter
-            self.state[basename] = self._resolve_config_data(full_path)
+            self.state[basename] = self._resolve_config_data(full_path, basename)
             logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
         else:
             self.state[basename] = []
@@ -233,14 +237,25 @@ class SystemConfigData(RecursiveConfigurationBase):
     def keys(self):
         return self._option_registry
 
-    @staticmethod
-    def _resolve_config_data(fn):
+    def _resolve_config_data(self, fn, basename):
         logger.debug('resolving config data from file ' + fn)
         if fn is None:
             return []
         else:
             data = ingest_yaml_list(fn)
-            if len(data) == 1:
+
+            mapping = {
+                'sphinx_local': SphinxLocalConfig,
+                'sphinx-local': SphinxLocalConfig,
+                'manpages': ManpageConfig,
+                'pdfs': PdfConfig,
+                'intersphinx': IntersphinxConfig
+            }
+
+            if basename in mapping:
+                data = [ mapping[basename](doc) for doc in data ]
+
+            if len(data) == 1 and basename not in ('manpages', 'pdfs'):
                 return data[0]
             else:
                 return data

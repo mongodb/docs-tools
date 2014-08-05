@@ -16,5 +16,6 @@ TAGS
 utils/docs_meta.py
 config
 !giza/giza/config
+!giza/giza/quickstart/config
 fabsrc/giza
 *.egg-info

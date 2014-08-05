@@ -16,6 +16,7 @@ setup(
     packages=find_packages(),
     test_suite=None,
     install_requires=REQUIRES,
+    package_data={'giza': ['quickstart/*']},
     extras_require={
         'jira': ['jira-python', 'pyOpenSSL', 'ndg-httpsclient', 'pyasn1'],
         'github': ['github3.py']

@@ -119,6 +119,40 @@ class ProjectConfig(RecursiveConfigurationBase):
                     self.state['basepath'] = edition.tag
                     break
 
+    @property
+    def siteroot(self):
+        if 'siteroot' in self.state:
+            return self.state['siteroot']
+        else:
+            return False
+
+    @siteroot.setter
+    def siteroot(self, value):
+        if isinstance(value, bool):
+            self.state['siteroot'] = value
+        else:
+            self.state['siteroot'] = bool(value)
+
+    @property
+    def sitepath(self):
+        o = []
+
+        if self.siteroot is True:
+            if (self.branched is True and
+                self.conf.git.branches.manual != self.conf.git.branches.current):
+                o.append(self.conf.git.branches.current)
+            else:
+                o.append(self.basepath)
+        else:
+            o.append(self.basepath)
+
+            if self.branched is True:
+                if self.conf.git.branches.manual == self.conf.git.branches.current:
+                    o.append('current')
+                else:
+                    o.append(self.conf.git.branches.current)
+
+        return '/'.join(o)
 
 class EditionListConfig(ConfigurationBase):
     @property
