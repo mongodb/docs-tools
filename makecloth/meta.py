@@ -71,7 +71,13 @@ def generate_meta(conf):
     return m
 
 def main():
-    conf = get_conf()
+    try:
+        conf = get_conf()
+    except AttributeError:
+        from giza.config.helper import fetch_config
+        from giza.config.runstate import RuntimeStateConfig
+        conf = fetch_config(RuntimeStateConfig())
+
     m = generate_meta(conf)
 
     m.write(sys.argv[1])
