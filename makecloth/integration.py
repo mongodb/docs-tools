@@ -11,8 +11,14 @@ from utils.config import get_conf, get_conf_file
 
 from makecloth import MakefileCloth
 
+try:
+    site_conf = get_conf()
+except AttributeError:
+    from giza.config.helper import fetch_config
+    from giza.config.runtime import RuntimeStateConfig
+    site_conf = fetch_config(RuntimeStateConfig())
+
 m = MakefileCloth()
-site_conf = get_conf()
 paths = site_conf.paths
 
 def generate_integration_targets(conf):

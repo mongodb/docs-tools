@@ -18,7 +18,12 @@ from makecloth import MakefileCloth
 
 m = MakefileCloth()
 
-conf = get_conf()
+try:
+    site_conf = get_conf()
+except AttributeError:
+    from giza.config.helper import fetch_config
+    from giza.config.runtime import RuntimeStateConfig
+    site_conf = fetch_config(RuntimeStateConfig())
 
 def make_all_sphinx(config):
     b = 'prereq'

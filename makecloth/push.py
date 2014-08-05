@@ -14,7 +14,13 @@ from utils.structures import get_conf_file
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
-conf = get_conf()
+
+try:
+    conf = get_conf()
+except AttributeError:
+    from giza.config.helper import fetch_config
+    from giza.config.runtime import RuntimeStateConfig
+    conf = fetch_config(RuntimeStateConfig())
 
 ##############################  Legacy Push Makefile Builder ##############################
 
