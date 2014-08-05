@@ -18,6 +18,8 @@ except AttributeError:
     from giza.config.runtime import RuntimeStateConfig
     site_conf = fetch_config(RuntimeStateConfig())
 
+conf = site_conf
+
 m = MakefileCloth()
 paths = site_conf.paths
 
