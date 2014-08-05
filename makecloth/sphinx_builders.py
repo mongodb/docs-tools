@@ -64,7 +64,7 @@ def make_all_sphinx(config):
     m.target(['prereq', 'sphinx-prerequisites'], block=b)
     m.job('fab log.set:debug sphinx.prereq', block=b)
 
-    build_source_dir = conf.paths.branch_output + '/source'
+    build_source_dir = site_conf.paths.branch_output + '/source'
 
     if 'generate-source' in config and config['generate-sourced']:
         m.target('generate-source', ['setup'], config['generate-sourced'], block=b)
@@ -76,7 +76,7 @@ def make_all_sphinx(config):
     sphinx_targets = []
 
     targets = []
-    for builder in get_sphinx_builders():
+    for builder in get_sphinx_builders(site_conf):
         if builder.endswith('base') or builder.startswith('editions'):
             continue
 
@@ -148,7 +148,7 @@ def sphinx_builder(target):
         m.job('fab tx.update', block=b)
     else:
         base = 'fab'
-        if conf.project.name == 'ecosystem':
+        if site_conf.project.name == 'ecosystem':
             base += ' serial'
 
         m.job('{0} sphinx.target:{1}'.format(base, target), block=b)
@@ -168,7 +168,8 @@ def sphinx_builder(target):
     return ret_value
 
 def main():
-    config = ingest_yaml(get_conf_file(file='sphinx', directory=conf.paths.builddata))
+    
+    config = ingest_yaml(os.path.join(site_conf.paths.builddata, 'sphinx.yaml'))
 
     config = render_sphinx_config(config)
 

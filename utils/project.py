@@ -69,7 +69,8 @@ def get_versions(conf=None):
 
     o = []
 
-    current_branch = get_branch()
+    current_branch = conf.git.branches.current
+
     if current_branch not in conf.git.branches.published:
         current_version_index = 0
     else:

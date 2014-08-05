@@ -37,20 +37,20 @@ def generate_integration_targets(conf):
     dependencies = [ '_publish']
     dependencies_debug = [ '_publish-debug']
 
-    if 'doc-root' in conf:
-        for dep in conf['doc-root']:
-            dependencies.append(os.path.join(paths['public'], dep))
-            dependencies_debug.append(os.path.join(paths['public'], dep))
+    if 'doc_root' in conf:
+        for dep in conf.doc_root:
+            dependencies.append(os.path.join(paths.public, dep))
+            dependencies_debug.append(os.path.join(paths.public, dep))
 
     dependencies.extend(proccess_branch_root(conf))
     dependencies_debug.extend(proccess_branch_root(conf))
 
     m.target('publish', dependencies)
-    m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
+    m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths.public))
     m.newline()
 
     m.target('publish-debug', dependencies_debug)
-    m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
+    m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths.public))
     m.newline()
 
     m.target('package')
@@ -63,15 +63,15 @@ def generate_integration_targets(conf):
 def proccess_branch_root(conf):
     dependencies = []
 
-    if 'branch_root' in conf and conf['branch_root'] is not None:
-        for dep in conf['branch-root']:
+    if 'branch_root' in conf and conf.branch_root is not None:
+        for dep in conf.branch_root:
             if isinstance(dep, list):
                 dep = os.path.sep.join(dep)
 
             if dep != '':
-                dependencies.append(os.path.join(paths['branch_staging'], dep))
+                dependencies.append(os.path.join(paths.branch_staging, dep))
             else:
-                dependencies.append(paths['branch_staging'])
+                dependencies.append(paths.branch_staging)
 
     return dependencies
 
@@ -80,7 +80,7 @@ def gennerate_translation_integration_targets(language, conf):
     dependencies_debug = [ dep + "-debug" for dep in dependencies ]
 
     for dep in conf['doc-root']:
-        dependencies.append(os.path.join(paths['public'], dep))
+        dependencies.append(os.path.join(paths.public, dep))
 
     dependencies.extend(proccess_branch_root(conf))
 
@@ -97,7 +97,7 @@ def gennerate_translation_integration_targets(language, conf):
 
     m.target(publish_target)
     m.job('fab sphinx.target:{0}'.format(','.join(dependencies)))
-    m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths['public']))
+    m.msg('[build]: deployed branch {0} successfully to {1}'.format(get_branch(), paths.public))
     m.newline()
 
     m.target('.PHONY', [publish_target + '-debug', package_target + '-debug', publish_target, package_target])
