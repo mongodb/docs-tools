@@ -30,9 +30,9 @@ def lazy_conf(conf=None):
 
     return conf
 
-def get_conf_file(file, directory=None):
+def get_conf_file(file, directory=None, conf=None):
     if directory is None:
-        conf = get_conf()
+        conf = lazy_conf(conf)
         directory = conf.paths.builddata
 
     conf_file = os.path.split(file)[1].rsplit('.', 1)[0] + '.yaml'

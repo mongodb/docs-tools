@@ -101,7 +101,7 @@ def gennerate_translation_integration_targets(language, conf):
     m.target('.PHONY', [publish_target + '-debug', package_target + '-debug', publish_target, package_target])
 
 def main():
-    conf_file = get_conf_file(__file__)
+    conf_file = get_conf_file(__file__, conf=conf)
 
     config = ingest_yaml(conf_file)
 
