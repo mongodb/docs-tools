@@ -60,6 +60,7 @@ def pdf_tasks(sconf, conf, app):
     link_app = app.add('app')
 
     for i in conf.system.files.data.pdfs:
+        i = i.dict()
         tagged_name = i['output'][:-4] + '-' + i['tag']
         deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
         link_name = deploy_fn.replace('-' + conf.git.branches.current, '')
