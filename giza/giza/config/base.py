@@ -34,7 +34,6 @@ class ConfigurationBase(object):
         elif not isinstance(input_obj, ConfigurationBase) and os.path.isfile(input_obj):
             input_obj = ingest_yaml_doc(input_obj)
         else:
-            print(input_obj)
             msg = 'cannot ingest Configuration obj from object with type {0}'.format(type(input_obj))
             logger.critical(msg)
             raise TypeError(msg)
@@ -52,7 +51,7 @@ class ConfigurationBase(object):
             else:
                 m = 'key "{0}" in configuration object does not exist'.format(key)
                 logger.debug(m)
-                raise AttributeError(m)
+                raise AttributeError(m, e.message)
 
     @property
     def state(self):

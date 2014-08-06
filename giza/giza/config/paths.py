@@ -179,27 +179,24 @@ class PathsConfig(RecursiveConfigurationBase):
 
     @property
     def public_site_output(self):
-        if 'public_site_output' not in self.state:
-            self.public_site_output = None
+        if 'public_site_output' in self.state:
+            return self.state['public_site_output']
+        else:
+            p = [ self.conf.paths.public ]
 
-        return self.state['public_site_output']
+            if (self.conf.project.edition != self.conf.project.name and
+                self.conf.project.edition is not None):
+                p.append(self.conf.project.edition)
 
-    @public_site_output.setter
-    def public_site_output(self, value):
-        p = [ self.conf.paths.public ]
+            if self.conf.project.branched is True:
+                p.append(self.conf.git.branches.current)
 
-        if (self.conf.project.edition != self.conf.project.name and
-            self.conf.project.edition is not None):
-            p.append(self.conf.project.edition)
+            p = os.path.sep.join(p)
 
-        if self.conf.project.branched is True:
-            p.append(self.conf.git.branches.current)
+            if (self.conf.project.branched is False and
+                self.conf.project.edition is not None and
+                self.conf.git.branches.current != self.conf.git.branches.published[0]):
+                p += '-' + self.conf.git.branches.current
 
-        p = os.path.sep.join(p)
-
-        if (self.conf.project.branched is False and
-            self.conf.project.edition is not None and
-            self.conf.git.branches.current != self.conf.git.branches.published[0]):
-            p += '-' + self.conf.git.branches.current
-
-        self.state['public_site_output'] = p
+            self.state['public_site_output'] = p
+            return self.state['public_site_output']

@@ -30,4 +30,3 @@ def render_config(args):
     print('--- ' + "str of config object >>>")
     print(json.dumps(c.dict(), indent=3))
     print('---  <<<')
-    print(c.project.sitepath)

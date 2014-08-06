@@ -85,6 +85,12 @@ class CommandResult(object):
 
 
 def command(command, capture=False, ignore=False, logger=None):
+    if logger is None:
+        log_output = False
+        logger = logging.getLogger('giza.command')
+    else:
+        log_output = True
+
     logger.debug("running '{0}'".format(command))
     if capture is False:
         tmp_out = DevNull()
@@ -116,7 +122,7 @@ def command(command, capture=False, ignore=False, logger=None):
                         return_code=p.returncode)
     out.captured = capture
 
-    if logger is not None and capture is True:
+    if log_output is True and capture is True:
         logger.info(stdout)
         logger.error(stderr)
 
