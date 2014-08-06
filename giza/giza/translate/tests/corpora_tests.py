@@ -120,7 +120,6 @@ class EvenCorpusTestCase(unittest.TestCase):
         shutil.rmtree(TEST_PATH+"/temp_files", ignore_errors=True)
 
     def test_english_train(self):
-        print self.cconf
         create_hybrid_corpora(self.cconf)
         with open(TEST_PATH+"/temp_files/train.en-es.en") as f:
             self.assertEqual(f.read().strip(), "hello\ne1-m\ne2-m\ne3-m")

@@ -48,6 +48,10 @@ def create_corpora(args):
         logger.error(args.t_corpora_config + " doesn't exist")
         return
 
+    if os.path.exists(conf.container_path):
+        logger.error(conf.container_path+" already exists. Please delete it or change the container and try again")
+        return
+
     create_hybrid_corpora(cconf)
 
 
@@ -68,11 +72,11 @@ def model_results(args):
 
 
 @argh.arg('--output', '-o', default=None, dest='t_output_file')
-@argh.arg('--input', '-i', required=True, default=None, nargs='*', dest='t_input_file')
+@argh.arg('--input', '-i', required=True, default=None, nargs='*', dest='t_input_files')
 @argh.named('mt')
 def merge_translations(args):
     annotation_list = ['- ', '+ ', '~ ', '> ', '= ', '* ', '# ', '$ ', '^ ', '% ', '& ', '@ ']
-    merge_files(args.output_file, args.input_file, annotation_list)
+    merge_files(args.output_file, args.input_files, annotation_list)
 
 @argh.arg('--po', default=None, required=True, dest='t_input_file')
 @argh.arg('--source', '-s', default="source_corpus.txt", dest='t_source')

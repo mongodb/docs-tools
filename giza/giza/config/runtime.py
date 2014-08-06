@@ -186,8 +186,8 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
     _option_registry = [ 'serial', 'length', 'days_to_save', 'builder_to_delete',
                          'git_branch', 'git_sign_patch', 'serial_sphinx', 'package_path',
                          'clean_generated', 'include_mask', 'push_targets', 'dry_run',
-                         't_corpora_config', 't_translate_config', 't_output_file', 't_input_file',
-                         't_source', 't_target', 't_protected_regex']
+                         't_corpora_config', 't_translate_config', 't_output_file',
+                         't_source', 't_target']
 
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
@@ -320,3 +320,38 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
             self.state['dry_run'] = value
         else:
             raise TypeError
+
+    @property
+    def t_protected_regex(self):
+        return self.state['t_protected_regex']
+
+    @t_protected_regex.setter
+    def t_protected_regex(self, value)
+        value = os.path.expanduser(value)
+        if os.path.isfile(value):
+            self.state['t_protected_regex'] = value
+        else:
+            raise TypeError(value + ' is not a file')
+
+    @property
+    def t_input_file(self):
+        return self.state['t_input_file']
+
+    @t_input_file.setter
+    def t_input_file(self, value)
+        if os.path.exists(value):
+            self.state['t_input_file'] = value
+        else:
+            raise TypeError(value + ' does not exist')
+
+    @property
+    def t_input_files(self):
+        return self.state['t_input_file']
+
+    @t_input_files.setter
+    def t_input_files(self, value)
+        for path in value:
+            if os.path.exists(path) is False:
+                raise TypeError(path + ' does not exist)
+        self.state['t_input_files'] = value
+
