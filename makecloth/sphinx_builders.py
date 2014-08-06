@@ -99,7 +99,7 @@ def make_all_sphinx(config):
         builder_string = ','.join(['{0}-' + ed for ed in config['editions']])
         base = 'fab'
 
-        if conf.project.name == 'ecosystem':
+        if site_conf.project.name == 'ecosystem':
             base += " serial"
 
         for target in config['sphinx_builders']:
