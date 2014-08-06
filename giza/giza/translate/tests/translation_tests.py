@@ -46,9 +46,10 @@ class ExtractMultiplePoTestCase(unittest.TestCase):
 
     def test_aggregation(self):
         po_file_list = get_file_list(TEST_PATH+"/test_files/docs",["po","pot"])
+        po_file_list.sort()
         extract_all_untranslated_po_entries(po_file_list,TEST_PATH+"/temp_files")
         with open(TEST_PATH+"/temp_files/source") as f:
-            self.assertEqual(f.read().strip(), "Aggregation\nA high-level introduction to aggregation.\nIntroduces the use and operation of the data aggregation modalities available in MongoDB.\nAdministration")
+            self.assertEqual(f.read().strip(), "Administration\nAggregation\nA high-level introduction to aggregation.\nIntroduces the use and operation of the data aggregation modalities available in MongoDB.")
 
 
 class FillOnePoTestCase(unittest.TestCase):
@@ -87,6 +88,7 @@ class FillMultiplePoTestCase(unittest.TestCase):
 
     def test_files(self):
         po_file_list = get_file_list(TEST_PATH+"/temp_files/docs",["po","pot"])
+        po_file_list.sort()
         write_po_files(po_file_list,TEST_PATH+"/test_files/doc_filler.txt")
         f1 = polib.pofile(TEST_PATH+"/temp_files/docs/aggregation.po")
         f2 = polib.pofile(TEST_PATH+"/test_files/filled_docs/aggregation.po")

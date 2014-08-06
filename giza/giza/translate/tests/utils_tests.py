@@ -12,7 +12,9 @@ TEST_PATH = os.path.abspath(os.path.join('..', os.path.dirname(__file__)))
 class ListFilesTestCase(unittest.TestCase):
 
     def test_simple(self):
-        self.assertEqual(get_file_list(TEST_PATH+"/test_files/test_dir", ['txt', 'yaml']), [TEST_PATH+'/test_files/test_dir/f2.txt',TEST_PATH+'/test_files/test_dir/f1.txt',TEST_PATH+'/test_files/test_dir/f5.yaml',TEST_PATH+'/test_files/test_dir/d1/f4.txt'])
+        file_list = get_file_list(TEST_PATH+"/test_files/test_dir", ['txt', 'yaml'])
+        file_list.sort()
+        self.assertEqual(file_list, [TEST_PATH+'/test_files/test_dir/d1/f4.txt',TEST_PATH+'/test_files/test_dir/f1.txt',TEST_PATH+'/test_files/test_dir/f2.txt',TEST_PATH+'/test_files/test_dir/f5.yaml'])
 
     def test_single(self):
         self.assertEqual(get_file_list(TEST_PATH+"/test_files/test_dir/f1.txt", ['txt']), [TEST_PATH+'/test_files/test_dir/f1.txt'])
