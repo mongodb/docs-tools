@@ -56,12 +56,13 @@ def create_corpora(args):
 def model_results(args):
     conf = fetch_config(args)
 
-    if args.t_translate_config is not None and 'translate.yaml' in conf.system.files.paths:
-        idx = conf.system.files.paths.index('translate.yaml')
-        conf.system.files.paths[idx] = {'translate': args.t_translate_config}
-
-    tconf = conf.system.files.data.translate
-    tconf = TranslateConfig(tconf, conf)
+    if args.t_translate_config is None:
+        tconf = conf.system.files.data.translate
+    elif os.path.isfile(args.t_corpora_config):
+        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config))
+    else:
+        logger.error(args.t_translate_config + " doesn't exist")
+        return
 
     aggregate_model_data(tconf.paths.project)
 
@@ -95,12 +96,13 @@ def dict_to_corpus(args):
 @argh.named('tpo')
 def translate_po(args):
     conf = fetch_config(args)
-
-    if args.t_translate_config is not None and 'translate.yaml' in conf.system.files.paths:
-        idx = conf.system.files.paths.index('translate.yaml')
-        conf.system.files.paths[idx] = {'translate': args.t_translate_config}
-
-    tconf = conf.system.files.data.translate
+    if args.t_translate_config is None:
+        tconf = conf.system.files.data.translate
+    elif os.path.isfile(args.t_corpora_config):
+        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config))
+    else:
+        logger.error(args.t_translate_config + " doesn't exist")
+        return
 
     translate_po_files(args.t_input_file, tconf, args.t_protected_regex)
 
@@ -111,13 +113,14 @@ def translate_po(args):
 @argh.arg('--protected', '-p', default=None, dest='t_protected_regex')
 @argh.named('tdoc')
 def translate_text_doc(args):
-
     conf = fetch_config(args)
-    if args.t_translate_config is not None and 'translate.yaml' in conf.system.files.paths:
-        idx = conf.system.files.paths.index('translate.yaml')
-        conf.system.files.paths[idx] = {'translate': args.t_translate_config}
-
-    tconf = conf.system.files.data.translate
+    if args.t_translate_config is None:
+        tconf = conf.system.files.data.translate
+    elif os.path.isfile(args.t_corpora_config):
+        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config))
+    else:
+        logger.error(args.t_translate_config + " doesn't exist")
+        return
 
     translate_file(args.t_source, args.t_target, tconf, args.t_protected_regex)
 
@@ -132,12 +135,13 @@ def flip_text(args):
 @argh.named('bm')
 def build_translation_model(args):
     conf = fetch_config(args)
-
-    if args.t_translate_config is not None and 'translate.yaml' in conf.system.files.paths:
-        idx = conf.system.files.paths.index('translate.yaml')
-        conf.system.files.paths[idx] = {'translate': args.t_translate_config}
-
-    tconf = conf.system.files.data.translate
+    if args.t_translate_config is None:
+        tconf = conf.system.files.data.translate
+    elif os.path.isfile(args.t_corpora_config):
+        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config))
+    else:
+        logger.error(args.t_translate_config + " doesn't exist")
+        return
 
     if os.path.exists(tconf.paths.project) is False:
         os.makedirs(tconf.paths.project)
