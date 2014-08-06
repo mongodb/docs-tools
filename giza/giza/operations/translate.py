@@ -35,12 +35,11 @@ from giza.app import BuildApp
 
 logger = logging.getLogger('giza.operations.translate')
 
-
 @argh.arg('--config', '-c', default=None, dest="t_corpora_config")
 @argh.named('cc')
 def create_corpora(args):
-
     conf = fetch_config(args)
+
     if args.t_corpora_config is None:
         cconf = conf.system.files.data.corpora
     elif os.path.isfile(args.t_corpora_config) is False:
@@ -48,6 +47,7 @@ def create_corpora(args):
         sys.exit(1)
     else:
         cconf = ingest_yaml_doc(args.t_corpora_config)
+
     cconf = CorporaConfig(cconf)
 
     create_hybrid_corpora(cconf)
@@ -57,9 +57,11 @@ def create_corpora(args):
 @argh.named('res')
 def model_results(args):
     conf = fetch_config(args)
+
     if args.t_translate_config is not None and 'translate.yaml' in conf.system.files.paths:
         idx = conf.system.files.paths.index('translate.yaml')
         conf.system.files.paths[idx] = {'translate': args.t_translate_config}
+
     tconf = conf.system.files.data.translate
     tconf = TranslateConfig(tconf, conf)
 
@@ -72,7 +74,6 @@ def model_results(args):
 def merge_translations(args):
     annotation_list = ['- ', '+ ', '~ ', '> ', '= ', '* ', '# ', '$ ', '^ ', '% ', '& ', '@ ']
     merge_files(args.output_file, args.input_file, annotation_list)
-
 
 @argh.arg('--po', default=None, required=True, dest='t_input_file')
 @argh.arg('--source', '-s', default="source_corpus.txt", dest='t_source')
@@ -96,9 +97,11 @@ def dict_to_corpus(args):
 @argh.named('tpo')
 def translate_po(args):
     conf = fetch_config(args)
+
     if args.t_translate_config is not None and 'translate.yaml' in conf.system.files.paths:
         idx = conf.system.files.paths.index('translate.yaml')
         conf.system.files.paths[idx] = {'translate': args.t_translate_config}
+
     tconf = conf.system.files.data.translate
     tconf = TranslateConfig(tconf, conf)
 
@@ -116,6 +119,7 @@ def translate_text_doc(args):
     if args.t_translate_config is not None and 'translate.yaml' in conf.system.files.paths:
         idx = conf.system.files.paths.index('translate.yaml')
         conf.system.files.paths[idx] = {'translate': args.t_translate_config}
+
     tconf = conf.system.files.data.translate
     tconf = TranslateConfig(tconf, conf)
 
@@ -127,7 +131,6 @@ def translate_text_doc(args):
 @argh.named('ft')
 def flip_text(args):
     flip_text_direction(args.t_input_file, args.t_output_file)
-
 
 @argh.arg('--config', '-c', default=None, dest="t_translate_config")
 @argh.named('bm')
@@ -160,16 +163,14 @@ def build_translation_model(args):
     setup_tune(tconf)
     setup_test(tconf)
 
-    i = 0
-    for parameter_set in run_args:
+    for idx, parameter_set in enumerate(run_args):
         parameter_set = list(parameter_set)
-        parameter_set.append(i)
+        parameter_set.append(idx)
         parameter_set.append(tconf)
         t = app.add()
         t.job = build_model
         t.args = parameter_set
         t.description = "model_" + str(parameter_set[9])
-        i += 1
 
     app.run()
 
@@ -177,6 +178,7 @@ def build_translation_model(args):
 
     from_addr = "build_model@mongodb.com"
     to_addr = [tconf.settings.email]
+
     with open(tconf.paths.project+"/data.csv") as data:
         msg = MIMEText(data.read())
 

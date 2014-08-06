@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import sys
 import logging
 import time
@@ -20,14 +21,12 @@ import shutil
 import os
 
 from giza.files import expand_tree
-from giza.command import command
 
 '''
 This module contains utility functions used through the translate section of
 giza that can obviously be used anywhere else
 '''
 logger = logging.getLogger('giza.translate.utils')
-
 
 def get_file_list(path, input_extension):
     ''' This function wraps around expand tree to return a list of only 1 file
@@ -49,7 +48,8 @@ def get_file_list(path, input_extension):
                 if not path.endswith(input_extension):
                     return []
         return [path]
-    return expand_tree(path, input_extension)
+    else:
+        return expand_tree(path, input_extension)
 
 
 def set_logger(lg, logger_id):
@@ -60,6 +60,7 @@ def set_logger(lg, logger_id):
     '''
     for handler in logger.handlers:
         lg.removeHandler(handler)
+
     f = logging.Formatter("%(levelname)s|%(asctime)s|%(name)s|{0}: %(message)s".format(logger_id))
     h = logging.StreamHandler(sys.stdout)
     h.setFormatter(f)
@@ -81,9 +82,12 @@ class Timer(object):
     def __enter__(self):
         self.start = time.time()
         time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+
         self.d[self.name+"_start_time"] = time_now
+
         message = '[timer]: {0} started at {1}'
         message = message.format(self.name, time_now)
+
         logger.info(message)
 
     def __exit__(self, *args):
@@ -91,23 +95,9 @@ class Timer(object):
         message = '[timer]: time elapsed for {0} was: {1}'
         message = message.format(self.name, str(datetime.timedelta(seconds=total_time)))
         logger.info(message)
+
         self.d[self.name+"_time"] = total_time
         self.d[self.name+"_time_hms"] = str(datetime.timedelta(seconds=total_time))
-
-
-def pcommand(c):
-    '''This function wraps the command module with logging functionality
-    :param string c: command to run and log
-    :returns: a command result object
-    '''
-
-    logger.info(c)
-    o = command(c, capture=True)
-    if len(o.out) != 0:
-        logger.info(o.out)
-    if len(o.err) != 0:
-        logger.info(o.err)
-    return o
 
 
 def merge_files(output_file, input_files, annotation_list):
@@ -133,9 +123,12 @@ def merge_files(output_file, input_files, annotation_list):
         out = sys.stdout
     else:
         out = open(output_file, 'w', 1)
+
     open_files = []
+
     for file in input_files:
         open_files.append(open(file, "r"))
+
     t = True
     while t:
         for index, file in enumerate(open_files):
@@ -148,8 +141,10 @@ def merge_files(output_file, input_files, annotation_list):
             else:
                 out.write(annotation_list[index]+line+'\n')
         out.write("\n")
+
     for file in open_files:
         file.close()
+
     out.close()
 
 

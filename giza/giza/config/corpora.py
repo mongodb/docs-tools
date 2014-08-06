@@ -19,31 +19,20 @@ logger = logging.getLogger('giza.config.corpora')
 from giza.config.base import ConfigurationBase
 
 class SourceConfig(ConfigurationBase):
-    _option_registry = ['name',
-                        'source_file_path',
-                        'target_file_path',
-                        'percent_train',
-                        'percent_tune',
-                        'percent_test',
-                        'percent_of_train',
-                        'percent_of_tune',
-                        'percent_of_test',
-                        'length',
-                        'end']
-
-    def __init__(self, input_obj):
-        super(SourceConfig, self).__init__(input_obj)
-
+    _option_registry = ['name', 'source_file_path', 'target_file_path',
+                        'percent_train', 'percent_tune', 'percent_test',
+                        'percent_of_train', 'percent_of_tune',
+                        'percent_of_test', 'length', 'end']
 
 class CorporaConfig(ConfigurationBase):
-    _option_registry = ['container_path',
-                        'source_language',
-                        'target_language',
+    _option_registry = ['container_path', 'source_language', 'target_language',
                         'sources']
 
     def __init__(self, input_obj):
         input_obj = self.transform(input_obj)
+
         super(CorporaConfig, self).__init__(input_obj)
+
         self.verify_percentages()
         self.get_file_lengths()
 
@@ -82,28 +71,29 @@ class CorporaConfig(ConfigurationBase):
     def dict(self):
         '''This function overrides the default dict() function to transform a corpora object into a dictionary
         '''
-        d = dict()
-        d['container_path'] = self.container_path
-        d['source_language'] = self.source_language
-        d['target_language'] = self.target_language
-        d['sources'] = []
-        for fn, source in self.sources.items():
-            d['sources'].append(source.dict())
+        # use listcomp in sources for py3 compatibility
+        d = {
+            'container_path': self.container_path,
+            'target_language': self.target_language, 
+            'sources': [ s for s in self.sources.values() ]
+        }
+
         return d
 
     def transform(self, input_obj):
         '''This function takes a configuration file object cand creates a dictionary of the useful information.
         It also sets defaults for certain arguments so they do not need to be specified by the user for it to work
-        :Parameters:
-            - 'input_obj': original input object
-        :Returns:
-            - a dictionary of the configuration
+
+        :param dict input_obj: original input object
+
+        :returns: a processed dictionary of the configuration
         '''
-        d = dict()
-        d['container_path'] = input_obj['container_path']
-        d['source_language'] = input_obj['source_language']
-        d['target_language'] = input_obj['target_language']
-        d['sources'] = dict()
+        d = { 
+            'container_path' : input_obj['container_path'],
+            'source_language': input_obj['source_language'],
+            'target_language': input_obj['target_language'],
+            'sources': {}
+        }
 
         #handles sources section of config
         for source in input_obj['sources']:
@@ -125,5 +115,6 @@ class CorporaConfig(ConfigurationBase):
                     logger.error("Invalid percentage")
                     raise TypeError("Invalid percentage")
                 d['sources'][source['name']].state['percent_of_'+t] = source['percent_of_corpus']
+
         return d
 

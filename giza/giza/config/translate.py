@@ -20,10 +20,11 @@ logger = logging.getLogger('giza.config.translate')
 
 class TranslateConfig(RecursiveConfigurationBase):
     def __init__(self, input_obj, conf):
-        if isinstance(input_obj,list):
+        if isinstance(input_obj, list):
             logger.error("Config doesn't exist")
-            sys.exit(1)
-        super(TranslateConfig, self).__init__(input_obj, conf)
+            raise TypeError
+        else:
+            super(TranslateConfig,self).__init__(input_obj, conf)
 
     @property
     def settings(self):
@@ -75,7 +76,8 @@ class TranslateConfig(RecursiveConfigurationBase):
 
 
 class SettingsConfig(ConfigurationBase):
-    _option_registry = ['foreign', 'threads', 'pool_size', 'email', 'phrase_table_name', 'reordering_name', 'best_run']
+    _option_registry = ['foreign', 'threads', 'pool_size', 'email',
+                        'phrase_table_name', 'reordering_name', 'best_run']
 
 class PathsConfig(ConfigurationBase):
     _option_registry = ['moses', 'irstlm', 'aux_corpus_files', 'project']
@@ -84,16 +86,16 @@ class CorpusTypeConfig(ConfigurationBase):
     _option_registry = ['dir', 'name']
 
 class TrainingParametersConfig(ConfigurationBase):
-    _option_registry = ['alignment', 'max_phrase_length', 'order', 'reordering_directionality', 'reordering_language', 'reordering_modeltype', 'reordering_orientation', 'score_options', 'smoothing']
-    
+    _option_registry = ['alignment', 'max_phrase_length', 'order',
+                        'reordering_directionality', 'reordering_language', 'reordering_modeltype',
+                        'reordering_orientation', 'score_options', 'smoothing']
+
     def __init__(self, input_obj):
         input_obj = self.transform(input_obj)
         super(TrainingParametersConfig, self).__init__(input_obj)
-   
+
     def transform(self, input_obj):
         for k, param in input_obj.items():
             if isinstance(param, list) is False:
                 input_obj[k] = [param]
         return input_obj
-
-

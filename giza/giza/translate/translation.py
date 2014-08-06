@@ -19,7 +19,8 @@ import os
 
 import polib
 
-from giza.translate.utils import pcommand, TempDir, get_file_list
+from giza.translate.utils import TempDir, get_file_list
+
 '''
 This module has functions for translating files. It has a function for
 translating any file given a config and it has a functioni for translating
@@ -41,62 +42,71 @@ logger = logging.getLogger('giza.translate.translation')
 
 def translate_file(in_file, out_file,  tconf, protected_file, super_temp=None):
     '''This function translates a given file to another language
+
     :param string in_file: path to file to be translated
     :param string out_file: path to file where translated output should be written
     :param config tconf: translateconfig object
     :param string protected_file': path to regex file to protect expressions from tokenization
-    :param string super_temp: If you have a TempDir context inside of a TempDir context, this allows you to not create two. Just pass in the directory of the previous temporary directory
+    :param string super_temp: If you have a TempDir context inside of a TempDir
+       context, this allows you to not create two. Just pass in the directory of
+       the previous temporary directory 
     '''
     if os.path.isfile(in_file) is False:
-        logger.error(in_file+" doesn't exist")
+        logger.error(in_file + " doesn't exist")
         sys.exit(1)
     if protected_file is not None and os.path.isfile(protected_file) is False:
-        logger.error(protected_file+" doesn't exist")
+        logger.error(protected_file + " doesn't exist")
         sys.exit(1)
 
     if out_file is None:
         out_file = in_file + ".translated"
 
     with TempDir(super_temp=super_temp) as temp:
-        logger.info("tempdir: "+temp)
-        logger.info("decoding: "+in_file)
+        logger.info("tempdir: " + temp)
+        logger.info("decoding: " + in_file)
         if super_temp is None:
             shutil.copy(in_file, temp)
         in_file = os.path.basename(in_file)
 
         if protected_file is not None:
-            pcommand("{0}/scripts/tokenizer/tokenizer.perl -l en < {4}/{1} > {4}/{1}.tok.en -threads {2} -protected {3}".format(tconf.paths.moses, in_file, tconf.settings.threads, protected_file, temp))
+            command("{0}/scripts/tokenizer/tokenizer.perl -l en < {4}/{1} > {4}/{1}.tok.en -threads {2} -protected {3}".format(tconf.paths.moses, in_file, tconf.settings.threads, protected_file, temp), logger=logger)
         else:
-            pcommand("{0}/scripts/tokenizer/tokenizer.perl -l en < {3}/{1} > {3}/{1}.tok.en -threads {2}".format(tconf.paths.moses, in_file, tconf.settings.threads, temp))
-        pcommand("{0}/scripts/recaser/truecase.perl --model {1}/truecase-model.en < {3}/{2}.tok.en > {3}/{2}.true.en".format(tconf.paths.moses, tconf.paths.aux_corpus_files, in_file, temp))
-        pcommand("{0}/bin/moses -f {1}/{3}/working/binarised-model/moses.ini < {4}/{2}.true.en > {4}/{2}.true.trans".format(tconf.paths.moses, tconf.paths.project, in_file, tconf.settings.best_run, temp))
-        pcommand("{0}/scripts/recaser/detruecase.perl < {2}/{1}.true.trans > {2}/{1}.tok.trans".format(tconf.paths.moses, in_file, temp))
-        pcommand("{0}/scripts/tokenizer/detokenizer.perl -l en < {3}/{1}.tok.trans > {2}".format(tconf.paths.moses, in_file, out_file, temp))
+            command("{0}/scripts/tokenizer/tokenizer.perl -l en < {3}/{1} > {3}/{1}.tok.en -threads {2}".format(tconf.paths.moses, in_file, tconf.settings.threads, temp), logger=logger)
+
+        command("{0}/scripts/recaser/truecase.perl --model {1}/truecase-model.en < {3}/{2}.tok.en > {3}/{2}.true.en".format(tconf.paths.moses, tconf.paths.aux_corpus_files, in_file, temp), logger=logger)
+        command("{0}/bin/moses -f {1}/{3}/working/binarised-model/moses.ini < {4}/{2}.true.en > {4}/{2}.true.trans".format(tconf.paths.moses, tconf.paths.project, in_file, tconf.settings.best_run, temp), logger=logger)
+        command("{0}/scripts/recaser/detruecase.perl < {2}/{1}.true.trans > {2}/{1}.tok.trans".format(tconf.paths.moses, in_file, temp), logger=logger)
+        command("{0}/scripts/tokenizer/detokenizer.perl -l en < {3}/{1}.tok.trans > {2}".format(tconf.paths.moses, in_file, out_file, temp), logger=logger)
 
 
 def po_file_untranslated_to_text(text_doc, po_file):
     '''This function writes a po file out to a text file
+
     :param string text_doc: the path to the text document to write the po file sentences to
     :param string po_file: the path to the po_file to write from
     '''
-    logger.info("writing out from "+po_file)
+    logger.info("writing out from " + po_file)
     po = polib.pofile(po_file)
+
     for entry in po.untranslated_entries():
-        text_doc.write(entry.msgid.encode('utf-8')+'\n')
+        text_doc.write(entry.msgid.encode('utf-8') + '\n')
 
 
 def extract_all_untranslated_po_entries(po_file_list, temp_dir):
     '''This function extracts all of the untranslated entries in
     the directory structure
+
     :param list po_file_list: the list of po files
     :param string temp_dir: the path to the temporary directory
+
     :returns: the path to the temporary source file
     '''
 
     with open(temp_dir+"/source", "w") as temp:
         for fn in po_file_list:
             po_file_untranslated_to_text(temp, fn)
-    return temp_dir+"/source"
+
+    return temp_dir + "/source"
 
 
 def fill_po_file(target_po_file, translated_lines, start):

@@ -37,13 +37,15 @@ logger = logging.getLogger('giza.translate.corpora')
 def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
     '''This function appends the correct amount of the corpus to the basefile,
     finishing up the file when necessary so no data goes to waste
+
     :param int percentage: percentage of the file going into the corpus
     :param float num_copies: number of copies of the file going into the corpus
     :param string out_fn: the name of the base file to append the corpus to
     :param string in_fn: the name of the new file to take the data from
     :param int start: the line to start copying from in the new file
     :param boolean final: if it's the final section of the file. If True it
-    makes sure to use all of the way to the end of the file
+         makes sure to use all of the way to the end of the file
+
     :returns: the last line it copied until
     '''
     with open(in_fn, 'r') as f:
@@ -69,15 +71,15 @@ def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
         if f.read(1) != '\n':
             f.write('\n')
 
-
     return start + tot
-
 
 def get_total_length(conf, corpus_type):
     '''This function finds the ideal total length of the corpus
     It finds the minimum length where each corpus section is used in full
+
     :param config conf: corpora configuration object
     :param string corpus_type: either train, tune, or test
+
     :returns: total length of the corpus
     '''
     tot_length = 0
@@ -97,12 +99,14 @@ def create_hybrid_corpora(conf):
     It will copy the config file to the directory with the corpora so that you
     have a record, but the copy won't be exact. It creates both language
     corpora at the same time in parallel.
+
     :param config conf: corpora configuration object
     '''
 
     if os.path.exists(conf.container_path):
         logger.error(conf.container_path+" already exists. Please delete it or change the container and try again")
         sys.exit(1)
+
     os.makedirs(conf.container_path)
     with open(conf.container_path+"/corpora.yaml", 'w') as f:
         yaml.dump(conf.dict(), f, default_flow_style=False)
@@ -151,6 +155,7 @@ def create_hybrid_corpora(conf):
 def write_from_po_file(source_doc, target_doc, po_file_name):
     '''This function writes two files in english and spanish from a po file's
     translated entries
+
     :param string source_doc: Name of file to put source lanaguge text in.
     :param string target_doc: Name of file to put target lanaguge text in.
     :param string po_file_name: Path to po file to parse
@@ -165,6 +170,7 @@ def write_from_po_file(source_doc, target_doc, po_file_name):
 def create_corpus_from_po(po_path, source_doc_fn, target_doc_fn):
     '''This function opens up the output files and then goes through the files
     in the file list and writes them all to two corpus files.
+
     :param string po_path: Path to po file or directory of po files
     :param string source_doc_fn: Name of file to put source lanaguge text in.
     :param string target_doc_fn: Name of file to put target lanaguge text in.
@@ -186,6 +192,7 @@ def create_corpus_from_po(po_path, source_doc_fn, target_doc_fn):
 def create_corpus_from_dictionary(dict_fn, source_fn, target_fn):
     '''This function splits a dictionary from http://www.dicts.info/uddl.php
     and turns it into a parallel corpus.
+
     :param string dict_fn: path to dictionary file
     :param string source_fn: path to file to write source text to
     :param string target_fn: path to file to write target text to

@@ -84,7 +84,7 @@ class CommandResult(object):
         self._captured = value
 
 
-def command(command, capture=False, ignore=False):
+def command(command, capture=False, ignore=False, logger=None):
     logger.debug("running '{0}'".format(command))
     if capture is False:
         tmp_out = DevNull()
@@ -115,6 +115,10 @@ def command(command, capture=False, ignore=False):
                         out=stdout,
                         return_code=p.returncode)
     out.captured = capture
+
+    if logger is not None and capture is True:
+        logger.info(stdout)
+        logger.error(stderr)
 
     if out.succeeded is True or ignore is True:
         return out
