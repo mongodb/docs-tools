@@ -326,7 +326,9 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
         return self.state['t_protected_regex']
 
     @t_protected_regex.setter
-    def t_protected_regex(self, value)
+    def t_protected_regex(self, value):
+        if value is None:
+            return
         value = os.path.expanduser(value)
         if os.path.isfile(value):
             self.state['t_protected_regex'] = value
@@ -338,7 +340,9 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
         return self.state['t_input_file']
 
     @t_input_file.setter
-    def t_input_file(self, value)
+    def t_input_file(self, value):
+        if value is None:
+            return
         if os.path.exists(value):
             self.state['t_input_file'] = value
         else:
@@ -349,9 +353,11 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
         return self.state['t_input_file']
 
     @t_input_files.setter
-    def t_input_files(self, value)
+    def t_input_files(self, value):
+        if value is None:
+            return
         for path in value:
             if os.path.exists(path) is False:
-                raise TypeError(path + ' does not exist)
+                raise TypeError(path + ' does not exist')
         self.state['t_input_files'] = value
 
