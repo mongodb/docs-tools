@@ -172,6 +172,10 @@ def run_sphinx(builder, sconf, conf):
         os.makedirs(dirpath)
         logger.info('created directories "{1}" for sphinx builder {0}'.format(builder, dirpath))
 
+    if 'language' in sconf and sconf.language is not None:
+        command('sphinx-intl build --language=' + sconf.language)
+        logger.info('compiled all PO files for translated build.')
+
     logger.info('starting sphinx build {0} at {1}'.format(builder, timestamp()))
 
     cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {4}' # per-builder-doctreea
