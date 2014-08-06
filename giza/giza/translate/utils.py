@@ -35,10 +35,6 @@ def get_file_list(path, input_extension):
     :param string path: path to the file
     :param list input_extension: a list (or a single) of extensions that is acceptable
     '''
-    if os.path.exists(path) is False:
-        logger.error(path+" does not exist")
-        sys.exit(1)
-
     if os.path.isfile(path):
         if input_extension is not None:
             if isinstance(input_extension, list):
@@ -112,12 +108,7 @@ def merge_files(output_file, input_files, annotation_list):
 
     if len(input_files) > len(annotation_list):
         logger.error("Too many files, add more annotations and retry")
-        sys.exit(1)
-
-    for fn in input_files:
-        if os.path.exists(fn) is False:
-            logger.error(fn+" doesn't exist")
-            sys.exit(1)
+        raise TypeError("Too many files, add more annotations and retry")
 
     if output_file is None:
         out = sys.stdout
@@ -178,10 +169,6 @@ def flip_text_direction(in_fp, out_fp):
     :param string in_fp: file path for the file to flip
     :param string out_fp: file path for the flipped file
     '''
-    if os.path.isfile(in_fp) is False:
-        logger.error(in_fp+" is not a file")
-        sys.exit(1)
-
     with open(out_fp, "w", 1) as out_file:
         with open(in_fp, "r") as in_file:
             for line in in_file:

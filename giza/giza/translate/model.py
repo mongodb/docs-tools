@@ -17,10 +17,13 @@ import time
 import datetime
 import logging
 import json
+import re
 
 from giza.translate.utils import Timer, set_logger
 from giza.command import command
 from giza.files import copy_always
+from giza.transformation import munge_page
+
 '''
 This module builds the translation model by training, tuning, and then testing.
 It also binarizes the model at the end so that it's faster to load the decoder
@@ -167,7 +170,7 @@ def train(working_path, lm_path, l_len, l_order, l_lang, l_direct, l_score,
 
     with Timer(d, 'train'):
         os.makedirs(working_path)
-        command("{0}/scripts/training/train-model.perl -root-dir {13}/train -corpus {1}/{2}.clean -f en -e {3} --score-options \'{4}\' -alignment {5} -reordering {6}-{7}-{8}-{9} -lm 0:{10}:{11}/{2}.blm.{3}:1 -mgiza -mgiza-cpus {12} -external-bin-dir {0}/tools -cores {12} --parallel --parts 3 2>&1 > {13}/training.out".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.train.name, tconf.settings.foreign, l_score, l_align, l_model, l_orient, l_direct, l_lang, l_order, lm_path, tconf.settings.threads, working_path))
+        command("{0}/scripts/training/train-model.perl -root-dir {13}/train -corpus {1}/{2}.clean -f en -e {3} --score-options \'{4}\' -alignment {5} -reordering {6}-{7}-{8}-{9} -lm 0:{10}:{11}/{2}.blm.{3}:1 -mgiza -mgiza-cpus {12} -external-bin-dir {0}/tools -cores {12} --parallel --parts 3 2>&1 > {13}/training.out".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.train.name, tconf.settings.foreign, l_score, l_align, l_model, l_orient, l_direct, l_lang, l_order, lm_path, tconf.settings.threads, working_path), logger=logger)
 
 
 def tune(working_path, tconf, d):
@@ -178,7 +181,7 @@ def tune(working_path, tconf, d):
     '''
 
     with Timer(d, 'tune'):
-        command("{0}/scripts/training/mert-moses.pl {1}/{2}.true.en {1}/{2}.true.{3} {0}/bin/moses  {4}/train/model/moses.ini --working-dir {4}/mert-work --mertdir {0}/bin/ 2>&1 > {4}/mert.out".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.tune.name, tconf.settings.foreign, working_path))
+        command("{0}/scripts/training/mert-moses.pl {1}/{2}.true.en {1}/{2}.true.{3} {0}/bin/moses  {4}/train/model/moses.ini --working-dir {4}/mert-work --mertdir {0}/bin/ 2>&1 > {4}/mert.out".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.tune.name, tconf.settings.foreign, working_path), logger=logger)
 
 
 def binarise(working_path, l_lang, l_direct, l_orient, l_model, tconf, d):
@@ -197,14 +200,19 @@ def binarise(working_path, l_lang, l_direct, l_orient, l_model, tconf, d):
     with Timer(d, 'binarise'):
         binarised_model_path = os.path.join(workingpath, 'binarised-model')
         os.makedirs(binarised_model_path)
-        command("{0}/bin/processPhraseTable  -ttable 0 0 {1}/train/model/{2}.gz -nscores 5 -out {1}/binarised-model/phrase-table".format(tconf.paths.moses, working_path, tconf.settings.phrase_table_name))
-        command("{0}/bin/processLexicalTable -in {1}/train/model/{6}.{2}-{3}-{4}-{5}.gz -out {1}/binarised-model/reordering-table".format(tconf.paths.moses, working_path, l_model, l_orient, l_direct, l_lang, tconf.settings.reordering_name))
+        command("{0}/bin/processPhraseTable  -ttable 0 0 {1}/train/model/{2}.gz -nscores 5 -out {1}/binarised-model/phrase-table".format(tconf.paths.moses, working_path, tconf.settings.phrase_table_name), logger=logger)
+        command("{0}/bin/processLexicalTable -in {1}/train/model/{6}.{2}-{3}-{4}-{5}.gz -out {1}/binarised-model/reordering-table".format(tconf.paths.moses, working_path, l_model, l_orient, l_direct, l_lang, tconf.settings.reordering_name), logger=logger)
 
         copy_always(os.path.join(working_path, 'mert-work', 'moses.ini'),
                     binarised_model_path)
 
-        command("sed -i 's/PhraseDictionaryMemory/PhraseDictionaryBinary/' {0}/binarised-model/moses.ini".format(working_path))
-        command("sed -i 's/train\/model\/{1}.gz/binarised-model\/phrase-table/' {0}/binarised-model/moses.ini".format(working_path, tconf.settings.phrase_table_name))
+        sub_dict = (re.compile(r'PhraseDictionaryMemory'), 'PhraseDictionaryBinary')
+        munge_page(os.path.join(working_path, 'binarised-model', 'moses.ini'), sub_dict)
+        phrase_table_path = os.path.join('train', 'model', tconf.settings.phrase_table_name + '.gz')
+        sub_table = (re.compile(phrase_table_path), 'binarised-model/phrase-table')
+
+        #command("sed -i 's/PhraseDictionaryMemory/PhraseDictionaryBinary/' {0}/binarised-model/moses.ini".format(working_path), logger=logger)
+        #command("sed -i 's/train\/model\/{1}.gz/binarised-model\/phrase-table/' {0}/binarised-model/moses.ini".format(working_path, tconf.settings.phrase_table_name), logger=logger)
 
 
 def test_filtered(working_path, tconf, d):
@@ -217,9 +225,9 @@ def test_filtered(working_path, tconf, d):
     :param dict d: output dictionary
     '''
     with Timer(d, 'test'):
-        command("{0}/scripts/training/filter-model-given-input.pl {3}/filtered {3}/mert-work/moses.ini {2}/{1}.true.en -Binarizer {0}/bin/processPhraseTable".format(tconf.paths.moses, tconf.test.name, tconf.paths.aux_corpus_files, working_path))
-        command("{0}/bin/moses -f {1}/filtered/moses.ini  < {2}/{3}.true.en > {1}/{3}.translated.{4} 2> {1}/{3}.out".format(tconf.paths.moses, working_path, tconf.paths.aux_corpus_files, tconf.test.name, tconf.settings.foreign))
-        c = command("{0}/scripts/generic/multi-bleu.perl -lc {1}/{2}.true.{4} < {3}/{2}.translated.{4}".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.test.name, working_path, tconf.settings.foreign))
+        command("{0}/scripts/training/filter-model-given-input.pl {3}/filtered {3}/mert-work/moses.ini {2}/{1}.true.en -Binarizer {0}/bin/processPhraseTable".format(tconf.paths.moses, tconf.test.name, tconf.paths.aux_corpus_files, working_path), logger=logger)
+        command("{0}/bin/moses -f {1}/filtered/moses.ini  < {2}/{3}.true.en > {1}/{3}.translated.{4} 2> {1}/{3}.out".format(tconf.paths.moses, working_path, tconf.paths.aux_corpus_files, tconf.test.name, tconf.settings.foreign), logger=logger)
+        c = command("{0}/scripts/generic/multi-bleu.perl -lc {1}/{2}.true.{4} < {3}/{2}.translated.{4}".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.test.name, working_path, tconf.settings.foreign), logger=logger)
 
         d["BLEU"] = c.out
 
@@ -232,8 +240,8 @@ def test_binarised(working_path, tconf, d):
     :param dict d: output dictionary
     '''
     with Timer(d, 'test'):
-        command("{0}/bin/moses -f {1}/binarised-model/moses.ini  < {2}/{3}.true.en > {1}/{3}.translated.{4} 2> {1}/{3}.out".format(tconf.paths.moses, working_path, tconf.paths.aux_corpus_files, tconf.test.name, tconf.settings.foreign))
-        c = command("{0}/scripts/generic/multi-bleu.perl -lc {1}/{2}.true.{4} < {3}/{2}.translated.{4}".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.test.name, working_path, tconf.settings.foreign))
+        command("{0}/bin/moses -f {1}/binarised-model/moses.ini  < {2}/{3}.true.en > {1}/{3}.translated.{4} 2> {1}/{3}.out".format(tconf.paths.moses, working_path, tconf.paths.aux_corpus_files, tconf.test.name, tconf.settings.foreign), logger=logger)
+        c = command("{0}/scripts/generic/multi-bleu.perl -lc {1}/{2}.true.{4} < {3}/{2}.translated.{4}".format(tconf.paths.moses, tconf.paths.aux_corpus_files, tconf.test.name, working_path, tconf.settings.foreign), logger=logger)
 
         d["BLEU"] = c.out
 

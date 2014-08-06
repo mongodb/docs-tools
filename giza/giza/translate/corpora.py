@@ -103,9 +103,6 @@ def create_hybrid_corpora(conf):
     :param config conf: corpora configuration object
     '''
 
-    if os.path.exists(conf.container_path):
-        logger.error(conf.container_path+" already exists. Please delete it or change the container and try again")
-        sys.exit(1)
 
     os.makedirs(conf.container_path)
     with open(conf.container_path+"/corpora.yaml", 'w') as f:
@@ -176,10 +173,6 @@ def create_corpus_from_po(po_path, source_doc_fn, target_doc_fn):
     :param string target_doc_fn: Name of file to put target lanaguge text in.
     '''
 
-    if os.path.exists(po_path) is False:
-        logger.error(po_path+" doesn't exist")
-        sys.exit(1)
-
     # path is a directory now
     logger.info("walking path "+po_path)
     with open(source_doc_fn, "w", 1) as source_doc:
@@ -197,10 +190,6 @@ def create_corpus_from_dictionary(dict_fn, source_fn, target_fn):
     :param string source_fn: path to file to write source text to
     :param string target_fn: path to file to write target text to
     '''
-
-    if os.path.isfile(dict_fn) is False:
-        logger.error(dict_fn+" doesn't exist")
-        sys.exit(1)
 
     with open(dict_fn, "r") as dict_f:
         with open(source_fn, "w", 1) as source_f:
