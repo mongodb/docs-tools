@@ -17,7 +17,7 @@ def apply_patch(args):
     g = GitRepo(c.paths.projectroot)
 
     if c.runstate.git_branch is None:
-        c.runstate.git_branch = g.current_branch
+        c.runstate.git_branch = g.current_branch()
 
     with g.branch(c.runstate.git_branch):
         g.am(patches=c.runstate.git_objects,

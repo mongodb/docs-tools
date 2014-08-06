@@ -90,6 +90,7 @@ def command(command, capture=False, ignore=False, logger=None):
         logger = logging.getLogger('giza.command')
     else:
         log_output = True
+        logger.info(command)
 
     logger.debug("running '{0}'".format(command))
     if capture is False:

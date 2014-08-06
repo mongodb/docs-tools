@@ -33,7 +33,7 @@ class GitRepo(object):
     def cmd(self, *args):
         args = ' '.join(args)
 
-        return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True)
+        return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True, logger=logger)
 
     def remotes(self):
         return self.cmd('remote').out.split('\n')
@@ -95,19 +95,19 @@ class GitRepo(object):
                 if not obj.endswith('.patch'):
                     obj += '.patch'
 
-                self.cmd(cmd_base.format(path=obj))
+                command(cmd_base.format(path=obj))
                 logger.info("applied {0}".format(obj))
             elif re.search('[a-zA-Z]+', obj):
                 path = '/'.join([ repo, 'commit', obj ]) + '.patch'
 
-                self.cmd(cmd_base.format(path=path))
+                command(cmd_base.format(path=path))
                 logger.info('merged commit {0} for {1} into {2}'.format(obj, repo, self.current_branch()))
             else:
                 if repo is None:
                     logger.warning('not applying "{0}", because of missing repo'.format(obj))
                 else:
                     path = '/'.join([ repo, 'pull', obj ]) + '.patch'
-                    self.cmd(cmd_base.format(path=path))
+                    command(cmd_base.format(path=path))
                     logger.info("applied {0}".format(obj))
 
     @contextmanager
