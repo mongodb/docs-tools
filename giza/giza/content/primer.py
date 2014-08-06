@@ -25,10 +25,15 @@ from giza.transformation import post_process_tasks, truncate_file, append_to_fil
 def get_migration_specifications(conf):
     return [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
                                                    conf.paths.builddata))
-             if 'primer' in fn and 'migrations' in fn ]
+             if conf.project.name in fn and 'migrations' in fn ]
 
 def convert_multi_source(page):
-    return [ { 'source': source } for source in page['sources'] ]
+    if 'source_dir' in page:
+        return [ { 'source': source, 'source_dir': page['source_dir'] }
+                 for source in page['sources'] ]
+    else:
+        return [ { 'source': source }
+                 for source in page['sources'] ]
 
 def fix_migration_paths(page):
     if 'target' not in page:
@@ -83,7 +88,10 @@ def primer_migration_tasks(conf, app):
             page = fix_migration_paths(page)
 
             fq_target = os.path.join(conf.paths.projectroot, conf.paths.source, page['target'])
-            fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, '..', 'source', page['source']))
+            if 'source_dir' in page:
+                fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, page['source_dir'], page['source']))
+            else:
+                fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, '..', 'source', page['source']))
 
             prev = build_migration_task(fq_target, fq_source, app)
 
@@ -124,7 +132,7 @@ def build_append_task(page, target, spec_files, app):
     task = app.add('task')
     task.target = page['target']
     task.job = append_to_file
-    task.args = [ target, page['append']]
+    task.args = [ target, page['append'] ]
     task.dependency = spec_files
 
 def build_truncate_task(truncate_spec, target, app):

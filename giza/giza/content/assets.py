@@ -19,6 +19,7 @@ logger = logging.getLogger('giza.content.assets')
 
 from giza.git import GitRepo
 from giza.files import rm_rf
+from giza.command import command
 
 def assets_setup(path, branch, repo):
     if os.path.exists(path):
@@ -46,6 +47,13 @@ def assets_tasks(conf, app):
             t.args = { 'path': path,
                        'branch': asset.branch,
                        'repo': asset.repository }
+
+            if 'generate' in asset:
+                gen_app = app.add('app')
+                for content_type in asset.generate:
+                    t = gen_app.add('task')
+                    t.job = command
+                    t.args = 'cd {0}; giza generate {1}'.format(path, content_type)
 
 def assets_clean(conf, app):
     if conf.assets is not None:

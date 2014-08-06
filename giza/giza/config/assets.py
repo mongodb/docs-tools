@@ -15,26 +15,16 @@
 from giza.config.base import ConfigurationBase
 
 class AssetsConfig(ConfigurationBase):
-    @property
-    def path(self):
-        return self.state['path']
-
-    @path.setter
-    def path(self, value):
-        self.state['path'] = value
+    _option_registry = ['path', 'branch', 'repository']
 
     @property
-    def branch(self):
-        return self.state['branch']
+    def generate(self):
+        return self.state['generate']
 
-    @branch.setter
-    def branch(self, value):
-        self.state['branch'] = value
+    @generate.setter
+    def generate(self, value):
+        if isinstance(value, list):
+            self.state['generate'] = value
+        else:
+            raise TypeError
 
-    @property
-    def repository(self):
-        return self.state['repository']
-
-    @repository.setter
-    def repository(self, value):
-        self.state['repository'] = value
