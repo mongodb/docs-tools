@@ -49,7 +49,7 @@ def translate_file(in_file, out_file,  tconf, protected_file, super_temp=None):
     :param string protected_file': path to regex file to protect expressions from tokenization
     :param string super_temp: If you have a TempDir context inside of a TempDir
        context, this allows you to not create two. Just pass in the directory of
-       the previous temporary directory 
+       the previous temporary directory
     '''
     if os.path.isfile(in_file) is False:
         logger.error(in_file + " doesn't exist")
@@ -157,11 +157,11 @@ def translate_po_files(po_path, tconf, protected_file=None):
     '''
 
     if os.path.exists(po_path) is False:
-        logger.error(po_path+" doesn't exist")
+        logger.error(po_path + " doesn't exist")
         sys.exit(1)
 
     if protected_file is not None and os.path.exists(protected_file) is False:
-        logger.error(protected_file+" doesn't exist")
+        logger.error(protected_file + " doesn't exist")
         sys.exit(1)
 
     with TempDir() as temp_dir:

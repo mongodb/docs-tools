@@ -42,13 +42,11 @@ def create_corpora(args):
 
     if args.t_corpora_config is None:
         cconf = conf.system.files.data.corpora
-    elif os.path.isfile(args.t_corpora_config) is False:
-        logger.error(args.t_corpora_config+" doesn't exist")
-        sys.exit(1)
+    elif os.path.isfile(args.t_corpora_config):
+        cconf = CorporaConfig(ingest_yaml_doc(args.t_corpora_config))
     else:
-        cconf = ingest_yaml_doc(args.t_corpora_config)
-
-    cconf = CorporaConfig(cconf)
+        logger.error(args.t_corpora_config + " doesn't exist")
+        return
 
     create_hybrid_corpora(cconf)
 
@@ -103,7 +101,6 @@ def translate_po(args):
         conf.system.files.paths[idx] = {'translate': args.t_translate_config}
 
     tconf = conf.system.files.data.translate
-    tconf = TranslateConfig(tconf, conf)
 
     translate_po_files(args.t_input_file, tconf, args.t_protected_regex)
 
@@ -121,7 +118,6 @@ def translate_text_doc(args):
         conf.system.files.paths[idx] = {'translate': args.t_translate_config}
 
     tconf = conf.system.files.data.translate
-    tconf = TranslateConfig(tconf, conf)
 
     translate_file(args.t_source, args.t_target, tconf, args.t_protected_regex)
 
@@ -136,11 +132,12 @@ def flip_text(args):
 @argh.named('bm')
 def build_translation_model(args):
     conf = fetch_config(args)
+
     if args.t_translate_config is not None and 'translate.yaml' in conf.system.files.paths:
         idx = conf.system.files.paths.index('translate.yaml')
         conf.system.files.paths[idx] = {'translate': args.t_translate_config}
+
     tconf = conf.system.files.data.translate
-    tconf = TranslateConfig(tconf, conf)
 
     if os.path.exists(tconf.paths.project) is False:
         os.makedirs(tconf.paths.project)
@@ -192,13 +189,12 @@ def build_translation_model(args):
 
 
 def get_run_args(tconf):
-    config = itertools.product(tconf.training_parameters.max_phrase_length,
-                               tconf.training_parameters.order,
-                               tconf.training_parameters.reordering_language,
-                               tconf.training_parameters.reordering_directionality,
-                               tconf.training_parameters.score_options,
-                               tconf.training_parameters.smoothing,
-                               tconf.training_parameters.alignment,
-                               tconf.training_parameters.reordering_orientation,
-                               tconf.training_parameters.reordering_modeltype)
-    return config
+    return itertools.product(tconf.training_parameters.max_phrase_length,
+                             tconf.training_parameters.order,
+                             tconf.training_parameters.reordering_language,
+                             tconf.training_parameters.reordering_directionality,
+                             tconf.training_parameters.score_options,
+                             tconf.training_parameters.smoothing,
+                             tconf.training_parameters.alignment,
+                             tconf.training_parameters.reordering_orientation,
+                             tconf.training_parameters.reordering_modeltype)

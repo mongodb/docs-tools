@@ -22,6 +22,8 @@ from giza.config.sphinx_local import SphinxLocalConfig
 from giza.config.manpage import ManpageConfig
 from giza.config.pdfs import PdfConfig
 from giza.config.intersphinx import IntersphinxConfig
+from giza.config.translate import TranslateConfig
+from giza.config.corpora import CorporaConfig
 from giza.serialization import ingest_yaml_list
 
 class SystemConfig(RecursiveConfigurationBase):
@@ -229,7 +231,7 @@ class SystemConfigData(RecursiveConfigurationBase):
         else:
             full_path = os.path.join(self.conf.paths.projectroot,
                                      self.conf.paths.builddata, fn)
-        
+
         if os.path.exists(full_path):
             # TODO we should make this process lazy with a more custom getter/setter
             self.state[basename] = self._resolve_config_data(full_path, basename)
@@ -253,7 +255,9 @@ class SystemConfigData(RecursiveConfigurationBase):
                 'sphinx-local': SphinxLocalConfig,
                 'manpages': ManpageConfig,
                 'pdfs': PdfConfig,
-                'intersphinx': IntersphinxConfig
+                'intersphinx': IntersphinxConfig,
+                'translate': TranslateConfig,
+                'corpora': CorporaConfig
             }
 
             if basename in mapping:
