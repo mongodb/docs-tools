@@ -14,6 +14,27 @@
 
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 
+def get_path_prefix(conf, branch):
+    o = []
+
+    if conf.project.siteroot is True:
+        if (conf.project.branched is True and
+            conf.git.branches.manual != branch):
+            o.append(branch)
+        else:
+            o.append(conf.project.tag)
+    else:
+        o.append(conf.project.project.basepath)
+
+        if self.project.branched is True:
+            if conf.git.branches.manual == conf.git.branches.current:
+                o.append('current')
+            else:
+                o.append(branch)
+
+    print('sparta')
+    return '/'.join(o)
+
 class ProjectConfig(RecursiveConfigurationBase):
     @property
     def name(self):
@@ -135,24 +156,9 @@ class ProjectConfig(RecursiveConfigurationBase):
 
     @property
     def sitepath(self):
-        o = []
+        return get_path_prefix(self.conf, self.conf.git.branches.current)
 
-        if self.siteroot is True:
-            if (self.branched is True and
-                self.conf.git.branches.manual != self.conf.git.branches.current):
-                o.append(self.conf.git.branches.current)
-            else:
-                o.append(self.basepath)
-        else:
-            o.append(self.basepath)
 
-            if self.branched is True:
-                if self.conf.git.branches.manual == self.conf.git.branches.current:
-                    o.append('current')
-                else:
-                    o.append(self.conf.git.branches.current)
-
-        return '/'.join(o)
 
 class EditionListConfig(ConfigurationBase):
     @property

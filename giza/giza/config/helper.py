@@ -18,6 +18,7 @@ logger = logging.getLogger('giza.config.helper')
 
 from giza.config.main import Configuration
 from giza.config.runtime import RuntimeStateConfig
+from giza.config.project import get_path_prefix
 
 def fetch_config(args):
     c = Configuration()
@@ -42,16 +43,13 @@ def dump_skel(skel, args):
         f.write('...')
         logger.info('wrote scrumpy configuration skeleton to: {0}')
 
-def get_path(conf, branch):
-    # for backwards compatibility
-    return conf.project.sitepath
 
 def get_manual_path(conf):
     if conf.system.branched is False:
         return conf.project.tag
     else:
         branch = conf.git.branches.current
-        return get_path(conf, branch)
+        return get_path_prefix(conf, branch)
 
 def get_versions(conf):
     o = []
@@ -67,7 +65,7 @@ def get_versions(conf):
         v = {}
 
         branch = conf.git.branches.published[idx]
-        v['path'] = get_path(conf, branch)
+        v['path'] = get_path_prefix(conf, branch)
 
         v['text'] = version
         if version == conf.version.stable:

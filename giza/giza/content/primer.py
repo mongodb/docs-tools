@@ -25,7 +25,7 @@ from giza.transformation import post_process_tasks, truncate_file, append_to_fil
 def get_migration_specifications(conf):
     return [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
                                                    conf.paths.builddata))
-             if conf.project.name in fn and 'migrations' in fn ]
+             if  conf.project.name in os.path.basename(fn) and 'migrations' in fn ]
 
 def convert_multi_source(page):
     if 'source_dir' in page:

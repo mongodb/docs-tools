@@ -50,7 +50,8 @@ class ConfigurationBase(object):
                 return self.state[key]
             else:
                 m = 'key "{0}" in configuration object does not exist'.format(key)
-                logger.debug(m)
+                if not key.startswith('__'):
+                    logger.debug(m)
                 raise AttributeError(m, e.message)
 
     @property

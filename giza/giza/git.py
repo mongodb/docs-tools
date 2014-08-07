@@ -33,7 +33,7 @@ class GitRepo(object):
     def cmd(self, *args):
         args = ' '.join(args)
 
-        return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True, logger=logger)
+        return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True)
 
     def remotes(self):
         return self.cmd('remote').out.split('\n')
