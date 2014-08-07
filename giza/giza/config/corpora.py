@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import os
 
 logger = logging.getLogger('giza.config.corpora')
 
@@ -74,7 +75,7 @@ class CorporaConfig(ConfigurationBase):
         # use listcomp in sources for py3 compatibility
         d = {
             'container_path': self.container_path,
-            'target_language': self.target_language, 
+            'target_language': self.target_language,
             'sources': [ s for s in self.sources.values() ]
         }
 
@@ -88,8 +89,8 @@ class CorporaConfig(ConfigurationBase):
 
         :returns: a processed dictionary of the configuration
         '''
-        d = { 
-            'container_path' : input_obj['container_path'],
+        d = {
+            'container_path' : os.path.expanduser(input_obj['container_path']),
             'source_language': input_obj['source_language'],
             'target_language': input_obj['target_language'],
             'sources': {}
@@ -101,6 +102,8 @@ class CorporaConfig(ConfigurationBase):
                 if source['percent_'+t] < 0 or source['percent_'+t] > 100:
                     logger.error("Invalid percentage")
                     raise TypeError("Invalid percentage")
+            source['source_file_path'] = os.path.expanduser(source['source_file_path'])
+            source['target_file_path'] = os.path.expanduser(source['target_file_path'])
             s = SourceConfig(source)
             s.percent_of_train = 0
             s.percent_of_tune = 0
