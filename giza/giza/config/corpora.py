@@ -49,7 +49,7 @@ class CorporaConfig(ConfigurationBase):
         for t in ('train', 'tune', 'test'):
             tot = 0
             for file_name,source in self.sources.items():
-                tot += source.state['percent_of_'+t]
+                tot += source.state['percent_of_' + t]
             if tot != 100:
                 error = "Contribution percentages don't add up to 100 for " + t
                 logger.error(error)
@@ -96,10 +96,10 @@ class CorporaConfig(ConfigurationBase):
             'sources': {}
         }
 
-        #handles sources section of config
+        # handles sources section of config
         for source in input_obj['sources']:
             for t in ('train', 'tune', 'test'):
-                if source['percent_'+t] < 0 or source['percent_'+t] > 100:
+                if source['percent_' + t] < 0 or source['percent_' + t] > 100:
                     logger.error("Invalid percentage")
                     raise TypeError("Invalid percentage")
             source['source_file_path'] = os.path.expanduser(source['source_file_path'])
@@ -111,13 +111,13 @@ class CorporaConfig(ConfigurationBase):
             s.end = 0
             d['sources'][source['name']] = s
 
-        #handles source contributions section of config
+        # handles source contributions section of config
         for t in ('train','tune','test'):
             for source in input_obj['source_contributions'][t]:
                 if source['percent_of_corpus'] < 0 or source['percent_of_corpus'] > 100:
                     logger.error("Invalid percentage")
                     raise TypeError("Invalid percentage")
-                d['sources'][source['name']].state['percent_of_'+t] = source['percent_of_corpus']
+                d['sources'][source['name']].state['percent_of_' + t] = source['percent_of_corpus']
 
         return d
 

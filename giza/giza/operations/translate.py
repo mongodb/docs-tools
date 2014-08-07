@@ -48,8 +48,8 @@ def create_corpora(args):
         logger.error(args.t_corpora_config + " doesn't exist")
         return
 
-    if os.path.exists(conf.container_path):
-        logger.error(conf.container_path+" already exists. Please delete it or change the container and try again")
+    if os.path.exists(cconf.container_path):
+        logger.error(cconf.container_path + " already exists. Please delete it or change the container and try again")
         return
 
     create_hybrid_corpora(cconf)
@@ -76,7 +76,7 @@ def model_results(args):
 @argh.named('mt')
 def merge_translations(args):
     annotation_list = ['- ', '+ ', '~ ', '> ', '= ', '* ', '# ', '$ ', '^ ', '% ', '& ', '@ ']
-    merge_files(args.output_file, args.input_files, annotation_list)
+    merge_files(args.t_output_file, args.t_input_files, annotation_list)
 
 @argh.arg('--po', default=None, required=True, dest='t_input_file')
 @argh.arg('--source', '-s', default="source_corpus.txt", dest='t_source')
@@ -103,7 +103,6 @@ def translate_po(args):
     if args.t_translate_config is None:
         tconf = conf.system.files.data.translate
     elif os.path.isfile(args.t_translate_config):
-        logger.info("HI")
         tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config), conf)
     else:
         logger.error(args.t_translate_config + " doesn't exist")
@@ -112,8 +111,8 @@ def translate_po(args):
     translate_po_files(args.t_input_file, tconf, args.t_protected_regex)
 
 @argh.arg('--config', '-c', default=None, dest="t_translate_config")
-@argh.arg('--source', '-s', required=True, default=None, dest='t_source')
-@argh.arg('--target', '-t', default=None, dest='t_target')
+@argh.arg('--input', '-i', required=True, default=None, dest='t_input_file')
+@argh.arg('--output', '-o', default=None, dest='t_output_file')
 @argh.arg('--protected', '-p', default=None, dest='t_protected_regex')
 @argh.named('tdoc')
 def translate_text_doc(args):
@@ -125,14 +124,15 @@ def translate_text_doc(args):
     else:
         logger.error(args.t_translate_config + " doesn't exist")
         return
-
-    translate_file(args.t_source, args.t_target, tconf, args.t_protected_regex)
+    translate_file(args.t_input_file, args.t_output_file, tconf, args.t_protected_regex)
 
 
 @argh.arg('--input', '-i', required=True, default=None, dest='t_input_file')
-@argh.arg('--output', '-o', default="flipped.txt", dest='t_output_file')
-@argh.named('ft')
+@argh.arg('--output', '-o', default=None, dest='t_output_file')
+@argh.named('flip')
 def flip_text(args):
+    if args.t_output_file is None:
+        args.t_output_file = args.t_input_file + '.flip'
     flip_text_direction(args.t_input_file, args.t_output_file)
 
 @argh.arg('--config', '-c', default=None, dest="t_translate_config")
@@ -150,13 +150,13 @@ def build_translation_model(args):
     if os.path.exists(tconf.paths.project) is False:
         os.makedirs(tconf.paths.project)
     elif os.path.isfile(tconf.paths.project):
-        logger.error(tconf.paths.project+" is a file")
+        logger.error(tconf.paths.project + " is a file")
         sys.exit(1)
     elif os.listdir(tconf.paths.project) != []:
-        logger.error(tconf.paths.project+" must be empty")
+        logger.error(tconf.paths.project + " must be empty")
         sys.exit(1)
 
-    with open(tconf.paths.project+"/translate.yaml", 'w') as f:
+    with open(os.path.join(tconf.paths.project, "translate.yaml"), 'w') as f:
         yaml.dump(tconf.dict(), f, default_flow_style=False)
 
     tconf.conf.runstate.pool_size = tconf.settings.pool_size

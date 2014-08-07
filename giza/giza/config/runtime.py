@@ -327,13 +327,14 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @t_protected_regex.setter
     def t_protected_regex(self, value):
-        if value is None:
-            return
-        value = os.path.expanduser(value)
-        if os.path.isfile(value):
-            self.state['t_protected_regex'] = value
+        if value is not None:
+            value = os.path.expanduser(value)
+            if os.path.isfile(value):
+                self.state['t_protected_regex'] = value
+            else:
+                raise TypeError(value + ' is not a file')
         else:
-            raise TypeError(value + ' is not a file')
+            self.state['t_protected_regex'] = None
 
     @property
     def t_input_file(self):
@@ -341,23 +342,24 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @t_input_file.setter
     def t_input_file(self, value):
-        if value is None:
-            return
-        if os.path.exists(value):
-            self.state['t_input_file'] = value
+        if value is not None:
+            if os.path.exists(value):
+                self.state['t_input_file'] = value
+            else:
+                raise TypeError(value + ' does not exist')
         else:
-            raise TypeError(value + ' does not exist')
+            self.state['t_input_file'] = None
 
     @property
     def t_input_files(self):
-        return self.state['t_input_file']
+        return self.state['t_input_files']
 
     @t_input_files.setter
     def t_input_files(self, value):
-        if value is None:
-            return
-        for path in value:
-            if os.path.exists(path) is False:
-                raise TypeError(path + ' does not exist')
-        self.state['t_input_files'] = value
-
+        if value is not None:
+            for path in value:
+                if os.path.exists(path) is False:
+                    raise TypeError(path + ' does not exist')
+            self.state['t_input_files'] = value
+        else:
+            self.state['t_input_files'] = []

@@ -68,8 +68,9 @@ class Timer(object):
     '''This class is responsible for timing processes and then both logging
     them and saving them to the process's dictionary object
     '''
-    def __init__(self, d, name=None):
+    def __init__(self, d, name=None, lg=logger):
         self.d = d
+        self.lg = lg
         if name is None:
             self.name = 'task'
         else:
@@ -84,13 +85,13 @@ class Timer(object):
         message = '[timer]: {0} started at {1}'
         message = message.format(self.name, time_now)
 
-        logger.info(message)
+        self.lg.info(message)
 
     def __exit__(self, *args):
         total_time = time.time()-self.start
         message = '[timer]: time elapsed for {0} was: {1}'
         message = message.format(self.name, str(datetime.timedelta(seconds=total_time)))
-        logger.info(message)
+        self.lg.info(message)
 
         self.d[self.name+"_time"] = total_time
         self.d[self.name+"_time_hms"] = str(datetime.timedelta(seconds=total_time))
@@ -128,9 +129,9 @@ def merge_files(output_file, input_files, annotation_list):
                 t = False
                 break
             if line[-1] == '\n':
-                out.write(annotation_list[index]+line)
+                out.write(annotation_list[index] + line)
             else:
-                out.write(annotation_list[index]+line+'\n')
+                out.write(annotation_list[index] + line + '\n')
         out.write("\n")
 
     for file in open_files:
@@ -177,4 +178,3 @@ def flip_text_direction(in_fp, out_fp):
                 else:
                     out_file.write(line[::-1])
                 out_file.write('\n')
-                logger.info(line[::-1])

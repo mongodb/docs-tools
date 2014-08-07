@@ -84,7 +84,7 @@ class CommandResult(object):
         self._captured = value
 
 
-def command(command, capture=False, ignore=False, logger=None):
+def command(command, capture=True, ignore=False, logger=None):
     if logger is None:
         log_output = False
         logger = logging.getLogger('giza.command')

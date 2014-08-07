@@ -89,6 +89,8 @@ class PathsConfig(ConfigurationBase):
     @moses.setter
     def moses(self, value):
         self.state['moses'] = os.path.expanduser(value)
+        if os.path.exists(self.state['moses']) is False:
+            raise TypeError(value + ' does not exist')
 
     @property
     def irstlm(self):
@@ -97,7 +99,8 @@ class PathsConfig(ConfigurationBase):
     @irstlm.setter
     def irstlm(self, value):
         self.state['irstlm'] = os.path.expanduser(value)
-        logger.info(self.irstlm)
+        if os.path.exists(self.state['irstlm']) is False:
+            raise TypeError(value + ' does not exist')
 
     @property
     def aux_corpus_files(self):
@@ -106,6 +109,8 @@ class PathsConfig(ConfigurationBase):
     @aux_corpus_files.setter
     def aux_corpus_files(self, value):
         self.state['aux_corpus_files'] = os.path.expanduser(value)
+        if os.path.exists(self.state['aux_corpus_files']) is False:
+            raise TypeError(value + ' does not exist')
 
     @property
     def project(self):
@@ -114,6 +119,8 @@ class PathsConfig(ConfigurationBase):
     @project.setter
     def project(self, value):
         self.state['project'] = os.path.expanduser(value)
+        if os.path.exists(self.state['project']) is False:
+            raise TypeError(value + ' project')
 
 class CorpusTypeConfig(ConfigurationBase):
     _option_registry = ['name']
@@ -124,6 +131,8 @@ class CorpusTypeConfig(ConfigurationBase):
     @dir.setter
     def dir(self, value):
         self.state['dir'] = os.path.expanduser(value)
+        if os.path.exists(self.state['dir']) is False:
+            raise TypeError(value + ' does not exist')
 
 class TrainingParametersConfig(ConfigurationBase):
     _option_registry = ['alignment', 'max_phrase_length', 'order',

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from __future__ import division
-import sys
 import os
 import logging
 import re
@@ -55,23 +54,24 @@ def append_corpus(percentage, num_copies, out_fn, in_fn, start, final=False):
         tot = int(len(new_content) * percentage / 100)
         for i in range(int(math.floor(num_copies))):
             if final is False:
-                f.writelines(new_content[start:start+tot])
+                f.writelines(new_content[start:start + tot])
             else:
                 f.writelines(new_content[start:])
-            #if there's no new line at the end this adds one
+            # if there's no new line at the end this adds one
             f.seek(-1, os.SEEK_END)
             if f.read(1) != '\n':
                 f.write('\n')
 
         # if we have a fractional number of copies then we take care of the rest
-        f.writelines(new_content[start:start+int(tot*(num_copies-math.floor(num_copies)))])
+        f.writelines(new_content[start:start + int(tot*(num_copies - math.floor(num_copies)))])
 
-        #if there's no new line at the end this adds one
+        # if there's no new line at the end this adds one
         f.seek(-1, os.SEEK_END)
         if f.read(1) != '\n':
             f.write('\n')
 
     return start + tot
+
 
 def get_total_length(conf, corpus_type):
     '''This function finds the ideal total length of the corpus
@@ -84,8 +84,8 @@ def get_total_length(conf, corpus_type):
     '''
     tot_length = 0
     for file_name, source in conf.sources.items():
-        if source.state['percent_of_'+corpus_type] > 0:
-            temp_length = source.length*source.state['percent_'+corpus_type] / source.state['percent_of_'+corpus_type]
+        if source.state['percent_of_' + corpus_type] > 0:
+            temp_length = source.length*source.state['percent_' + corpus_type] / source.state['percent_of_' + corpus_type]
             if temp_length > tot_length:
                 tot_length = temp_length
     return tot_length
@@ -103,44 +103,41 @@ def create_hybrid_corpora(conf):
     :param config conf: corpora configuration object
     '''
 
-
     os.makedirs(conf.container_path)
-    with open(conf.container_path+"/corpora.yaml", 'w') as f:
+    with open(os.path.join(conf.container_path, "corpora.yaml"), 'w') as f:
         yaml.dump(conf.dict(), f, default_flow_style=False)
 
     # append files appropriately
     for corpus_type in ('train', 'tune', 'test'):
-        source_outfile = "{0}/{1}.{2}-{3}.{2}".format(conf.container_path,
-                                                      corpus_type,
-                                                      conf.source_language,
-                                                      conf.target_language)
-        target_outfile = "{0}/{1}.{2}-{3}.{3}".format(conf.container_path,
-                                                      corpus_type,
-                                                      conf.source_language,
-                                                      conf.target_language)
+        source_outfile = os.path.join(conf.container_path, "{0}.{1}-{2}.{1}".format(corpus_type,
+                                                                                    conf.source_language,
+                                                                                    conf.target_language))
+        target_outfile = os.path.join(conf.container_path, "{0}.{1}-{2}.{2}".format(corpus_type,
+                                                                                    conf.source_language,
+                                                                                    conf.target_language))
         open(source_outfile, 'w').close()
         open(target_outfile, 'w').close()
 
         tot_length = get_total_length(conf, corpus_type)
 
         for fn, source in conf.sources.items():
-            logger.info("Processing "+fn+" for "+corpus_type)
+            logger.info("Processing " + fn + " for " + corpus_type)
 
             # finds how many copies of this file will make it the correct percentage of the full corpus
-            if source.state['percent_'+corpus_type] == 0 or source.state['percent_of_'+corpus_type] == 0:
+            if source.state['percent_' + corpus_type] == 0 or source.state['percent_of_' + corpus_type] == 0:
                 continue
-            num_copies = tot_length * source.state['percent_of_'+corpus_type] / source.length / source.state['percent_'+corpus_type]
+            num_copies = tot_length * source.state['percent_of_' + corpus_type] / source.length / source.state['percent_' + corpus_type]
             final = False
             if corpus_type is 'test':
                 final = True
 
             # appends the section of the file to the corpora
-            end = append_corpus(source.state['percent_'+corpus_type],
+            end = append_corpus(source.state['percent_' + corpus_type],
                                 num_copies,
                                 source_outfile,
                                 source.source_file_path,
                                 source.end, final)
-            append_corpus(source.state['percent_'+corpus_type],
+            append_corpus(source.state['percent_' + corpus_type],
                           num_copies,
                           target_outfile,
                           source.target_file_path,

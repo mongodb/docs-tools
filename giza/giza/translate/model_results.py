@@ -47,7 +47,7 @@ def grab_data(json_file, out):
     hyp_len = score_list[10]
     ref_len = score_list[12]
 
-    out.write(','.join([d['i'], d['max_phrase_length'], d['order'],
+    out.write(','.join([str(d['i']), str(d['max_phrase_length']), str(d['order']),
                         d['reordering_language'], d['reordering_directionality'],
                         d['score_options'], d['smoothing'], d['alignment'],
                         d['reordering_orientation'], d['reordering_modeltype'], BLEU_score, gram1,
@@ -62,10 +62,10 @@ def aggregate_model_data(project_path):
     '''
     with open("{0}/data.csv".format(project_path), "w", 1) as out:
         out.write("i,max phrase length,order,reordering language,reordering directionality,score options,smoothing,alignment,reordering orientation,reordering modeltype,BLEU Score,1-gram precision,2-gram precision,3-gram precision,4-gram precision,BP,ratio,hyp len,ref len\n")
-        g = 0
+        i = 0
         while True:
-            json_path = os.path.join(project_path, g, g) + ".json"
+            json_path = os.path.join(project_path, str(i), str(i)) + ".json"
             if os.path.isfile(json_path) is False:
                 break
             grab_data(json_path, out)
-            g += 1
+            i += 1
