@@ -19,7 +19,8 @@ import os
 
 import polib
 
-from giza.translate.utils import TempDir, get_file_list
+from giza.translate.utils import TempDir, get_file_list, flip_text_direction
+from giza.command import command
 
 '''
 This module has functions for translating files. It has a function for
@@ -116,10 +117,8 @@ def fill_po_file(target_po_file, translated_lines, start):
     for entry in po:
         if entry.translated() is False:
             i += 1
-            logger.info("untranslated"+entry.msgstr)
             entry.msgstr = unicode(translated_lines[start+i].strip(), "utf-8")
         else:
-            logger.info("translated"+entry.msgstr)
             entry.msgstr = ""
 
     po.save(target_po_file)
@@ -153,5 +152,13 @@ def translate_po_files(po_path, tconf, protected_file=None):
     with TempDir() as temp_dir:
         po_file_list = get_file_list(po_path, ["po", "pot"])
         temp_file = extract_all_untranslated_po_entries(po_file_list, temp_dir)
-        translate_file(temp_file, temp_file+'.translated', tconf, protected_file, temp_dir)
-        write_po_files(po_file_list, temp_file+'.translated')
+        trans_file = temp_file + '.translated'
+        translate_file(temp_file, trans_file, tconf, protected_file, temp_dir)
+
+        #flips the file if the language is right to left
+        if tconf.settings.foreign in ['he', 'ar']:
+            flipped_file = trans_file+'.flip'
+            flip_text_direction(trans_file, flipped_file)
+            trans_file = flipped_file
+
+        write_po_files(po_file_list, trans_file)

@@ -18,6 +18,7 @@ Giza Commands
 
     * These could be individual corpora such as KDE4 or Europarl, or they could be hybrid ones
     * The create_corpora script can be used to create good hubrid corpora. See its documentation for how to use it.
+    * If you're trying to test build model on small corpora to make it go quickly, make sure they're not too small, some of the irstlm/moses scripts can break with very small corpora.
     * Specify the paths to the training, tuning and testing directories. The source and target language training files should be together, the files for tuning should be together, and the files for testing should be together. The three sets can have different directories though. The source and target language files for each should have the same name except for the final extensions. For example: in testdir/ you'd have test.es-en.en and test.es-en.es. When specifying the name in the config, leave off the final language extension.
 
   * Specify your run settings.

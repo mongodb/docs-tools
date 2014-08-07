@@ -14,6 +14,7 @@
 
 import logging
 import sys
+import os
 
 from giza.config.base import ConfigurationBase, RecursiveConfigurationBase
 logger = logging.getLogger('giza.config.translate')
@@ -80,10 +81,49 @@ class SettingsConfig(ConfigurationBase):
                         'phrase_table_name', 'reordering_name', 'best_run']
 
 class PathsConfig(ConfigurationBase):
-    _option_registry = ['moses', 'irstlm', 'aux_corpus_files', 'project']
+
+    @property
+    def moses(self):
+        return self.state['moses']
+
+    @moses.setter
+    def moses(self, value):
+        self.state['moses'] = os.path.expanduser(value)
+
+    @property
+    def irstlm(self):
+        return self.state['irstlm']
+
+    @irstlm.setter
+    def irstlm(self, value):
+        self.state['irstlm'] = os.path.expanduser(value)
+        logger.info(self.irstlm)
+
+    @property
+    def aux_corpus_files(self):
+        return self.state['aux_corpus_files']
+
+    @aux_corpus_files.setter
+    def aux_corpus_files(self, value):
+        self.state['aux_corpus_files'] = os.path.expanduser(value)
+
+    @property
+    def project(self):
+        return self.state['project']
+
+    @project.setter
+    def project(self, value):
+        self.state['project'] = os.path.expanduser(value)
 
 class CorpusTypeConfig(ConfigurationBase):
-    _option_registry = ['dir', 'name']
+    _option_registry = ['name']
+    @property
+    def dir(self):
+        return self.state['dir']
+
+    @dir.setter
+    def dir(self, value):
+        self.state['dir'] = os.path.expanduser(value)
 
 class TrainingParametersConfig(ConfigurationBase):
     _option_registry = ['alignment', 'max_phrase_length', 'order',

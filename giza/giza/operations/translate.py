@@ -62,8 +62,8 @@ def model_results(args):
 
     if args.t_translate_config is None:
         tconf = conf.system.files.data.translate
-    elif os.path.isfile(args.t_corpora_config):
-        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config))
+    elif os.path.isfile(args.t_translate_config):
+        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config), conf)
     else:
         logger.error(args.t_translate_config + " doesn't exist")
         return
@@ -102,14 +102,14 @@ def translate_po(args):
     conf = fetch_config(args)
     if args.t_translate_config is None:
         tconf = conf.system.files.data.translate
-    elif os.path.isfile(args.t_corpora_config):
-        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config))
+    elif os.path.isfile(args.t_translate_config):
+        logger.info("HI")
+        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config), conf)
     else:
         logger.error(args.t_translate_config + " doesn't exist")
         return
 
     translate_po_files(args.t_input_file, tconf, args.t_protected_regex)
-
 
 @argh.arg('--config', '-c', default=None, dest="t_translate_config")
 @argh.arg('--source', '-s', required=True, default=None, dest='t_source')
@@ -120,8 +120,8 @@ def translate_text_doc(args):
     conf = fetch_config(args)
     if args.t_translate_config is None:
         tconf = conf.system.files.data.translate
-    elif os.path.isfile(args.t_corpora_config):
-        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config))
+    elif os.path.isfile(args.t_translate_config):
+        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config), conf)
     else:
         logger.error(args.t_translate_config + " doesn't exist")
         return
@@ -141,8 +141,8 @@ def build_translation_model(args):
     conf = fetch_config(args)
     if args.t_translate_config is None:
         tconf = conf.system.files.data.translate
-    elif os.path.isfile(args.t_corpora_config):
-        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config))
+    elif os.path.isfile(args.t_translate_config):
+        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config), conf)
     else:
         logger.error(args.t_translate_config + " doesn't exist")
         return
