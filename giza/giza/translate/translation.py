@@ -64,14 +64,14 @@ def translate_file(in_file, out_file,  tconf, protected_file, super_temp=None):
         in_file = os.path.basename(in_file)
 
         if protected_file is not None:
-            command("{0}/scripts/tokenizer/tokenizer.perl -l en < {4}/{1} > {4}/{1}.tok.en -threads {2} -protected {3}".format(tconf.paths.moses, in_file, tconf.settings.threads, protected_file, temp), logger=logger)
+            command("{0}/scripts/tokenizer/tokenizer.perl -l en < {4}/{1} > {4}/{1}.tok.en -threads {2} -protected {3}".format(tconf.paths.moses, in_file, tconf.settings.threads, protected_file, temp), logger=logger, capture=True)
         else:
-            command("{0}/scripts/tokenizer/tokenizer.perl -l en < {3}/{1} > {3}/{1}.tok.en -threads {2}".format(tconf.paths.moses, in_file, tconf.settings.threads, temp), logger=logger)
+            command("{0}/scripts/tokenizer/tokenizer.perl -l en < {3}/{1} > {3}/{1}.tok.en -threads {2}".format(tconf.paths.moses, in_file, tconf.settings.threads, temp), logger=logger, capture=True)
 
-        command("{0}/scripts/recaser/truecase.perl --model {1}/truecase-model.en < {3}/{2}.tok.en > {3}/{2}.true.en".format(tconf.paths.moses, tconf.paths.aux_corpus_files, in_file, temp), logger=logger)
-        command("{0}/bin/moses -f {1}/{3}/working/binarised-model/moses.ini < {4}/{2}.true.en > {4}/{2}.true.trans".format(tconf.paths.moses, tconf.paths.project, in_file, tconf.settings.best_run, temp), logger=logger)
-        command("{0}/scripts/recaser/detruecase.perl < {2}/{1}.true.trans > {2}/{1}.tok.trans".format(tconf.paths.moses, in_file, temp), logger=logger)
-        command("{0}/scripts/tokenizer/detokenizer.perl -l en < {3}/{1}.tok.trans > {2}".format(tconf.paths.moses, in_file, out_file, temp), logger=logger)
+        command("{0}/scripts/recaser/truecase.perl --model {1}/truecase-model.en < {3}/{2}.tok.en > {3}/{2}.true.en".format(tconf.paths.moses, tconf.paths.aux_corpus_files, in_file, temp), logger=logger, capture=True)
+        command("{0}/bin/moses -f {1}/{3}/working/binarised-model/moses.ini < {4}/{2}.true.en > {4}/{2}.true.trans".format(tconf.paths.moses, tconf.paths.project, in_file, tconf.settings.best_run, temp), logger=logger, capture=True)
+        command("{0}/scripts/recaser/detruecase.perl < {2}/{1}.true.trans > {2}/{1}.tok.trans".format(tconf.paths.moses, in_file, temp), logger=logger, capture=True)
+        command("{0}/scripts/tokenizer/detokenizer.perl -l en < {3}/{1}.tok.trans > {2}".format(tconf.paths.moses, in_file, out_file, temp), logger=logger, capture=True)
 
 
 def po_file_untranslated_to_text(text_doc, po_file):
@@ -111,7 +111,7 @@ def fill_po_file(target_po_file, translated_lines, start):
     :param int start: the line to start at when writing out this file
     :returns: The start of the sentences for the next file
     '''
-    logger.info("writing out to "+target_po_file)
+    logger.info("writing out to " + target_po_file)
     po = polib.pofile(target_po_file)
     i = -1
     for entry in po:
@@ -157,7 +157,7 @@ def translate_po_files(po_path, tconf, protected_file=None):
 
         #flips the file if the language is right to left
         if tconf.settings.foreign in ['he', 'ar']:
-            flipped_file = trans_file+'.flip'
+            flipped_file = trans_file + '.flip'
             flip_text_direction(trans_file, flipped_file)
             trans_file = flipped_file
 

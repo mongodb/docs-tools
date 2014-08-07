@@ -1,0 +1,28 @@
+container_path: temp_files
+source_language: en
+target_language: es
+sources:
+    - name: small
+      source_file_path: test_files/small.en
+      target_file_path: test_files/small.es
+      percent_train: 100
+      percent_test: -6
+      percent_tune: 0
+    - name: medium
+      source_file_path: test_files/medium.en
+      target_file_path: test_files/medium.es
+      percent_train: 30
+      percent_test: 40
+      percent_tune: 30
+source_contributions:
+    train:
+        - name: small
+          percent_of_corpus: 25
+        - name: medium
+          percent_of_corpus: 75
+    test:
+        - name: medium
+          percent_of_corpus: 100
+    tune:
+        - name: medium
+          percent_of_corpus: 100
