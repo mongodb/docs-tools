@@ -1,9 +1,21 @@
+# Copyright 2014 MongoDB, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import datetime
 import logging
 
 from flask_app import app, db
-
-logger = logging.getLogger('verifier.app.models')
 
 
 def get_sentences_in_file(fp, source_language, target_language, curr_db=db):
@@ -14,7 +26,7 @@ def get_sentences_in_file(fp, source_language, target_language, curr_db=db):
     :param string target_language: target language
     :returns: cursor of sentences
     '''
-    logger.debug(fp)
+    app.logger.debug(fp)
     file = curr_db['files'].find_one({'source_language': source_language,
                                       'target_language': target_language,
                                       'file_path': fp},
@@ -34,7 +46,7 @@ def get_languages(curr_db=db):
     :returns: cursor of languages
     '''
     languages = curr_db['translations'].find().distinct('target_language')
-    logger.debug(languages)
+    app.logger.debug(languages)
     return languages
 
 def get_fileIDs(source_language, target_language, curr_db=db):
@@ -128,7 +140,7 @@ class File(object):
         if source is not None:
             for k, v in source.items():
                 if k not in self.state:
-                    logger.error(k)
+                    app.logger.error(k)
                     raise KeyError
 
             if ('source_language' in source) and ('target_language' in source) and ('file_path' in source):
@@ -227,7 +239,7 @@ class Sentence(object):
         if source is not None:
             for k, v in source.items():
                 if k not in self.state:
-                    logger.error(k)
+                    app.logger.error(k)
                     raise KeyError
 
             for k, v in source.items():
@@ -249,20 +261,20 @@ class Sentence(object):
         '''
         if self.check_approver(new_editor._id):
             err = "Already approved sentence"
-            logger.error(err)
+            app.logger.error(err)
             raise MyError(err, 403)
         if new_target_sentence == self.target_sentence:
             err = "No change made"
-            logger.error(err)
+            app.logger.error(err)
             raise MyError(err, 403)
         if self.status is 'approved':
             err = "Can't edit approved sentence"
-            logger.error(err)
+            app.logger.error(err)
             raise MyError(err, 403)
 
         f = File(oid=self.fileID, curr_db=self.db)
         if f.grab_lock(new_editor._id) is False:
-            logger.error("can't edit without lock")
+            app.logger.error("can't edit without lock")
             raise LockError("Someone else is already editing this file", f.file_path, new_editor.username, self.target_language)
 
         audit("edit", self.userID, new_editor._id, self.state, new_target_sentence)
@@ -284,16 +296,16 @@ class Sentence(object):
         '''
         if approver._id == self.userID:
             err = "Can't approve own edit"
-            logger.error(err)
+            app.logger.error(err)
             raise MyError(err, 403)
         if approver._id in self.approvers:
             err = "Can't approve sentence twice"
-            logger.error(err)
+            app.logger.error(err)
             raise MyError(err, 403)
 
         f = File(oid=self.fileID, curr_db=self.db)
         if f.grab_lock(approver._id) is False:
-            logger.error("can't approve without lock")
+            app.logger.error("can't approve without lock")
             raise LockError("Someone else is already editing this file", f.file_path, approver.username, self.target_language)
 
         prev_editor = User(oid=self.userID, curr_db=self.db)
@@ -316,12 +328,12 @@ class Sentence(object):
         '''
         if self.check_approver(unapprover._id) is False:
             err = "Never approved sentence"
-            logger.error(err)
+            app.logger.error(err)
             raise MyError(err, 403)
 
         f = File(oid=self.fileID, curr_db=self.db)
         if f.grab_lock(unapprover._id) is False:
-            logger.error("can't unapprove without lock")
+            app.logger.error("can't unapprove without lock")
             raise LockError("Someone else is already editing this file", f.file_path, unapprover.username, self.target_language)
 
         prev_editor = User(oid=self.userID, curr_db=self.db)
@@ -456,7 +468,7 @@ class User(object):
         if source is not None:
             for k, v in source.items():
                 if k not in self.state:
-                    logger.error(k)
+                    app.logger.error(k)
                     raise KeyError
 
             for k, v in source.items():
@@ -468,11 +480,14 @@ class User(object):
                 self.state[k] = v
         elif username is not None:
             record = self.db['users'].find_one({'username': username})
+            if record is None:
+                db['users'].insert({"username": username, "num_reviewed": 0, "num_user_approved": 0, "num_got_approved":0, "trust_level": "basic"})
+                record = self.db['users'].find_one({'username': username})
             for k, v in record.items():
                 self.state[k] = v
 
     def save(self):
-        logger.info(self.state)
+        app.logger.info(self.state)
         self.state[u'_id'] = self.db['users'].save(self.state)
 
     @property

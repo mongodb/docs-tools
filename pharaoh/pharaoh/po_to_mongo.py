@@ -1,13 +1,26 @@
-import sys
+# Copyright 2014 MongoDB, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os.path
-import models
 import logging
 import re
 
 import polib
 from pymongo import MongoClient
 
-from giza.translate.utils import get_file_list
+from pharaoh.app.models import File, Sentence
+from pharaoh.utils import get_file_list
 
 '''
 This module takes the po files and writes the sentences
@@ -17,7 +30,8 @@ translated and each other entry untranslated. For every group
 of po files you input them with the appropriate username and status
 '''
 
-logger = logging.getLogger('verifier.app.po_to_mongo')
+logger = logging.getLogger('pharaoh.po_to_mongo')
+
 
 def write_po_file_to_mongo(po_fn, userID, status, source_language, target_language, po_root, db):
     '''write a po_file to mongodb
@@ -32,10 +46,10 @@ def write_po_file_to_mongo(po_fn, userID, status, source_language, target_langua
     po = polib.pofile(po_fn)
     rel_fn = os.path.relpath(po_fn, po_root)
     rel_fn = os.path.splitext(rel_fn)[0]
-    f = models.File({ u'file_path': rel_fn,
-                      u'priority': 0,
-                      u'source_language': source_language,
-                      u'target_language': target_language }, curr_db=db)
+    f = File({u'file_path': rel_fn,
+              u'priority': 0,
+              u'source_language': source_language,
+              u'target_language': target_language}, curr_db=db)
 
     reg = re.compile('^:[a-zA-Z0-9]+:`(?!.*<.*>.*)[^`]*`$')
     for idx, entry in enumerate(po.translated_entries()):
@@ -44,18 +58,19 @@ def write_po_file_to_mongo(po_fn, userID, status, source_language, target_langua
         if match is not None and match.group() == entry.msgstr.encode('utf-8'):
             sentence_status = "approved"
 
-        t = models.Sentence({ u'source_language': source_language,
-                              u'source_sentence': entry.msgid.encode('utf-8'),
-                              u'sentenceID': entry.tcomment.encode('utf-8'),
-                              u'sentence_num': idx,
-                              u'fileID': f._id,
-                              u'target_sentence': entry.msgstr.encode('utf-8'),
-                              u'target_language': target_language,
-                              u'userID': userID,
-                              u'status': sentence_status,
-                              u'update_number': 0 }, curr_db=db)
+        t = Sentence({u'source_language': source_language,
+                      u'source_sentence': entry.msgid.encode('utf-8'),
+                      u'sentenceID': entry.tcomment.encode('utf-8'),
+                      u'sentence_num': idx,
+                      u'fileID': f._id,
+                      u'target_sentence': entry.msgstr.encode('utf-8'),
+                      u'target_language': target_language,
+                      u'userID': userID,
+                      u'status': sentence_status,
+                      u'update_number': 0}, curr_db=db)
         t.save()
     f.get_num_sentences()
+
 
 def put_po_files_in_mongo(path, username, status, source_language, target_language, db_host, db_port, db_name):
     '''go through directories and write the po file to mongo
@@ -84,15 +99,4 @@ def put_po_files_in_mongo(path, username, status, source_language, target_langua
 
     for fn in file_list:
         write_po_file_to_mongo(fn, userID, status, source_language,
-                    target_language, path, db)
-
-
-def main():
-    if len(sys.argv) < 8:
-        print "Usage: python", ' '.join(sys.argv), "<path/to/*.po> <username> <status> <language> <host> <port> <dbname>"
-        return
-    put_po_files_in_mongo(sys.argv[1],sys.argv[2], sys.argv[3], u'en', sys.argv[4], sys.argv[5], int(sys.argv[6]), sys.argv[7])
-
-if __name__ == "__main__":
-    main()
-
+                               target_language, path, db)
