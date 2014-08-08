@@ -6,7 +6,7 @@ import os
 import polib
 
 from giza.serialization import ingest_yaml_doc
-from giza.translate.translation import po_file_untranslated_to_text, extract_all_untranslated_po_entries, fill_po_file, write_po_files
+from giza.translate.translation import po_file_untranslated_to_text, extract_all_untranslated_po_entries, fill_po_file, write_po_files, auto_approve_po_entries
 from giza.translate.utils import get_file_list
 
 logger = logging.getLogger('giza.translate.translation_tests')
@@ -48,7 +48,7 @@ class ExtractMultiplePoTestCase(unittest.TestCase):
         po_file_list = get_file_list(os.path.join(TEST_PATH, "test_files", "docs"), ["po","pot"])
         po_file_list.sort()
         extract_all_untranslated_po_entries(po_file_list, os.path.join(TEST_PATH, "temp_files"))
-        with open(os.path.join(TEST_PATH, "temp_files/source")) as f:
+        with open(os.path.join(TEST_PATH, "temp_files", "source")) as f:
             self.assertEqual(f.read().strip(), "Administration\nAggregation\nA high-level introduction to aggregation.\nIntroduces the use and operation of the data aggregation modalities available in MongoDB.")
 
 
@@ -56,7 +56,7 @@ class FillOnePoTestCase(unittest.TestCase):
 
     def setUp(self):
         os.makedirs(os.path.join(TEST_PATH,"temp_files"))
-        shutil.copytree(TEST_PATH+"/test_files/docs", os.path.join(TEST_PATH, "temp_files", "docs"))
+        shutil.copytree(os.path.join(TEST_PATH, "test_files", "docs"), os.path.join(TEST_PATH, "temp_files", "docs"))
 
     def tearDown(self):
         logger.info('tear down')
@@ -76,11 +76,12 @@ class FillOnePoTestCase(unittest.TestCase):
         for l1, l2 in zip(f1, f2):
             self.assertEqual(l1, l2)
 
+
 class FillMultiplePoTestCase(unittest.TestCase):
 
     def setUp(self):
         os.makedirs(os.path.join(TEST_PATH,"temp_files"))
-        shutil.copytree(os.path.join(TEST_PATH, "test_files", "docs"), os.path.join(TEST_PATH, "temp_files/docs"))
+        shutil.copytree(os.path.join(TEST_PATH, "test_files", "docs"), os.path.join(TEST_PATH, "temp_files", "docs"))
 
     def tearDown(self):
         logger.info('tear down')
@@ -98,3 +99,19 @@ class FillMultiplePoTestCase(unittest.TestCase):
         f2 = polib.pofile(os.path.join(TEST_PATH, "test_files", "filled_docs", "administration.po"))
         for l1, l2 in zip(f1, f2):
             self.assertEqual(l1, l2)
+
+
+class AutoApprovePoTestCase(unittest.TestCase):
+
+    def setUp(self):
+        os.makedirs(os.path.join(TEST_PATH,"temp_files"))
+        shutil.copy(os.path.join(TEST_PATH, "test_files", "approve.pot"), os.path.join(TEST_PATH, "temp_files", "approve.pot"))
+
+    def tearDown(self):
+        logger.info('tear down')
+        shutil.rmtree(os.path.join(TEST_PATH,"temp_files"), ignore_errors=True)
+
+    def test_approve(self):
+        auto_approve_po_entries(os.path.join(TEST_PATH, "temp_files", "approve.pot"))
+        po_file = polib.pofile(os.path.join(TEST_PATH, "temp_files", "approve.pot"))
+        self.assertEqual([entry.msgstr for entry in po_file.translated_entries()], [":hardlink:`MongoDB-manual.epub`"])

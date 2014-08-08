@@ -107,6 +107,7 @@ def main():
             giza.operations.translate.translate_po,
             giza.operations.translate.translate_text_doc,
             giza.operations.translate.flip_text,
+            giza.operations.translate.auto_approve_obvious_po,
     ]
     argh.add_commands(parser, translate_commands, namespace='translate')
 

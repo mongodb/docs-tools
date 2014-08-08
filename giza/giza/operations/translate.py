@@ -26,7 +26,7 @@ from giza.translate.corpora import create_hybrid_corpora, create_corpus_from_po,
 from giza.translate.model import build_model, setup_train, setup_tune, setup_test
 from giza.translate.model_results import aggregate_model_data
 from giza.translate.utils import merge_files, flip_text_direction
-from giza.translate.translation import translate_po_files, translate_file
+from giza.translate.translation import translate_po_files, translate_file, auto_approve_po_entries
 from giza.serialization import ingest_yaml_doc
 from giza.config.helper import fetch_config
 from giza.config.corpora import CorporaConfig
@@ -78,6 +78,7 @@ def merge_translations(args):
     annotation_list = ['- ', '+ ', '~ ', '> ', '= ', '* ', '# ', '$ ', '^ ', '% ', '& ', '@ ']
     merge_files(args.t_output_file, args.t_input_files, annotation_list)
 
+
 @argh.arg('--po', default=None, required=True, dest='t_input_file')
 @argh.arg('--source', '-s', default="source_corpus.txt", dest='t_source')
 @argh.arg('--target', '-t', default="target_corpus.txt", dest='t_target')
@@ -110,6 +111,7 @@ def translate_po(args):
 
     translate_po_files(args.t_input_file, tconf, args.t_protected_regex)
 
+
 @argh.arg('--config', '-c', default=None, dest="t_translate_config")
 @argh.arg('--input', '-i', required=True, default=None, dest='t_input_file')
 @argh.arg('--output', '-o', default=None, dest='t_output_file')
@@ -134,6 +136,13 @@ def flip_text(args):
     if args.t_output_file is None:
         args.t_output_file = args.t_input_file + '.flip'
     flip_text_direction(args.t_input_file, args.t_output_file)
+
+
+@argh.arg('--input', '-i', required=True, default=None, dest='t_input_file')
+@argh.named('auto_approve')
+def auto_approve_obvious_po(args):
+    auto_approve_po_entries(args.t_input_file)
+
 
 @argh.arg('--config', '-c', default=None, dest="t_translate_config")
 @argh.named('bm')
