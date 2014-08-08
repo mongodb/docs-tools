@@ -5,7 +5,7 @@ settings:
     email: judah.schvimer@10gen.com
     phrase_table_name: phrase-table
     reordering_name: reordering-table
-train: 
+train:
     dir: /home/judah/corpus/run03
     name: train.en-es
 tune:
@@ -20,7 +20,7 @@ paths:
     irstlm: /home/judah/irstlm-5.80.03
     project: /home/judah/archive12
 parameters:
-    order: 
+    order:
        - 3
     smoothing:
        - improved-kneser-ney
@@ -35,7 +35,7 @@ parameters:
        - --GoodTuring --OnlyDirect
        - --NoLex --OnlyDirect
        - --GoodTuring --Nolex --OnlyDirect
-    alignment : 
+    alignment:
        - grow-diag-final-and
        - grow-diag-final
        - grow-diag

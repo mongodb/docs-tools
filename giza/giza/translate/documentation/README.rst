@@ -6,7 +6,7 @@ Giza Commands
 -------------
 
 
-* **build model**
+* **build translation model**
 
   * ``giza translate build_translation_model --config <translate.yaml>``
   * ``giza translate bm -c <translate.yaml>``
@@ -27,6 +27,9 @@ Giza Commands
     * phrase_table_name and reordering_name are a bit trickier. In general they are 'phrase_table' and 'reordering_table' in some cases- mainly when doing factorized or OSM models- this name changes to something like ``phrase_table.0-0,1``. This would be found under ``project/0/working/train/model``. As such you can't actually know exactly what the answer is before you run it. Usually this will just cause an error late in the script (around tuning or testing) and you'll have to fix the name at then rerun the whole script or those sections if you feel like editing the initial script.
 
   * Specify your training_parameters. If you know what you want to run you can just make a simple yaml attribute. If you make a list, as shown in the example, it will run all combinations of the parameters in parallel using as many processes as the pool-size allows.
+
+    * One notable parameter is "score_options". These have a slightly different syntax than the others as you can see from ``translate_full.yaml``. These are flags instead of just strings, and you can put multiple in each line. There are three options: ``--GoodTuring``, ``--NoLex``, and ``--OnlyDirect``. I recommend using ``--GoodTuring`` and not the others, but you can choose to use them by just putting them all on one line separated by spaces. To use none of these options, just put in an empty string ``""``
+
   * Run the build model command in the background. Expect it to take a long time. It should email you if it succeeds, however make sure to monitor if the process is still running. ``ps aux | grep 'moses'`` usually does the trick.
   * Look at ``data.csv`` in the project directory to get the results from the test. The highest BLEU score is the best result.
   * To see a sample from the model, look at ``project/0/working/test.en-es.translate.es`` (note es will be your target language).
@@ -39,6 +42,7 @@ Giza Commands
     * http://www.statmt.org/moses/?n=FactoredTraining.ScorePhrases
 
   * There are sample configuration files in this directory. translate_full.yaml has all of the possible options, translate_best.yaml has the best options I found, translate_baseline.yaml has the moses documentation's baseline system.
+  * If you're training for a language written right to left the corpora must be flipped first so that they go from left to right. This is important so that the words in teh sentences align properly.
 
 * **model results**
   * ``giza translate model_results --config <corpora.yaml>``
@@ -46,7 +50,7 @@ Giza Commands
   * If for some reason build model doesn't run ``model_results`` or you just want to run it again, this command will run it for you
   * It takes the json file from build model and writes the data to a csv file and then emails the person in the config
 
-  * **create corpora**
+* **create corpora**
   * ``giza translate create_corpora --config <corpora.yaml>``
   * ``giza translate cc -c <corpora.yaml>``
   * These commands create training, tuning, and testing corpora from mutliple different input corpora
@@ -112,36 +116,60 @@ Giza Commands
 
     * This is intentional as it makes it so every translation has a known source. It would be bad if we conflated human translations with machine translations. This way each set has a consistent source.
 
+  * If you use Hebrew or Arabic (or change the code a bit and add in other right-to-left languages), this command will flip the translated text before putting it into po files
+
+    * When translating right to left text it will originally come out from left to right since that's how you have to train it.
+
+* **flip text**
+
+  * ``giza translate flip_text --input <input_file> --output <output_file>``
+  * ``giza translate flip -i <input_file> -o <output_file>``
+  * These commands flip the text of a file from horizontally on every line. It takes a file written from left to right and writes it from right to left
+
+* **auto approve obvious po**
+
+  * ``giza translate auto_approve_obvious_po  --po <input_po_files>``
+  * ``giza translate auto_approve  --po <po_files_to_approve>``
+  * These commands automatically approve any entries in the provided po files that should be approved automatically
+  * These are lines where the entire sentence should not be translated and are of the form ``:foo:`bar```
+
 
 Setup
 -----
 
 * Follow the instructions in MosesSetup.sh. It is not meant to be a script that you simply run, rather go through it line by line or paragraph by paragraph running the commands.
 * Be sure to read the comments as you go along, they may tell you alternate commands to run in certain situations.
+* If you don't want to accidentally turn backticks (`) into apostrophes ('), then comment out line 278 of translation_tools/mosesdecoder/scripts/tokenizer/tokenizer.perl: ``$text =~ s/\`/\'/g;``
 
 Workflow
 --------
 
-1. Setup Moses, Giza, and IRSTLM as described above
+1. Setup Moses, Giza, and IRSTLM as described above and in MosesSetup.sh
 2. Setup your corpora
 
-  1. Use more data for better results, preferably data similar to the documents you will be translating from
-  2. Plan out the train, tune, and test corpora, with almost all data going to train. To do this first find as many parallel corpora as you want out of which you will create your train, tune, and test corpora
-  3. If you have any translations in po files, use ``po_to_corpus`` to pull the data out to use as parallel corpora
-  4. Use`` create_corpora`` to make your corpora. You will need to first create a ``corpora.yaml`` file similar to the sample one provided specifying how much of each file goes into train, tune, and test respectively and how much of the train, tune, and test copora will have lines from each file. Note that this second part means that the train, tune, or test corpora may have multiple copies of some input corpora.
-  5. Put the same data in multiple times (or make it a higher percentage of the train, tune, or test corpus in ``create_corpora``) to weight it higher. For example, if you have sentences in po files that you know are good and relevant to your domain, these may be the best data you have and should be correspondingly waited higher. Alternatively, unless you're creating a translater for parliamentary data, the europarl corpus should probably have a low weight so your translations do not sound like parliamentary proceedings
+  1. Use more data for better results, preferably data similar to the documents you will be translating from. For example, KDE4 is more similar to MongoDB's documentation that Europarl would be.
+  2. Plan out the train, tune, and test corpora, with almost all data going to train. To do this first find as many parallel corpora as you want out of which you will create your train, tune, and test corpora.
+  3. If you have any translations in po files, use ``po_to_corpus`` to pull the data out and use that data as parallel corpora.
+  4. If you want to use a bilingual dictionary as a corpus, use ``dict_to_corpus`` to pull the data out and use that data. The dictionary must be retrieved from here <http://dicts.info/uddl.php>`_
+  5. Make sure not to overlap tune, train, or test data. ``create_corpora`` won't actually allow you to, but if you create any by yourself, don't reuse sentences. It will bias your results.
+  6. Use ``create_corpora`` to make your corpora. You will need to first create a ``corpora.yaml`` file similar to the sample one provided specifying how much of each file goes into train, tune, and test respectively and how much of the train, tune, and test copora will have lines from each file. Note that this second part means that the train, tune, or test corpora may have multiple copies of some input corpora.
+  7. Put the same data in a given corpus multiple times (or make it a higher percentage of the train, tune, or test corpus in ``create_corpora``) to weight it higher. For example, if you have sentences in po files that you know are good and relevant to your domain, these may be the best data you have and should be correspondingly waited higher. Alternatively, unless you're creating a translater for parliamentary data, the europarl corpus should probably have a low weight so your translations do not sound like parliamentary proceedings.
 
 3. Build your model
 
-  1. Decide what configurations to test and run ``build_model`` with an appropriate config file modeled off of the sample ``translate_full.yaml`` which shows all of the possible settings. Perusing the Moses website will explain a bit more about every setting, but in general most settings either perform faster or perform better. Ones that seem to "do less"- such as by using fewer scoring options, considering only one direction, or considering smaller phrases or words- likely will finish faster but will perform worse. ``translate_best.yaml`` was found to perform very well. ``translate_baseline.yaml`` is the baseline provided by moses.
-  2. Wait a while (and read a good book!) while the test runs
+  1. Decide what configurations to test and run ``build_translation_model`` with an appropriate config file modeled off of the sample ``translate_full.yaml`` which shows all of the possible settings. Perusing the Moses website will explain a bit more about every setting, but in general most settings either perform faster or perform better. Ones that seem to "do less"- such as by using fewer scoring options, considering only one direction, or considering smaller phrases or words- likely will finish faster but will perform worse. ``translate_best.yaml`` was found to perform very well. ``translate_baseline.yaml`` is the baseline provided by moses.
+  2. Wait a while (and read a good book!) while the test runs.
   3. At the end of the test look at the out.csv file for the data on how well each configuration did, the BLEU score is the metric you want to look at.
   4. If for some reason the out.csv file isn't there, use ``model_results`` to create it.
+  5. You can easily review your translations by comparing them side by side with the source text or a reference translation by using ``merge_translations``.
 
 4. Translate your docs
 
-  1. Use ``translate_po`` to translate your po files.
-  2. First copy the files so you have a parallel directory tree, and give ``translate_po`` one of them to translate
+  1. First copy the files so you have a parallel directory tree, and give ``translate_po`` one of the trees to translate. Make a note of which was machine translated.
+  2. Create, or use the provided, ``protected.re`` regular expression list to tell moses which regular expressions to not tokenize.
+  3. Use ``translate_po`` to translate your po files.
+  4. If you only have a single file you can user ``translate_text_doc``. ``translate_po`` will automatically flip the text right to left if it needs to, but ``translate_text_doc`` will not. You can then use ``flip_text`` to flip it.
+  5. If you are using Sphinx documentation, you can use ``auto_approve_obvious_po`` to automatically approve sentences that will (ideally) never get translated
 
 5. Put your docs in MongoDB
 
@@ -181,7 +209,9 @@ http://www.statmt.org/wmt13/translation-task.html#download
 These scripts, especailly the tuning and training phases, can take a long time. Take proper measures to background your processes so that they do not get killed part way.
 ``nohup``- makes sure that training is not interrupted when done over SSH
 ``nice``- makes sure the training doens't hold up the entire computer. run with ``nice -n 15``
-### Explanation of Moses scripts
+
+Explanation of Moses scripts
+----------------------------
 
 * **Tokenizing**
 

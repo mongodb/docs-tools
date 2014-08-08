@@ -138,7 +138,7 @@ def flip_text(args):
     flip_text_direction(args.t_input_file, args.t_output_file)
 
 
-@argh.arg('--input', '-i', required=True, default=None, dest='t_input_file')
+@argh.arg('--po', required=True, default=None, dest='t_input_file')
 @argh.named('auto_approve')
 def auto_approve_obvious_po(args):
     auto_approve_po_entries(args.t_input_file)
