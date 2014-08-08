@@ -159,13 +159,13 @@ def translate_po_files(po_path, tconf, protected_file=None):
         trans_file = temp_file + '.translated'
         translate_file(temp_file, trans_file, tconf, protected_file, temp_dir)
 
-    #flips the file if the language is right to left
-    if tconf.settings.foreign in ['he', 'ar']:
-        flipped_file = trans_file + '.flip'
-        flip_text_direction(trans_file, flipped_file)
-        trans_file = flipped_file
+        #flips the file if the language is right to left
+        if tconf.settings.foreign in ['he', 'ar']:
+            flipped_file = trans_file + '.flip'
+            flip_text_direction(trans_file, flipped_file)
+            trans_file = flipped_file
 
-    write_po_files(po_file_list, trans_file)
+        write_po_files(po_file_list, trans_file)
 
 def auto_approve_po_entries(po_path):
     ''' This function automatically approves any untranslated sentence in a
