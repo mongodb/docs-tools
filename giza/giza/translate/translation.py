@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 import logging
 import shutil
 import os
+import re
 
 import polib
 
@@ -59,6 +59,10 @@ def translate_file(in_file, out_file,  tconf, protected_file, super_temp=None):
     with TempDir(super_temp=super_temp) as temp:
         logger.info("tempdir: " + temp)
         logger.info("decoding: " + in_file)
+        if os.stat(in_file).st_size == 0:
+            logger.warning("File is empty")
+            open(out_file, "w").close()
+            return
         if super_temp is None:
             shutil.copy(in_file, temp)
         in_file = os.path.basename(in_file)
@@ -155,10 +159,26 @@ def translate_po_files(po_path, tconf, protected_file=None):
         trans_file = temp_file + '.translated'
         translate_file(temp_file, trans_file, tconf, protected_file, temp_dir)
 
-        #flips the file if the language is right to left
-        if tconf.settings.foreign in ['he', 'ar']:
-            flipped_file = trans_file + '.flip'
-            flip_text_direction(trans_file, flipped_file)
-            trans_file = flipped_file
+    #flips the file if the language is right to left
+    if tconf.settings.foreign in ['he', 'ar']:
+        flipped_file = trans_file + '.flip'
+        flip_text_direction(trans_file, flipped_file)
+        trans_file = flipped_file
 
-        write_po_files(po_file_list, trans_file)
+    write_po_files(po_file_list, trans_file)
+
+def auto_approve_po_entries(po_path):
+    ''' This function automatically approves any untranslated sentence in a
+    po file that should be identical in the target language. These sentences
+    are of the form :word:`link`
+    :param string po_path:the path to the top level directory of the po_files
+    '''
+    po_file_list = get_file_list(po_path, ["po", "pot"])
+    reg = re.compile('^:[a-zA-Z0-9]+:`(?!.*<.*>.*)[^`]*`$')
+    for fn in po_file_list:
+        po = polib.pofile(fn)
+        for entry in po.untranslated_entries():
+            match = re.match(reg, entry.msgid.encode('utf-8'))
+            if match is not None and match.group() == entry.msgid.encode('utf-8'):
+                entry.msgstr = entry.msgid
+        po.save()

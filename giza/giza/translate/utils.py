@@ -19,6 +19,7 @@ import datetime
 import tempfile
 import shutil
 import os
+import codecs
 
 from giza.files import expand_tree
 
@@ -170,8 +171,8 @@ def flip_text_direction(in_fp, out_fp):
     :param string in_fp: file path for the file to flip
     :param string out_fp: file path for the flipped file
     '''
-    with open(out_fp, "w", 1) as out_file:
-        with open(in_fp, "r") as in_file:
+    with codecs.open(out_fp, "w", encoding="utf-8") as out_file:
+        with codecs.open(in_fp, "r", encoding="utf-8") as in_file:
             for line in in_file:
                 if line[-1] == '\n':
                     out_file.write(line[-2::-1])
