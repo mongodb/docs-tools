@@ -4,19 +4,20 @@ import shutil
 import tempfile
 import unittest
 import subprocess
-import my_util
-import pymongo
-import os
 import logging
-import models
 from random import randint
+
+import pymongo
+
+from pharaoh.utils import load_json
+from pharaoh.models import Sentence, User, File
 
 MONGODB_TEST_PORT = 31415
 PATH_TO_MONGOD = '/home/wisdom/mongodb/2.6.0-rc0'
 DBNAME = 'veritest'
 
-logger = logging.getLogger('tests')
-logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('pharaoh.tests')
+
 
 class MongoTemporaryInstance(object):
     '''Singleton to manage a temporary MongoDB instance
@@ -29,7 +30,8 @@ class MongoTemporaryInstance(object):
 
     @classmethod
     def get_instance(cls):
-        '''This method gets an instance that's destroyed at the end of the program'''
+        '''This method gets an instance that's destroyed at the end of
+        the program'''
         if cls._instance is None:
             cls._instance = cls()
             atexit.register(cls._instance.shutdown)
@@ -79,7 +81,9 @@ class TestCase(unittest.TestCase):
     A test can access the connection using the attribute `conn`.
 
     '''
-    db_init_files = ['test_files/translations.json','test_files/users.json', 'test_files/files.json']
+    db_init_files = ['test_files/translations.json',
+                     'test_files/users.json',
+                     'test_files/files.json']
 
     def __init__(self, *args, **kwargs):
         super(TestCase, self).__init__(*args, **kwargs)
@@ -88,48 +92,52 @@ class TestCase(unittest.TestCase):
         self.db = self.client[DBNAME]
 
     def sentence(self, id=None):
-        '''This method wraps around the sentence creator to provide the correct db'''
-        s = models.Sentence(oid=id, curr_db=self.db)
+        '''This method wraps around the sentence creator to provide
+        the correct db'''
+        s = Sentence(oid=id, curr_db=self.db)
         return s
 
     def user(self, id=None):
-        '''This method wraps around the user creator to provide the correct db'''
-        u = models.User(oid=id, curr_db=self.db)
+        '''This method wraps around the user creator to provide
+        the correct db'''
+        u = User(oid=id, curr_db=self.db)
         return u
 
     def file(self, id=None):
-        '''This method wraps around the file creator to provide the correct db'''
-        f = models.File(oid=id, curr_db=self.db)
+        '''This method wraps around the file creator to provide
+        the correct db'''
+        f = File(oid=id, curr_db=self.db)
         return f
 
     def jumble_data(self):
         '''This method does random updates to the data'''
-        for i in range(randint(0,5)):
+        for i in range(randint(0, 5)):
             try:
-                s = self.sentence(id='s{0}'.format(randint(1,3)))
-                u = self.user(id='u{0}'.format(randint(1,3)))
-                s.edit(u,"foo{0}".format(i))
+                s = self.sentence(id='s{0}'.format(randint(1, 3)))
+                u = self.user(id='u{0}'.format(randint(1, 3)))
+                s.edit(u, "foo{0}".format(i))
             except Exception:
                 continue
 
-        for i in range(randint(0,3)):
+        for i in range(randint(0, 3)):
             try:
-                s = self.sentence(id='s{0}'.format(randint(1,3)))
-                u = self.user(id='u{0}'.format(randint(1,3)))
+                s = self.sentence(id='s{0}'.format(randint(1, 3)))
+                u = self.user(id='u{0}'.format(randint(1, 3)))
                 s.approve(u)
             except Exception:
                 continue
 
 
     def setUp(self):
-        '''This method sets up the test by deleting all of the databases and reloading them'''
+        '''This method sets up the test by deleting all of the databases
+        and reloading them'''
         super(TestCase, self).setUp()
 
         for db_name in self.client.database_names():
             self.client.drop_database(db_name)
 
         for f in self.db_init_files:
-            my_util.load_json(f,self.db)
+            load_json(f, self.db)
 
     def test_setup(self):
         '''This test tests that the database sets up properly'''
@@ -140,12 +148,11 @@ class TestCase(unittest.TestCase):
         s = self.sentence(id=u's1')
         s_old = self.sentence(id=u's1')
         judah = self.user(id=u'u2')
-        judah_old = self.user(id=u'u2')
         s.edit(judah, u'foo bar')
         s = self.sentence(id=u's1')
         judah = self.user(id=u'u2')
         self.assertEquals(s.update_number, s_old.update_number+1)
-        self.assertEquals(s.target_sentence,u'foo bar')
+        self.assertEquals(s.target_sentence, u'foo bar')
         self.assertEquals(s.status, u'reviewed')
 
         self.assertEquals(judah.num_reviewed, 1)
@@ -164,8 +171,8 @@ class TestCase(unittest.TestCase):
         self.assertEquals(s.update_number, s_old.update_number+1)
         self.assertTrue(u'u2' in s.approvers)
 
-        self.assertEquals(judah.num_user_approved, judah_old.num_user_approved+1)
-        self.assertEquals(moses.num_got_approved, moses_old.num_got_approved+1)
+        self.assertEquals(judah.num_user_approved, judah_old.num_user_approved + 1)
+        self.assertEquals(moses.num_got_approved, moses_old.num_got_approved + 1)
 
     def test_unapprove(self):
         '''This method tests that the approve command works properly'''
@@ -185,14 +192,14 @@ class TestCase(unittest.TestCase):
         self.assertEquals(s.update_number, s_old.update_number+1)
         self.assertFalse(u'u2' in s.approvers)
 
-        self.assertEquals(judah.num_user_approved, judah_old.num_user_approved-1)
-        self.assertEquals(moses.num_got_approved, moses_old.num_got_approved-1)
+        self.assertEquals(judah.num_user_approved, judah_old.num_user_approved - 1)
+        self.assertEquals(moses.num_got_approved, moses_old.num_got_approved - 1)
 
     def test_sentence_approved(self):
-        '''This method tests that if a sentence is approved twice it gets approved'''
+        '''This method tests that if a sentence is approved twice
+        it gets approved'''
         s = self.sentence(id=u's3')
         judah = self.user(id=u'u2')
-        wisdom = self.user(id=u'u3')
         s.approve(judah)
         s = self.sentence(id=u's3')
         self.assertEquals(s.status, 'approved')
@@ -209,7 +216,8 @@ class TestCase(unittest.TestCase):
             s.approve(judah)
 
     def test_approve_own_edit(self):
-        '''This method tests that you can't approve a setence you edited last'''
+        '''This method tests that you can't approve a setence
+        you edited last'''
         s_pre = self.sentence(id=u's1')
         judah_pre = self.user(id=u'u2')
         s_pre.edit(judah_pre, "edited")
@@ -220,22 +228,12 @@ class TestCase(unittest.TestCase):
             s.approve(judah)
 
     def test_unapprove_no_approve(self):
-        '''This method tests that you can't unapprove a sentence you haven't approved'''
+        '''This method tests that you can't unapprove a
+        sentence you haven't approved'''
         s = self.sentence(id=u's1')
         judah = self.user(id=u'u2')
         with self.assertRaises(Exception):
             s.unapprove(judah)
-
-    def test_approve_own_edit(self):
-        '''This method tests that you can't approve a setence you edited last'''
-        s_pre = self.sentence(id=u's1')
-        judah_pre = self.user(id=u'u2')
-        s_pre.edit(judah_pre, "edited")
-
-        s = self.sentence(id=u's1')
-        judah = self.user(id=u'u2')
-        with self.assertRaises(Exception):
-            s.approve(judah)
 
     def test_edit_own_approve(self):
         '''This method tests that you can't edit something you've approved'''
