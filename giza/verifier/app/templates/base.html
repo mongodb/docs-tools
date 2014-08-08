@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Translation Pipeline</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"></link>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"></link>
+    <script type=text/javascript src="{{url_for('static', filename='javascript/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{url_for('static',filename='javascript/jquery.autosize.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static',filename='javascript/scripts.js')}}"></script>
+    {% block header %}
+    {% endblock %}
+</head>
+<body>
+    <div id="content">{% block content %}{% endblock %}</div>
+    <div id="footer">
+        {% block footer %}
+        &copy; Copyright 2014 by MongoDB</a>.
+        {% endblock %}
+    </div>
+</body>
+</html>

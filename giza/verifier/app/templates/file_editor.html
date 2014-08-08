@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}File Editor{% endblock %}
+{% block header %}
+{% endblock %}
+{% block content %}
+    <ul id="navigation" data-userid='{{username|get_userID}}'>
+    Username: <input id="username" value="{{username}}" readonly></input>
+    Target Language: <input id="language" value="{{language}}" readonly></input>
+    <input id="error-message" readonly value=""></input>
+    <button class="show_unapproved btn btn-sm" id="show-unapproved-button">Only Show Unapproved</button>
+    <table class = "table table-striped">
+        {% for sentence in sentence_list %}
+            <tr>
+                <td class="source">{{sentence['source_sentence']}}</td>
+                <td class="target" data-sentence='{{sentence|to_json}}'>
+                    <textarea readonly class="target_sentence" id="{{sentence['sentenceID']}}-textarea">{{sentence['target_sentence']}}</textarea>
+                    {% if sentence['status'] != 'approved' %}
+                            <button class="edit btn btn-success btn-sm" id="{{sentence['sentenceID']}}-editButton">Edit</button>
+                            <button class="approve btn btn-success btn-sm" id="{{sentence['sentenceID']}}-approveButton">Approve</button>
+                            <input class="approval_check" value="&#x2713;"></input>
+                            <input class="approval_num" value="{{sentence['approvers']|list_length}}"></input>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    </ul>
+{% endblock %}
