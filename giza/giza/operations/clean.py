@@ -49,6 +49,6 @@ def clean(args):
         t.args = fn
         m = 'removing artifact: {0}'.format(fn)
         t.description = m
-        logger.critical(MW)
+        logger.critical(m)
 
     app.run()
