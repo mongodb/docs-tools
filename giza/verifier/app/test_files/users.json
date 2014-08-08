@@ -1,0 +1,34 @@
+{"users":[
+{
+    "_id" : "u1",
+    "username" : "Moses",
+    "num_got_approved" : 0,
+    "num_reviewed" : 0,
+    "num_user_approved" : 0,
+    "trust_level" : "basic"
+},
+{
+    "_id" : "u2",
+    "username" : "Judah",
+    "num_got_approved" : 0,
+    "num_reviewed" : 0,
+    "num_user_approved" : 0,
+    "trust_level" : "basic"
+},
+{
+    "_id" : "u3",
+    "username" : "Wisdom",
+    "num_got_approved" : 0,
+    "num_reviewed" : 0,
+    "num_user_approved" : 0,
+    "trust_level" : "basic"
+},
+{
+    "_id" : "u4",
+    "username" : "Sam",
+    "num_got_approved" : 0,
+    "num_reviewed" : 0,
+    "num_user_approved" : 0,
+    "trust_level" : "basic"
+}
+]}
