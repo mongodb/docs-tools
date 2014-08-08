@@ -1,0 +1,143 @@
+#content {
+    padding: 10px;
+    padding-bottom: 20px;
+    height:100%;
+    min-height: 100%;
+    position: relative;
+}
+
+#footer {
+    width: 100%;
+    left:30px;
+    position: relative;
+    height: 30px;
+    margin: auto;
+}
+
+td, th{
+    text-align: left;
+}
+
+td.source, td.file_name {
+    width: 35%;
+    padding: 5px;
+}
+
+td.target{
+    padding: 5px;
+    width: 45%;
+}
+
+td.editfile_button{
+    padding: 5px;
+    width: 25%;
+}
+
+td.approved_stat{
+    padding: 5px;
+    width: 15%;
+}
+
+td.reviewed_stat{
+    padding: 5px;
+    width: 15%;
+}
+
+textarea {
+    width: 75%;
+    height: 100%;
+    resize: none;
+    background-color: #F0F0F0;
+    font-size: 10pt;
+}
+
+p.result {
+    text-align: right;
+}
+
+div.target_text{
+    width: 80%;
+    float: left;
+    height: 100%;
+}
+
+div.target_side{
+    width: 20%;
+    float: left;
+}
+
+button.approve, button.unapprove, button.edit{
+    float: right;
+}
+
+#error-message{
+    color: red;
+    border: 0;
+    width: 30%;
+    font-size: 12pt;
+}
+
+input.approval_num{
+    width: 10px;
+    color: green;
+    border: 0;
+    float: right;
+    background: transparent;
+    border: none;
+}
+
+input.approval_check{
+    width: 10px;
+    color: green;
+    border: 0;
+    float: right;
+    background: transparent;
+    border: none;
+}
+
+input.approval_frac, input.review_frac{
+    width: 40px;
+    border: 0;
+    background: transparent;
+}
+
+table.sortable thead {
+    background-color:#eee;
+    color:#666666;
+    font-weight: bold;
+    cursor: default;
+}
+
+div.pagination {
+    text-align: center;
+    margin: auto;
+    left: 40%;
+    position: absolute;
+}
+
+.btn,
+.btn:focus,
+.btn:active,
+.btn:hover
+{
+    margin-left: 5px;
+    outline:0px !important;
+    -webkit-appearance:none;
+}
+
+#show-unapproved-button {
+    background-color: #3b291f;
+    color: #FFFFFF;
+    margin-bottom: 5px;
+    float: right;
+}
+
+#show-unapproved-button:active,
+#show-unapproved-button:hover
+{
+    margin-left: 5px;
+    outline:0px !important;
+    -webkit-appearance:none;
+    background-color: #835C3B;
+
+}
