@@ -7,7 +7,7 @@ from giza.serialization import ingest_yaml_doc
 from giza.config.corpora import CorporaConfig
 from giza.translate.corpora import create_hybrid_corpora, create_corpus_from_po, create_corpus_from_dictionary
 
-logger = logging.getLogger('giza.translate.corpora_tests')
+logger = logging.getLogger('test.test_corpora')
 TEST_PATH = os.path.abspath(os.path.join('..', os.path.dirname(__file__)))
 
 

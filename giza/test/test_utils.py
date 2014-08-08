@@ -5,7 +5,7 @@ import os
 
 from giza.translate.utils import flip_text_direction, merge_files, get_file_list
 
-logger = logging.getLogger('giza.translate.utils_tests')
+logger = logging.getLogger('test.test_utils')
 TEST_PATH = os.path.abspath(os.path.join('..', os.path.dirname(__file__)))
 
 

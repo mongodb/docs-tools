@@ -9,7 +9,7 @@ from giza.serialization import ingest_yaml_doc
 from giza.translate.translation import po_file_untranslated_to_text, extract_all_untranslated_po_entries, fill_po_file, write_po_files, auto_approve_po_entries
 from giza.translate.utils import get_file_list
 
-logger = logging.getLogger('giza.translate.translation_tests')
+logger = logging.getLogger('test.test_translation')
 TEST_PATH = os.path.abspath(os.path.join('..', os.path.dirname(__file__)))
 
 
