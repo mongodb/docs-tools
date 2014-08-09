@@ -123,8 +123,6 @@ class HtaccessData(list):
 
         outputs = resolve_outputs_for_redirect(item['outputs'], self.conf)
 
-
-
         for doc in process_redirect_inputs(outputs, item):
             super(HtaccessData, self).insert(index, RedirectSpecification(doc))
 
@@ -139,6 +137,9 @@ def is_computed_output(key):
 
 ########## Redirect Resolution ##########
 
+# the following three private functions are refactored components of
+# ``resolve_output_for_redirect()``
+
 def _add_outputs_to_computed(computed, keyword, base, conf):
     if keyword == 'all':
         computed.extend(conf.git.branches.published)
@@ -147,8 +148,44 @@ def _add_outputs_to_computed(computed, keyword, base, conf):
     elif keyword == 'after':
         computed.extend(conf.git.branches.published[:conf.git.branches.published.index(base)])
 
+def _render_key(sub_key, left_base, right_base):
+    if sub_key == left_base:
+        left = sub_key
+    else:
+        left = '/'.join([left_base, sub_key])
 
+    if o == right_base:
+        right = o
+    else:
+        right = '/'.join([right_base, sub_key])
 
+    return left, right
+
+def _get_redirect_base_paths(computed, out, conf):
+    if out == 'all':
+        out_key = out_value = ''
+        _add_outputs_to_computed(computed, 'all', 0, conf)
+    elif isinstance(out, dict):
+        out_key, out_value = out.items()[0]
+        if isinstance(out_value, dict):
+            # for mms where from/to paths are mapped differently
+            keyword, base = out_key.split('-', 1)
+            out_key, out_value = out_value.items()[0]
+            _add_outputs_to_computed(computed, keyword, base, conf)
+    else:
+        if is_computed_output(out):
+            keyword, base = out.split('-', 1)
+            out_key = out_value = ''
+            _add_outputs_to_computed(computed, keyword, base, conf)
+        elif isinstance(out, tuple):
+            out_key, out_value = out
+        else:
+            out_key = out_value = out
+
+    return out_key, out_value
+
+# The following functions describe the process for inserting documents into the
+# HtaccessData list and are called in HtaccessData.list()
 
 def resolve_outputs_for_redirect(outputs, conf):
     if 'integration' in conf.system.files.data:
@@ -156,36 +193,20 @@ def resolve_outputs_for_redirect(outputs, conf):
     else:
         shadows = []
 
-    for idx, out in enumerate(outputs):
+    sh_outputs = []
+    for out in outputs:
         computed = []
-        if out == 'all':
-            branch_keyword = base = 'all'
-            out_key = out_value = ''
-            _add_outputs_to_computed(computed, 'all', 0, conf)
-        elif isinstance(out, dict):
-            out_key, out_value = out.items()[0]
-            if isinstance(out_value, dict):
-                # for mms where from/to paths are mapped differently
-                keyword, base = out_key.split('-', 1)
-                out_key, out_value = out_value.items()[0]
-                _add_outputs_to_computed(computed, keyword, base, conf)
-        else:
-            if is_computed_output(out):
-                keyword, base = out.split('-', 1)
-                _add_outputs_to_computed(computed, keyword, base, conf)
-                out_key = out_value = base
-            else:
-                out_key = out_value = out
 
-        # for shadow in shadows:
-        #     key, value = shadow.items()[0]
-        #     if key == out_value:
-        #         print key
-        #         computed.extend((key, value))
+        out_key, out_value = _get_redirect_base_paths(computed, out, conf)
 
-        outputs.extend([ ('/'.join([out_key, o]), '/'.join([out_value, o])) for o in computed ])
-        # print(outputs)
+        for shadow in shadows:
+            key, value = shadow.items()[0]
+            if value == out_value:
+                sh_outputs.extend((value, key))
 
+        outputs.append([ _render_key(o, out_key, out_value) for o in computed ])
+
+    outputs.extend(sh_outputs)
     return outputs
 
 def process_redirect_inputs(outputs, item):

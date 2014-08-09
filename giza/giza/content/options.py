@@ -41,7 +41,6 @@ class Options(object):
         else:
             self.source_dirname = fn
 
-
     def ingest(self, fn):
         if self.source_dirname is None:
             self.source_dirname = os.path.dirname(os.path.abspath(fn))

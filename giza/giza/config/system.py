@@ -201,7 +201,6 @@ class SystemConfigData(RecursiveConfigurationBase):
                     if len(self.state[key]) == 1:
                         basename, fns = self.state[key].items()[0]
                         if isinstance(fns, list):
-                            print fns
                             for fn in fns:
                                 self._load_file(basename, fn)
                         else:
