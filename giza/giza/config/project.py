@@ -32,7 +32,6 @@ def get_path_prefix(conf, branch):
             else:
                 o.append(branch)
 
-    print('sparta')
     return '/'.join(o)
 
 class ProjectConfig(RecursiveConfigurationBase):
@@ -157,8 +156,6 @@ class ProjectConfig(RecursiveConfigurationBase):
     @property
     def sitepath(self):
         return get_path_prefix(self.conf, self.conf.git.branches.current)
-
-
 
 class EditionListConfig(ConfigurationBase):
     @property

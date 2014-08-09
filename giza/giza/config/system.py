@@ -24,6 +24,7 @@ from giza.config.pdfs import PdfConfig
 from giza.config.intersphinx import IntersphinxConfig
 from giza.config.translate import TranslateConfig
 from giza.config.corpora import CorporaConfig
+from giza.config.redirects import HtaccessData
 from giza.serialization import ingest_yaml_list
 
 class SystemConfig(RecursiveConfigurationBase):
@@ -188,15 +189,25 @@ class SystemConfigData(RecursiveConfigurationBase):
             return object.__getattribute__(self, key)
         except AttributeError as e:
             if key in self._option_registry:
+                if isinstance(key, dict):
+                    basename, fn = key.items()[0]
+                else:
+                    fn = key
+                    basename = os.path.splitext(fn)[0]
+
                 if isinstance(self.state[key], list):
-                    return self.state[key]
+                    pass
                 elif isinstance(self.state[key], dict):
                     if len(self.state[key]) == 1:
-                        self._load_file(self.state[key])
-                    else:
-                        return self.state[key]
+                        basename, fns = self.state[key].items()[0]
+                        if isinstance(fns, list):
+                            print fns
+                            for fn in fns:
+                                self._load_file(basename, fn)
+                        else:
+                            self._load_file(basename, fn)
                 else:
-                    self._load_file(self.state[key])
+                    self._load_file(basename, self.state[key])
 
                 return self.state[key]
             else:
@@ -212,16 +223,7 @@ class SystemConfigData(RecursiveConfigurationBase):
         # it, but we want this class to load data lazily.
         pass
 
-    def _load_file(self, fn):
-        if isinstance(fn, dict):
-            if len(fn) > 1:
-                raise TypeError
-            else:
-                key, fn = fn.items()[0]
-                basename = key
-        else:
-            basename = os.path.splitext(fn)[0]
-
+    def _load_file(self, basename, fn):
         if os.path.exists(fn):
             full_path = fn
         elif os.path.exists(os.path.join(os.getcwd(), fn)):
@@ -232,13 +234,35 @@ class SystemConfigData(RecursiveConfigurationBase):
             full_path = os.path.join(self.conf.paths.projectroot,
                                      self.conf.paths.builddata, fn)
 
-        if os.path.exists(full_path):
-            # TODO we should make this process lazy with a more custom getter/setter
-            self.state[basename] = self._resolve_config_data(full_path, basename)
-            logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
+        if basename not in self.state:
+            if os.path.isfile(full_path):
+                # TODO we should make this process lazy with a more custom getter/setter
+                self.state[basename] = self._resolve_config_data(full_path, basename)
+                logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
+            else:
+                self.state[basename] = []
+                logger.warning('{0} does not exist. continuing.'.format(full_path))
         else:
-            self.state[basename] = []
-            logger.warning('{0} does not exist. continuing.'.format(full_path))
+            if os.path.isfile(full_path):
+                d = self._resolve_config_data(full_path, basename)
+
+                if isinstance(self.state[basename], list):
+                    if isinstance(d, list):
+                        self.state[basename].extend(d)
+                    else:
+                        self.state[basename].append(d)
+                else:
+                    if isinstance(self.state[basename], dict) and len(self.state[basename]) == 1:
+                        self.state[basename] = []
+                    elif self.state[basename] != fn:
+                        self.state[basename] = [self.state[basename]]
+                    else:
+                        self.state[basename] = []
+
+                    if isinstance(d, list):
+                        self.state[basename].extend(d)
+                    else:
+                        self.state[basename].append(d)
 
     def keys(self):
         return self._option_registry
@@ -256,14 +280,24 @@ class SystemConfigData(RecursiveConfigurationBase):
                 'manpages': ManpageConfig,
                 'pdfs': PdfConfig,
                 'intersphinx': IntersphinxConfig,
+                'corpora': CorporaConfig,
+            }
+            # recur_mapping for config objects that subclass RecursiveConfigurationBase
+            recur_mapping = {
                 'translate': TranslateConfig,
-                'corpora': CorporaConfig
             }
 
             if basename in mapping:
                 data = [ mapping[basename](doc) for doc in data ]
+            elif basename in recur_mapping:
+                data = [ mapping[basename](doc, self.conf) for doc in data ]
+            elif basename == 'htaccess':
+                l = HtaccessData()
+                l.conf = self.conf
+                l.extend(data)
+                data = l
 
-            if len(data) == 1 and basename not in ('manpages', 'pdfs'):
+            if len(data) == 1 and basename not in ('manpages', 'pdfs', 'htaccess'):
                 return data[0]
             else:
                 return data

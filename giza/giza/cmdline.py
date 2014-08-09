@@ -33,6 +33,7 @@ from giza.operations.clean import clean
 from giza.operations.sphinx import sphinx
 from giza.operations.deploy import deploy, push
 from giza.operations.quickstart import make_project
+
 def get_base_parser():
     parser = argh.ArghParser()
     parser.add_argument('--level', '-l',
@@ -73,6 +74,7 @@ def main():
         giza.operations.generate.tables,
         giza.operations.generate.toc,
         giza.operations.generate.examples,
+        giza.operations.generate.redirects
     ]
     argh.add_commands(parser, generate_commands, namespace='generate')
 
