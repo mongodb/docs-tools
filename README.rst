@@ -123,8 +123,8 @@ Integration and Getting Started
 
 See `the mongodb manual repository <https://github.com/mongodb/docs>`_
 for an example of an integrated repository using
-``docs-tools``. In particular, note the `docs_meta.yaml
-<https://github.com/mongodb/docs/blob/master/bin/docs_meta.yaml>`
+``docs-tools``. In particular, note the `build_conf.yaml 
+<https://github.com/mongodb/docs/blob/master/config/build_conf.yaml>`
 file: this is the only strict requirement for ``docs-tools``.
 
 Copy the `bootstrap.py
