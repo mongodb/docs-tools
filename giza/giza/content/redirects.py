@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import os.path
 import logging
+
 logger = logging.getLogger('giza.content.post.sites')
 
 from giza.serialization import ingest_yaml_list
@@ -20,10 +21,31 @@ from giza.serialization import ingest_yaml_list
 def make_redirect(conf):
     o = [ ]
 
+    logger.info('generating {0} redirects'.format(len(conf.system.files.data.htaccess)))
     for redir in conf.system.files.data.htaccess:
-        o.append(' '.join(['Redirect', str(redir.code), redir.from_loc, conf.project.url + redir.to]))
+        o.append(' '.join(['Redirect', str(redir.code), redir.from_loc, conf.project.url + redir.to, '\n']))
 
     o.sort()
+    o.extend(['\n',
+              '<FilesMatch "\.(ttf|otf|eot|woff)$">', '\n',
+              '   Header set Access-Control-Allow-Origin "*"', '\n',
+              '</FilesMatch>',
+    ])
 
-    print('\n'.join(o))
-    print(len(o))
+    return o
+
+def write_redirects(conf):
+    path = os.path.join(conf.paths.projectroot, conf.paths.htaccess)
+
+    if not os.path.exists(os.path.dirname(path)):
+        os.makedirs(os.path.dirname(path))
+
+    with open(path, 'w') as f:
+        f.writelines(make_redirect(conf))
+        f.write('\n')
+
+def redirect_tasks(conf, app):
+    t = app.add('task')
+    t.job = write_redirects
+    t.args = [conf]
+    t.description = 'generate and write redirects into: ' + conf.paths.htaccess

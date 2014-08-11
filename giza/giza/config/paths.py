@@ -200,3 +200,21 @@ class PathsConfig(RecursiveConfigurationBase):
 
             self.state['public_site_output'] = p
             return self.state['public_site_output']
+
+    @property
+    def htaccess(self):
+        if 'htaccess' in self.state:
+            return self.state['htaccess']
+        else:
+            p = [ self.conf.paths.public ]
+
+            if (self.conf.project.edition != self.conf.project.name and
+                self.conf.project.edition is not None):
+                p.append(self.conf.project.edition)
+
+            p.append('.htaccess')
+
+            p = os.path.sep.join(p)
+
+            self.state['htaccess'] = p
+            return self.state['htaccess']

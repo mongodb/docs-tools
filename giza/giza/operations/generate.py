@@ -16,7 +16,7 @@ from giza.content.param import api_tasks, api_clean
 from giza.content.steps import steps_tasks, steps_clean
 from giza.content.table import table_tasks, table_clean
 from giza.content.toc import toc_tasks, toc_clean
-from giza.content.redirects import make_redirect
+from giza.content.redirects import make_redirect, redirect_tasks
 from giza.content.examples.tasks import example_tasks
 
 from giza.content.primer import primer_migration_tasks
@@ -137,9 +137,15 @@ def examples(args):
 
     app.run()
 
-
 @argh.arg('--edition', '-e')
+@argh.arg('--print', '-p', default=False, action='store_true', dest='dry_run')
 def redirects(args):
     c = fetch_config(args)
 
-    make_redirect(c)
+    if args.dry_run is True:
+        print(''.join(make_redirect(c)))
+    else:
+        app = BuildApp(c)
+
+        redirect_tasks(c, app)
+        app.run()

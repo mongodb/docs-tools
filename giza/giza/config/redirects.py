@@ -154,7 +154,7 @@ def _render_key(sub_key, left_base, right_base):
     else:
         left = '/'.join([left_base, sub_key])
 
-    if o == right_base:
+    if sub_key == right_base:
         right = o
     else:
         right = '/'.join([right_base, sub_key])
@@ -173,7 +173,9 @@ def _get_redirect_base_paths(computed, out, conf):
             out_key, out_value = out_value.items()[0]
             _add_outputs_to_computed(computed, keyword, base, conf)
     else:
-        if is_computed_output(out):
+        if out == []:
+            out_key = out_value = ''
+        elif is_computed_output(out):
             keyword, base = out.split('-', 1)
             out_key = out_value = ''
             _add_outputs_to_computed(computed, keyword, base, conf)
@@ -193,7 +195,7 @@ def resolve_outputs_for_redirect(outputs, conf):
     else:
         shadows = []
 
-    sh_outputs = []
+    expanded_outputs = []
     for out in outputs:
         computed = []
 
@@ -202,11 +204,11 @@ def resolve_outputs_for_redirect(outputs, conf):
         for shadow in shadows:
             key, value = shadow.items()[0]
             if value == out_value:
-                sh_outputs.extend((value, key))
+                expanded_outputs.extend((value, key))
 
-        outputs.append([ _render_key(o, out_key, out_value) for o in computed ])
+        expanded_outputs.extend([ _render_key(o, out_key, out_value) for o in computed ])
 
-    outputs.extend(sh_outputs)
+    outputs.extend(expanded_outputs)
     return outputs
 
 def process_redirect_inputs(outputs, item):

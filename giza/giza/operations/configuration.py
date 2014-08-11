@@ -24,10 +24,9 @@ def render_config(args):
                  c.project.branched, c.system.dependency_cache,
                  c.paths.public_site_output, c.project.basepath,
                  c.runstate.runner, c.runstate.force, c.system.files,
-                 c.system.files.paths, c.system.files.data
+                 c.system.files.paths, c.system.files.data, c.paths.htaccess
                ]
 
     print('--- ' + "str of config object >>>")
     print(json.dumps(c.dict(), indent=3))
     print('---  <<<')
-    print c.system.files.data.integration
