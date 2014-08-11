@@ -208,7 +208,10 @@ class SystemConfigData(RecursiveConfigurationBase):
                 else:
                     self._load_file(basename, self.state[key])
 
-                return self.state[key]
+                if len(self.state[key]) == 1:
+                    return self.state[key][0]
+                else:
+                     return self.state[key]
             else:
                 m = 'key "{0}" in system.data object does not exist'.format(key)
                 logger.debug(m)
@@ -223,15 +226,7 @@ class SystemConfigData(RecursiveConfigurationBase):
         pass
 
     def _load_file(self, basename, fn):
-        if os.path.exists(fn):
-            full_path = fn
-        elif os.path.exists(os.path.join(os.getcwd(), fn)):
-            full_path = os.path.join(os.getcwd(), fn)
-        elif fn.startswith('/'):
-            full_path = os.path.join(self.conf.paths.projectroot, fn[1:])
-        else:
-            full_path = os.path.join(self.conf.paths.projectroot,
-                                     self.conf.paths.builddata, fn)
+        full_path = self._resolve_config_path(fn)
 
         if basename not in self.state:
             if os.path.isfile(full_path):
@@ -244,27 +239,46 @@ class SystemConfigData(RecursiveConfigurationBase):
         else:
             if os.path.isfile(full_path):
                 d = self._resolve_config_data(full_path, basename)
+            else: #if os.path.isfile(self.state[basename]):
+                full_path = self.state[basename].items()[0][1]
+                d = self._resolve_config_data(self._resolve_config_path(full_path), basename)
 
-                if isinstance(self.state[basename], list):
-                    if isinstance(d, list):
-                        self.state[basename].extend(d)
-                    else:
-                        self.state[basename].append(d)
-                else:
-                    if isinstance(self.state[basename], dict) and len(self.state[basename]) == 1:
-                        self.state[basename] = []
-                    elif self.state[basename] != fn:
-                        self.state[basename] = [self.state[basename]]
-                    else:
-                        self.state[basename] = []
-
-                    if isinstance(d, list):
-                        self.state[basename].extend(d)
-                    else:
-                        self.state[basename].append(d)
+            self._set_config_data(basename, fn, d)
 
     def keys(self):
         return self._option_registry
+
+    def _set_config_data(self, basename, fn, d):
+        if isinstance(self.state[basename], list):
+            if isinstance(d, list):
+                self.state[basename].extend(d)
+            else:
+                self.state[basename].append(d)
+        else:
+            if isinstance(self.state[basename], (ConfigurationBase, dict)) and len(self.state[basename]) == 1:
+                self.state[basename] = []
+            elif self.state[basename] != fn:
+                self.state[basename] = [self.state[basename]]
+            else:
+                self.state[basename] = []
+
+            if isinstance(d, list):
+                self.state[basename].extend(d)
+            else:
+                self.state[basename].append(d)
+
+    def _resolve_config_path(self, fn):
+        if os.path.exists(fn):
+            full_path = fn
+        elif os.path.exists(os.path.join(os.getcwd(), fn)):
+            full_path = os.path.join(os.getcwd(), fn)
+        elif fn.startswith('/'):
+            full_path = os.path.join(self.conf.paths.projectroot, fn[1:])
+        else:
+            full_path = os.path.join(self.conf.paths.projectroot,
+                                     self.conf.paths.builddata, fn)
+
+        return full_path
 
     def _resolve_config_data(self, fn, basename):
         logger.debug('resolving config data from file ' + fn)

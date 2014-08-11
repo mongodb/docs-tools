@@ -191,7 +191,7 @@ def _get_redirect_base_paths(computed, out, conf):
 
 def resolve_outputs_for_redirect(outputs, conf):
     if 'integration' in conf.system.files.data:
-        shadows = conf.system.files.data.integration[0]['base']['links']
+        shadows = conf.system.files.data.integration['base']['links']
     else:
         shadows = []
 
