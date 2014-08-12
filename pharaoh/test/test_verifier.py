@@ -12,6 +12,7 @@ import pymongo
 
 from pharaoh.utils import load_json
 from pharaoh.app.models import Sentence, User, File
+from pharaoh.mongo_to_po import generate_fresh_po_text
 
 MONGODB_TEST_PORT = 31415
 PATH_TO_MONGOD = '/home/wisdom/mongodb/2.6.0-rc0'
@@ -70,8 +71,32 @@ class MongoTemporaryInstance(object):
             self._process = None
             shutil.rmtree(self._tmpdir, ignore_errors=True)
 
+class ExportTestCase(unittest.TestCase):
+    db_init_files = [os.path.join(TEST_PATH, 'test_files', 'translations.json'),
+                     os.path.join(TEST_PATH, 'test_files', 'users.json'),
+                     os.path.join(TEST_PATH, 'test_files', 'files.json')]
+    def __init__(self, *args, **kwargs):
+        super(VerifierTestCase, self).__init__(*args, **kwargs)
+        self.db_inst = MongoTemporaryInstance.get_instance()
+        self.client = self.db_inst.client
+        self.db = self.client[DBNAME]
 
-class TestCase(unittest.TestCase):
+    def setUp(self):
+        '''This method sets up the test by deleting all of the databases
+        and reloading them'''
+        super(ExportTestCase, self).setUp()
+
+        for db_name in self.client.database_names():
+            self.client.drop_database(db_name)
+
+        for f in self.db_init_files:
+            load_json(f, self.db)
+
+    def grab_po_test(self):
+        print generate_fresh_po_text('f1', 'en', 'es', self.db, True)
+
+
+class VerifierTestCase(unittest.TestCase):
     '''TestCase with an embedded MongoDB temporary instance.
 
     Each test runs on a temporary instance of MongoDB. Please note that
@@ -87,7 +112,7 @@ class TestCase(unittest.TestCase):
                      os.path.join(TEST_PATH, 'test_files', 'files.json')]
 
     def __init__(self, *args, **kwargs):
-        super(TestCase, self).__init__(*args, **kwargs)
+        super(VerifierTestCase, self).__init__(*args, **kwargs)
         self.db_inst = MongoTemporaryInstance.get_instance()
         self.client = self.db_inst.client
         self.db = self.client[DBNAME]

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import datetime
-import logging
 
 from flask_app import app, db
 
@@ -27,11 +26,11 @@ def get_sentences_in_file(fp, source_language, target_language, curr_db=db):
     :returns: cursor of sentences
     '''
     app.logger.debug(fp)
-    file = curr_db['files'].find_one({'source_language': source_language,
-                                      'target_language': target_language,
-                                      'file_path': fp},
-                                      {'_id': 1})
-    sentences = curr_db['translations'].find({'fileID': file[u'_id']},
+    f = curr_db['files'].find_one({'source_language': source_language,
+                                   'target_language': target_language,
+                                   'file_path': fp},
+                                  {'_id': 1})
+    sentences = curr_db['translations'].find({'fileID': f[u'_id']},
                                              {'_id': 1,
                                               'source_sentence': 1,
                                               'target_sentence': 1,
@@ -70,19 +69,19 @@ def get_files_for_page(page_number, num_files_per_page, fileIDs, curr_db=db):
     :returns: cursor of file names
     '''
     page_fileIDs = fileIDs.skip(((page_number-1)*num_files_per_page) if page_number > 0 else 0).limit(num_files_per_page)
-    list = []
+    l = []
     for f in page_fileIDs:
-        file = File(oid=f[u'_id'])
-        if file.num_sentences == 0:
+        f = File(oid=f[u'_id'])
+        if f.num_sentences == 0:
             continue
-        data = {'file_path': file.file_path,
-                'num_sentences': file.num_sentences,
-                'num_reviewed': file.num_reviewed(),
-                'num_approved': file.num_approved()}
+        data = {'file_path': f.file_path,
+                'num_sentences': f.num_sentences,
+                'num_reviewed': f.num_reviewed(),
+                'num_approved': f.num_approved()}
         if data['num_sentences'] != data['num_approved']:
-            list.append(data)
+            l.append(data)
 
-    return list
+    return l
 
 def audit(action, last_editor, current_user, doc, new_target_sentence=None, curr_db=db):
     ''' This function saves an audit of the event that occurred
@@ -189,13 +188,14 @@ class File(object):
         :returns: True or False if you grabbed the lock or not
         '''
         now = datetime.datetime.utcnow()
+        time_diff =datetime.timedelta(minutes=app.config['SESSION_LENGTH'])
         if self.state[u'lock_exp'] < now:
-            self.state[u'lock_exp'] = now + app.config['SESSION_LENGTH']
+            self.state[u'lock_exp'] = now + time_diff
             self.state[u'lock_id'] = userID
             self.save()
             return True
         elif self.state[u'lock_id'] == userID:
-            self.state[u'lock_exp'] = now + app.config['SESSION_LENGTH']
+            self.state[u'lock_exp'] = now + time_diff
             self.save()
             return True
         else:
@@ -230,6 +230,7 @@ class Sentence(object):
                       u'sentence_num': -1,
                       u'fileID': None,
                       u'sentenceID': None,
+                      u'source_location': None,
                       u'target_sentence': None,
                       u'status': u'init',
                       u'update_number': 0,
@@ -397,6 +398,10 @@ class Sentence(object):
     @property
     def sentenceID(self):
         return self.state[u'sentenceID']
+
+    @property
+    def source_location(self):
+        return self.state[u'source_location']
 
     @property
     def sentence_num(self):

@@ -61,7 +61,7 @@ function toggle_message(msg, color){
 }
 
 function lock_error(json_data){
-    window.location.replace('/file/'+json_data.username+'/'+json_data.target_language+'/'+json_data.file_path+'/423');
+    window.location.replace('/edit/'+json_data.username+'/'+json_data.target_language+'/'+json_data.file_path+'/423');
 }
 
 function save(){
@@ -158,5 +158,5 @@ function unapprove_html(e){
 }
 
 function language(){
-    window.location.href = 'file/'+$('#username').val()+'/'+$(this).html();
+    window.location.href = 'edit/'+$('#username').val()+'/'+$(this).html();
 }

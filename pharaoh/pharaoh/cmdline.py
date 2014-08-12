@@ -28,14 +28,16 @@ logger = logging.getLogger('pharaoh.main')
 ######################### Operations ###################################
 
 @argh.arg('--po', required=True, dest='po_files')
+@argh.arg('--source_language', '-sl', default='en', dest='source_language')
+@argh.arg('--target_language', '-tl', required=True, dest='target_language')
 @argh.arg('--host', default='localhost', dest='host')
 @argh.arg('--port', default=27017, dest='port')
 @argh.arg('--dbname', '-db', required=True, dest='db_name')
 @argh.arg('--all', default=False, action='store_true', dest='all')
 @argh.named('mongo-to-po')
 def mongo_to_po(args):
-    write_mongo_to_po_files(args.po_files, args.host, args.port,
-                            args.db_name, args.all)
+    write_mongo_to_po_files(args.po_files, args.source_language, args.target_language,
+                            args.host, args.port, args.db_name, args.all)
 
 
 @argh.arg('--po', required=True, dest='po_files')

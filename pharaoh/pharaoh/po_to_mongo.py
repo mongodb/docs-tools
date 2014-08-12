@@ -61,6 +61,7 @@ def write_po_file_to_mongo(po_fn, userID, status, source_language, target_langua
         t = Sentence({u'source_language': source_language,
                       u'source_sentence': entry.msgid.encode('utf-8'),
                       u'sentenceID': entry.tcomment.encode('utf-8'),
+                      u'source_location': entry.comment.encode('utf-8'),
                       u'sentence_num': idx,
                       u'fileID': f._id,
                       u'target_sentence': entry.msgstr.encode('utf-8'),
