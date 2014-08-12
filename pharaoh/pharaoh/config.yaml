@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import datetime
 
-APPROVAL_THRESHOLD = 2
-MONGO_PORT = 28000
-MONGO_HOST = 'localhost'
-MONGO_DBNAME = 'verifier'
-NUM_FILES_PER_PAGE = 20
-SESSION_LENGTH = datetime.timedelta(seconds=30)
-DEBUG = False
-WORKERS = 1
+APPROVAL_THRESHOLD: 2
+MONGO_PORT: 28000
+MONGO_HOST: 'localhost'
+MONGO_DBNAME: 'verifier'
+NUM_FILES_PER_PAGE: 20
+SESSION_LENGTH: 1
+DEBUG: False
+WORKERS: 1

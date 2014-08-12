@@ -5,19 +5,20 @@ import tempfile
 import unittest
 import subprocess
 import logging
+import os
 from random import randint
 
 import pymongo
 
 from pharaoh.utils import load_json
-from pharaoh.models import Sentence, User, File
+from pharaoh.app.models import Sentence, User, File
 
 MONGODB_TEST_PORT = 31415
 PATH_TO_MONGOD = '/home/wisdom/mongodb/2.6.0-rc0'
 DBNAME = 'veritest'
 
-logger = logging.getLogger('pharaoh.tests')
-
+logger = logging.getLogger('pharaoh.test_verifier')
+TEST_PATH = os.path.abspath(os.path.join('..', os.path.dirname(__file__)))
 
 class MongoTemporaryInstance(object):
     '''Singleton to manage a temporary MongoDB instance
@@ -81,9 +82,9 @@ class TestCase(unittest.TestCase):
     A test can access the connection using the attribute `conn`.
 
     '''
-    db_init_files = ['test_files/translations.json',
-                     'test_files/users.json',
-                     'test_files/files.json']
+    db_init_files = [os.path.join(TEST_PATH, 'test_files', 'translations.json'),
+                     os.path.join(TEST_PATH, 'test_files', 'users.json'),
+                     os.path.join(TEST_PATH, 'test_files', 'files.json')]
 
     def __init__(self, *args, **kwargs):
         super(TestCase, self).__init__(*args, **kwargs)

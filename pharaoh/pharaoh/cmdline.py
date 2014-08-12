@@ -32,7 +32,7 @@ logger = logging.getLogger('pharaoh.main')
 @argh.arg('--port', default=27017, dest='port')
 @argh.arg('--dbname', '-db', required=True, dest='db_name')
 @argh.arg('--all', default=False, action='store_true', dest='all')
-@argh.named('m2p')
+@argh.named('mongo-to-po')
 def mongo_to_po(args):
     write_mongo_to_po_files(args.po_files, args.host, args.port,
                             args.db_name, args.all)
@@ -46,7 +46,7 @@ def mongo_to_po(args):
 @argh.arg('--host', default='localhost', dest='host')
 @argh.arg('--port', default=27017, dest='port')
 @argh.arg('--dbname', '-db', default=None, required=True, dest='db_name')
-@argh.named('p2m')
+@argh.named('po-to-mongo')
 def po_to_mongo(args):
     put_po_files_in_mongo(args.po_files, args.username, args.status,
                           args.source_language, args.target_language,
