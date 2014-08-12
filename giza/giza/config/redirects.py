@@ -77,10 +77,12 @@ class RedirectSpecification(ConfigurationBase):
     def output(self):
         left, right = self.state['output']
 
-        if not left.startswith('/'):
+        if left != '/' and not left.startswith('/'):
             left = '/' + left
 
-        if not right.startswith('/'):
+        if right == '/':
+            right = ''
+        elif not right.startswith('/'):
             right = '/' + right
 
         return left, right
@@ -155,7 +157,7 @@ def _render_key(sub_key, left_base, right_base):
         left = '/'.join([left_base, sub_key])
 
     if sub_key == right_base:
-        right = o
+        right = sub_key
     else:
         right = '/'.join([right_base, sub_key])
 

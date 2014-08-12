@@ -95,10 +95,9 @@ def main():
             m.newline()
 
 
-    integration_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, 'integration.yaml')
-    if os.path.exists(integration_path):
+    if 'integration' in conf.system.files.data:
         m.section_break('integration and publish targets')
-        iconf = ingest_yaml_doc(integration_path)
+        iconf = conf.system.files.data.integration
 
         if 'base' in iconf:
             languages = [ k for k in iconf.keys() if not k.endswith('base') ]
