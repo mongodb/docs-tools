@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from app import flask_app
 app = flask_app.app
-
 from app import views
 from app import filters
 
 from pharaoh.gunicorn_application import StandaloneApplication
+
+PHARAOH_PATH = os.path.abspath(os.path.join('..', os.path.dirname(__file__)))
 
 def runserver(conf, server_host, server_port):
     app.debug = app.config['DEBUG']
@@ -26,7 +29,7 @@ def runserver(conf, server_host, server_port):
     options = {
         'bind': '%s:%s' % (server_host, 5000),
         'workers': app.config['WORKERS'],
-        'logconfig': 'logging.conf',
+        'logconfig': os.path.join(PHARAOH_PATH, 'app', 'logging.conf'),
 
     }
     StandaloneApplication(app, options).run()

@@ -3,7 +3,7 @@ import pharaoh
 from setuptools import setup, find_packages
 
 REQUIRES = ['argh', 'polib', 'flask', 'gunicorn', 'pymongo',
-            'pyYAML']
+            'pyYAML', 'flask-environments']
 
 setup(
     name='pharaoh',
