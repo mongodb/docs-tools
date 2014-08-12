@@ -46,7 +46,7 @@ def cherry_pick(args):
     g = GitRepo(c.paths.projectroot)
 
     if c.runstate.git_branch is None:
-        c.runstate.git_branch = g.current_branch
+        c.runstate.git_branch = g.current_branch()
 
     with g.branch(c.runstate.git_branch):
         g.cherry_pick(c.runstate.git_objects)
