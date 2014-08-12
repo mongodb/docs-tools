@@ -160,3 +160,9 @@ function unapprove_html(e){
 function language(){
     window.location.href = 'edit/'+$('#username').val()+'/'+$(this).html();
 }
+
+// Custom example logic
+function $(id) {
+return document.getElementById(id);
+}
+

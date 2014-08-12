@@ -165,6 +165,16 @@ def download_all_po_approved(username, language):
     response.headers["Content-Disposition"] = "attachment; filename={0}.tar.gz".format(language)
     return response
 
+@app.route('/admin/<username>')
+def admin(username):
+    if request.method == 'POST':
+        app.logger.info(request)
+        #file = request.files['file']
+        #if file and allowed_file(file.filename):
+            #filename = secure_filename(file.filename)
+            #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return render_template("admin.html",
+                           username=username)
 
 def fix_json(json_object):
     ''' helper function to fix json from request for mongodb
