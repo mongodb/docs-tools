@@ -27,7 +27,7 @@
                     <input readonly class="review_frac" value="{{file['num_reviewed']}}/{{file['num_sentences']}}"></input>
                 </td>
                 <td class="editfile_button" >
-                    <button class="editfile btn btn-success btn-sm" id="{{file}}-editButton" onclick="location.href = '/file/{{username}}/{{language}}/{{file['file_path']|pathname2url}}';">Edit</button>
+                    <button class="editfile btn btn-success btn-sm" id="{{file}}-editButton" onclick="location.href = '/edit/{{username}}/{{language}}/{{file['file_path']|pathname2url}}';">Edit</button>
                 </td>
             </tr>
         {% endfor %}

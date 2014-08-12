@@ -13,15 +13,16 @@
 # limitations under the License.
 
 import json
-import logging
 import urllib
 from math import ceil
+import zlib
 
 from bson import json_util
-from flask import  request, redirect, render_template
-from flask_app import app, db
+from flask import  request, redirect, render_template, make_response
 
+from flask_app import app, db
 import models
+from pharaoh.mongo_to_po import generate_fresh_po_text, generate_all_po_files
 
 @app.route('/')
 @app.route('/index')
@@ -32,8 +33,8 @@ def language_picker():
                            language_list=languages)
 
 
-@app.route('/file/<username>/<language>/', defaults={'page': 1})
-@app.route('/file/<username>/<language>/page/<int:page>/')
+@app.route('/edit/<username>/<language>/', defaults={'page': 1})
+@app.route('/edit/<username>/<language>/page/<int:page>/')
 def file_browser(language, username, page):
     ''' This view shows the valid files
     :param string language: the current target language
@@ -50,7 +51,7 @@ def file_browser(language, username, page):
                            pagination=pagination)
 
 
-@app.route('/file/<username>/<language>/<path:file>')
+@app.route('/edit/<username>/<language>/<path:file>')
 def file_editor(file, language, username):
     ''' This view shows the sentences in a file to edit
     :param string file': the file currently being edited
@@ -62,7 +63,7 @@ def file_editor(file, language, username):
     f = models.File(oid=models.find_file("en", language, file)['_id'])
     u = models.User(username=username)
     if f.grab_lock(u._id) is False:
-        return redirect('/file/{0}/{1}/{2}/423'.format(username, language, file))
+        return redirect('/edit/{0}/{1}/{2}/423'.format(username, language, file))
 
     sentences = models.get_sentences_in_file(urllib.url2pathname(file), 'en', language)
     return render_template('file_editor.html',
@@ -127,12 +128,42 @@ def unapprove_translation():
                            "username": e.username, "target_language": e.target_language}), e.code
 
 
-@app.route('/file/<username>/<language>/<path:file>/423')
+@app.route('/edit/<username>/<language>/<path:file>/423')
 def lock_error(username, language, file):
     return render_template("423.html",
                            username=username,
                            language=language,
                            file=file)
+
+@app.route('/download-all/<username>/<language>/<path:file>')
+def download_single_po(username, language, file):
+    po = generate_fresh_po_text(file, 'en', language, db, True)
+    response = make_response(po)
+    response.headers["Content-Disposition"] = "attachment; filename={0}.po".format(file)
+    return response
+
+@app.route('/download-approved/<username>/<language>/<path:file>')
+def download_single_po_approved(username, language, file):
+    po = generate_fresh_po_text(file, 'en', language, db, False)
+    response = make_response(po)
+    response.headers["Content-Disposition"] = "attachment; filename={0}.po".format(file)
+    return response
+
+@app.route('/download-all/<username>/<language>/')
+@app.route('/download-all/<username>/<language>')
+def download_all_po(username, language):
+    po = generate_all_po_files( 'en', language, db, True)
+    response = make_response(po)
+    response.headers["Content-Disposition"] = "attachment; filename={0}.tar.gz".format(language)
+    return response
+
+@app.route('/download-approved/<username>/<language>/')
+@app.route('/download-approved/<username>/<language>')
+def download_all_po_approved(username, language):
+    po = generate_all_po_files( 'en', language, db, False)
+    response = make_response(po)
+    response.headers["Content-Disposition"] = "attachment; filename={0}.tar.gz".format(language)
+    return response
 
 
 def fix_json(json_object):
