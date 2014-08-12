@@ -8,9 +8,8 @@ Giza Commands
 
 * **build translation model**
 
-  * ``giza translate build_translation_model --config <translate.yaml>``
-  * ``giza translate bm -c <translate.yaml>``
-  * These commands create a translation model with the configuration taken from the translate.yaml config.
+  * ``giza translate build-model --config <translate.yaml>``
+  * This command creates a translation model with the configuration taken from the translate.yaml config.
   * First create an empty directory that the script should run in. Specify that as the "project_path" in the config.
   * Then create (or resuse) a directory that the auxilary corpus files (the tokenized files , truecased files, etc.) should be written to. Specify that as the "aux_corpus_files" in the config.
   * Additionally, specify the paths to the top most mosesdecoder directory and the topmost irstlm directory
@@ -45,15 +44,13 @@ Giza Commands
   * If you're training for a language written right to left the corpora must be flipped first so that they go from left to right. This is important so that the words in teh sentences align properly.
 
 * **model results**
-  * ``giza translate model_results --config <corpora.yaml>``
-  * ``giza translate res -c <corpora.yaml>``
+  * ``giza translate model-results --config <corpora.yaml>``
   * If for some reason build model doesn't run ``model_results`` or you just want to run it again, this command will run it for you
   * It takes the json file from build model and writes the data to a csv file and then emails the person in the config
 
 * **create corpora**
-  * ``giza translate create_corpora --config <corpora.yaml>``
-  * ``giza translate cc -c <corpora.yaml>``
-  * These commands create training, tuning, and testing corpora from mutliple different input corpora
+  * ``giza translate create-corpora --config <corpora.yaml>``
+  * This command creates training, tuning, and testing corpora from mutliple different input corpora
   * The first thing to do is create the config file.
 
     * The container_path is the path to the directory that the corpora will be placed in. If you provide just a name then a directory of that name will be placed in the current directory.
@@ -65,9 +62,8 @@ Giza Commands
 
 * **merge translations**
 
-  * ``giza translate merge_translations --output <output_file> --input <input_file1> <input_file2> ...``
-  * ``giza translate mt -o <output_file> -i <input_file1> <input_file2> ...``
-  * These comamnds merge two files together line by line. This is useful for looking at different translations of the same file line by line next to each other.
+  * ``giza translate merge --output <output_file> --input <input_file1> <input_file2> ...``
+  * This command merges two files together line by line. This is useful for looking at different translations of the same file line by line next to each other.
   * It annotates each line so that the user can better line things up.
   * To use it just specify an output file and a list of input files.
 
@@ -78,27 +74,24 @@ Giza Commands
 
 * **po to corpus**
 
-  * ``giza translate po_to_corpus --po <path_to_po_files> --source <path_for_source_lang_corpus> --target <path_for_target_lang_corpus>``
-  * ``giza translate p2c --po <path_to_po_files> -s <path_for_source_lang_corpus> -t <path_for_target_lang_corpus>``
-  * These commands are used for creating corpora from po files
+  * ``giza translate po-to-corpus --po <path_to_po_files> --source <path_for_source_lang_corpus> --target <path_for_target_lang_corpus>``
+  * This command is used for creating corpora from po files
   * If you have po files that have been translated by a person and are reliable these will parse through them and write them out line by line to parallel files.
   * The source and target flags are used for specifying the output files. They are optional and if left off will use default files.
   * If you have po files that are translated I highly recommend using them as corpora since they are the best data you could possibly have and are the most similar to the sentences you'll be translating.
 
 * **dict to corpus**
 
-  * ``giza translate dict_to_corpus --dict <path_to_dictionary> --source <path_for_source_lang_corpus> --target <path_for_target_lang_corpus>``
-  * ``giza translate d2c --dict <path_to_dictionary> -s <path_for_source_lang_corpus> -t <path_for_target_lang_corpus>``
-  * These commands will turn a dictionary into a corpus
+  * ``giza translate dict-to-corpus --dict <path_to_dictionary> --source <path_for_source_lang_corpus> --target <path_for_target_lang_corpus>``
+  * This command will turn a dictionary into a corpus
   * This can be good for trying to fill in words that don't get translated, though adding dictionaries is not so effective as there are no actual phrases
   * Dictionaries for this script can be gotten at http://www.dicts.info/uddl.php .
   * This command works almost identically to po_to_corpus, though it doens't work for multiple input files.
 
 * **translate text doc**
 
-  * ``giza translate translate_text_doc --config <translate.yaml> --source <file_to_translate> --target <filename_after_translation> --protected <protected_regex_file>``
-  * ``giza translate tdoc -c <translate.yaml> -s <file_to_translate> -t <filename_after_translation> -p <protected_regex_file>``
-  * These commands will translate any file according to the model specified by the provided (or default) config.
+  * ``giza translate translate-file --config <translate.yaml> --source <file_to_translate> --target <filename_after_translation> --protected <protected_regex_file>``
+  * This command will translate any file according to the model specified by the provided (or default) config.
   * The file will be translated line by line, so it is primarily meant for text documents that are just text line after line, however obviously it could "translate" any other structured file
   * The source is the file to translate, the target is the name of the file after translation.
   * If there are regexes that you don't want to tokenize, --protected will handle them for you.
@@ -108,9 +101,8 @@ Giza Commands
 
 * **translate po**
 
-  * ``giza translate translate_po --config <translate.yaml> --po <po_files_to_translate> --protected <protected_regex_file>``
-  * ``giza translate tpo -c <translate.yaml> --po <po_files_to_translate> -p <protected_regex_file>``
-  * These commands work just like translate text doc, but rather than translating one text doc they can translate one or more po files
+  * ``giza translate translate-po --config <translate.yaml> --po <po_files_to_translate> --protected <protected_regex_file>``
+  * This command works just like translate text doc, but rather than translating one text doc they can translate one or more po files
   * Just provide a link to a po file or a directory of them and it will traverse them all and translate them all.
   * The po files will be translated in place so it's important to copy them beforehand. Moreover, the already translated entries will be emptied.
 
@@ -122,15 +114,13 @@ Giza Commands
 
 * **flip text**
 
-  * ``giza translate flip_text --input <input_file> --output <output_file>``
-  * ``giza translate flip -i <input_file> -o <output_file>``
-  * These commands flip the text of a file from horizontally on every line. It takes a file written from left to right and writes it from right to left
+  * ``giza translate flip --input <input_file> --output <output_file>``
+  * This command flips the text of a file from horizontally on every line. It takes a file written from left to right and writes it from right to left
 
 * **auto approve obvious po**
 
-  * ``giza translate auto_approve_obvious_po  --po <input_po_files>``
   * ``giza translate auto_approve  --po <po_files_to_approve>``
-  * These commands automatically approve any entries in the provided po files that should be approved automatically
+  * This command automatically approves any entries in the provided po files that should be approved automatically
   * These are lines where the entire sentence should not be translated and are of the form ``:foo:`bar```
 
 
