@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from flask import Flask
+from flask_environments import Environments
 from pymongo import MongoClient
 
-import config
 
 app = Flask(__name__)
-app.config.from_object(config)
+env = Environments(app)
+env.from_yaml(os.path.join(os.path.abspath(os.path.join('..', os.path.dirname(__file__))), '..', 'config.yaml'))
 
 mongodb = MongoClient(app.config['MONGO_HOST'], app.config['MONGO_PORT'])
 db = mongodb[app.config['MONGO_DBNAME']]
