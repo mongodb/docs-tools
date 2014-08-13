@@ -2,13 +2,25 @@
 {% block title %}Admin{% endblock %}
 {% block content %}
     <ul id="navigation">
-    <input id="username" value="Judah"></input>
     <h1>Upload PO Files</h1>
-    <form action="" method=post enctype=multipart/form-data>
-      <p><input type=file name=file webkitdirectory directory multiple>
-         <input type=submit value=Upload>
+    <form action="upload" enctype="multipart/form-data" method="post">
+        <input type="file" name="file" id="file"><br/>
+        Username: <input type="text" id="username" name="username" value="Moses" ><br/>
+        Status: <input type="text" id="status" name="status" value="SMT" ><br/>
+        Source Language: <input type="text" id="source_language" name="source_language" value="en" ><br/>
+        Target Language: <input type="text" id="target_language" name="target_language" value="es" ><br/>
+        <input type="button" id= "upload-btn" value="Upload"><br/>
     </form>
-
+    <h1>Download PO Files</h1>
+        Target Language: <input type="text" id="target_language_download" name="target_language" value="es" ><br/>
+        <select id="download-file-path">
+            <option>ALL</option>
+            {% for file in file_list %}
+            <option>{{file}}</option>
+            {% endfor %}
+        </select><br/>
+         <input type="button" id= "download-all-btn" value="Download All Sentences"><br/>
+         <input type="button" id= "download-approved-btn" value="Download Approved Sentences"><br/>
     </ul>
 
 {% endblock %}

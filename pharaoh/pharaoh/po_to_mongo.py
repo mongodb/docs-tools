@@ -15,6 +15,7 @@
 import os.path
 import logging
 import re
+import tarfile
 
 import polib
 from pymongo import MongoClient
@@ -33,26 +34,23 @@ of po files you input them with the appropriate username and status
 logger = logging.getLogger('pharaoh.po_to_mongo')
 
 
-def write_po_file_to_mongo(po_fn, userID, status, source_language, target_language, po_root, db):
+def write_po_file_to_mongo(po_fn, po_file, userID, status, source_language, target_language, db):
     '''write a po_file to mongodb
-    :param string po_fn: the file name of the current pofile
+    :param string po_fn: the file name of the current pofile as it should be put in mongodb
+    :param POFile po_file: the polib pofile instance
     :param string userID: the ID of the user that translated the po file
     :param string status: the status of the translations
     :param string source_language: The source_language of the translations
     :param string target_language: The target_language of the translations
-    :param string po_root: the root of the po_files
     :param database db: the database that you want to write to
     '''
-    po = polib.pofile(po_fn)
-    rel_fn = os.path.relpath(po_fn, po_root)
-    rel_fn = os.path.splitext(rel_fn)[0]
-    f = File({u'file_path': rel_fn,
+    f = File({u'file_path': po_fn,
               u'priority': 0,
               u'source_language': source_language,
               u'target_language': target_language}, curr_db=db)
 
     reg = re.compile('^:[a-zA-Z0-9]+:`(?!.*<.*>.*)[^`]*`$')
-    for idx, entry in enumerate(po.translated_entries()):
+    for idx, entry in enumerate(po_file.translated_entries()):
         sentence_status = status
         match = re.match(reg, entry.msgstr.encode('utf-8'))
         if match is not None and match.group() == entry.msgstr.encode('utf-8'):
@@ -72,10 +70,9 @@ def write_po_file_to_mongo(po_fn, userID, status, source_language, target_langua
         t.save()
     f.get_num_sentences()
 
-
 def put_po_files_in_mongo(path, username, status, source_language, target_language, db_host, db_port, db_name):
     '''go through directories and write the po file to mongo
-    :param path: the path to the po_files
+    :param string path: the path to the po_files
     :param string username: the username of the translator
     :param string status: the status of the translations
     :param string source_language: The source_language of the translations
@@ -99,5 +96,29 @@ def put_po_files_in_mongo(path, username, status, source_language, target_langua
         path = os.path.dirname(path)
 
     for fn in file_list:
-        write_po_file_to_mongo(fn, userID, status, source_language,
-                               target_language, path, db)
+        po = polib.pofile(fn)
+        rel_fn = os.path.relpath(fn, path)
+        rel_fn = os.path.splitext(rel_fn)[0]
+        write_po_file_to_mongo(fn, po, userID, status, source_language,
+                               target_language, db)
+
+
+def put_po_data_in_mongo(po_tar, username, status, source_language, target_language, db):
+    '''go through directories and write the po file to mongo
+    :param string po_fn: the filename for the po file
+    :param string po_data: the po_file data
+    :param string username: the username of the translator
+    :param string status: the status of the translations
+    :param string source_language: The source_language of the translations
+    :param string target_language: The target_language of the translations
+    :param database db: the mongodb database
+    '''
+    tar = tarfile.open(fileobj=po_tar)
+    for member in tar.getmembers():
+        if os.path.splitext(member.name)[1] not in ['.po', '.pot']:
+            continue
+        po_file = tar.extractfile(member)
+        po = polib.pofile(po_file.read())
+        userID = db['users'].find_one({'username': username})[u'_id']
+        write_po_file_to_mongo(os.path.splitext(member.name)[0], po, userID, status, source_language,
+                               target_language, db)

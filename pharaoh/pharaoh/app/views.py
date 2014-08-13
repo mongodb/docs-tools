@@ -23,6 +23,7 @@ from flask import  request, redirect, render_template, make_response
 from flask_app import app, db
 import models
 from pharaoh.mongo_to_po import generate_fresh_po_text, generate_all_po_files
+from pharaoh.po_to_mongo import put_po_data_in_mongo
 
 @app.route('/')
 @app.route('/index')
@@ -135,46 +136,52 @@ def lock_error(username, language, file):
                            language=language,
                            file=file)
 
-@app.route('/download-all/<username>/<language>/<path:file>')
-def download_single_po(username, language, file):
+@app.route('/download-all/<language>/<path:file>')
+def download_single_po(language, file):
     po = generate_fresh_po_text(file, 'en', language, db, True)
     response = make_response(po)
     response.headers["Content-Disposition"] = "attachment; filename={0}.po".format(file)
     return response
 
-@app.route('/download-approved/<username>/<language>/<path:file>')
-def download_single_po_approved(username, language, file):
+@app.route('/download-approved/<language>/<path:file>')
+def download_single_po_approved(language, file):
     po = generate_fresh_po_text(file, 'en', language, db, False)
     response = make_response(po)
     response.headers["Content-Disposition"] = "attachment; filename={0}.po".format(file)
     return response
 
-@app.route('/download-all/<username>/<language>/')
-@app.route('/download-all/<username>/<language>')
-def download_all_po(username, language):
+@app.route('/download-all/<language>/')
+@app.route('/download-all/<language>')
+def download_all_po(language):
     po = generate_all_po_files( 'en', language, db, True)
     response = make_response(po)
     response.headers["Content-Disposition"] = "attachment; filename={0}.tar.gz".format(language)
     return response
 
-@app.route('/download-approved/<username>/<language>/')
-@app.route('/download-approved/<username>/<language>')
-def download_all_po_approved(username, language):
+@app.route('/download-approved/<language>/')
+@app.route('/download-approved/<language>')
+def download_all_po_approved(language):
     po = generate_all_po_files( 'en', language, db, False)
     response = make_response(po)
     response.headers["Content-Disposition"] = "attachment; filename={0}.tar.gz".format(language)
     return response
 
-@app.route('/admin/<username>')
-def admin(username):
-    if request.method == 'POST':
-        app.logger.info(request)
-        #file = request.files['file']
-        #if file and allowed_file(file.filename):
-            #filename = secure_filename(file.filename)
-            #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    return render_template("admin.html",
-                           username=username)
+@app.route('/admin', methods=['GET'])
+def admin():
+    files = models.get_file_paths()
+    return render_template("admin.html", file_list=files)
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    app.logger.info(request.files['file'])
+    app.logger.info(request.form)
+    put_po_data_in_mongo(request.files['file'], 
+                         request.form['username'], 
+                         request.form['status'], 
+                         request.form['source_language'], 
+                         request.form['target_language'],
+                         db)
+    return json.dumps({"code:": 200, "msg": "Unapproval Succeeded"}), 200
 
 def fix_json(json_object):
     ''' helper function to fix json from request for mongodb
