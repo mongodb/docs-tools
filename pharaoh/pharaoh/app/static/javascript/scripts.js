@@ -9,7 +9,97 @@ $(document).ready(function(){
     $(".target").each(check_editor);
     $('textarea').autosize();
 
-});
+    $('#upload-btn').on('click',upload);
+    $('#download-all-btn').on('click', download_all);
+    $('#download-approved-btn').on('click', download_approved);
+
+})
+
+
+function download_all(){
+    if($('#download-file-path').val() == "ALL"){
+        var url = 'download-all/'+$('#target_language_download').val();
+    }
+    else{
+        var url = 'download-all/'+$('#target_language_download').val()+'/'+$('#download-file-path').val();
+    }
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function(data, textStatus, jqXHR){
+            if(typeof data.error === 'undefined'){
+                console.log("SUCCESS");
+                $("body").append("<iframe src='" + url + "' style='display: none;' ></iframe>");
+            }
+            else{
+                console.log('ERRORS: ' + data.error);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+            console.log('ERRORS: ' + textStatus);
+        }
+    });
+
+}
+
+function download_approved(){
+    if($('#download-file-path').val() == "ALL"){
+        var url = 'download-approved/'+$('#target_language_download').val();
+    }
+    else{
+        var url = 'download-approved/'+$('#target_language_download').val()+'/'+$('#download-file-path').val();
+    }
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function(data, textStatus, jqXHR){
+            if(typeof data.error === 'undefined'){
+                console.log("SUCCESS");
+                $("body").append("<iframe src='" + url + "' style='display: none;' ></iframe>");
+            }
+            else{
+                console.log('ERRORS: ' + data.error);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+            console.log('ERRORS: ' + textStatus);
+        }
+    });
+
+}
+
+function upload(){
+    
+    var filelist =  document.getElementById("file").files || [];
+    var data = new FormData();
+    data.append('file_name', filelist[0].webkitRelativePath);
+    data.append('file', filelist[0]);
+    data.append('username', $('#username').val());
+    data.append('status', $('#status').val());
+    data.append('source_language', $('#source_language').val());
+    data.append('target_language', $('#target_language').val());
+    $.ajax({
+        url: '/upload',
+        type: 'POST',
+        data: data,
+        cache: false,
+        dataType: 'json',
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        success: function(data, textStatus, jqXHR){
+            if(typeof data.error === 'undefined'){
+                console.log("SUCCESS");
+            }
+            else{
+                console.log('ERRORS: ' + data.error);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+            console.log('ERRORS: ' + textStatus);
+        }
+    });
+
+}
 
 function toggle_approved(){
     var newtext = ($(this).html() == "Show All" ? "Only Show Unapproved" : "Show All");
@@ -160,9 +250,3 @@ function unapprove_html(e){
 function language(){
     window.location.href = 'edit/'+$('#username').val()+'/'+$(this).html();
 }
-
-// Custom example logic
-function $(id) {
-return document.getElementById(id);
-}
-
