@@ -13,6 +13,9 @@ from giza.serialization import ingest_yaml_list
 from giza.transformation import munge_page
 from giza.strings import hyph_concat
 
+from giza.content.helper import edition_check
+
+
 #################### PDFs from Latex Produced by Sphinx  ####################
 
 def _clean_sphinx_latex(fn, regexes):
@@ -60,6 +63,9 @@ def pdf_tasks(sconf, conf, app):
     link_app = app.add('app')
 
     for i in conf.system.files.data.pdfs:
+        if edition_check(i, conf) is False:
+            continue
+
         i = i.dict()
         tagged_name = i['output'][:-4] + '-' + i['tag']
         deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'

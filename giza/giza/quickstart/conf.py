@@ -11,7 +11,7 @@ import datetime
 import logging
 
 from giza.config.runtime import RuntimeStateConfig
-from giza.config.helper import fetch_config, get_versions, get_manual_path, get_path
+from giza.config.helper import fetch_config, get_versions, get_manual_path
 from giza.strings import dot_concat
 
 logging.basicConfig(level=logging.INFO)

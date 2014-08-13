@@ -44,8 +44,11 @@ def write_redirects(conf):
         f.writelines(make_redirect(conf))
         f.write('\n')
 
+    logger.info('wrote redirects to: ' + path)
+
 def redirect_tasks(conf, app):
-    t = app.add('task')
-    t.job = write_redirects
-    t.args = [conf]
-    t.description = 'generate and write redirects into: ' + conf.paths.htaccess
+    if 'htaccess' in conf.system.files.data:
+        t = app.add('task')
+        t.job = write_redirects
+        t.args = [conf]
+        t.description = 'generate and write redirects into: ' + conf.paths.htaccess

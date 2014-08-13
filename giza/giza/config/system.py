@@ -173,6 +173,8 @@ class SystemConfigData(RecursiveConfigurationBase):
     ## There shouldn't be any setters in this class. All items in this class
     ## must exist in SystemConfigPaths() objects.
 
+    _always_list_configs = ('manpages', 'pdfs', 'htaccess')
+
     def __init__(self, obj, conf):
         super(SystemConfigData, self).__init__(None, conf)
         for fn in self.conf.system.files.paths:
@@ -208,7 +210,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                 else:
                     self._load_file(basename, self.state[key])
 
-                if len(self.state[key]) == 1:
+                if len(self.state[key]) == 1 and key not in self._always_list_configs:
                     return self.state[key][0]
                 else:
                      return self.state[key]
@@ -310,7 +312,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                 l.extend(data)
                 data = l
 
-            if len(data) == 1 and basename not in ('manpages', 'pdfs', 'htaccess'):
+            if len(data) == 1 and basename not in self._always_list_configs:
                 return data[0]
             else:
                 return data
