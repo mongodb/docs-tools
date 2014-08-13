@@ -59,13 +59,22 @@ def get_fileIDs(source_language, target_language, curr_db=db):
                                   'target_language': target_language},
                                  {'_id': 1}).sort('priority', 1)
 
+def get_file_paths(curr_db=db):
+    '''This function  gets all of the file ids for a given pair of languages
+    :param string db: database
+    :param string source_language: source language
+    :param string target_language: target language
+    :returns: cursor of fileids
+    '''
+    return curr_db['files'].distinct('file_path')
+
 
 def get_files_for_page(page_number, num_files_per_page, fileIDs, curr_db=db):
     '''This function gets all of the stats for a list of files
     :param int page_number: current page number
+    :param int num_files_per_page: number of files per page
+    :param list fileIDS: list of file ids
     :param database db: database
-    :param string source_language: source language
-    :param string target_language: target language
     :returns: cursor of file names
     '''
     page_fileIDs = fileIDs.skip(((page_number-1)*num_files_per_page) if page_number > 0 else 0).limit(num_files_per_page)
@@ -82,6 +91,7 @@ def get_files_for_page(page_number, num_files_per_page, fileIDs, curr_db=db):
             l.append(data)
 
     return l
+
 
 def audit(action, last_editor, current_user, doc, new_target_sentence=None, curr_db=db):
     ''' This function saves an audit of the event that occurred
