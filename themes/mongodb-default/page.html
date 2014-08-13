@@ -1,0 +1,34 @@
+{%- extends "layout.html" -%}
+
+{%- block header_logo %}
+    <div class="logo pull-left">
+      <a href="{{ url_root }}">
+        {{ theme_sitename }}
+      </a>
+    </div>
+{%- endblock -%}
+
+{%- block htmltitle %}
+  {%- if not embedded and docstitle %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif -%}
+
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
+
+{%- block canonicalref %}
+{%- endblock -%}
+
+{%- block adblockheader %}
+{%- endblock -%}
+
+{%- block adblock %}
+{%- endblock -%}
+
+{%- block langauge_selector %}{%- endblock -%}
+{%- block version_selector %}{%- endblock -%}
+
+{%- block subnav %}
+{% endblock %}

@@ -12,15 +12,15 @@
 {%- endif -%}
 <script type="text/javascript">
 jQuery.ajax({
-	 url: "https://jira.mongodb.org/s/en_UScn8g8x/782/6/1.2.5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?collectorId=298ba4e7",
-	 type: "get",
-	 cache: true,
-	 dataType: "script"
-	});
+         url: "https://jira.mongodb.org/s/en_UScn8g8x/782/6/1.2.5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?collectorId=298ba4e7",
+         type: "get",
+         cache: true,
+         dataType: "script"
+        });
 window.ATL_JQ_PAGE_PROPS =  {
-	"triggerFunction": function(showCollectorDialog) {
-		jQuery(".jirafeedback").click(function(e) {e.preventDefault();showCollectorDialog();});},
-		fieldValues: {component: '{{component}}', summary: 'Comment on: "{{theme_project}}/{{pagename}}.txt"'},
-		environment: {'repo': '{{theme_repo_name|e}}','source': '{{pagename|e}}'}
-		};
+        "triggerFunction": function(showCollectorDialog) {
+                jQuery(".jirafeedback").click(function(e) {e.preventDefault();showCollectorDialog();});},
+                fieldValues: {component: '{{component}}', summary: 'Comment on: "{{theme_project}}/{{pagename}}.txt"'},
+                environment: {'repo': '{{theme_repo_name|e}}','source': '{{pagename|e}}'}
+                };
 </script>
