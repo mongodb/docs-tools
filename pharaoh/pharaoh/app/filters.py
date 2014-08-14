@@ -18,8 +18,8 @@ import urllib
 from bson import json_util
 from flask import request, url_for
 
-from flask_app import app
-import models
+from pharaoh.app.flask_app import app
+from pharaoh.app.models import Sentence, User
 
 
 def to_json(value):
@@ -44,8 +44,8 @@ def check_if_user_approved(user, sentenceID):
     :param string sentenceID: the sentence's id
     :returns: a boolean saying if the user approved the sentence
     '''
-    s = models.Sentence(oid=sentenceID)
-    return models.User(username=user)._id in s.state['approvers']
+    s = Sentence(oid=sentenceID)
+    return User(username=user)._id in s.state['approvers']
 
 
 def check_if_user_edited(user, sentenceID):
@@ -54,18 +54,16 @@ def check_if_user_edited(user, sentenceID):
     :param string sentenceID: the sentence's id
     :returns: a boolean saying if the user edited the sentence
     '''
-    s = models.Sentence(oid=sentenceID)
-    return models.User(username=user)._id == s.state['userID']
+    s = Sentence(oid=sentenceID)
+    return User(username=user)._id == s.state['userID']
 
 
 def get_userID(user):
     ''' This filter gets userID of a user
-    :Parameters:
-        - 'user': the user
-    :Returns:
-        - userID
+    :param string user: the username of the user
+    :teturns: userID
     '''
-    return models.User(username=user)._id
+    return User(username=user)._id
 
 
 def list_length(l):

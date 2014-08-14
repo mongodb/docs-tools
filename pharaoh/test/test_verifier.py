@@ -76,7 +76,7 @@ class ExportTestCase(unittest.TestCase):
                      os.path.join(TEST_PATH, 'test_files', 'users.json'),
                      os.path.join(TEST_PATH, 'test_files', 'files.json')]
     def __init__(self, *args, **kwargs):
-        super(VerifierTestCase, self).__init__(*args, **kwargs)
+        super(ExportTestCase, self).__init__(*args, **kwargs)
         self.db_inst = MongoTemporaryInstance.get_instance()
         self.client = self.db_inst.client
         self.db = self.client[DBNAME]
@@ -93,7 +93,13 @@ class ExportTestCase(unittest.TestCase):
             load_json(f, self.db)
 
     def grab_po_test(self):
-        print generate_fresh_po_text('f1', 'en', 'es', self.db, True)
+        out = generate_fresh_po_text(u'LC_MESSAGES/about', u'en', u'es', self.db, True).split('\n')
+        with open(os.path.join(TEST_PATH, 'test_files', 'export_reference.po'), 'r') as f:
+            ref = f.readlines()
+        for l1, l2 in zip(out, ref):
+            if len(l1)>0 and l1[0] == '\"':
+                continue
+            self.assertEquals(l1.strip(), l2.strip().decode('utf-8'))
 
 
 class VerifierTestCase(unittest.TestCase):
@@ -157,7 +163,7 @@ class VerifierTestCase(unittest.TestCase):
     def setUp(self):
         '''This method sets up the test by deleting all of the databases
         and reloading them'''
-        super(TestCase, self).setUp()
+        super(VerifierTestCase, self).setUp()
 
         for db_name in self.client.database_names():
             self.client.drop_database(db_name)

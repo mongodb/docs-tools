@@ -14,7 +14,7 @@
 
 import datetime
 
-from flask_app import app, db
+from pharaoh.app.flask_app import app, db
 
 
 def get_sentences_in_file(fp, source_language, target_language, curr_db=db):

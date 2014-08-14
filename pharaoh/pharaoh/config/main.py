@@ -20,6 +20,11 @@ from pharaoh.config.runtime import RuntimeStateConfig
 logger = logging.getLogger('pharaoh.config.main')
 
 class Configuration(ConfigurationBase):
+    _option_registry = ['APPROVAL_THRESHOLD', 'MONGO_HOST', 'MONGO_PORT',
+                        'MONGO_DBNAME', 'SERVER_HOST', 'SERVER_PORT',
+                        'NUM_FILES_PER_PAGE', 'SESSION_LENGTH', 'DEBUG',
+                        'WORKERS']
+
     @property
     def runstate(self):
         return self.state['runstate']

@@ -15,13 +15,13 @@
 import os
 
 from flask import Flask
-from flask_environments import Environments
 from pymongo import MongoClient
 
+from pharaoh.utils import from_yaml_to_flask
 
 app = Flask(__name__)
-env = Environments(app)
-env.from_yaml(os.path.join(os.path.abspath(os.path.join('..', os.path.dirname(__file__))), '..', 'config.yaml'))
+
+from_yaml_to_flask(os.path.join(os.path.abspath(os.path.join('..', os.path.dirname(__file__))), '..', 'config', 'config.yaml'), app)
 
 mongodb = MongoClient(app.config['MONGO_HOST'], app.config['MONGO_PORT'])
 db = mongodb[app.config['MONGO_DBNAME']]

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import json
+import yaml
 
 from bson import json_util
 import os
@@ -62,3 +63,15 @@ def get_file_list(path, input_extension=['po', 'pot']):
                     file_list.append(f)
 
     return file_list
+
+def from_yaml_to_flask(path, app):
+    ''' Loads a yaml config to an app
+    :param string path: path to yaml config
+    :param flask-app app: flask application
+    '''
+    with open(path) as f:
+        config = yaml.load(f)
+
+    for k, v in config.items():
+        if k.isupper():
+            app.config[k] = config[k]

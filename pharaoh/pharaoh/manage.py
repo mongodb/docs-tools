@@ -14,20 +14,20 @@
 
 import os
 
-from app import flask_app
+from pharaoh.app import flask_app
 app = flask_app.app
-from app import views
-from app import filters
+from pharaoh.app import views
+from pharaoh.app import filters
 
 from pharaoh.gunicorn_application import StandaloneApplication
 
 PHARAOH_PATH = os.path.abspath(os.path.join('..', os.path.dirname(__file__)))
 
-def runserver(conf, server_host, server_port):
+def runserver(conf, host, port):
     app.debug = app.config['DEBUG']
     app.logger.setLevel(conf.runstate.level)
     options = {
-        'bind': '%s:%s' % (server_host, 5000),
+        'bind': '%s:%s' % (host, port),
         'workers': app.config['WORKERS'],
         'logconfig': os.path.join(PHARAOH_PATH, 'app', 'logging.conf'),
 

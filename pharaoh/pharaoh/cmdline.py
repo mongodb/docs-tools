@@ -54,12 +54,20 @@ def po_to_mongo(args):
                           args.source_language, args.target_language,
                           args.host, args.port, args.db_name)
 
-
-@argh.arg('--host', default='localhost', dest='host')
-@argh.arg('--port', default=5000, dest='port')
+@argh.arg('--host', default=None, dest='host')
+@argh.arg('--port', default=None, dest='port')
 def verifier(args):
     conf = fetch_config(args)
-    runserver(conf, args.host, args.port)
+    logger.debug(conf)
+    if args.host is not None:
+        host = args.host
+    else:
+        host = conf.SERVER_HOST
+    if args.port is not None:
+        port = args.port
+    else:
+        port = conf.SERVER_PORT
+    runserver(conf, host, port)
 
 ########################## Setup #######################################
 

@@ -133,7 +133,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
         if value is not None and os.path.exists(value):
             self.state['conf_path'] = value
         else:
-            self._discover_conf_file('build_conf.yaml')
+            self._discover_conf_file('config.yaml')
 
     @property
     def source_language(self):
