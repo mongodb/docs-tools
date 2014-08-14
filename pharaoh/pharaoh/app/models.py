@@ -57,7 +57,7 @@ def get_fileIDs(source_language, target_language, curr_db=db):
     '''
     return curr_db['files'].find({'source_language': source_language,
                                   'target_language': target_language},
-                                 {'_id': 1}).sort('priority', 1)
+                                 {'_id': 1}).sort([('priority', 1)])
 
 def get_file_paths(curr_db=db):
     '''This function  gets all of the file ids for a given pair of languages

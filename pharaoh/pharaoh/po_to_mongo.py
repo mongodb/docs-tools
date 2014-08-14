@@ -99,7 +99,7 @@ def put_po_files_in_mongo(path, username, status, source_language, target_langua
         po = polib.pofile(fn)
         rel_fn = os.path.relpath(fn, path)
         rel_fn = os.path.splitext(rel_fn)[0]
-        write_po_file_to_mongo(fn, po, userID, status, source_language,
+        write_po_file_to_mongo(rel_fn, po, userID, status, source_language,
                                target_language, db)
 
 
@@ -114,11 +114,14 @@ def put_po_data_in_mongo(po_tar, username, status, source_language, target_langu
     '''
 
     tar = tarfile.open(fileobj=po_tar)
+    top_dir = os.path.commonprefix(tar.getnames())
     for member in tar.getmembers():
         if os.path.splitext(member.name)[1] not in ['.po', '.pot']:
             continue
         po_file = tar.extractfile(member)
         po = polib.pofile(po_file.read())
         userID = db['users'].find_one({'username': username})[u'_id']
-        write_po_file_to_mongo(os.path.splitext(member.name)[0], po, userID, status, source_language,
+        rel_fn = os.path.relpath(member.name, top_dir)
+        rel_fn = os.path.splitext(rel_fn)[0]
+        write_po_file_to_mongo(rel_fn, po, userID, status, source_language,
                                target_language, db)

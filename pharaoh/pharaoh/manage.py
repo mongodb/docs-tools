@@ -29,6 +29,7 @@ def runserver(conf, host, port):
     options = {
         'bind': '%s:%s' % (host, port),
         'workers': app.config['WORKERS'],
+        'timeout': app.config['TIMEOUT'],
         'logconfig': os.path.join(PHARAOH_PATH, 'app', 'logging.conf'),
 
     }

@@ -96,7 +96,7 @@ input.approval_check{
 }
 
 input.approval_frac, input.review_frac{
-    width: 40px;
+    width: 100px;
     border: 0;
     background: transparent;
 }

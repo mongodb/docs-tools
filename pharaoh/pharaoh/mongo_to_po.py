@@ -113,25 +113,26 @@ def generate_fresh_po_text(po_fn, source_language, target_language, db, is_all):
                               'target_language': target_language,
                               'file_path': po_fn},
                              {'_id': 1})
-    sentences = db['translations'].find({'fileID': f[u'_id']},
-                                        {'_id': 1,
-                                         'source_sentence': 1,
-                                         'target_sentence': 1,
-                                         'source_location': 1,
-                                         'sentenceID': 1,
-                                         'status': 1} ).sort('sentence_num', 1)
-    for sentence in sentences:
-        translation = sentence['target_sentence'].strip()
-        if is_all is False and sentence['status'] != 'approved':
-            translation = ""
+    if f is not None:
+        sentences = db['translations'].find({'fileID': f[u'_id']},
+                                            {'_id': 1,
+                                             'source_sentence': 1,
+                                             'target_sentence': 1,
+                                             'source_location': 1,
+                                             'sentenceID': 1,
+                                             'status': 1} ).sort('sentence_num', 1)
+        for sentence in sentences:
+            translation = sentence['target_sentence'].strip()
+            if is_all is False and sentence['status'] != 'approved':
+                translation = ""
 
-        entry = polib.POEntry(
-            msgid=unicode(sentence['source_sentence'].strip()),
-            msgstr=unicode(translation),
-            tcomment=unicode(sentence['sentenceID'].strip()),
-            comment=unicode(sentence['source_location'].strip())
-            )
-        po.append(entry)
+            entry = polib.POEntry(
+                msgid=unicode(sentence['source_sentence'].strip()),
+                msgstr=unicode(translation),
+                tcomment=unicode(sentence['sentenceID'].strip()),
+                comment=unicode(sentence['source_location'].strip())
+                )
+            po.append(entry)
     return getattr(po, '__unicode__')()
 
 def generate_all_po_files(source_language, target_language, db, is_all):
@@ -149,7 +150,7 @@ def generate_all_po_files(source_language, target_language, db, is_all):
     tar_string = cStringIO.StringIO()
     tar = tarfile.open(mode='w', fileobj=tar_string)
     for f in file_list:
-        print("tarring " + f['file_path'])
+        logger.debug("tarring " + f['file_path'])
         text = generate_fresh_po_text(f['file_path'], source_language, target_language, db, is_all)
         fake_file = cStringIO.StringIO(text)
         fake_tarinfo = tarfile.TarInfo(f['file_path']+'.po')

@@ -23,7 +23,7 @@ class Configuration(ConfigurationBase):
     _option_registry = ['APPROVAL_THRESHOLD', 'MONGO_HOST', 'MONGO_PORT',
                         'MONGO_DBNAME', 'SERVER_HOST', 'SERVER_PORT',
                         'NUM_FILES_PER_PAGE', 'SESSION_LENGTH', 'DEBUG',
-                        'WORKERS']
+                        'WORKERS', 'TIMEOUT']
 
     @property
     def runstate(self):

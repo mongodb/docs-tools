@@ -30,14 +30,28 @@ logger = logging.getLogger('pharaoh.main')
 @argh.arg('--po', required=True, dest='po_files')
 @argh.arg('--source_language', '-sl', default='en', dest='source_language')
 @argh.arg('--target_language', '-tl', required=True, dest='target_language')
-@argh.arg('--host', default='localhost', dest='host')
-@argh.arg('--port', default=27017, dest='port')
-@argh.arg('--dbname', '-db', required=True, dest='db_name')
+@argh.arg('--host', default=None, dest='host')
+@argh.arg('--port', default=None, dest='port')
+@argh.arg('--dbname', '-db', default=None, dest='db_name')
 @argh.arg('--all', default=False, action='store_true', dest='all')
-@argh.named('mongo-to-po')
+@argh.named('export-po')
 def mongo_to_po(args):
+    conf = fetch_config(args)
+    if args.host is not None:
+        host = args.host
+    else:
+        host = conf.MONGO_HOST
+    if args.port is not None:
+        port = args.port
+    else:
+        port = conf.MONGO_PORT
+    if args.db_name is not None:
+        db_name = args.db_name
+    else:
+        db_name = conf.MONGO_DBNAME
+    
     write_mongo_to_po_files(args.po_files, args.source_language, args.target_language,
-                            args.host, args.port, args.db_name, args.all)
+                            host, port, db_name, args.all)
 
 
 @argh.arg('--po', required=True, dest='po_files')
@@ -45,20 +59,32 @@ def mongo_to_po(args):
 @argh.arg('--status', '-s', default='SMT', dest='status')
 @argh.arg('--source_language', '-sl', default='en', dest='source_language')
 @argh.arg('--target_language', '-tl', required=True, dest='target_language')
-@argh.arg('--host', default='localhost', dest='host')
-@argh.arg('--port', default=27017, dest='port')
-@argh.arg('--dbname', '-db', default=None, required=True, dest='db_name')
-@argh.named('po-to-mongo')
+@argh.arg('--host', default=None, dest='host')
+@argh.arg('--port', default=None, dest='port')
+@argh.arg('--dbname', '-db', default=None, dest='db_name')
+@argh.named('import-po')
 def po_to_mongo(args):
+    conf = fetch_config(args)
+    if args.host is not None:
+        host = args.host
+    else:
+        host = conf.MONGO_HOST
+    if args.port is not None:
+        port = args.port
+    else:
+        port = conf.MONGO_PORT
+    if args.db_name is not None:
+        db_name = args.db_name
+    else:
+        db_name = conf.MONGO_DBNAME
     put_po_files_in_mongo(args.po_files, args.username, args.status,
                           args.source_language, args.target_language,
-                          args.host, args.port, args.db_name)
+                          host, port, db_name)
 
 @argh.arg('--host', default=None, dest='host')
 @argh.arg('--port', default=None, dest='port')
 def verifier(args):
     conf = fetch_config(args)
-    logger.debug(conf)
     if args.host is not None:
         host = args.host
     else:
