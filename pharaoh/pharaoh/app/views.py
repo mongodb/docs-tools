@@ -131,6 +131,9 @@ def unapprove_translation():
 
 @app.route('/edit/<username>/<language>/<path:file>/423')
 def lock_error(username, language, file):
+    ''' This function is called when a user tries to do something in a file
+    but doesn't have a lock and thu can't
+    '''
     return render_template("423.html",
                            username=username,
                            language=language,
@@ -138,6 +141,8 @@ def lock_error(username, language, file):
 
 @app.route('/download-all/<language>/<path:file>')
 def download_single_po(language, file):
+    ''' This function downloads all translations from a single po file
+    '''
     po = generate_fresh_po_text(file, 'en', language, db, True)
     response = make_response(po)
     response.headers["Content-Disposition"] = "attachment; filename={0}.po".format(file)
@@ -145,6 +150,9 @@ def download_single_po(language, file):
 
 @app.route('/download-approved/<language>/<path:file>')
 def download_single_po_approved(language, file):
+    ''' This function downloads all approved translations from a single
+    po file
+    '''
     po = generate_fresh_po_text(file, 'en', language, db, False)
     response = make_response(po)
     response.headers["Content-Disposition"] = "attachment; filename={0}.po".format(file)
@@ -153,6 +161,9 @@ def download_single_po_approved(language, file):
 @app.route('/download-all/<language>/')
 @app.route('/download-all/<language>')
 def download_all_po(language):
+    ''' This function downloads all translations from all 
+    po files
+    '''
     po = generate_all_po_files( 'en', language, db, True)
     response = make_response(po)
     response.headers["Content-Disposition"] = "attachment; filename={0}.tar.gz".format(language)
@@ -161,6 +172,9 @@ def download_all_po(language):
 @app.route('/download-approved/<language>/')
 @app.route('/download-approved/<language>')
 def download_all_po_approved(language):
+    ''' This function downloads all approved translations from all 
+    po files
+    '''
     po = generate_all_po_files( 'en', language, db, False)
     response = make_response(po)
     response.headers["Content-Disposition"] = "attachment; filename={0}.tar.gz".format(language)
@@ -168,11 +182,13 @@ def download_all_po_approved(language):
 
 @app.route('/admin', methods=['GET'])
 def admin():
+    ''' This function produces an admin page'''
     files = models.get_file_paths()
     return render_template("admin.html", file_list=files)
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    ''' This function uploads the given tar ball to mongodb'''
     app.logger.info(request.files['file'])
     app.logger.info(request.form)
     put_po_data_in_mongo(request.files['file'], 

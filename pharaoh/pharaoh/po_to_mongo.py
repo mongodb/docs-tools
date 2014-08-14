@@ -104,15 +104,15 @@ def put_po_files_in_mongo(path, username, status, source_language, target_langua
 
 
 def put_po_data_in_mongo(po_tar, username, status, source_language, target_language, db):
-    '''go through directories and write the po file to mongo
-    :param string po_fn: the filename for the po file
-    :param string po_data: the po_file data
+    '''go through a tar of directories and write the po file to mongo
+    :param string po_tar: the tar of a set of po files
     :param string username: the username of the translator
     :param string status: the status of the translations
     :param string source_language: The source_language of the translations
     :param string target_language: The target_language of the translations
     :param database db: the mongodb database
     '''
+
     tar = tarfile.open(fileobj=po_tar)
     for member in tar.getmembers():
         if os.path.splitext(member.name)[1] not in ['.po', '.pot']:
