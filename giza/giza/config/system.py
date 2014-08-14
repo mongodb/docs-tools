@@ -303,7 +303,7 @@ class SystemConfigData(RecursiveConfigurationBase):
             if basename in mapping:
                 data = [ mapping[basename](doc) for doc in data ]
             elif basename in recur_mapping:
-                data = [ mapping[basename](doc, self.conf) for doc in data ]
+                data = [ recur_mapping[basename](doc, self.conf) for doc in data ]
             elif basename == 'htaccess':
                 l = HtaccessData()
                 l.conf = self.conf
