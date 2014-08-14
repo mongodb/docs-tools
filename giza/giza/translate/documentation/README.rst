@@ -161,23 +161,9 @@ Workflow
   4. If you only have a single file you can user ``translate_text_doc``. ``translate_po`` will automatically flip the text right to left if it needs to, but ``translate_text_doc`` will not. You can then use ``flip_text`` to flip it.
   5. If you are using Sphinx documentation, you can use ``auto_approve_obvious_po`` to automatically approve sentences that will (ideally) never get translated
 
-5. Put your docs in MongoDB
+5. Verify your translations
 
-  1. Use ``po_to_mongo`` to move the data into MongoDB
-  2. Run this once for every "type" of translation you have. (i.e. Moses, Person1, Person2....), this will make the status and the username correct
-  3. You may need to put some users into your database first. Opening up a shell and running ``db.users.insert({"username": "Moses", "num_reviewed": 0, "num_user_approved": 0, "num_got_approved":0, "trust_level": "basic"})``
-  4. ``python po_to_mongo.py ~/docs Jorge approved es 28000 verifier``
-  5. ``python po_to_mongo.py ~/docsMoses Moses SMT es 28000 verifier``
-
-6. Run the verifier
-
-  1. Run the verifier web app and have people contribute to it
-
-7. Take the approved data from the verifier
-
-  1. Copy doc directory tree to back it up
-  2. Use ``mongo_to_po`` to copy approved translations into the new doc directory tree
-  3. This will inject the approved translations into all of the untranslated sentences
+  1. User Pharaoh, which can be found in Pypi to upload your po files to a webapp that allows contributors to edit and approve translations
 
 Notes
 -----
