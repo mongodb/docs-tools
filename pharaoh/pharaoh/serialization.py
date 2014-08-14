@@ -14,6 +14,10 @@
 
 import json
 import yaml
+import logging
+
+logger = logging.getLogger('pharaoh.serialization')
+
 
 def ingest_yaml_list(*filenames):
     o = []

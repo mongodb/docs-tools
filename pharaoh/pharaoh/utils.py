@@ -21,6 +21,10 @@ import logging
 logger = logging.getLogger('pharaoh.utils')
 
 def load_json(file_name, db):
+    ''' This function loads json into a dictionary
+    :param string file_name: The name of the json file
+    :param database db: The instance of the mongodb database
+    '''
     file_no_ext = os.path.basename(file_name)
     file_no_ext = os.path.splitext(file_no_ext)[0]
     with open(file_name,"r") as file:
@@ -31,6 +35,10 @@ def load_json(file_name, db):
 
 
 def get_file_list(path, input_extension=['po', 'pot']):
+    '''Returns of a list of files with certain extensions in a given directory tree
+    :param string path: The path to the top of directory tree
+    :param list input_extension: list of file extensions (without a dot) that are returned
+    '''
     file_list = []
     if os.path.isfile(path):
         return [path]
