@@ -2,7 +2,7 @@
 Giza -- Documentation Build Tools
 =================================
 
-Giza is a collection of tools built around `Sphinx <>`_, that
+Giza is a collection of tools built around `Sphinx <http://sphinx-doc.org/>`_, that
 coordinates assembling, building, and deploying documentation. Giza
 primarily addresses the MongoDB documentation project; however, its
 design is sufficiently generic to be able to facilitate the builds of
@@ -216,6 +216,7 @@ require inputs, and these operations are not needed.
 - ``assets``
 - ``images``
 - ``intersphinx``
+- ``redirects``
 - ``options``
 - ``primer``
 - ``steps``

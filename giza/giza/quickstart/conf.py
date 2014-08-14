@@ -126,9 +126,6 @@ manual_edition_path = '/.'.join([conf.project.url,
 
 html_theme_options = {
     'branch': conf.git.branches.current,
-    'pdfpath': dot_concat(manual_edition_path, 'pdf'),
-    'epubpath': dot_concat(manual_edition_path, 'epub'),
-    'manual_path': get_manual_path(conf),
     'translations': languages,
     'language': language,
     'repo_name': sconf.theme.repo,
@@ -136,8 +133,6 @@ html_theme_options = {
     'google_analytics': sconf.theme.google_analytics,
     'project': sconf.theme.project,
     'version': version,
-    'version_selector': get_versions(conf),
-    'stable': conf.version.stable,
     'sitename': sconf.theme.sitename,
     'nav_excluded': sconf.theme.nav_excluded,
 }

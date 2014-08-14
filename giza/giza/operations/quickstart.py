@@ -49,5 +49,5 @@ def make_project(args):
         except CommandError:
             command('giza sphinx -b html')
             shutil.rmtree('docs-tools')
-
-        command('python build/docs-tools/makecloth/meta.py build/makefile.meta')
+        finally:
+            command('python build/docs-tools/makecloth/meta.py build/makefile.meta')

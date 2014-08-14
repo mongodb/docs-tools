@@ -173,7 +173,7 @@ class SystemConfigData(RecursiveConfigurationBase):
     ## There shouldn't be any setters in this class. All items in this class
     ## must exist in SystemConfigPaths() objects.
 
-    _always_list_configs = ('manpages', 'pdfs', 'htaccess')
+    _always_list_configs = ('manpages', 'pdfs', 'htaccess', 'push')
 
     def __init__(self, obj, conf):
         super(SystemConfigData, self).__init__(None, conf)
