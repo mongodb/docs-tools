@@ -137,7 +137,8 @@ Giza Commands
 Setup
 -----
 
-* Follow the instructions in MosesSetup.sh. It is not meant to be a script that you simply run, rather go through it line by line or paragraph by paragraph running the commands.
+* If you are not using Ubuntu or it is below version 14.04, read the instructions becase some commands will have to change. Additionally it can go faster if you go to line 80 and replace -j8 with -j<number of cores>
+* Run the script MosesSetup.sh. If it does not work, go through it line by line and try to use the comments to fix anything that went wrong
 * Be sure to read the comments as you go along, they may tell you alternate commands to run in certain situations.
 * If you don't want to accidentally turn backticks (`) into apostrophes ('), then comment out line 278 of translation_tools/mosesdecoder/scripts/tokenizer/tokenizer.perl: ``$text =~ s/\`/\'/g;``
 
