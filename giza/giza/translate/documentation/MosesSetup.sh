@@ -1,3 +1,4 @@
+#!/bin/bash
 # The following pages may help if there are any errors: http://www.statmt.org/moses/?n=Development.GetStarted, http://www.statmt.org/moses/?n=Moses.ExternalTools#ntoc3, http://www.statmt.org/moses/?n=FactoredTraining.BuildingLanguageModel#ntoc4
 # PLEASE READ ALL INSTRUCTIONS IN TEH COMMENTS
 
@@ -11,6 +12,7 @@ sudo apt-get install build-essential g++ git subversion automake autotools-dev l
 # Create directory for all of Moses tools
 mkdir translation_tools
 cd translation_tools
+TTDIR=$PWD
 
 #Any references to -j8 replace with the correct number of threads you want to run with
 
@@ -28,22 +30,28 @@ cd translation_tools
 # Download and build the correct IRSTLM
 wget http://sourceforge.net/projects/irstlm/files/latest/download
 tar zxvf download
+rm download
 cd irstlm-5.80.03/
 ./regenerate-makefiles.sh
 ./configure --prefix=$PWD
 make -j8
 make install
 cd ..
-rm download
+
 
 # Download and install MGIZA. Download the most up to date version from this site: http://www.kyloo.net/software/doku.php/mgiza:overview
 wget http://sourceforge.net/projects/mgizapp/files/mgizapp-0.7.3-updated.tgz/download
 tar zxvf download
+rm download
 cd mgizapp/
 cmake .
+sed -i 's/SET(MGIZA_VERSION_PATCH "0")/SET(MGIZA_VERSION_PATCH "2")/' CMakeLists.txt
+sed -i 's/FIND_PACKAGE( Boost [.0-9]* COMPONENTS thread)/FIND_PACKAGE( Boost COMPONENTS thread system)/' CMakeLists.txt
+sed -i 's/ insert(typename MY_HASH_BASE::value_type(a,init));/ this->insert(typename MY_HASH_BASE::value_type(a,init));/' src/mkcls/myleda.h
 make
 make install
-# The above may fail. It appears that the following will fix the issue. (http://www.kyloo.net/software/doku.php/mgiza:fixing_boost_library)
+cd ..
+# The above may fail. It appears that the following will fix the issue. (http://www.kyloo.net/software/doku.php/mgiza:fixing_boost_library). If the version has changed it might not be true anymore.
 # In CMakelists.txt change SET(MGIZA_VERSION_PATCH "0") to SET(MGIZA_VERSION_PATCH "2")
 # and
 # change FIND_PACKAGE( Boost 1.46 COMPONENTS thread) to FIND_PACKAGE( Boost COMPONENTS thread system)
@@ -53,8 +61,8 @@ make install
 # to
 # this->insert(typename MY_HASH_BASE::value_type(a,init));
 
-cd ..
-rm download
+
+
 
 # Download and build Moses
 git clone https://github.com/moses-smt/mosesdecoder.git
@@ -62,11 +70,14 @@ cd mosesdecoder/
 mkdir tools
 cp ../mgizapp/bin/* tools/
 cp ../mgizapp/scripts/merge_alignment.py tools/
+#sed -i "s:\$text =~ s/\`/\'/g;:# \$text =~ s/\`/\'/g;:" scripts/tokenizer/tokenizer.perl
+
 
 #If you replaced boost, use this and replace all pathnames with the appropriate ones based on your installation
 # ./bjam --with-boost=/home/ubuntu/translation_tools/boost_1_55_0 --with-irstlm=/home/ubuntu/translation_tools/irstlm-5.80.03 --with-giza=/home/ubuntu/translation_tools/mgizapp/bin -j8 -a -q
-#Otherwise use this:
-./bjam --with-irstlm=/home/ubuntu/translation_tools/irstlm-5.80.03 --with-giza=/home/ubuntu/translation_tools/mgizapp/bin -j8 -a -q
+#Otherwise use this (here is it included with paths for clarity):
+#./bjam --with-irstlm=/home/ubuntu/translation_tools/irstlm-5.80.03 --with-giza=/home/ubuntu/translation_tools/mgizapp/bin -j8 -a -q
+./bjam --with-irstlm=$TTDIR/irstlm-5.80.03 --with-giza=$TTDIR/translation_tools/mgizapp/bin -j8 -a -q
 
 # If you don't want to accidentally turn backticks (`) into apostrophes ('), then comment out line 278 of translation_tools/mosesdecoder/scripts/tokenizer/tokenizer.perl
 # $text =~ s/\`/\'/g;
@@ -74,8 +85,10 @@ cp ../mgizapp/scripts/merge_alignment.py tools/
 # Test moses is working properly
 wget http://www.statmt.org/moses/download/sample-models.tgz
 tar xzf sample-models.tgz
+rm sample-models.tgz
 cd sample-models
 ../bin/moses -f phrase-model/moses.ini < phrase-model/in > out
 #If you look in the file `out` it should say this is a small house
+cat out
 cd ..
-rm sample-models.tgz
+
