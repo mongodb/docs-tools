@@ -36,7 +36,7 @@ to have a backup in case it messes up.
 logger = logging.getLogger('pharaoh.mongo_to_po')
 
 
-def write_po_file(po_fn, source_language, target_language, db, is_all):
+def write_po_file(po_fn, top_path, source_language, target_language, db, is_all):
     ''' writes approved or all trnalstions to file
     :param string po_fn: the path to the current po file to write
     :param string source_language: language to translate from
@@ -47,9 +47,9 @@ def write_po_file(po_fn, source_language, target_language, db, is_all):
 
     logger.info("writing " + po_fn)
     po = polib.pofile(po_fn)
-    name = os.path.basename(po_fn)
-    name = os.path.splitext(name)[0]
-    file_record = find_file(source_language, target_language, name, curr_db=db)
+    rel_fn = os.path.relpath(po_fn, top_path)
+    rel_fn = os.path.splitext(rel_fn)[0]
+    file_record = find_file(source_language, target_language, rel_fn, curr_db=db)
     for entry in po.untranslated_entries():
         if is_all is False:
             t = db['translations'].find({"status": "approved", "sentenceID": entry.tcomment, "source_language": source_language, "target_language": target_language, 'file_edition': file_record['edition']})
@@ -88,7 +88,7 @@ def write_mongo_to_po_files(path, source_language, target_language, db_host, db_
     file_list = get_file_list(path, ["po", "pot"])
 
     for fn in file_list:
-        write_po_file(fn, source_language, target_language, db, is_all)
+        write_po_file(fn, path, source_language, target_language, db, is_all)
 
 def generate_fresh_po_text(po_fn, source_language, target_language, db, is_all):
     ''' goes through all of the sentences in a po file in the database and writes them out to a fresh po file
@@ -114,7 +114,7 @@ def generate_fresh_po_text(po_fn, source_language, target_language, db, is_all):
     }
     file_record = find_file(source_language, target_language, po_fn, curr_db=db)
     if file_record is not None:
-        sentences = db['translations'].find({'fileID': file_record[u'_id'], 
+        sentences = db['translations'].find({'fileID': file_record[u'_id'],
                                              'file_edition': file_record[u'edition']},
                                             {'_id': 1,
                                              'source_sentence': 1,

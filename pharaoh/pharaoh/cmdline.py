@@ -31,7 +31,7 @@ logger = logging.getLogger('pharaoh.main')
 @argh.arg('--source_language', '-sl', default='en', dest='source_language')
 @argh.arg('--target_language', '-tl', required=True, dest='target_language')
 @argh.arg('--host', default=None, dest='host')
-@argh.arg('--port', default=None, dest='port')
+@argh.arg('--port', default=None, type=int, dest='port')
 @argh.arg('--dbname', '-db', default=None, dest='db_name')
 @argh.arg('--all', default=False, action='store_true', dest='all')
 @argh.named('export-po')
@@ -49,7 +49,7 @@ def mongo_to_po(args):
         db_name = args.db_name
     else:
         db_name = conf.MONGO_DBNAME
-    
+
     write_mongo_to_po_files(args.po_files, args.source_language, args.target_language,
                             host, port, db_name, args.all)
 
@@ -60,7 +60,7 @@ def mongo_to_po(args):
 @argh.arg('--source_language', '-sl', default='en', dest='source_language')
 @argh.arg('--target_language', '-tl', required=True, dest='target_language')
 @argh.arg('--host', default=None, dest='host')
-@argh.arg('--port', default=None, dest='port')
+@argh.arg('--port', default=None, type=int, dest='port')
 @argh.arg('--dbname', '-db', default=None, dest='db_name')
 @argh.named('import-po')
 def po_to_mongo(args):
@@ -82,7 +82,7 @@ def po_to_mongo(args):
                           host, port, db_name)
 
 @argh.arg('--host', default=None, dest='host')
-@argh.arg('--port', default=None, dest='port')
+@argh.arg('--port', default=None, type=int, dest='port')
 def verifier(args):
     conf = fetch_config(args)
     if args.host is not None:
