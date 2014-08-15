@@ -44,24 +44,30 @@ def write_po_file_to_mongo(po_fn, po_file, userID, status, source_language, targ
     :param string target_language: The target_language of the translations
     :param database db: the database that you want to write to
     '''
+    logger.info(po_fn)
     f = File({u'file_path': po_fn,
               u'priority': 0,
               u'source_language': source_language,
               u'target_language': target_language}, curr_db=db)
 
     reg = re.compile('^:[a-zA-Z0-9]+:`(?!.*<.*>.*)[^`]*`$')
-    for idx, entry in enumerate(po_file.translated_entries()):
-        sentence_status = status
-        match = re.match(reg, entry.msgstr.encode('utf-8'))
-        if match is not None and match.group() == entry.msgstr.encode('utf-8'):
-            sentence_status = "approved"
+    for idx, entry in enumerate(po_file):
+        if entry.translated():
+            sentence_status = status
+            # If sentence should be autoapproved, do so
+            match = re.match(reg, entry.msgstr.encode('utf-8'))
+            if match is not None and match.group() == entry.msgstr.encode('utf-8'):
+                sentence_status = "approved"
+        else:
+            sentence_status = "untranslated"
 
         t = Sentence({u'source_language': source_language,
                       u'source_sentence': entry.msgid.encode('utf-8'),
                       u'sentenceID': entry.tcomment.encode('utf-8'),
-                      u'source_location': entry.comment.encode('utf-8'),
+                      u'source_location': entry.occurrences,
                       u'sentence_num': idx,
                       u'fileID': f._id,
+                      u'file_edition': f.edition,
                       u'target_sentence': entry.msgstr.encode('utf-8'),
                       u'target_language': target_language,
                       u'userID': userID,
