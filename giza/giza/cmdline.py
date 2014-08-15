@@ -60,6 +60,7 @@ def main():
         giza.operations.git.apply_patch,
         giza.operations.git.pull_rebase,
         giza.operations.git.cherry_pick,
+        giza.operations.git.merge,
     ]
     argh.add_commands(parser, git_commands, namespace='git')
 

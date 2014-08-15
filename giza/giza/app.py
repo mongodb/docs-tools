@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+:module:`app` holds the :class:`~giza.app.BuildApp()` class that provides an
+organizing framework for running larger sequences of operations.
+"""
+
 import logging
 
 logger = logging.getLogger('giza.app')
@@ -22,13 +27,39 @@ from giza.config.main import Configuration
 from giza.task import Task, MapTask
 
 class BuildApp(object):
+    """
+    A unit of work. :class:`~giza.app.BuildApp()` instances possess queues of
+    :class:`~giza.task.Task()` objects and sub-\ :class:`~giza.app.BuildApp()`
+    objects that describe a build process. Groups of :class:`~giza.task.Task()`
+    objects may execute in parallel, while any :class:`~giza.app.BuildApp()`
+    objects in the queue execute in isolation after proceeding group of
+    :class:`~giza.task.Task()` operations complete. Mix
+    :class:`~giza.app.BuildApp()` and :class:`~giza.task.Task()` operations to
+    control task ordering. 
+
+    The results of all operations are accessible in the
+    :attr:`~giza.app.BuildApp.results`, which largely preserves the ordering of the
+    insertion of operations into the queue. Unlike the queue,
+    :attr:`~giza.app.BuildApp.results` contains the result of each operation in
+    an embedded :class:`~giza.app.BuildApp()` in the order that each task was
+    added to the embedded :class:`~giza.app.BuildApp()` instance.
+
+    :class:`~giza.app.BuildApp()` are reusable: after running all operations in
+    the queue, the queue resets. However, results do not reset.
+    """
+
     def __init__(self, conf):
+        """
+        :param Configuration conf: A top level
+           :class:`~giza.config.main.Configuration` object. 
+        """
+
         self.conf = conf
         self.queue = []
         self.results = []
         self.worker_pool = None
         self.default_pool = self.conf.runstate.runner
-
+        
         self.pool_mapping = {
             'thread': ThreadPool,
             'process': ProcessPool,
@@ -110,6 +141,28 @@ class BuildApp(object):
             self.worker_pool = None
 
     def add(self, task=None):
+        """
+        Adds a new :class:`~giza.app.BuildApp()` or :class:`~giza.task.Task()`
+        to the :class:`~giza.app.BuildApp()` object. 
+
+        :param string,Task,BuildApp task: Optional. If not specified,
+           :meth:`~giza.app.BuildApp.add()` creates and returns a new
+           :class:`~giza.task.Task()` object. You can pass the string ``task``
+           or the class :class:`~giza.task.Task` to explicitly create a new
+           Task, or pass an existing :class:`~giza.task.Task()` instance to add
+           that task to the :class:`~giza.app.BuildApp()` instance. You can also
+           pass the string ``app`` or the :class:`~giza.app.BuildApp` class, to
+           create and add new :class:`~giza.app.BuildApp()`: pass an existing
+           :class:`~giza.app.BuildApp()`  instance to add that that operation
+           grouping to the queue. 
+
+        :returns: A reference to a :class:`~giza.app.BuildApp()` or
+           :class:`~giza.task.Task()` object in the :class:`~giza.app.BuildApp()` 
+
+        :raises: :exception:`TypeError` if the ``task`` argument is invalid.
+
+        """
+
         if task is None or task in (Task, 'task'):
             t = Task()
             t.conf = self.conf
@@ -188,6 +241,8 @@ class BuildApp(object):
             self.results.extend(self.pool.runner(group))
 
     def run(self):
+        "Executes all tasks in the :attr:`~giza.app.BuildApp.queue`."
+
         if len(self.queue) == 1:
             self._run_single(self.queue[0])
         elif self.queue_has_apps is True:

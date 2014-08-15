@@ -12,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+:mod:`task` stores the :class:`~giza.task.Task()` and
+:class:`~giza.task.MapTask()` classes which represent single units of work in
+the context of a :class:`~giza.app.BuildApp()` procedure.
+
+:mod:`task` also has a number of dependency resolution helper functions.
+"""
+
 import logging
 import sys
 import os.path
@@ -26,7 +34,32 @@ if sys.version_info >= (3, 0):
     basestring = str
 
 class Task(object):
+    """
+    Provides a common interface for defining an operational unit of work in a
+    concurrent :class:`~giza.app.BuildApp()` environment. 
+
+    With :attr:`~giza.task.Task.target` and :attr:`~giza.task.Task.dependency`
+    defined, if a ``target`` file exists and was modified after the
+    ``dependency`` file, the :class:`~giza.task.Task()` operation becomes a
+    no-op, unless forced.
+    """
+
     def __init__(self, job=None, description=None, target=None, dependency=None):
+        """
+        All arguments are optional. You can define a :class:`~giza.task.Task()`
+        either upon creation, or after creation by modifying attributes.
+
+        :param callable job: A callable object that the task will execute. 
+
+        :param string description: Describes the task. Used in error messages.
+
+        :param string target: A file name. A path to a file that the task will create.
+
+        :param string dependency: A file name. A path to a file that the task
+           depends on. When specified, the task will only run if forced or if
+           the ``depdendency`` file is newer than the target file. 
+        """
+
         self.spec = {}
         self._conf = None
         self._args = None
@@ -124,6 +157,22 @@ class Task(object):
 ############### Dependency Checking ###############
 
 def check_dependency(target, dependency):
+    """
+    Determines if a target requires rebuilding based on it's provided
+    dependency.
+
+    :param string target: A file name. 
+
+    :param string,list dependency: A file name or list of file names.
+
+    :returns: A boolean. If either the ``target`` or ``dependency`` doesn't
+       exist, or if the ``target`` was modified more recently than the
+       ``dependency`` returns ``True`` otherwise returns ``False.
+
+    :func:`~giza.task.check_dependency()` Accepts dependencies in the form of a single file name, or as a
+    list, and will 
+    """
+
     if dependency is None:
         return True
 
@@ -152,6 +201,12 @@ def check_dependency(target, dependency):
         return needs_rebuild(target_time, dependency)
 
 class MapTask(Task):
+    """
+    A variant of :class:`~giza.task.Task()` that defines a task that like the
+    kind of operation that would run in a :func:`map()` function, processing the
+    contents of an iterable with a single function.
+    """
+
     def __init__(self, job=None, description=None, target=None, dependency=None):
         super(MapTask, self).__init__(job=job, description=description,
                                    target=target, dependency=dependency)

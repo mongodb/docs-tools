@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Provides the :class:`~giza.git.GitRepo()` class that provides a thin
+Python-layer on top of common git operations.
+"""
+
 import logging
 import os
 import re
@@ -22,7 +27,18 @@ from giza.command import command
 logger = logging.getLogger('giza.git')
 
 class GitRepo(object):
+    """
+    An object that represents a git repository, and provides methods to wrap
+    many common git commands and basic aggregate operations.
+    """
+
     def __init__(self, path=None):
+        """
+        :param string path: Optional. Defines a the path of the git
+           repository. If not specified, defaults to the current working
+           directory. 
+        """
+
         if path is None:
             self.path = os.getcwd()
         else:
@@ -43,6 +59,32 @@ class GitRepo(object):
 
     def checkout(self, ref):
         return self.cmd('checkout', ref)
+
+    def checkout_branch(self, name, tracking=None):
+        args = ['checkout', '-b', name]
+
+        if tracking is not None:
+            args.append(tracking)
+
+        return self.cmd(*args)
+
+    def remove_branch(self, name, force=False):
+        args = ['branch']
+
+        if force is False:
+            args.append('-d')
+        else:
+            args.append('-D')
+
+        args.append(name)
+
+        return self.cmd(*args)
+
+    def rebase(self, onto):
+        return self.cmd('rebase', onto)
+
+    def merge(self, branch):
+        return self.cmd('merge', branch)
 
     def hard_reset(self, ref='HEAD'):
         return self.cmd('reset', '--hard', ref)
