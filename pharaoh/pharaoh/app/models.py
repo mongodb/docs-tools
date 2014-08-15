@@ -29,8 +29,9 @@ def get_sentences_in_file(fp, source_language, target_language, curr_db=db):
     f = curr_db['files'].find_one({'source_language': source_language,
                                    'target_language': target_language,
                                    'file_path': fp},
-                                  {'_id': 1})
-    sentences = curr_db['translations'].find({'fileID': f[u'_id']},
+                                   {'_id': 1, 'edition':1})
+    sentences = curr_db['translations'].find({'fileID': f[u'_id'],
+                                              'file_edition': f[u'edition']},
                                              {'_id': 1,
                                               'source_sentence': 1,
                                               'target_sentence': 1,
@@ -45,7 +46,6 @@ def get_languages(curr_db=db):
     :returns: cursor of languages
     '''
     languages = curr_db['translations'].find().distinct('target_language')
-    app.logger.debug(languages)
     return languages
 
 def get_fileIDs(source_language, target_language, curr_db=db):
@@ -117,17 +117,31 @@ def audit(action, last_editor, current_user, doc, new_target_sentence=None, curr
                                   'timestamp': datetime.datetime.utcnow() })
 
 def find_file(source_language, target_language, file_path, curr_db=db):
-    '''This function finds the oid of a file by it's languages and file_path,
+    '''This function finds the record of a file by it's languages and file_path,
     which should ideally be unique. If these aren't unique this could create
     issues, but if they're not unique then you probably already have a problem.
     :param string source_language'
     :param string target_language'
     :param string file_path' path to the file you're trying to find
-    :returns: File's OID
+    :returns: File's record
     '''
     record = curr_db['files'].find_one({'source_language': source_language,
                                         'target_language': target_language,
                                         'file_path': file_path})
+    return record
+
+def find_sentence(source_language, target_language, sentenceID, curr_db=db):
+    '''This function finds the record of a file by it's languages and id,
+    which should ideally be unique. If these aren't unique this could create
+    issues, but if they're not unique then you probably already have a problem.
+    :param string source_language'
+    :param string target_language'
+    :param string sentenceID' the ID of the sentence
+    :returns: sentence's record
+    '''
+    record = curr_db['translations'].find_one({'source_language': source_language,
+                                               'target_language': target_language,
+                                               'sentenceID': sentenceID}, sort=[('file_edition',-1)])
     return record
 
 
@@ -144,6 +158,7 @@ class File(object):
                       u'priority': 0,
                       u'source_language': None,
                       u'target_language': None,
+                      u'edition': 0,
                       u'num_sentences': -1}
 
         if source is not None:
@@ -155,9 +170,11 @@ class File(object):
             if ('source_language' in source) and ('target_language' in source) and ('file_path' in source):
                 s = find_file(source['source_language'],
                               source['target_language'],
-                              source['file_path'])
+                              source['file_path'],
+                              curr_db=self.db)
                 if s is not None:
                     source = s
+                    source['edition'] += 1
             for k, v in source.items():
                 self.state[k] = v
             self.save()
@@ -173,6 +190,10 @@ class File(object):
     @property
     def file_path(self):
         return self.state[u'file_path']
+
+    @property
+    def edition(self):
+        return self.state[u'edition']
 
     @property
     def priority(self):
@@ -212,13 +233,13 @@ class File(object):
             return False
 
     def num_approved(self):
-        return self.db['translations'].find({'fileID': self._id, 'status': 'approved'}).count()
+            return self.db['translations'].find({'fileID': self._id, 'file_edition': self.edition, 'status': 'approved'}).count()
 
     def num_reviewed(self):
-        return self.db['translations'].find({'fileID': self._id, 'status': { '$in': ['reviewed', 'approved']}}).count()
+            return self.db['translations'].find({'fileID': self._id, 'file_edition': self.edition, 'status': { '$in': ['reviewed', 'approved']}}).count()
 
     def get_num_sentences(self):
-        self.state[u'num_sentences'] = self.db['translations'].find({'fileID': self._id}).count()
+        self.state[u'num_sentences'] = self.db['translations'].find({'fileID': self._id, 'file_edition': self.edition}).count()
         self.save()
         return self.num_sentences
 
@@ -239,6 +260,7 @@ class Sentence(object):
                       u'source_sentence': None,
                       u'sentence_num': -1,
                       u'fileID': None,
+                      u'file_edition': 0,
                       u'sentenceID': None,
                       u'source_location': None,
                       u'target_sentence': None,
@@ -252,6 +274,19 @@ class Sentence(object):
                 if k not in self.state:
                     app.logger.error(k)
                     raise KeyError
+            if ('source_language' in source) and ('target_language' in source) and ('sentenceID' in source) and ('sentence_num' in source) and ('status' in source):
+                # Checks if the sentence is already there
+                s = find_sentence(source[u'source_language'],
+                                  source[u'target_language'],
+                                  source[u'sentenceID'],
+                                  curr_db=self.db)
+                if s is not None:
+                    s[u'sentence_num'] = source['sentence_num']
+                    s[u'file_edition'] = source['file_edition']
+                    del s['_id']
+                    # If it's there and not approved, use the old version; if the new one is approved use the new one
+                    if not(source[u'status'] == 'approved' or (s[u'status'] == 'untranslated' and source[u'status'] != 'untranslated')):
+                        source = s
 
             for k, v in source.items():
                 self.state[k] = v
@@ -311,6 +346,10 @@ class Sentence(object):
             raise MyError(err, 403)
         if approver._id in self.approvers:
             err = "Can't approve sentence twice"
+            app.logger.error(err)
+            raise MyError(err, 403)
+        if self.target_sentence == "" and self.source_sentence != "":
+            err = "Can't approve empty sentence"
             app.logger.error(err)
             raise MyError(err, 403)
 
