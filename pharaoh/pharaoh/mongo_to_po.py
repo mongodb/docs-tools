@@ -25,6 +25,7 @@ import polib
 from pymongo import MongoClient
 
 from pharaoh.utils import get_file_list
+from pharaoh.app.models import find_file
 
 ''''
 This module takes the data in mongodb and writes out any approved (or all)
@@ -46,19 +47,21 @@ def write_po_file(po_fn, source_language, target_language, db, is_all):
 
     logger.info("writing " + po_fn)
     po = polib.pofile(po_fn)
+    name = os.path.basename(po_fn)
+    name = os.path.splitext(name)[0]
+    file_record = find_file(source_language, target_language, name, curr_db=db)
     for entry in po.untranslated_entries():
         if is_all is False:
-            t = db['translations'].find({"status": "approved", "sentenceID": entry.tcomment, "source_language": source_language, "target_language": target_language})
+            t = db['translations'].find({"status": "approved", "sentenceID": entry.tcomment, "source_language": source_language, "target_language": target_language, 'file_edition': file_record['edition']})
         else:
-            t = db['translations'].find({"sentenceID": entry.tcomment, "source_language": source_language, "target_language": target_language})
+            t = db['translations'].find({"sentenceID": entry.tcomment, "source_language": source_language, "target_language": target_language, 'file_edition': file_record['edition']})
 
-        if t.count() > 1:
-            logger.info("multiple approved translations with sentenceID: " + entry.tcomment)
-            continue
         if t.count() == 1:
             entry.msgstr = unicode(t[0]['target_sentence'].strip())
+        elif t.count() > 1:
+            logger.info("multiple translations with sentenceID: " + entry.tcomment)
         else:
-            logger.info("multiple approved translations with sentenceID: " + entry.tcomment)
+            logger.info("no translation for: " + entry.tcomment)
 
 
     po.save(po_fn)
@@ -109,12 +112,10 @@ def generate_fresh_po_text(po_fn, source_language, target_language, db, is_all):
         u'Content-Transfer-Encoding': u'8bit',
         u'Plural-Forms': u'nplurals=2; plural=(n != 1);'
     }
-    f = db['files'].find_one({'source_language': source_language,
-                              'target_language': target_language,
-                              'file_path': po_fn},
-                             {'_id': 1})
-    if f is not None:
-        sentences = db['translations'].find({'fileID': f[u'_id']},
+    file_record = find_file(source_language, target_language, po_fn, curr_db=db)
+    if file_record is not None:
+        sentences = db['translations'].find({'fileID': file_record[u'_id'], 
+                                             'file_edition': file_record[u'edition']},
                                             {'_id': 1,
                                              'source_sentence': 1,
                                              'target_sentence': 1,
@@ -130,7 +131,7 @@ def generate_fresh_po_text(po_fn, source_language, target_language, db, is_all):
                 msgid=unicode(sentence['source_sentence'].strip()),
                 msgstr=unicode(translation),
                 tcomment=unicode(sentence['sentenceID'].strip()),
-                comment=unicode(sentence['source_location'].strip())
+                occurrences=sentence['source_location']
                 )
             po.append(entry)
     return getattr(po, '__unicode__')()

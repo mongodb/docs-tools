@@ -435,7 +435,7 @@ class Sentence(object):
 
     @status.setter
     def status(self, value):
-        if value in (u'smt', u'reviewed', u'approved'):
+        if value in [u'SMT', u'reviewed', u'approved', u'untranslated']:
             self.state[u'status'] = value
         else:
             raise TypeError
