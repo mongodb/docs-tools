@@ -36,7 +36,7 @@ from giza.app import BuildApp
 logger = logging.getLogger('giza.operations.translate')
 
 @argh.arg('--config', '-c', default=None, dest="t_corpora_config")
-@argh.named('cc')
+@argh.named('create-corpora')
 def create_corpora(args):
     conf = fetch_config(args)
 
@@ -56,7 +56,7 @@ def create_corpora(args):
 
 
 @argh.arg('--config', '-c', default=None, dest="t_translate_config")
-@argh.named('res')
+@argh.named('model-results')
 def model_results(args):
     conf = fetch_config(args)
 
@@ -73,7 +73,7 @@ def model_results(args):
 
 @argh.arg('--output', '-o', default=None, dest='t_output_file')
 @argh.arg('--input', '-i', required=True, default=None, nargs='*', dest='t_input_files')
-@argh.named('mt')
+@argh.named('merge')
 def merge_translations(args):
     annotation_list = ['- ', '+ ', '~ ', '> ', '= ', '* ', '# ', '$ ', '^ ', '% ', '& ', '@ ']
     merge_files(args.t_output_file, args.t_input_files, annotation_list)
@@ -82,7 +82,7 @@ def merge_translations(args):
 @argh.arg('--po', default=None, required=True, dest='t_input_file')
 @argh.arg('--source', '-s', default="source_corpus.txt", dest='t_source')
 @argh.arg('--target', '-t', default="target_corpus.txt", dest='t_target')
-@argh.named('p2c')
+@argh.named('po-to-corpus')
 def po_to_corpus(args):
     create_corpus_from_po(args.t_input_file, args.t_source, args.t_target)
 
@@ -90,7 +90,7 @@ def po_to_corpus(args):
 @argh.arg('--dict', required=True, default=None, dest='t_input_file')
 @argh.arg('--source', '-s', default="source_corpus.txt", dest='t_source')
 @argh.arg('--target', '-t', default="target_corpus.txt", dest='t_target')
-@argh.named('d2c')
+@argh.named('dict-to-corpus')
 def dict_to_corpus(args):
     create_corpus_from_dictionary(args.t_input_file, args.t_source, args.t_target)
 
@@ -98,7 +98,7 @@ def dict_to_corpus(args):
 @argh.arg('--config', '-c', default=None, dest="t_translate_config")
 @argh.arg('--po', required=True, default=None, dest='t_input_file')
 @argh.arg('--protected', '-p', default=None, dest='t_protected_regex')
-@argh.named('tpo')
+@argh.named('translate-po')
 def translate_po(args):
     conf = fetch_config(args)
     if args.t_translate_config is None:
@@ -116,7 +116,7 @@ def translate_po(args):
 @argh.arg('--input', '-i', required=True, default=None, dest='t_input_file')
 @argh.arg('--output', '-o', default=None, dest='t_output_file')
 @argh.arg('--protected', '-p', default=None, dest='t_protected_regex')
-@argh.named('tdoc')
+@argh.named('translate-file')
 def translate_text_doc(args):
     conf = fetch_config(args)
     if args.t_translate_config is None:
@@ -139,13 +139,13 @@ def flip_text(args):
 
 
 @argh.arg('--po', required=True, default=None, dest='t_input_file')
-@argh.named('auto_approve')
+@argh.named('auto-approve')
 def auto_approve_obvious_po(args):
     auto_approve_po_entries(args.t_input_file)
 
 
 @argh.arg('--config', '-c', default=None, dest="t_translate_config")
-@argh.named('bm')
+@argh.named('build-model')
 def build_translation_model(args):
     conf = fetch_config(args)
     if args.t_translate_config is None:

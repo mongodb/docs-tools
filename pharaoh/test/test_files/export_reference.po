@@ -1,0 +1,38 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: uMongoDB Manual\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-08-14 15:01:07.911978\n"
+"PO-Revision-Date: 2014-08-14 15:01:07.912014\n"
+"Last-Translator: \n"
+"Language-Team: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. ../source/about.txt:113
+# 391a61e423644e5a8374f935eb876d8d
+msgid "License"
+msgstr "Licencia"
+
+#. ../source/about.txt:114
+# 77bcce3ba66548d2944e42fcc3fc5c05
+msgid ""
+"This manual is licensed under a Creative Commons \"`Attribution-"
+"NonCommercial-ShareAlike 3.0 Unported <http://creativecommons.org/licenses"
+"/by-nc-sa/3.0/>`_\" (i.e. \"CC-BY-NC-SA\") license."
+msgstr ""
+"Este manual está licenciado bajo una licencia de Creative Commons &quot; "
+"&apos; Atribución-NoComercial-CompartirIgual 3.0 Unported &lt; http : / / "
+"creativecommons.org / licenses / by-nc-sa / 3.0 / &gt; &apos; _ &quot; ( es "
+"decir &quot; CC-BY-NC-SA &quot; ) licencia ."
+
+#. ../source/about.txt:115
+# f5a78db275c84ffe90817818b78ba0d9
+msgid "The MongoDB Manual is copyright |copy| 2011-|year| MongoDB, Inc."
+msgstr ""
+"El Manual de MongoDB Manual tiene derechos de autor &#124; copy &#124; 2011-"
+" &#124; year &#124; MongoDB , Inc ."

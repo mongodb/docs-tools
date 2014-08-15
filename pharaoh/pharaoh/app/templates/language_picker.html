@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Language Picker{% endblock %}
+{% block content %}
+    <ul id="navigation">
+    Username: <input id="username" value="Judah"></input>
+    <table>
+        {% for language in language_list %}
+            <tr>
+                <td class="language-cell" >
+                    <button class="language btn btn-success" id="{{language}}-languageButton" >{{language}}</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    </ul>
+
+{% endblock %}
