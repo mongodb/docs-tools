@@ -13,13 +13,13 @@ msgstr ""
 "Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#. ../source/about.txt:113
 # 391a61e423644e5a8374f935eb876d8d
+#: ../source/about.txt:113
 msgid "License"
 msgstr "Licencia"
 
-#. ../source/about.txt:114
 # 77bcce3ba66548d2944e42fcc3fc5c05
+#: ../source/about.txt:114
 msgid ""
 "This manual is licensed under a Creative Commons \"`Attribution-"
 "NonCommercial-ShareAlike 3.0 Unported <http://creativecommons.org/licenses"
@@ -30,8 +30,8 @@ msgstr ""
 "creativecommons.org / licenses / by-nc-sa / 3.0 / &gt; &apos; _ &quot; ( es "
 "decir &quot; CC-BY-NC-SA &quot; ) licencia ."
 
-#. ../source/about.txt:115
 # f5a78db275c84ffe90817818b78ba0d9
+#: ../source/about.txt:115
 msgid "The MongoDB Manual is copyright |copy| 2011-|year| MongoDB, Inc."
 msgstr ""
 "El Manual de MongoDB Manual tiene derechos de autor &#124; copy &#124; 2011-"
