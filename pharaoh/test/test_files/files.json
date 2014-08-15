@@ -1,0 +1,25 @@
+{"files": [{
+    "_id" : "f1",
+    "source_language" : "en",
+    "priority" : 0,
+    "file_path" : "LC_MESSAGES/about",
+    "target_language" : "es",
+    "edition": 0
+},
+{
+    "_id" : "f2",
+    "source_language" : "en",
+    "priority" : 0,
+    "file_path" : "LC_MESSAGES/installation",
+    "target_language" : "es",
+    "edition": 0
+},
+{
+    "_id" : "f3",
+    "source_language" : "en",
+    "priority" : 0,
+    "file_path" : "LC_MESSAGES/contents",
+    "target_language" : "es",
+    "edition": 0
+}
+]}
