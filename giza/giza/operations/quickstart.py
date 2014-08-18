@@ -23,14 +23,18 @@ import argh
 import giza
 
 from giza.command import command, CommandError
+from giza.config.helper import fetch_config
+from giza.operations.sphinx import sphinx_publication
+from giza.app import BuildApp
 
 @argh.named('quickstart')
 def make_project(args):
     curdir = os.getcwd()
     curdir_list = os.listdir(curdir)
+
     if len(curdir_list) > 0 and (not len(curdir_list) == 1 and not '.git' in curdir_list):
         logger.critical('cannot create new project in directory that already has files: ' + curdir)
-        _weak_bootstrapping()
+        _weak_bootstrapping(args)
         logger.info('attempted to bootstrap buildsystem')
     else:
         mod_path = os.path.dirname(inspect.getfile(giza))
@@ -46,13 +50,16 @@ def make_project(args):
 
         logger.info('created project skeleton in current directory.')
 
-        _weak_bootstrapping()
+        _weak_bootstrapping(args)
 
-def _weak_bootstrapping():
+def _weak_bootstrapping(args):
+    conf = fetch_config(args)
+    app = BuildApp(conf)
+
     try:
-        command('giza sphinx -b html')
-    except CommandError:
-        command('giza sphinx -b html')
+        sphinx_publication(conf, args, app)
+    except:
+        sphinx_publication(conf, args, app)
         shutil.rmtree('docs-tools')
-    finally:
-        command('python build/docs-tools/makecloth/meta.py build/makefile.meta')
+
+    command('python build/docs-tools/makecloth/meta.py build/makefile.meta')

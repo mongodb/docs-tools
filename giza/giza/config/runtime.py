@@ -287,7 +287,10 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @property
     def editions_to_build(self):
-        return self.state['editions_to_build']
+        if 'editions_to_build' not in self.state:
+            return []
+        else:
+            return self.state['editions_to_build']
 
     @editions_to_build.setter
     def editions_to_build(self, value):
@@ -298,7 +301,10 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @property
     def languages_to_build(self):
-        return self.state['languages_to_build']
+        if 'languages_to_build' not in self.state:
+            return []
+        else:
+            return self.state['languages_to_build']
 
     @languages_to_build.setter
     def languages_to_build(self, value):
