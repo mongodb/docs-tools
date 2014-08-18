@@ -19,3 +19,4 @@ config
 !giza/giza/quickstart/config
 fabsrc/giza
 *.egg-info
+!giza/docs/config

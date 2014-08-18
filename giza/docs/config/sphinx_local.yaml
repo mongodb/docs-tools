@@ -1,0 +1,18 @@
+project: 'giza'
+master_doc: 'index'
+logo: ".static/logo.png"
+paths:
+  static: ['source/.static']
+theme:
+  name: 'mongodb-default'
+  project: 'giza'
+  google_analytics: 'UA-0000000-0'
+  book_path_base: 'Giza'
+  repo: 'docs-tools'
+  jira: 'DOCS'
+  sitename: 'Giza'
+  nav_excluded: []
+sidebars:
+  '**':
+    - 'pagenav.html'
+...
