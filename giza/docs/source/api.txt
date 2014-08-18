@@ -6,6 +6,7 @@ Giza contains a number of components
 
 .. toctree::
 
-   /api/nav/core
    /api/nav/config
    /api/nav/content
+   /api/nav/core
+   /api/nav/tools

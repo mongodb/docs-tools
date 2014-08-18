@@ -12,7 +12,7 @@ import logging
 
 from giza.config.runtime import RuntimeStateConfig
 from giza.config.helper import fetch_config, get_versions, get_manual_path
-from giza.strings import dot_concat
+from giza.tools.strings import dot_concat
 
 logging.basicConfig(level=logging.INFO)
 conf = fetch_config(RuntimeStateConfig())

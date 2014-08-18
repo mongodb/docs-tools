@@ -13,8 +13,8 @@ from makecloth import MakefileCloth
 try:
     import giza
     from giza.config.helper import new_config
-    from giza.serialization import ingest_yaml_doc
-    from giza.strings import hyph_concat
+    from giza.tools.serialization import ingest_yaml_doc
+    from giza.tools.strings import hyph_concat
 except ImportError as e:
     giza = None
     print(e)
