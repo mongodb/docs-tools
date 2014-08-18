@@ -19,8 +19,8 @@ logger = logging.getLogger('giza.content.table')
 
 from rstcloth.table import TableBuilder, YamlTable, ListTable
 
-from giza.strings import dot_concat, hyph_concat
-from giza.files import expand_tree, verbose_remove
+from giza.tools.strings import dot_concat, hyph_concat
+from giza.tools.files import expand_tree, verbose_remove
 
 #################### Table Builder ####################
 

@@ -20,9 +20,9 @@ import json
 import re
 
 from giza.translate.utils import Timer, set_logger
-from giza.command import command
-from giza.files import copy_always
-from giza.transformation import munge_page
+from giza.tools.command import command
+from giza.tools.files import copy_always
+from giza.tools.transformation import munge_page
 
 '''
 This module builds the translation model by training, tuning, and then testing.

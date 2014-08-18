@@ -17,7 +17,7 @@ import os.path
 
 logger = logging.getLogger('giza.content.examples')
 
-from giza.files import expand_tree
+from giza.tools.files import expand_tree
 from giza.content.examples.inheritance import ExampleDataCache
 from giza.content.examples.views import full_example
 

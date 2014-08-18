@@ -18,7 +18,7 @@ import logging
 
 logger = logging.getLogger('giza.content.manpages')
 
-from giza.files import expand_tree
+from giza.tools.files import expand_tree
 
 #################### Manpage Processing ####################
 

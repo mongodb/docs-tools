@@ -18,9 +18,9 @@ import logging
 
 logger = logging.getLogger('giza.content.intersphinx')
 
-from giza.command import command
-from giza.serialization import ingest_yaml_list
-from giza.files import verbose_remove
+from giza.tools.command import command
+from giza.tools.serialization import ingest_yaml_list
+from giza.tools.files import verbose_remove
 
 ACCEPTABLE = 864000
 

@@ -24,8 +24,8 @@ Given a deploy target, we need to compile the rsync commands to:
 import logging
 import os.path
 
-from giza.files import InvalidFile
-from giza.command import command
+from giza.tools.files import InvalidFile
+from giza.tools.command import command
 
 logger = logging.getLogger('giza.deploy')
 

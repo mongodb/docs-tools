@@ -27,11 +27,11 @@ from giza.translate.model import build_model, setup_train, setup_tune, setup_tes
 from giza.translate.model_results import aggregate_model_data
 from giza.translate.utils import merge_files, flip_text_direction
 from giza.translate.translation import translate_po_files, translate_file, auto_approve_po_entries
-from giza.serialization import ingest_yaml_doc
-from giza.config.helper import fetch_config
 from giza.config.corpora import CorporaConfig
+from giza.config.helper import fetch_config
 from giza.config.translate import TranslateConfig
-from giza.app import BuildApp
+from giza.core.app import BuildApp
+from giza.tools.serialization import ingest_yaml_doc
 
 logger = logging.getLogger('giza.operations.translate')
 

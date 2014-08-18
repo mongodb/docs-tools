@@ -18,8 +18,8 @@ import logging
 logger = logging.getLogger('giza.content.examples.models')
 
 from giza.config.base import ConfigurationBase
-from giza.inheritance import DataCache, DataContentBase, InheritableContentBase
-from giza.serialization import ingest_yaml_doc
+from giza.core.inheritance import DataCache, DataContentBase, InheritableContentBase
+from giza.tools.serialization import ingest_yaml_doc
 
 from pygments.lexers import get_all_lexers
 
@@ -103,6 +103,7 @@ class ExampleOptions(ConfigurationBase):
 
 class ExampleOperationBlock(ConfigurationBase):
     _option_registry = ['pre', 'post']
+
     @property
     def code(self):
         return self.state['code']

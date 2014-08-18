@@ -18,9 +18,9 @@ from shutil import rmtree
 
 logger = logging.getLogger('giza.content.source')
 
-from giza.command import command
 from giza.content.dependencies import dump_file_hashes
-from giza.files import InvalidFile
+from giza.tools.command import command
+from giza.tools.files import InvalidFile
 
 def transfer_source(conf, sconf):
     target = os.path.join(conf.paths.projectroot, conf.paths.branch_source)

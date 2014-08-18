@@ -19,12 +19,12 @@ import sys
 
 logger = logging.getLogger('giza.content.post.sites')
 
-from giza.command import command
-from giza.serialization import ingest_yaml_list, ingest_yaml_doc
-from giza.task import check_dependency
-from giza.files import (expand_tree, create_link, copy_if_needed,
+from giza.core.task import check_dependency
+from giza.tools.command import command
+from giza.tools.serialization import ingest_yaml_list, ingest_yaml_doc
+from giza.tools.transformation import munge_page
+from giza.tools.files import (expand_tree, create_link, copy_if_needed,
                               decode_lines_from_file, encode_lines_to_file)
-from giza.transformation import munge_page
 
 def manual_single_html(input_file, output_file):
     # don't rebuild this if its not needed.

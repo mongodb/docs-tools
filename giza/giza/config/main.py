@@ -14,7 +14,7 @@
 
 import os.path
 
-from giza.serialization import ingest_yaml_doc
+from giza.tools.serialization import ingest_yaml_doc
 
 from giza.config.base import ConfigurationBase, RecursiveConfigurationBase
 from giza.config.assets import AssetsConfig

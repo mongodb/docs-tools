@@ -22,7 +22,7 @@ import os
 import re
 from contextlib import contextmanager
 
-from giza.command import command
+from giza.tools.command import command
 
 logger = logging.getLogger('giza.git')
 
@@ -36,7 +36,7 @@ class GitRepo(object):
         """
         :param string path: Optional. Defines a the path of the git
            repository. If not specified, defaults to the current working
-           directory. 
+           directory.
         """
 
         if path is None:

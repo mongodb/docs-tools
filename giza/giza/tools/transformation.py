@@ -18,8 +18,8 @@ import re
 
 logger = logging.getLogger('giza.transformation')
 
-from giza.files import copy_always, encode_lines_to_file, decode_lines_from_file
-from giza.serialization import ingest_yaml
+from giza.tools.files import copy_always, encode_lines_to_file, decode_lines_from_file
+from giza.tools.serialization import ingest_yaml
 
 class ProcessingError(Exception):
     pass

@@ -17,10 +17,9 @@ import logging
 
 logger = logging.getLogger('giza.content.primer')
 
-from giza.serialization import ingest_yaml_list
-from giza.files import copy_if_needed, copy_always, expand_tree, verbose_remove
-
-from giza.transformation import post_process_tasks, truncate_file, append_to_file
+from giza.tools.files import copy_if_needed, copy_always, expand_tree, verbose_remove
+from giza.tools.serialization import ingest_yaml_list
+from giza.tools.transformation import post_process_tasks, truncate_file, append_to_file
 
 def get_migration_specifications(conf):
     return [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,

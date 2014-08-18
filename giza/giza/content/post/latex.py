@@ -1,20 +1,17 @@
+import logging
 import os
 import re
 import subprocess
-import logging
 
 logger = logging.getLogger('giza.content.post.latex')
 
-from giza.command import command
-
-from giza.files import (create_link, copy_if_needed,
-                        decode_lines_from_file, encode_lines_to_file)
-from giza.serialization import ingest_yaml_list
-from giza.transformation import munge_page
-from giza.strings import hyph_concat
-
 from giza.content.helper import edition_check
-
+from giza.tools.command import command
+from giza.tools.serialization import ingest_yaml_list
+from giza.tools.strings import hyph_concat
+from giza.tools.transformation import munge_page
+from giza.tools.files import (create_link, copy_if_needed,
+                        decode_lines_from_file, encode_lines_to_file)
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 

@@ -16,7 +16,7 @@ import logging
 
 logger = logging.getLogger('giza.content.post.sites')
 
-from giza.serialization import ingest_yaml_list
+from giza.tools.serialization import ingest_yaml_list
 
 def make_redirect(conf):
     o = [ ]

@@ -25,8 +25,8 @@ import os.path
 
 logger = logging.getLogger('giza.content.examples.inheritance')
 
-from giza.serialization import ingest_yaml_list
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
+from giza.tools.serialization import ingest_yaml_list
 
 class InheritableContentError(Exception):
     """

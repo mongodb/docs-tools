@@ -28,7 +28,7 @@ import collections
 logger = logging.getLogger('giza.task')
 
 from giza.config.main import ConfigurationBase
-from giza.files import md5_file
+from giza.tools.files import md5_file
 
 if sys.version_info >= (3, 0):
     basestring = str
@@ -36,7 +36,7 @@ if sys.version_info >= (3, 0):
 class Task(object):
     """
     Provides a common interface for defining an operational unit of work in a
-    concurrent :class:`~giza.app.BuildApp()` environment. 
+    concurrent :class:`~giza.app.BuildApp()` environment.
 
     With :attr:`~giza.task.Task.target` and :attr:`~giza.task.Task.dependency`
     defined, if a ``target`` file exists and was modified after the
@@ -49,7 +49,7 @@ class Task(object):
         All arguments are optional. You can define a :class:`~giza.task.Task()`
         either upon creation, or after creation by modifying attributes.
 
-        :param callable job: A callable object that the task will execute. 
+        :param callable job: A callable object that the task will execute.
 
         :param string description: Describes the task. Used in error messages.
 
@@ -57,7 +57,7 @@ class Task(object):
 
         :param string dependency: A file name. A path to a file that the task
            depends on. When specified, the task will only run if forced or if
-           the ``depdendency`` file is newer than the target file. 
+           the ``depdendency`` file is newer than the target file.
         """
 
         self.spec = {}
@@ -161,7 +161,7 @@ def check_dependency(target, dependency):
     Determines if a target requires rebuilding based on it's provided
     dependency.
 
-    :param string target: A file name. 
+    :param string target: A file name.
 
     :param dependency: A file name or list of file names.
     :type dependency: string, list

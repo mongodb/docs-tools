@@ -2,7 +2,7 @@ import logging
 
 import argh
 
-from giza.git import GitRepo
+from giza.core.git import GitRepo
 from giza.config.helper import fetch_config
 
 logger = logging.getLogger('giza.operations.git')

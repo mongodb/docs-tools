@@ -20,7 +20,7 @@ from multiprocessing import cpu_count
 
 logger = logging.getLogger('giza.config.runtime')
 
-from giza.command import CommandError
+from giza.tools.command import CommandError
 
 from giza.config.base import ConfigurationBase
 from giza.config.sphinx_config import avalible_sphinx_builders

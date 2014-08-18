@@ -2,7 +2,7 @@
 ``app`` -- Process Management
 =============================
 
-.. automodule:: giza.app
+.. automodule:: giza.core.app
 
 .. autoclass:: BuildApp
    :members:

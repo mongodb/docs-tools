@@ -18,10 +18,10 @@ import re
 
 logger = logging.getLogger('giza.content.post.singlehtml')
 
-from giza.files import (expand_tree, copy_if_needed, decode_lines_from_file,
-                        encode_lines_to_file, FileNotFoundError)
-from giza.strings import hyph_concat
-from giza.task import check_dependency
+from giza.core.task import check_dependency
+from giza.tools.strings import hyph_concat
+from giza.tools.files import (expand_tree, copy_if_needed, decode_lines_from_file,
+                              encode_lines_to_file, FileNotFoundError)
 
 def get_single_html_dir(conf):
     return os.path.join(conf.paths.public_site_output, 'single')

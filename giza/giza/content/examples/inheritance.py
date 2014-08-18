@@ -17,10 +17,10 @@ import os.path
 
 logger = logging.getLogger('giza.inheritance')
 
-from giza.serialization import ingest_yaml_list
 from giza.config.base import RecursiveConfigurationBase
-from giza.inheritance import InheritableContentError, DataContentBase, DataCache
 from giza.content.examples.models import ExampleData, ExampleCase
+from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache
+from giza.tools.serialization import ingest_yaml_list
 
 # Example specific inheritance machinery
 

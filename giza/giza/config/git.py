@@ -16,7 +16,7 @@ import logging
 
 logger = logging.getLogger('giza.config.git')
 
-from giza.git import GitRepo
+from giza.core.git import GitRepo
 from giza.config.base import ConfigurationBase
 
 class GitConfigBase(ConfigurationBase):
@@ -129,4 +129,3 @@ class GitBranchConfig(GitConfigBase):
 
 class GitRemoteConfig(ConfigurationBase):
     _option_registry = ['upstream', 'tools']
-

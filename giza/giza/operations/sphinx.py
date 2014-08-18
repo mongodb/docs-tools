@@ -4,7 +4,7 @@ import argh
 import itertools
 
 from giza.config.helper import fetch_config
-from giza.app import BuildApp
+from giza.core.app import BuildApp
 
 logger = logging.getLogger('giza.operations.sphinx')
 

@@ -25,7 +25,7 @@ from giza.config.intersphinx import IntersphinxConfig
 from giza.config.translate import TranslateConfig
 from giza.config.corpora import CorporaConfig
 from giza.config.redirects import HtaccessData
-from giza.serialization import ingest_yaml_list
+from giza.tools.serialization import ingest_yaml_list
 
 class SystemConfig(RecursiveConfigurationBase):
     @property

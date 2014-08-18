@@ -2,7 +2,7 @@
 ``task`` -- Work Unit Encapsulation
 ===================================
 
-.. automodule:: giza.task
+.. automodule:: giza.core.task
 
 .. autoclass:: Task
    :members:
@@ -12,8 +12,8 @@
    :members:
    :undoc-members:
 
-.. autofunction:: check_dependency               
+.. autofunction:: check_dependency
 
-.. autofunction:: check_multi_dependency               
+.. autofunction:: check_multi_dependency
 
-.. autofunction:: check_hashed_dependency               
+.. autofunction:: check_hashed_dependency

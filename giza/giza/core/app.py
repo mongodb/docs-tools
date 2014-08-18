@@ -21,10 +21,10 @@ import logging
 
 logger = logging.getLogger('giza.app')
 
-from giza.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool, EventPool
+from giza.core.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool, EventPool
 from giza.config.main import Configuration
 
-from giza.task import Task, MapTask
+from giza.core.task import Task, MapTask
 
 class BuildApp(object):
     """
@@ -35,7 +35,7 @@ class BuildApp(object):
     objects in the queue execute in isolation after proceeding group of
     :class:`~giza.task.Task()` operations complete. Mix
     :class:`~giza.app.BuildApp()` and :class:`~giza.task.Task()` operations to
-    control task ordering. 
+    control task ordering.
 
     The results of all operations are accessible in the
     :attr:`~giza.app.BuildApp.results`, which largely preserves the ordering of the
@@ -51,7 +51,7 @@ class BuildApp(object):
     def __init__(self, conf):
         """
         :param Configuration conf: A top level
-           :class:`~giza.config.main.Configuration` object. 
+           :class:`~giza.config.main.Configuration` object.
         """
 
         self.conf = conf
@@ -59,7 +59,7 @@ class BuildApp(object):
         self.results = []
         self.worker_pool = None
         self.default_pool = self.conf.runstate.runner
-        
+
         self.pool_mapping = {
             'thread': ThreadPool,
             'process': ProcessPool,
@@ -144,7 +144,7 @@ class BuildApp(object):
     def add(self, task=None):
         """
         Adds a new :class:`~giza.app.BuildApp()` or :class:`~giza.task.Task()`
-        to the :class:`~giza.app.BuildApp()` object. 
+        to the :class:`~giza.app.BuildApp()` object.
 
         :param string,Task,BuildApp task: Optional. If not specified,
            :meth:`~giza.app.BuildApp.add()` creates and returns a new
@@ -155,10 +155,10 @@ class BuildApp(object):
            pass the string ``app`` or the :class:`~giza.app.BuildApp` class, to
            create and add new :class:`~giza.app.BuildApp()`: pass an existing
            :class:`~giza.app.BuildApp()`  instance to add that that operation
-           grouping to the queue. 
+           grouping to the queue.
 
         :returns: A reference to a :class:`~giza.app.BuildApp()` or
-           :class:`~giza.task.Task()` object in the :class:`~giza.app.BuildApp()` 
+           :class:`~giza.task.Task()` object in the :class:`~giza.app.BuildApp()`
 
         :raises: :exc:`TypeError` if the ``task`` argument is invalid.
 

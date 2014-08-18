@@ -25,7 +25,7 @@ import logging
 
 logger = logging.getLogger('giza.pool')
 
-from giza.task import MapTask
+from giza.core.task import MapTask
 
 class PoolConfigurationError(Exception): pass
 class PoolResultsError(Exception): pass
@@ -140,5 +140,3 @@ class EventPool(WorkerPool):
             raise PoolConfigurationError('gevent is not available')
 
         self.p = gevent.pool.Pool(self.conf.runstate.pool_size)
-
-

@@ -17,8 +17,8 @@ import os.path
 
 logger = logging.getLogger('giza.content.includes')
 
-from giza.files import expand_tree
-from giza.serialization import ingest_yaml_doc
+from giza.tools.files import expand_tree
+from giza.tools.serialization import ingest_yaml_doc
 from giza.includes import generated_includes, included_recusively, include_files
 from rstcloth.rstcloth import RstCloth
 

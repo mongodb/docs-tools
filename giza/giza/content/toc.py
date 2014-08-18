@@ -18,7 +18,7 @@ import os.path
 logger = logging.getLogger('giza.content.toc')
 
 import yaml
-from giza.files import expand_tree
+from giza.tools.files import expand_tree
 
 from rstcloth.rstcloth import RstCloth, fill
 from rstcloth.table import TableData, TableBuilder, RstTable

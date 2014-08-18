@@ -20,7 +20,7 @@ import re
 import polib
 
 from giza.translate.utils import TempDir, get_file_list, flip_text_direction
-from giza.command import command
+from giza.tools.command import command
 
 '''
 This module has functions for translating files. It has a function for

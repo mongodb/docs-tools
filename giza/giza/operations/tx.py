@@ -20,12 +20,13 @@ import argh
 
 logger = logging.getLogger('giza.operations.tx')
 
-from giza.app import BuildApp
 from giza.config.helper import fetch_config
-from giza.command import command
-from giza.strings import hyph_concat
-from giza.files import FileLogger
 from giza.config.sphinx_config import resolve_builder_path
+from giza.core.app import BuildApp
+from giza.tools.command import command
+from giza.tools.strings import hyph_concat
+from giza.tools.files import FileLogger
+
 from sphinx_intl.commands import update_txconfig_resources
 
 #################### Helpers ####################

@@ -21,11 +21,10 @@ logger = logging.getLogger('giza.content.images')
 from docutils.core import publish_parts
 from rstcloth.rstcloth import RstCloth
 
-from giza.command import command
-
-from giza.files import verbose_remove
-from giza.strings import dot_concat
-from giza.serialization import ingest_yaml_list
+from giza.tools.command import command
+from giza.tools.files import verbose_remove
+from giza.tools.serialization import ingest_yaml_list
+from giza.tools.strings import dot_concat
 
 ## Internal Supporting Methods
 

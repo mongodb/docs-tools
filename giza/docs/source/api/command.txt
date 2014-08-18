@@ -2,7 +2,7 @@
 ``command`` -- Shell Command Execution
 ======================================
 
-.. automodule:: giza.command
+.. automodule:: giza.tools.command
 
 .. autoclass:: CommandResult
    :members:

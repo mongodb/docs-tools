@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
+import datetime
 import json
 import logging
-import datetime
+import os
 
-from giza.task import check_hashed_dependency
-from giza.files import expand_tree, md5_file
 from giza.content.includes import include_files
+from giza.core.task import check_hashed_dependency
+from giza.tools.files import expand_tree, md5_file
 
 logger = logging.getLogger('giza.content.dependencies')
 

@@ -4,9 +4,9 @@ logger = logging.getLogger('giza.operations.generate')
 
 import argh
 
-from giza.app import BuildApp
+from giza.core.app import BuildApp
 from giza.config.helper import fetch_config
-from giza.files import rm_rf
+from giza.tools.files import rm_rf
 
 from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images import image_tasks, image_clean

@@ -5,9 +5,9 @@ logger = logging.getLogger('giza.operations.clean')
 
 import argh
 
-from giza.app import BuildApp
+from giza.core.app import BuildApp
 from giza.config.main import Configuration
-from giza.files import rm_rf
+from giza.tools.files import rm_rf
 
 @argh.arg('--conf_path', '-c')
 @argh.arg('--builder', '-b', dest='builder_to_delete')

@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import inspect
 import logging
 import os
-import inspect
 import shutil
 
 logger = logging.getLogger('giza.operations.quickstart')
@@ -22,10 +22,10 @@ logger = logging.getLogger('giza.operations.quickstart')
 import argh
 import giza
 
-from giza.command import command, CommandError
 from giza.config.helper import fetch_config
+from giza.core.app import BuildApp
 from giza.operations.sphinx import sphinx_publication
-from giza.app import BuildApp
+from giza.tools.command import command, CommandError
 
 @argh.named('quickstart')
 def make_project(args):

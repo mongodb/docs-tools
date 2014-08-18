@@ -21,9 +21,8 @@ logger = logging.getLogger('giza.content.options')
 from jinja2 import Template
 from rstcloth.rstcloth import RstCloth
 
-from giza.files import expand_tree, rm_rf
-from giza.serialization import ingest_yaml_list
-from giza.files import expand_tree
+from giza.tools.files import expand_tree, rm_rf
+from giza.tools.serialization import ingest_yaml_list
 
 #################### Rendering ####################
 

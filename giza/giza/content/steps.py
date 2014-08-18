@@ -17,8 +17,8 @@ import os.path
 
 logger = logging.getLogger('giza.content.steps')
 
-from giza.files import expand_tree, verbose_remove
-from giza.serialization import ingest_yaml_list
+from giza.tools.files import expand_tree, verbose_remove
+from giza.tools.serialization import ingest_yaml_list
 
 from rstcloth.rstcloth import RstCloth
 

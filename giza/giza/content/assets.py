@@ -17,9 +17,9 @@ import os.path
 
 logger = logging.getLogger('giza.content.assets')
 
-from giza.git import GitRepo
-from giza.files import rm_rf
-from giza.command import command
+from giza.core.git import GitRepo
+from giza.tools.files import rm_rf
+from giza.tools.command import command
 
 def assets_setup(path, branch, repo):
     if os.path.exists(path):

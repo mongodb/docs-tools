@@ -3,12 +3,12 @@ import argh
 
 logger = logging.getLogger('giza.operations.deploy')
 
-from giza.command import verbose_command
-from giza.app import BuildApp
-from giza.deploy import Deploy
 from giza.config.helper import fetch_config
-from giza.serialization import ingest_yaml_list, dict_from_list
+from giza.core.app import BuildApp
+from giza.deploy import Deploy
 from giza.operations.sphinx import sphinx_publication
+from giza.tools.command import verbose_command
+from giza.tools.serialization import ingest_yaml_list, dict_from_list
 
 @argh.arg('--target', '-t', nargs='*', dest='push_targets')
 @argh.arg('--dry-run', '-d', action='store_true', dest='dry_run')

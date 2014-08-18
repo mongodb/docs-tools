@@ -18,9 +18,9 @@ import re
 from itertools import groupby
 from operator import itemgetter
 
-from giza.serialization import ingest_yaml_doc, ingest_yaml_list
-from giza.files import expand_tree
-from giza.command import command
+from giza.tools.serialization import ingest_yaml_doc, ingest_yaml_list
+from giza.tools.files import expand_tree
+from giza.tools.command import command
 
 def include_files(conf, files=None):
     if files is not None:

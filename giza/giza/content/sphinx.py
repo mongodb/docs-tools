@@ -20,13 +20,11 @@ from multiprocessing import cpu_count
 
 logger = logging.getLogger('giza.content.sphinx')
 
-from giza.strings import timestamp
-
-from giza.command import command
-from giza.app import BuildApp
+from giza.core.app import BuildApp
+from giza.tools.command import command
+from giza.tools.strings import timestamp
 from giza.content.links import create_manual_symlink
 from giza.content.manpages import manpage_url_tasks
-
 from giza.content.post.archives import man_tarball, html_tarball
 from giza.content.post.json_output import json_output_tasks
 from giza.content.post.singlehtml import finalize_single_html_tasks

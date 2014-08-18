@@ -27,7 +27,7 @@ except ImportError:
 import argh
 
 from giza.config.helper import fetch_config
-from giza.serialization import dict_from_list
+from giza.tools.serialization import dict_from_list
 from giza.operations.deploy import deploy_worker
 
 ############### Helper ###############

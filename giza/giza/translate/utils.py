@@ -21,7 +21,7 @@ import shutil
 import os
 import codecs
 
-from giza.files import expand_tree
+from giza.tools.files import expand_tree
 
 '''
 This module contains utility functions used through the translate section of

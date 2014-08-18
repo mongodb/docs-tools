@@ -17,10 +17,10 @@ import logging
 
 import sphinx.builders
 
-from giza.strings import hyph_concat
-from giza.config.base import RecursiveConfigurationBase
-from giza.serialization import ingest_yaml_doc
 from giza.config.base import ConfigurationBase
+from giza.config.base import RecursiveConfigurationBase
+from giza.tools.serialization import ingest_yaml_doc
+from giza.tools.strings import hyph_concat
 
 logger = logging.getLogger('giza.config.sphinx_config')
 
