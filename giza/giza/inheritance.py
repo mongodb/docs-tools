@@ -11,6 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+:mod:`~giza.inheritance` is a library for managing content reuse using an
+inheritance-based model for structured content. In systems that use this code,
+writers define content in a structured form, where content units can "inherit"
+from other content units and optionally override some portions of the inherited
+units.
+"""
 
 import logging
 import os.path
@@ -20,9 +27,20 @@ logger = logging.getLogger('giza.content.examples.inheritance')
 from giza.serialization import ingest_yaml_list
 from giza.config.base import RecursiveConfigurationBase
 
-class InheritableContentError(Exception): pass
+class InheritableContentError(Exception): 
+    """
+    Exception used by inheritance code to indicate a problem resolving
+    inherited content.
+    """
+    
+    pass
 
 class InheritableContentBase(RecursiveConfigurationBase):
+    """
+    Base data object that represents a single unit of content. Typically
+    sub-classed.
+    """
+
     _option_registry = ['pre', 'post', 'ref', 'content', 'title', 'edition']
 
     @property
@@ -62,6 +80,12 @@ class InheritableContentBase(RecursiveConfigurationBase):
             raise InheritableContentError(m)
 
 class InheritanceReference(RecursiveConfigurationBase):
+    """
+    Represents a single reference to another unit of content. The
+    setter method for the :meth:`~giza.inheritance.InheritanceReference.file`
+    attribute, returns an error if it cannot discover a specified value.
+    """
+
     _option_registry = ['ref']
 
     @property
@@ -86,6 +110,8 @@ class InheritanceReference(RecursiveConfigurationBase):
     def file(self, value):
         fns = [ value,
                 os.path.join(self.conf.paths.projectroot, value),
+                os.path.join(self.conf.paths.projectroot, 
+                             self.conf.paths.source, value),
                 os.path.join(self.conf.paths.projectroot,
                              self.conf.paths.includes, value) ]
 
@@ -101,6 +127,10 @@ class InheritanceReference(RecursiveConfigurationBase):
 ##############################
 
 class DataContentBase(RecursiveConfigurationBase):
+    """
+    Represents a group of units ingested from a single file. 
+    """
+
     content_class = InheritableContentBase
 
     def __init__(self, src, data, conf):
@@ -184,6 +214,11 @@ class DataContentBase(RecursiveConfigurationBase):
             exmp.resolve(self.data)
 
 class DataCache(RecursiveConfigurationBase):
+    """
+    Represents a group of related files that hold similar kinds of structured
+    data. Often subclassed.
+    """
+
     content_class = DataContentBase
 
     def __init__(self, files, conf):

@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+:mod:`~giza.pool` provides methods for executing the tasks in a
+:class:`~giza.app`. The base class :class:`~giza.pool.WorkerPool` provides core
+functionality, while additional sub-classes use different parallelism
+mechanisms.
+"""
+
 import multiprocessing
 import multiprocessing.dummy
 import logging
@@ -20,8 +27,8 @@ logger = logging.getLogger('giza.pool')
 
 from giza.task import MapTask
 
-class PoolResultsError(Exception):
-    pass
+class PoolConfigurationError(Exception): pass
+class PoolResultsError(Exception): pass
 
 def run_task(task):
     "helper to call run method on task so entire operation can be pickled for process pool support"
@@ -121,3 +128,17 @@ class ProcessPool(WorkerPool):
         self.conf = conf
         self.p = multiprocessing.Pool(self.conf.runstate.pool_size)
         logger.info('new process pool object')
+
+
+class EventPool(WorkerPool):
+    def __init__(self, conf=None):
+        self.conf = conf
+
+        try:
+            import gevent.pool
+        except ImportError:
+            raise PoolConfigurationError('gevent is not available')
+
+        self.p = gevent.pool.Pool(self.conf.runstate.pool_size)
+
+

@@ -21,7 +21,7 @@ import logging
 
 logger = logging.getLogger('giza.app')
 
-from giza.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool
+from giza.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool, EventPool
 from giza.config.main import Configuration
 
 from giza.task import Task, MapTask
@@ -63,6 +63,7 @@ class BuildApp(object):
         self.pool_mapping = {
             'thread': ThreadPool,
             'process': ProcessPool,
+            'event': EventPool,
             'serial': SerialPool
         }
         self.pool_types = tuple([ self.pool_mapping[p] for p in self.pool_mapping ])
