@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """
 :mod:`~giza.inheritance` is a library for managing content reuse using an
 inheritance-based model for structured content. In systems that use this code,
