@@ -128,18 +128,5 @@ class GitBranchConfig(GitConfigBase):
             self.state['published'] = 'master'
 
 class GitRemoteConfig(ConfigurationBase):
-    @property
-    def upstream(self):
-        return self.state['upstream']
+    _option_registry = ['upstream', 'tools']
 
-    @upstream.setter
-    def upstream(self, value):
-        self.state['upstream'] = value
-
-    @property
-    def tools(self):
-        return self.state['tools']
-
-    @tools.setter
-    def tools(self, value):
-        self.state['tools'] = value

@@ -35,37 +35,7 @@ def get_path_prefix(conf, branch):
     return '/'.join(o)
 
 class ProjectConfig(RecursiveConfigurationBase):
-    @property
-    def name(self):
-        return self.state['name']
-
-    @name.setter
-    def name(self, value):
-        self.state['name'] = value
-
-    @property
-    def tag(self):
-        return self.state['tag']
-
-    @tag.setter
-    def tag(self, value):
-        self.state['tag'] = value
-
-    @property
-    def url(self):
-        return self.state['url']
-
-    @url.setter
-    def url(self, value):
-        self.state['url'] = value
-
-    @property
-    def title(self):
-        return self.state['title']
-
-    @title.setter
-    def title(self, value):
-        self.state['title'] = value
+    _option_registry = ['name', 'tag', 'url', 'title']
 
     @property
     def editions(self):
@@ -158,13 +128,7 @@ class ProjectConfig(RecursiveConfigurationBase):
         return get_path_prefix(self.conf, self.conf.git.branches.current)
 
 class EditionListConfig(ConfigurationBase):
-    @property
-    def name(self):
-        return self.state['name']
-
-    @name.setter
-    def name(self, value):
-        self.state['name'] = value
+    _option_registry = ['name']
 
     @property
     def branched(self):

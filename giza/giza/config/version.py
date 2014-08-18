@@ -15,21 +15,7 @@
 from giza.config.base import RecursiveConfigurationBase
 
 class VersionConfig(RecursiveConfigurationBase):
-    @property
-    def release(self):
-        return self.state['release']
-
-    @release.setter
-    def release(self, value):
-        self.state['release'] = value
-
-    @property
-    def branch(self):
-        return self.state['branch']
-
-    @branch.setter
-    def branch(self, value):
-        self.state['branch'] = value
+    _option_registry = ['release', 'branch']
 
     @property
     def published(self):

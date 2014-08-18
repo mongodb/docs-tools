@@ -21,61 +21,8 @@ from giza.strings import hyph_concat
 from giza.config.base import RecursiveConfigurationBase
 
 class PathsConfig(RecursiveConfigurationBase):
-    @property
-    def output(self):
-        return self.state['output']
-
-    @output.setter
-    def output(self, value):
-        self.state['output'] = value
-
-    @property
-    def source(self):
-        return self.state['source']
-
-    @source.setter
-    def source(self, value):
-        self.state['source'] = value
-
-    @property
-    def includes(self):
-        return self.state['includes']
-
-    @includes.setter
-    def includes(self, value):
-        self.state['includes'] = value
-
-    @property
-    def images(self):
-        return self.state['images']
-
-    @images.setter
-    def images(self, value):
-        self.state['images'] = value
-
-    @property
-    def tools(self):
-        return self.state['tools']
-
-    @tools.setter
-    def tools(self, value):
-        self.state['tools'] = value
-
-    @property
-    def buildsystem(self):
-        return self.state['buildsystem']
-
-    @buildsystem.setter
-    def buildsystem(self, value):
-        self.state['buildsystem'] = value
-
-    @property
-    def builddata(self):
-        return self.state['builddata']
-
-    @builddata.setter
-    def builddata(self, value):
-        self.state['builddata'] = value
+    _option_registry = ['output', 'source', 'includes', 'images', 'buildsystem',
+                        'tools', 'builddata']
 
     @property
     def locale(self):
