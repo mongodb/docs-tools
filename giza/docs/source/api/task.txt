@@ -1,0 +1,19 @@
+===================================
+``task`` -- Work Unit Encapsulation
+===================================
+
+.. automodule:: giza.task
+
+.. autoclass:: Task
+   :members:
+   :undoc-members:
+
+.. autoclass:: MapTask
+   :members:
+   :undoc-members:
+
+.. autofunction:: check_dependency               
+
+.. autofunction:: check_multi_dependency               
+
+.. autofunction:: check_hashed_dependency               

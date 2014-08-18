@@ -66,6 +66,7 @@ def generate_image_pages(dir, name, alt, output, conf):
                         '{6}</div>' ]
             img_str = ''.join(img_tags)
 
+
             r.directive('only', 'website and not html', wrap=False, block=b)
             r.newline()
             r.directive(name='raw', arg='html',

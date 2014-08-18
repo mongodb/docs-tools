@@ -1,0 +1,8 @@
+========
+Giza API
+========
+
+.. toctree:: 
+   :glob:
+
+   api/*

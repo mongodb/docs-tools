@@ -163,14 +163,16 @@ def check_dependency(target, dependency):
 
     :param string target: A file name. 
 
-    :param string,list dependency: A file name or list of file names.
+    :param dependency: A file name or list of file names.
+    :type dependency: string, list
 
     :returns: A boolean. If either the ``target`` or ``dependency`` doesn't
        exist, or if the ``target`` was modified more recently than the
-       ``dependency`` returns ``True`` otherwise returns ``False.
+       ``dependency`` returns ``True`` otherwise returns ``False``.
 
-    :func:`~giza.task.check_dependency()` Accepts dependencies in the form of a single file name, or as a
-    list, and will 
+    :func:`~giza.task.check_dependency()` Accepts dependencies in the form of a
+    single file name, or as a list, and will return ``True`` if *any* dependent
+    file is newer than the target.
     """
 
     if dependency is None:
@@ -204,7 +206,7 @@ class MapTask(Task):
     """
     A variant of :class:`~giza.task.Task()` that defines a task that like the
     kind of operation that would run in a :func:`map()` function, processing the
-    contents of an iterable with a single function.
+    contents of an operable with a single function.
     """
 
     def __init__(self, job=None, description=None, target=None, dependency=None):

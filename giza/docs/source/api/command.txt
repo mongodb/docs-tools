@@ -1,0 +1,15 @@
+======================================
+``command`` -- Shell Command Execution
+======================================
+
+.. automodule:: giza.command
+
+.. autoclass:: CommandResult
+   :members:
+   :undoc-members:
+
+.. autoexception:: CommandError
+
+.. autofunction:: command
+
+.. autofunction:: verbose_command

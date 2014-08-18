@@ -1,0 +1,9 @@
+===========================================
+``app`` -- Task Management and Coordination
+===========================================
+
+.. automodule:: giza.app
+
+.. autoclass:: BuildApp
+   :members:
+   :undoc-members:

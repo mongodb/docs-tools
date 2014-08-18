@@ -85,6 +85,11 @@ class CommandResult(object):
 
 
 def command(command, capture=True, ignore=False, logger=None):
+    """
+    Inspired by Fabric's ``local()`` operation. Runs a shell command, optionally
+    captures the output, and returns a :class:`~giza.command.CommandResult` object.
+    """
+
     if logger is None:
         log_output = False
         logger = logging.getLogger('giza.command')
@@ -133,6 +138,10 @@ def command(command, capture=True, ignore=False, logger=None):
         raise CommandError('[ERROR]: "{0}" returned {1}'.format(out.cmd, out.return_code))
 
 def verbose_command(cmd, capture=False, ignore=False):
+    """
+    .. deprecated:: 0.
+"""
+
     if isinstance(cmd, list):
         cmd_str = ' '.join(cmd)
     else:

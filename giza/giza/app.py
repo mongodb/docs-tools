@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-:module:`app` holds the :class:`~giza.app.BuildApp()` class that provides an
+:mod:`app` holds the :class:`~giza.app.BuildApp()` class that provides an
 organizing framework for running larger sequences of operations.
 """
 
@@ -160,7 +160,7 @@ class BuildApp(object):
         :returns: A reference to a :class:`~giza.app.BuildApp()` or
            :class:`~giza.task.Task()` object in the :class:`~giza.app.BuildApp()` 
 
-        :raises: :exception:`TypeError` if the ``task`` argument is invalid.
+        :raises: :exc:`TypeError` if the ``task`` argument is invalid.
 
         """
 
