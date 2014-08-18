@@ -25,14 +25,14 @@ import os.path
 logger = logging.getLogger('giza.content.examples.inheritance')
 
 from giza.serialization import ingest_yaml_list
-from giza.config.base import RecursiveConfigurationBase
+from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 
-class InheritableContentError(Exception): 
+class InheritableContentError(Exception):
     """
     Exception used by inheritance code to indicate a problem resolving
     inherited content.
     """
-    
+
     pass
 
 class InheritableContentBase(RecursiveConfigurationBase):
@@ -41,7 +41,23 @@ class InheritableContentBase(RecursiveConfigurationBase):
     sub-classed.
     """
 
-    _option_registry = ['pre', 'post', 'ref', 'content', 'title', 'edition']
+    _option_registry = ['pre', 'post', 'ref', 'content', 'edition']
+
+    @property
+    def title(self):
+        return self.state['title']
+
+    @title.setter
+    def title(self, value):
+        if isinstance(value, basestring):
+            self.state['title'] = TitleData({'text': value})
+        elif isinstance(value, TitleData):
+            self.state['title'] = value
+        elif isinstance(value, dict):
+            self.state['title'] = TitleData(value)
+        else:
+            print value, type(value)
+            raise TypeError
 
     @property
     def source(self):
@@ -110,7 +126,7 @@ class InheritanceReference(RecursiveConfigurationBase):
     def file(self, value):
         fns = [ value,
                 os.path.join(self.conf.paths.projectroot, value),
-                os.path.join(self.conf.paths.projectroot, 
+                os.path.join(self.conf.paths.projectroot,
                              self.conf.paths.source, value),
                 os.path.join(self.conf.paths.projectroot,
                              self.conf.paths.includes, value) ]
@@ -128,7 +144,7 @@ class InheritanceReference(RecursiveConfigurationBase):
 
 class DataContentBase(RecursiveConfigurationBase):
     """
-    Represents a group of units ingested from a single file. 
+    Represents a group of units ingested from a single file.
     """
 
     content_class = InheritableContentBase
@@ -263,3 +279,20 @@ class DataCache(RecursiveConfigurationBase):
             raise InheritableContentError
 
         return self.cache[fn].fetch(ref)
+
+class TitleData(ConfigurationBase):
+    _option_registry = ['text']
+
+    @property
+    def level(self):
+        if 'level' not in self.state:
+            return 3
+        else:
+            return self.state['level']
+
+    @level.setter
+    def level(self, value):
+        if isinstance(value, int):
+            self.state['level'] = value
+        else:
+            raise TypeError

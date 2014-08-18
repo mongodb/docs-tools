@@ -26,15 +26,16 @@ def full_example(collection, examples):
     else:
         ex_str = 'Examples'
 
-    r.h2(ex_str)
-    r.newline()
+    if collection.options.show_title is True:
+        r.h2(ex_str)
+        r.newline()
 
     if collection is not None:
         if 'pre' in collection:
             r.content(collection.pre)
             r.newline()
 
-        if 'content' in collection:
+        if 'content' in collection and collection.options.show_collection is True:
             r.content(collection.content)
             r.newline()
 
@@ -52,7 +53,7 @@ def full_example(collection, examples):
             r.newline(2)
 
         if len(examples) > 1:
-            r.h3(example.title)
+            getattr(r, 'h' + str(example.title.level))(example.title.text)
             r.newline()
 
         r.content(example.pre)

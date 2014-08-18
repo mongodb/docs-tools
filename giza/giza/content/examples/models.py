@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 import logging
 
 logger = logging.getLogger('giza.content.examples.models')
@@ -25,6 +26,9 @@ from pygments.lexers import get_all_lexers
 # get a list of all supported pygment lexers.
 all_languages = []
 [ all_languages.extend(lexers[1]) for lexers in get_all_lexers() ]
+
+if sys.version_info >= (3, 0):
+    basestring = str
 
 class ExampleData(InheritableContentBase):
     @property
@@ -57,9 +61,48 @@ class ExampleData(InheritableContentBase):
         else:
             raise TypeError('{0} is not a list'.format(value))
 
-class ExampleOperationBlock(ConfigurationBase):
-    _option_registry = ['pre', 'post' ]
+    @property
+    def options(self):
+        if 'options' not in self.state:
+            return ExampleOptions()
+        else:
+            return self.state['options']
 
+    @options.setter
+    def options(self, value):
+        self.state['options'] = ExampleOptions(value)
+
+class ExampleOptions(ConfigurationBase):
+    @property
+    def show_title(self):
+        if 'title' not in self.state:
+            return True
+        else:
+            return self.state['title']
+
+    @show_title.setter
+    def show_title(self, value):
+        if isinstance(value, bool):
+            self.state['title'] = value
+        else:
+            raise TypeError
+
+    @property
+    def show_collection(self):
+        if 'collection' not in self.state:
+            return True
+        else:
+            return self.state['collection']
+
+    @show_collection.setter
+    def show_collection(self, value):
+        if isinstance(value, bool):
+            self.state['collection'] = value
+        else:
+            raise TypeError
+
+class ExampleOperationBlock(ConfigurationBase):
+    _option_registry = ['pre', 'post']
     @property
     def code(self):
         return self.state['code']
@@ -109,6 +152,10 @@ class ExampleCase(InheritableContentBase):
     @results.setter
     def results(self, value):
         if isinstance(value, list):
-            self.state['results'] = value
+            v = []
+            for ln in value:
+                v.extend(ln.split('\n'))
+
+            self.state['results'] = v
         else:
-            self.state['results'] = [ value ]
+            self.state['results'] = value.split('\n')
