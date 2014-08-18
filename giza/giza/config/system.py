@@ -216,7 +216,8 @@ class SystemConfigData(RecursiveConfigurationBase):
                      return self.state[key]
             else:
                 m = 'key "{0}" in system.data object does not exist'.format(key)
-                logger.debug(m)
+                if not key.startswith('__'):
+                    logger.debug(m)
                 raise AttributeError(m)
 
     def __contains__(self, value):

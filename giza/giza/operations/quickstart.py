@@ -53,6 +53,8 @@ def make_project(args):
         _weak_bootstrapping(args)
 
 def _weak_bootstrapping(args):
+    args.languages_to_build = args.editions_to_build = []
+    args.builder = 'html'
     conf = fetch_config(args)
     app = BuildApp(conf)
 
