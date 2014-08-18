@@ -2,7 +2,10 @@
 Giza API
 ========
 
-.. toctree:: 
-   :glob:
+Giza contains a number of components 
 
-   api/*
+.. toctree:: 
+
+   api/nav/core
+   api/nav/config
+   api/nav/content

@@ -1,0 +1,28 @@
+==================
+Giza Configuration
+==================
+
+.. toctree:: 
+   
+   /api/config/assets
+   /api/config/base
+   /api/config/corpora
+   /api/config/credentials
+   /api/config/deploy
+   /api/config/git
+   /api/config/github
+   /api/config/helper
+   /api/config/intersphinx
+   /api/config/jeerah
+   /api/config/main
+   /api/config/manpage
+   /api/config/paths
+   /api/config/pdfs
+   /api/config/project
+   /api/config/redirects
+   /api/config/runtime
+   /api/config/sphinx_config
+   /api/config/sphinx_local
+   /api/config/system
+   /api/config/translate
+   /api/config/version

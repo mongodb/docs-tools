@@ -15,6 +15,11 @@
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 
 def get_path_prefix(conf, branch):
+    """
+    Returns the part of a site path between the domain name and the paths
+    produced from sprint, accounting for sub-site names and branch names.
+    """
+
     o = []
 
     if conf.project.siteroot is True:
