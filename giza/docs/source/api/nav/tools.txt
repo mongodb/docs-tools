@@ -1,3 +1,7 @@
 ==========
 Giza Tools
 ==========
+
+.. toctree::
+
+   /api/tools/command
