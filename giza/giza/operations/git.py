@@ -21,7 +21,7 @@ def apply_patch(args):
 
     with g.branch(c.runstate.git_branch):
         g.am(patches=c.runstate.git_objects,
-             repo='/'.join(['http://github.com', c.git.remote.upstream]),
+             repo='/'.join(['https://github.com', c.git.remote.upstream]),
              sign=c.runstate.git_sign_patch)
 
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
