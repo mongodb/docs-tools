@@ -1,0 +1,6 @@
+=======================================
+``model`` -- Data Schema and Validation
+=======================================
+
+.. automodule:: giza.translate.model
+   :members:

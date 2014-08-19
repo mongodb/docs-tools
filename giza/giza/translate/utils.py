@@ -103,9 +103,13 @@ def merge_files(output_file, input_files, annotation_list):
     Annotations are made in order to help differentiate which line is from
     which file. It prints out each file, interlacing their lines so you can
     compare them line by line.
+
     :param string output_file: The file path to output the lines to, if None goes to stdout
+
     :param list input_files: The list of file names to merge
-    :param list annotation_list: The list of annotations to use (*,-,+,~...etc.)
+
+    :param list annotation_list: The list of annotations to use
+        (``*``,``-``,``+``,``~`, etc.)
     '''
 
     if len(input_files) > len(annotation_list):

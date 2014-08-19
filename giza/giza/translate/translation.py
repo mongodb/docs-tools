@@ -170,8 +170,8 @@ def translate_po_files(po_path, tconf, protected_file=None):
 def auto_approve_po_entries(po_path):
     ''' This function automatically approves any untranslated sentence in a
     po file that should be identical in the target language. These sentences
-    are of the form :word:`link`
-    :param string po_path:the path to the top level directory of the po_files
+    are of the form ``:word:\`link\```
+    :param string po_path: the path to the top level directory of the po_files
     '''
     po_file_list = get_file_list(po_path, ["po", "pot"])
     reg = re.compile('^:[a-zA-Z0-9]+:`(?!.*<.*>.*)[^`]*`$')

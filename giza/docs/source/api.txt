@@ -10,3 +10,4 @@ Giza contains a number of components
    /api/nav/content
    /api/nav/core
    /api/nav/tools
+   /api/nav/translate

@@ -2,8 +2,8 @@
 Giza Configuration
 ==================
 
-.. toctree:: 
-   
+.. toctree::
+
    /api/config/assets
    /api/config/base
    /api/config/corpora

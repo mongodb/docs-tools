@@ -1,0 +1,6 @@
+================================
+``corpora`` -- Corpus Generation
+================================
+
+.. automodule:: giza.translate.corpora
+   :members:

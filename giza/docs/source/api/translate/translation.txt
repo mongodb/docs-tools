@@ -1,0 +1,6 @@
+======================================
+``translation`` -- Machine Translation
+======================================
+
+.. automodule:: giza.translate.translation
+   :members:
