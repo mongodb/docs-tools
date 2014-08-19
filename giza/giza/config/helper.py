@@ -28,10 +28,12 @@ def fetch_config(args):
     return c
 
 def new_config(args=None):
-    if not isinstance(args, RuntimeStateConfig):
+    if args is None:
         args = RuntimeStateConfig()
 
-    return fetch_config(args)
+        return fetch_config(args)
+    else:
+        return args
 
 def dump_skel(skel, args):
     conf_path = os.path.expanduser(os.path.join("~", args.user_conf_path))

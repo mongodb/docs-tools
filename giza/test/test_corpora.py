@@ -3,7 +3,7 @@ import logging
 import shutil
 import os
 
-from giza.serialization import ingest_yaml_doc
+from giza.tools.serialization import ingest_yaml_doc
 from giza.config.corpora import CorporaConfig
 from giza.translate.corpora import create_hybrid_corpora, create_corpus_from_po, create_corpus_from_dictionary
 
