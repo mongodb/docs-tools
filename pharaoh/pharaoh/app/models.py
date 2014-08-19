@@ -16,7 +16,6 @@ import datetime
 
 from flask_app import app, db
 
-
 def get_sentences_in_file(fp, source_language, target_language, curr_db=db):
     '''This function  gets all of the sentences in the given file
     :param dataabase db: database
@@ -597,7 +596,6 @@ class User(object):
         else:
             raise TypeError
 
-
 class MyError(Exception):
     def __init__(self, msg, code):
         self.msg = msg
@@ -605,7 +603,6 @@ class MyError(Exception):
 
     def __str__(self):
         return self.msg
-
 
 class LockError(Exception):
     def __init__(self, msg, file_path, username, target_language):

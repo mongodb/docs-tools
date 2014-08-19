@@ -15,7 +15,7 @@ from pharaoh.app.models import Sentence, User, File
 from pharaoh.mongo_to_po import generate_fresh_po_text
 
 MONGODB_TEST_PORT = 31415
-PATH_TO_MONGOD = '/home/wisdom/mongodb/2.6.0-rc0'
+
 DBNAME = 'veritest'
 
 logger = logging.getLogger('pharaoh.test_verifier')
@@ -42,7 +42,7 @@ class MongoTemporaryInstance(object):
     def __init__(self):
         self._tmpdir = tempfile.mkdtemp()
         logger.info(self._tmpdir)
-        self._process = subprocess.Popen('{0}/mongod --bind_ip localhost --port {1} --dbpath {2} --nojournal --nohttpinterface --noauth --smallfiles --syncdelay 0 --maxConns 10 --nssize 1'.format(PATH_TO_MONGOD, MONGODB_TEST_PORT, self._tmpdir), shell=True, executable='/bin/bash')
+        self._process = subprocess.Popen('mongod --bind_ip localhost --port {0} --dbpath {1} --nojournal --nohttpinterface --noauth --smallfiles --syncdelay 0 --maxConns 10 --nssize 1'.format(MONGODB_TEST_PORT, self._tmpdir), shell=True, executable='/bin/bash')
         #      wait for the instance to be ready
         #      Mongo is ready in a glance, we just wait to be able to open a
         #      Connection.
@@ -76,7 +76,7 @@ class ExportTestCase(unittest.TestCase):
                      os.path.join(TEST_PATH, 'test_files', 'users.json'),
                      os.path.join(TEST_PATH, 'test_files', 'files.json')]
     def __init__(self, *args, **kwargs):
-        super(VerifierTestCase, self).__init__(*args, **kwargs)
+        super(ExportTestCase, self).__init__(*args, **kwargs)
         self.db_inst = MongoTemporaryInstance.get_instance()
         self.client = self.db_inst.client
         self.db = self.client[DBNAME]
@@ -157,7 +157,6 @@ class VerifierTestCase(unittest.TestCase):
     def setUp(self):
         '''This method sets up the test by deleting all of the databases
         and reloading them'''
-        super(TestCase, self).setUp()
 
         for db_name in self.client.database_names():
             self.client.drop_database(db_name)

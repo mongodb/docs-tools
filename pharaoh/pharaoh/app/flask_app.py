@@ -18,7 +18,6 @@ from flask import Flask
 from flask_environments import Environments
 from pymongo import MongoClient
 
-
 app = Flask(__name__)
 env = Environments(app)
 env.from_yaml(os.path.join(os.path.abspath(os.path.join('..', os.path.dirname(__file__))), '..', 'config.yaml'))

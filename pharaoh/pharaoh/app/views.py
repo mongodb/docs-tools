@@ -161,7 +161,7 @@ def download_single_po_approved(language, file):
 @app.route('/download-all/<language>/')
 @app.route('/download-all/<language>')
 def download_all_po(language):
-    ''' This function downloads all translations from all 
+    ''' This function downloads all translations from all
     po files
     '''
     po = generate_all_po_files( 'en', language, db, True)
@@ -172,7 +172,7 @@ def download_all_po(language):
 @app.route('/download-approved/<language>/')
 @app.route('/download-approved/<language>')
 def download_all_po_approved(language):
-    ''' This function downloads all approved translations from all 
+    ''' This function downloads all approved translations from all
     po files
     '''
     po = generate_all_po_files( 'en', language, db, False)
@@ -191,10 +191,10 @@ def upload():
     ''' This function uploads the given tar ball to mongodb'''
     app.logger.info(request.files['file'])
     app.logger.info(request.form)
-    put_po_data_in_mongo(request.files['file'], 
-                         request.form['username'], 
-                         request.form['status'], 
-                         request.form['source_language'], 
+    put_po_data_in_mongo(request.files['file'],
+                         request.form['username'],
+                         request.form['status'],
+                         request.form['source_language'],
                          request.form['target_language'],
                          db)
     return json.dumps({"code:": 200, "msg": "Unapproval Succeeded"}), 200
