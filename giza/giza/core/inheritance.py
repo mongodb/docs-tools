@@ -76,10 +76,21 @@ class InheritableContentBase(RecursiveConfigurationBase):
         if self.source is None:
             return True
         else:
-            return self.source.resolved
+            try:
+                return self.source.resolved
+            except AttributeError:
+                return False
+
+    def _is_resolveable(self, data):
+        try:
+            return not self.is_resolved() and self.source.file in data
+        except AttributeError:
+            logger.warning(str(data) + ' is not resolvable')
+            return False
+
 
     def resolve(self, data):
-        if (not self.is_resolved() and self.source.file in data):
+        if self._is_resolveable(data):
             try:
                 base = data.fetch(self.source.file, self.source.ref)
                 base.resolve(data)
@@ -128,9 +139,14 @@ class InheritanceReference(RecursiveConfigurationBase):
         fns = [ value,
                 os.path.join(self.conf.paths.projectroot, value),
                 os.path.join(self.conf.paths.projectroot,
-                             self.conf.paths.source, value),
-                os.path.join(self.conf.paths.projectroot,
                              self.conf.paths.includes, value) ]
+
+        try:
+            fns.append(os.path.join(self.conf.paths.projectroot,
+                                    self.conf.paths.source, value))
+        except KeyError:
+            pass
+
 
         for fn in fns:
             if os.path.exists(fn):

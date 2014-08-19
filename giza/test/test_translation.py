@@ -5,7 +5,7 @@ import os
 
 import polib
 
-from giza.serialization import ingest_yaml_doc
+from giza.tools.serialization import ingest_yaml_doc
 from giza.translate.translation import po_file_untranslated_to_text, extract_all_untranslated_po_entries, fill_po_file, write_po_files, auto_approve_po_entries
 from giza.translate.utils import get_file_list
 
