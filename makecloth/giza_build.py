@@ -98,7 +98,6 @@ def main():
     if 'integration' in conf.system.files.data:
         m.section_break('integration and publish targets')
         iconf = conf.system.files.data.integration
-
         if 'base' in iconf:
             languages = [ k for k in iconf.keys() if not k.endswith('base') ]
             iconf = iconf['base']

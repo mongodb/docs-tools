@@ -20,7 +20,7 @@ m = MakefileCloth()
 
 try:
     site_conf = get_conf()
-except AttributeError:
+except:
     from giza.config.helper import fetch_config
     from giza.config.runtime import RuntimeStateConfig
     site_conf = fetch_config(RuntimeStateConfig())
@@ -168,7 +168,7 @@ def sphinx_builder(target):
     return ret_value
 
 def main():
-    
+
     config = ingest_yaml(os.path.join(site_conf.paths.builddata, 'sphinx.yaml'))
 
     config = render_sphinx_config(config)
