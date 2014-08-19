@@ -181,7 +181,30 @@ conf['directives'] = [
         'description': 'system alert',
         'prepend': False,
         'callable': False,
-    }
+    },
+
+    ## Custom Setting Directives for MMS Agents
+    {
+        'name': 'msetting',
+        'tag': 'msetting',
+        'description': 'Monitoring Agent Setting',
+        'prepend': True,
+        'callable': False,
+    },
+    {
+        'name': 'bsetting',
+        'tag': 'bsetting',
+        'description': 'Backup Agent Setting',
+        'prepend': True,
+        'callable': False,
+    },
+    {
+        'name': 'asetting',
+        'tag': 'bsetting',
+        'description': 'Automation Agent Setting',
+        'prepend': True,
+        'callable': False,
+    },
 ]
 
 conf['prepend'] = { }
