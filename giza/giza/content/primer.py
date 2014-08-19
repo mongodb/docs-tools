@@ -27,25 +27,33 @@ def get_migration_specifications(conf):
              if  conf.project.name in os.path.basename(fn) and 'migrations' in fn ]
 
 def convert_multi_source(page):
-    if 'source_dir' in page:
-        return [ { 'source': source, 'source_dir': page['source_dir'] }
-                 for source in page['sources'] ]
-    else:
-        return [ { 'source': source }
-                 for source in page['sources'] ]
+    pages = [ { 'source': source }
+              for source in page['sources'] ]
+
+    for k in ('source', 'sources'):
+        if k in page:
+            del page[k]
+
+    r = []
+    for p in pages:
+        p.update(page)
+        r.append(p)
+
+    return r
 
 def fix_migration_paths(page):
     if 'target' not in page:
         page['target'] = page['source']
 
-    if page['target'].endswith('.txt'):
+    if 'override' in page:
+        should_override = True or page['override']
+    else:
+        should_override = False
+
+    if page['target'].endswith('.txt') and should_override is True:
         msg = '({0}) imported files cannot end with ".txt", changing to ".rst"'
         logger.warning(msg.format(page['source']))
         page['target'] = page['target'].replace('.txt', '.rst')
-
-    for field  in ['source', 'target']:
-        if page[field].startswith('/'):
-            page[field] = page[field][1:]
 
     return page
 
@@ -68,6 +76,42 @@ def clean(conf):
     map(verbose_remove, targets)
     logger.info('clean: removed {0} files'.format(len(targets)))
 
+def resolve_page_path(page, conf):
+    if page['target'].startswith('/'):
+        fq_target = page['target']
+    else:
+        fq_target = os.path.join(conf.paths.projectroot, conf.paths.source, page['target'])
+
+    if page['source'].startswith('/'):
+        fq_source = page['source']
+    elif 'source_dir' in page:
+        fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, page['source_dir'], page['source']))
+    else:
+        fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, '..', 'source', page['source']))
+
+    return fq_target, fq_source
+
+def directory_expansion(source_path, page, conf):
+    new_page = { 'sources': expand_tree(source_path, None)}
+    del page['source']
+
+    if 'source_dir' in page:
+        new_page['source_dir'] = page['source_dir']
+
+    pages = []
+
+    for p in convert_multi_source(new_page):
+        p.update(page)
+        p['target'] = os.path.join(conf.paths.projectroot,
+                                   conf.paths.source,
+                                   p['target'],
+                                   p['source'][len(source_path)+1:])
+
+        pages.append(p)
+
+
+    return pages
+
 def primer_migration_tasks(conf, app):
     "Migrates all manual files to primer according to the spec. As needed."
 
@@ -86,11 +130,15 @@ def primer_migration_tasks(conf, app):
 
             page = fix_migration_paths(page)
 
-            fq_target = os.path.join(conf.paths.projectroot, conf.paths.source, page['target'])
-            if 'source_dir' in page:
-                fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, page['source_dir'], page['source']))
-            else:
-                fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, '..', 'source', page['source']))
+            fq_target, fq_source = resolve_page_path(page, conf)
+
+            if page['source'].endswith('/'):
+                migrations.extend(directory_expansion(fq_source, page, conf))
+                continue
+
+            for field  in ['source', 'target']:
+                if page[field].startswith('/'):
+                    page[field] = page[field][1:]
 
             prev = build_migration_task(fq_target, fq_source, app)
 
