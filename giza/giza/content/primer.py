@@ -70,7 +70,7 @@ def fix_migration_paths(page):
         page['target'] = page['source']
 
     if 'override' in page:
-        should_override = True or page['override']
+        should_override = page['override']
     else:
         should_override = False
 
