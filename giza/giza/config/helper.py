@@ -27,8 +27,9 @@ def fetch_config(args):
 
     return c
 
-def new_config():
-    args = RuntimeStateConfig()
+def new_config(args=None):
+    if not isinstance(args, RuntimeStateConfig):
+        args = RuntimeStateConfig()
 
     return fetch_config(args)
 

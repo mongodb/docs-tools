@@ -23,6 +23,7 @@ logger = logging.getLogger('giza.app')
 
 from giza.core.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool, EventPool
 from giza.config.main import Configuration
+from giza.config.helper import new_config
 
 from giza.core.task import Task, MapTask
 
@@ -48,13 +49,13 @@ class BuildApp(object):
     the queue, the queue resets. However, results do not reset.
     """
 
-    def __init__(self, conf):
+    def __init__(self, conf=None):
         """
         :param Configuration conf: A top level
            :class:`~giza.config.main.Configuration` object.
         """
 
-        self.conf = conf
+        self.conf = new_config(conf)
         self.queue = []
         self.results = []
         self.worker_pool = None
