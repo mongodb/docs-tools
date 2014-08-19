@@ -32,7 +32,7 @@ def make_project(args):
     curdir = os.getcwd()
     curdir_list = os.listdir(curdir)
 
-    if len(curdir_list) > 0 and (not len(curdir_list) == 1 and not '.git' in curdir_list):
+    if len(curdir_list) > 0 and '.git' in curdir_list:
         logger.critical('cannot create new project in directory that already has files: ' + curdir)
         _weak_bootstrapping(args)
         logger.info('attempted to bootstrap buildsystem')
@@ -40,13 +40,14 @@ def make_project(args):
         mod_path = os.path.dirname(inspect.getfile(giza))
         qstart_path = os.path.join(mod_path, 'quickstart')
 
-        command('rsync -r {0}/. {1}'.format(qstart_path, curdir))
-        command('git init')
-        command('git add .')
-        try:
-            command('git commit -m "initial commit"')
-        except CommandError:
-            pass
+        r = command('git init', capture=True)
+        if not r.output.startswith('Re'):
+            command('rsync -r {0}/. {1}'.format(qstart_path, curdir))
+            command('git add .')
+            try:
+                command('git commit -m "initial commit"')
+            except CommandError:
+                pass
 
         logger.info('created project skeleton in current directory.')
 
