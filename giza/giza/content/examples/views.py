@@ -21,12 +21,12 @@ from rstcloth.rstcloth import RstCloth
 def full_example(collection, examples):
     r = RstCloth()
 
-    if len(examples) == 1:
-        ex_str = 'Example'
-    else:
-        ex_str = 'Examples'
-
     if collection.options.show_title is True:
+        if len(examples) == 1:
+            ex_str = 'Example'
+        else:
+            ex_str = 'Examples'
+
         r.h2(ex_str)
         r.newline()
 
@@ -48,6 +48,10 @@ def full_example(collection, examples):
             r.content(collection.post)
             r.newline()
 
+        if 'final' in collection:
+            r.content(collection.final)
+            r.newline()
+
     for idx, example in enumerate(examples):
         if idx != 0 :
             r.newline(2)
@@ -56,8 +60,9 @@ def full_example(collection, examples):
             getattr(r, 'h' + str(example.title.level))(example.title.text)
             r.newline()
 
-        r.content(example.pre)
-        r.newline()
+        if 'pre' in example:
+            r.content(example.pre)
+            r.newline()
 
         for op in example.operation:
             if 'pre' in op:
@@ -72,9 +77,16 @@ def full_example(collection, examples):
                 r.content(op.post)
                 r.newline()
 
-        r.content(example.post)
-        r.newline()
+
+        if 'post' in 'example':
+            r.content(example.post)
+            r.newline()
+
         r.codeblock(content=example.results,
                     language='javascript')
+
+        if 'final' in example:
+            r.newline()
+            r.content(example.final)
 
     return r

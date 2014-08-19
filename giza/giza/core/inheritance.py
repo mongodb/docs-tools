@@ -42,7 +42,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
     sub-classed.
     """
 
-    _option_registry = ['pre', 'post', 'ref', 'content', 'edition']
+    _option_registry = ['pre', 'post', 'final', 'ref', 'content', 'edition']
 
     @property
     def title(self):

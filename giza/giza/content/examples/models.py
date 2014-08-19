@@ -102,7 +102,7 @@ class ExampleOptions(ConfigurationBase):
             raise TypeError
 
 class ExampleOperationBlock(ConfigurationBase):
-    _option_registry = ['pre', 'post']
+    _option_registry = ['pre', 'post', 'final']
 
     @property
     def code(self):
