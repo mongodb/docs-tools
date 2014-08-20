@@ -78,7 +78,7 @@ def full_example(collection, examples):
                 r.newline()
 
 
-        if 'post' in 'example':
+        if 'post' in example:
             r.content(example.post)
             r.newline()
 
