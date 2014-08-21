@@ -1361,14 +1361,15 @@ div.admonition {
 .admonition.admonition-platform-support,
 .admonition.tip,
 .admonition.admonition-tip,
-.admonition.note {
+.admonition.note, .admonition-instructor {
     background-color: #edf4e8;
     border-color: #6ba442;
 }
 
 .admonition.admonition-platform-support .admonition-title,
 .admonition.tip .admonition-title,
-.admonition.note .admonition-title {
+.admonition.note .admonition-title,
+.admonition-instructor .admonition-title {
     color: #89b668;
 }
 
