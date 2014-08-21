@@ -72,6 +72,7 @@ class Instructor(MongoDBNode):
                               self.block_text, self.state, self.state_machine)
 
         ret[0]['expr'] = self.arguments[0]
+        ret[0]['classes'] += 'note'
 
         return ret
 
