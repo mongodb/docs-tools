@@ -32,7 +32,6 @@ class MongoDBNode(Directive):
 
         return self.return_node(ret)
 
-
 def visit_mongodb_node(self, node):
     self.visit_admonition(node)
 
@@ -58,6 +57,23 @@ class tip_node(nodes.Admonition, nodes.Element): pass
 class see_node(nodes.Admonition, nodes.Element): pass
 
 class related_node(nodes.Admonition, nodes.Element): pass
+
+class instructor_node(nodes.Admonition, nodes.Element):
+    parent = addnodes.only
+
+class Instructor(MongoDBNode):
+    directive_name = ['Instructor']
+
+    def run(self):
+        self.arguments = ['instructor']
+
+        ret = make_admonition(instructor_node, self.name, [_('Instructor')],
+                              self.options, self.content, self.lineno, self.content_offset,
+                              self.block_text, self.state, self.state_machine)
+
+        ret[0]['expr'] = self.arguments[0]
+
+        return ret
 
 class Optional(MongoDBNode):
     directive_name = ["Optional"]
@@ -94,9 +110,11 @@ def setup(app):
     app.add_directive('tip', Tip)
     app.add_directive('related', Related)
     app.add_directive('example', Example)
+    app.add_directive('instructor', Instructor)
 
     mongodb_add_node(app, optional_node)
     mongodb_add_node(app, related_node)
     mongodb_add_node(app, example_node)
     mongodb_add_node(app, tip_node)
     mongodb_add_node(app, see_node)
+    mongodb_add_node(app, instructor_node)
