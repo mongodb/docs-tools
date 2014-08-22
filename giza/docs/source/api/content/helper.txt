@@ -1,0 +1,5 @@
+=============================
+``helper`` -- Content Helpers
+=============================
+
+.. autofunction:: giza.content.helper.edition_check

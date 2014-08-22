@@ -13,8 +13,25 @@
 # limitations under the License.
 
 def edition_check(data, conf):
-    if 'edition' in data:
+    """
+    Tests a content structure against the current configuration object to ensure
+    that the editions match. Used so that content generation scripts can
+    consistently filter out content from non-matching editions.
 
+    :param dict,object data: A dictionary or object that holds content.
+
+    :param giza.config.main.Configuration conf: A Configuration object. 
+
+    :returns: ``True`` if ``data`` does not contain an ``edition`` field or
+       attribute of ``data`` matches the value of
+       ``conf.project.edition``. ``False`` if the edition does not match
+       ``conf.project.edition`` or if ``conf.project.edition`` is the same as
+       the project name (i.e. ``conf.project.name``).
+
+    :rtype: Boolean
+    """
+
+    if 'edition' in data:
         try:
             local_edition = data.edition
         except AttributeError:
@@ -22,5 +39,7 @@ def edition_check(data, conf):
 
         if conf.project.edition != conf.project.name and local_edition != conf.project.edition:
             return False
+        else: 
+            return True
     else:
         return True

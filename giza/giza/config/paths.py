@@ -140,9 +140,9 @@ class PathsConfig(RecursiveConfigurationBase):
 
             p = os.path.sep.join(p)
 
-            if (self.conf.project.branched is False and
-                self.conf.project.edition is not None and
-                self.conf.git.branches.current != self.conf.git.branches.published[0]):
+            if (self.conf.project.branched is True and
+                (self.conf.project.edition is not None and
+                 self.conf.git.branches.current != self.conf.git.branches.published[0])):
                 p += '-' + self.conf.git.branches.current
 
             self.state['public_site_output'] = p
