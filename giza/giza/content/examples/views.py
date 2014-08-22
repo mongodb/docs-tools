@@ -82,8 +82,9 @@ def full_example(collection, examples):
             r.content(example.post)
             r.newline()
 
-        r.codeblock(content=example.results,
-                    language='javascript')
+        if example.results is not None:
+            r.codeblock(content=example.results,
+                        language='javascript')
 
         if 'final' in example:
             r.newline()

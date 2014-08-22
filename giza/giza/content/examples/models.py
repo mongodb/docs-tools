@@ -152,7 +152,9 @@ class ExampleCase(InheritableContentBase):
 
     @results.setter
     def results(self, value):
-        if isinstance(value, list):
+        if value is None:
+            self.state['results'] = value
+        elif isinstance(value, list):
             v = []
             for ln in value:
                 v.extend(ln.split('\n'))
