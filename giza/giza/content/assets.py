@@ -12,6 +12,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+:mod:`~giza.content.assets` makes it possible to configure embedded `git`
+repositories within a ``giza`` configured project. These repositories may either
+be updated to the latest revision upon every build or are pinned to a specific
+revision in the configuration file.
+
+Assets specifications are in the top level of the build configuration accessible
+via the ``assets`` field in a :class:`~giza.config.main.Configuration` instance,
+which holds a list of repository definitions, which resembles the following: ::
+
+   {
+     "branch": <string>,
+     "path": <path>,
+     "repository": <url>
+   }
+
+
+.. describe:: assets.branch
+
+   The name of a remote branch in the repository.
+
+.. describe:: assets.path
+
+   A local path for the cloned repository. Relative to the top of the repository.
+
+.. describe:: assets.repository
+
+   A git-compatible URL for the source repository.
+
+A future version of the assets system may allow users to specify a specific
+revision rather than a branch so that builds for specific branches are more
+stable over time.
+"""
+
 import logging
 import os.path
 
@@ -22,6 +56,9 @@ from giza.tools.files import rm_rf
 from giza.tools.command import command
 
 def assets_setup(path, branch, repo):
+    if path.startswith('/'):
+        path = path[1:]
+
     if os.path.exists(path):
         g = GitRepo(path)
         g.pull(branch=branch)
@@ -37,6 +74,8 @@ def assets_setup(path, branch, repo):
 
 def assets_tasks(conf, app):
     if conf.assets is not None:
+        gen_app = app.add('app')
+
         for asset in conf.assets:
             path = os.path.join(conf.paths.projectroot, asset.path)
 
@@ -49,7 +88,6 @@ def assets_tasks(conf, app):
                        'repo': asset.repository }
 
             if 'generate' in asset:
-                gen_app = app.add('app')
                 for content_type in asset.generate:
                     t = gen_app.add('task')
                     t.job = command

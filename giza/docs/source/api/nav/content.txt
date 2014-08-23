@@ -2,8 +2,11 @@
 Content Generation
 ==================
 
+The Giza content generation modules are responsible for pre and post
+processing the content and output.
+
 .. toctree::
-   
+
    /api/content/assets
    /api/content/dependencies
    /api/content/hash

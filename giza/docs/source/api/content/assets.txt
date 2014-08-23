@@ -1,0 +1,8 @@
+===================================
+``assets`` -- Embedded Repositories
+===================================
+
+.. automodule:: giza.content.assets
+   :members: 
+   :undoc-members:
+   
