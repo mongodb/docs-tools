@@ -2,4 +2,4 @@
 ``dependencies`` -- Dependency Resolution
 =========================================
 
-.. automodule:: giza.content.dependency
+.. automodule:: giza.content.dependencies
