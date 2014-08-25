@@ -56,9 +56,6 @@ from giza.tools.files import rm_rf
 from giza.tools.command import command
 
 def assets_setup(path, branch, repo):
-    if path.startswith('/'):
-        path = path[1:]
-
     if os.path.exists(path):
         g = GitRepo(path)
         g.pull(branch=branch)
