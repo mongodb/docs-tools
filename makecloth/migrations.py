@@ -12,7 +12,12 @@ from utils.config import get_conf
 from makecloth import MakefileCloth
 
 m = MakefileCloth()
-conf = get_conf()
+
+try:
+    conf = get_conf()
+except:
+    from giza.config.helper import new_conf
+    conf = new_conf()
 
 def _job_touch(migration, block):
     m.job('touch {0}'.format(migration['target']), block=block)
