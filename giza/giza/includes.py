@@ -100,7 +100,11 @@ def generated_includes(conf):
             toc_spec_files.append(fn)
         elif base.startswith('ref-spec'):
             toc_spec_files.append(fn)
-        elif base.startswith('steps'):
+        elif base.startswith('steps')
+            step_files.append(fn)
+        elif base.startswith('example'):
+            # example files, for the purpose of this have the same structure as
+            # steps, so we can just use that:
             step_files.append(fn)
 
     maskl = len(conf.paths.source)
@@ -128,6 +132,8 @@ def generated_includes(conf):
             deps = [ os.path.join(path_prefix, i ) for i in deps ]
 
             mapping[step_def[maskl:]] = deps
+
+
 
     return mapping
 
