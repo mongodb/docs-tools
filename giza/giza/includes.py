@@ -133,8 +133,6 @@ def generated_includes(conf):
 
             mapping[step_def[maskl:]] = deps
 
-
-
     return mapping
 
 def include_files_unused(conf, inc_files=None):
