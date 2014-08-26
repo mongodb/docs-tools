@@ -9,8 +9,7 @@ documentation project; however, its design is sufficiently generic to
 be able to facilitate the builds of multiple documentation resources
 produced at MongoDB.
 
-.. toctree:: 
-      
-   tutorial
-   api
-   
+.. toctree::
+
+   /tutorial
+   /api
