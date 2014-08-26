@@ -137,8 +137,9 @@ class PathsConfig(RecursiveConfigurationBase):
 
             if self.conf.project.branched is True:
                 p.append(self.conf.git.branches.current)
-            elif (self.conf.project.edition is not None and
-                  self.conf.git.branches.current != self.conf.git.branches.published[0]): 
+            elif (self.conf.git.branches.current != 'master' and
+                  self.conf.projectself.conf.project.edition is not None and
+                  self.conf.git.branches.current != self.conf.git.branches.published[0]):
                 p[-1] += '-' + self.conf.git.branches.current
 
             p = os.path.sep.join(p)

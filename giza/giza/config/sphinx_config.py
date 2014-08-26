@@ -111,7 +111,7 @@ class SphinxConfig(RecursiveConfigurationBase):
     @property
     def name(self):
         if 'name' in self.state:
-            return self.state['builder']
+            return self.state['name']
         else:
             return self.builder
 

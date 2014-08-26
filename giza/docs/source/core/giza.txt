@@ -1,0 +1,57 @@
+===============
+Giza Background
+===============
+
+Overview
+--------
+
+Giza is a collection of tools built around `Sphinx
+<http://sphinx-doc.org/>`_, that coordinates assembling, building, and
+deploying documentation. Giza primarily addresses the MongoDB
+documentation project; however, its design is sufficiently generic to
+be able to facilitate the builds of multiple documentation resources
+produced at MongoDB.
+
+Features and Goals
+------------------
+
+Giza has the following objectives and primary features:
+
+Local Build
+~~~~~~~~~~~
+
+Facilitate fully-local test builds. Contributors to the
+documentation should be able to generate the documentation using the
+exact same process used to produce the production version of the
+resources.
+
+Content Generation
+~~~~~~~~~~~~~~~~~~
+
+Generate content from structured forms into reStructuredText that
+Sphinx can publish. In an effort to manage duplicated content, and
+facilitate sustainable content reuse, Giza translates structured
+content, procedures, including command line interfaces, tables of
+contents, and API interfaces.
+
+Parallelism
+~~~~~~~~~~~
+
+Run multiple Sphinx builds concurrently. Practically speaking,
+building the documentation requires running Sphinx multiple
+times. Building the documentation requires multiple invocations of
+Sphinx, to produce:
+
+- multiple versions of the manual (i.e. HTML, ``json``, PDF, ePub,
+  etc.)
+
+- transitions of the content in different human languages.
+
+- different editions of a text to address different editions of a
+  single resource. (e.g. a student and instructor version of a
+  training resource.)
+
+Internally, Sphinx itself is not optimally parallelized, and
+it's considerably more efficient to run multiple Sphinx processes in
+parallel, particularly for larger resources and as the matrix of
+required build artifacts grows.
