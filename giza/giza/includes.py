@@ -100,7 +100,7 @@ def generated_includes(conf):
             toc_spec_files.append(fn)
         elif base.startswith('ref-spec'):
             toc_spec_files.append(fn)
-        elif base.startswith('steps')
+        elif base.startswith('steps'):
             step_files.append(fn)
         elif base.startswith('example'):
             # example files, for the purpose of this have the same structure as
