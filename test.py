@@ -109,6 +109,9 @@ def main():
                 os.remove(bootstrapped_tools_path)
             except:
                 shutil.rmtree(bootstrapped_tools_path)
+        logger.info('running giza quickstart')
+        command('giza quickstart')
+        logger.info('completed giza quickstart')
     else:
         if not os.path.exists(bootstrapped_tools_path):
             os.makedirs('build')
@@ -123,14 +126,11 @@ def main():
             symlink(name=bootstrapped_tools_path, target=root_path)
             logger.debug('created tools symlink')
 
-    logger.info('bootstrapping.')
-    command('python bootstrap.py safe')
-    logger.info('moving on to build the publish target.')
+        logger.info('bootstrapping.')
+        command('python bootstrap.py safe')
+        logger.info('moving on to build the publish target.')
 
-    if user.toolchain == 'giza':
-        build_task = command('make giza-publish', capture=True, ignore=True)
-    elif user.toolchain == 'legacy':
-        build_task = command('make publish', capture=True, ignore=True)
+    build_task = command('make publish', capture=True, ignore=True)
 
     logger.info('completed build task, moving to printing output')
 
