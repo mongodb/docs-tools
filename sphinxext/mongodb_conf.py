@@ -182,6 +182,13 @@ conf['directives'] = [
         'prepend': False,
         'callable': False,
     },
+    {
+        'name': 'event',
+        'tag': 'event',
+        'description': 'system event',
+        'prepend': False,
+        'callable': False,
+    },
 
     ## Custom Setting Directives for MMS Agents
     {
