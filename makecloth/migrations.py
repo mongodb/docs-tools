@@ -120,13 +120,13 @@ def build_all_sphinx_migrations(migrations):
         m.job('rm -rf {0}'.format(' '.join(links['all'])), True)
 
 def main():
-    conf_file = get_conf_file(file=__file__, directory=conf.paths.builddata)
+    pass
 
-    build_all_sphinx_migrations(ingest_yaml(conf_file))
+    # conf_file = get_conf_file(file=__file__, directory=conf.paths.builddata)
+    # build_all_sphinx_migrations(ingest_yaml(conf_file))
 
-    m.write(sys.argv[1])
-
-    print('[meta-build]: built "' + sys.argv[1] + '" to specify sphinx migrations.')
+    # m.write(sys.argv[1])
+    # print('[meta-build]: built "' + sys.argv[1] + '" to specify sphinx migrations.')
 
 if __name__ == '__main__':
     main()

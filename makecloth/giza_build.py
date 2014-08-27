@@ -29,10 +29,10 @@ def main():
     m.section_break('content generation targets')
     for gen_target in [ 'api', 'assets', 'images', 'intersphinx', 'options',
                         'primer', 'steps', 'tables', 'toc']:
-        m.target(hyph_concat('giza', gen_target))
+        m.target([gen_target, hyph_concat('giza', gen_target)])
         m.job('giza generate ' + gen_target)
 
-        m.target(hyph_concat('giza', 'force', gen_target))
+        m.target([hyph_concat('force', gen_target), hyph_concat('giza', 'force', gen_target)])
         m.job('giza --force generate ' + gen_target)
         m.newline()
 
@@ -65,22 +65,26 @@ def main():
 
         m.comment(builder + ' targets')
         for edition in editions:
-            m.target(hyph_concat('giza', builder, edition))
+            m.target([hyph_concat(builder, edition), hyph_concat('giza', builder, edition)])
             m.job('giza sphinx --builder {0} --edition {1}'.format(builder, edition))
 
             for language in languages:
-                m.target(hyph_concat('giza', builder, edition, language))
+                m.target([hyph_concat(builder, edition, language),
+                          hyph_concat('giza', builder, edition, language)])
                 m.job('giza sphinx --builder {0} --edition {1} --language {2}'.format(builder, edition, language))
 
         if len(editions) == 0:
-            m.target(hyph_concat('giza', builder))
+            m.target([hyph_concat(builder), 
+                      hyph_concat('giza', builder)])
             m.job('giza sphinx --builder ' + builder)
 
             for language in languages:
-                m.target(hyph_concat('giza', builder, language))
+                m.target([hyph_concat(builder, language),
+                          hyph_concat('giza', builder, language)])
                 m.job('giza sphinx --builder {0} --language {1}'.format(builder, language))
         else:
-            m.target(hyph_concat('giza', builder))
+            m.target([hyph_concat(builder),
+                      hyph_concat('giza', builder)])
             m.job('giza sphinx --builder {0} --edition {1}'.format(builder, ' '.join(editions)))
 
         m.newline()
@@ -90,7 +94,7 @@ def main():
     if 'push' in conf.system.files.data:
         for ptarget in conf.system.files.data.push:
             name = ptarget['target']
-            m.target(hyph_concat('giza-deploy', name))
+            m.target(hyph_concat('deploy', name))
             m.job('giza deploy --target ' + name)
             m.newline()
 
@@ -113,12 +117,13 @@ def main():
         if len(editions) > 0:
             base_job += " --serial_sphinx --edition " + ' '.join(editions)
 
-        m.target('giza-publish')
+        m.target(['giza-publish', 'publish'])
         m.job(base_job)
 
         m.newline()
         for lang in languages:
-            m.target('giza-publish-' + lang)
+            m.target([hyph_concat('publish', lang),
+                      hyph_concat('giza', 'publish', lang)])
             m.job(base_job + ' --language ' + lang)
             m.newline()
 
@@ -132,13 +137,15 @@ def main():
                 if len(editions) > 0:
                     push_base_job += " --serial_sphinx --edition " + ' '.join(editions)
 
-                m.target('giza-' + ptarget['target'])
+                m.target([ptarget['target'],
+                          hyph_concat('giza', ptarget['target'])])
                 m.job(push_base_job)
 
                 m.newline()
 
                 for lang in languages:
-                    m.target('giza-{0}-{1}'.format(ptarget['target'], lang))
+                    m.target([ hyph_concat(ptarget['target'], lang),
+                               hyph_concat('giza', ptarget['target'], lang) ])
                     m.job(push_base_job + ' --language ' + lang)
                     m.newline()
 

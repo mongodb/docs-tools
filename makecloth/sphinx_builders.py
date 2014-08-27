@@ -168,6 +168,10 @@ def sphinx_builder(target):
     return ret_value
 
 def main():
+    fn = sys.argv[1]
+
+    if os.path.isfile(fn):
+        os.remove(fn)
 
     config = ingest_yaml(os.path.join(site_conf.paths.builddata, 'sphinx.yaml'))
 
@@ -175,9 +179,8 @@ def main():
 
     make_all_sphinx(config)
 
-    m.write(sys.argv[1])
-
-    print('[meta-build]: built "' + sys.argv[1] + '" to specify sphinx builders.')
+    # m.write(sys.argv[1])
+    # print('[meta-build]: built "' + sys.argv[1] + '" to specify sphinx builders.')
 
 if __name__ == '__main__':
     main()

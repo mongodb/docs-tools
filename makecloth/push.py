@@ -63,13 +63,18 @@ def generate_new_deploy_system(push_conf):
     m.target('.PHONY', phony)
 
 def main():
-    push_conf = ingest_yaml_list(get_conf_file(file=__file__, directory=conf.paths.builddata))
+    fn = sys.argv[1]
 
-    generate_new_deploy_system(push_conf)
+    if os.path.isfile(fn):
+        os.remove(fn)
 
-    m.write(sys.argv[1])
+    # push_conf = ingest_yaml_list(get_conf_file(file=__file__, directory=conf.paths.builddata))
 
-    print('[meta-build]: built "' + sys.argv[1] + '" to specify dependencies  files.')
+    # generate_new_deploy_system(push_conf)
+
+    # m.write(sys.argv[1])
+
+    # print('[meta-build]: built "' + sys.argv[1] + '" to specify dependencies  files.')
 
 if __name__ == '__main__':
     main()

@@ -103,29 +103,34 @@ def gennerate_translation_integration_targets(language, conf):
     m.target('.PHONY', [publish_target + '-debug', package_target + '-debug', publish_target, package_target])
 
 def main():
-    conf_file = get_conf_file(__file__, conf=conf)
+    fn = sys.argv[1]
 
-    config = ingest_yaml(conf_file)
+    if os.path.isfile(fn):
+        os.remove(fn)
 
-    if 'base' in config:
-        generate_integration_targets(config['base'])
+    # conf_file = get_conf_file(__file__, conf=conf)
 
-        for lang, lang_config in config.items():
-            if lang == 'base':
-                continue
+    # config = ingest_yaml(conf_file)
 
-            if 'inherit' in lang_config:
-                new_config = config[lang_config['inherit']]
-                new_config.update(lang_config)
+    # if 'base' in config:
+    #     generate_integration_targets(config['base'])
 
-                gennerate_translation_integration_targets(lang, new_config)
-            else:
-                gennerate_translation_integration_targets(lang, lang_config)
-    else:
-        generate_integration_targets(config)
+    #     for lang, lang_config in config.items():
+    #         if lang == 'base':
+    #             continue
 
-    m.write(sys.argv[1])
-    print('[meta-build]: build "' + sys.argv[1] + '" to specify integration targets.')
+    #         if 'inherit' in lang_config:
+    #             new_config = config[lang_config['inherit']]
+    #             new_config.update(lang_config)
+
+    #             gennerate_translation_integration_targets(lang, new_config)
+    #         else:
+    #             gennerate_translation_integration_targets(lang, lang_config)
+    # else:
+    #     generate_integration_targets(config)
+
+    # m.write(sys.argv[1])
+    # print('[meta-build]: build "' + sys.argv[1] + '" to specify integration targets.')
 
 if __name__ == '__main__':
     main()
