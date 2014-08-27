@@ -67,14 +67,19 @@ def json_output_tasks(conf, app):
     for fn in expand_tree('source', 'txt'):
         # path = build/<branch>/json/<filename>
 
-        path = os.path.join(conf.paths.branch_output,
-                            'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
+        if 'edition' in conf.project and conf.project.edition != conf.project.name:
+            path = os.path.join(conf.paths.branch_output,
+                                'json-' + conf.project.edition, 
+                                os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
+            
+        else:
+            path = os.path.join(conf.paths.branch_output,
+                                'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
+
+
+
         fjson = dot_concat(path, 'fjson')
         json = dot_concat(path, 'json')
-
-        if conf.project.name == 'mms':
-            if not os.path.exists(fjson):
-                continue
 
         task = app.add('task')
         task.target = json

@@ -25,10 +25,11 @@ from giza.tools.command import command
 from giza.tools.strings import timestamp
 from giza.content.links import create_manual_symlink
 from giza.content.manpages import manpage_url_tasks
-from giza.content.post.archives import man_tarball, html_tarball, slides_tarball
 from giza.content.post.json_output import json_output_tasks
 from giza.content.post.singlehtml import finalize_single_html_tasks
+from giza.content.post.archives import man_tarball, html_tarball
 from giza.content.post.gettext import gettext_tasks
+from giza.content.post.slides import slide_tasks
 from giza.content.post.latex import pdf_tasks
 from giza.content.post.sites import (finalize_epub_build,
                                      finalize_dirhtml_build, error_pages)
@@ -242,10 +243,7 @@ def finalize_sphinx_build(sconf, conf, app):
         task.args = [sconf.name, conf]
         task.description = "creating tarball for html archive"
     elif target == 'slides':
-        task = app.add('task')
-        task.job = slides_tarball
-        task.args = [sconf.name, conf]
-        task.description = "creating tarball for slides"
+        slide_tasks(sconf, conf, app)
     elif target == 'json':
         json_output_tasks(conf, app)
     elif target == 'singlehtml':
