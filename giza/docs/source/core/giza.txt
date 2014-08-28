@@ -34,6 +34,8 @@ facilitate sustainable content reuse, Giza translates structured
 content, procedures, including command line interfaces, tables of
 contents, and API interfaces.
 
+See :doc:`/core/content-generation` for more information.
+
 Parallelism
 ~~~~~~~~~~~
 

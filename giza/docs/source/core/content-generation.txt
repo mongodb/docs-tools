@@ -1,0 +1,102 @@
+==================
+Content Generation
+==================
+
+Overview
+--------
+
+Content generation with Giza tools has two primary advantages over
+conventional content in-lining: ``giza`` encourages the separation of
+internal and external representation with the use of structure *and*
+``giza`` supports very granular content-reuse using an inheritance
+metaphor.
+
+Giza generation works by reading data from a ``yaml`` formatted text
+file in the content tree, and producing reSructuredText output that
+other files in the content tree can include using the in-lining
+mechanism. 
+
+While each type of files has a slightly different
+structure, generally these ``yaml`` files consist of a sequence of
+mappings (i.e. a list of dictionaries,) where each document in the
+stream represents a unit of content,. Each content unit has a number of
+fields, and can optionally *inherit* from another content unit, and
+optionally override any of the top-level fields in the source
+document.
+
+The content generation runs as needed before beginning the Sphinx
+portion of a build, and Giza is generally aware of the dependencies
+between source files and included files, and between source files. 
+
+Implementation
+--------------
+
+.. note:: In practice, at the time of writing, many of the content
+   generators use legacy implementations that implement the
+   inheritance resolution and have limited access to the build state,
+   relative to the implementation described in this section. 
+
+A content generator has a number of high level components: 
+
+- a cache that holds all DE-serialized content, hashed by file and
+  then by unique identifier (i.e. ``ref``). Having a single cache of
+  all this data in one interface makes it possible to resolve
+  inherited content quickly, while limiting file access. 
+  
+- some representation of each file-level collection of content
+  object. This serves as a connector between the cache and the
+  representation of each content unit, and the requirements of this
+  level depend on what content will be generated. If each content unit
+  is its own file, then this layer is effectively a simple list or
+  sequence. If there is some relationship between source file and
+  output file, or if the content units in the file have different
+  structures then this layer has stronger requirements.
+  
+- a representation of the content unit. This layer is responsible for
+  validating input content, and inferring any computed values based on
+  the input content.
+
+- a rendering layer that translates the content units into text
+  files. This uses `RstCloth
+  <https://pypi.python.org/pypi/rstcloth>`_, which is a Python API to
+  generate restructured text in Python code.
+
+The :mod:`giza.core.implementation` module provides the base classes
+that other content generators can use to provide inheritance and basic
+structure.
+
+Strategies
+----------
+
+When using the Giza-based content generation authors and editors
+should write content.
+
+- avoid references between content units.
+  
+- when possible, include content in top-level fields within the content
+  unit document. Some formats may support some level of nesting,
+  however this limits the potential for custom reuse.
+  
+- prefer using a larger number of smaller content units to a fewer
+  number of larger content units.
+
+Future Development
+------------------
+
+In the future, the content generation system will:
+
+- have some system "context change" so that the build system can
+  notify when the context around a reused content unit changes.
+  
+- legacy content generators will migrate to using the new
+  infrastructure.
+
+- improve sophistication and consistency around the edition-based
+  filtering and begin to use the
+  :func:`~giza.content.helper.edition_check()` operation.
+        
+- increased consistency about when and where the build creates
+  files. Currently some generators write files to the source directly,
+  while other builders write to the
+  ``build/<branch>/source[-<edition>]/`` directory: in future all
+  generators should write output to the ``build/`` directory.

@@ -11,6 +11,6 @@ produced at MongoDB.
 
 .. toctree::
 
-   /core/giza
+   /core
    /tutorial
    /api

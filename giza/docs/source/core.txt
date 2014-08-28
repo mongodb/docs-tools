@@ -1,0 +1,8 @@
+=============
+Core Concepts
+=============
+
+.. toctree:: 
+   
+   /core/giza
+   /core/content-generation
