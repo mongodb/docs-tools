@@ -69,12 +69,10 @@ def fix_migration_paths(page):
     if 'target' not in page:
         page['target'] = page['source']
 
-    if 'override' in page:
-        should_override = page['override']
-    else:
-        should_override = False
+    if 'override' not in page:
+        page['override'] = True
 
-    if page['target'].endswith('.txt') and should_override is True:
+    if page['target'].endswith('.txt') and page['override'] is True:
         msg = '({0}) imported files cannot end with ".txt", changing to ".rst"'
         logger.warning(msg.format(page['source']))
         page['target'] = page['target'].replace('.txt', '.rst')
