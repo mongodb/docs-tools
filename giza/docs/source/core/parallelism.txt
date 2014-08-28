@@ -1,0 +1,49 @@
+===================
+Parallel Operations
+===================
+
+Overview
+--------
+
+There are a large number of small tasks required to build a
+documentation resources including: content generation, compiling a target, post
+processing the target, staging resource, and uploading content to a
+server. While most of these tasks are small, they all incur some cost, and
+while there are dependencies and ordering requirements many of these
+tasks can safely execute in parallel. While parallel execution incurs
+some overhead, the overall build time is lower.
+
+Giza contains a model for describing a concurrent build system that is
+independent from the actual parallelism mechanism, this functionally,
+accessible using :class:`~giza.core.app.BuildApp()` and
+:class:`~giza.core.task.Task()` objects have the following features: 
+       
+- parallelism mechanisms are pluggable. Users can decide at runtime to
+  use a different default mechanism, or to execute tasks serially.
+
+- except for requirements related to parallelism mechanisms
+  (e.g. pickle-ability,) functions do not need to be aware of the
+  concurrent execution.
+  
+- developers can easily control the execution order of tasks.
+
+- exceptions propagate "correctly" out of concurrent environments, and
+  developers have access to the results of tasks in the order of
+  task creation.
+
+Behavior
+--------
+
+:class:`~giza.core.task.Task()` defines a single task, which you can
+think of as a function call that *may* execute
+concurrently. :class:`~giza.core.task.Task()` may define a file path
+or paths as its target and dependency, and by default will only
+execute if the/a target does not exist or if the last modification to
+the dependency is more recent than the modification of the target.
+
+:class:`~giza.core.app.BuildApp()` defines a sequence of tasks, and
+contain other instances of :class:`~giza.core.app.BuildApp()`
+in addition to :class:`~giza.core.task.Task()`
+units. Nested :class:`~giza.core.app.BuildApp()` instance execute in
+isolation with regard to tasks defined before and after the nested
+:class:`~giza.core.app.BuildApp()`  instance.

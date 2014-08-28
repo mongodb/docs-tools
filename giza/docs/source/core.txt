@@ -6,3 +6,4 @@ Core Concepts
    
    /core/giza
    /core/content-generation
+   /core/parallelism
