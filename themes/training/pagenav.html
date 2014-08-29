@@ -8,8 +8,10 @@
 </h3>
 
 {{ toctree( collapse=false, titles_only=1) }}
+{%- set slide_path = 'slides/' + pagename + '.html' %}
 
 <div class="nav-footer">
   <a href="{{ pathto('genindex') }}">{{ _('Index') }}</a> |
+  <a href="{{ pathto(slide_path, 1)}}">{{ _('Slides') }}</a> |
   <a class="open-version-modal" href="#">Change version</a>
 </div>
