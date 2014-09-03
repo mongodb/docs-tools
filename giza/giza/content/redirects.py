@@ -23,7 +23,12 @@ def make_redirect(conf):
 
     logger.info('generating {0} redirects'.format(len(conf.system.files.data.htaccess)))
     for redir in conf.system.files.data.htaccess:
-        o.append(' '.join(['Redirect', str(redir.code), redir.from_loc, conf.project.url + redir.to, '\n']))
+        if redir.to.startswith('http'):
+            url = redir.to
+        else:
+            url = conf.project.url + redir.to
+
+        o.append(' '.join(['Redirect', str(redir.code), redir.from_loc, url, '\n']))
 
     o.sort()
     o.extend(['\n',
