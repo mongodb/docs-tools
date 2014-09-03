@@ -16,8 +16,8 @@ m = MakefileCloth()
 try:
     conf = get_conf()
 except:
-    from giza.config.helper import new_conf
-    conf = new_conf()
+    from giza.config.helper import new_config
+    conf = new_config()
 
 def _job_touch(migration, block):
     m.job('touch {0}'.format(migration['target']), block=block)
