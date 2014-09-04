@@ -663,6 +663,12 @@ div.section > h4 {
     width: 270px;
 }
 
+@media print {
+    #btnv {
+        display: none;
+    }
+}
+
 table.docutils tbody tr td div.highlight pre { background-color: inherit; }
 
 /* somehow, powershell commands starting with a directory reference does not include a div.highlight */
@@ -703,6 +709,12 @@ div.hidden { display: none; }
     text-decoration: none;
     font-size: 24px;
     color: #313030;
+}
+
+@media print {
+    .document .body .edit-link {
+        display: none;
+    }
 }
 
 a > em { font-style: normal; }
@@ -778,6 +790,12 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 #header-db .nav-items > a:not(:last-child) {
     margin-right: 15px;
+}
+
+@media print {
+    header#header-db {
+        display: none;
+    }
 }
 
 div.gsc-control-cse-en, div.gsc-control-cse { padding: 0 !important; }
@@ -1011,6 +1029,12 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     transition: left 0.4s cubic-bezier(.02,.01,.47,1);
     -moz-transition: left 0.4s cubic-bezier(.02,.01,.47,1);
     -webkit-transition: left 0.4s cubic-bezier(.02,.01,.47,1);
+}
+
+@media print {
+    .sidebar {
+        display: none;
+    }
 }
 
 div.sphinxsidebar {
@@ -1254,6 +1278,12 @@ div.sphinxsidebarwrapper div.idxcontents {
     color: rgb( 255, 255, 255 );
     font-weight: bold;
     line-height: 0.914;
+}
+
+@media print {
+    .option-popup {
+        display: none;
+    }
 }
 
 /* Right column TOC */
