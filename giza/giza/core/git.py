@@ -22,9 +22,11 @@ import os
 import re
 from contextlib import contextmanager
 
-from giza.tools.command import command
+from giza.tools.command import command, CommandError
 
 logger = logging.getLogger('giza.git')
+
+class GitError(Exception): pass
 
 class GitRepo(object):
     """
@@ -49,10 +51,23 @@ class GitRepo(object):
     def cmd(self, *args):
         args = ' '.join(args)
 
-        return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True)
+        try: 
+            return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True)
+        except CommandError as e:
+            raise GitError(e)
 
     def remotes(self):
         return self.cmd('remote').out.split('\n')
+
+    def branch_exists(self, name):
+        r = self.cmd('branch --list ' + name).out.split('\n')
+
+        if len(r) == 0:
+            return False
+        elif len(r) == 1: 
+            return True
+        else: 
+            raise GitError
 
     def branch_file(self, path, branch='master'):
         return self.cmd('show {branch}:{path}'.format(branch=branch, path=path)).out

@@ -20,8 +20,7 @@ from multiprocessing import cpu_count
 
 logger = logging.getLogger('giza.config.runtime')
 
-from giza.tools.command import CommandError
-
+from giza.core.git import GitError
 from giza.config.base import ConfigurationBase
 from giza.config.sphinx_config import avalible_sphinx_builders
 
@@ -245,7 +244,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
         else:
             try:
                 data = self.conf.git.repo.branch_file(path=fn, branch='master')
-            except CommandError:
+            except GitError:
                 logger.critical('giza not configured to work with buildbot repos')
                 self._branch_conf = {}
                 return
