@@ -230,7 +230,7 @@ table {
   .dropup > .btn > .caret {
     border-top-color: #000 !important;
   }
-  .label {
+  .bootstrap-label {
     border: 1px solid #000;
   }
   .table {
@@ -4171,7 +4171,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
   background-color: #ffffff;
   cursor: not-allowed;
 }
-.label {
+.bootstrap-label {
   display: inline;
   padding: .2em .6em .3em;
   font-size: 75%;
@@ -4183,13 +4183,13 @@ textarea.input-group-sm > .input-group-btn > .btn {
   vertical-align: baseline;
   border-radius: .25em;
 }
-.label[href]:hover,
-.label[href]:focus {
+.bootstrap-label[href]:hover,
+.bootstrap-label[href]:focus {
   color: #ffffff;
   text-decoration: none;
   cursor: pointer;
 }
-.label:empty {
+.bootstrap-label:empty {
   display: none;
 }
 .label-default {
