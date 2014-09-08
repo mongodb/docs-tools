@@ -18,6 +18,21 @@ def deploy(args):
 
     deploy_worker(c, app)
 
+@argh.arg('--deploy', '-d', nargs='*', dest='push_targets')
+@argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
+@argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
+@argh.arg('--builder', '-b', nargs='*', default='html')
+@argh.arg('--serial_sphinx', action='store_true', default=False)
+def push(args):
+    c = fetch_config(args)
+    app = BuildApp(c)
+
+    sphinx_ret = sphinx_publication(c, args, app)
+    if sphinx_ret == 0 or c.runstate.force is True:
+        deploy_worker(c, app)
+    else:
+        logger.warning('a sphinx build failed, and build not forced. not deploying.')
+
 def deploy_worker(c, app):
     pconf = c.system.files.data.push
     pconf = dict_from_list('target', pconf)
@@ -47,18 +62,3 @@ def deploy_worker(c, app):
         app.run()
 
     logger.info('completed deploy for: {0}'.format(' '.join(c.runstate.push_targets)))
-
-@argh.arg('--deploy', '-deploy', nargs='*', dest='push_targets')
-@argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
-@argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
-@argh.arg('--builder', '-b', nargs='*', default='html')
-@argh.arg('--serial_sphinx', action='store_true', default=False)
-def push(args):
-    c = fetch_config(args)
-    app = BuildApp(c)
-
-    sphinx_ret = sphinx_publication(c, args, app)
-    if sphinx_ret == 0 or c.runstate.force is True:
-        deploy_worker(c, app)
-    else:
-        logger.warning('a sphinx build failed, and build not forced. not deploying.')
