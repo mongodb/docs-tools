@@ -41,7 +41,7 @@ def make_project(args):
         qstart_path = os.path.join(mod_path, 'quickstart')
 
         r = command('git init', capture=True)
-        if not r.output.startswith('Re'):
+        if not r.out.startswith('Re'):
             command('rsync -r {0}/. {1}'.format(qstart_path, curdir))
             command('git add .')
             try:
