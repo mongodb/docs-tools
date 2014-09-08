@@ -139,8 +139,8 @@ def command(command, capture=True, ignore=False, logger=None):
 
 def verbose_command(cmd, capture=False, ignore=False):
     """
-    .. deprecated:: 0.
-"""
+    .. deprecated:: 0.2.7
+    """
 
     if isinstance(cmd, list):
         cmd_str = ' '.join(cmd)
