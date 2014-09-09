@@ -42,7 +42,7 @@ def make_project(args):
 
         r = command('git init', capture=True)
         if not r.out.startswith('Re'):
-            command('rsync -r {0}/. {1}'.format(qstart_path, curdir))
+            command('rsync --ignore-existing --recursive {0}/. {1}'.format(qstart_path, curdir))
             command('git add .')
             try:
                 command('git commit -m "initial commit"')
