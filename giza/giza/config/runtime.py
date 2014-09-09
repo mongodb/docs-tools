@@ -260,6 +260,17 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @builder.setter
     def builder(self, value):
+        if value == 'publish':
+            if 'integration' in self.conf.system.files.data:
+                targets = conf.system.files.data.integration['targets']
+                value = set([ target.split('-')[0] for target in targets
+                              if '/' not in target and
+                              not target.startswith('htaccess') ])
+            else:
+                m = 'Builder integration not specified for "publish" target'
+                logger.error(m)
+                raise TypeError(m)
+
         if not isinstance(value, list):
             value = [value]
 
