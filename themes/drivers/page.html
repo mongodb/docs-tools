@@ -1,0 +1,33 @@
+{%- extends "layout.html" -%}
+
+{%- block htmltitle %}
+  {%- if not embedded and docstitle %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif -%}
+
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
+
+{%- block header_logo %}
+    <div class="logo pull-left">
+      <a href="{{ url_root }}">
+        {{ theme_sitename }}
+      </a>
+    </div>
+{%- endblock -%}
+
+{%- block subnav -%} {%- endblock -%}
+
+{%- block canonicalref %}
+  {%- if pagename == 'index' %}
+    <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
+  {%- else %}
+    <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/{{pagename}}" />
+  {%- endif -%}
+{%- endblock -%}
+
+{% block language_selector %}{% endblock %}
+
+{% block version_selector %}{% endblock %}
