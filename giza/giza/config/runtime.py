@@ -185,11 +185,12 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
             raise OSError(m)
 
 class RuntimeStateConfig(RuntimeStateConfigurationBase):
-    _option_registry = [ 'serial', 'length', 'days_to_save', 'builder_to_delete',
-                         'git_branch', 'git_sign_patch', 'serial_sphinx', 'package_path',
-                         'clean_generated', 'include_mask', 'push_targets', 'dry_run',
-                         't_corpora_config', 't_translate_config', 't_output_file',
-                         't_source', 't_target']
+    _option_registry = [ 'serial', 'length', 'days_to_save',
+                         'builder_to_delete', 'git_branch',
+                         'git_sign_patch', 'serial_sphinx', 'package_path',
+                         'clean_generated', 'include_mask', 'push_targets',
+                         'dry_run', 't_corpora_config', 't_translate_config',
+                         't_output_file', 't_source', 't_target']
 
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
@@ -378,3 +379,17 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
             self.state['t_input_files'] = value
         else:
             self.state['t_input_files'] = []
+
+    @property
+    def quickstart_git(self):
+        if 'quickstart_git' in self.state:
+            return self.state['quickstart_git']
+        else:
+            return False
+
+    @quickstart_git.setter
+    def quickstart_git(self, value):
+        if isinstance(value, bool):
+            self.state['quickstart_git'] = value
+        else:
+            self.state['quickstart_git'] = bool(value)

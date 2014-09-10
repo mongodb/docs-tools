@@ -28,36 +28,35 @@ from giza.operations.sphinx import sphinx_publication
 from giza.tools.command import command, CommandError
 
 @argh.named('quickstart')
+@argh.arg('--with-git', action='store_true', dest='quickstart_git')
 def make_project(args):
     curdir = os.getcwd()
     curdir_list = os.listdir(curdir)
 
-    if len(curdir_list) > 0 and '.git' in curdir_list:
-        logger.critical('cannot create new project in directory that already has files: ' + curdir)
-        _weak_bootstrapping(args)
-        logger.info('attempted to bootstrap buildsystem')
-    else:
-        mod_path = os.path.dirname(inspect.getfile(giza))
-        qstart_path = os.path.join(mod_path, 'quickstart')
+    _weak_bootstrapping(args)
 
+    if args.quickstart_git is True:
+        logger.info('creating a new git repository')
         r = command('git init', capture=True)
-        if not r.out.startswith('Re'):
-            command('rsync --ignore-existing --recursive {0}/. {1}'.format(qstart_path, curdir))
+
+        if not r.out.startswith('Reinitialized'):
             command('git add .')
             try:
                 command('git commit -m "initial commit"')
             except CommandError:
                 pass
 
-        logger.info('created project skeleton in current directory.')
-
-        _weak_bootstrapping(args)
-
 def _weak_bootstrapping(args):
     args.languages_to_build = args.editions_to_build = []
     args.builder = 'html'
     conf = fetch_config(args)
     app = BuildApp(conf)
+
+    mod_path = os.path.dirname(inspect.getfile(giza))
+    qstart_path = os.path.join(mod_path, 'quickstart')
+
+    command('rsync --ignore-existing --recursive {0}/. {1}'.format(qstart_path, os.getcwd()))
+    logger.info('migrated new site files')
 
     try:
         sphinx_publication(conf, args, app)
@@ -66,3 +65,6 @@ def _weak_bootstrapping(args):
         shutil.rmtree('docs-tools')
 
     command('python build/docs-tools/makecloth/meta.py build/makefile.meta')
+    logger.info('bootstrapped makefile system')
+
+    logger.info('updated project skeleton in current directory.')
