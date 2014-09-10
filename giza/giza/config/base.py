@@ -19,6 +19,9 @@ logger = logging.getLogger('giza.config.base')
 
 from giza.tools.serialization import ingest_yaml_doc
 
+class ConfigurationError(Exception):
+    pass
+
 class ConfigurationBase(object):
     _option_registry = []
 

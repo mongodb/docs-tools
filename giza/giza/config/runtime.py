@@ -21,7 +21,7 @@ from multiprocessing import cpu_count
 logger = logging.getLogger('giza.config.runtime')
 
 from giza.core.git import GitError
-from giza.config.base import ConfigurationBase
+from giza.config.base import ConfigurationBase, ConfigurationError
 from giza.config.sphinx_config import avalible_sphinx_builders
 
 class RuntimeStateConfigurationBase(ConfigurationBase):
@@ -31,7 +31,10 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
     @property
     def conf(self):
-        return self._conf
+        if self._conf is None:
+            raise ConfigurationError
+        else:
+            return self._conf
 
     @conf.setter
     def conf(self, value):
@@ -255,22 +258,24 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
     def builder(self):
         if 'builder' not in self.state:
             return [ ]
+        elif 'publish' in self.state['builder']:
+            self.state['builder'].remove('publish')
+
+            if 'integration' in self.conf.system.files.data:
+                targets = self.conf.system.files.data.integration['base']['targets']
+                self.state['builder'].extend(set([ target.split('-')[0] for target in targets
+                                                   if '/' not in target and
+                                                   not target.startswith('htaccess') ]))
+                return self.state['builder']
+            else:
+                m = 'Builder integration not specified for "publish" target'
+                logger.error(m)
+                raise TypeError(m)
         else:
             return self.state['builder']
 
     @builder.setter
     def builder(self, value):
-        if value == 'publish':
-            if 'integration' in self.conf.system.files.data:
-                targets = conf.system.files.data.integration['targets']
-                value = set([ target.split('-')[0] for target in targets
-                              if '/' not in target and
-                              not target.startswith('htaccess') ])
-            else:
-                m = 'Builder integration not specified for "publish" target'
-                logger.error(m)
-                raise TypeError(m)
-
         if not isinstance(value, list):
             value = [value]
 

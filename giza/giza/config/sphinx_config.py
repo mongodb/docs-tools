@@ -61,6 +61,7 @@ def resolve_builder_path(builder, edition, language, conf):
 def avalible_sphinx_builders():
     builders = sphinx.builders.BUILTIN_BUILDERS.keys()
     builders.append('slides')
+    builders.append('publish')
 
     return builders
 

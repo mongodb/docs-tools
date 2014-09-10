@@ -74,7 +74,7 @@ def main():
                 m.job('giza sphinx --builder {0} --edition {1} --language {2}'.format(builder, edition, language))
 
         if len(editions) == 0:
-            m.target([hyph_concat(builder), 
+            m.target([hyph_concat(builder),
                       hyph_concat('giza', builder)])
             m.job('giza sphinx --builder ' + builder)
 
@@ -98,56 +98,43 @@ def main():
             m.job('giza deploy --target ' + name)
             m.newline()
 
+    m.section_break('integration and publish targets')
 
-    if 'integration' in conf.system.files.data:
-        m.section_break('integration and publish targets')
-        iconf = conf.system.files.data.integration
-        if 'base' in iconf:
-            languages = [ k for k in iconf.keys() if not k.endswith('base') ]
-            iconf = iconf['base']
-        else:
-            languages = []
+    m.target(['giza-publish', 'publish'])
 
-        targets = set([ target.split('-')[0] for target in iconf['targets']
-                        if '/' not in target and
-                        not target.startswith('htaccess') ])
+    base_job = 'giza sphinx --builder publish'
+    if len(editions) > 0:
+        base_job += " --serial_sphinx --edition " + ' '.join(editions)
 
-        base_job = 'giza sphinx --builder {0}'.format(' '.join(targets))
+    m.job(base_job)
+    m.newline()
 
-        if len(editions) > 0:
-            base_job += " --serial_sphinx --edition " + ' '.join(editions)
-
-        m.target(['giza-publish', 'publish'])
-        m.job(base_job)
-
+    for lang in languages:
+        m.target([hyph_concat('publish', lang),
+                  hyph_concat('giza', 'publish', lang)])
+        m.job(base_job + ' --language ' + lang)
         m.newline()
-        for lang in languages:
-            m.target([hyph_concat('publish', lang),
-                      hyph_concat('giza', 'publish', lang)])
-            m.job(base_job + ' --language ' + lang)
+
+    # following targets build a group of sphinx targets followed by running
+    # one or more deploy actions.
+    m.section_break('push targets')
+    if 'push' in conf.system.files.data:
+        for ptarget in conf.system.files.data.push:
+            push_base_job = 'giza push --deploy {0} --builder publish'.format(ptarget['target'])
+
+            if len(editions) > 0:
+                push_base_job += " --serial_sphinx --edition " + ' '.join(editions)
+
+            m.target([ptarget['target'],
+                      hyph_concat('giza', ptarget['target'])])
+            m.job(push_base_job)
             m.newline()
 
-        # following targets build a group of sphinx targets followed by running
-        # one or more deploy actions.
-        m.section_break('push targets')
-        if 'push' in conf.system.files.data:
-            for ptarget in conf.system.files.data.push:
-                push_base_job = 'giza push --deploy {0} --builder {1}'.format(ptarget['target'], ' '.join(targets))
-
-                if len(editions) > 0:
-                    push_base_job += " --serial_sphinx --edition " + ' '.join(editions)
-
-                m.target([ptarget['target'],
-                          hyph_concat('giza', ptarget['target'])])
-                m.job(push_base_job)
-
+            for lang in languages:
+                m.target([ hyph_concat(ptarget['target'], lang),
+                           hyph_concat('giza', ptarget['target'], lang) ])
+                m.job(push_base_job + ' --language ' + lang)
                 m.newline()
-
-                for lang in languages:
-                    m.target([ hyph_concat(ptarget['target'], lang),
-                               hyph_concat('giza', ptarget['target'], lang) ])
-                    m.job(push_base_job + ' --language ' + lang)
-                    m.newline()
 
     m.write(output_file)
     print('[meta-build]: built "build/makefile.giza_build" to integrate giza')
