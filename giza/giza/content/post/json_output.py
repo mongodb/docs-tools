@@ -69,9 +69,9 @@ def json_output_tasks(conf, app):
 
         if 'edition' in conf.project and conf.project.edition != conf.project.name:
             path = os.path.join(conf.paths.branch_output,
-                                'json-' + conf.project.edition, 
+                                'json-' + conf.project.edition,
                                 os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
-            
+
         else:
             path = os.path.join(conf.paths.branch_output,
                                 'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
@@ -81,19 +81,14 @@ def json_output_tasks(conf, app):
         fjson = dot_concat(path, 'fjson')
         json = dot_concat(path, 'json')
 
-        # skip files that are excluded. trust sphinx to produce needed files
-        # correctly.
-        if not os.path.isfile(fjson):
-            continue
-        else:
-            task = app.add('task')
-            task.target = json
-            task.dependency = fjson
-            task.job = process_json_file
-            task.description = "processing json file".format(json)
-            task.args = [fjson, json, regexes, conf]
+        task = app.add('task')
+        task.target = json
+        task.dependency = fjson
+        task.job = process_json_file
+        task.description = "processing json file".format(json)
+        task.args = [fjson, json, regexes, conf]
 
-            outputs.append(json)
+        outputs.append(json)
 
     list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
 
@@ -109,6 +104,9 @@ def json_output_tasks(conf, app):
     out_task.description = 'transfer json output to public directory'
 
 def process_json_file(input_fn, output_fn, regexes, conf=None):
+    if  os.path.isfile(input_fn) is False:
+        return False
+
     with open(input_fn, 'r') as f:
         document = f.read()
 
@@ -134,6 +132,8 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
     with open(output_fn, 'w') as f:
         f.write(json.dumps(doc))
 
+    return True
+
 def generate_list_file(outputs, path, conf):
     dirname = os.path.dirname(path)
 
@@ -144,7 +144,8 @@ def generate_list_file(outputs, path, conf):
 
     with open(path, 'w') as f:
         for fn in outputs:
-            f.write( '/'.join([ url, fn.split('/', 3)[3:][0]]) )
-            f.write('\n')
+            if os.path.isfile(fn) is True:
+                f.write( '/'.join([ url, fn.split('/', 3)[3:][0]]) )
+                f.write('\n')
 
     logger.info('rebuilt inventory of json output.')
