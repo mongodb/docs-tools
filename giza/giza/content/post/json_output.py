@@ -86,7 +86,6 @@ def json_output_tasks(conf, app):
         if not os.path.isfile(fjson):
             continue
         else:
-
             task = app.add('task')
             task.target = json
             task.dependency = fjson
