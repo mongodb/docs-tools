@@ -81,14 +81,20 @@ def json_output_tasks(conf, app):
         fjson = dot_concat(path, 'fjson')
         json = dot_concat(path, 'json')
 
-        task = app.add('task')
-        task.target = json
-        task.dependency = fjson
-        task.job = process_json_file
-        task.description = "processing json file".format(json)
-        task.args = [fjson, json, regexes, conf]
+        # skip files that are excluded. trust sphinx to produce needed files
+        # correctly.
+        if not os.path.isfile(fjson):
+            continue
+        else:
 
-        outputs.append(json)
+            task = app.add('task')
+            task.target = json
+            task.dependency = fjson
+            task.job = process_json_file
+            task.description = "processing json file".format(json)
+            task.args = [fjson, json, regexes, conf]
+
+            outputs.append(json)
 
     list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
 
