@@ -104,7 +104,7 @@ def _generate_copy_core(rel, target, release):
     logger.info('wrote release info file: ' + target)
 
 def release_tasks(conf, app):
-    if 'release' not in conf.system.files.data:
+    if 'releases' not in conf.system.files.data:
         return
 
     if 'release' in conf.version:
@@ -115,7 +115,6 @@ def release_tasks(conf, app):
     rel_data = conf.system.files.data.releases
 
     deps = [ os.path.join(conf.paths.projectroot, conf.runstate.conf_path) ]
-
     for rel in rel_data['source-files']:
         target = os.path.join(conf.paths.projectroot,
                               conf.paths.includes,
