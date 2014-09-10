@@ -19,10 +19,7 @@ except ImportError as e:
     giza = None
     print(e)
 
-def main():
-    m = MakefileCloth()
-    conf = new_config()
-    output_file = os.path.join(conf.paths.projectroot, conf.paths.output, 'makefile.giza_build')
+def build_makefile(m, conf):
     m.section_break('giza build integration')
     m.newline()
 
@@ -135,6 +132,15 @@ def main():
                            hyph_concat('giza', ptarget['target'], lang) ])
                 m.job(push_base_job + ' --language ' + lang)
                 m.newline()
+
+    return m
+
+def main():
+    m = MakefileCloth()
+    conf = new_config()
+    output_file = os.path.join(conf.paths.projectroot, conf.paths.output, 'makefile.giza_build')
+
+    m = build_makefile(m, conf)
 
     m.write(output_file)
     print('[meta-build]: built "build/makefile.giza_build" to integrate giza')

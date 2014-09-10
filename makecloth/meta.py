@@ -6,6 +6,8 @@ import os.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'bin')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import giza_build
+
 from makecloth import MakefileCloth
 
 from utils.git import get_branch, get_commit
@@ -45,7 +47,6 @@ def generate_meta(conf):
 
     m.section_break('generated makefiles')
 
-    conf.system.make.generated.append('giza_build')
     for target in conf.system.make.generated:
         if target == 'sphinx':
             generator_fn = 'sphinx_builders'
@@ -68,15 +69,18 @@ def generate_meta(conf):
 
     m.target('.PHONY',  generated_makefiles)
 
+    m.newline(3)
+    m = giza_build.build_makefile(m, conf)
+
     return m
 
 def main():
     try:
-        conf = get_conf()
-    except:
         from giza.config.helper import fetch_config
         from giza.config.runtime import RuntimeStateConfig
         conf = fetch_config(RuntimeStateConfig())
+    except:
+        conf = get_conf()
 
     m = generate_meta(conf)
 
