@@ -21,11 +21,9 @@ from giza.tools.files import expand_tree
 from giza.content.examples.inheritance import ExampleDataCache
 from giza.content.examples.views import full_example
 
-
 def write_full_example(collection, examples, fn):
     content = full_example(collection, examples)
     content.write(fn)
-    logger.info('wrote example: ' + fn)
 
 def example_tasks(conf, app):
     include_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)
