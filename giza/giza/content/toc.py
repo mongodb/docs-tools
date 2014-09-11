@@ -84,7 +84,9 @@ class CustomTocTree(object):
             for ref in self.spec:
                 if 'edition' in ref:
                     if 'edition' in self.conf.project:
-                        if ref['edition'] != self.conf.project.edition:
+                        if isinstance(ref['edition'], list) and self.conf.project.edition not in ref['edition']:
+                            continue
+                        elif ref['edition'] != self.conf.project.edition:
                             continue
 
                 if self.table is not None:

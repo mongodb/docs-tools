@@ -223,7 +223,9 @@ class StepsOutput(object):
     def edition_check(self, step):
         if 'edition' in step:
             if 'edition' in self.conf.project:
-                if step['edition'] != self.conf.project.edition:
+                if isinstance(step['edition'], list) and self.conf.project.edition not in step['edition']:
+                    return False
+                elif step['edition'] != self.conf.project.edition:
                     return False
         else:
             return True
