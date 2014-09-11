@@ -20,7 +20,7 @@ def edition_check(data, conf):
 
     :param dict,object data: A dictionary or object that holds content.
 
-    :param giza.config.main.Configuration conf: A Configuration object. 
+    :param giza.config.main.Configuration conf: A Configuration object.
 
     :returns: ``True`` if ``data`` does not contain an ``edition`` field or
        attribute of ``data`` matches the value of
@@ -37,9 +37,17 @@ def edition_check(data, conf):
         except AttributeError:
             local_edition = data['edition']
 
-        if conf.project.edition != conf.project.name and local_edition != conf.project.edition:
+        if conf.project.edition == conf.project.name:
+            return True
+
+        if isinstance(local_edition, list):
+            if conf.project.edition not in local_edition:
+                return False
+            else:
+                return True
+        elif local_edition != conf.project.edition:
             return False
-        else: 
+        else:
             return True
     else:
         return True
