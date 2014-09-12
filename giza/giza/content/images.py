@@ -24,7 +24,7 @@ from rstcloth.rstcloth import RstCloth
 from giza.tools.command import command
 from giza.tools.files import verbose_remove
 from giza.tools.serialization import ingest_yaml_list
-from giza.tools.strings import dot_concat
+from giza.tools.strings import dot_concat, hyph_concat
 
 ## Internal Supporting Methods
 
@@ -188,7 +188,7 @@ def image_clean(conf, app):
         return
 
     for image in conf.system.files.data.images:
-        source_base = os.path.join(conf.paths.projectroot, image['dir'], image['name'])
+        source_base = os.path.join(conf.paths.projectroot, conf.paths.images, image['name'])
 
         rm_rst = app.add('task')
         rm_rst.job = verbose_remove
@@ -197,7 +197,7 @@ def image_clean(conf, app):
         for output in image['output']:
             rm_tag_image = app.add('task')
             rm_tag_image.job = verbose_remove
-            if 'tag' in otuput:
-                rm_tag_image.args = dot_concat(hyph_concat(source_base, tag), 'png')
+            if 'tag' in output:
+                rm_tag_image.args = dot_concat(hyph_concat(source_base, output['tag']), 'png')
             else:
                 rm_tag_image.args = dot_concat(source_base, 'png')
