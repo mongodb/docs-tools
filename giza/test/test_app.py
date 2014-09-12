@@ -522,13 +522,41 @@ class CommonAppSuite(object):
                           2, 2, 2, 2, 2, 2, 2, 2, 2, 2
                           ])
 
-class TestBuildAppStandardConfig(CommonAppSuite, TestCase):
-    @classmethod
-    def setUp(self):
-        self.c = Configuration()
-        self.c.runstate = RuntimeStateConfig()
-        self.app = BuildApp(self.c)
+    def test_single_runner_app(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
 
+        app = BuildApp()
+        t = app.add('task')
+        t.job = sum
+        t.args = [[ 1 , 2 ], 0]
+
+        self.app._run_single(app)
+        self.assertEqual(self.app.results[0], 3)
+
+    def test_single_runner_app_with_many_subtasks(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        app = BuildApp()
+
+        for _ in range(10):
+            t = app.add('task')
+            t.job = sum
+            t.args = [[ 1 , 2 ], 0]
+
+        self.app._run_single(app)
+        self.assertEqual(len(self.app.results), 10)
+        self.assertEqual(self.app.results[0], 3)
+        self.assertEqual(sum(self.app.results), 30)
+
+    def test_add_existing_app_object(self):
+        self.assertEqual(self.app.queue, [])
+        app = BuildApp()
+        self.app.add(app)
+        self.assertIs(app, self.app.queue[0])
+        self.assertIsNot(app, BuildApp())
+        self.assertIsNot(BuildApp(), self.app.queue[0])
 
     def test_add_existing_app_object(self):
         self.assertEqual(self.app.queue, [])
@@ -538,26 +566,6 @@ class TestBuildAppStandardConfig(CommonAppSuite, TestCase):
         self.assertIsNot(app, BuildApp(self.c))
         self.assertIsNot(BuildApp(self.c), self.app.queue[0])
 
-    def test_conf_objet_consistent_in_task(self):
-        self.assertEqual(self.app.queue, [])
-        t = self.app.add('task')
-        self.assertIs(self.c, t.conf)
-        self.assertIs(self.c, self.app.queue[0].conf)
-
-    def test_conf_objet_consistent_in_app(self):
-        self.assertEqual(self.app.queue, [])
-        app = self.app.add('app')
-        self.assertIs(self.c, app.conf)
-        self.assertIs(self.c, self.app.queue[0].conf)
-
-    def test_conf_objet_consistent_in_task(self):
-        self.assertEqual(self.app.queue, [])
-        t = Task()
-        self.assertIsNone(t.conf)
-        self.app.add(t)
-        self.assertIsNotNone(t.conf)
-        self.assertIs(self.c, self.app.queue[0].conf)
-        self.assertIs(self.c, t.conf)
 
     def test_pool_setter_existing_pool_thread(self):
         self.assertIsNone(self.app.worker_pool)
@@ -587,71 +595,36 @@ class TestBuildAppStandardConfig(CommonAppSuite, TestCase):
         self.assertFalse(self.app.is_pool(self.c))
         self.assertFalse(self.app.is_pool(self.app))
 
-    def test_single_runner_app(self):
+class TestBuildAppStandardConfig(CommonAppSuite, TestCase):
+    @classmethod
+    def setUp(self):
+        self.c = Configuration()
+        self.c.runstate = RuntimeStateConfig()
+        self.app = BuildApp(self.c)
+
+    def test_conf_objet_consistent_in_task(self):
         self.assertEqual(self.app.queue, [])
-        self.assertEqual(self.app.results, [])
+        t = self.app.add('task')
+        self.assertIs(self.c, t.conf)
+        self.assertIs(self.c, self.app.queue[0].conf)
 
-        app = BuildApp(self.c)
-        t = app.add('task')
-        t.job = sum
-        t.args = [[ 1 , 2 ], 0]
-
-        self.app._run_single(app)
-        self.assertEqual(self.app.results[0], 3)
-
-    def test_single_runner_app_with_many_subtasks(self):
+    def test_conf_objet_consistent_in_app(self):
         self.assertEqual(self.app.queue, [])
-        self.assertEqual(self.app.results, [])
+        app = self.app.add('app')
+        self.assertIs(self.c, app.conf)
+        self.assertIs(self.c, self.app.queue[0].conf)
 
-        app = BuildApp(self.c)
-
-        for _ in range(10):
-            t = app.add('task')
-            t.job = sum
-            t.args = [[ 1 , 2 ], 0]
-
-        self.app._run_single(app)
-        self.assertEqual(len(self.app.results), 10)
-        self.assertEqual(self.app.results[0], 3)
-        self.assertEqual(sum(self.app.results), 30)
+    def test_conf_objet_consistent_in_new_task(self):
+        self.assertEqual(self.app.queue, [])
+        t = Task()
+        self.assertIsNone(t.conf)
+        self.app.add(t)
+        self.assertIsNotNone(t.conf)
+        self.assertIs(self.c, self.app.queue[0].conf)
+        self.assertIs(self.c, t.conf)
 
 class TestBuildAppMinimalConfig(CommonAppSuite, TestCase):
     @classmethod
     def setUp(self):
         self.app = BuildApp()
-
-    def test_add_existing_app_object(self):
-        self.assertEqual(self.app.queue, [])
-        app = BuildApp()
-        self.app.add(app)
-        self.assertIs(app, self.app.queue[0])
-        self.assertIsNot(app, BuildApp())
-        self.assertIsNot(BuildApp(), self.app.queue[0])
-
-    def test_single_runner_app(self):
-        self.assertEqual(self.app.queue, [])
-        self.assertEqual(self.app.results, [])
-
-        app = BuildApp()
-        t = app.add('task')
-        t.job = sum
-        t.args = [[ 1 , 2 ], 0]
-
-        self.app._run_single(app)
-        self.assertEqual(self.app.results[0], 3)
-
-    def test_single_runner_app_with_many_subtasks(self):
-        self.assertEqual(self.app.queue, [])
-        self.assertEqual(self.app.results, [])
-
-        app = BuildApp()
-
-        for _ in range(10):
-            t = app.add('task')
-            t.job = sum
-            t.args = [[ 1 , 2 ], 0]
-
-        self.app._run_single(app)
-        self.assertEqual(len(self.app.results), 10)
-        self.assertEqual(self.app.results[0], 3)
-        self.assertEqual(sum(self.app.results), 30)
+        self.c = None

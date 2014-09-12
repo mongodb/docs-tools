@@ -26,6 +26,7 @@ import logging
 logger = logging.getLogger('giza.pool')
 
 from giza.core.task import MapTask
+from giza.config.helper import new_skeleton_config
 
 class PoolConfigurationError(Exception): pass
 class PoolResultsError(Exception): pass
@@ -102,7 +103,7 @@ class WorkerPool(object):
 class SerialPool(object):
     def __init__(self, conf=None):
         self.p = None
-        self.conf = conf
+        self.conf = new_skeleton_config(conf)
         logger.debug('new phony "serial" pool object')
 
     def get_results(self, results):
@@ -119,20 +120,20 @@ class SerialPool(object):
 
 class ThreadPool(WorkerPool):
     def __init__(self, conf=None):
-        self.conf = conf
+        self.conf = new_skeleton_config(conf)
         self.p = multiprocessing.dummy.Pool(self.conf.runstate.pool_size)
         logger.info('new thread pool object')
 
 class ProcessPool(WorkerPool):
     def __init__(self, conf=None):
-        self.conf = conf
+        self.conf = new_skeleton_config(conf)
         self.p = multiprocessing.Pool(self.conf.runstate.pool_size)
         logger.info('new process pool object')
 
 
 class EventPool(WorkerPool):
     def __init__(self, conf=None):
-        self.conf = conf
+        self.conf = new_skeleton_config(conf)
 
         try:
             import gevent.pool
