@@ -23,7 +23,7 @@ logger = logging.getLogger('giza.app')
 
 from giza.core.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool, EventPool
 from giza.config.main import Configuration
-from giza.config.helper import new_config
+from giza.config.helper import new_skeleton_config
 
 from giza.core.task import Task, MapTask
 
@@ -55,7 +55,7 @@ class BuildApp(object):
            :class:`~giza.config.main.Configuration` object.
         """
 
-        self.conf = new_config(conf)
+        self.conf = new_skeleton_config(conf)
         self.queue = []
         self.results = []
         self.worker_pool = None

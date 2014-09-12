@@ -13,6 +13,9 @@
 # limitations under the License.
 
 import os.path
+import logging
+
+logger = logging.getLogger('giza.config.main')
 
 from giza.tools.serialization import ingest_yaml_doc
 

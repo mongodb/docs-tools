@@ -27,6 +27,17 @@ def fetch_config(args):
 
     return c
 
+def new_skeleton_config(conf=None):
+    if conf is None:
+        conf = Configuration()
+        args = RuntimeStateConfig()
+        conf.runstate = args
+
+        return conf
+    else:
+        return conf
+
+
 def new_config(args=None):
     if args is None:
         args = RuntimeStateConfig()

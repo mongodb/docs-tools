@@ -20,13 +20,7 @@ from giza.core.task import Task
 from giza.config.main import Configuration
 from giza.config.runtime import RuntimeStateConfig
 
-class TestBuildApp(TestCase):
-    @classmethod
-    def setUp(self):
-        self.c = Configuration()
-        self.c.runstate = RuntimeStateConfig()
-        self.app = BuildApp(self.c)
-
+class CommonAppSuite(object):
     def test_add_make_test_default(self):
         self.assertEqual(self.app.queue, [])
         self.app.add()
@@ -52,35 +46,6 @@ class TestBuildApp(TestCase):
         self.assertIs(t, self.app.queue[0])
         self.assertIsNot(t, Task())
         self.assertIsNot(Task(), self.app.queue[0])
-
-    def test_add_existing_app_object(self):
-        self.assertEqual(self.app.queue, [])
-        app = BuildApp(self.c)
-        self.app.add(app)
-        self.assertIs(app, self.app.queue[0])
-        self.assertIsNot(app, BuildApp(self.c))
-        self.assertIsNot(BuildApp(self.c), self.app.queue[0])
-
-    def test_conf_objet_consistent_in_task(self):
-        self.assertEqual(self.app.queue, [])
-        t = self.app.add('task')
-        self.assertIs(self.c, t.conf)
-        self.assertIs(self.c, self.app.queue[0].conf)
-
-    def test_conf_objet_consistent_in_app(self):
-        self.assertEqual(self.app.queue, [])
-        app = self.app.add('app')
-        self.assertIs(self.c, app.conf)
-        self.assertIs(self.c, self.app.queue[0].conf)
-
-    def test_conf_objet_consistent_in_task(self):
-        self.assertEqual(self.app.queue, [])
-        t = Task()
-        self.assertIsNone(t.conf)
-        self.app.add(t)
-        self.assertIsNotNone(t.conf)
-        self.assertIs(self.c, self.app.queue[0].conf)
-        self.assertIs(self.c, t.conf)
 
     def test_pool_setter_default(self):
         self.assertIsNone(self.app.worker_pool)
@@ -129,24 +94,6 @@ class TestBuildApp(TestCase):
         a = self.app.pool = 1
         self.assertIsInstance(self.app.pool, ProcessPool)
 
-    def test_pool_setter_existing_pool_thread(self):
-        self.assertIsNone(self.app.worker_pool)
-        p = ThreadPool(self.c)
-        self.app.pool = p
-        self.assertIs(self.app.pool, p)
-
-    def test_pool_setter_existing_pool_process(self):
-        self.assertIsNone(self.app.worker_pool)
-        p = ProcessPool(self.c)
-        self.app.pool = p
-        self.assertIs(self.app.pool, p)
-
-    def test_pool_setter_existing_pool_serial(self):
-        self.assertIsNone(self.app.worker_pool)
-        p = SerialPool(self.c)
-        self.app.pool = p
-        self.assertIs(self.app.pool, p)
-
     def test_pool_closer(self):
         self.assertIsNone(self.app.worker_pool)
         self.app.pool = 'thread'
@@ -172,18 +119,8 @@ class TestBuildApp(TestCase):
     def test_pool_type_checker_thread_invalid(self):
         self.assertFalse(self.app.is_pool_type('threaded'))
 
-    def test_is_pool_predicate_thead(self):
-        self.assertTrue(self.app.is_pool(ThreadPool(self.c)))
-
-    def test_is_pool_predicate_process(self):
-        self.assertTrue(self.app.is_pool(ProcessPool(self.c)))
-
     def test_is_pool_predicate_serial(self):
         self.assertTrue(self.app.is_pool(SerialPool()))
-
-    def test_is_pool_predicate_invalid(self):
-        self.assertFalse(self.app.is_pool(self.c))
-        self.assertFalse(self.app.is_pool(self.app))
 
     def test_add_invalid_object(self):
         with self.assertRaises(TypeError):
@@ -218,18 +155,6 @@ class TestBuildApp(TestCase):
 
         self.assertEqual(self.app.results[0], 3)
 
-    def test_single_runner_app(self):
-        self.assertEqual(self.app.queue, [])
-        self.assertEqual(self.app.results, [])
-
-        app = BuildApp(self.c)
-        t = app.add('task')
-        t.job = sum
-        t.args = [[ 1 , 2 ], 0]
-
-        self.app._run_single(app)
-        self.assertEqual(self.app.results[0], 3)
-
     def test_single_runner_app_integrated(self):
         self.assertEqual(self.app.queue, [])
         self.assertEqual(self.app.results, [])
@@ -242,22 +167,6 @@ class TestBuildApp(TestCase):
 
         self.app.run()
         self.assertEqual(self.app.results[0], 3)
-
-    def test_single_runner_app_with_many_subtasks(self):
-        self.assertEqual(self.app.queue, [])
-        self.assertEqual(self.app.results, [])
-
-        app = BuildApp(self.c)
-
-        for _ in range(10):
-            t = app.add('task')
-            t.job = sum
-            t.args = [[ 1 , 2 ], 0]
-
-        self.app._run_single(app)
-        self.assertEqual(len(self.app.results), 10)
-        self.assertEqual(self.app.results[0], 3)
-        self.assertEqual(sum(self.app.results), 30)
 
     def test_results_ordering(self):
         expected_results = [12, 13, 14, 15, 7, 17, 18, 10, 20, 12]
@@ -612,3 +521,137 @@ class TestBuildApp(TestCase):
                           3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 2,
                           2, 2, 2, 2, 2, 2, 2, 2, 2, 2
                           ])
+
+class TestBuildAppStandardConfig(CommonAppSuite, TestCase):
+    @classmethod
+    def setUp(self):
+        self.c = Configuration()
+        self.c.runstate = RuntimeStateConfig()
+        self.app = BuildApp(self.c)
+
+
+    def test_add_existing_app_object(self):
+        self.assertEqual(self.app.queue, [])
+        app = BuildApp(self.c)
+        self.app.add(app)
+        self.assertIs(app, self.app.queue[0])
+        self.assertIsNot(app, BuildApp(self.c))
+        self.assertIsNot(BuildApp(self.c), self.app.queue[0])
+
+    def test_conf_objet_consistent_in_task(self):
+        self.assertEqual(self.app.queue, [])
+        t = self.app.add('task')
+        self.assertIs(self.c, t.conf)
+        self.assertIs(self.c, self.app.queue[0].conf)
+
+    def test_conf_objet_consistent_in_app(self):
+        self.assertEqual(self.app.queue, [])
+        app = self.app.add('app')
+        self.assertIs(self.c, app.conf)
+        self.assertIs(self.c, self.app.queue[0].conf)
+
+    def test_conf_objet_consistent_in_task(self):
+        self.assertEqual(self.app.queue, [])
+        t = Task()
+        self.assertIsNone(t.conf)
+        self.app.add(t)
+        self.assertIsNotNone(t.conf)
+        self.assertIs(self.c, self.app.queue[0].conf)
+        self.assertIs(self.c, t.conf)
+
+    def test_pool_setter_existing_pool_thread(self):
+        self.assertIsNone(self.app.worker_pool)
+        p = ThreadPool(self.c)
+        self.app.pool = p
+        self.assertIs(self.app.pool, p)
+
+    def test_pool_setter_existing_pool_process(self):
+        self.assertIsNone(self.app.worker_pool)
+        p = ProcessPool(self.c)
+        self.app.pool = p
+        self.assertIs(self.app.pool, p)
+
+    def test_pool_setter_existing_pool_serial(self):
+        self.assertIsNone(self.app.worker_pool)
+        p = SerialPool(self.c)
+        self.app.pool = p
+        self.assertIs(self.app.pool, p)
+
+    def test_is_pool_predicate_thead(self):
+        self.assertTrue(self.app.is_pool(ThreadPool(self.c)))
+
+    def test_is_pool_predicate_process(self):
+        self.assertTrue(self.app.is_pool(ProcessPool(self.c)))
+
+    def test_is_pool_predicate_invalid(self):
+        self.assertFalse(self.app.is_pool(self.c))
+        self.assertFalse(self.app.is_pool(self.app))
+
+    def test_single_runner_app(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        app = BuildApp(self.c)
+        t = app.add('task')
+        t.job = sum
+        t.args = [[ 1 , 2 ], 0]
+
+        self.app._run_single(app)
+        self.assertEqual(self.app.results[0], 3)
+
+    def test_single_runner_app_with_many_subtasks(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        app = BuildApp(self.c)
+
+        for _ in range(10):
+            t = app.add('task')
+            t.job = sum
+            t.args = [[ 1 , 2 ], 0]
+
+        self.app._run_single(app)
+        self.assertEqual(len(self.app.results), 10)
+        self.assertEqual(self.app.results[0], 3)
+        self.assertEqual(sum(self.app.results), 30)
+
+class TestBuildAppMinimalConfig(CommonAppSuite, TestCase):
+    @classmethod
+    def setUp(self):
+        self.app = BuildApp()
+
+    def test_add_existing_app_object(self):
+        self.assertEqual(self.app.queue, [])
+        app = BuildApp()
+        self.app.add(app)
+        self.assertIs(app, self.app.queue[0])
+        self.assertIsNot(app, BuildApp())
+        self.assertIsNot(BuildApp(), self.app.queue[0])
+
+    def test_single_runner_app(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        app = BuildApp()
+        t = app.add('task')
+        t.job = sum
+        t.args = [[ 1 , 2 ], 0]
+
+        self.app._run_single(app)
+        self.assertEqual(self.app.results[0], 3)
+
+    def test_single_runner_app_with_many_subtasks(self):
+        self.assertEqual(self.app.queue, [])
+        self.assertEqual(self.app.results, [])
+
+        app = BuildApp()
+
+        for _ in range(10):
+            t = app.add('task')
+            t.job = sum
+            t.args = [[ 1 , 2 ], 0]
+
+        self.app._run_single(app)
+        self.assertEqual(len(self.app.results), 10)
+        self.assertEqual(self.app.results[0], 3)
+        self.assertEqual(sum(self.app.results), 30)
