@@ -29,15 +29,22 @@ def get_path_prefix(conf, branch):
         else:
             o.append(conf.project.tag)
     else:
-        o.append(conf.project.project.basepath)
+        o.append(conf.project.basepath)
 
-        if self.project.branched is True:
+        if conf.project.branched is True:
             if conf.git.branches.manual == conf.git.branches.current:
                 o.append('current')
             else:
                 o.append(branch)
 
     return '/'.join(o)
+
+def get_current_path(conf):
+    branch = conf.git.branches.current
+    if branch not in conf.git.branches.published:
+        branch = conf.git.branches.published[0]
+
+    return get_path_prefix(conf, branch)
 
 class ProjectConfig(RecursiveConfigurationBase):
     _option_registry = ['name', 'tag', 'url', 'title']

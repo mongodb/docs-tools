@@ -117,7 +117,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
     @runner.setter
     def runner(self, value):
-        supported_runners = ['process', 'thread', 'serial']
+        supported_runners = ['process', 'thread', 'event', 'serial']
 
         if value is None:
             self.state['runner'] = 'process'

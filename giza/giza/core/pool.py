@@ -130,7 +130,6 @@ class ProcessPool(WorkerPool):
         self.p = multiprocessing.Pool(self.conf.runstate.pool_size)
         logger.info('new process pool object')
 
-
 class EventPool(WorkerPool):
     def __init__(self, conf=None):
         self.conf = new_skeleton_config(conf)
@@ -141,3 +140,4 @@ class EventPool(WorkerPool):
             raise PoolConfigurationError('gevent is not available')
 
         self.p = gevent.pool.Pool(self.conf.runstate.pool_size)
+        logger.info('new event pool object')

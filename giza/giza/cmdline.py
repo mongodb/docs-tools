@@ -40,6 +40,8 @@ def get_base_parser():
                         choices=['debug', 'warning', 'info', 'critical', 'error'],
                         default='info')
     parser.add_argument('--serial', '-s', default=None, dest='runner', const='serial', action='store_const')
+    parser.add_argument('--thread', default=None, dest='runner', const='thread', action='store_const')
+    parser.add_argument('--event', default=None, dest='runner', const='event', action='store_const')
     parser.add_argument('--force', '-f', default=False, action='store_true')
 
     return parser
