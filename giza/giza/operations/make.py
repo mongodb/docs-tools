@@ -18,53 +18,59 @@ import argh
 
 from giza.core.app import BuildApp
 from giza.config.helper import fetch_config
+from giza.config.project import EditionListConfig
 from giza.operations.deploy import deploy_worker
 from giza.operations.sphinx import sphinx_publication
 
 logger = logging.getLogger('giza.operations.make')
 
 def build_reporter(target, deploy_action, build_sphinx, editions, languages):
-    if not deploy_action: 
-        cmd = 'giza sphinx --builder ' + ' '.join(target)
-    else: 
-        if build_sphinx:
-            cmd = 'giza push --deploy ' + deploy_action[0] + ' --builder ' + ' '.join(target)
+    if len(deploy_action) > 0:
+        deploy_action = ' '.join(deploy_action)
+
+    target_set = set()
+    for t in target:
+        if isinstance(t, list):
+            target_set.update(t)
         else:
-            cmd = 'giza deploy --target ' + deploy_action[0]
+            target_set.add(t)
+
+    target = list(target_set)
+    if not deploy_action:
+        cmd = 'giza sphinx --builder ' + ' '.join(target)
+    else:
+        if build_sphinx:
+            cmd = 'giza push --deploy ' + deploy_action + ' --builder ' + ' '.join(target)
+        else:
+            cmd = 'giza deploy --target ' + deploy_action
 
     if build_sphinx:
-        if editions: 
+        if editions and None not in editions:
             cmd += ' --edition ' + ' '.join(editions)
-        if languages: 
+        if languages and None not in languages:
             cmd += ' --languages ' + ' '.join(languages)
 
     return cmd
 
-def determine_workload(targets, conf):
+def determine_workload(deploy_action, targets, conf):
     build_sphinx = True
-    deploy_action = []
-
     if targets[0] in ('deploy', 'stage', 'push'):
-        offset = 0
-
         target = ['publish']
 
         if targets[0] == 'giza':
             targets = targets[1:]
-            offset += 4
 
         if targets[0] == 'deploy':
             build_sphinx = False
-            targets.pop('deploy')
-            offset += 6
-    
+            targets = targets[1:]
+
+        target_str = '-'.join(targets)
+
         for t in conf.system.files.data.push:
-            if targets[0].startswith(t['target']) or target[offset:].startswith(t['target']):
-                deploy_action = [ t['target'] ]
-                offset += len(t['target'])
-                break
+            if targets[0].startswith(t['target']) or target_str.startswith(t['target']):
+                deploy_action.append( t['target'])
     else:
-        supported_targets = set([ target.split('-')[0] 
+        supported_targets = set([ target.split('-')[0]
                                   for target in conf.system.files.data.integration['base']['targets']
                                   if '/' not in target and
                                   not target.startswith('htaccess') ])
@@ -77,36 +83,52 @@ def determine_workload(targets, conf):
         if not target:
             target = ['publish']
 
-    return target, deploy_action, build_sphinx
+    return build_sphinx, target
 
-@argh.arg('make_target')
+@argh.arg('make_target', nargs="*")
 @argh.named('make')
 def main(args):
     conf = fetch_config(args)
-    targets = args.make_target.split('-')
+    targets = [ t.split('-') for t in args.make_target ]
 
-    target, deploy_action, build_sphinx = determine_workload(targets, conf)
+    build_sphinx = True
+    deploy_action = []
+
+    sphinx_targets = set()
+    for t in targets:
+        should_build, sp = determine_workload(deploy_action, t, conf)
+        sphinx_targets.update(sp)
+        if build_sphinx is True and should_build is False:
+            build_sphinx = should_build
+
+    sphinx_targets = list(sphinx_targets)
 
     editions = []
     languages = []
-    for rtarget in targets: 
-        if rtarget in conf.project.edition_list:
-            editions.append(rtarget)
-        elif rtarget in conf.system.files.data.integration:
+    for rt in targets:
+        for t in rt:
+            if t in conf.project.edition_list:
+                editions.append(t)
+
+        rtarget = '-'.join(rt)
+        if rtarget in conf.system.files.data.integration:
             languages.append(rtarget)
 
-    cmd = build_reporter(target, deploy_action, build_sphinx, editions, languages)
-    logger.info('running: ' + cmd)
-
     if not editions:
-        editions = [None]
+        if len(conf.project.editions) > 0:
+            editions = conf.project.edition_list
+        else:
+            editions = [None]
     if not languages:
         languages = [None]
+
+    cmd = build_reporter(sphinx_targets, deploy_action, build_sphinx, editions, languages)
+    logger.info('running: ' + cmd)
 
     args.push_targets = deploy_action
     args.languages_to_build = languages
     args.editions_to_build = editions
-    args.builder = target
+    args.builder = sphinx_targets
     conf.runstate = args
 
     app = BuildApp(conf)
@@ -114,5 +136,5 @@ def main(args):
     if build_sphinx:
         sphinx_publication(conf, args, app)
 
-    if deploy_action: 
+    if deploy_action:
         deploy_worker(conf, app)
