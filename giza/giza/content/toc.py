@@ -27,12 +27,13 @@ from rstcloth.table import TableData, TableBuilder, RstTable
 
 class CustomTocTree(object):
     def __init__(self, filename, conf, sort=False):
-        self.spec = self._process_spec(filename, sort)
-
         if "ref-toc" in filename:
             self._is_ref = True
+            sort = True
         else:
             self._is_ref = False
+
+        self.spec = self._process_spec(filename, sort)
 
         self.conf = conf
         self.table = None

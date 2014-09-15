@@ -59,7 +59,7 @@ def determine_workload(targets, conf):
             offset += 6
     
         for t in conf.system.files.data.push:
-            if target[offset:].startswith(t['target']):
+            if targets[0].startswith(t['target']) or target[offset:].startswith(t['target']):
                 deploy_action = [ t['target'] ]
                 offset += len(t['target'])
                 break
