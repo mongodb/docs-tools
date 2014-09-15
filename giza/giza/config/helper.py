@@ -37,7 +37,6 @@ def new_skeleton_config(conf=None):
     else:
         return conf
 
-
 def new_config(args=None):
     if args is None:
         args = RuntimeStateConfig()

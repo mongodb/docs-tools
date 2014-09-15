@@ -147,7 +147,7 @@ def primer_migration_tasks(conf, app):
 
         return True
 
-def clean(conf):
+def clean(conf, app):
     "Removes all migrated primer files according to the current spec."
 
     migration_paths = get_migration_specifications(conf)
@@ -163,7 +163,11 @@ def clean(conf):
 
         targets.append(os.path.join(conf.paths.projectroot, conf.paths.source, page['target']))
 
-    map(verbose_remove, targets)
+    t = app.add('map')
+    t.job = verbose_remove
+    t.iter = targets
+    t.description = 'clean primer migrations'
+
     logger.info('clean: removed {0} files'.format(len(targets)))
 
 ########## Task Creators

@@ -109,13 +109,14 @@ def intersphinx(args):
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 def primer(args):
     c = fetch_config(args)
+    app = BuildApp(c)
 
     if c.runstate.clean_generated is True:
-        primer_clean(c)
+        primer_clean(c, app)
     else:
-        app = BuildApp(c)
         primer_migration_tasks(c, app)
-        app.run()
+
+    app.run()
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 def tables(args):

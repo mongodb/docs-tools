@@ -54,3 +54,17 @@ def example_tasks(conf, app):
         t.description = 'generate an example for ' + basename
 
     logger.debug('added all tasks for example generation')
+
+def example_clean(conf, app):
+    fn_prefix = os.path.join(include_dir, 'example')
+
+    example_sources = [ fn for fn in
+                        expand_tree(include_dir, 'yaml')
+                        if fn.startswith(fn_prefix) ]
+
+    for fn in example_sources:
+        basename = fn[len(fn_prefix)+1:-5]
+
+        out_fn = os.path.join(conf.paths.projectroot,
+                              conf.paths.branch_source,
+                              'includes', 'examples', basename) + '.rst'

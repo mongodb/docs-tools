@@ -186,7 +186,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
 class RuntimeStateConfig(RuntimeStateConfigurationBase):
     _option_registry = [ 'serial', 'length', 'days_to_save',
-                         'builder_to_delete', 'git_branch',
+                         'builder_to_delete', 'git_branch', 'make_target',
                          'git_sign_patch', 'serial_sphinx', 'package_path',
                          'clean_generated', 'include_mask', 'push_targets',
                          'dry_run', 't_corpora_config', 't_translate_config',

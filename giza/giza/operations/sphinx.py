@@ -46,6 +46,7 @@ def sphinx_publication(c, args, app):
     build_source_copies = set()
     sphinx_app = BuildApp(c)
     sphinx_app.pool = app.pool
+
     jobs = itertools.product(args.editions_to_build, args.languages_to_build, args.builder)
     for edition, language, builder in jobs:
         args.language = language

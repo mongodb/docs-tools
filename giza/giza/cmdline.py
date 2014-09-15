@@ -27,6 +27,7 @@ import giza.operations.packaging
 import giza.operations.git
 import giza.operations.tx
 import giza.operations.translate
+import giza.operations.make
 
 from giza.operations.configuration import render_config
 from giza.operations.clean import clean
@@ -54,7 +55,8 @@ def main():
         render_config,
         clean,
         sphinx,
-        deploy, push
+        deploy, push,
+        giza.operations.make.main
     ]
     argh.add_commands(parser, commands)
 

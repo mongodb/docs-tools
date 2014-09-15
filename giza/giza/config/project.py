@@ -56,6 +56,13 @@ class ProjectConfig(RecursiveConfigurationBase):
         else:
             return []
 
+    @property
+    def edition_list(self):
+        if '_edition_list' in self.state: 
+            return self.state['_edition_list']
+        else: 
+            return []
+
     @editions.setter
     def editions(self, value):
         if isinstance(value, list):
