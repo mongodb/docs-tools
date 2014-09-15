@@ -24,7 +24,7 @@ from giza.operations.sphinx import sphinx_publication
 
 logger = logging.getLogger('giza.operations.make')
 
-def build_reporter(target, deploy_action, build_sphinx, editions, languages):
+def build_reporter(target, deploy_action, build_sphinx, editions, languages, args):
     if len(deploy_action) > 0:
         deploy_action = ' '.join(deploy_action)
 
@@ -49,6 +49,9 @@ def build_reporter(target, deploy_action, build_sphinx, editions, languages):
             cmd += ' --edition ' + ' '.join(editions)
         if languages and None not in languages:
             cmd += ' --languages ' + ' '.join(languages)
+
+    if args.serial_sphinx is True:
+        cmd += ' --serial_sphinx'
 
     return cmd
 
@@ -86,6 +89,7 @@ def determine_workload(deploy_action, targets, conf):
     return build_sphinx, target
 
 @argh.arg('make_target', nargs="*")
+@argh.arg('--serial_sphinx', action='store_true', default=False)
 @argh.named('make')
 def main(args):
     conf = fetch_config(args)
@@ -122,7 +126,7 @@ def main(args):
     if not languages:
         languages = [None]
 
-    cmd = build_reporter(sphinx_targets, deploy_action, build_sphinx, editions, languages)
+    cmd = build_reporter(sphinx_targets, deploy_action, build_sphinx, editions, languages, args)
     logger.info('running: ' + cmd)
 
     args.push_targets = deploy_action
