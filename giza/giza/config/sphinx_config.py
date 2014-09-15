@@ -191,7 +191,10 @@ class SphinxConfig(RecursiveConfigurationBase):
             logger.error('excluded files must be a list.')
             raise TypeError
         else:
-            self.state['excluded'] = value
+            if 'excluded' in self.state:
+                self.state['excluded'].extend(value)
+            else:
+                self.state['excluded'] = value
 
     @tags.setter
     def tags(self, value):
@@ -240,6 +243,11 @@ def render_sphinx_config(conf):
                 base = deepcopy(computed[v['inherit']])
             else:
                 base = deepcopy(conf[v['inherit']])
+
+            if 'excluded' in v and 'excluded' in base:
+                if isinstance(v['excluded'], list):
+                    base['excluded'].extend(v['excluded'])
+                    del v['excluded']
 
             del v['inherit']
             base.update(v)
