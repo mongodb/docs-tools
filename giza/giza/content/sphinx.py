@@ -81,9 +81,6 @@ def get_sphinx_args(sconf, conf):
 #################### Output Management ####################
 
 def output_sphinx_stream(out, conf):
-    if isinstance(out, list):
-        out = '\n'.join(out)
-
     out = [ o for o in out.split('\n') if o != '' ]
 
     full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
@@ -189,14 +186,19 @@ def run_sphinx(builder, sconf, conf):
     # out = sphinx_native_worker(sphinx_cmd)
     logger.info('completed sphinx build {0} at {1}'.format(builder, timestamp()))
 
-    output = '\n'.join([out.err, out.out])
-
     if out.return_code == 0:
         logger.info('successfully completed {0} sphinx build at {1}'.format(builder, timestamp()))
+
+        finalizer_app = BuildApp(conf)
+        finalizer_app.root_app = False
+        finalize_sphinx_build(sconf, conf, finalizer_app)
+        finalizer_app.run()
     else:
         logger.warning('the sphinx build {0} was not successful. not running finalize operation'.format(builder))
 
-    return out.return_code, sconf, conf, output
+    output = '\n'.join([out.err, out.out])
+
+    return output
 
 #################### Application Logic ####################
 
@@ -212,10 +214,12 @@ def finalize_sphinx_build(sconf, conf, app):
     logger.info('starting to finalize the Sphinx build {0}'.format(target))
 
     if target == 'linkcheck':
+        app.pool = 'serial'
         task = app.add('task')
         task.job = printer
         task.args = '{0}: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)
     elif target == 'dirhtml':
+        app.pool = 'thread'
         for job in (finalize_dirhtml_build, error_pages):
             task = app.add('task')
             task.job = job
@@ -227,28 +231,36 @@ def finalize_sphinx_build(sconf, conf, app):
             link_task.args = [conf]
             link_task.description = "create the 'manual' symlink"
     elif target == 'epub':
+        app.pool = 'serial'
         task = app.add('task')
         task.job = finalize_epub_build
         task.args = [target, conf]
         task.description = 'finalizing epub build'
     elif target == 'man':
+        app.pool = 'thread'
         manpage_url_tasks(target, conf, app)
         task = app.add('task')
         task.job = man_tarball
         task.args = [target, conf]
         task.description = "creating tarball for manpages"
     elif target == 'html':
+        app.pool = 'serial'
         task = app.add('task')
         task.job = html_tarball
         task.args = [sconf.name, conf]
         task.description = "creating tarball for html archive"
     elif target == 'slides':
+        app.pool = 'thread'
         slide_tasks(sconf, conf, app)
     elif target == 'json':
+        app.pool = 'thread'
         json_output_tasks(conf, app)
     elif target == 'singlehtml':
+        app.pool = 'thread'
         finalize_single_html_tasks(target, conf, app)
     elif target == 'latex':
+        app.pool = 'thread'
         pdf_tasks(sconf, conf, app)
     elif target == 'gettext':
+        app.pool = 'thread'
         gettext_tasks(conf, app)
