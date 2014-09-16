@@ -198,7 +198,7 @@ def run_sphinx(builder, sconf, conf):
 
     output = '\n'.join([out.err, out.out])
 
-    return output
+    return out.return_code, output
 
 #################### Application Logic ####################
 

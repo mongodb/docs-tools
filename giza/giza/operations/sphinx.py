@@ -82,10 +82,11 @@ def sphinx_publication(c, args, app):
 
     logger.info('builds finalized. sphinx output and errors to follow')
 
-    sphinx_output = '\n'.join(sphinx_app.results)
+    sphinx_output = '\n'.join([ o[1] for o in sphinx_app.results ])
+    ret_code = sum([ o[0] for o in sphinx_app.results ])
     output_sphinx_stream(sphinx_output, c)
 
-    return 0 # ret_code
+    return ret_code
 
 def post_build_operations(results, app):
     logger.info('starting build finalizing')

@@ -33,7 +33,7 @@ def publish_and_deploy(args):
     if sphinx_ret == 0 or c.runstate.force is True:
         deploy_worker(c, app)
     else:
-        logger.warning('a sphinx build failed, and build not forced. not deploying.')
+        logger.warning(sphinx_ret + ' sphinx build(s) failed, and build not forced. not deploying.')
 
 def deploy_worker(c, app):
     pconf = c.system.files.data.push
