@@ -91,6 +91,8 @@ import os.path
 
 logger = logging.getLogger('giza.content.steps')
 
+import giza.content.helper
+
 from giza.tools.files import expand_tree, verbose_remove
 from giza.tools.serialization import ingest_yaml_list
 
@@ -221,14 +223,7 @@ class StepsOutput(object):
         self.indent = 3
 
     def edition_check(self, step):
-        if 'edition' in step:
-            if 'edition' in self.conf.project:
-                if isinstance(step['edition'], list) and self.conf.project.edition not in step['edition']:
-                    return False
-                elif step['edition'] != self.conf.project.edition:
-                    return False
-        else:
-            return True
+        return giza.content.helper.edition_check(step, self.conf)
 
     @staticmethod
     def annotate_optional(step):

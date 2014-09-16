@@ -18,6 +18,8 @@ import os.path
 logger = logging.getLogger('giza.content.toc')
 
 import yaml
+
+import giza.content.helper
 from giza.tools.files import expand_tree
 
 from rstcloth.rstcloth import RstCloth, fill
@@ -83,12 +85,8 @@ class CustomTocTree(object):
     def finalize(self):
         if not self.final:
             for ref in self.spec:
-                if 'edition' in ref:
-                    if 'edition' in self.conf.project:
-                        if isinstance(ref['edition'], list) and self.conf.project.edition not in ref['edition']:
-                            continue
-                        elif ref['edition'] != self.conf.project.edition:
-                            continue
+                if giza.content.helper.edition_check(ref, self.conf) is False:
+                    continue
 
                 if self.table is not None:
                     if 'text' in ref:
