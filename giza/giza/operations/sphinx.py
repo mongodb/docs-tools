@@ -33,7 +33,8 @@ from giza.config.sphinx_config import render_sconf
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
 @argh.arg('--builder', '-b', nargs='*', default='html')
 @argh.arg('--serial_sphinx', action='store_true', default=False)
-def sphinx(args):
+@argh.named('sphinx')
+def main(args):
     c = fetch_config(args)
     app = BuildApp(c)
 
@@ -79,12 +80,12 @@ def sphinx_publication(c, args, app):
     app.run()
     logger.info("sphinx build complete.")
 
-    ret_code, sphinx_output = post_build_operations(sphinx_app.results, app)
     logger.info('builds finalized. sphinx output and errors to follow')
 
+    sphinx_output = '\n'.join(sphinx_app.results)
     output_sphinx_stream(sphinx_output, c)
 
-    return ret_code
+    return 0 # ret_code
 
 def post_build_operations(results, app):
     logger.info('starting build finalizing')

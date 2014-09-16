@@ -12,7 +12,8 @@ from giza.tools.files import rm_rf
 @argh.arg('--conf_path', '-c')
 @argh.arg('--builder', '-b', dest='builder_to_delete')
 @argh.arg('--length', default=None, type=int, dest='days_to_save')
-def clean(args):
+@argh.named('clean')
+def main(args):
     c = Configuration()
     c.ingest(args.conf_path)
     c.runstate = args

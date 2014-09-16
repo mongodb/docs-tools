@@ -21,19 +21,82 @@ import argh
 
 from giza.config.runtime import RuntimeStateConfig
 
+import giza.operations.clean
+import giza.operations.configuration
+import giza.operations.deploy
 import giza.operations.generate
-import giza.operations.includes
-import giza.operations.packaging
 import giza.operations.git
-import giza.operations.tx
-import giza.operations.translate
+import giza.operations.includes
 import giza.operations.make
+import giza.operations.packaging
+import giza.operations.quickstart
+import giza.operations.sphinx
+import giza.operations.translate
+import giza.operations.tx
 
-from giza.operations.configuration import render_config
-from giza.operations.clean import clean
-from giza.operations.sphinx import sphinx
-from giza.operations.deploy import deploy, push
-from giza.operations.quickstart import make_project
+commands = {
+    'main': [
+        giza.operations.clean.main,
+        giza.operations.configuration.render_config,
+        giza.operations.deploy.main,
+        giza.operations.deploy.publish_and_deploy,
+        giza.operations.make.main,
+        giza.operations.quickstart.make_project,
+        giza.operations.sphinx.main,
+    ],
+    'git': [
+        giza.operations.git.apply_patch,
+        giza.operations.git.pull_rebase,
+        giza.operations.git.cherry_pick,
+        giza.operations.git.merge,
+    ],
+    'generate': [
+        giza.operations.generate.api,
+        giza.operations.generate.assets,
+        giza.operations.generate.images,
+        giza.operations.generate.intersphinx,
+        giza.operations.generate.options,
+        giza.operations.generate.primer,
+        giza.operations.generate.steps,
+        giza.operations.generate.tables,
+        giza.operations.generate.toc,
+        giza.operations.generate.examples,
+        giza.operations.generate.redirects
+    ],
+    'includes': [
+        giza.operations.includes.recursive,
+        giza.operations.includes.changed,
+        giza.operations.includes.once,
+        giza.operations.includes.unused,
+        giza.operations.includes.list,
+        giza.operations.includes.graph,
+        giza.operations.includes.clean,
+    ],
+    'packaging': [
+        giza.operations.packaging.fetch,
+        giza.operations.packaging.unwind,
+        giza.operations.packaging.create,
+        giza.operations.packaging.deploy,
+    ],
+    'translate': [
+        giza.operations.translate.create_corpora,
+        giza.operations.translate.build_translation_model,
+        giza.operations.translate.model_results,
+        giza.operations.translate.merge_translations,
+        giza.operations.translate.po_to_corpus,
+        giza.operations.translate.dict_to_corpus,
+        giza.operations.translate.translate_po,
+        giza.operations.translate.translate_text_doc,
+        giza.operations.translate.flip_text,
+        giza.operations.translate.auto_approve_obvious_po,
+    ],
+    'tx': [
+        giza.operations.tx.check_orphaned,
+        giza.operations.tx.update_translations,
+        giza.operations.tx.pull_translations,
+        giza.operations.tx.push_translations,
+    ]
+}
 
 def get_base_parser():
     parser = argh.ArghParser()
@@ -50,79 +113,11 @@ def get_base_parser():
 def main():
     parser = get_base_parser()
 
-    commands = [
-        make_project,
-        render_config,
-        clean,
-        sphinx,
-        deploy, push,
-        giza.operations.make.main
-    ]
-    argh.add_commands(parser, commands)
-
-    git_commands = [
-        giza.operations.git.apply_patch,
-        giza.operations.git.pull_rebase,
-        giza.operations.git.cherry_pick,
-        giza.operations.git.merge,
-    ]
-    argh.add_commands(parser, git_commands, namespace='git')
-
-    generate_commands = [
-        giza.operations.generate.api,
-        giza.operations.generate.assets,
-        giza.operations.generate.images,
-        giza.operations.generate.intersphinx,
-        giza.operations.generate.options,
-        giza.operations.generate.primer,
-        giza.operations.generate.steps,
-        giza.operations.generate.tables,
-        giza.operations.generate.toc,
-        giza.operations.generate.examples,
-        giza.operations.generate.redirects
-    ]
-    argh.add_commands(parser, generate_commands, namespace='generate')
-
-    include_commands = [
-        giza.operations.includes.recursive,
-        giza.operations.includes.changed,
-        giza.operations.includes.once,
-        giza.operations.includes.unused,
-        giza.operations.includes.list,
-        giza.operations.includes.graph,
-        giza.operations.includes.clean,
-    ]
-    argh.add_commands(parser, include_commands, namespace='includes')
-
-    packaging_commands = [
-        giza.operations.packaging.fetch,
-        giza.operations.packaging.unwind,
-        giza.operations.packaging.create,
-        giza.operations.packaging.deploy,
-    ]
-    argh.add_commands(parser, packaging_commands, namespace='package')
-
-    translate_commands = [
-            giza.operations.translate.create_corpora,
-            giza.operations.translate.build_translation_model,
-            giza.operations.translate.model_results,
-            giza.operations.translate.merge_translations,
-            giza.operations.translate.po_to_corpus,
-            giza.operations.translate.dict_to_corpus,
-            giza.operations.translate.translate_po,
-            giza.operations.translate.translate_text_doc,
-            giza.operations.translate.flip_text,
-            giza.operations.translate.auto_approve_obvious_po,
-    ]
-    argh.add_commands(parser, translate_commands, namespace='translate')
-
-    translation_commands = [
-        giza.operations.tx.check_orphaned,
-        giza.operations.tx.update_translations,
-        giza.operations.tx.pull_translations,
-        giza.operations.tx.push_translations,
-    ]
-    argh.add_commands(parser, translation_commands, namespace='tx')
+    for namespace, entry_points in commands.items():
+        if namespace == 'main':
+            argh.add_commands(parser, entry_points)
+        else:
+            argh.add_commands(parser, entry_points, namespace=namespace)
 
     args = RuntimeStateConfig()
     argh.dispatch(parser, namespace=args)
