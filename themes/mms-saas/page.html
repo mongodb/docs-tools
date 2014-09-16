@@ -46,25 +46,10 @@
   {%- endif %}
 {%- endblock -%}
 
+{%- block onboarding_modal -%}{%- endblock -%}
+
+{%- block alertbar -%}{%- endblock -%}
+
 {% block language_selector %}{% endblock %}
 
-{% block version_selector %}
-  <li>
-    <label>{{ _('Version') }}</label>
-    <p class="pull-right saving-copy hide"><i class="fa fa-spin fa-spinner"></i> Saving your settings...</p>
-    <div class="btn-group btn-group-xs pull-right mms-version-btn-group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        Cloud <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" role="menu">
-        {% for v in theme_version_selector %}
-        <li>
-          <a href="#" data-path="{{ v.path }}" class="is-on-prem mms-version-selector">
-          {{ v.text }}
-          </a>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-  </li>
-{% endblock %}
+{% block version_selector %}{% endblock %}
