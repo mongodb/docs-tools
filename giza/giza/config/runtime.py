@@ -120,7 +120,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
         supported_runners = ['process', 'thread', 'event', 'serial']
 
         if value is None:
-            self.state['runner'] = 'process'
+            self.state['runner'] = 'thread'
         elif value in supported_runners:
             self.state['runner'] = value
         else:
