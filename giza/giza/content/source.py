@@ -62,6 +62,6 @@ def source_exclusion(conf, sconf):
                 rmtree(fqfn)
             else:
                 os.remove(fqfn)
-                logger.debug('removed {0}'.format(fqfn))
+                logger.debug('redacted {0}'.format(fqfn))
 
-    logger.info('removed {0} files'.format(len(sconf.excluded)))
+    logger.info('redacted {0} files'.format(len(sconf.excluded)))

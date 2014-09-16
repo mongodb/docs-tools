@@ -182,6 +182,7 @@ def run_sphinx(builder, sconf, conf):
                             os.path.join(conf.paths.projectroot, conf.paths.branch_source),
                             sconf.build_output)
 
+    logger.debug(sphinx_cmd)
     out = command(sphinx_cmd, capture=True, ignore=True)
     # out = sphinx_native_worker(sphinx_cmd)
     logger.info('completed sphinx build {0} at {1}'.format(builder, timestamp()))
