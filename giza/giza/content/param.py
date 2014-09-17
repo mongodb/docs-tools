@@ -153,17 +153,19 @@ def render_header_row(param_zero, num_rows, type_column):
 def populate_external_param(fn, basename, projectdir, sourcedir):
     if fn.startswith('/'):
         fn = os.path.join(sourcedir, fn[1:])
+    print fn, basename, projectdir, sourcedir
 
-    try:
-        ext_param = ingest_yaml_list(fn)
-    except OSError:
-        fn = os.path.join(basename, fn)
-        ext_param = ingest_yaml_list(fn)
-    except OSError:
-        fn = os.path.join(projectdir, sourcedir, fn)
-        ext_param = ingest_yaml_list(fn)
-    else:
-        pass
+    fns = [
+        fn,
+        os.path.join(basename, fn),
+        os.path.join(projectdir, fn),
+        os.path.join(projectdir, sourcedir, fn)
+    ]
+
+    ext_param = []
+    for pfn in fns:
+        if os.path.isfile(pfn):
+            ext_param = ingest_yaml_list(pfn)
 
     o = { }
     for param in ext_param:

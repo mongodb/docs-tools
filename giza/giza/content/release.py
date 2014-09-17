@@ -150,7 +150,9 @@ def release_tasks(conf, app):
         t.description = 'generating release page {0}'.format(target)
 
     for rel in rel_data['subscription-build']:
-        target = 'source/includes/install-curl-release-ent-{0}.rst'.format(rel['system'])
+        target = os.path.join(conf.paths.projectroot, conf.paths.includes,
+                              'install-curl-release-ent-{0}.rst'.format(rel['system']))
+
 
         t = app.add('task')
         t.job = _generate_release_ent

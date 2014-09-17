@@ -92,7 +92,8 @@ def generate_image_pages(dir, name, alt, output, conf):
 
         r.newline(block=b)
 
-    r.write(image + '.rst')
+    image_rst_file_path = os.path.join(conf.paths.projectroot, image + '.rst')
+    r.write(image_rst_file_path)
     logger.info('generated include file {0}.rst'.format(image))
 
 def _get_inkscape_cmd():
