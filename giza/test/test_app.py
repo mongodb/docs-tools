@@ -51,7 +51,7 @@ class CommonAppSuite(object):
         self.assertIsNone(self.app.worker_pool)
         self.app.pool = None
         self.assertIsNotNone(self.app.worker_pool)
-        self.assertIsInstance(self.app.pool, ProcessPool)
+        self.assertIsInstance(self.app.pool, ThreadPool)
 
     def test_pool_setter_process(self):
         self.assertIsNone(self.app.worker_pool)
@@ -92,7 +92,7 @@ class CommonAppSuite(object):
     def test_pool_setter_invalid_input(self):
         self.assertIsNone(self.app.worker_pool)
         a = self.app.pool = 1
-        self.assertIsInstance(self.app.pool, ProcessPool)
+        self.assertIsInstance(self.app.pool, ThreadPool)
 
     def test_pool_closer(self):
         self.assertIsNone(self.app.worker_pool)
