@@ -28,12 +28,13 @@ from giza.tools.transformation import munge_content
 
 def json_output(conf):
     list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
-    public_list_file = os.path.join(conf.paths.public_site_output,
+    public_list_file = os.path.join(conf.paths.projectroot,
+                                    conf.paths.public_site_output,
                                     'json', '.file_list')
 
     cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {src} {dst}'
 
-    json_dst = os.path.join(conf.paths.public_site_output, 'json')
+    json_dst = os.path.join(conf.paths.projectroot, conf.paths.public_site_output, 'json')
 
     if not os.path.exists(json_dst):
         logger.debug('created directories for {0}'.format(json_dst))
@@ -43,7 +44,8 @@ def json_output(conf):
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
         builder += '-' + conf.project.edition
 
-    command(cmd.format(src=os.path.join(conf.paths.branch_output, builder) + '/',
+    command(cmd.format(src=os.path.join(conf.paths.projectroot,
+                                        conf.paths.branch_output, builder) + '/',
                        dst=json_dst))
 
     copy_if_needed(list_file, public_list_file)
