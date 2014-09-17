@@ -121,7 +121,10 @@ def main():
             argh.add_commands(parser, entry_points, namespace=namespace)
 
     args = RuntimeStateConfig()
-    argh.dispatch(parser, namespace=args)
+    try:
+        argh.dispatch(parser, namespace=args)
+    except KeyboardInterrupt:
+        logger.error('operation interrupted by user.')
 
 if __name__ == '__main__':
     main()
