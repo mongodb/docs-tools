@@ -13,17 +13,17 @@
 # limitations under the License.
 
 import logging
+import os
 
 logger = logging.getLogger('giza.config.git')
 
 from giza.core.git import GitRepo
-from giza.config.base import ConfigurationBase
+from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 
-class GitConfigBase(ConfigurationBase):
+class GitConfigBase(RecursiveConfigurationBase):
     def __init__(self, obj, conf, repo=None):
-        super(GitConfigBase, self).__init__(obj)
-        self._conf = conf
-        self._repo = repo
+        super(GitConfigBase, self).__init__(obj, conf)
+        self.repo = repo
 
     @property
     def repo(self):
@@ -31,16 +31,15 @@ class GitConfigBase(ConfigurationBase):
 
     @repo.setter
     def repo(self, path=None):
-        if self._repo is None:
+        if isinstance(path, GitRepo):
+            self._repo = path
+        elif path is None:
+            self._repo = GitRepo(self.conf.paths.projectroot)
+        elif os.path.isdir(path):
             self._repo = GitRepo(path)
+        else:
+            self._repo = GitRepo(os.getcwd())
 
-    @property
-    def conf(self):
-        return self._conf
-
-    @conf.setter
-    def conf(self, value):
-        logger.error("cannot set conf at this level")
 
 class GitConfig(GitConfigBase):
     @property
@@ -125,7 +124,7 @@ class GitBranchConfig(GitConfigBase):
             else:
                 self.state['published'] = []
         else:
-            self.state['published'] = 'master'
+            self.state['published'] = ['master']
 
 class GitRemoteConfig(ConfigurationBase):
     _option_registry = ['upstream', 'tools']

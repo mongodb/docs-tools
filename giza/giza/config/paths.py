@@ -55,9 +55,28 @@ class PathsConfig(RecursiveConfigurationBase):
 
     @property
     def projectroot(self):
-        p = os.getcwd()
-        self.state['projectroot'] = os.getcwd()
-        return p
+        if 'projectroot' in self.state:
+            return self.state['projectroot']
+        else:
+            cwd = os.getcwd()
+            if 'config' in os.listdir(cwd):
+                return cwd
+            else:
+                cwd_parts = cwd.split(os.path.sep)
+                for idx, _ in enumerate(cwd_parts):
+                    if idx == 0:
+                        continue
+                    path = os.path.sep.join(cwd_parts[0:-idx])
+
+                    if 'config' in os.listdir(path):
+                        return path
+
+                return None
+
+    @projectroot.setter
+    def projectroot(self, value):
+        if os.path.isdir(value):
+            self.state['projectroot'] = value
 
     @property
     def public(self):

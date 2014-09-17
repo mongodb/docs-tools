@@ -55,8 +55,7 @@ class Configuration(ConfigurationBase):
 
     @git.setter
     def git(self, value):
-        c = GitConfig(value, self)
-        c.repo = self.paths.projectroot
+        c = GitConfig(obj=value, repo=self.paths.projectroot, conf=self)
         self.state['git'] = c
 
     @property

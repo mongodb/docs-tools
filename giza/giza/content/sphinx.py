@@ -129,6 +129,10 @@ def print_build_messages(messages):
         print(l)
 
 def path_normalization(l, full_path, conf):
+    if l.startswith('..'):
+        l = os.path.sep.join([ el for el in l.split(os.path.sep)
+                               if el != '..'])
+
     if l.startswith(conf.paths.branch_output):
         l = l[len(conf.paths.branch_output)+1:]
     elif l.startswith(full_path):
@@ -163,7 +167,7 @@ def printer(string):
 #################### Builder Operation ####################
 
 def run_sphinx(builder, sconf, conf):
-    dirpath = os.path.join(conf.paths.branch_output, builder)
+    dirpath = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder)
     if not os.path.exists(dirpath):
         os.makedirs(dirpath)
         logger.info('created directories "{1}" for sphinx builder {0}'.format(builder, dirpath))

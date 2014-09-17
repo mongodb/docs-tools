@@ -242,10 +242,9 @@ class SystemConfigData(RecursiveConfigurationBase):
         else:
             if os.path.isfile(full_path):
                 d = self._resolve_config_data(full_path, basename)
-            else: #if os.path.isfile(self.state[basename]):
-                full_path = self.state[basename].items()[0][1]
+            else:  # if os.path.isfile(self.state[basename]):
+                full_path = self.state[basename]# .items()[0][1]
                 d = self._resolve_config_data(self._resolve_config_path(full_path), basename)
-
             self._set_config_data(basename, fn, d)
 
     def keys(self):
@@ -271,6 +270,12 @@ class SystemConfigData(RecursiveConfigurationBase):
                 self.state[basename].append(d)
 
     def _resolve_config_path(self, fn):
+        if isinstance(fn, dict):
+            if len(fn) == 1:
+                fn = fn.values()[0]
+            else:
+                logger.error("unsupported config file specification: " + str(fn))
+
         if os.path.exists(fn):
             full_path = fn
         elif os.path.exists(os.path.join(os.getcwd(), fn)):
