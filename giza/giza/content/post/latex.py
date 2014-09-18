@@ -11,7 +11,7 @@ from giza.tools.serialization import ingest_yaml_list
 from giza.tools.strings import hyph_concat
 from giza.tools.transformation import munge_page
 from giza.tools.files import (create_link, copy_if_needed,
-                        decode_lines_from_file, encode_lines_to_file)
+                              decode_lines_from_file, encode_lines_to_file)
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 
@@ -50,7 +50,7 @@ def pdf_tasks(sconf, conf, app):
     tex_regexes = [ ( re.compile(r'(index|bfcode)\{(.*)--(.*)\}'),
                       r'\1\{\2-\{-\}\3\}'),
                     ( re.compile(r'\\PYGZsq{}'), "'"),
-                    ( re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv)'),
+                    ( re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv|data|bin|dev|opt|proc|24)'),
                       r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
 
     clean_app = app.add('app')
@@ -71,11 +71,11 @@ def pdf_tasks(sconf, conf, app):
         if 'edition' in conf.project and conf.project.edition != conf.project.name:
             if 'edition' in i and conf.project.edition != i['edition']:
                 continue
-            latex_dir = os.path.join(conf.paths.branch_output, hyph_concat(target, conf.project.edition))
+            latex_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, hyph_concat(target, conf.project.edition))
         else:
-            latex_dir = os.path.join(conf.paths.branch_output, target)
+            latex_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, target)
 
-        deploy_path = conf.paths.public_site_output
+        deploy_path = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
 
         i['source'] = os.path.join(latex_dir, i['output'])
         i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')
