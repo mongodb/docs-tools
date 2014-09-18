@@ -58,9 +58,9 @@ class ProjectConfig(RecursiveConfigurationBase):
 
     @property
     def edition_list(self):
-        if '_edition_list' in self.state: 
+        if '_edition_list' in self.state:
             return self.state['_edition_list']
-        else: 
+        else:
             return []
 
     @editions.setter
@@ -81,15 +81,21 @@ class ProjectConfig(RecursiveConfigurationBase):
     def edition(self):
         if 'edition' not in self.state or self.state['edition'] is None:
             self.edition = None
-
-        return self.state['edition']
+            if 'edition' not in self.state:
+                return self.name
+            else:
+                return self.state['edition']
+        else:
+            return self.state['edition']
 
     @edition.setter
     def edition(self, value):
-        if 'editions' in self.state and self.conf.runstate.edition in self.state['_edition_list']:
-            self.state['edition'] = self.conf.runstate.edition
-        else:
-            self.state['edition'] = self.name
+        if 'editions' in self.state:
+            if self.conf.runstate.edition in self.state['_edition_list']:
+                self.state['edition'] = self.conf.runstate.edition
+            elif value in self.state['_edition_list']:
+                self.state['edition'] = value
+
 
     @property
     def branched(self):
