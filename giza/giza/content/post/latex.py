@@ -51,7 +51,7 @@ def pdf_tasks(sconf, conf, app):
                       r'\1\{\2-\{-\}\3\}'),
                     ( re.compile(r'\\PYGZsq{}'), "'"),
                     ( re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv|data|bin|dev|opt|proc|24)'),
-                      r'\code{' + conf.project.url + r'/' + conf.project.tag) ]
+                      r'\code{' + conf.project.url + r'/' + conf.project.tag + r'/') ]
 
     clean_app = app.add('app')
     cache_app = app.add('app')
