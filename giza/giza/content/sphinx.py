@@ -230,6 +230,8 @@ def finalize_sphinx_build(sconf, conf, app):
         app.pool = 'serial'
         task = app.add('task')
         task.job = printer
+        task.target = os.path.join(conf.paths.projectroot,
+                                   conf.paths.branch_output, builder, 'output.txt')
         task.args = '{0}: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)
     elif target == 'dirhtml':
         app.pool = 'thread'

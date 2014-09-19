@@ -35,8 +35,12 @@ def gettext_tasks(conf, app):
     path_offset = len(branch_output) + 1
 
     for fn in expand_tree(branch_output, None):
+        target = os.path.join(locale_dirs, fn[path_offset:])
+        source = fn
+
         task = app.add('task')
-        task.target = fn
+        task.target = target
+        task.dependency = source
         task.job = copy_if_needed
-        task.args = [ fn, os.path.join(locale_dirs, fn[path_offset:]), None]
+        task.args = [ source, target, None]
         task.description = "migrating po file {0} if needed".format(fn)
