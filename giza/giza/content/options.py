@@ -44,14 +44,15 @@ class Options(object):
         if self.source_dirname is None:
             self.source_dirname = os.path.dirname(os.path.abspath(fn))
 
-        input_sources = ingest_yaml_list(os.path.join(self.source_dirname, os.path.basename(fn)))
+        input_fn = os.path.join(self.source_dirname, os.path.basename(fn))
+        input_sources = ingest_yaml_list(input_fn)
         self.cache[fn] = dict()
 
         self.source_files.append(input_sources)
 
         for option in input_sources:
             opt = Option(option)
-            opt.source_filename = fn
+            opt.source_filenames = [input_fn]
 
             self.cache_option(opt, fn)
 
@@ -71,8 +72,12 @@ class Options(object):
     def resolve(self, fn):
         for opt in self.unresolved:
             if opt.inherited is True:
+                deps = [os.path.join(self.source_dirname, fn)]
+
                 if opt.source['file'] == fn:
                     continue
+                else:
+                    deps.append(os.path.join(self.source_dirname, opt.source['file']))
 
                 if opt.source['file'] in self.cache:
                     base_opt = self.resolve_inherited(opt.source)
@@ -85,6 +90,7 @@ class Options(object):
                     del base_opt.doc['inherit']
 
                 opt = Option(base_opt.doc)
+                opt.source_filenames = deps
                 logmsg = 'cached option while rendering {0}, program "{1}" name "{2}"'
                 logger.debug(logmsg.format(self.source_dirname, opt.program, opt.name))
 
@@ -109,7 +115,6 @@ class Option(object):
 
         self.name = doc['name']
         self.program = doc['program']
-        self.source_filename = None
 
         for k in optional_source_fields:
             if k in doc:
@@ -324,7 +329,7 @@ def option_tasks(conf, app):
         t = app.add('task')
         t.job = render_option_page
         t.args = [ opt, output_path ]
-        t.dependency = opt.source_filename
+        t.dependency = opt.source_filenames
         t.target = opt.resolve_output_path(output_path)
         t.description = 'generating option "{0}" for "{1}"'.format(opt.name, opt.program)
 

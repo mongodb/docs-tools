@@ -85,5 +85,6 @@ def refresh_dependency_tasks(conf, app):
         t = app.add('task')
         t.job = dep_refresh_worker
         t.args = [target, deps, dep_map, conf]
+        t.target = target
+        t.dependency = None #this should be giza.content.source.transfer_source()
         t.description = 'checking dependencies for changes and bumping mtime for {0}'.format(target)
-        logger.debug('adding dep check task for ' + target)

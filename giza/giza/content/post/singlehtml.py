@@ -24,7 +24,7 @@ from giza.tools.files import (expand_tree, copy_if_needed, decode_lines_from_fil
                               encode_lines_to_file, FileNotFoundError)
 
 def get_single_html_dir(conf):
-    return os.path.join(conf.paths.public_site_output, 'single')
+    return os.path.join(conf.paths.projectroot, conf.paths.public_site_output, 'single')
 
 def manual_single_html(input_file, output_file):
     # don't rebuild this if its not needed.
@@ -62,13 +62,14 @@ def finalize_single_html_tasks(builder, conf, app):
             break
 
         for fn in [ pjoin(base_path, f) for f in ('contents.html', 'index.html') ]:
-            src_fn = pjoin(conf.paths.branch_output, fn)
+            src_fn = pjoin(conf.paths.projectroot, conf.paths.branch_output, fn)
 
             if os.path.exists(src_fn):
-                manual_single_html(input_file=pjoin(conf.paths.branch_output, fn),
+                manual_single_html(input_file=src_fn,
                                    output_file=pjoin(single_html_dir, 'index.html'))
 
-                copy_if_needed(source_file=pjoin(conf.paths.branch_output,
+                copy_if_needed(source_file=pjoin(conf.paths.projectroot,
+                                                 conf.paths.branch_output,
                                                  base_path, 'objects.inv'),
                                target_file=pjoin(single_html_dir, 'objects.inv'))
 
@@ -81,9 +82,14 @@ def finalize_single_html_tasks(builder, conf, app):
 
     single_path = pjoin(single_html_dir, '_static')
 
-    for fn in expand_tree(pjoin(conf.paths.branch_output,
+    for fn in expand_tree(pjoin(conf.paths.projectroot,
+                                conf.paths.branch_output,
                                 builder, '_static'), None):
+        target_fn = pjoin(single_path, os.path.basename(fn))
+
         task = app.add('task')
         task.job = copy_if_needed
-        task.args = [fn, pjoin(single_path, os.path.basename(fn))]
+        task.target = target_fn
+        task.dependency = fn
+        task.args = [fn, target_fn]
         task.description = "migrating static files to the HTML build"

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os.path
 import logging
 
 logger = logging.getLogger('giza.config.helper')
@@ -92,3 +93,23 @@ def get_versions(conf):
         o.append(v)
 
     return o
+
+def get_config_paths(name, conf):
+    def path_fixer(path):
+        if path.startswith(os.path.sep):
+            return os.path.join(conf.paths.projectroot, path[1:])
+        else:
+            return os.path.join(conf.paths.projectroot, conf.paths.builddata, path)
+
+    for i in conf.system.files.paths:
+        if isinstance(i, dict):
+            k, v = i.items()[0]
+            if i == k:
+                if isinstance(v, list):
+                    return [ path_fixer(p) for p in v ]
+                else:
+                    return [ path_fixer(v) ]
+        elif i.startswith(name):
+            return [path_fixer(i)]
+
+    return []

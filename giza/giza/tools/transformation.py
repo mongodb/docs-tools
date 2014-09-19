@@ -18,7 +18,7 @@ import re
 
 logger = logging.getLogger('giza.transformation')
 
-from giza.tools.files import copy_always, encode_lines_to_file, decode_lines_from_file
+from giza.tools.files import copy_always, copy_if_needed, encode_lines_to_file, decode_lines_from_file
 from giza.tools.serialization import ingest_yaml
 
 class ProcessingError(Exception):
@@ -73,7 +73,7 @@ def append_to_file(fn, text):
         f.write(text)
 
 
-def process_page(fn, output_fn, regex, app, builder='processor'):
+def process_page(fn, output_fn, regex, app, builder='processor', copy='always'):
     tmp_fn = fn + '~'
 
     munge = app.add('task')
@@ -85,7 +85,12 @@ def process_page(fn, output_fn, regex, app, builder='processor'):
     cp = app.add('task')
     cp.target = output_fn
     cp.depdency = tmp_fn
-    cp.job = copy_always
+
+    if copy == 'always':
+        cp.job = copy_always
+    else:
+        cp.job = copy_if_needed
+
     cp.args = dict(source_file=tmp_fn,
                    target_file=output_fn,
                    name=builder)

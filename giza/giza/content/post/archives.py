@@ -12,10 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os.path
+import os
+import logging
+
+logger = logging.getLogger('giza.content.post.archives')
 
 from giza.tools.strings import hyph_concat
 from giza.tools.files import copy_if_needed, create_link, tarball
+
+def get_tarball_name(builder, conf):
+    if builder == 'link-html':
+        fn = conf.project.name + '.tar.gz'
+    elif builder == 'link-man':
+        fn = "manpages.tar.gz"
+    elif builder == 'link-slides':
+        fn = hyph_concat(conf.project.name, 'slides') + '.tar.gz'
+    elif builder.startswith('man'):
+        fn = hyph_concat('manpages', conf.git.branches.current) + '.tar.gz'
+    elif builder.startswith('html'):
+        fn = hyph_concat(conf.project.name, conf.git.branches.current) + '.tar.gz'
+    else:
+        fn = hyph_concat(conf.project.name, conf.git.branches.current, builder) + '.tar.gz'
+
+    return os.path.join(conf.paths.projectroot,
+                        conf.paths.public_site_output,
+                        fn)
 
 def html_tarball(builder, conf):
     copy_if_needed(os.path.join(conf.paths.projectroot,
@@ -24,22 +45,15 @@ def html_tarball(builder, conf):
                                 conf.paths.branch_output,
                                 builder, 'release.txt'))
 
-    basename = os.path.join(conf.paths.projectroot,
-                            conf.paths.public_site_output,
-                            hyph_concat(conf.project.name, ) + '-' + conf.git.branches.current)
-
-    tarball_name = basename + '.tar.gz'
+    tarball_name = get_tarball_name('html', conf)
 
     tarball(name=tarball_name,
             path=builder,
             cdir=os.path.join(conf.paths.projectroot,
                               conf.paths.branch_output),
-            newp=os.path.basename(basename))
+            newp=os.path.splitext(os.path.basename(tarball_name))[0])
 
-
-    link_name = os.path.join(conf.paths.projectroot,
-                             conf.paths.public_site_output,
-                             conf.project.name + '.tar.gz')
+    link_name = get_tarball_name('link-html', conf)
 
     if os.path.exists(link_name):
         os.remove(link_name)
@@ -54,23 +68,15 @@ def slides_tarball(builder, conf):
                                 conf.paths.branch_output,
                                 builder, 'release.txt'))
 
-    basename = os.path.join(conf.paths.projectroot,
-                            conf.paths.public_site_output,
-                            hyph_concat(conf.project.name,
-                                        conf.git.branches.current,
-                                        builder))
+    tarball_name = get_tarball_name('slides', conf)
 
-    tarball_fn = basename + '.tar.gz'
-
-    tarball(name=tarball_fn,
+    tarball(name=tarball_name,
             path=builder,
             cdir=os.path.join(conf.paths.projectroot,
                               conf.paths.branch_output),
-            newp=os.path.basename(basename))
+            newp=os.path.splitext(os.path.basename(tarball_name))[0])
 
-    link_name = os.path.join(conf.paths.projectroot,
-                             conf.paths.public_site_output,
-                             hyph_concat(conf.project.name, 'slides') + '.tar.gz')
+    link_name = get_tarball_name('link-slides', conf)
 
     if os.path.exists(link_name):
         os.remove(link_name)
@@ -79,20 +85,14 @@ def slides_tarball(builder, conf):
                  output_fn=link_name)
 
 def man_tarball(builder, conf):
-    basename = os.path.join(conf.paths.projectroot,
-                            conf.paths.public_site_output,
-                            'manpages-' + conf.git.branches.current)
+    tarball_name = get_tarball_name('man', conf)
 
-    tarball_name = basename + '.tar.gz'
     tarball(name=tarball_name,
             path=builder,
             cdir=os.path.join(conf.paths.projectroot, conf.paths.branch_output),
             newp=conf.project.name + '-manpages')
 
-
-    link_name = os.path.join(conf.paths.projectroot,
-                             conf.paths.public_site_output,
-                             'manpages' + '.tar.gz')
+    link_name = get_tarball_name('link-man', conf)
 
     if os.path.exists(link_name):
         os.remove(link_name)

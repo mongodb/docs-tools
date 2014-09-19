@@ -64,7 +64,7 @@ def robots_txt_tasks(conf, app):
                 break
 
         robots_fn = os.path.join(conf.paths.projectroot, conf.paths.public,
-                                'robots.txt'),
+                                'robots.txt')
         t = app.add('task')
         t.job = robots_txt_builder
         t.target = robots_fn

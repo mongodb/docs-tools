@@ -238,5 +238,5 @@ def includes_tasks(conf, app):
         t = app.add('task')
         t.job = write_include_index
         t.target = overview_fn
-        t.dependency = os.listdir(includes_dir)
+        t.dependency = [os.path.join(includes_dir, fn) for fn in os.listdir(includes_dir)]
         t.args = [overview_fn, conf]

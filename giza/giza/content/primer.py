@@ -130,7 +130,7 @@ def primer_migration_tasks(conf, app):
             prev = build_migration_task(fq_target, fq_source, app)
 
             if 'truncate' in page:
-                build_truncate_task(page['truncate'], fq_target, app)
+                build_truncate_task(page['truncate'], fq_target, fq_source, app)
 
             if 'transform' in page:
                 prev.job = copy_always
@@ -176,6 +176,8 @@ def build_migration_task(target, source, app):
     task = app.add('task')
     task.target = target
     task.job = copy_if_needed
+    task.target = target
+    task.dependency = source
     task.args = [ source, target, 'primer' ]
 
     return task
@@ -190,13 +192,14 @@ def build_transform_task(transform, target):
 def build_append_task(page, target, spec_files, app):
     task = app.add('task')
     task.target = page['target']
+    task.dependency = spec_files
     task.job = append_to_file
     task.args = [ target, page['append'] ]
-    task.dependency = spec_files
 
-def build_truncate_task(truncate_spec, target, app):
+def build_truncate_task(truncate_spec, target, deps, app):
     task = app.add('task')
     task.target = target
+    task.dependency = deps
     task.job = truncate_file
     task.args = {
         'fn': target,

@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import os
-import logging 
+import logging
 
 from giza.tools.command import command
-from giza.content.post.archives import slides_tarball
+from giza.content.post.archives import slides_tarball, get_tarball_name
 
 logger = logging.getLogger('giza.content.post.slides')
 
@@ -30,7 +30,7 @@ def slides_output(conf):
         os.makedirs(dst)
 
     builder = 'slides'
-    
+
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
         builder += '-' + conf.project.edition
 
@@ -42,9 +42,11 @@ def slides_output(conf):
 def slide_tasks(sconf, conf, app):
     task = app.add('task')
     task.job = slides_tarball
+    task.target = [get_tarball_name('slides', conf),
+                   get_tarball_name('link-slides', conf)]
     task.args = [sconf.name, conf]
     task.description = "creating tarball for slides"
-    
+
     task = app.add('task')
     task.job = slides_output
     task.args = [conf]

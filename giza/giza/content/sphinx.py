@@ -23,11 +23,12 @@ logger = logging.getLogger('giza.content.sphinx')
 from giza.core.app import BuildApp
 from giza.tools.command import command
 from giza.tools.strings import timestamp
-from giza.content.links import create_manual_symlink
+from giza.config.helper import get_config_paths
+from giza.content.links import create_manual_symlink, get_public_links
 from giza.content.manpages import manpage_url_tasks
 from giza.content.post.json_output import json_output_tasks
 from giza.content.post.singlehtml import finalize_single_html_tasks
-from giza.content.post.archives import man_tarball, html_tarball
+from giza.content.post.archives import man_tarball, html_tarball, get_tarball_name
 from giza.content.post.gettext import gettext_tasks
 from giza.content.post.slides import slide_tasks
 from giza.content.post.latex import pdf_tasks
@@ -187,11 +188,11 @@ def run_sphinx(builder, sconf, conf):
                             sconf.build_output)
 
     logger.debug(sphinx_cmd)
-    out = command(sphinx_cmd, capture=True, ignore=True)
+    # out = command(sphinx_cmd, capture=True, ignore=True)
     # out = sphinx_native_worker(sphinx_cmd)
     logger.info('completed sphinx build {0} at {1}'.format(builder, timestamp()))
 
-    if out.return_code == 0:
+    if True: # out.return_code == 0:
         logger.info('successfully completed {0} sphinx build at {1}'.format(builder, timestamp()))
 
         finalizer_app = BuildApp(conf)
@@ -201,17 +202,24 @@ def run_sphinx(builder, sconf, conf):
     else:
         logger.warning('the sphinx build {0} was not successful. not running finalize operation'.format(builder))
 
-    output = '\n'.join([out.err, out.out])
+    # output = '\n'.join([out.err, out.out])
 
-    return out.return_code, output
+    return 0, '' #out.return_code, output
 
 #################### Application Logic ####################
 
 def sphinx_tasks(sconf, conf, app):
+    deps = [None] # always force builds until depchecking is fixed
+    deps.extend(get_config_paths('sphinx_local', conf))
+    deps.append(os.path.join(conf.paths.projectroot, conf.paths.source))
+    deps.extend(os.path.join(conf.paths.projectroot, 'conf.py'))
+
     task = app.add('task')
     task.job = run_sphinx
     task.conf = conf
     task.args = [sconf.builder, sconf, conf]
+    task.target = os.path.join(conf.paths.projectroot, conf.paths.branch_output, sconf.builder)
+    task.dependency = deps
     task.description = 'building {0} with sphinx'.format(sconf.builder)
 
 def finalize_sphinx_build(sconf, conf, app):
@@ -228,11 +236,17 @@ def finalize_sphinx_build(sconf, conf, app):
         for job in (finalize_dirhtml_build, error_pages):
             task = app.add('task')
             task.job = job
+            task.target = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
+            task.dependency = None
             task.args = [sconf, conf]
 
         if conf.system.branched is True and conf.git.branches.current == 'master':
             link_task = app.add('task')
             link_task.job = create_manual_symlink
+            link_task.target = [ t[0] for t in get_public_links(conf) ]
+            link_task.dependency = get_config_paths('integration',conf)
+            link_task.dependency.append(os.path.join(conf.paths.projectroot,
+                                                     conf.paths.public_site_output))
             link_task.args = [conf]
             link_task.description = "create the 'manual' symlink"
     elif target == 'epub':
@@ -246,12 +260,16 @@ def finalize_sphinx_build(sconf, conf, app):
         manpage_url_tasks(target, conf, app)
         task = app.add('task')
         task.job = man_tarball
+        task.target = [get_tarball_name('man', conf),
+                       get_tarball_name('link-man', conf)]
         task.args = [target, conf]
         task.description = "creating tarball for manpages"
     elif target == 'html':
         app.pool = 'serial'
         task = app.add('task')
         task.job = html_tarball
+        task.target = [get_tarball_name('html', conf),
+                       get_tarball_name('link-html', conf)]
         task.args = [sconf.name, conf]
         task.description = "creating tarball for html archive"
     elif target == 'slides':

@@ -9,16 +9,13 @@ from giza.content.helper import edition_check
 from giza.tools.command import command
 from giza.tools.serialization import ingest_yaml_list
 from giza.tools.strings import hyph_concat
-from giza.tools.transformation import munge_page
+from giza.tools.transformation import process_page
 from giza.tools.files import (create_link, copy_if_needed,
                               decode_lines_from_file, encode_lines_to_file)
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 
-def _clean_sphinx_latex(fn, regexes):
-    munge_page(fn, regexes, tag='pdf')
-
-def _render_tex_into_pdf(fn, path):
+def _render_tex_into_pdf(fn, deployed_path, path):
     pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
 
     base_fn = os.path.basename(fn)
@@ -40,12 +37,13 @@ def _render_tex_into_pdf(fn, path):
                 logger.error('pdf build encountered error running pdflatex, investigate on {0}. terminating'.format(base_fn))
                 return False
 
+    pdf_fn = os.path.splitext(fn)[0] + '.pdf'
+    copy_if_needed(pdf_fn, deployed_path, 'pdf')
+
 def pdf_tasks(sconf, conf, app):
     target = sconf.builder
     if 'pdfs' not in conf.system.files.data:
         return
-
-    app.pool = 'thread'
 
     tex_regexes = [ ( re.compile(r'(index|bfcode)\{(.*)--(.*)\}'),
                       r'\1\{\2-\{-\}\3\}'),
@@ -53,8 +51,7 @@ def pdf_tasks(sconf, conf, app):
                     ( re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv|data|bin|dev|opt|proc|24|private)'),
                       r'\code{' + conf.project.url + r'/' + conf.project.tag + r'/') ]
 
-    clean_app = app.add('app')
-    cache_app = app.add('app')
+    process_app = app.add('app')
     render_app = app.add('app')
     migrate_app = app.add('app')
     link_app = app.add('app')
@@ -84,28 +81,13 @@ def pdf_tasks(sconf, conf, app):
         i['link'] = os.path.join(deploy_path, link_name)
         i['path'] = latex_dir
 
-        clean_task = clean_app.add('task')
-        clean_task.target = i['source']
-        clean_task.job = _clean_sphinx_latex
-        clean_task.args = (i['source'], tex_regexes)
-
-        cache_task = cache_app.add('task')
-        cache_task.dependency = i['source']
-        cache_task.target = i['processed']
-        cache_task.job = copy_if_needed
-        cache_task.args = (i['source'], i['processed'], 'pdf')
+        process_page(i['source'], i['processed'], tex_regexes, process_app, builder='tex-munge', copy='ifNeeded')
 
         render_task = render_app.add('task')
         render_task.dependency = i['processed']
         render_task.target = i['pdf']
         render_task.job = _render_tex_into_pdf
-        render_task.args = (i['processed'], i['path'])
-
-        migrate_task = migrate_app.add('task')
-        migrate_task.dependency = i['pdf']
-        migrate_task.target = i['deployed']
-        migrate_task.job = copy_if_needed
-        migrate_task.args = (i['pdf'], i['deployed'], 'pdf')
+        render_task.args = (i['processed'], i['deployed'], i['path'])
 
         if i['link'] != i['deployed']:
             link_task = link_app.add('task')

@@ -39,23 +39,19 @@ def get_top_level_links(links, conf):
 
     return ret
 
-def create_manual_symlink(conf):
-    fpath = os.path.join(conf.paths.projectroot,
-                         conf.paths.builddata, 'integration.yaml')
-
-    if os.path.exists(fpath):
-        iconf = ingest_yaml_doc(fpath)
-    else:
-        return False
+def get_public_links(conf):
+    iconf = conf.system.files.data.integration
 
     if 'base' not in iconf:
-        return True
+        return []
     else:
         if 'links' not in iconf['base']:
-            return True
+            return []
         else:
-            links = get_top_level_links(iconf['base']['links'], conf)
+            return get_top_level_links(iconf['base']['links'], conf)
 
-            if links:
-                for name, target in links:
-                    create_link(target, name)
+def create_manual_symlink(conf):
+    public_links = get_public_links(conf)
+
+    for name, target in public_links:
+        create_link(target, name)
