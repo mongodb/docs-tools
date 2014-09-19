@@ -90,23 +90,6 @@ def sphinx_publication(c, args, app):
 
     return ret_code
 
-def post_build_operations(results, app):
-    logger.info('starting build finalizing')
-
-    sphinx_output = []
-    aggregated_return_code = 0
-
-    for ret_code, ret_sconf, ret_conf, sbuild_output in results:
-        sphinx_output.append(sbuild_output)
-        if ret_code == 0:
-            finalize_sphinx_build(ret_sconf, ret_conf, app)
-        else:
-            aggregated_return_code = 1
-
-    app.run()
-
-    return aggregated_return_code, sphinx_output
-
 def build_prep_tasks(conf, app):
     image_tasks(conf, app)
     robots_txt_tasks(conf, app)
