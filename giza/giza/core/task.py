@@ -144,7 +144,7 @@ class Task(object):
     @property
     def needs_rebuild(self):
         if self.target is None:
-            logger.warning('no target specified for: ' + self.job)
+            logger.warning('no target specified for: ' + str(self.job))
             return True
         elif self.dependency is None or self.conf.runstate.force is True:
             return True
@@ -205,7 +205,9 @@ def check_dependency(target, dependency):
     target_time = os.path.getmtime(target)
     if isinstance(dependency, list):
         for dep in dependency:
-            if needs_rebuild(target_time, dep) is True:
+            if dep is None:
+                return True
+            elif needs_rebuild(target_time, dep) is True:
                 return True
         return False
     else:
