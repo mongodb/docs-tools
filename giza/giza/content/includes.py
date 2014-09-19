@@ -34,16 +34,12 @@ suppressed_page_prefixes = [
     '/includes/metadata',
 ]
 
-def write_include_index(conf):
+def write_include_index(overview_fn, conf):
     fd = include_file_data(conf)
     r = build_page(fd, conf)
 
     if r is not None:
-        r.write(os.path.join(conf.paths.projectroot,
-                             conf.paths.includes,
-                             'generated',
-                             'overview.rst'))
-
+        r.write(overview_fn)
         logger.info('includes: generated /meta/includes source page.')
 
 
@@ -230,9 +226,17 @@ def add_meta(r, page_name, record):
             r.newline()
 
 def includes_tasks(conf, app):
-    if (os.path.exists(os.path.join(conf.paths.projectroot, conf.paths.includes)) and
-        os.path.exists(os.path.join(conf.paths.projectroot, conf.paths.source, 'meta'))):
+    includes_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)
+    meta_dir = os.path.join(conf.paths.projectroot, conf.paths.source, 'meta')
+
+    if os.path.exists(includes_dir) and os.path.exists(meta_dir):
+        overview_fn = os.path.join(conf.paths.projectroot,
+                                   conf.paths.includes,
+                                   'generated',
+                                   'overview.rst')
 
         t = app.add('task')
         t.job = write_include_index
-        t.args = [conf]
+        t.target = overview_fn
+        t.dependency = os.listdir(includes_dir)
+        t.args = [overview_fn, conf]

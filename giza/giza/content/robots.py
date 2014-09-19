@@ -57,8 +57,16 @@ def robots_txt_builder(fn, conf, override=False):
 
 def robots_txt_tasks(conf, app):
     if 'robots' in conf.system.files.data and len(conf.system.files.data.robots) > 0:
+        dep_path = None
+        for k in conf.system.files.paths:
+            if k.startswith('robots'):
+                dep_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, k)
+                break
+
+        robots_fn = os.path.join(conf.paths.projectroot, conf.paths.public,
+                                'robots.txt'),
         t = app.add('task')
         t.job = robots_txt_builder
-        t.args = [ os.path.join(conf.paths.projectroot,
-                                conf.paths.public,
-                                'robots.txt'), conf ]
+        t.target = robots_fn
+        t.dependency = dep_path
+        t.args = [  robots_fn, conf ]

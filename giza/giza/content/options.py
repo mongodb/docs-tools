@@ -51,6 +51,7 @@ class Options(object):
 
         for option in input_sources:
             opt = Option(option)
+            opt.source_filename = fn
 
             self.cache_option(opt, fn)
 
@@ -108,6 +109,7 @@ class Option(object):
 
         self.name = doc['name']
         self.program = doc['program']
+        self.source_filename = None
 
         for k in optional_source_fields:
             if k in doc:
@@ -206,6 +208,17 @@ class Option(object):
                 if "{{" not in self.default:
                     break
 
+    def resolve_output_path(self, path):
+        name_parts = self.name.split(',')
+
+        if len(name_parts) > 1:
+            clensed_name = name_parts[0]
+        else:
+            clensed_name = self.name
+
+        fn = '-'.join([ self.directive, self.program, clensed_name ]) + '.rst'
+        return os.path.join(path, fn)
+
 class OptionRendered(object):
     def __init__(self, option):
         if not isinstance(option, Option):
@@ -240,17 +253,6 @@ class OptionRendered(object):
         else:
             return self.option.name
 
-    def resolve_output_path(self, path):
-        name_parts = self.option.name.split(',')
-
-        if len(name_parts) > 1:
-            clensed_name = name_parts[0]
-        else:
-            clensed_name = self.option.name
-
-        fn = '-'.join([ self.option.directive, self.option.program, clensed_name ]) + '.rst'
-        return os.path.join(path, fn)
-
     def render(self, path):
         self.option.replace()
 
@@ -277,7 +279,7 @@ class OptionRendered(object):
             self.rst.content(self.option.post.split('\n'), indent=3, wrap=False)
             self.rst.newline()
 
-        output_file = self.resolve_output_path(path)
+        output_file =  option.resolve_output_path(path)
 
         self.rst.write(output_file)
 
@@ -322,6 +324,8 @@ def option_tasks(conf, app):
         t = app.add('task')
         t.job = render_option_page
         t.args = [ opt, output_path ]
+        t.dependency = opt.source_filename
+        t.target = opt.resolve_output_path(output_path)
         t.description = 'generating option "{0}" for "{1}"'.format(opt.name, opt.program)
 
 def option_clean(conf):

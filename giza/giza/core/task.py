@@ -67,8 +67,10 @@ class Task(object):
             self.job = job
         self.args_type = None
         self.description = description
+
         self.target = target
         self.dependency = dependency
+
         logger.debug('created task object calling {0}, for {1}'.format(job, description))
         self._task_id = None
 
@@ -94,6 +96,10 @@ class Task(object):
     @target.setter
     def target(self, value):
         self._target = value
+
+    def define_dependency_node(self, target, dependency):
+        self.target = target
+        self.dependency = dependency
 
     @property
     def conf(self):

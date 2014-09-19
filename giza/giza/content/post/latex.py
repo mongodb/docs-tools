@@ -50,7 +50,7 @@ def pdf_tasks(sconf, conf, app):
     tex_regexes = [ ( re.compile(r'(index|bfcode)\{(.*)--(.*)\}'),
                       r'\1\{\2-\{-\}\3\}'),
                     ( re.compile(r'\\PYGZsq{}'), "'"),
-                    ( re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv|data|bin|dev|opt|proc|24)'),
+                    ( re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv|data|bin|dev|opt|proc|24|private)'),
                       r'\code{' + conf.project.url + r'/' + conf.project.tag + r'/') ]
 
     clean_app = app.add('app')

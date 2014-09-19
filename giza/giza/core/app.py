@@ -72,6 +72,29 @@ class BuildApp(object):
         self.needs_rebuild = True
         self.root_app = True
 
+        self.target = None
+        self.dependency = None
+
+    @property
+    def dependency(self):
+        return self._dependency
+
+    @dependency.setter
+    def dependency(self, value):
+        self._dependency = value
+
+    @property
+    def target(self):
+        return self._target
+
+    @target.setter
+    def target(self, value):
+        self._target = value
+
+    def define_dependency_node(self, target, dependency):
+        self.target = target
+        self.dependency = dependency
+
     def reset(self):
         self.queue = []
         self.results = []
@@ -254,3 +277,8 @@ class BuildApp(object):
 
         self.queue = []
         return self.results
+
+def pprint(doc):
+    import json
+
+    print(json.dumps(doc, indent=3))

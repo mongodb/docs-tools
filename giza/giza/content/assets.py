@@ -80,6 +80,8 @@ def assets_tasks(conf, app):
 
             t = app.add('task')
             t.job = assets_setup
+            t.target = path
+            t.depends = None
             t.args = { 'path': path,
                        'branch': asset.branch,
                        'repo': asset.repository }
@@ -88,6 +90,8 @@ def assets_tasks(conf, app):
                 for content_type in asset.generate:
                     t = gen_app.add('task')
                     t.job = command
+                    t.target = path
+                    t.depends = None
                     t.args = 'cd {0}; giza generate {1}'.format(path, content_type)
 
 def assets_clean(conf, app):
