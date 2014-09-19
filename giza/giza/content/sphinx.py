@@ -188,7 +188,7 @@ def run_sphinx(builder, sconf, conf):
                             sconf.build_output)
 
     logger.debug(sphinx_cmd)
-    # out = command(sphinx_cmd, capture=True, ignore=True)
+    out = command(sphinx_cmd, capture=True, ignore=True)
     # out = sphinx_native_worker(sphinx_cmd)
     logger.info('completed sphinx build {0} at {1}'.format(builder, timestamp()))
 
@@ -202,9 +202,9 @@ def run_sphinx(builder, sconf, conf):
     else:
         logger.warning('the sphinx build {0} was not successful. not running finalize operation'.format(builder))
 
-    # output = '\n'.join([out.err, out.out])
+    output = '\n'.join([out.err, out.out])
 
-    return 0, '' #out.return_code, output
+    return out.return_code, output
 
 #################### Application Logic ####################
 
