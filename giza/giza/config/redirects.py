@@ -171,7 +171,11 @@ def _get_redirect_base_paths(computed, out, conf):
         out_key, out_value = out.items()[0]
         if isinstance(out_value, dict):
             # for mms where from/to paths are mapped differently
-            keyword, base = out_key.split('-', 1)
+            if '-' in out_key:
+                keyword, base = out_key.split('-', 1)
+            else:
+                keyword = out_key
+                base = ''
             out_key, out_value = out_value.items()[0]
             _add_outputs_to_computed(computed, keyword, base, conf)
     else:
