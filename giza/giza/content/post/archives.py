@@ -81,7 +81,7 @@ def slides_tarball(builder, conf):
     if os.path.exists(link_name):
         os.remove(link_name)
 
-    create_link(input_fn=os.path.basename(tarball_fn),
+    create_link(input_fn=os.path.basename(tarball_name),
                  output_fn=link_name)
 
 def man_tarball(builder, conf):
