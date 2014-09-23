@@ -28,6 +28,9 @@ def make_redirect(conf):
         else:
             url = conf.project.url + redir.to
 
+        if not url.endswith('/'):
+            url += '/'
+
         o.append(' '.join(['Redirect', str(redir.code), redir.from_loc, url, '\n']))
 
     o.sort()

@@ -284,7 +284,7 @@ class OptionRendered(object):
             self.rst.content(self.option.post.split('\n'), indent=3, wrap=False)
             self.rst.newline()
 
-        output_file =  option.resolve_output_path(path)
+        output_file = self.option.resolve_output_path(path)
 
         self.rst.write(output_file)
 
