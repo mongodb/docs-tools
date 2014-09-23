@@ -170,4 +170,17 @@ $(function() {
         }
     });
 
+    /* Add expand icons to indicate what's expandable and what's a link. This
+       is necessary when (1) we're at a leaf node, or (2) the menu triggers
+       a page load. */
+    $('.sphinxsidebarwrapper > ul ul a.reference').prepend(function(index) {
+        var expandElement = $('<span class="expand-icon"></span>');
+        var self = $(this)
+
+        if(!isLeafNode(self) && !requiresPageload(self)) {
+            expandElement.addClass('fa fa-plus');
+        }
+
+        return expandElement;
+    });
 });

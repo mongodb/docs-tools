@@ -1598,3 +1598,14 @@ h4.modal-title {
 .saving-copy, .redirect-copy {
     height: 100px;
 }
+
+.expand-icon {
+    vertical-align: 1.5px;
+    font-size: 0.6em;
+    width: 0.5em;
+    display: inline-block;
+}
+
+li.current > a > .fa.expand-icon:before {
+    content: ""; /* fa-minus */
+}
