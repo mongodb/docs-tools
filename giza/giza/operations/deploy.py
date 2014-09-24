@@ -1,12 +1,12 @@
+import os.path
 import logging
-
 logger = logging.getLogger('giza.operations.deploy')
 
 from giza.config.helper import fetch_config, new_credentials_config
 from giza.core.app import BuildApp
 from giza.deploy import Deploy
 from giza.operations.sphinx import sphinx_publication
-from giza.tools.command import verbose_command
+from giza.tools.command import command
 from giza.tools.serialization import ingest_yaml_list, dict_from_list
 
 import argh
@@ -41,7 +41,8 @@ def deploy_worker(c, app):
     pconf = c.system.files.data.push
     pconf = dict_from_list('target', pconf)
 
-    cmds = []
+    backgrounds = []
+
     for target in c.runstate.push_targets:
         d = Deploy(c)
 
@@ -52,17 +53,19 @@ def deploy_worker(c, app):
 
         d.load(target_pconf)
 
-        map_task = app.add('map')
-        map_task.iter = d.deploy_commands()
+        for cmd in d.deploy_commands():
+            task = app.add('task')
+            task.args = ' '.join(cmd)
+            task.job = command
+            task.target = ""
+            task.depends = os.path.join(c.paths.projectroot, c.paths.public_site_output)
 
-        map_task.job = verbose_command
+            if c.runstate.dry_run is True:
+                logger.info('dry run: {0}'.format(' '.join(cmd)))
+            else:
+                logger.info('deploying: {0}'.format(' '.join(cmd)))
 
-        cmds.extend(d.deploy_commands())
-
-    if c.runstate.dry_run is True:
-        for i in cmds:
-            logger.info('dry run: {0}'.format(' '.join(i)))
-    else:
+    if c.runstate.dry_run is False:
         app.run()
 
     logger.info('completed deploy for: {0}'.format(' '.join(c.runstate.push_targets)))

@@ -6,4 +6,10 @@ production:
 staging:
   hosts:
     - 'public@test.docs.10gen.cc'
+docsprod:
+  hosts:
+    - 'mms-docswww-prod-1.vpc3.10gen.cc'
+    - 'mms-docswww-prod-2.vpc3.10gen.cc'
+  args: ['--rsh="ssh -o ProxyCommand=''ssh -q ssh1.vpc3.10gen.cc nc %h %p''"']
+  input: code
 ...

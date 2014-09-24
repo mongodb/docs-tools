@@ -15,6 +15,8 @@
 import os.path
 import logging
 
+import yaml
+
 logger = logging.getLogger('giza.config.helper')
 
 from giza.config.main import Configuration
@@ -66,7 +68,7 @@ def dump_skel(skel, args):
 
     with open(conf_path, 'w') as f:
         yaml.dump(skel, f, default_flow_style=False)
-        f.write('...')
+        f.write('...\n')
         logger.info('wrote scrumpy configuration skeleton to: {0}')
 
 

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import time
 import os
 import subprocess
 import logging
@@ -84,11 +85,15 @@ class CommandResult(object):
         self._captured = value
 
 
-def command(command, capture=True, ignore=False, logger=None):
+def command(command, capture=True, ignore=False, logger=None, input=None):
     """
     Inspired by Fabric's ``local()`` operation. Runs a shell command, optionally
     captures the output, and returns a :class:`~giza.command.CommandResult` object.
     """
+
+    if isinstance(command, (list, tuple)):
+        command = ' '.join(command)
+
 
     if logger is None:
         log_output = False
@@ -142,10 +147,15 @@ def verbose_command(cmd, capture=False, ignore=False):
     .. deprecated:: 0.2.7
     """
 
+    if isinstance(cmd, dict):
+        cmd = cmd['command']
+
     if isinstance(cmd, list):
         cmd_str = ' '.join(cmd)
     else:
         cmd_str = cmd
+
+
 
     logger.info("running command: " + cmd_str)
     command(cmd_str, capture, ignore)

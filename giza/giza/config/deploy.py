@@ -49,6 +49,8 @@ class DeployConfig(ConfigurationBase):
 
 
 class DeployTargetConfig(ConfigurationBase):
+    _option_registry = ['input']
+
     @property
     def args(self):
         return self.state['args']
