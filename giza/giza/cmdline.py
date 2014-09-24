@@ -43,6 +43,7 @@ commands = {
         giza.operations.make.main,
         giza.operations.quickstart.make_project,
         giza.operations.sphinx.main,
+        giza.operations.deploy.twofa_code
     ],
     'git': [
         giza.operations.git.apply_patch,

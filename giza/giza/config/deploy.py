@@ -39,6 +39,15 @@ class DeployConfig(ConfigurationBase):
     def testing(self, value):
         self.state['testing'] = DeployTargetConfig(value)
 
+    @property
+    def docsprod(self):
+        return self.state['docsprod']
+
+    @docsprod.setter
+    def docsprod(self, value):
+        self.state['docsprod'] = DeployTargetConfig(value)
+
+
 class DeployTargetConfig(ConfigurationBase):
     @property
     def args(self):

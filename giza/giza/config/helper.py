@@ -20,6 +20,13 @@ logger = logging.getLogger('giza.config.helper')
 from giza.config.main import Configuration
 from giza.config.runtime import RuntimeStateConfig
 from giza.config.project import get_path_prefix
+from giza.config.credentials import CredentialsConfig, get_credentials_skeleton
+
+def new_credentials_config(conf_path=None):
+    if conf_path is None:
+        conf_path = os.path.expanduser("~/.mongodb-jira.yaml")
+
+    return CredentialsConfig(conf_path)
 
 def fetch_config(args):
     c = Configuration()
@@ -37,6 +44,11 @@ def new_skeleton_config(conf=None):
         return conf
     else:
         return conf
+
+def setup_credentials(args):
+    skel = get_credentials_skeleton()
+
+    dump_skel(skel, args)
 
 def new_config(args=None):
     if args is None:

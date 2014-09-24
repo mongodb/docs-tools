@@ -1,14 +1,16 @@
 import logging
-import argh
 
 logger = logging.getLogger('giza.operations.deploy')
 
-from giza.config.helper import fetch_config
+from giza.config.helper import fetch_config, new_credentials_config
 from giza.core.app import BuildApp
 from giza.deploy import Deploy
 from giza.operations.sphinx import sphinx_publication
 from giza.tools.command import verbose_command
 from giza.tools.serialization import ingest_yaml_list, dict_from_list
+
+import argh
+import onetimepass as otp
 
 @argh.arg('--target', '-t', nargs='*', dest='push_targets')
 @argh.arg('--dry-run', '-d', action='store_true', dest='dry_run')
@@ -64,3 +66,9 @@ def deploy_worker(c, app):
         app.run()
 
     logger.info('completed deploy for: {0}'.format(' '.join(c.runstate.push_targets)))
+
+@argh.named('code')
+def twofa_code(args):
+    creds = new_credentials_config()
+
+    print(otp.get_totp(creds.corp.seed))
