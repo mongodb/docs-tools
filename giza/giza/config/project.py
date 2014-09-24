@@ -32,7 +32,7 @@ def get_path_prefix(conf, branch):
         o.append(conf.project.basepath)
 
         if conf.project.branched is True:
-            if conf.git.branches.manual == conf.git.branches.current:
+            if branch == conf.git.branches.current and conf.git.branches.manual == conf.git.branches.current:
                 o.append('current')
             else:
                 o.append(branch)
