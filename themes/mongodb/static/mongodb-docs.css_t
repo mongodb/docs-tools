@@ -1598,3 +1598,8 @@ h4.modal-title {
 .saving-copy, .redirect-copy {
     height: 100px;
 }
+
+.guilabel {
+    font-style: normal;
+    font-weight: bold;
+}
