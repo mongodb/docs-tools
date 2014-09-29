@@ -34,6 +34,7 @@ def query(j, app, conf):
     for name, query in queries:
         ops.append(name)
         t = app.add('task')
+        t.target = True
         t.job = j.query
         t.args = [query]
         t.description = "{0} Jira query".format(name)
