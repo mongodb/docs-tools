@@ -42,13 +42,10 @@ def get_top_level_links(links, conf):
 def get_public_links(conf):
     iconf = conf.system.files.data.integration
 
-    if 'base' not in iconf:
+    try:
+        return get_top_level_links(iconf['base']['links'], conf)
+    except KeyError:
         return []
-    else:
-        if 'links' not in iconf['base']:
-            return []
-        else:
-            return get_top_level_links(iconf['base']['links'], conf)
 
 def create_manual_symlink(conf):
     public_links = get_public_links(conf)
