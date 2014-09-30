@@ -25,7 +25,7 @@ import logging
 import os.path
 
 from giza.tools.files import InvalidFile
-from giza.tools.command import command
+from giza.tools.command import command, CommandError
 
 logger = logging.getLogger('giza.deploy')
 
@@ -103,4 +103,15 @@ class Deploy(object):
                                    host + ':' + self.remote_path ]
 
     def run(self):
-        map(command, self.deploy_commands())
+        map(deploy_target, self.deploy_commands())
+
+def deploy_target(cmd):
+    r = command(cmd, capture=True, ignore=True, logger=logger)
+
+    if r.succeeded is True:
+        return r
+    elif r.return_code == 23:
+        logger.warning('permissions error on remote end, possibly timestamp related.')
+        return r
+    else:
+        raise CommandError('"{0}" returned code {1}'.format(r.out, r.return_code))

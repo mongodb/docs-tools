@@ -63,6 +63,7 @@ def robots_txt_builder(fn, conf, override=False):
     if counter > 0 and counter == len(conf.system.files.data.robots):
         try:
             os.remove(fn)
+            logger.debug('removed empty robots.txt file')
         except OSError:
             pass
     else:

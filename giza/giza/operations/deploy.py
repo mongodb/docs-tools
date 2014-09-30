@@ -4,7 +4,7 @@ logger = logging.getLogger('giza.operations.deploy')
 
 from giza.config.helper import fetch_config, new_credentials_config
 from giza.core.app import BuildApp
-from giza.deploy import Deploy
+from giza.deploy import Deploy, deploy_target
 from giza.operations.sphinx import sphinx_publication
 from giza.tools.command import command
 from giza.tools.serialization import ingest_yaml_list, dict_from_list
@@ -56,14 +56,12 @@ def deploy_worker(c, app):
         for cmd in d.deploy_commands():
             task = app.add('task')
             task.args = ' '.join(cmd)
-            task.job = command
+            task.job = deploy_target
             task.target = ""
             task.depends = os.path.join(c.paths.projectroot, c.paths.public_site_output)
 
             if c.runstate.dry_run is True:
                 logger.info('dry run: {0}'.format(' '.join(cmd)))
-            else:
-                logger.info('deploying: {0}'.format(' '.join(cmd)))
 
     if c.runstate.dry_run is False:
         app.run()
