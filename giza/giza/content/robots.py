@@ -18,6 +18,7 @@ import logging
 logger = logging.getLogger('giza.content.robots')
 
 from giza.tools.serialization import ingest_yaml_list
+import giza.content.helper
 
 def robots_txt_builder(fn, conf, override=False):
     if override is False:
@@ -35,10 +36,15 @@ def robots_txt_builder(fn, conf, override=False):
     if not os.path.exists(robots_txt_dir):
         os.makedirs(robots_txt_dir)
 
+    counter = 0
     with open(fn, 'w') as f:
         f.write('User-agent: *')
         f.write('\n')
         for record in conf.system.files.data.robots:
+            if giza.content.helper.edition_check(record, conf) is False:
+                counter += 1
+                continue
+
             page = record['file']
             if 'branches' not in record:
                 f.write('Disallow: {0}'.format(page))
@@ -53,7 +59,14 @@ def robots_txt_builder(fn, conf, override=False):
                         f.write('Disallow: /{0}{1}'.format(branch,page))
                         f.write('\n')
 
-    logger.info('regenerated robots.txt file.')
+
+    if counter > 0 and counter == len(conf.system.files.data.robots):
+        try:
+            os.remove(fn)
+        except OSError:
+            pass
+    else:
+        logger.info('regenerated {0} file.'.format(fn))
 
 def robots_txt_tasks(conf, app):
     if 'robots' in conf.system.files.data and len(conf.system.files.data.robots) > 0:
@@ -63,7 +76,7 @@ def robots_txt_tasks(conf, app):
                 dep_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, k)
                 break
 
-        robots_fn = os.path.join(conf.paths.projectroot, conf.paths.public,
+        robots_fn = os.path.join(conf.paths.projectroot, conf.paths.public_site_output,
                                 'robots.txt')
         t = app.add('task')
         t.job = robots_txt_builder

@@ -16,6 +16,7 @@ from giza.content.param import api_tasks, api_clean
 from giza.content.steps import steps_tasks, steps_clean
 from giza.content.table import table_tasks, table_clean
 from giza.content.toc import toc_tasks, toc_clean
+from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
 from giza.content.examples.tasks import example_tasks
 
@@ -135,6 +136,16 @@ def examples(args):
     app = BuildApp(c)
 
     example_tasks(c, app)
+
+    app.run()
+
+@argh.arg('--edition', '-e')
+def robots(args):
+    c = fetch_config(args)
+    app = BuildApp(c)
+    app.pool = 'serial'
+
+    robots_txt_tasks(c, app)
 
     app.run()
 

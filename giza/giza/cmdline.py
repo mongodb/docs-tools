@@ -62,7 +62,8 @@ commands = {
         giza.operations.generate.tables,
         giza.operations.generate.toc,
         giza.operations.generate.examples,
-        giza.operations.generate.redirects
+        giza.operations.generate.redirects,
+        giza.operations.generate.robots
     ],
     'includes': [
         giza.operations.includes.recursive,
