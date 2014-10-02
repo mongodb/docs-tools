@@ -290,6 +290,14 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
         self.state['builder'] = value
 
+    def is_publish_target(self):
+        if 'builder' not in self.state:
+            return False
+        elif 'publish' in self.state['builder']:
+            return True
+        else:
+            return False
+
     @property
     def git_objects(self):
         return self.state['git_objects']
