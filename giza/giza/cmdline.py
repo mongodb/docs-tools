@@ -26,6 +26,7 @@ import giza.operations.configuration
 import giza.operations.deploy
 import giza.operations.generate
 import giza.operations.git
+import giza.operations.http_serve
 import giza.operations.includes
 import giza.operations.make
 import giza.operations.packaging
@@ -43,7 +44,8 @@ commands = {
         giza.operations.make.main,
         giza.operations.quickstart.make_project,
         giza.operations.sphinx.main,
-        giza.operations.deploy.twofa_code
+        giza.operations.deploy.twofa_code,
+        giza.operations.http_serve.start,
     ],
     'git': [
         giza.operations.git.apply_patch,

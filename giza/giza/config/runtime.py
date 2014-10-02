@@ -190,7 +190,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
                          'git_sign_patch', 'serial_sphinx', 'package_path',
                          'clean_generated', 'include_mask', 'push_targets',
                          'dry_run', 't_corpora_config', 't_translate_config',
-                         't_output_file', 't_source', 't_target']
+                         't_output_file', 't_source', 't_target', 'port']
 
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
