@@ -49,8 +49,6 @@ def manual_single_html(input_file, output_file):
 
 
 def finalize_single_html_tasks(builder, conf, app):
-    pjoin = os.path.join
-
     single_html_dir = get_single_html_dir(conf)
 
     if not os.path.exists(single_html_dir):
@@ -61,17 +59,17 @@ def finalize_single_html_tasks(builder, conf, app):
         if found_src is True:
             break
 
-        for fn in [ pjoin(base_path, f) for f in ('contents.html', 'index.html') ]:
-            src_fn = pjoin(conf.paths.projectroot, conf.paths.branch_output, fn)
+        for fn in [ os.path.join(base_path, f) for f in ('contents.html', 'index.html') ]:
+            src_fn = os.path.join(conf.paths.projectroot, conf.paths.branch_output, fn)
 
             if os.path.exists(src_fn):
                 manual_single_html(input_file=src_fn,
-                                   output_file=pjoin(single_html_dir, 'index.html'))
+                                   output_file=os.path.join(single_html_dir, 'index.html'))
 
-                copy_if_needed(source_file=pjoin(conf.paths.projectroot,
+                copy_if_needed(source_file=os.path.join(conf.paths.projectroot,
                                                  conf.paths.branch_output,
                                                  base_path, 'objects.inv'),
-                               target_file=pjoin(single_html_dir, 'objects.inv'))
+                               target_file=os.path.join(single_html_dir, 'objects.inv'))
 
                 found_src = True
 
@@ -80,13 +78,10 @@ def finalize_single_html_tasks(builder, conf, app):
     if found_src is not True:
         raise FileNotFoundError('singlehtml source file')
 
-    single_path = pjoin(single_html_dir, '_static')
+    single_path = os.path.join(single_html_dir, '_static')
 
-    for fn in expand_tree(pjoin(conf.paths.projectroot,
-                                conf.paths.branch_output,
-                                builder, '_static'), None):
-        target_fn = pjoin(single_path, os.path.basename(fn))
-        print target_fn
+    for fn in expand_tree(os.path.join(os.path.dirname(src_fn), '_static'), None):
+        target_fn = os.path.join(single_path, os.path.basename(fn))
 
         task = app.add('task')
         task.job = copy_if_needed
