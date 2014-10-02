@@ -1595,6 +1595,11 @@ h4.modal-title {
     color: #333;
 }
 
+.action-buttons .btn-group,
+.action-buttons .btn-group > button {
+    width: 100%;
+}
+
 .saving-copy, .redirect-copy {
     height: 100px;
 }
