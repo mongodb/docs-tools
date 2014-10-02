@@ -73,9 +73,9 @@ def finalize_single_html_tasks(builder, conf, app):
                                                  base_path, 'objects.inv'),
                                target_file=pjoin(single_html_dir, 'objects.inv'))
 
-            found_src = True
+                found_src = True
 
-            break
+                break
 
     if found_src is not True:
         raise FileNotFoundError('singlehtml source file')
@@ -86,6 +86,7 @@ def finalize_single_html_tasks(builder, conf, app):
                                 conf.paths.branch_output,
                                 builder, '_static'), None):
         target_fn = pjoin(single_path, os.path.basename(fn))
+        print target_fn
 
         task = app.add('task')
         task.job = copy_if_needed
