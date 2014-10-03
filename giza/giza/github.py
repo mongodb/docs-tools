@@ -133,7 +133,6 @@ def setup(args):
 def mine(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
-    app.pool = 'thread'
     gh = get_connection(conf)
 
     pprint(mine_github_pulls(gh, app, conf))
@@ -141,7 +140,6 @@ def mine(args):
 def stats(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
-    app.pool = 'thread'
     gh = get_connection(conf)
 
     users = set()
@@ -161,7 +159,6 @@ def stats(args):
 def actions(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
-    app.pool = 'thread'
     gh = get_connection(conf)
 
     results = []
