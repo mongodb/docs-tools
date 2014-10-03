@@ -100,9 +100,9 @@ def build_prep_tasks(conf, app):
     option_tasks(conf, app)
     api_tasks(conf, app)
     table_tasks(conf, app)
-    hash_tasks(conf, app)
 
 def build_content_generation_tasks(conf, app):
+    hash_tasks(conf, app)
     redirect_tasks(conf, app)
     steps_tasks(conf, app.add('app'))
     toc_tasks(conf, app)
