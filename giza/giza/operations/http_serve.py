@@ -1,5 +1,7 @@
 import sys
 import os.path
+import logging
+logger = logging.getLogger('giza.operations.http')
 
 if sys.version_info[0] == 2:
     import SocketServer as socket_server
@@ -8,12 +10,8 @@ else:
     import socketserver as socket_server
     import http.server as http_server
 
-import logging
-logger = logging.getLogger('giza.operations.http')
-
 import argh
 from giza.config.helper import fetch_config
-
 
 class RequestHandler(http_server.SimpleHTTPRequestHandler):
     """Request handler wrapper that hosts files rooted at a particular
@@ -33,18 +31,15 @@ class RequestHandler(http_server.SimpleHTTPRequestHandler):
 @argh.named('http')
 def start(args):
     """Start an HTTP server rooted in the build directory."""
-    config = fetch_config(args)
+    conf = fetch_config(args)
 
-
-    if config.runstate.is_publish_target():
-        root = config.paths.public_site_output
+    if conf.runstate.is_publish_target():
+        RequestHandler.root = conf.paths.public_site_output
     else:
-        root = os.path.join(config.paths.projectroot,
-                            config.paths.branch_output,
-                            args.builder[0])
+        RequestHandler.root = os.path.join(conf.paths.projectroot,
+                                           conf.paths.branch_output,
+                                           args.builder[0])
 
-    RequestHandler.root = root
-
-    httpd = socket_server.TCPServer(('', config.runstate.port), RequestHandler)
-    logger.info('Hosting {0} on port {1}'.format(root, config.runstate.port))
+    httpd = socket_server.TCPServer(('', conf.runstate.port), RequestHandler)
+    logger.info('Hosting {0} on port {1}'.format(RequestHandler.root, conf.runstate.port))
     httpd.serve_forever()
