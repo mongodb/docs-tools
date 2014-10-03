@@ -1,0 +1,21 @@
+{%- extends "page-layout.html" -%}
+
+{%- block canonicalref %}
+  {%- if pagename == 'index' %}
+    <link rel="canonical" href="http://mms.mongodb.com/help-classic/" />
+  {%- else %}
+    <link rel="canonical" href="http://mms.mongodb.com/help-classic/{{pagename}}" />
+  {%- endif -%}
+{%- endblock -%}
+
+{% block searchbox %}{% endblock %}
+
+{%- block sitesearch %}{%- endblock -%}
+
+{%- block onboarding_modal -%}{%- endblock -%}
+
+{%- block alertbar -%}{%- endblock -%}
+
+{% block language_selector %}{% endblock %}
+
+{% block version_selector %}{% endblock %}
