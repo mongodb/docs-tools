@@ -27,6 +27,9 @@ ACCEPTABLE = 864000
 #### Helper functions
 
 def download_file(file, url):
+    if not os.path.isdir(os.path.dirname(file)):
+        os.makedirs(os.path.dirname(file))
+
     cmd = ['curl', '-s', '--remote-time', url, '-o', file]
     command(' '.join(cmd))
     logger.info('downloaded {0}'.format(file))
