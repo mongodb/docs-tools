@@ -12,6 +12,7 @@ else:
 
 import argh
 from giza.config.helper import fetch_config
+from giza.tools.strings import hyph_concat
 
 class RequestHandler(http_server.SimpleHTTPRequestHandler):
     """Request handler wrapper that hosts files rooted at a particular
@@ -28,6 +29,7 @@ class RequestHandler(http_server.SimpleHTTPRequestHandler):
 
 @argh.arg('--port', '-p', default=8090, dest='port')
 @argh.arg('--builder', '-b', nargs='*', default='publish')
+@argh.arg('--edition', '-e')
 @argh.named('http')
 def start(args):
     """Start an HTTP server rooted in the build directory."""
@@ -35,11 +37,15 @@ def start(args):
 
     if conf.runstate.is_publish_target():
         RequestHandler.root = conf.paths.public_site_output
+    elif conf.runstate.edition is not None:
+        RequestHandler.root = os.path.join(conf.paths.projectroot,
+                                           conf.paths.branch_output,
+                                           hyph_concat(args.builder[0], args.edition))
     else:
         RequestHandler.root = os.path.join(conf.paths.projectroot,
                                            conf.paths.branch_output,
                                            args.builder[0])
 
     httpd = socket_server.TCPServer(('', conf.runstate.port), RequestHandler)
-    logger.info('Hosting {0} on port {1}'.format(RequestHandler.root, conf.runstate.port))
+    logger.info('Hosting {0} at http://localhost:{1}/'.format(RequestHandler.root, conf.runstate.port))
     httpd.serve_forever()
