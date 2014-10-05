@@ -10,7 +10,7 @@
  */
 @import url("basic.css");
 
-@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700);
+/** @import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700); */
 
 /* -- page layout ----------------------------------------------------------- */
 
