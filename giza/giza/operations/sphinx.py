@@ -32,7 +32,7 @@ from giza.config.sphinx_config import render_sconf
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
 @argh.arg('--builder', '-b', nargs='*', default='html')
-@argh.arg('--serial_sphinx', action='store_true', default=False)
+@argh.arg('--serial_sphinx', action='store_true')
 @argh.named('sphinx')
 def main(args):
     c = fetch_config(args)
@@ -48,7 +48,7 @@ def sphinx_publication(c, args, app):
     sphinx_app = BuildApp(c)
     sphinx_app.pool = app.pool
 
-    jobs = itertools.product(args.editions_to_build, args.languages_to_build, args.builder)
+    jobs = itertools.product(c.runstate.editions_to_build, c.runstate.languages_to_build, c.runstate.builder)
     for edition, language, builder in jobs:
         args.language = language
         args.edition = edition

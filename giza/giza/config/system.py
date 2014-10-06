@@ -96,6 +96,14 @@ class SystemConfig(RecursiveConfigurationBase):
 
             self.state['dependency_cache'] = os.path.sep.join(p)
 
+    @property
+    def runstate(self):
+        return self.conf.runstate
+
+    @runstate.setter
+    def runstate(self, value):
+        self.conf.runstate = value
+
 class SystemToolsConfig(ConfigurationBase):
     @property
     def pinned(self):

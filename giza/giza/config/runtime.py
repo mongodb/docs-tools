@@ -187,7 +187,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 class RuntimeStateConfig(RuntimeStateConfigurationBase):
     _option_registry = [ 'serial', 'length', 'days_to_save',
                          'builder_to_delete', 'git_branch', 'make_target',
-                         'git_sign_patch', 'serial_sphinx', 'package_path',
+                         'git_sign_patch', 'package_path',
                          'clean_generated', 'include_mask', 'push_targets',
                          'dry_run', 't_corpora_config', 't_translate_config',
                          't_output_file', 't_source', 't_target', 'port']
@@ -195,6 +195,20 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
         self._branch_conf = None
+
+    @property
+    def serial_sphinx(self):
+        if 'serial_sphinx' in self.state:
+            return self.state['serial_sphinx']
+        else:
+            return None
+
+    @serial_sphinx.setter
+    def serial_sphinx(self, value):
+        if value is False:
+            pass
+        else:
+            self.state['serial_sphinx'] = value
 
     @property
     def conf_path(self):

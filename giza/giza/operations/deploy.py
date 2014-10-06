@@ -25,7 +25,7 @@ def main(args):
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
 @argh.arg('--builder', '-b', nargs='*', default='html')
-@argh.arg('--serial_sphinx', action='store_true', default=False)
+@argh.arg('--serial_sphinx', action='store_true')
 @argh.named('push')
 def publish_and_deploy(args):
     c = fetch_config(args)

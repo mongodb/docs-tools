@@ -65,8 +65,22 @@ class Configuration(ConfigurationBase):
     @runstate.setter
     def runstate(self, value):
         if isinstance(value, RuntimeStateConfig):
-            value.conf = self
-            self.state['runstate'] = value
+            if 'runstate' in self.state:
+                self.state['runstate'].state.update(value.state)
+            else:
+                value.conf = self
+                self.state['runstate'] = value
+        elif isinstance(value, dict):
+            if 'runstate' in self.state:
+                self.state['runstate'].ingest(value)
+            else:
+                runtime = RuntimeStateConfig(value)
+                runtime.conf = self
+                self.state['runstate'] = runtime
+        elif value is None:
+            runtime = RuntimeStateConfig()
+            runtime.conf = self
+            self.state['runstate'] = runtime
         else:
             msg = "invalid runtime state"
             logger.critical(msg)
