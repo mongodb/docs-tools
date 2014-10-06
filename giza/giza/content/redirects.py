@@ -42,21 +42,33 @@ def make_redirect(conf):
 
     return o
 
-def write_redirects(conf):
-    path = os.path.join(conf.paths.projectroot, conf.paths.htaccess)
+def write_redirects(fn, conf):
+    if not os.path.exists(os.path.dirname(fn)):
+        os.makedirs(os.path.dirname(fn))
 
-    if not os.path.exists(os.path.dirname(path)):
-        os.makedirs(os.path.dirname(path))
-
-    with open(path, 'w') as f:
+    with open(fn, 'w') as f:
         f.writelines(make_redirect(conf))
         f.write('\n')
 
-    logger.info('wrote redirects to: ' + path)
+    logger.info('wrote redirects to: ' + fn)
 
 def redirect_tasks(conf, app):
     if 'htaccess' in conf.system.files.data:
+        fn = path = os.path.join(conf.paths.projectroot, conf.paths.htaccess)
+
+        deps = []
+        for configfn in conf.system.files.paths:
+            if isinstance(configfn, dict):
+                if 'htaccess' in configfn:
+                    deps.extend([os.path.join(conf.paths.projectroot, conf.paths.builddata, rfn)
+                              for rfn in configfn['htaccess']])
+            elif configfn.startswith('htaccess'):
+                deps.append(os.path.join(conf.paths.projectroot, conf.paths.builddata, configfn))
+
+
         t = app.add('task')
         t.job = write_redirects
-        t.args = [conf]
+        t.target = fn
+        t.dependency = deps
+        t.args = [fn, conf]
         t.description = 'generate and write redirects into: ' + conf.paths.htaccess
