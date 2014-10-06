@@ -10,7 +10,7 @@
  */
 @import url("basic.css");
 
-@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700);
+@import url(//fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700);
 
 /* -- page layout ----------------------------------------------------------- */
 
@@ -25,7 +25,7 @@
     height: 100%;
     z-index: 2000;
     opacity: 0.5;
-    background: url(http://media.mongodb.org.s3.amazonaws.com/24px-baseline-overlay.png) 0 0 repeat;
+    background: url(//media.mongodb.org/24px-baseline-overlay.png) 0 0 repeat;
 }
 
 body {
