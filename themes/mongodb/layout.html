@@ -7,7 +7,7 @@
 {%- set url_root = pathto('', 1) %}
 {%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.tipsy.js", "_static/lib/jquery.cookie.js", "_static/navbar.js"] %}
 {%  set css_files = css_files + ["_static/bootstrap-custom.css", "_static/lib/icomoon.css", "_static/lib/font-awesome.css", "_static/lib/tipsy.css"] %}
-{%- set github_organization = "mongodb" %}
+{%- set github_organization = "tjworks" %}
 
 {%- macro translationslink() -%}
   {%- block translationslink %}
@@ -16,9 +16,9 @@
 {%- endmacro -%}
 
 {%- macro editlink(type) -%}
-  <a class="edit-link" href="https://github.com/{{ github_organization }}/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub">
+  <a class="edit-link" href="https://github.com/{{ github_organization }}/{{theme_repo_name}}/blob/{{theme_branch}}/locale/zh/LC_MESSAGES/{{pagename}}.po" target="_blank" title="Edit {{pagename}}.txt on GitHub">
     {% if type == 'icon' %}
-      <span class="icon-edit"></span>
+      <span class="icon-edit"></span> <span>Edit on Github</span>
     {% else %}
       <span>Edit on Github</span>
     {% endif %}
