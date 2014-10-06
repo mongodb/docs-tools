@@ -118,24 +118,23 @@ def error_pages(sconf, conf):
         logging.info('error-pages: rendered {0} error pages'.format(idx))
 
 def finalize_dirhtml_build(sconf, conf):
-    pjoin = os.path.join
     builder = sconf.builder
 
     single_html_dir = get_single_html_dir(conf)
-    search_page = pjoin(conf.paths.branch_output, builder, 'index.html')
+    search_page = os.path.join(conf.paths.branch_output, builder, 'index.html')
 
     if os.path.exists(search_page):
         copy_if_needed(source_file=search_page,
-                       target_file=pjoin(single_html_dir, 'search.html'))
+                       target_file=os.path.join(single_html_dir, 'search.html'))
 
-    dest = pjoin(conf.paths.projectroot, conf.paths.public_site_output)
+    dest = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
     m_cmd = command('rsync -a {source}/ {destination}'.format(source=sconf.build_output,
                                                               destination=dest))
 
     logger.info('"{0}" migrated build from {1} to {2}, with result {3}'.format(sconf.name, sconf.build_output, dest, m_cmd.return_code))
 
     if 'excluded_files' in sconf:
-        fns = [ pjoin(conf.paths.projectroot,
+        fns = [ os.path.join(conf.paths.projectroot,
                       conf.paths.public_site_output,
                       fn)
                 for fn in sconf['dirhtml']['excluded_files'] ]
@@ -146,13 +145,15 @@ def finalize_dirhtml_build(sconf, conf):
     if conf.git.branches.current in conf.git.branches.published:
         sitemap_exists = sitemap(config_path=None, conf=conf)
 
-        if sitemap_exists is True:
-            copy_if_needed(source_file=pjoin(conf.paths.projectroot,
-                                             conf.paths.branch_output,
-                                             'sitemap.xml.gz'),
-                           target_file=pjoin(conf.paths.projectroot,
-                                             conf.paths.public_site_output,
-                                             'sitemap.xml.gz'))
+        legacy_sitemap_fn = os.path.join(conf.paths.projectroot,
+                                         conf.paths.branch_output,
+                                         'sitemap.xml.gz')
+
+        if os.path.exists(legacy_sitemap_fn) and sitemap_exists is True:
+            copy_if_needed(source_file=legacy_sitemap_fn,
+                           target_file=os.path.join(conf.paths.projectroot,
+                                                    conf.paths.public_site_output,
+                                                    'sitemap.xml.gz'))
 
 
 def sitemap(config_path, conf):
