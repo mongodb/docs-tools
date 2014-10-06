@@ -153,7 +153,6 @@ def render_header_row(param_zero, num_rows, type_column):
 def populate_external_param(fn, basename, projectdir, sourcedir):
     if fn.startswith('/'):
         fn = os.path.join(sourcedir, fn[1:])
-    print fn, basename, projectdir, sourcedir
 
     fns = [
         fn,

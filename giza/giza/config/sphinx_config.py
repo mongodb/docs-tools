@@ -93,14 +93,18 @@ class SphinxConfig(RecursiveConfigurationBase):
         self.builder = builder
         self.edition = edition
 
+        lookup_opts = []
+
         if edition is None:
-            lookup = self.builder
+            lookup_opts.append(self.builder)
         else:
-            lookup = hyph_concat(self.builder, self.edition)
+            lookup_opts.append(hyph_concat(self.builder, self.edition))
 
-        self.name = lookup
-
-        base = self._raw[lookup]
+        base = {}
+        for opt in lookup_opts:
+            if opt in self._raw:
+                base = self._raw[opt]
+                break
 
         for i in ['excluded', 'tags', 'languages']:
             if i in base:
@@ -202,7 +206,10 @@ class SphinxConfig(RecursiveConfigurationBase):
             logger.error('builder tags must be a list.')
             raise TypeError
         else:
-            self.state['tags'] = value
+            if 'tags' in self.state:
+                self.state['tags'].extend(value)
+            else:
+                self.state['tags'] = value
 
     @languages.setter
     def languages(self, value):
