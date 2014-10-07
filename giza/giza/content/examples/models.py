@@ -18,14 +18,8 @@ import logging
 logger = logging.getLogger('giza.content.examples.models')
 
 from giza.config.base import ConfigurationBase
-from giza.core.inheritance import DataCache, DataContentBase, InheritableContentBase
-from giza.tools.serialization import ingest_yaml_doc
-
-from pygments.lexers import get_all_lexers
-
-# get a list of all supported pygment lexers.
-all_languages = []
-[ all_languages.extend(lexers[1]) for lexers in get_all_lexers() ]
+from giza.core.inheritance import InheritableContentBase
+from giza.content.helper import get_all_languages
 
 if sys.version_info >= (3, 0):
     basestring = str
@@ -121,7 +115,7 @@ class ExampleOperationBlock(ConfigurationBase):
 
     @language.setter
     def language(self, value):
-        if value in all_languages:
+        if value in get_all_languages():
             self.state['language'] = value
         else:
             m = '{0} is not a supported language'.format(value)

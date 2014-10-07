@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pygments.lexers import get_all_lexers
+
 def edition_check(data, conf):
     """
     Tests a content structure against the current configuration object to ensure
@@ -51,3 +53,11 @@ def edition_check(data, conf):
             return True
     else:
         return True
+
+# get a list of all supported pygment lexers.
+def get_all_languages():
+    all_languages = []
+
+    [ all_languages.extend(lexers[1]) for lexers in get_all_lexers() ]
+
+    return all_languages
