@@ -1607,6 +1607,16 @@ h4.modal-title {
 .guilabel {
     font-style: normal;
     font-weight: bold;
+}
+
+h1 .guilabel,
+h2 .guilabel,
+h3 .guilabel,
+h4 .guilabel,
+h5 .guilabel,
+h6 .guilabel {
+  font-style: italic;
+}
 
 .expand-icon {
     vertical-align: 1.5px;
