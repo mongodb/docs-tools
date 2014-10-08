@@ -108,6 +108,7 @@ class TestTask(BaseTaskSuite, TestCase):
         self.c = Configuration()
         self.c.runstate = RuntimeStateConfig()
         self.task = Task()
+        self.task.job = sum
         self.Task = Task
         self.task.conf = self.c
 
@@ -121,6 +122,7 @@ class TestTask(BaseTaskSuite, TestCase):
 
             t.job = sum_func
             t.args = i
+            t.description = "test task: " + str(i)
 
             self.assertEqual(t.run(), 6)
 
@@ -130,6 +132,7 @@ class TestMapTask(BaseTaskSuite, TestCase):
         self.c = Configuration()
         self.c.runstate = RuntimeStateConfig()
         self.task = MapTask()
+        self.task.job = sum
         self.Task = MapTask
         self.task.conf = self.c
 

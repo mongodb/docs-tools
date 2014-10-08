@@ -185,19 +185,18 @@ class TestInheritedContentResolution(TestCase):
     def test_gross_correctness_of_ingestion(self):
         self.assertEqual(len(self.data.cache), 3)
 
-    # def test_everything_resolved(self):
-    #     for fn, data in self.data.cache.items():
-    #         self.assertIsInstance(data, self.data.content_class)
+    def test_everything_resolved(self):
+        for fn, data in self.data.cache.items():
+            self.assertIsInstance(data, self.data.content_class)
 
-    #         self.assertNotEqual(len(data.content), 0)
+            self.assertNotEqual(len(data.content), 0)
 
-    #         for doc in data.content.values():
-    #             if 'source' in doc:
-    #                 self.assertEqual(len(doc.state.keys()), 2)
+            for doc in data.content.values():
+                if 'source' in doc:
+                    self.assertEqual(len(doc.state.keys()), 7)
 
-    #         data.resolve()
+            data.resolve()
 
-    #         for doc in data.content.values():
-    #             if 'source' in doc:
-    #                 print len(doc)
-    #                 self.assertTrue(doc.source.resolved)
+            for doc in data.content.values():
+                if 'source' in doc:
+                    self.assertTrue(doc.source.resolved)

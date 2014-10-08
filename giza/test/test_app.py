@@ -137,6 +137,7 @@ class CommonAppSuite(object):
 
         t = Task()
         t.job = sum
+        t.description = 'test task'
         t.args = [[ 1 , 2 ], 0]
 
         self.app._run_single(t)
@@ -150,6 +151,7 @@ class CommonAppSuite(object):
 
         t.job = sum
         t.args = [[ 1 , 2 ], 0]
+        t.description = 'test task'
 
         self.app.run()
 
@@ -163,6 +165,7 @@ class CommonAppSuite(object):
 
         t = app.add('task')
         t.job = sum
+        t.description = 'test task'
         t.args = [[ 1 , 2 ], 0]
 
         self.app.run()
@@ -181,6 +184,8 @@ class CommonAppSuite(object):
                 t.args = [[ 1 , 2, inc ], 0]
             else:
                 t.args = [[ 20 , 2, inc - 10 ], 0]
+            t.description = 'test task'
+
 
         self.app.run()
 
@@ -196,6 +201,7 @@ class CommonAppSuite(object):
             t = app.add('task')
             t.job = sum
             t.args = [[ 1 , 2 ], 0]
+            t.description = 'test task'
 
         self.app.run()
         self.assertEqual(len(self.app.results), 10)
@@ -254,6 +260,7 @@ class CommonAppSuite(object):
                 t = app.add('task')
                 t.job = sum
                 t.args = [[1,2], 0]
+                t.description = 'test task'
 
 
         self.app.run()
@@ -271,6 +278,7 @@ class CommonAppSuite(object):
             t = self.app.add('task')
             t.job = sum
             t.args = [[1,2], 0]
+            t.description = 'test task'
 
         for _ in range(10):
             app = self.app.add('app')
@@ -278,6 +286,7 @@ class CommonAppSuite(object):
                 t = app.add('task')
                 t.job = sum
                 t.args = [[1,2], 0]
+                t.description = 'test task'
 
         self.app.run()
 
@@ -296,7 +305,7 @@ class CommonAppSuite(object):
                 t = app.add('task')
                 t.job = sum
                 t.args = [[1,2], 0]
-
+                t.description = 'test task'
 
         self.app._run_mixed_queue()
 
@@ -313,6 +322,7 @@ class CommonAppSuite(object):
             t = self.app.add('task')
             t.job = sum
             t.args = [[1,2], 0]
+            t.description = 'test task'
 
         for _ in range(10):
             app = self.app.add('app')
@@ -320,6 +330,7 @@ class CommonAppSuite(object):
                 t = app.add('task')
                 t.job = sum
                 t.args = [[1,2], 0]
+                t.description = 'test task'
 
         self.app._run_mixed_queue()
 
@@ -336,12 +347,13 @@ class CommonAppSuite(object):
             t = self.app.add('task')
             t.job = sum
             t.args = [[1,2], 0]
+            t.description = 'test task'
 
         for _ in range(5):
             t = self.app.add('task')
             t.job = sum
             t.args = [[2,2], 0]
-
+            t.description = 'test task'
 
         self.app.run()
 
@@ -358,10 +370,13 @@ class CommonAppSuite(object):
                 t = app.add('task')
                 t.job = sum
                 t.args = [[1,2], 0]
+                t.description = 'test task'
+
             for _ in range(5):
                 t = app.add('task')
                 t.job = sum
                 t.args = [[2,2], 0]
+                t.description = 'test task'
 
         self.app.run()
 
@@ -380,6 +395,7 @@ class CommonAppSuite(object):
         t = app.add('task')
         t.job = sum
         t.args = [[1, 8], 0]
+        t.description = 'test task'
 
         for _ in range(3):
             app = self.app.add('app')
@@ -387,11 +403,13 @@ class CommonAppSuite(object):
                 t = app.add('task')
                 t.job = sum
                 t.args = [[1,2], 0]
+                t.description = 'test task'
 
             for _ in range(5):
                 t = app.add('task')
                 t.job = sum
                 t.args = [[2,2], 0]
+                t.description = 'test task'
 
         app = self.app.add('app')
         t = app.add('task')
@@ -402,6 +420,7 @@ class CommonAppSuite(object):
             t = app.add('task')
             t.job = sum
             t.args = [[2,2], 0]
+            t.description = 'test task'
 
         self.app.run()
 
@@ -421,10 +440,13 @@ class CommonAppSuite(object):
             t = self.app.add('task')
             t.job = sum
             t.args = [[1,2], 0]
+            t.description = 'test task'
+
         for _ in range(5):
             t = self.app.add('task')
             t.job = sum
             t.args = [[2,2], 0]
+            t.description = 'test task'
 
         self.app.run()
 
@@ -446,6 +468,7 @@ class CommonAppSuite(object):
             t = self.app.add('task')
             t.job = sum
             t.args = [[1,1], 0]
+            t.description = 'test task'
 
         for _ in range(3):
             app0 = self.app.add('app')
@@ -453,21 +476,25 @@ class CommonAppSuite(object):
                 t = app0.add('task')
                 t.job = sum
                 t.args = [[1,2], 0]
+                t.description = 'test task'
 
             t = self.app.add('task')
             t.job = sum
             t.args = [[1,1], 0]
+            t.description = 'test task'
 
             app1 = self.app.add('app')
             for _ in range(5):
                 t = app1.add('task')
                 t.job = sum
                 t.args = [[2,2], 0]
+                t.description = 'test task'
 
         for _ in range(10):
             t = self.app.add('task')
             t.job = sum
             t.args = [[1,1], 0]
+            t.description = 'test task'
 
         self.app.run()
 
@@ -489,6 +516,7 @@ class CommonAppSuite(object):
             t = self.app.add('task')
             t.job = sum
             t.args = [[1,1], 0]
+            t.description = 'test task'
 
         for _ in range(3):
             app = self.app.add('app')
@@ -496,20 +524,24 @@ class CommonAppSuite(object):
                 t = app.add('task')
                 t.job = sum
                 t.args = [[1,2], 0]
+                t.description = 'test task'
 
             t = self.app.add('task')
             t.job = sum
             t.args = [[1,1], 0]
+            t.description = 'test task'
 
             for _ in range(5):
                 t = app.add('task')
                 t.job = sum
                 t.args = [[2,2], 0]
+                t.description = 'test task'
 
         for _ in range(10):
             t = self.app.add('task')
             t.job = sum
             t.args = [[1,1], 0]
+            t.description = 'test task'
 
         self.app.run()
 
@@ -530,6 +562,7 @@ class CommonAppSuite(object):
         t = app.add('task')
         t.job = sum
         t.args = [[ 1 , 2 ], 0]
+        t.description = 'test task'
 
         self.app._run_single(app)
         self.assertEqual(self.app.results[0], 3)
@@ -543,6 +576,7 @@ class CommonAppSuite(object):
         for _ in range(10):
             t = app.add('task')
             t.job = sum
+            t.description = 'test task'
             t.args = [[ 1 , 2 ], 0]
 
         self.app._run_single(app)
