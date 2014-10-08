@@ -58,7 +58,6 @@ class InheritableContentBase(RecursiveConfigurationBase):
         elif isinstance(value, dict):
             self.state['title'] = TitleData(value)
         else:
-            print value, type(value)
             raise TypeError
 
     @property
@@ -89,7 +88,6 @@ class InheritableContentBase(RecursiveConfigurationBase):
             logger.warning(str(data) + ' is not resolvable')
             return False
 
-
     def resolve(self, data):
         if self._is_resolveable(data):
             try:
@@ -104,7 +102,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
                 logger.error(e)
 
         if self.source is not None and not self.source.is_resolved():
-            m = 'cannot find {0} and ref {1} do not  exist'.format(self.source.file, self.source.ref)
+            m = 'cannot find {0} and ref "{1}" do not exist'.format(self.source.file, self.source.ref)
             logger.error(m)
             raise InheritableContentError(m)
 
@@ -130,6 +128,9 @@ class InheritanceReference(RecursiveConfigurationBase):
             self.state['resolved'] = value
         else:
             raise TypeError('{0} is not boolean'.format(value))
+
+    def is_resolved(self):
+        return self.resolved
 
     @property
     def file(self):
@@ -220,12 +221,16 @@ class DataContentBase(RecursiveConfigurationBase):
 
         if doc['ref'] not in self.content:
             if isinstance(doc, self.content_class):
-                self.content[doc['ref']] = doc
+                content = doc
             else:
                 try:
-                    self.content[doc['ref']] = self.content_class(doc)
+                    content = self.content_class(doc)
                 except TypeError:
-                    self.content[doc['ref']] = self.content_class(doc, self.conf)
+                    content = self.content_class(doc, self.conf)
+
+            self.content[content.ref] = content
+            if not content.is_resolved():
+                content.resolve(self.data)
         else:
             m = 'content named {0} already exists'.format(doc['ref'])
             logger.error(m)
@@ -237,7 +242,7 @@ class DataContentBase(RecursiveConfigurationBase):
             content = self.content[ref]
 
             if not content.is_resolved():
-                content.resolve(self.data)
+                content.resolve(self)
 
             return content
         else:
@@ -300,12 +305,15 @@ class DataCache(RecursiveConfigurationBase):
             data = ingest_yaml_list(fn)
             self.cache[fn] = self.content_class(data, self, self.conf)
         else:
-            logger.info('populated file {0} exists in the cache'.format(fn))
+            logger.debug('populated file {0} exists in the cache'.format(fn))
 
     def fetch(self, fn, ref):
         if fn not in self.cache:
             logger.error('file "{0}" is not included.'.format(fn))
             raise InheritableContentError
+
+        if self.cache[fn] == []:
+            self.add_file(fn)
 
         return self.cache[fn].fetch(ref)
 
