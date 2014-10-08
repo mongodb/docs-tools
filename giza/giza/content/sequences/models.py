@@ -26,8 +26,19 @@ if sys.version_info >= (3, 0):
 
 class HeadingMixin(object):
     @property
+    def title(self):
+        return self.heading
+
+    @title.setter
+    def title(self, value):
+        self.heading = value
+
+    @property
     def heading(self):
-        return self.state['heading']
+        if self.optional is True:
+            return "Optional: " + self.state['heading']
+        else:
+            return self.state['heading']
 
     @heading.setter
     def heading(self, value):
@@ -46,7 +57,7 @@ class HeadingMixin(object):
         if 'level' in self.state:
             return self.state['level']
         else:
-            return _default_level
+            return 3
 
     @level.setter
     def level(self, value):
@@ -60,22 +71,44 @@ class HeadingMixin(object):
         else:
             logger.error('{0} is not a valid heading level'.format(value))
 
+    @property
+    def optional(self):
+        if 'optional' in self.state:
+            return True
+        else:
+            return False
+
+    @optional.setter
+    def optional(self, value):
+        if value is True:
+            self.state['optional'] = True
+        else:
+            self.state['optional'] = False
+
 class StepData(HeadingMixin, InheritableContentBase):
     _defalut_level = 3
 
     @property
-    def stepnum(self):
-        if 'stepnum' in self.state:
-            return self.state['stepnum']
+    def number(self):
+        if 'number' in self.state:
+            return self.state['number']
         else:
             return None
 
-    @stepnum.setter
-    def stepnum(self, value):
+    @number.setter
+    def number(self, value):
         if isinstance(value, (int, float, complex)):
-            self.state['stepnum'] = int(value)
+            self.state['number'] = int(value)
         else:
             raise TypeError
+
+    @property
+    def stepnum(self):
+        return self.number
+
+    @stepnum.setter
+    def stepnum(self, value):
+        self.number = value
 
     @property
     def action(self):
@@ -95,23 +128,8 @@ class StepData(HeadingMixin, InheritableContentBase):
                 else:
                     actions.append(ActionContent(item))
 
-    @property
-    def optional(self):
-        if 'optional' in self.state:
-            return True
-        else:
-            return False
-
-    @optional.setter
-    def optional(self, value):
-        if value is True:
-            self.state['optional'] = True
-        else:
-            self.state['optional'] = False
-
-
 class ActionContent(HeadingMixin, ConfigurationBase):
-    _option_registry = [ 'pre', 'post', 'content', 'heading']
+    _option_registry = [ 'pre', 'post', 'content']
 
     @property
     def code(self):

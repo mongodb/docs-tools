@@ -23,6 +23,25 @@ class StepError(Exception): pass
 
 class StepFile(DataContentBase):
     content_class = StepData
+    _ordered_content = []
+
+    @property
+    def steps(self):
+        if not hasattr(self, '_ordered_content'):
+            self._ordered_content = []
+
+        if len(self._ordered_content) == 0:
+            ret = []
+            for step in self.content.values():
+                step.resolve(self.data)
+                ret.append((step.number, step))
+
+            ret.sort(cmp=lambda x, y: x[0])
+
+            self._ordered_content = [ r for idx, r in ret ]
+
+
+        return self._ordered_content
 
 class StepDataCache(DataCache):
     content_class = StepFile
