@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import logging
-import os.path
+import os
 
 logger = logging.getLogger('giza.content.examples')
 

@@ -19,6 +19,7 @@ logger = logging.getLogger('giza.content.examples.inheritance')
 
 from giza.config.base import RecursiveConfigurationBase
 from giza.content.examples.models import ExampleData, ExampleCase
+from giza.content.helper import edition_check
 from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache
 from giza.tools.serialization import ingest_yaml_list
 
@@ -71,9 +72,7 @@ class ExampleFile(DataContentBase):
         ]
 
     def add(self, doc):
-        if ('edition' in doc and
-            'edition' in self.conf.project and
-            doc['edition'] != self.conf.project.edition):
+        if edition_check(doc, self.conf) is False:
             return
 
         if 'collection' in doc:
@@ -91,7 +90,6 @@ class ExampleFile(DataContentBase):
                 self.content[op.ref] = op
                 if not op.is_resolved():
                     op.resolve(self.data)
-
                 logger.debug('added operation {0}'.format(op.name))
 
     def fetch(self, ref):
