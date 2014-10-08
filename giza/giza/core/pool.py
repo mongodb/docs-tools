@@ -112,6 +112,7 @@ class SerialPool(object):
     def runner(self, jobs):
         results = []
         for job in jobs:
+            logger.info('running: ' + job.description)
             results.append(job.run())
 
         return results
