@@ -14,6 +14,15 @@
 
 from pygments.lexers import get_all_lexers
 
+level_characters = {
+    "=": 1,
+    "-": 2,
+    "~": 3,
+    "`": 4,
+    "^": 5,
+    "'": 6
+}
+
 def edition_check(data, conf):
     """
     Tests a content structure against the current configuration object to ensure
@@ -56,7 +65,7 @@ def edition_check(data, conf):
 
 # get a list of all supported pygment lexers.
 def get_all_languages():
-    all_languages = []
+    all_languages = [ 'none' ]
 
     [ all_languages.extend(lexers[1]) for lexers in get_all_lexers() ]
 

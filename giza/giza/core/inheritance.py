@@ -23,10 +23,11 @@ units.
 import logging
 import os.path
 
-logger = logging.getLogger('giza.content.examples.inheritance')
+logger = logging.getLogger('giza.core.inheritance')
 
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 from giza.tools.serialization import ingest_yaml_list
+from giza.content.helper import level_characters
 
 class InheritableContentError(Exception):
     """
@@ -207,6 +208,16 @@ class DataContentBase(RecursiveConfigurationBase):
             self.add(doc)
 
     def add(self, doc):
+        if 'ref' not in doc:
+            if 'source' in doc:
+                doc['ref'] = doc['source']['ref']
+            elif 'inherit' in doc:
+                doc['ref'] = doc['inherit']['ref']
+            else:
+                m = '{0} does not have ref'.format(doc)
+                logger.error(m)
+                raise InheritableContentError(m)
+
         if doc['ref'] not in self.content:
             if isinstance(doc, self.content_class):
                 self.content[doc['ref']] = doc
@@ -218,6 +229,7 @@ class DataContentBase(RecursiveConfigurationBase):
         else:
             m = 'content named {0} already exists'.format(doc['ref'])
             logger.error(m)
+            logger.warning(doc)
             raise InheritableContentError(m)
 
     def fetch(self, ref):
@@ -299,6 +311,14 @@ class DataCache(RecursiveConfigurationBase):
 
 class TitleData(ConfigurationBase):
     _option_registry = ['text']
+
+    @property
+    def character(self):
+        return self.level
+
+    @character.setter
+    def character(self, value):
+        self.level = level_characters[value]
 
     @property
     def level(self):

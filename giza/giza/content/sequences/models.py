@@ -13,24 +13,16 @@
 # limitations under the License.
 
 import logging
+import sys
 
 logger = logging.getLogger('giza.content.steps.models')
 
 from giza.core.inheritance import InheritableContentBase
 from giza.config.base import ConfigurationBase
-from giza.content.helper import get_all_languages
+from giza.content.helper import get_all_languages, level_characters
 
 if sys.version_info >= (3, 0):
     basestring = str
-
-level_characters = {
-    "=": 1,
-    "-": 2,
-    "~": 3,
-    "`": 4,
-    "^": 5,
-    "`": 6
-}
 
 class HeadingMixin(object):
     @property
@@ -72,6 +64,20 @@ class StepData(HeadingMixin, InheritableContentBase):
     _defalut_level = 3
 
     @property
+    def stepnum(self):
+        if 'stepnum' in self.state:
+            return self.state['stepnum']
+        else:
+            return None
+
+    @stepnum.setter
+    def stepnum(self, value):
+        if isinstance(value, (int, float, complex)):
+            self.state['stepnum'] = int(value)
+        else:
+            raise TypeError
+
+    @property
     def action(self):
         return self.state['action']
 
@@ -83,11 +89,26 @@ class StepData(HeadingMixin, InheritableContentBase):
             self.state['action'] = [ ActionContent(value) ]
         elif isinstance(value, list):
             actions = []
-            for item in list:
-                if isinstance(item, ActionContent)
+            for item in value:
+                if isinstance(item, ActionContent):
                     actions.append(item)
                 else:
                     actions.append(ActionContent(item))
+
+    @property
+    def optional(self):
+        if 'optional' in self.state:
+            return True
+        else:
+            return False
+
+    @optional.setter
+    def optional(self, value):
+        if value is True:
+            self.state['optional'] = True
+        else:
+            self.state['optional'] = False
+
 
 class ActionContent(HeadingMixin, ConfigurationBase):
     _option_registry = [ 'pre', 'post', 'content', 'heading']
