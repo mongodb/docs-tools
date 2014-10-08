@@ -1,4 +1,4 @@
- # Copyright 2014 MongoDB, Inc.
+# Copyright 2014 MongoDB, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 import logging
 import os.path
 
-logger = logging.getLogger('giza.inheritance')
+logger = logging.getLogger('giza.content.examples.inheritance')
 
 from giza.config.base import RecursiveConfigurationBase
 from giza.content.examples.models import ExampleData, ExampleCase
@@ -28,8 +28,13 @@ class ExampleError(Exception): pass
 
 class ExampleFile(DataContentBase):
     def ingest(self, src):
-        if not isinstance(src, list) and os.path.isfile(src):
-            src = ingest_yaml_list(src)
+        if not isinstance(src, list):
+            if os.path.isfile(src):
+                src = ingest_yaml_list(src)
+            else:
+                m = '{0} is not a valid example file.'
+                logger.error(m)
+                raise InheritableContentError(m)
 
         for doc in src:
             self.add(doc)
