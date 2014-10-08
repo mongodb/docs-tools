@@ -23,6 +23,9 @@ level_characters = {
     "'": 6
 }
 
+character_levels = dict(zip(level_characters.values(),
+                            level_characters.keys()))
+
 def edition_check(data, conf):
     """
     Tests a content structure against the current configuration object to ensure
