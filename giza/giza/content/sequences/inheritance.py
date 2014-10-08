@@ -23,7 +23,6 @@ class StepError(Exception): pass
 
 class StepFile(DataContentBase):
     content_class = StepData
-    _ordered_content = []
 
     @property
     def steps(self):
@@ -42,6 +41,19 @@ class StepFile(DataContentBase):
 
 
         return self._ordered_content
+
+    def add(self, doc):
+        super(StepFile, self).add(doc)
+
+        if not hasattr(self, '_step_counter'):
+            self._step_counter = 1
+        else:
+            self._step_counter += 1
+
+        obj = self.content[doc['ref']]
+
+        if 'number' not in obj:
+            obj.number = self._step_counter
 
 class StepDataCache(DataCache):
     content_class = StepFile

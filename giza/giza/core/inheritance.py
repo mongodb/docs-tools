@@ -231,6 +231,8 @@ class DataContentBase(RecursiveConfigurationBase):
             self.content[content.ref] = content
             if not content.is_resolved():
                 content.resolve(self.data)
+
+            return content
         else:
             m = 'content named {0} already exists'.format(doc['ref'])
             logger.error(m)
