@@ -29,7 +29,7 @@ def render_steps(steps, conf):
         if 'number' not in step:
             step.number = idx
 
-        r.directive('only', 'web')
+        r.directive('only', 'html or dirhtml or singlehtml')
         r.newline()
 
         r.directive(name='raw',
@@ -43,15 +43,15 @@ def render_steps(steps, conf):
                   indent=3)
         r.newline()
 
-        if ('pre' in step or 'action' in step or 'content' in step or 'post' in step):
-            r.directive(name='class',
-                        arg='step-' + str(step.number),
-                        indent=3)
-            r.newline()
+        render_step_content(step, 3, r)
 
-        render_step_content(step, 6, r)
+        r.directive(name='raw',
+                    arg='html',
+                    content="</div>",
+                    indent=3)
+        r.newline()
 
-        r.directive('only', 'print')
+        r.directive('only', 'latex or epub')
         r.newline()
 
         r.heading(text="Step {0}: {1}".format(step.number, step.heading),
