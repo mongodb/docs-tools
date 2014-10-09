@@ -22,8 +22,12 @@ from rstcloth.rstcloth import RstCloth
 def render_steps(steps, conf):
     r = RstCloth()
 
-    header_html = ('<div class="sequence-block">' '<div class="bullet-block">'
-                   '<div class="sequence-step">' '{0}' '</div>' '</div>')
+    header_html = ('<div class="sequence-block">'
+                   '<div class="bullet-block">'
+                   '<div class="sequence-step">'
+                   '{0}'
+                   '</div>'
+                   '</div>')
 
     for idx, step in enumerate(steps.steps):
         if 'number' not in step:
@@ -72,7 +76,7 @@ def render_step_content(step, indent, r):
 
     if 'action' in step:
         for action in step.action:
-            render_action(action, indent, r)
+            render_action(action, indent, step.level + 1, r)
 
     if 'content' in step:
         r.content(content=step.content,
@@ -86,10 +90,10 @@ def render_step_content(step, indent, r):
                   wrap=False)
         r.newline()
 
-def render_action(action, indent, r):
+def render_action(action, indent, level, r):
     if 'heading' in action:
         r.heading(text=action.heading,
-                  char=character_levels[action.level],
+                  char=character_levels[level],
                   indent=indent)
         r.newline()
 
