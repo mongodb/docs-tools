@@ -64,10 +64,10 @@ def render_steps(steps, conf):
     return r
 
 def render_step_content(step, indent, r):
-
     if 'pre' in step:
         r.content(content=step.pre,
-                  indent=indent)
+                  indent=indent,
+                  wrap=False)
         r.newline()
 
     if 'action' in step:
@@ -76,12 +76,14 @@ def render_step_content(step, indent, r):
 
     if 'content' in step:
         r.content(content=step.content,
-                  indent=indent)
+                  indent=indent,
+                  wrap=False)
         r.newline()
 
     if 'post' in step:
         r.content(content=step.post,
-                  indent=indent)
+                  indent=indent,
+                  wrap=False)
         r.newline()
 
 def render_action(action, indent, r):
@@ -93,22 +95,26 @@ def render_action(action, indent, r):
 
     if 'pre' in action:
         r.content(content=action.pre,
-                  indent=indent)
+                  indent=indent,
+                  wrap=False)
         r.newline()
 
     if 'code' in action:
         r.directive(name='code-block',
                     arg=action.language,
                     indent=indent,
-                    content=action.code)
+                    content=action.code,
+                    wrap=False)
         r.newline()
 
     if 'content' in action:
         r.content(content=action.content,
-                  indent=indent)
+                  indent=indent,
+                  wrap=False)
         r.newline()
 
     if 'post' in action:
         r.content(content=action.post,
-                  indent=indent)
+                  indent=indent,
+                  wrap=False)
         r.newline()
