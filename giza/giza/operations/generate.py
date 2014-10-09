@@ -13,12 +13,12 @@ from giza.content.images import image_tasks, image_clean
 from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
 from giza.content.options import option_tasks, option_clean
 from giza.content.param import api_tasks, api_clean
-from giza.content.steps import steps_tasks, steps_clean
 from giza.content.table import table_tasks, table_clean
 from giza.content.toc import toc_tasks, toc_clean
 from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
 from giza.content.examples.tasks import example_tasks
+from giza.content.steps.tasks import step_tasks, step_clean
 
 from giza.content.primer import primer_migration_tasks
 from giza.content.primer import clean as primer_clean
@@ -42,9 +42,9 @@ def steps(args):
     app = BuildApp(c)
 
     if c.runstate.clean_generated is True:
-        steps_clean(c, app)
+        step_clean(c, app)
     else:
-        steps_tasks(c, app)
+        step_tasks(c, app)
 
     app.run()
 

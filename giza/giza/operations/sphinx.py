@@ -21,7 +21,7 @@ from giza.content.hash import hash_tasks
 from giza.content.source import source_tasks
 from giza.content.toc import toc_tasks
 from giza.content.examples.tasks import example_tasks
-from giza.content.steps import steps_tasks
+from giza.content.steps.tasks import step_tasks
 from giza.content.dependencies import refresh_dependency_tasks
 from giza.content.sphinx import sphinx_tasks, output_sphinx_stream, finalize_sphinx_build
 from giza.content.primer import primer_migration_tasks
@@ -104,6 +104,6 @@ def build_prep_tasks(conf, app):
 def build_content_generation_tasks(conf, app):
     hash_tasks(conf, app)
     redirect_tasks(conf, app)
-    steps_tasks(conf, app.add('app'))
+    step_tasks(conf, app.add('app'))
     toc_tasks(conf, app)
     example_tasks(conf, app)
