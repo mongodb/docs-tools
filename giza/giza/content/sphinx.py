@@ -132,11 +132,21 @@ def output_sphinx_stream(out, conf):
 
         printable.append(l)
 
-    printable = list(set(printable))
-    printable.sort()
+    printable = stable_deduplicate(printable)
 
     logger.info('sphinx builder has {0} lines of output, processed from {1}'.format(len(printable), len(out)))
     print_build_messages(printable)
+
+def stable_deduplicate(lines):
+    mapping = {}
+
+    for idx, ln in enumerate(lines):
+        mapping[ln] = idx
+
+    mapping = [ (num, l) for l, num in mapping.items() ]
+    mapping.sort(cmp=lambda x, y: cmp(x[0], y[0]))
+
+    return [ ln for _, ln in mapping ]
 
 def print_build_messages(messages):
     for l in ( l for l in messages if l is not None ):
@@ -168,9 +178,9 @@ def is_msg_worthy(l):
         return False
     elif l.endswith('Duplicate ID: "cmdoption-h".'):
         return False
-    elif l.endswith('should look like "opt", "-opt args", "--opt args" or "/opt args"'):
+    elif l.endswith('should look like "opt", "-opt args", "--opt args" or "/opt args" or "+opt args"'):
         return False
-    elif l.endswith('should look like "-opt args", "--opt args" or "/opt args"'):
+    elif l.endswith('should look like "-opt args", "--opt args" or "/opt args" or "+opt args"'):
         return False
     else:
         return True
