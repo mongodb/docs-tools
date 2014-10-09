@@ -127,6 +127,7 @@ class StepData(HeadingMixin, InheritableContentBase):
                     actions.append(item)
                 else:
                     actions.append(ActionContent(item))
+            self.state['action'] = actions
 
 class ActionContent(HeadingMixin, ConfigurationBase):
     _option_registry = [ 'pre', 'post', 'content']
