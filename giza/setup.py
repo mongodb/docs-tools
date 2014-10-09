@@ -2,8 +2,19 @@ import giza
 
 from setuptools import setup, find_packages
 
-REQUIRES = ['argh', 'pyyaml', 'rstcloth>=0.2.2', 'docutils', 'jinja2', 'sphinx',
-            'hieroglyph', 'sphinxcontrib-httpdomain', 'sphinx-intl', 'polib', 'onetimepass']
+REQUIRES = [
+    'argh',
+    'docutils',
+    'hieroglyph',
+    'jinja2',
+    'onetimepass',
+    'polib',
+    'pyyaml',
+    'rstcloth>=0.2.2',
+    'sphinx-intl',
+    'sphinx==1.2.3',
+    'sphinxcontrib-httpdomain',
+]
 
 setup(
     name='giza',
