@@ -302,5 +302,15 @@ class MongoDBDomain(Domain):
         for refname, (docname, type) in self.data['objects'].items():
             yield refname, refname, type, docname, refname.replace('$', '_S_'), 1
 
+    def merge_domaindata(self, docnames, otherdata):
+        # XXX check duplicates?
+        for fullname, (fn, objtype) in otherdata['objects'].items():
+            if fn in docnames:
+                self.data['objects'][fullname] = (fn, objtype)
+
+
 def setup(app):
     app.add_domain(MongoDBDomain)
+
+    return { 'parallel_read_safe': True,
+             'parallel_write_safe': True }

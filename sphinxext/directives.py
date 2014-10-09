@@ -119,3 +119,6 @@ def setup(app):
     mongodb_add_node(app, tip_node)
     mongodb_add_node(app, see_node)
     mongodb_add_node(app, instructor_node)
+
+    return { 'parallel_read_safe': True,
+             'parallel_write_safe': True }
