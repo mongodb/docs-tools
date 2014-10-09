@@ -35,10 +35,11 @@ class StepFile(DataContentBase):
                 step.resolve(self.data)
                 ret.append((step.number, step))
 
-            ret.sort(cmp=lambda x, y: x[0])
+            def sorter(x, y):
+                return cmp(x[0], y[0])
 
+            ret.sort(cmp=lambda x,y: cmp(x[0], y[0]))
             self._ordered_content = [ r for idx, r in ret ]
-
 
         return self._ordered_content
 

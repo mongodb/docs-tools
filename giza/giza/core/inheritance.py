@@ -27,7 +27,7 @@ logger = logging.getLogger('giza.core.inheritance')
 
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 from giza.tools.serialization import ingest_yaml_list
-from giza.content.helper import level_characters
+from giza.content.helper import level_characters, edition_check
 
 class InheritableContentError(Exception):
     """
@@ -83,7 +83,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     def _is_resolveable(self, data):
         try:
-            return not self.is_resolved() and self.source.file in data
+            return not self.is_resolved() and self.source.file in data.cache
         except AttributeError:
             logger.warning(str(data) + ' is not resolvable')
             return False
@@ -138,17 +138,19 @@ class InheritanceReference(RecursiveConfigurationBase):
 
     @file.setter
     def file(self, value):
-        fns = [ value,
-                os.path.join(self.conf.paths.projectroot, value),
-                os.path.join(self.conf.paths.projectroot,
-                             self.conf.paths.includes, value) ]
+        if 'file' in self.state and os.path.exists(self.state['file']):
+            return
+
+        fns = set([ # value,  os.path.abspath(value),
+                   os.path.join(self.conf.paths.projectroot, value),
+                   os.path.join(self.conf.paths.projectroot,
+                                self.conf.paths.includes, value) ])
 
         try:
-            fns.append(os.path.join(self.conf.paths.projectroot,
+            fns.add(os.path.join(self.conf.paths.projectroot,
                                     self.conf.paths.source, value))
         except KeyError:
             pass
-
 
         for fn in fns:
             if os.path.exists(fn):
@@ -206,18 +208,21 @@ class DataContentBase(RecursiveConfigurationBase):
             src = ingest_yaml_list(src)
 
         for doc in src:
-            self.add(doc)
+            if edition_check(doc, self.conf) is False:
+                continue
+            try:
+                self.add(doc)
+            except:
+                print(doc)
 
     def add(self, doc):
         if 'ref' not in doc:
             if 'source' in doc:
-                doc['ref'] = doc['source']['ref']
+                ref = doc['source']['ref']
             elif 'inherit' in doc:
-                doc['ref'] = doc['inherit']['ref']
-            else:
-                m = '{0} does not have ref'.format(doc)
-                logger.error(m)
-                raise InheritableContentError(m)
+                ref = doc['inherit']['ref']
+
+            doc['ref'] = ref
 
         if doc['ref'] not in self.content:
             if isinstance(doc, self.content_class):
@@ -229,12 +234,13 @@ class DataContentBase(RecursiveConfigurationBase):
                     content = self.content_class(doc, self.conf)
 
             self.content[content.ref] = content
+
             if not content.is_resolved():
                 content.resolve(self.data)
 
             return content
         else:
-            m = 'content named {0} already exists'.format(doc['ref'])
+            m = 'content named "{0}" already exists'.format(doc['ref'])
             logger.error(m)
             logger.warning(doc)
             raise InheritableContentError(m)

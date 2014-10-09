@@ -458,18 +458,23 @@ def step_outputs(conf):
 #################### step workers ####################
 
 def steps_tasks(conf, app):
-    paths = conf.paths
+    # paths = conf.paths
 
-    for fn in expand_tree(os.path.join(paths.projectroot, paths.includes), 'yaml'):
-        if fn.startswith(os.path.join(paths.projectroot, paths.includes, 'step')):
-            out_fn = _get_steps_output_fn(fn, paths)
+    # for fn in expand_tree(os.path.join(paths.projectroot, paths.includes), 'yaml'):
+    #     if fn.startswith(os.path.join(paths.projectroot, paths.includes, 'step')):
+    #         out_fn = _get_steps_output_fn(fn, paths)
 
-            task = app.add('task')
-            task.dependency = fn
-            task.target = out_fn
-            task.job = render_step_file
-            task.args = [fn, out_fn, conf]
-            logger.debug('added task to generate step: {0}'.format(out_fn))
+    #         task = app.add('task')
+    #         task.dependency = fn
+    #         task.target = out_fn
+    #         task.job = render_step_file
+    #         task.args = [fn, out_fn, conf]
+    #         task.description = 'generate an stepfile for ' + fn
+    #         logger.debug('added task to generate step: {0}'.format(out_fn))
+
+    from giza.content.sequences.tasks import step_task_maker
+
+    step_task_maker(conf, app)
 
 def steps_clean(conf, app):
     for fn in step_outputs(conf):

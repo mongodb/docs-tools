@@ -26,8 +26,6 @@ def render_steps(steps, conf):
                    '<div class="sequence-step">' '{0}' '</div>' '</div>')
 
     for idx, step in enumerate(steps.steps):
-        if edition_check(step, conf) is False:
-            continue
         if 'number' not in step:
             step.number = idx
 
@@ -66,6 +64,7 @@ def render_steps(steps, conf):
     return r
 
 def render_step_content(step, indent, r):
+
     if 'pre' in step:
         r.content(content=step.pre,
                   indent=indent)
