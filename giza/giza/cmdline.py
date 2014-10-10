@@ -46,6 +46,7 @@ commands = {
         giza.operations.sphinx.main,
         giza.operations.deploy.twofa_code,
         giza.operations.http_serve.start,
+        giza.operations.configuration.report_version,
     ],
     'git': [
         giza.operations.git.apply_patch,

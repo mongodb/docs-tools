@@ -2,6 +2,11 @@ import json
 import argh
 
 from giza.config.main import Configuration
+import giza
+
+@argh.named('version')
+def report_version(args):
+    print(giza.__version__)
 
 @argh.arg('--conf_path', '-c')
 @argh.arg('--edition', '-e')
