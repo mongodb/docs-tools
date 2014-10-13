@@ -55,13 +55,18 @@ def source_tasks(conf, sconf, app):
     logger.info('adding task to migrate source to {0}'.format(conf.paths.branch_source))
 
 def source_exclusion(conf, sconf):
+    ct = 0
     for fn in sconf.excluded:
         fqfn = os.path.join(conf.paths.projectroot, conf.paths.branch_source, fn[1:])
         if os.path.exists(fqfn):
             if os.path.isdir(fqfn):
                 rmtree(fqfn)
+                ct += 1
             else:
                 os.remove(fqfn)
+                ct += 1
                 logger.debug('redacted {0}'.format(fqfn))
+        else:
+            logger.warning('cannot redact non-existing file: ' + fqfn)
 
-    logger.info('redacted {0} files'.format(len(sconf.excluded)))
+    logger.info('redacted {0} files'.format(ct))
