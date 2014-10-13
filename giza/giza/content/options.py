@@ -242,9 +242,10 @@ class OptionRendered(object):
 
             if hasattr(self.option, 'aliases'):
                 if hasattr(self.option, 'arguments'):
-                    return '{0}{1} {2}, {3}'.format(prefix, self.option.name,
+                    return '{0}{1} {2}, {3} {4}'.format(prefix, self.option.name,
                                                     self.option.arguments,
-                                                    '{0}, '.format(self.option.arguments).join(self.option.aliases))
+                                                    '{0}, '.format(self.option.arguments).join(self.option.aliases),
+                                                    self.option.arguments)
                 else:
                     return '{0}{1}, {2}'.format(prefix, self.option.name,
                                                 ', '.join(self.option.aliases))
