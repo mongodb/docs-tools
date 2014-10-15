@@ -44,13 +44,14 @@ class HeadingMixin(object):
     def heading(self, value):
         if isinstance(value, dict):
             self.state['heading'] = value['text']
-            if 'character' in value and value['character'] in level_characters:
+            if 'level' not in self.state and 'character' in value and value['character'] in level_characters:
                 self.state['level'] = level_characters[value['character']]
             else:
                 self.state['level'] = 3
         else:
             self.state['heading'] = value
-            self.state['level'] = 3
+            if 'level' not in self.state:
+                self.state['level'] = 3
 
     @property
     def level(self):
