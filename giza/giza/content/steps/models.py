@@ -61,12 +61,12 @@ class HeadingMixin(object):
 
     @level.setter
     def level(self, value):
-        if isinstance(value, basetring):
+        if isinstance(value, basestring):
             if value in level_characters:
                 self.state['level'] = level_characters[value]
             else:
                 logger.error('{0} is not a valid heading level'.format(value))
-        elif isintance(value, (int, float, complex)):
+        elif isinstance(value, (int, float, complex)):
             self.state['level'] = int(value)
         else:
             logger.error('{0} is not a valid heading level'.format(value))
