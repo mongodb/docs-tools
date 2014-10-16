@@ -139,64 +139,40 @@ class JeerahConfig(ConfigurationBase):
             self.state['modification'] = ModificationConfig(value, self)
 
 class SprintCollectionConfig(ConfigurationBase):
-    @property
-    def current(self):
-        return self.state['current']
-
-    @current.setter
-    def current(self, value):
-        if isinstance(value, list):
-            self.state['current'] = value
+    def ingest(self, obj):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                self._add_sprint(k, v)
+        elif isinstance(obj, list):
+            for item in obj:
+                self._add_sprint(item['name'], item)
         else:
-            raise TypeError('{0} is not a list, and must be.'.format(value))
+            logger.error('{0} is malformed sprint description'.format(obj))
 
-    @property
-    def previous(self):
-        return self.state['previous']
-
-    @previous.setter
-    def previous(self, value):
-        if isinstance(value, list):
-            self.state['previous'] = value
+    def _add_sprint(self, name, sprint):
+        # compatibility shim:
+        if isinstance(sprint, list):
+            rendered_sprint = {
+                'name': name,
+                'fix_versions': sprint,
+            }
         else:
-            raise TypeError('{0} is not a list, and must be.'.format(value))
+            rendered_sprint = sprint
 
-    @property
-    def next(self):
-        return self.state['next']
+        # commit object to interface's storage
+        try:
+            self.state[name] = SprintConfig(rendered_sprint)
+        except:
+            logger.error('{0} is not a valid sprint'.format(name))
 
-    @next.setter
-    def next(self, value):
-        if isinstance(value, list):
-            self.state['next'] = value
+    def get_sprint_versions(self, name):
+        if name in self.state:
+            return self.state[name].fix_versions
         else:
-            raise TypeError('{0} is not a list, and must be.'.format(value))
+            logger.error("sprint '{0}' does not exist".format(name))
 
-    @property
-    def future(self):
-        return self.state['future']
-
-    @future.setter
-    def future(self, value):
-        if isinstance(value, list):
-            self.state['future'] = value
-        else:
-            raise TypeError('{0} is not a list, and must be.'.format(value))
-
-    @property
-    def archived(self):
-        return self.state['archived']
-
-    @archived.setter
-    def archived(self, value):
-        if isinstance(value, list):
-            for sprint in value:
-                if not isinstance(sprint, list):
-                    raise TypeError('archived sprint {0} is not a list'.format(sprint))
-
-            self.state['archived'] = value
-        else:
-            raise TypeError('sprint archives is not a list: {0}'.format(value))
+class SprintConfig(ConfigurationBase):
+    _option_registry = [ 'fix_versions', 'name' ]
 
 class JeerahSiteConfig(ConfigurationBase):
     _option_registry = ['url']

@@ -20,8 +20,8 @@ def query(j, app, conf):
     query_base = "project {0} and fixVersion {1} and status {2}"
 
     project = conf.site.projects
-    sprint = getattr(conf.sprints, conf.runstate.sprint)
-
+    sprint = conf.sprints.get_sprint_versions(conf.runstate.sprint)
+    
     queries = [
         ('total', 'project {0} and fixVersion {1}'.format(equality(project), equality(sprint))),
         ('completed', query_base.format(equality(project), equality(sprint), equality(['Closed', 'Resolved']))),
@@ -50,7 +50,7 @@ def report(data, conf):
         'meta': {
             'projects': conf.site.projects,
             'units': conf.reporting.units,
-            'sprint': getattr(conf.sprints, conf.runstate.sprint),
+            'sprint': conf.sprints.get_sprint_versions(conf.runstate.sprint),
             'date': str(datetime.date.today())
         }
     }
