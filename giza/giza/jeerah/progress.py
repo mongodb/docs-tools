@@ -87,8 +87,6 @@ def report(data, conf):
                 result['breakdown'][query][assignee] += hours
             elif conf.reporting.units == 'days':
                 result['breakdown'][query][assignee] += hours / 8
-            elif conf.reporting.units == 'count':
-                result['breakdown'][query][assignee] += 1
 
     for category in result['breakdown']:
         result['counts'][category] += sum(result['breakdown'][category].values())
