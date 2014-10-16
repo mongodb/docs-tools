@@ -171,8 +171,31 @@ class SprintCollectionConfig(ConfigurationBase):
         else:
             logger.error("sprint '{0}' does not exist".format(name))
 
+    def get_sprint(self, name):
+        if name in self.state:
+            return self.state[name]
+        else:
+            logger.error("sprint '{0}' does not exist".format(name))
+
 class SprintConfig(ConfigurationBase):
-    _option_registry = [ 'fix_versions', 'name' ]
+    _option_registry = [ 'fix_versions', 'name', 'staffing' ]
+
+    @property
+    def quota(self):
+        if 'quota' in self.state:
+            return self.state['quota']
+        elif 'staffing' in self:
+            self.quota = sum([ v for v in self.staffing.values() ])
+            return self.state['quota']
+        else:
+            return None
+
+    @quota.setter
+    def quota(self, value):
+        if isinstance(value, (int, float, complex)):
+            self.state['quota'] = value
+        else:
+            raise TypeError('{0} is not a valid sprint quota')
 
 class JeerahSiteConfig(ConfigurationBase):
     _option_registry = ['url']

@@ -21,7 +21,7 @@ def query(j, app, conf):
 
     project = conf.site.projects
     sprint = conf.sprints.get_sprint_versions(conf.runstate.sprint)
-    
+
     queries = [
         ('total', 'project {0} and fixVersion {1}'.format(equality(project), equality(sprint))),
         ('completed', query_base.format(equality(project), equality(sprint), equality(['Closed', 'Resolved']))),
@@ -44,6 +44,8 @@ def query(j, app, conf):
     return dict(zip(ops, app.results))
 
 def report(data, conf):
+    sprint = conf.sprints.get_sprint(conf.runstate.sprint)
+
     result = {
         'breakdown': { },
         'counts': { },
@@ -51,9 +53,17 @@ def report(data, conf):
             'projects': conf.site.projects,
             'units': conf.reporting.units,
             'sprint': conf.sprints.get_sprint_versions(conf.runstate.sprint),
-            'date': str(datetime.date.today())
-        }
+            'date': str(datetime.date.today()),
+            'quota': sprint.quota,
+        },
+        'planning': {
+            'burndown': { },
+            'capacity': { },
+        },
     }
+
+    if 'staffing' in sprint:
+        result['meta']['staffing'] = sprint.staffing
 
     for query, issues in data.items():
         result['breakdown'][query] = { }
@@ -82,5 +92,14 @@ def report(data, conf):
 
     for category in result['breakdown']:
         result['counts'][category] += sum(result['breakdown'][category].values())
+
+    for person in result['breakdown']['completed']:
+        if 'staffing' in sprint:
+            if person in sprint.staffing:
+                result['planning']['burndown'][person] = sprint.staffing[person] - result['breakdown']['completed'][person]
+
+    for person in sprint.staffing:
+        if person in result['breakdown']['total']:
+            result['planning']['capacity'][person] = sprint.staffing[person] - result['breakdown']['total'][person]
 
     return result
