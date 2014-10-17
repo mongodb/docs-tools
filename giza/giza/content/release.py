@@ -31,9 +31,9 @@ def generate_output(builder, platform, version, release):
     if release == 'core':
         r.content('curl -O http://downloads.mongodb.org/{0}/mongodb-{1}-{2}.tgz'.format(platform, builder, version), 3, wrap=False, block='cmd')
     else:
-        r.content('curl -O http://downloads.10gen.com/linux/mongodb-{0}-subscription-{1}-{2}.tgz'.format(builder, release, version), 3, wrap=False, block='cmd')
-        r.content('tar -zxvf mongodb-{0}-subscription-{1}-{2}.tgz'.format(builder, release, version), 3, wrap=False, block='cmd')
-        r.content('cp -R -n mongodb-{0}-subscription-{1}-{2}/ mongodb'.format(builder, release, version), 3, wrap=False, block='cmd')
+        r.content('curl -O http://downloads.10gen.com/linux/mongodb-{0}-enterprise-{1}-{2}.tgz'.format(builder, release, version), 3, wrap=False, block='cmd')
+        r.content('tar -zxvf mongodb-{0}-enterprise-{1}-{2}.tgz'.format(builder, release, version), 3, wrap=False, block='cmd')
+        r.content('cp -R -n mongodb-{0}-enterprise-{1}-{2}/ mongodb'.format(builder, release, version), 3, wrap=False, block='cmd')
 
     r.newline(block='footer')
 
@@ -50,9 +50,9 @@ def generate_release_output(builder, platform, architecture, release):
     if architecture == 'core':
         r.content('curl -O http://downloads.mongodb.org/{0}/mongodb-{1}-{2}.tgz'.format(platform, builder, release), 3, wrap=False, block='cmd')
     else:
-        r.content('curl -O http://downloads.10gen.com/linux/mongodb-{0}-subscription-{1}-{2}.tgz'.format(builder, architecture, release), 3, wrap=False, block='cmd')
-        r.content('tar -zxvf mongodb-{0}-subscription-{1}-{2}.tgz'.format(builder, architecture, release), 3, wrap=False, block='cmd')
-        r.content('cp -R -n mongodb-{0}-subscription-{1}-{2}/ mongodb'.format(builder, architecture, release), 3, wrap=False, block='cmd')
+        r.content('curl -O http://downloads.10gen.com/linux/mongodb-{0}-enterprise-{1}-{2}.tgz'.format(builder, architecture, release), 3, wrap=False, block='cmd')
+        r.content('tar -zxvf mongodb-{0}-enterprise-{1}-{2}.tgz'.format(builder, architecture, release), 3, wrap=False, block='cmd')
+        r.content('cp -R -n mongodb-{0}-enterprise-{1}-{2}/ mongodb'.format(builder, architecture, release), 3, wrap=False, block='cmd')
 
     r.newline(block='footer')
 
