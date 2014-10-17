@@ -43,6 +43,30 @@ def query(j, app, conf):
 
     return dict(zip(ops, app.results))
 
+def process_query(data, conf):
+    query_data = { }
+    for query, issues in data.items():
+        query_data[query] = { }
+        for issue in issues:
+            hours = issue.fields.customfield_10855
+            if hours is None:
+                hours = 0
+
+            if issue.fields.assignee is None:
+                assignee = 'Unassigned'
+            else:
+                assignee = issue.fields.assignee.name
+
+            if assignee not in query_data[query]:
+                query_data[query][assignee] = 0
+
+            if conf.reporting.units == 'hours':
+                query_data[query][assignee] += hours
+            elif conf.reporting.units == 'days':
+                query_data[query][assignee] += hours / 8
+
+    return query_data
+
 def report(data, conf):
     sprint = conf.sprints.get_sprint(conf.runstate.sprint)
 
@@ -56,48 +80,14 @@ def report(data, conf):
             'date': str(datetime.date.today()),
             'quota': sprint.quota,
         },
-        'planning': {
-            'burndown': { },
-            'capacity': { },
-        },
     }
 
-    if 'staffing' in sprint:
-        result['meta']['staffing'] = sprint.staffing
-
-    for query, issues in data.items():
-        result['breakdown'][query] = { }
-        result['counts'][query] = 0
-
-        for issue in issues:
-            hours = issue.fields.customfield_10855
-
-            if hours is None:
-                hours = 0
-
-            if issue.fields.assignee is None:
-                assignee = 'Unassigned'
-            else:
-                assignee = issue.fields.assignee.name
-
-            if assignee not in result['breakdown'][query]:
-                result['breakdown'][query][assignee] = 0
-
-            if conf.reporting.units == 'hours':
-                result['breakdown'][query][assignee] += hours
-            elif conf.reporting.units == 'days':
-                result['breakdown'][query][assignee] += hours / 8
+    result['breakdown'] = giza.jeerah.progress.process_query(data, conf)
 
     for category in result['breakdown']:
+        if category not in result['counts']:
+            result['counts'][category] = 0
+
         result['counts'][category] += sum(result['breakdown'][category].values())
-
-    for person in result['breakdown']['completed']:
-        if 'staffing' in sprint:
-            if person in sprint.staffing:
-                result['planning']['burndown'][person] = sprint.staffing[person] - result['breakdown']['completed'][person]
-
-    for person in sprint.staffing:
-        if person in result['breakdown']['total']:
-            result['planning']['capacity'][person] = sprint.staffing[person] - result['breakdown']['total'][person]
 
     return result

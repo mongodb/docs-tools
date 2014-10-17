@@ -31,6 +31,7 @@ from giza.jeerah.client import JeerahClient
 from giza.jeerah.query import strip_name
 
 import giza.jeerah.progress
+import giza.jeerah.planning
 import giza.jeerah.triage
 
 #################### helpers #####################
@@ -60,6 +61,21 @@ def progress(args):
     query_data = giza.jeerah.progress.query(j, app, conf)
 
     pprint(giza.jeerah.progress.report(query_data, conf))
+
+@argh.arg('--sprint')
+def planning(args):
+    conf = fetch_config(args)
+    app = BuildApp(conf)
+    app.pool = 'thread'
+
+    j = JeerahClient(conf)
+    j.connect()
+
+    query_data = giza.jeerah.progress.query(j, app, conf)
+
+    pprint(giza.jeerah.planning.report(query_data, conf))
+
+
 
 def triage(args):
     conf = fetch_config(args)
@@ -198,7 +214,7 @@ def setup_credential_file(args):
 def main():
     parser = get_base_parser()
 
-    commands = [setup, setup_credential_file, config, progress, triage,
+    commands = [setup, setup_credential_file, config, progress, planning, triage,
                 make_versions, mirror_version, release]
 
     argh.add_commands(parser, commands)
