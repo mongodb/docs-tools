@@ -91,15 +91,19 @@ class StepData(HeadingMixin, InheritableContentBase):
 
     @property
     def number(self):
-        if 'number' in self.state:
-            return self.state['number']
-        else:
-            return None
+        if not hasattr(self, '_number'):
+            self._number = None
+
+        return self._number
 
     @number.setter
     def number(self, value):
+        if not hasattr(self, '_number'):
+            self._number = None
+
         if isinstance(value, (int, float, complex)):
-            self.state['number'] = int(value)
+            self._number = int(value)
+            self.state['number'] = self._number
         else:
             raise TypeError
 
