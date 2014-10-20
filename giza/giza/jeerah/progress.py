@@ -82,7 +82,7 @@ def report(data, conf):
         },
     }
 
-    result['breakdown'] = giza.jeerah.progress.process_query(data, conf)
+    result['breakdown'] = process_query(data, conf)
 
     for category in result['breakdown']:
         if category not in result['counts']:

@@ -156,7 +156,7 @@ def release(args):
         results[project] = []
         current = j.versions(project)
 
-        for version in conf.sprints.current:
+        for version in conf.sprints.get_sprint('current').fix_versions:
             for v in current:
                 if v.name in version:
                     logger.debug('archiving {0} in project {1}'.format(v.name, project))
@@ -175,15 +175,14 @@ def setup(args):
         'site': { 'credentials': "~/.giza-credentials.yaml",
                   'projects': ['DOCS', 'TOOLS', 'INTERNAL'],
                   'url': "https://jira.example.net/" },
-        'sprints': { 'previous': [ 'sprint-0', 'release-0' ],
-                     'current': [ 'spirnt-1', 'release-1'],
-                     'next': [ 'spirnt-2', 'release-2'],
-                     'future': [ 'spirnt-3', 'release-3'],
-                     'archived': [
-                         [ 'legacy-0', 'legacy-release-0'],
-                         [ 'legacy-1', 'legacy-release-1']
-                      ],
-        },
+        'sprints': [
+            { 'name': 'one',
+              'fix_versions': [ 'v20141020' ],
+              'start': '2014-10-15',
+              'end': '2014-10-20',
+              'staffing': { }
+            },
+        ],
         'buckets': {
             'next': 'docs-next',
             'planning': 'docs-planning',

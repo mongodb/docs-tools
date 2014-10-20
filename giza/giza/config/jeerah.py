@@ -14,6 +14,7 @@
 
 import os.path
 import logging
+import datetime
 
 logger = logging.getLogger('giza.config.jeerah')
 
@@ -196,6 +197,41 @@ class SprintConfig(ConfigurationBase):
             self.state['quota'] = value
         else:
             raise TypeError('{0} is not a valid sprint quota')
+
+    @property
+    def start(self):
+        if 'start' in self.state:
+            return self.state['start']
+        else:
+            return None
+
+    @start.setter
+    def start(self, value):
+        if isinstance(value, datetime.date):
+            self.state['start'] = value
+        else:
+            try:
+                self.state['start'] = datetime.datetime.strptime(value, "%Y-%m-%d")
+            except:
+                logger.warning('{0} is not a properly formed date. (use YYYY-MM-DD)'.format(value))
+
+    @property
+    def end(self):
+        if 'end' in self.state:
+            return self.state['end']
+        else:
+            return None
+
+    @end.setter
+    def end(self, value):
+        if isinstance(value, datetime.date):
+            self.state['end'] = value
+        else:
+            try:
+                self.state['end'] = datetime.datetime.strptime(value, "%Y-%m-%d")
+            except:
+                logger.warning('{0} is not a properly formed date. (use YYYY-MM-DD)'.format(value))
+
 
 class JeerahSiteConfig(ConfigurationBase):
     _option_registry = ['url']

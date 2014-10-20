@@ -36,14 +36,14 @@ def report(data, conf):
     if 'staffing' in sprint:
         result['staffing'] = sprint.staffing
 
-    for person in query_data['completed']:
-        if 'staffing' in sprint:
-            if person in sprint.staffing:
+        for person in sprint.staffing:
+            if person in query_data['completed']:
                 result['burndown'][person] = sprint.staffing[person] - query_data['completed'][person]
+            else:
+                result['burndown'][person] = sprint.staffing[person]
 
-    for person in sprint.staffing:
-        if person in query_data['total']:
-            result['capacity'][person] = sprint.staffing[person] - query_data['total'][person]
+            if person in query_data['total']:
+                result['capacity'][person] = sprint.staffing[person] - query_data['total'][person]
 
     for overage in result['capacity'].values():
         if overage < 0:
