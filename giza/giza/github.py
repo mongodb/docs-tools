@@ -117,7 +117,7 @@ def mine_github_pulls(gh, app, conf):
 
 #################### mdbpr commands #####################
 
-@argh.arg('--path', dest='user_conf_path', default='.github.yaml')
+@argh.arg('--path', dest='conf_path', default='.github.yaml')
 def setup(args):
     skel = {
         'site': { 'credentials': "~/.giza-credentials.yaml",

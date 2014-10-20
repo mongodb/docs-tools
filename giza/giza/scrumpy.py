@@ -205,7 +205,6 @@ def setup(args):
 @argh.named('setup-credentials')
 @argh.arg('user_conf_path')
 def setup_credential_file(args):
-
     setup_credentials(args)
 
 #################### scrumpy entry point #####################
