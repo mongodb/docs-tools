@@ -77,7 +77,9 @@ class RedirectSpecification(ConfigurationBase):
     def output(self):
         left, right = self.state['output']
 
-        if left != '/' and not left.startswith('/') and not left.startswith('http'):
+        if left in ('', '/'):
+            pass
+        elif left != '/' and not left.startswith('/') and not left.startswith('http'):
             left = '/' + left
 
         if right == '/':
