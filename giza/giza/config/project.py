@@ -47,7 +47,20 @@ def get_current_path(conf):
     return get_path_prefix(conf, branch)
 
 class ProjectConfig(RecursiveConfigurationBase):
-    _option_registry = ['name', 'tag', 'url', 'title']
+    _option_registry = ['name', 'url', 'title']
+
+    @property
+    def tag(self):
+        if self.edition in self.edition_list:
+            return self.edition_map[self.edition].tag
+        elif 'tag' in self.state:
+            return self.state['tag']
+        else:
+            return ''
+
+    @tag.setter
+    def tag(self, value):
+        self.state['tag'] = value
 
     @property
     def editions(self):
@@ -63,6 +76,13 @@ class ProjectConfig(RecursiveConfigurationBase):
         else:
             return []
 
+    @property
+    def edition_map(self):
+        if '_edition_map' in self.state:
+            return self.state['_edition_map']
+        else:
+            return {}
+
     @editions.setter
     def editions(self, value):
         if isinstance(value, list):
@@ -70,9 +90,15 @@ class ProjectConfig(RecursiveConfigurationBase):
                 self.state['_edition_list'] = []
             if 'editions' not in self.state:
                 self.state['editions'] = []
+            if '_edition_map' not in self.state:
+                self.state['_edition_map'] = {}
 
-            self.state['_edition_list'].extend( [ v['name'] for v in value ] )
-            self.state['editions'].extend([EditionListConfig(v) for v in value])
+            for v in value:
+                ename = v['name']
+                ed = EditionListConfig(v)
+                self.state['_edition_list'].append(ename)
+                self.state['editions'].append(ed)
+                self.state['_edition_map'][ename] = ed
         else:
             logger.critical('editions must be a list')
             raise TypeError
@@ -91,11 +117,10 @@ class ProjectConfig(RecursiveConfigurationBase):
     @edition.setter
     def edition(self, value):
         if 'editions' in self.state:
-            if self.conf.runstate.edition in self.state['_edition_list']:
-                self.state['edition'] = self.conf.runstate.edition
-            elif value in self.state['_edition_list']:
+            if value in self.state['_edition_list']:
                 self.state['edition'] = value
-
+            elif self.conf.runstate.edition in self.state['_edition_list']:
+                self.state['edition'] = self.conf.runstate.edition
 
     @property
     def branched(self):
