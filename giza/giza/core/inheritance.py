@@ -20,6 +20,7 @@ from other content units and optionally override some portions of the inherited
 units.
 """
 
+import copy
 import logging
 import os.path
 
@@ -253,7 +254,7 @@ class DataContentBase(RecursiveConfigurationBase):
             if not content.is_resolved():
                 content.resolve(self)
 
-            return content
+            return copy.deepcopy(content)
         else:
             m = 'content with ref "{0}" not found'.format(ref)
             logger.error(m)
