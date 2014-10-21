@@ -265,7 +265,7 @@
                    <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" target="_blank" rel="nofollow">{{ _("This Page's Source") }}</a></li>
                {%- endif %}
                {%- if builder != 'singlehtml' %}
-                   <li><a href="/{{ theme_manual_path }}/single/" target="_blank">HTML</span></a></li>
+                   <li><a href="{{ pathto('single', 1) }}" target="_blank">HTML</span></a></li>
                {%- else %}
                    <li><a href="/{{ theme_manual_path }}" target="_blank">SITE</span></a></li>
                {%- endif %}
