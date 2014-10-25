@@ -35,7 +35,7 @@ def example_tasks(conf, app):
 
     d = ExampleDataCache(example_sources, conf)
 
-    if not os.path.isdir(fn_prefix):
+    if len(d) > 0 and not os.path.isdir(fn_prefix):
         os.makedirs(fn_prefix)
 
     for fn in d.cache.keys():

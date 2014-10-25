@@ -36,7 +36,7 @@ def step_tasks(conf, app):
 
     s = StepDataCache(step_sources, conf)
 
-    if not os.path.isdir(fn_prefix):
+    if len(step_sources) and not os.path.isdir(fn_prefix):
         os.makedirs(fn_prefix)
 
     for fn in s.cache.keys():

@@ -40,6 +40,9 @@ class Options(object):
         else:
             self.source_dirname = fn
 
+    def __len__(self): 
+        return len(self.cache)
+
     def ingest(self, fn):
         if self.source_dirname is None:
             self.source_dirname = os.path.dirname(os.path.abspath(fn))
@@ -323,7 +326,7 @@ def option_tasks(conf, app):
     for fn in option_sources(conf):
         options.ingest(fn)
 
-    if not os.path.exists(output_path):
+    if len(options) > 0 and not os.path.exists(output_path):
         os.makedirs(output_path)
 
     for opt in options.iterator():

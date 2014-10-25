@@ -286,6 +286,9 @@ class DataCache(RecursiveConfigurationBase):
         self._conf = conf
         self.ingest(files)
 
+    def __len__(self):
+        return len(self._cache)
+
     @property
     def cache(self):
         return self._cache
