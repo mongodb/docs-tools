@@ -23,6 +23,7 @@ logger = logging.getLogger('giza.content.sphinx')
 from giza.core.app import BuildApp
 from giza.tools.command import command
 from giza.tools.strings import timestamp
+from giza.tools.files import safe_create_directory
 from giza.config.helper import get_config_paths
 from giza.content.links import create_manual_symlink, get_public_links
 from giza.content.manpages import manpage_url_tasks
@@ -191,10 +192,8 @@ def printer(string):
 #################### Builder Operation ####################
 
 def run_sphinx(builder, sconf, conf):
-    dirpath = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder)
-    if not os.path.exists(dirpath):
-        os.makedirs(dirpath)
-        logger.info('created directories "{1}" for sphinx builder {0}'.format(builder, dirpath))
+    if safe_create_directory(sconf.build_output):
+        logger.info('created directory "{1}" for sphinx builder {0}'.format(builder, sconf.build_output))
 
     if 'language' in sconf and sconf.language is not None:
         command('sphinx-intl build --language=' + sconf.language)
