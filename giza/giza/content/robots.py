@@ -84,3 +84,4 @@ def robots_txt_tasks(conf, app):
         t.target = robots_fn
         t.dependency = dep_path
         t.args = [  robots_fn, conf ]
+        t.description = "building robots.txt file"

@@ -112,7 +112,12 @@ class SerialPool(object):
     def runner(self, jobs):
         results = []
         for job in jobs:
-            logger.info('running: ' + job.description)
+            if job.description is not None:
+                msg = job.description
+            else:
+                msg = str(job.job)
+
+            logger.info('running: ' + msg)
             results.append(job.run())
 
         return results

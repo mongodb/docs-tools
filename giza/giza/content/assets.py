@@ -82,6 +82,7 @@ def assets_tasks(conf, app):
             t.job = assets_setup
             t.target = path
             t.depends = None
+            t.description = "setup assets for: {0} in {1}".format(asset.repository, path)
             t.args = { 'path': path,
                        'branch': asset.branch,
                        'repo': asset.repository }
@@ -93,6 +94,8 @@ def assets_tasks(conf, app):
                     t.target = path
                     t.depends = None
                     t.args = 'cd {0}; giza generate {1}'.format(path, content_type)
+                    t.description('generating objects in {0}'.format(path))
+
 
 def assets_clean(conf, app):
     if conf.assets is not None:
