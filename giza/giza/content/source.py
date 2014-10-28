@@ -20,14 +20,14 @@ logger = logging.getLogger('giza.content.source')
 
 from giza.content.dependencies import dump_file_hashes
 from giza.tools.command import command
-from giza.tools.files import InvalidFile
+from giza.tools.files import InvalidFile, safe_create_directory
 
 def transfer_source(conf, sconf):
     target = os.path.join(conf.paths.projectroot, conf.paths.branch_source)
 
-    if not os.path.exists(target):
-        os.makedirs(target)
-        logger.debug('created directory for sphinx build: {0}'.format(target))
+    dir_exists = safe_create_directory(target)
+    if dir_exists:
+        logger.info('created directory for sphinx build: {0}'.format(target))
     elif not os.path.isdir(target):
         msg = '"{0}" exists and is not a directory'.format(target)
         logger.error(msg)

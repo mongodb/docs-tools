@@ -41,6 +41,7 @@ class FileLogger(object):
 def safe_create_directory(path):
     try:
         os.makedirs(path)
+        return True
     except OSError as e:
         if os.path.isdir(path):
             return True
