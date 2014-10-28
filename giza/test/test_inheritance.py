@@ -24,6 +24,7 @@ from giza.config.base import RecursiveConfigurationBase
 
 class DummyRecord(InheritableContentBase):
     _option_registry = ['pre', 'post', 'final', 'ref', 'title', 'content', 'edition', 'operation', 'results']
+
 class DummyContent(DataContentBase):
     content_class = DummyRecord
 class DummyCache(DataCache):
@@ -163,7 +164,10 @@ class TestDataContentBase(TestCase):
 
     def test_fetching_content(self):
         for idx in self.content.content:
-            self.assertIs(self.content.content[idx], self.data.fetch(self.content_fn, idx))
+            compared = self.data.fetch(self.content_fn, idx)
+            for key in self.content.content[idx].state:
+                print(type(key))
+                self.assertEqual(self.content.content[idx].state[key], getattr(compared,key))
 
     def test_resolve_checker(self):
         if isinstance(self.content, dict):
