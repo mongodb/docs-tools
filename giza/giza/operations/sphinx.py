@@ -87,8 +87,6 @@ def sphinx_publication(c, args, app):
     ret_code = sum([ o[0] for o in sphinx_app.results ])
     output_sphinx_stream(sphinx_output, c)
 
-    ret_code = 0
-
     return ret_code
 
 def build_prep_tasks(conf, app):
