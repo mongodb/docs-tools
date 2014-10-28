@@ -38,6 +38,19 @@ class FileLogger(object):
         if message != '\n':
             self.logger.log(self.level, message)
 
+def safe_create_directory(path):
+    try:
+        os.makedirs(path)
+    except OSError as e:
+        if os.path.isdir(path):
+            return True
+        elif os.path.isfie(path):
+            logger.error('{0} is a file not a directory.'.format(e))
+            raise e
+        else:
+            logger.error('encountered error creating directory: ' + path)
+            raise e
+
 def verbose_remove(path):
     if os.path.exists(path):
         logger.info('clean: removing {0}'.format(path))
@@ -51,8 +64,7 @@ def rm_rf(path):
 
 def tarball(name, path, newp=None, cdir=None):
     tarball_path = os.path.dirname(name)
-    if not os.path.exists(tarball_path):
-        os.makedirs(tarball_path)
+    safe_create_directory(tarball_path)
 
     logger.debug('creating tarball: {0}'.format(name))
     with tarfile.open(name, 'w:gz') as t:
@@ -119,8 +131,7 @@ def copy_always(source_file, target_file, name='build'):
         logger.critical(msg)
         raise FileOperationError(msg)
     else:
-        if not os.path.exists(os.path.dirname(target_file)):
-            os.makedirs(os.path.dirname(target_file))
+        safe_create_directory(os.path.dirname(target_file))
         shutil.copyfile(source_file, target_file)
 
     logger.debug('{0}: copied {1} to {2}'.format(name, source_file, target_file))
@@ -131,8 +142,7 @@ def copy_if_needed(source_file, target_file, name='build'):
         logger.critical(msg)
         raise FileOperationError(msg)
     elif os.path.isfile(target_file) is False:
-        if not os.path.exists(os.path.dirname(target_file)):
-            os.makedirs(os.path.dirname(target_file))
+        safe_create_directory(os.path.dirname(target_file))
         shutil.copyfile(source_file, target_file)
 
         if name is not None:
@@ -149,8 +159,9 @@ def copy_if_needed(source_file, target_file, name='build'):
 
 def create_link(input_fn, output_fn):
     out_dirname = os.path.dirname(output_fn)
-    if out_dirname != '' and not os.path.exists(out_dirname):
-        os.makedirs(out_dirname)
+
+    if out_dirname != '':
+        safe_create_directory(out_dirname)
 
     if os.path.islink(output_fn):
         os.remove(output_fn)
