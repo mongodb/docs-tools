@@ -153,6 +153,7 @@ def fetch_package(path, conf):
 #################### Command Entry Points ####################
 
 @argh.arg('--target', '-t', nargs=1, default=[None], dest='push_targets')
+@argh.expects_obj
 def create(args):
     conf = fetch_config(args)
     target = conf.runstate.push_targets[0]
@@ -160,6 +161,7 @@ def create(args):
     create_package(target, conf)
 
 @argh.arg('--path', dest='package_path')
+@argh.expects_obj
 def unwind(args):
     conf = fetch_config(args)
 
@@ -171,6 +173,7 @@ def unwind(args):
 @argh.arg('--path', dest='package_path')
 @argh.arg('--target', '-t', nargs=1, dest='push_targets')
 @argh.arg('--dry-run', '-d', action='store_true', dest='dry_run')
+@argh.expects_obj
 def deploy(args):
     conf = fetch_config(args)
 
@@ -186,6 +189,7 @@ def deploy(args):
     deploy_worker(conf, app)
 
 @argh.arg('--path', dest='package_path')
+@argh.expects_obj
 def fetch(args):
     conf = fetch_config(args)
 

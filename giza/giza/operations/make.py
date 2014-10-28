@@ -91,6 +91,7 @@ def determine_workload(deploy_action, targets, conf):
 @argh.arg('make_target', nargs="*")
 @argh.arg('--serial_sphinx', action='store_true')
 @argh.named('make')
+@argh.expects_obj
 def main(args):
     conf = fetch_config(args)
     targets = [ t.split('-') for t in args.make_target ]

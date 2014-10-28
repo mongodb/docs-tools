@@ -7,10 +7,11 @@ from giza.config.helper import fetch_config
 
 logger = logging.getLogger('giza.operations.git')
 
-@argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.arg('--patch', '-p', nargs='*', dest='git_objects')
+@argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.arg('--signoff', '-s', default=False, action='store_true', dest='git_sign_patch')
 @argh.named('am')
+@argh.expects_obj
 def apply_patch(args):
     c = fetch_config(args)
 
@@ -26,6 +27,7 @@ def apply_patch(args):
 
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.named('update')
+@argh.expects_obj
 def pull_rebase(args):
     c = fetch_config(args)
 
@@ -40,6 +42,7 @@ def pull_rebase(args):
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.arg('--commits', '-c', nargs='*', dest='git_objects')
 @argh.named('cp')
+@argh.expects_obj
 def cherry_pick(args):
     c = fetch_config(args)
 
@@ -52,6 +55,7 @@ def cherry_pick(args):
         g.cherry_pick(c.runstate.git_objects)
 
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
+@argh.expects_obj
 def merge(args):
     c = fetch_config(args)
 

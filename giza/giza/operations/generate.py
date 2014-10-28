@@ -25,6 +25,7 @@ from giza.content.primer import clean as primer_clean
 
 @argh.arg('--edition', '-e')
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
 def toc(args):
     c = fetch_config(args)
 
@@ -37,6 +38,7 @@ def toc(args):
 
 @argh.arg('--edition', '-e')
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
 def steps(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -49,6 +51,7 @@ def steps(args):
     app.run()
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
 def options(args):
     c = fetch_config(args)
 
@@ -60,6 +63,7 @@ def options(args):
         app.run()
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
 def api(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -72,6 +76,7 @@ def api(args):
     app.run()
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
 def assets(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -84,6 +89,7 @@ def assets(args):
     app.run()
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
 def images(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -96,6 +102,7 @@ def images(args):
     app.run()
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
 def intersphinx(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -108,6 +115,7 @@ def intersphinx(args):
     app.run()
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
 def primer(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -120,6 +128,7 @@ def primer(args):
     app.run()
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
 def tables(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -131,6 +140,7 @@ def tables(args):
 
     app.run()
 
+@argh.expects_obj
 def examples(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -140,6 +150,7 @@ def examples(args):
     app.run()
 
 @argh.arg('--edition', '-e')
+@argh.expects_obj
 def robots(args):
     c = fetch_config(args)
     app = BuildApp(c)
@@ -151,6 +162,7 @@ def robots(args):
 
 @argh.arg('--edition', '-e')
 @argh.arg('--print', '-p', default=False, action='store_true', dest='dry_run')
+@argh.expects_obj
 def redirects(args):
     c = fetch_config(args)
 

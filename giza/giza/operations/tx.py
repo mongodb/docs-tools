@@ -114,6 +114,7 @@ def update(conf):
 #################### Commands ####################
 
 @argh.named('check')
+@argh.expects_obj
 def check_orphaned(args):
     conf = fetch_config(args)
 
@@ -122,6 +123,7 @@ def check_orphaned(args):
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')
 @argh.named('update')
+@argh.expects_obj
 def update_translations(args):
     conf = fetch_config(args)
 
@@ -129,6 +131,7 @@ def update_translations(args):
     check_for_orphaned_tx_files(conf)
 
 @argh.named('pull')
+@argh.expects_obj
 def pull_translations(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
@@ -139,6 +142,7 @@ def pull_translations(args):
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')
 @argh.named('push')
+@argh.expects_obj
 def push_translations(args):
     conf = fetch_config(args)
     app = BuildApp(conf)

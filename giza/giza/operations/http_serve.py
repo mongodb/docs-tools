@@ -31,6 +31,7 @@ class RequestHandler(http_server.SimpleHTTPRequestHandler):
 @argh.arg('--builder', '-b', nargs='*', default='publish')
 @argh.arg('--edition', '-e')
 @argh.named('http')
+@argh.expects_obj
 def start(args):
     """Start an HTTP server rooted in the build directory."""
     conf = fetch_config(args)

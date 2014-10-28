@@ -13,6 +13,7 @@ from giza.tools.files import rm_rf
 @argh.arg('--builder', '-b', dest='builder_to_delete')
 @argh.arg('--length', default=None, type=int, dest='days_to_save')
 @argh.named('clean')
+@argh.expects_obj
 def main(args):
     c = Configuration()
     c.ingest(args.conf_path)

@@ -20,32 +20,38 @@ def render_for_console(data):
 
 ## Entry Points
 
+@argh.expects_obj
 def recursive(args):
     c = fetch_config(args)
 
     render_for_console(included_recusively(conf=c))
 
+@argh.expects_obj
 def changed(args):
     c = fetch_config(args)
 
     render_for_console(changed_includes(conf=c))
 
+@argh.expects_obj
 def once(args):
     c = fetch_config(args)
 
     render_for_console(included_once(conf=c))
 
+@argh.expects_obj
 def unused(args):
     c = fetch_config(args)
 
     render_for_console(included_files_unused(conf=c))
 
+@argh.expects_obj
 def list(args):
     c = fetch_config(args)
 
     render_for_console(include_files(conf=c).keys())
 
 @argh.arg('--filter', '-f', default=None, dest="include_mask")
+@argh.expects_obj
 def graph(args):
     c = fetch_config(args)
 
@@ -61,6 +67,7 @@ def graph(args):
 
         render_for_console(includes_masked(mask=mask, conf=c))
 
+@argh.expects_obj
 def clean(args):
     c = fetch_config(args)
 

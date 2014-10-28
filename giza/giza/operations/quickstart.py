@@ -27,8 +27,9 @@ from giza.core.app import BuildApp
 from giza.operations.sphinx import sphinx_publication
 from giza.tools.command import command, CommandError
 
-@argh.named('quickstart')
 @argh.arg('--with-git', action='store_true', dest='quickstart_git')
+@argh.named('quickstart')
+@argh.expects_obj
 def make_project(args):
     curdir = os.getcwd()
     curdir_list = os.listdir(curdir)
@@ -46,6 +47,7 @@ def make_project(args):
             except CommandError:
                 pass
 
+@argh.expects_obj
 def _weak_bootstrapping(args):
     args.languages_to_build = args.editions_to_build = []
     args.builder = 'html'

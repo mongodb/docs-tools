@@ -12,6 +12,7 @@ def report_version(args):
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')
 @argh.named('config')
+@argh.expects_obj
 def render_config(args):
     c = Configuration()
     c.ingest(args.conf_path)

@@ -34,6 +34,7 @@ from giza.config.sphinx_config import render_sconf
 @argh.arg('--builder', '-b', nargs='*', default='html')
 @argh.arg('--serial_sphinx', action='store_true')
 @argh.named('sphinx')
+@argh.expects_obj
 def main(args):
     c = fetch_config(args)
     app = BuildApp(c)
