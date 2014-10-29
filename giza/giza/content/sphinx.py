@@ -12,10 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
+import collections
 import logging
-import pkg_resources
 import os.path
+import pkg_resources
+import re
+import sys
+
 from multiprocessing import cpu_count
 
 logger = logging.getLogger('giza.content.sphinx')
@@ -83,7 +86,7 @@ def get_sphinx_args(sconf, conf):
                 o.append(' '.join(['-j', str(conf.runstate.serial_sphinx)]))
             else:
                 pass
-        elif len(conf.runstate.builders) >= cpu_count():
+        elif len(conf.runstate.builder) >= cpu_count():
             pass
         else:
             o.append(' '.join( [ '-j', str(cpu_count()) ]))
@@ -143,14 +146,15 @@ def output_sphinx_stream(out, conf):
 def stable_deduplicate(lines):
     ## this should probably just use OrderedSet() in the future
 
-    mapping = [ ]
+    mapping = collections.OrderedDict()
 
     for idx, ln in enumerate(lines):
-        mapping.append( (ln, idx) )
+        mapping[ln] = idx
 
-    mapping.sort(cmp=lambda x, y: cmp(x[0], y[0]))
-
-    return [ ln for _, ln in mapping ]
+    if sys.version_info >= (3, 0):
+        return [ ln for _, ln in mapping.keys() ]
+    else:
+        return mapping.keys()
 
 def print_build_messages(messages):
     for l in ( l for l in messages if l is not None ):
