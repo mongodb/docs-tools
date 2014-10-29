@@ -51,16 +51,13 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
     @function.setter
     def function(self, value):
-        if '_entry_point' not in self.state:
-            self.state['_entry_point'] = []
-
-        if isinstance(value, (list, tuple)):
-            self.state['_entry_point'].extend(value)
+        if callable(value):
+            self.state['_entry_point'] = value
         else:
-            self.state['_entry_point'].append(value)
+            raise TypeError
 
     def get_function(self):
-        return self.state['_entry_point'][-1]
+        return self.state['_entry_point']
 
     @property
     def force(self):
