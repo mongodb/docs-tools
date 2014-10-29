@@ -94,7 +94,6 @@ def command(command, capture=True, ignore=False, logger=None):
     if isinstance(command, (list, tuple)):
         command = ' '.join(command)
 
-
     if logger is None:
         log_output = False
         logger = logging.getLogger('giza.command')
@@ -156,6 +155,8 @@ def verbose_command(cmd, capture=False, ignore=False):
         cmd_str = ' '.join(cmd)
     else:
         cmd_str = cmd
+
+    logger.warning('verbose command is deprecated: ({0})'.format(cmd_str))
 
     logger.info("running command: " + cmd_str)
     command(cmd_str, capture, ignore)

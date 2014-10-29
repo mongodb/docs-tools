@@ -83,6 +83,8 @@ def get_sphinx_args(sconf, conf):
                 o.append(' '.join(['-j', str(conf.runstate.serial_sphinx)]))
             else:
                 pass
+        elif len(conf.runstate.builders) >= cpu_count():
+            pass
         else:
             o.append(' '.join( [ '-j', str(cpu_count()) ]))
 
@@ -139,12 +141,13 @@ def output_sphinx_stream(out, conf):
     print_build_messages(printable)
 
 def stable_deduplicate(lines):
-    mapping = {}
+    ## this should probably just use OrderedSet() in the future
+
+    mapping = [ ]
 
     for idx, ln in enumerate(lines):
-        mapping[ln] = idx
+        mapping.append( (ln, idx) )
 
-    mapping = [ (num, l) for l, num in mapping.items() ]
     mapping.sort(cmp=lambda x, y: cmp(x[0], y[0]))
 
     return [ ln for _, ln in mapping ]

@@ -51,7 +51,16 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
     @function.setter
     def function(self, value):
-        self.state['_entry_point'] = value
+        if '_entry_point' not in self.state:
+            self.state['_entry_point'] = []
+
+        if isinstance(value, (list, tuple)):
+            self.state['_entry_point'].extend(value)
+        else:
+            self.state['_entry_point'].append(value)
+
+    def get_function(self):
+        return self.state['_entry_point'][-1]
 
     @property
     def force(self):

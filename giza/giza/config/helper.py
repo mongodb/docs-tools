@@ -19,7 +19,7 @@ import yaml
 
 logger = logging.getLogger('giza.config.helper')
 
-from giza.config.main import Configuration
+from giza.config.main import Configuration, ConfigurationError
 from giza.config.runtime import RuntimeStateConfig
 from giza.config.project import get_path_prefix
 from giza.config.credentials import CredentialsConfig, get_credentials_skeleton
@@ -53,12 +53,16 @@ def setup_credentials(args):
     dump_skel(skel, args)
 
 def new_config(args=None):
-    if args is None:
+    if args in (None, True, False):
         args = RuntimeStateConfig()
 
         return fetch_config(args)
-    else:
+    elif isinstance(args, RuntimeStateConfig):
+        return fetch_config(args)
+    elif isinstance(args, Configuration):
         return args
+    else:
+        raise ConfigurationError
 
 def dump_skel(skel, args):
     conf_path = os.path.expanduser(os.path.join("~", args.user_conf_path))
@@ -70,7 +74,6 @@ def dump_skel(skel, args):
         yaml.dump(skel, f, default_flow_style=False)
         f.write('...\n')
         logger.info('wrote scrumpy configuration skeleton to: {0}')
-
 
 def get_manual_path(conf):
     if conf.system.branched is False:
