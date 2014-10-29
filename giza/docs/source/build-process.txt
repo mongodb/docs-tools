@@ -1,0 +1,148 @@
+=============
+Build Process
+=============
+
+Overview
+--------
+
+A full build processes typically have the following stages:
+
+- initialization and configuration resolution,
+
+- definition of tasks,
+
+- running tasks:
+
+  1. generate content as needed to prepare,
+
+  2. run ``sphinx-build``,
+
+  3. process the build and stage (typically to ``build/public/``,) and finally
+
+- (optionally) deploy to production.
+
+Initialization happens in :mod:`giza.cmdline` and uses :mod:`argh`, while
+configuration happens in the the :mod:`giza.config` package. The
+definition of tasks happens in the entry point functions
+:mod:`giza.operations` package, often by calling definition functions
+in the :mod:`giza.content` package, where near the procedures for
+running tasks.
+
+Content Generation
+------------------
+
+To maximize clarity and efficiency, :mod:`giza` based sites prefer to
+generate content into static files before running ``sphinx-build`` to
+avoid duplicating work inside of the ``sphinx-build`` process, and to
+avoid the overhead and complexity of Sphinx extensions.
+
+All content generation code is in the :mod:`giza.content` package, and
+uses `rstcloth <https://pypi.python.org/pypi/rstcloth/>`_ to generate
+reStructuredText directly from Python.
+
+The content generation process has the following stages:
+
+- generate content that modifies the content of the ``source``
+  directory, and generates all output that is not impacted by the
+  output language, or edition. This includes most content
+  generation tasks. (e.g. command line arguments, tables for function
+  arguments, tables, the ``robots.txt`` file, downloading Intersphinx
+  inventories, updating asset repositories, and updating time stamps
+  for dependencies.)
+
+- copy, using ``rsync --recursive --delete`` the contents  ``source/``
+  to a directory in ``build/<branch>/source[...]`` that ``sphinx-build`` will use
+  to build artifacts. Each combination of branch, edition, and
+  language have their own source directory in ``build/``.
+
+- generate content that depends on output language or
+  edition. (e.g. redirects, examples, procedures, tables of contents,
+  file migrations.) This happens *once* per combination of branch,
+  edition, and language.
+
+In most cases, generated content takes data defined in structured
+``yaml`` files and produces restructured text using ``rstcloth``. A
+common feature of these content generators is that they support strict
+structures and content reuse with very fine-grained inheritance-based
+controls.
+
+In a group of related files, which each hold sequences of ``yaml``
+documents, each document is identifiable by the combination of
+file name and a special id (typically ``ref``). You can use this id to
+refer to a "base" document, which the inheriting document can override
+on a per-field basis.
+
+The base implementation for inheritance is in :mod:`giza.core.inheritance`,
+although there are some format-specific implementations in
+:mod:`giza.content.examples.inheritance` and
+:mod:`giza.content.steps.inheritance`.
+
+The content generation implementations are largely legacy, except for
+:mod:`~giza.content.steps` and :mod:`examples`. :mod:`~giza.content.steps`
+and :mod:`examples`, use a MVC-inspired architecture that clearly
+separate output format from the data representation or the inheritance
+implementation. Eventually other content generators will use this
+structure, as needed, but current implementations are stable and
+sufficient.
+
+Sphinx
+------
+
+The core of the build process is an invocation of
+``sphinx-build``. :mod:`giza` will run multiple invocations of Sphinx
+at the same time, as needed when building multiple versions of a
+resource for multi-output (i.e. "edition") sites, to generate
+publication artifacts or translation testing. A single ``giza`` can
+build as many versions of a single resource as needed at one time.
+
+Additional configuration for the sphinx build process is
+in the ``sphinx_locial`` configuration structure,
+which is typically ``config/sphinx_local.yaml``, and accessible in the
+``conf.system.files.data.sphinx_local`` in the configuration
+object. Before a sphinx build starts
+``conf.system.files.data.sphinx_local`` is processed into a per-build
+``sconf`` object in the :func:`giza.operations.sphinx_publication()`
+function.
+
+The core function for running ``sphinx-build`` is
+:func:`giza.content.sphinx.run_sphinx()` which assembles the command
+line arguments for ``sphinx-build`` and runs the command before
+handing the output of this command
+:func:`giza.content.sphinx.output_sphinx_stream()` to process the
+Sphinx output into more actionable items by removing duplicate output
+and normalizing paths so that:
+
+- parallel builds don't over-report errors.
+
+- Sphinx's own parallelism don't over-report errors.
+
+- Path names reflect the actual source directory rather than the
+  working copy of the source directory in the ``build`` directory. The
+  output also fully supports ``compile-mode`` in Emacs.
+
+Finally :func:`giza.content.sphinx.run_sphinx()`, runs tasks defined
+by :mod:`giza.content.sphinx.finalize_sphinx_build()`.
+
+Post Processing
+---------------
+
+See the :mod:`giza.content.post` package for all post-processing
+tasks. The post-processing tasks get called from
+:mod:`giza.content.sphinx.finalize_sphinx_build()`, which only runs if
+the ``sphinx-build`` command in
+:mod:`giza.content.sphinx.run_sphinx()` returns without error.
+
+.. As of 2014-10-28, giza finalizes all builds, even those that don't
+   finish successfully.
+
+Deploy
+------
+
+Deploying completed builds to production happens by running a sequence
+of ``rsync`` commands defined in the ``push`` configuration structure,
+which is typically ``config/push.yaml``, or
+``conf.system.files.data.push`` in the configuration
+object. Translating the configuration
+to ``rsync`` commands happens in the :mod:`giza.deploy` module,
+although this implementation predates the current configuration
+infrastructure, and is due for refactoring.
