@@ -2,8 +2,9 @@
 Core Concepts
 =============
 
-.. toctree:: 
-   
+.. toctree::
+
    /core/giza
+   /core/coding-practices
    /core/content-generation
    /core/parallelism
