@@ -19,7 +19,8 @@ import yaml
 
 logger = logging.getLogger('giza.config.helper')
 
-from giza.config.main import Configuration, ConfigurationError
+from giza.config.main import Configuration
+from giza.config.base import ConfigurationError
 from giza.config.runtime import RuntimeStateConfig
 from giza.config.project import get_path_prefix
 from giza.config.credentials import CredentialsConfig, get_credentials_skeleton
