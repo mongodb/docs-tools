@@ -26,6 +26,7 @@ from giza.tools.transformation import munge_page
 from giza.tools.files import (expand_tree, create_link, copy_if_needed,
                               decode_lines_from_file, encode_lines_to_file,
                               safe_create_directory)
+from giza.content.post.singlehtml import get_single_html_dir
 
 def manual_single_html(input_file, output_file):
     # don't rebuild this if its not needed.
