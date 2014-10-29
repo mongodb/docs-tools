@@ -152,12 +152,13 @@ class ProjectConfig(RecursiveConfigurationBase):
         if value is not None:
             self.state['basepath'] = value
         else:
-            self.state['basepath'] = self.tag
-
             for edition in self.editions:
                 if self.edition == edition.name:
                     self.state['basepath'] = edition.tag
                     break
+
+            if 'basepath' not in self.state and 'tag' not in self.state:
+                self.state['basepath'] = self.tag
 
     @property
     def siteroot(self):
