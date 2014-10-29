@@ -198,7 +198,7 @@ behaviors:
 
 - you can set private attributes without directly adding support for
   them to the object (i.e. those attributes that start with an
-  underscore (``_`)). *Only* use private attributes in exceptional
+  underscore (``_``)). *Only* use private attributes in exceptional
   cases in the object's definition.
 
 - The ``_object_registry`` property is a list that provides a list of
