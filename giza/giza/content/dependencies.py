@@ -17,9 +17,10 @@ import json
 import logging
 import os
 
-from giza.content.includes import include_files
-from giza.core.task import check_hashed_dependency
+from giza.includes import include_files
+from giza.core.task import check_hashed_dependency, normalize_dep_path
 from giza.tools.files import expand_tree, md5_file
+from giza.tools.timing import Timer
 
 logger = logging.getLogger('giza.content.dependencies')
 
@@ -28,8 +29,7 @@ logger = logging.getLogger('giza.content.dependencies')
 def dump_file_hashes(conf):
     output = conf.system.dependency_cache
 
-    o = { 'conf': conf.dict(),
-          'time': datetime.datetime.utcnow().strftime("%s"),
+    o = { 'time': datetime.datetime.utcnow().strftime("%s"),
           'files': { }
         }
 
@@ -53,19 +53,32 @@ def dump_file_hashes(conf):
 
 ########## Update Dependencies ##########
 
-def dep_refresh_worker(target, deps, dep_map, conf):
-    if check_hashed_dependency(target, deps, dep_map, conf) is True:
-        target = os.path.join(conf.paths.projectroot,
-                              conf.paths.branch_source,
-                              target[1:])
+def _refresh_deps(graph, dep_map, conf):
+    warned = set()
+    for file, dependents in graph.items():
+        if check_hashed_dependency(file, dep_map, conf) is True:
+            core_file = normalize_dep_path(file, conf, False)
+            norm_file = normalize_dep_path(file, conf, True)
 
-        update_dependency(target)
+            if os.path.isfile(norm_file) and not os.path.isfile(core_file):
+                # these are generated files in the build/<branch>/source
+                continue
+            for dep in [ normalize_dep_path(dep, conf, branch=True) for dep in dependents]:
+                if not os.path.exists(core_file):
+                    if core_file in warned:
+                        continue
+                    else:
+                        warned.add(core_file)
+                        logger.warning('included file does not exist: ' + core_file)
+                else:
+                    logger.info('updating timestamp of "{0}" because of "{1}"'.format(dep, file))
+                    os.utime(dep, None)
 
-        logger.debug('updated timestamp of {0} because of changed dependencies: {1}'.format(target, ', '.join(deps)))
+    logger.info('refreshed all deps')
 
-def update_dependency(fn):
-    if os.path.exists(fn):
-        os.utime(fn, None)
+def refresh_deps(graph, dep_map, conf):
+    with Timer('dependency updates'):
+        _refresh_deps(graph, dep_map, conf)
 
 def refresh_dependency_tasks(conf, app):
     graph = include_files(conf=conf)
@@ -81,10 +94,17 @@ def refresh_dependency_tasks(conf, app):
                 dep_map = None
                 logger.warning('no stored dependency information, will rebuild more things than necessary.')
 
-    for target, deps in graph.items():
-        t = app.add('task')
-        t.job = dep_refresh_worker
-        t.args = [target, deps, dep_map, conf]
-        t.target = target
-        t.dependency = None #this should be giza.content.source.transfer_source()
-        t.description = 'checking dependencies for changes and bumping mtime for {0}'.format(target)
+    t = app.add('task')
+    t.job = refresh_deps
+    t.args = (graph, dep_map, conf)
+    t.target = None
+    t.dependency = conf.system.dependency_cache
+    t.description = "check and touch files affected by dependency changes"
+
+    app_two = app.add('app')
+    t = app_two.add('task')
+    t.job = dump_file_hashes
+    t.args = [conf]
+    t.target = conf.system.dependency_cache
+    t.dependency = True
+    t.description = "writing dependency cache"

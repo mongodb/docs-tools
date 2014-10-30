@@ -112,6 +112,9 @@ class SerialPool(object):
     def runner(self, jobs):
         results = []
         for job in jobs:
+            if job.needs_rebuild is False:
+                continue
+
             if job.description is not None:
                 msg = job.description
             else:

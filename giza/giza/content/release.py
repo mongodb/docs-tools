@@ -116,7 +116,7 @@ def release_tasks(conf, app):
 
     deps = [ os.path.join(conf.paths.projectroot, conf.runstate.conf_path),
              os.path.abspath(__file__) ]
-    print deps
+
     for rel in rel_data['source-files']:
         target = os.path.join(conf.paths.projectroot,
                               conf.paths.includes,

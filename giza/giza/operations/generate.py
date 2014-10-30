@@ -23,6 +23,11 @@ from giza.content.steps.tasks import step_tasks, step_clean
 from giza.content.primer import primer_migration_tasks
 from giza.content.primer import clean as primer_clean
 
+from giza.operations.sphinx import build_prep_tasks, build_content_generation_tasks
+from giza.content.source import source_tasks
+from giza.config.sphinx_config import render_sconf
+from giza.content.dependencies import refresh_dependency_tasks
+
 @argh.arg('--edition', '-e')
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
@@ -173,3 +178,26 @@ def redirects(args):
 
         redirect_tasks(c, app)
         app.run()
+
+@argh.arg('--edition', '-e')
+@argh.arg('--language', '-l')
+@argh.expects_obj
+def source(args):
+    conf = fetch_config(args)
+    app = BuildApp(conf)
+
+    build_prep_tasks(conf, app)
+
+    sconf = render_sconf(args.edition, 'html', args.language, conf)
+
+    prep_app = app.add('app')
+    source_tasks(conf, sconf, prep_app)
+    refresh_dependency_tasks(conf, prep_app)
+
+    primer_app = app.add('app')
+    primer_migration_tasks(conf, primer_app)
+
+    source_app = prep_app.add('app')
+    build_content_generation_tasks(conf, source_app)
+
+    app.run()

@@ -51,7 +51,11 @@ def include_files(conf, files=None):
             files[i[0]] = list(files[i[0]])
             files[i[0]].sort()
 
-        files.update(generated_includes(conf))
+        for k,v in generated_includes(conf).items():
+            if k in files:
+                files[k].extend(v)
+            else:
+                files[k] = v
 
         return files
 
@@ -93,6 +97,8 @@ def includes_masked(mask, conf, inc_files=None):
 def generated_includes(conf):
     toc_spec_files = []
     step_files = []
+    mapping = {}
+
     for fn in expand_tree(os.path.join(conf.paths.includes), input_extension='yaml'):
         base = os.path.basename(fn)
 
@@ -109,7 +115,6 @@ def generated_includes(conf):
 
     maskl = len(conf.paths.source)
     path_prefix = conf.paths.includes[len(conf.paths.source):]
-    mapping = {}
     for spec_file in toc_spec_files:
         if os.path.exists(spec_file):
             data = ingest_yaml_doc(spec_file)

@@ -41,6 +41,9 @@ def main(args):
 
     sphinx_publication(c, args, app)
 
+## sphinx_publication is its own function because it's called as part of some
+## giza.operations.deploy tasks (i.e. ``push``).
+
 def sphinx_publication(c, args, app):
     build_prep_tasks(c, app)
 
@@ -70,7 +73,7 @@ def sphinx_publication(c, args, app):
 
             source_app = prep_app.add('app')
             build_content_generation_tasks(build_config, source_app)
-            refresh_dependency_tasks(build_config, prep_app)
+            refresh_dependency_tasks(build_config, prep_app.add('app'))
 
         sphinx_tasks(sconf, build_config, sphinx_app)
         logger.info("adding builder job for {0} ({1}, {2})".format(builder, language, edition))

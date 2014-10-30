@@ -296,13 +296,14 @@ def finalize_sphinx_build(sconf, conf, app):
         task.args = [target, conf]
         task.description = "creating tarball for manpages"
     elif target == 'html':
-        app.pool = 'serial'
-        task = app.add('task')
-        task.job = html_tarball
-        task.target = [get_tarball_name('html', conf),
-                       get_tarball_name('link-html', conf)]
-        task.args = [sconf.name, conf]
-        task.description = "creating tarball for html archive"
+        pass
+        # app.pool = 'serial'
+        # task = app.add('task')
+        # task.job = html_tarball
+        # task.target = [get_tarball_name('html', conf),
+        #                get_tarball_name('link-html', conf)]
+        # task.args = [sconf.name, conf]
+        # task.description = "creating tarball for html archive"
     elif target == 'slides':
         app.pool = 'thread'
         slide_tasks(sconf, conf, app)

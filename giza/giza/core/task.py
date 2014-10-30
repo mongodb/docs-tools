@@ -248,50 +248,39 @@ def check_multi_dependency(target, dependency):
 
 ############### Hashed Dependency Checking ###############
 
-def check_hashed_dependency(target, dependency, dep_map, conf):
-    def normalize_fn(fn):
-        if not fn.startswith(conf.paths.projectroot):
-            if fn.startswith(conf.paths.source):
-                fn = os.path.join(conf.paths.projectroot, fn)
-            if fn.startswith('/'):
+def normalize_dep_path(fn, conf, branch):
+    fn = fn.rstrip()
+    if not fn.startswith(conf.paths.projectroot):
+        if fn.startswith(conf.paths.branch_source) or fn.startswith(conf.paths.source):
+            fn = os.path.join(conf.paths.projectroot, fn)
+        elif fn.startswith('/'):
+            if branch is False:
                 fn = os.path.join(conf.paths.projectroot,
                                   conf.paths.source,
                                   fn[1:])
+            else:
+                fn = os.path.join(conf.paths.projectroot,
+                                  conf.paths.branch_source,
+                                  fn[1:])
 
-        return fn
+    return fn
 
-    def needs_rebuild(t, d):
-        if dep_map is None:
-            return check_dependency(t, d)
-        elif d in dep_map:
-            fn_hash = md5_file(d)
-        else:
-            return check_dependency(t, d)
+def check_hashed_dependency(fn, dep_map, conf):
+    """
+    :return: True when any of the files have changed.
+    """
+    # logger.info('checking dependency for: ' + fn)
 
-        if dep_map[d] == fn_hash:
-            return False
-        else:
-            return True
+    fn = normalize_dep_path(fn, conf, branch=False)
 
-    if target is None or dependency is None:
+    if dep_map is None:
         return True
-
-    if isinstance(target, list):
-        target = [ normalize_fn(t) for t in target ]
-        for f in target:
-            if not os.path.exists(f):
-                return True
-    else:
-        target = normalize_fn(target)
-        if not os.path.exists(target):
+    elif not os.path.exists(fn):
+        return True
+    elif fn in dep_map:
+        if dep_map[fn] != md5_file(fn):
             return True
-
-    if isinstance(dependency, list):
-        dependency = [ normalize_fn(d) for d in dependency ]
-        for dep in dependency:
-            if needs_rebuild(target, dep) is True:
-                return True
-        return False
+        else:
+            return False
     else:
-        dependency = normalize_fn(dependency)
-        return needs_rebuild(target, dependency)
+        return False

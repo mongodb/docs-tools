@@ -43,7 +43,6 @@ def transfer_source(conf, sconf):
     command('rsync --times --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions))
 
     source_exclusion(conf, sconf)
-    dump_file_hashes(conf)
 
     logger.info('prepared source for sphinx build in {0}'.format(target))
 
