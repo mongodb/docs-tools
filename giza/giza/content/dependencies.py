@@ -70,8 +70,8 @@ def _refresh_deps(graph, dep_map, conf):
                     else:
                         warned.add(core_file)
                         logger.warning('included file does not exist: ' + core_file)
-                else:
-                    logger.info('updating timestamp of "{0}" because of "{1}"'.format(dep, file))
+                elif os.path.exists(dep):
+                    logger.debug('updating timestamp of "{0}" because of "{1}"'.format(dep, file))
                     os.utime(dep, None)
 
     logger.info('refreshed all deps')
