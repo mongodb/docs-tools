@@ -38,7 +38,10 @@ def transfer_source(conf, sconf):
     # we don't want rsync to delete directories that hold generated content in
     # the target so we can have more incremental
     exclusions = "--exclude=" + ' --exclude='.join([ os.path.join('includes', 'steps'),
-                                                     os.path.join('includes', 'toc') ])
+                                                     os.path.join('includes', 'toc'),
+                                                     os.path.join('includes', 'option'),
+                                                     conf.paths.images[len(conf.paths.source)+1:],
+                                                   ])
 
     command('rsync --times --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions))
 

@@ -28,7 +28,7 @@ def render_config(args):
                  c.version.published, c.version.stable, c.version.upcoming,
                  c.project.edition, c.deploy, c.paths.global_config,
                  c.project.branched, c.system.dependency_cache,
-                 c.paths.public_site_output, c.project.basepath,
+                 c.paths.public_site_output,
                  c.runstate.runner, c.runstate.force, c.system.files,
                  c.system.files.paths, c.system.files.data, c.paths.htaccess
                ]

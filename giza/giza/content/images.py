@@ -135,8 +135,6 @@ def get_images_metadata_file(conf):
         return os.path.join(conf.paths.projectroot, conf.paths.builddata, base)
 
 def image_tasks(conf, app):
-    paths = conf.paths
-
     meta_file = get_images_metadata_file(conf)
 
     if 'images' not in conf.system.files.data:
@@ -148,17 +146,28 @@ def image_tasks(conf, app):
     else:
         images = [ conf.system.files.data.images ]
 
+    # replace with conf.paths.branch_images
+    if conf.paths.images.startswith(conf.paths.source):
+        image_dir = os.path.join(conf.paths.projectroot,
+                                 conf.paths.branch_source,
+                                 conf.paths.images[len(conf.paths.source)+1:])
+    else:
+        image_dir = os.path.join(conf.paths.projectroot,
+                                 conf.paths.branch_source,
+                                 conf.paths.images)
+
     for image in images:
-        image['dir'] = paths.images
-        source_base = os.path.join(paths.projectroot, image['dir'], image['name'])
+        image['dir'] = image_dir
+        image['conf'] = conf
+
+        source_base = os.path.join(conf.paths.projectroot, image['dir'], image['name'])
         source_file = dot_concat(source_base, 'svg')
         rst_file = dot_concat(source_base, 'rst')
-        image['conf'] = conf
 
         t = app.add('task')
         t.conf = conf
         t.job = generate_image_pages
-        t.args = image
+        t.args = image # as kwargs
         t.description = "generating rst include file {0} for {1}".format(rst_file, source_file)
         t.target = rst_file
         t.dependency = meta_file
