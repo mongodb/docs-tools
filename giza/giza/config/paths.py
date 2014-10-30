@@ -133,6 +133,34 @@ class PathsConfig(RecursiveConfigurationBase):
         self.state['branch_staging'] = os.path.join(self.public, self.conf.git.branches.current)
 
     @property
+    def branch_includes(self):
+        if self.includes.startswith(self.source):
+            p = os.path.join(self.branch_source,
+                             self.includes[len(self.source)+1:])
+        else:
+            p = os.path.join(self.branch_source,
+                             self.includes)
+
+        if 'branch_includes' not in self.state:
+            self.state['branch_includes'] = p
+
+        return p
+
+    @property
+    def branch_images(self):
+        if self.images.startswith(self.source):
+            p = os.path.join(self.branch_source,
+                                self.images[len(self.source)+1:])
+        else:
+            p = os.path.join(self.branch_source,
+                                self.images)
+
+        if 'branch_images' not in self.state:
+            self.state['branch_images'] = p
+
+        return p
+
+    @property
     def global_config(self):
         if 'global_config' not in self.state:
             self.global_config = None

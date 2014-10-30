@@ -301,11 +301,8 @@ def get_option_path(conf):
     return os.path.join(get_base_path(conf), 'option')
 
 def get_base_path(conf):
-    # replace with conf.paths.branch_includes
     return os.path.join(conf.paths.projectroot,
-                        conf.paths.branch_source,
-                        conf.paths.includes[len(conf.paths.source)+1:],
-                        conf.paths.includes)
+                        conf.paths.branch_includes)
 
 def option_sources(conf):
     output_path = get_option_path(conf)

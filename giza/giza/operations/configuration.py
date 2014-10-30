@@ -25,6 +25,7 @@ def render_config(args):
                  c.git.branches.manual, c.git.branches.published,
                  c.paths.branch_output, c.paths.buildarchive,
                  c.paths.branch_source, c.paths.branch_staging,
+                 c.paths.branch_images, c.paths.branch_includes,
                  c.version.published, c.version.stable, c.version.upcoming,
                  c.project.edition, c.deploy, c.paths.global_config,
                  c.project.branched, c.system.dependency_cache,

@@ -146,15 +146,7 @@ def image_tasks(conf, app):
     else:
         images = [ conf.system.files.data.images ]
 
-    # replace with conf.paths.branch_images
-    if conf.paths.images.startswith(conf.paths.source):
-        image_dir = os.path.join(conf.paths.projectroot,
-                                 conf.paths.branch_source,
-                                 conf.paths.images[len(conf.paths.source)+1:])
-    else:
-        image_dir = os.path.join(conf.paths.projectroot,
-                                 conf.paths.branch_source,
-                                 conf.paths.images)
+    image_dir = conf.paths.branch_images
 
     for image in images:
         image['dir'] = image_dir
