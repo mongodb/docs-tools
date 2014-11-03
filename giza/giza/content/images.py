@@ -197,7 +197,6 @@ def image_tasks(conf, app):
             if build_type == 'png':
                 inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
             elif build_type == 'eps':
-                target_img = source_base + tag + '.eps'
                 inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 1.0 -E >/dev/null {target} {source}'
 
             t = app.add('task')

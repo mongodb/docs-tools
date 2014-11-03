@@ -45,7 +45,10 @@ def is_parallel_sphinx(version):
     return version >= '1.2'
 
 def get_tags(target, sconf):
-    ret = set()
+    if 'tags' in sconf:
+        ret = set(sconf.tags)
+    else:
+        ret = set()
 
     ret.add(target)
     ret.add(target.split('-')[0])
