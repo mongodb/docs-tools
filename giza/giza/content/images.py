@@ -37,20 +37,34 @@ def generate_image_pages(dir, name, alt, output, conf):
     for img_output in output:
         img_output['width'] = str(img_output['width']) + 'px'
 
+        if img_output['type'] == 'offset':
+            build_type = 'eps'
+        else:
+            build_type = 'png'
+
         r.newline()
 
         if 'tag' in img_output:
-            tag = '-' + img_output['tag'] + '.png'
+            tag = ''.join(['-', img_output['tag'], '.', build_type ])
         else:
-            tag = '.png'
+            tag = '.' + build_type
 
         options = [('alt', alt), ('align', 'center'), ('figwidth', img_output['width'])]
 
         if 'scale' in img_output:
             options.append(('scale', img_output['scale']))
-
-        if img_output['type'] == 'print':
-            r.directive('only', 'latex', wrap=False, block=b)
+        if img_output['type'] in 'print':
+            r.directive('only', 'latex and not offset', wrap=False, block=b)
+            r.newline()
+            r.directive(name='figure',
+                        arg='/images/{0}{1}'.format(name, tag),
+                        fields=options,
+                        indent=3,
+                        content=alt,
+                        block=b)
+            r.newline()
+        elif img_output['type'] == 'offset':
+            r.directive('only', 'latex and offset', wrap=False, block=b)
             r.newline()
             r.directive(name='figure',
                         arg='/images/{0}{1}'.format(name, tag),
@@ -66,7 +80,7 @@ def generate_image_pages(dir, name, alt, output, conf):
             img_str = ''.join(img_tags)
 
 
-            r.directive('only', 'website and not html', wrap=False, block=b)
+            r.directive('only', 'website and not (html or slides)', wrap=False, block=b)
             r.newline()
             r.directive(name='raw', arg='html',
                         content=img_str.format(conf.project.url,
@@ -80,7 +94,7 @@ def generate_image_pages(dir, name, alt, output, conf):
             if img_output['width'] > 600:
                 options[2] = ('figwidth', 600)
 
-            r.directive('only', 'website and html', wrap=False, block=b)
+            r.directive('only', 'website and (html or slides)', wrap=False, block=b)
             r.newline()
             r.directive(name='figure',
                         arg='/images/{0}{1}'.format(name, tag),
@@ -90,7 +104,7 @@ def generate_image_pages(dir, name, alt, output, conf):
                         block=b)
 
 
-        r.newline(block=b)
+        r.newline()
 
     image_rst_file_path = os.path.join(conf.paths.projectroot, image + '.rst')
     r.write(image_rst_file_path)
@@ -107,11 +121,13 @@ def _get_inkscape_cmd():
     return 'inkscape'
 
 def _generate_images(cmd, dpi, width, target, source):
-    command(cmd.format(cmd=_get_inkscape_cmd(),
-                       dpi=dpi,
-                       width=width,
-                       target=target,
-                       source=source))
+    full_cmd = cmd.format(cmd=_get_inkscape_cmd(),
+                          dpi=dpi,
+                          width=width,
+                          target=target,
+                          source=source)
+    logger.debug(full_cmd)
+    command(full_cmd)
     logger.info('generated image file {0}'.format(target))
 
 def get_images_metadata_file(conf):
@@ -166,14 +182,23 @@ def image_tasks(conf, app):
         logger.debug('adding task for image rst file: {0}'.format(rst_file))
 
         for output in image['output']:
+            if output['type'] == 'offset':
+                build_type = 'eps'
+            else:
+                build_type = 'png'
+
             if 'tag' in output:
                 tag = '-' + output['tag']
             else:
                 tag = ''
 
-            target_img = source_base + tag + '.png'
+            target_img = ''.join([source_base, tag, '.', build_type])
 
-            inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
+            if build_type == 'png':
+                inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
+            elif build_type == 'eps':
+                target_img = source_base + tag + '.eps'
+                inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -E >/dev/null {target} {source}'
 
             t = app.add('task')
             t.conf = conf

@@ -41,7 +41,7 @@ def transfer_source(conf, sconf):
                                                      os.path.join('includes', 'toc'),
                                                      os.path.join('includes', 'option'),
                                                      conf.paths.images[len(conf.paths.source)+1:],
-                                                   ])
+                                                   ]) + "--include=*.svg --include=*.yaml"
 
     command('rsync --times --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions))
 
