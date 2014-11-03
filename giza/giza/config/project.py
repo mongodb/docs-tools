@@ -47,7 +47,7 @@ def get_current_path(conf):
     return get_path_prefix(conf, branch)
 
 class ProjectConfig(RecursiveConfigurationBase):
-    _option_registry = ['name', 'url', 'title']
+    _option_registry = ['name', 'title']
 
     @property
     def tag(self):
@@ -141,11 +141,35 @@ class ProjectConfig(RecursiveConfigurationBase):
                     break
 
     @property
+    def url(self):
+        if 'url' not in self.state:
+            self.url = None
+
+        return self.state['url']
+
+    @url.setter
+    def url(self, value):
+        url = None
+        for edition in self.editions:
+            if self.edition == edition.name:
+                url = edition.url
+                break
+
+        if url is None:
+            if value is None:
+                self.state['url'] = ''
+            else:
+                self.state['url'] = value
+        else:
+            self.state['url'] = url
+
+    @property
     def basepath(self):
         if 'basepath' not in self.state:
             self.basepath = None
 
-        return self.state['basepath']
+        if 'basepath' in self.state:
+            return self.state['basepath']
 
     @basepath.setter
     def basepath(self, value):
@@ -157,7 +181,7 @@ class ProjectConfig(RecursiveConfigurationBase):
                     self.state['basepath'] = edition.tag
                     break
 
-            if 'basepath' not in self.state and 'tag' not in self.state:
+            if 'basepath' not in self.state and 'tag' in self.state:
                 self.state['basepath'] = self.tag
 
     @property
@@ -179,7 +203,7 @@ class ProjectConfig(RecursiveConfigurationBase):
         return get_path_prefix(self.conf, self.conf.git.branches.current)
 
 class EditionListConfig(ConfigurationBase):
-    _option_registry = ['name']
+    _option_registry = ['name', 'url']
 
     @property
     def branched(self):

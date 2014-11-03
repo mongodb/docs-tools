@@ -46,6 +46,7 @@ def transfer_source(conf, sconf):
     command('rsync --times --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions))
 
     source_exclusion(conf, sconf)
+    os.utime(target, None)
 
     logger.info('prepared source for sphinx build in {0}'.format(target))
 
@@ -54,20 +55,22 @@ def source_tasks(conf, sconf, app):
     t.job = transfer_source
     t.args = [conf, sconf]
     t.description = 'transferring source to {0}'.format(conf.paths.branch_source)
-    logger.info('adding task to migrate source to {0}'.format(conf.paths.branch_source))
+    logger.debug('adding task to migrate source to {0}'.format(conf.paths.branch_source))
 
 def source_exclusion(conf, sconf):
     ct = 0
+    if len(sconf.excluded) == 0:
+        return
+
     for fn in sconf.excluded:
         fqfn = os.path.join(conf.paths.projectroot, conf.paths.branch_source, fn[1:])
-        if os.path.exists(fqfn):
-            if os.path.isdir(fqfn):
-                rmtree(fqfn)
-                ct += 1
-            else:
-                os.remove(fqfn)
-                ct += 1
-                logger.debug('redacted {0}'.format(fqfn))
+        if os.path.isdir(fqfn):
+            rmtree(fqfn)
+            ct += 1
+        elif os.path.isfile(fqfn):
+            os.remove(fqfn)
+            ct += 1
+            logger.debug('redacted {0}'.format(fqfn))
         else:
             logger.warning('cannot redact non-existing file: ' + fqfn)
 

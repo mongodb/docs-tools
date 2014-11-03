@@ -277,8 +277,3 @@ class BuildApp(object):
 
         self.queue = []
         return self.results
-
-def pprint(doc):
-    import json
-
-    print(json.dumps(doc, indent=3))

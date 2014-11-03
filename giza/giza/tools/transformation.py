@@ -95,7 +95,7 @@ def process_page(fn, output_fn, regex, app, builder='processor', copy='always'):
                    target_file=output_fn,
                    name=builder)
 
-    logger.info('added tasks to process file: {0}'.format(fn))
+    logger.debug('added tasks to process file: {0}'.format(fn))
 
 def post_process_tasks(app, tasks=None, source_fn=None):
     """

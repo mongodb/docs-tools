@@ -17,9 +17,11 @@ import os.path
 
 logger = logging.getLogger('giza.content.includes')
 
+from giza.includes import generated_includes, included_recusively, include_files
 from giza.tools.files import expand_tree
 from giza.tools.serialization import ingest_yaml_doc
-from giza.includes import generated_includes, included_recusively, include_files
+from giza.tools.timing import Timer
+
 from rstcloth.rstcloth import RstCloth
 
 suppressed_page_prefixes = [
@@ -41,7 +43,6 @@ def write_include_index(overview_fn, conf):
     if r is not None:
         r.write(overview_fn)
         logger.info('includes: generated /meta/includes source page.')
-
 
 def include_file_data(conf):
     inc_path = os.path.join(conf.paths.includes)

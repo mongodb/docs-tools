@@ -76,35 +76,36 @@ def _refresh_deps(graph, dep_map, conf):
 
     logger.info('refreshed all deps')
 
-def refresh_deps(graph, dep_map, conf):
+def refresh_deps(conf):
+    with Timer('resolve dependency graph'):
+        graph = include_files(conf=conf)
+
+        if not os.path.exists(conf.system.dependency_cache):
+            dep_map = None
+        else:
+            with open(conf.system.dependency_cache, 'r') as f:
+                try:
+                    dep_cache = json.load(f)
+                    dep_map = dep_cache['files']
+                except ValueError:
+                    dep_map = None
+                    logger.warning('no stored dependency information, will rebuild more things than necessary.')
+
     with Timer('dependency updates'):
         _refresh_deps(graph, dep_map, conf)
 
 def refresh_dependency_tasks(conf, app):
-    graph = include_files(conf=conf)
-
-    if not os.path.exists(conf.system.dependency_cache):
-        dep_map = None
-    else:
-        with open(conf.system.dependency_cache, 'r') as f:
-            try:
-                dep_cache = json.load(f)
-                dep_map = dep_cache['files']
-            except ValueError:
-                dep_map = None
-                logger.warning('no stored dependency information, will rebuild more things than necessary.')
-
     t = app.add('task')
     t.job = refresh_deps
-    t.args = (graph, dep_map, conf)
+    t.args = [conf]
     t.target = None
     t.dependency = conf.system.dependency_cache
     t.description = "check and touch files affected by dependency changes"
 
-    app_two = app.add('app')
-    t = app_two.add('task')
+def dump_file_hash_tasks(conf, app):
+    t = app.add('task')
     t.job = dump_file_hashes
     t.args = [conf]
     t.target = conf.system.dependency_cache
-    t.dependency = True
+    t.dependency = os.path.join(conf.paths.projectroot, conf.paths.branch_source)
     t.description = "writing dependency cache"

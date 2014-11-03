@@ -25,8 +25,8 @@ logger = logging.getLogger('giza.content.sphinx')
 
 from giza.core.app import BuildApp
 from giza.tools.command import command
-from giza.tools.strings import timestamp
 from giza.tools.files import safe_create_directory
+from giza.tools.timing import Timer
 from giza.config.helper import get_config_paths
 from giza.content.links import create_manual_symlink, get_public_links
 from giza.content.manpages import manpage_url_tasks
@@ -206,9 +206,9 @@ def run_sphinx(builder, sconf, conf):
         command('sphinx-intl build --language=' + sconf.language)
         logger.info('compiled all PO files for translated build.')
 
-    logger.info('starting sphinx build {0} at {1}'.format(builder, timestamp()))
+    logger.info('starting sphinx build {0}'.format(builder))
 
-    cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {4}' # per-builder-doctreea
+    cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {4}' # per-builder-doctree
 
     sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output),
@@ -217,12 +217,13 @@ def run_sphinx(builder, sconf, conf):
                             sconf.build_output)
 
     logger.debug(sphinx_cmd)
-    out = command(sphinx_cmd, capture=True, ignore=True)
+    with Timer("running sphinx build for: {0}, {1}, {2}".format(builder, sconf.language, sconf.edition)):
+        out = command(sphinx_cmd, capture=True, ignore=True)
     # out = sphinx_native_worker(sphinx_cmd)
-    logger.info('completed sphinx build {0} at {1}'.format(builder, timestamp()))
+    logger.info('completed sphinx build {0}'.format(builder))
 
     if True: # out.return_code == 0:
-        logger.info('successfully completed {0} sphinx build at {1}'.format(builder, timestamp()))
+        logger.info('successfully completed {0} sphinx build'.format(builder))
 
         finalizer_app = BuildApp(conf)
         finalizer_app.root_app = False
@@ -255,13 +256,14 @@ def finalize_sphinx_build(sconf, conf, app):
     target = sconf.builder
     logger.info('starting to finalize the Sphinx build {0}'.format(target))
 
-    if target == 'linkcheck':
+    if target == 'html':
         app.pool = 'serial'
         task = app.add('task')
-        task.job = printer
-        task.target = os.path.join(conf.paths.projectroot,
-                                   conf.paths.branch_output, builder, 'output.txt')
-        task.args = '{0}: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)
+        task.job = html_tarball
+        task.target = [get_tarball_name('html', conf),
+                       get_tarball_name('link-html', conf)]
+        task.args = [sconf.name, conf]
+        task.description = "creating tarball for html archive"
     elif target == 'dirhtml':
         app.pool = 'thread'
         for job in (finalize_dirhtml_build, error_pages):
@@ -284,7 +286,7 @@ def finalize_sphinx_build(sconf, conf, app):
         app.pool = 'serial'
         task = app.add('task')
         task.job = finalize_epub_build
-        task.args = [target, conf]
+        task.args = (target, conf)
         task.description = 'finalizing epub build'
     elif target == 'man':
         app.pool = 'thread'
@@ -295,15 +297,6 @@ def finalize_sphinx_build(sconf, conf, app):
                        get_tarball_name('link-man', conf)]
         task.args = [target, conf]
         task.description = "creating tarball for manpages"
-    elif target == 'html':
-        pass
-        # app.pool = 'serial'
-        # task = app.add('task')
-        # task.job = html_tarball
-        # task.target = [get_tarball_name('html', conf),
-        #                get_tarball_name('link-html', conf)]
-        # task.args = [sconf.name, conf]
-        # task.description = "creating tarball for html archive"
     elif target == 'slides':
         app.pool = 'thread'
         slide_tasks(sconf, conf, app)
@@ -319,3 +312,10 @@ def finalize_sphinx_build(sconf, conf, app):
     elif target == 'gettext':
         app.pool = 'thread'
         gettext_tasks(conf, app)
+    elif target == 'linkcheck':
+        app.pool = 'serial'
+        task = app.add('task')
+        task.job = printer
+        task.target = os.path.join(conf.paths.projectroot,
+                                   conf.paths.branch_output, builder, 'output.txt')
+        task.args = '{0}: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)

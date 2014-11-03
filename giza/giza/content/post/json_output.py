@@ -126,9 +126,8 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
 
         doc['title'] = title
 
-    url = [ conf.project.url, conf.project.basepath ]
+    url = get_site_url(conf)
     url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
-
     doc['url'] = '/'.join(url) + '/'
 
     with open(output_fn, 'w') as f:
@@ -139,7 +138,9 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
 def generate_list_file(outputs, path, conf):
     dirname = os.path.dirname(path)
 
-    url = '/'.join([ conf.project.url, conf.project.basepath, 'json' ])
+    url = get_site_url(conf)
+    url.append('json')
+    url = '/'.join(url)
 
     if not os.path.exists(dirname):
         os.mkdir(dirname)
@@ -151,3 +152,12 @@ def generate_list_file(outputs, path, conf):
                 f.write('\n')
 
     logger.info('rebuilt inventory of json output.')
+
+
+def get_site_url(conf):
+    url = [conf.project.url ]
+
+    if conf.project.basepath not in ('', None):
+        url.append(conf.project.basepath)
+
+    return url
