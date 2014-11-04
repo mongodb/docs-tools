@@ -22,7 +22,7 @@ mechanisms.
 import multiprocessing
 import multiprocessing.dummy
 import logging
-import random
+# import random
 
 logger = logging.getLogger('giza.pool')
 
@@ -36,7 +36,6 @@ def run_task(task):
     "helper to call run method on task so entire operation can be pickled for process pool support"
 
     return task.run()
-
 
 class WorkerPool(object):
     def __enter__(self):
@@ -59,7 +58,7 @@ class WorkerPool(object):
             j = jobs[0]
             results.append((j, j.run()))
         else:
-            random.shuffle(jobs)
+            # random.shuffle(jobs)
             for job in jobs:
                 if not hasattr(job, 'run'):
                     raise TypeError('task "{0}" is not a valid Task'.format(job))
