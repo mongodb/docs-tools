@@ -170,13 +170,14 @@ def image_tasks(conf, app):
 
         source_base = os.path.join(conf.paths.projectroot, image['dir'], image['name'])
         source_file = dot_concat(source_base, 'svg')
+        source_core = os.path.join(conf.paths.projectroot, conf.paths.images, image['name'] + '.svg' )
         rst_file = dot_concat(source_base, 'rst')
 
         t = app.add('task')
         t.conf = conf
         t.job = generate_image_pages
         t.args = image # as kwargs
-        t.description = "generating rst include file {0} for {1}".format(rst_file, source_file)
+        t.description = "generating rst include file {0} for {1}".format(rst_file, source_core)
         t.target = rst_file
         t.dependency = meta_file
         logger.debug('adding task for image rst file: {0}'.format(rst_file))
@@ -204,8 +205,8 @@ def image_tasks(conf, app):
             t.job = _generate_images
             t.args = [ inkscape_cmd, output['dpi'], output['width'], target_img, source_file ]
             t.target = target_img
-            t.dependency = [ meta_file, source_file ]
-            t.description = 'generating image file {0} from {1}'.format(target_img, source_file)
+            t.dependency = [ meta_file, source_core ]
+            t.description = 'generating image file {0} from {1}'.format(target_img, source_core)
             logger.debug('adding image creation job for {0}'.format(target_img))
 
 def image_clean(conf, app):

@@ -222,6 +222,7 @@ def run_sphinx(builder, sconf, conf):
     logger.debug(sphinx_cmd)
     with Timer("running sphinx build for: {0}, {1}, {2}".format(builder, sconf.language, sconf.edition)):
         out = command(sphinx_cmd, capture=True, ignore=True)
+
     # out = sphinx_native_worker(sphinx_cmd)
     logger.info('completed sphinx build {0}'.format(builder))
 

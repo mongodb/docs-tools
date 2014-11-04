@@ -74,28 +74,28 @@ def append_to_file(fn, text):
 
 
 def process_page(fn, output_fn, regex, app, builder='processor', copy='always'):
+    t = app.add('task')
+    t.job = _process_page
+    t.args = [fn, output_fn, regex, copy, builder ]
+    t.target = output_fn
+    t.depenency = None
+    t.description = "modify page"
+
+    logger.debug('added tasks to process file: {0}'.format(fn))
+
+def _process_page(fn, output_fn, regex, copy, builder):
     tmp_fn = fn + '~'
 
-    munge = app.add('task')
-    munge.target = tmp_fn
-    munge.dependency = fn
-    munge.job = munge_page
-    munge.args = dict(fn=fn, out_fn=tmp_fn, regex=regex)
+    munge_page(fn=fn, out_fn=tmp_fn, regex=regex)
 
-    cp = app.add('task')
-    cp.target = output_fn
-    cp.depdency = tmp_fn
-
-    if copy == 'always':
-        cp.job = copy_always
-    else:
-        cp.job = copy_if_needed
-
-    cp.args = dict(source_file=tmp_fn,
+    cp_args = dict(source_file=tmp_fn,
                    target_file=output_fn,
                    name=builder)
 
-    logger.debug('added tasks to process file: {0}'.format(fn))
+    if copy == 'always':
+        copy_always(**cp_args)
+    else:
+        copy_if_needed(**cp_args)
 
 def post_process_tasks(app, tasks=None, source_fn=None):
     """

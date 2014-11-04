@@ -15,14 +15,23 @@ from giza.tools.files import (create_link, copy_if_needed,
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 
-def _render_tex_into_pdf(fn, deployed_path, path):
-    pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
+def _render_tex_into_pdf(fn, deployed_path, path, output_format="pdf"):
+    if output_format == 'dvi':
+        pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --output-format dvi --interaction batchmode --output-directory {0} {1}'.format(path, fn)
+    elif output_format == 'pdf':
+        pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
+    else:
+        logger.error('not rendering pdf because {0} is not an output format'.format(output_format))
+        return
 
     base_fn = os.path.basename(fn)
     cmds = [ pdflatex,
              "makeindex -s {0}/python.ist {0}/{1}.idx ".format(path, base_fn[:-4]),
              pdflatex,
              pdflatex ]
+
+    if output_format == 'dvi':
+        cmds.append("cd {0}; dvipdf {1}.dvi".format(path, base_fn[:-4]))
 
     for idx, cmd in enumerate(cmds):
         r = command(command=cmd, ignore=True)
@@ -51,10 +60,30 @@ def pdf_tasks(sconf, conf, app):
                     ( re.compile(r'\\code\{/(?!.*{}/|etc|usr|data|var|srv|data|bin|dev|opt|proc|24|private)'),
                       r'\code{' + conf.project.url + r'/' + conf.project.tag + r'/') ]
 
+
     process_app = app.add('app')
     render_app = app.add('app')
     migrate_app = app.add('app')
     link_app = app.add('app')
+
+    if 'edition' in conf.project and conf.project.edition != conf.project.name:
+        latex_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, hyph_concat(target, conf.project.edition))
+    else:
+        latex_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, target)
+
+    deploy_path = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
+
+    if 'tags' in sconf and "offset" in sconf.tags:
+        output_format = "dvi"
+        sty_file = os.path.join(latex_dir, 'sphinx.sty')
+        process_page(fn=sty_file,
+                     output_fn=sty_file,
+                     regex=(re.compile(r'\\usepackage\[pdftex\]\{graphicx\}'), r'\usepackage{graphicx}'),
+                     app=process_app,
+                     builder='sphinx-latex',
+                     copy='ifNeeded')
+    else:
+        output_format = "pdf"
 
     for i in conf.system.files.data.pdfs:
         if edition_check(i, conf) is False:
@@ -65,15 +94,6 @@ def pdf_tasks(sconf, conf, app):
         deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
         link_name = deploy_fn.replace('-' + conf.git.branches.current, '')
 
-        if 'edition' in conf.project and conf.project.edition != conf.project.name:
-            if 'edition' in i and conf.project.edition != i['edition']:
-                continue
-            latex_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, hyph_concat(target, conf.project.edition))
-        else:
-            latex_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, target)
-
-        deploy_path = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
-
         i['source'] = os.path.join(latex_dir, i['output'])
         i['processed'] = os.path.join(latex_dir, tagged_name + '.tex')
         i['pdf'] = os.path.join(latex_dir, tagged_name + '.pdf')
@@ -83,11 +103,12 @@ def pdf_tasks(sconf, conf, app):
 
         process_page(i['source'], i['processed'], tex_regexes, process_app, builder='tex-munge', copy='ifNeeded')
 
+
         render_task = render_app.add('task')
-        render_task.dependency = i['processed']
+        render_task.dependency = None #i['processed']
         render_task.target = i['pdf']
         render_task.job = _render_tex_into_pdf
-        render_task.args = (i['processed'], i['deployed'], i['path'])
+        render_task.args = (i['processed'], i['deployed'], i['path'], output_format)
 
         if i['link'] != i['deployed']:
             link_task = link_app.add('task')
