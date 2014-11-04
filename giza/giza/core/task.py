@@ -167,7 +167,7 @@ class Task(object):
 
 def check_dependency(target, dependency):
     """
-    Determines if a target requires rebuilding based on it's provided
+    Determines if a target requires rebuilding based on a provided
     dependency.
 
     :param string target: A file name.
@@ -181,37 +181,39 @@ def check_dependency(target, dependency):
 
     :func:`~giza.task.check_dependency()` Accepts dependencies in the form of a
     single file name, or as a list, and will return ``True`` if *any* dependent
-    file is newer than the target.
+    file is newer than the target. Also returns ``True`` when:
+
+    - ``target`` or ``dependency`` is ``None``.
+
+    - ``target`` or ``dependency`` does not exist.
     """
 
     if dependency is None:
         return True
-
-    if isinstance(target, list):
-        if len(target) == 1:
-            target = target[0]
-        else:
-            return check_multi_dependency(target, dependency)
-
-    if os.path.exists(target) is False:
+    elif target is None:
         return True
-
-    def needs_rebuild(targ_t, dep_f):
-        if targ_t < os.path.getmtime(dep_f):
+    elif isinstance(target, list):
+        for t in target:
+            if os.path.exists(t) is False:
+                return True
+            else:
+                return check_dependency(t, dependency)
+    elif os.path.exists(target) is False:
+        return True
+    elif isinstance(dependency, list):
+        target_time = os.path.getmtime(target)
+        for dep in dependency:
+            if target_time < os.path.getmtime(dep):
+                return True
+        return False
+    elif os.path.exists(dependency):
+        if os.path.getmtime(target) < os.path.getmtime(dependency):
             return True
         else:
             return False
-
-    target_time = os.path.getmtime(target)
-    if isinstance(dependency, list):
-        for dep in dependency:
-            if dep is None:
-                return True
-            elif needs_rebuild(target_time, dep) is True:
-                return True
-        return False
     else:
-        return needs_rebuild(target_time, dependency)
+        logger.error('{0} is not a valid dependency'.format(dependency))
+        return True
 
 class MapTask(Task):
     """
@@ -238,13 +240,6 @@ class MapTask(Task):
 
     def run(self):
         return map(self.job, self.iter)
-
-def check_multi_dependency(target, dependency):
-    for idx, t in enumerate(target):
-        if check_dependency(t, dependency) is True:
-            return True
-
-    return False
 
 ############### Hashed Dependency Checking ###############
 

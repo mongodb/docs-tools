@@ -126,8 +126,10 @@ def _generate_images(cmd, dpi, width, target, source):
                           width=width,
                           target=target,
                           source=source)
-    logger.debug(full_cmd)
     command(full_cmd)
+
+    logger.debug(full_cmd)
+
     logger.info('generated image file {0}'.format(target))
 
 def get_images_metadata_file(conf):
@@ -172,6 +174,10 @@ def image_tasks(conf, app):
         source_file = dot_concat(source_base, 'svg')
         source_core = os.path.join(conf.paths.projectroot, conf.paths.images, image['name'] + '.svg' )
         rst_file = dot_concat(source_base, 'rst')
+
+        if not os.path.isfile(source_file):
+            logger.error('"{0}" does not exist'.format(source_core))
+            continue
 
         t = app.add('task')
         t.conf = conf
