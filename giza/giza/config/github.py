@@ -49,7 +49,7 @@ class GithubRuntimeConfig(RuntimeStateConfigurationBase):
             except OSError:
                 self._discover_conf_file('github.yaml')
             except OSError:
-                logger.error('could not find mdbgh github config file.')
+                logger.error('could not find mdbpr github config file.')
                 raise OSError
 
 class GithubConfig(ConfigurationBase):

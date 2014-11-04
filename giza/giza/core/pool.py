@@ -22,7 +22,6 @@ mechanisms.
 import multiprocessing
 import multiprocessing.dummy
 import logging
-# import random
 
 logger = logging.getLogger('giza.pool')
 
@@ -58,7 +57,6 @@ class WorkerPool(object):
             j = jobs[0]
             results.append((j, j.run()))
         else:
-            # random.shuffle(jobs)
             for job in jobs:
                 if not hasattr(job, 'run'):
                     raise TypeError('task "{0}" is not a valid Task'.format(job))

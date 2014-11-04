@@ -40,11 +40,9 @@ def transfer_source(conf, sconf):
     exclusions = "--exclude=" + ' --exclude='.join([ os.path.join('includes', 'steps'),
                                                      os.path.join('includes', 'toc'),
                                                      os.path.join('includes', 'option'),
-                                                     os.path.join('reference', 'method', "*.rst"),
-                                                     os.path.join('reference', 'command', "*.rst"),
-                                                     conf.paths.images[len(conf.paths.source)+1:],
-                                                     "*.png", "*.eps",
-                                                   ]) + "--include=*.svg --include=*.yaml"
+                                                     os.path.join(conf.paths.images[len(conf.paths.source)+1:], "*.png"),
+                                                     os.path.join(conf.paths.images[len(conf.paths.source)+1:], "*.eps"),
+                                                     ])
 
     command('rsync --times --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions))
 
