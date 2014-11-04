@@ -88,12 +88,7 @@ def sphinx_publication(c, args, app):
 
     jobs = [a for a in itertools.product(c.runstate.editions_to_build, c.runstate.languages_to_build, c.runstate.builder)]
     for edition, language, builder in jobs:
-        # modify sphinx configuration.
-        if len(jobs) == 1:
-            build_config = c
-            sconf = render_sconf(edition, builder, language, c)
-        else:
-            build_config, sconf = get_sphinx_build_configuration(edition, language, builder, args)
+        build_config, sconf = get_sphinx_build_configuration(edition, language, builder, args)
 
         # only do these tasks once per-language+edition combination
         if build_config.paths.branch_source not in build_source_copies:
