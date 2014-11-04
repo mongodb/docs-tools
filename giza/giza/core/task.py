@@ -203,7 +203,9 @@ def check_dependency(target, dependency):
     elif isinstance(dependency, list):
         target_time = os.path.getmtime(target)
         for dep in dependency:
-            if target_time < os.path.getmtime(dep):
+            if dep is None:
+                return True
+            elif target_time < os.path.getmtime(dep):
                 return True
         return False
     elif os.path.exists(dependency):
