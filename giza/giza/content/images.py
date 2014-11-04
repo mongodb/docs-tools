@@ -60,7 +60,6 @@ def generate_image_pages(dir, name, alt, output, conf):
                         arg='/images/{0}{1}'.format(name, tag),
                         fields=options,
                         indent=3,
-                        content=alt,
                         block=b)
             r.newline()
         elif img_output['type'] == 'offset':
@@ -70,7 +69,6 @@ def generate_image_pages(dir, name, alt, output, conf):
                         arg='/images/{0}{1}'.format(name, tag),
                         fields=options,
                         indent=3,
-                        content=alt,
                         block=b)
         else:
             alt_html = publish_parts(alt, writer_name='html')['body'].strip()
@@ -100,7 +98,6 @@ def generate_image_pages(dir, name, alt, output, conf):
                         arg='/images/{0}{1}'.format(name, tag),
                         fields=options,
                         indent=3,
-                        content=alt,
                         block=b)
 
 
