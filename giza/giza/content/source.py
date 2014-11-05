@@ -41,6 +41,7 @@ def transfer_source(conf, sconf):
                                                      os.path.join('includes', 'toc'),
                                                      os.path.join('includes', 'option'),
                                                      os.path.join(conf.paths.images[len(conf.paths.source)+1:], "*.png"),
+                                                     os.path.join(conf.paths.images[len(conf.paths.source)+1:], "*.rst"),
                                                      os.path.join(conf.paths.images[len(conf.paths.source)+1:], "*.eps"),
                                                      ])
 
