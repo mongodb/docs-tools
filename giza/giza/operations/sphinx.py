@@ -18,7 +18,7 @@ from giza.content.options import option_tasks
 from giza.content.param import api_tasks
 from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
-from giza.content.source import source_tasks
+from giza.content.source import source_tasks, latex_image_transfer_tasks
 from giza.content.toc import toc_tasks
 from giza.content.examples.tasks import example_tasks
 from giza.content.steps.tasks import step_tasks
@@ -102,6 +102,7 @@ def sphinx_publication(c, args, app):
             build_content_generation_tasks(build_config, prep_app.add('app'))
             refresh_dependency_tasks(build_config, prep_app.add('app'))
             dump_file_hash_tasks(build_config, prep_app)
+            latex_image_transfer_tasks(build_config, sconf, prep_app)
 
             msg = 'prepared source for ({0}, {1}, {2}) in {3}'
             logger.info(msg.format(builder, language, edition, build_config.paths.branch_source))

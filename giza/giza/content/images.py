@@ -32,7 +32,6 @@ def generate_image_pages(dir, name, alt, output, conf):
     r = RstCloth()
 
     image = '/'.join([dir, name])
-    b = name
 
     for img_output in output:
         img_output['width'] = str(img_output['width']) + 'px'
@@ -54,22 +53,27 @@ def generate_image_pages(dir, name, alt, output, conf):
         if 'scale' in img_output:
             options.append(('scale', img_output['scale']))
         if img_output['type'] in 'print':
-            r.directive('only', 'latex and not offset', wrap=False, block=b)
+            r.directive('only', 'latex and not offset', wrap=False)
             r.newline()
+
             r.directive(name='figure',
                         arg='/images/{0}{1}'.format(name, tag),
                         fields=options,
-                        indent=3,
-                        block=b)
+                        indent=3)
             r.newline()
         elif img_output['type'] == 'offset':
-            r.directive('only', 'latex and offset', wrap=False, block=b)
+            tex_figure = [
+                r'\begin{figure}[h!]',
+                   ''.join([r'\caption{', alt, '}']),
+                   r'\centering',
+                   ''.join([r'\includegraphics[width=', img_output['width'],
+                            ']{', name, tag, '}' ]),
+                r'\end{figure}'
+            ]
+
+            r.directive('only', 'latex and offset', wrap=False)
             r.newline()
-            r.directive(name='figure',
-                        arg='/images/{0}{1}'.format(name, tag),
-                        fields=options,
-                        indent=3,
-                        block=b)
+            r.directive('raw', 'latex', content=tex_figure, indent=3)
         else:
             alt_html = publish_parts(alt, writer_name='html')['body'].strip()
             img_tags = ['<div class="figure align-center" style="max-width:{5};">',
@@ -78,27 +82,25 @@ def generate_image_pages(dir, name, alt, output, conf):
             img_str = ''.join(img_tags)
 
 
-            r.directive('only', 'website and not (html or slides)', wrap=False, block=b)
+            r.directive('only', 'website and not (html or slides)', wrap=False)
             r.newline()
             r.directive(name='raw', arg='html',
                         content=img_str.format(conf.project.url,
                                                conf.git.branches.current, name, tag, alt,
                                                img_output['width'], alt_html),
-                        indent=3,
-                        block=b)
+                        indent=3)
 
             r.newline(count=2)
 
             if img_output['width'] > 600:
                 options[2] = ('figwidth', 600)
 
-            r.directive('only', 'website and (html or slides)', wrap=False, block=b)
+            r.directive('only', 'website and (html or slides)', wrap=False)
             r.newline()
             r.directive(name='figure',
                         arg='/images/{0}{1}'.format(name, tag),
                         fields=options,
-                        indent=3,
-                        block=b)
+                        indent=3)
 
 
         r.newline()
@@ -172,7 +174,7 @@ def image_tasks(conf, app):
         source_core = os.path.join(conf.paths.projectroot, conf.paths.images, image['name'] + '.svg' )
         rst_file = dot_concat(source_base, 'rst')
 
-        if not os.path.isfile(source_file):
+        if not os.path.isfile(source_core):
             logger.error('"{0}" does not exist'.format(source_core))
             continue
 
