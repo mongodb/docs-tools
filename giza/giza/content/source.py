@@ -55,13 +55,15 @@ def transfer_source(conf, sconf):
 
 def transfer_images(conf, sconf):
     if sconf.builder == 'latex':
-        builder_dir = sconf.builder
 
-        if 'edition' in sconf:
-            builder_dir = hyph_concat(builder_dir, sconf.edition)
+        if 'edition' in sconf and sconf.edition is not None:
+            builder_dir = hyph_concat(sconf.builder, sconf.edition)
+        else:
+            builder_dir = sconf.builder
 
         builder_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder_dir)
         image_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_images)
+
 
         safe_create_directory(builder_dir)
         command('rsync -am --include="*.png" --include="*.eps" --exclude="*" {0}/ {1} '.format(image_dir, builder_dir))
