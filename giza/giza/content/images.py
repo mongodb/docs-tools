@@ -64,7 +64,6 @@ def generate_image_pages(dir, name, alt, output, conf):
         elif img_output['type'] == 'offset':
             tex_figure = [
                 r'\begin{figure}[h!]',
-                   ''.join([r'\caption{', alt, '}']),
                    r'\centering',
                    ''.join([r'\includegraphics[width=', img_output['width'],
                             ']{', name, tag, '}' ]),
