@@ -40,7 +40,8 @@ def main(args):
     c = fetch_config(args)
     app = BuildApp(c)
 
-    sphinx_publication(c, args, app)
+    with Timer("full sphinx build process"):
+        sphinx_publication(c, args, app)
 
 ## sphinx_publication is its own function because it's called as part of some
 ## giza.operations.deploy tasks (i.e. ``push``).

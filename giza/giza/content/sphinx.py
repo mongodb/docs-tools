@@ -232,7 +232,8 @@ def run_sphinx(builder, sconf, conf):
         finalizer_app = BuildApp(conf)
         finalizer_app.root_app = False
         finalize_sphinx_build(sconf, conf, finalizer_app)
-        finalizer_app.run()
+        with Timer("finalize sphinx {0} build".format(builder)):
+            finalizer_app.run()
     else:
         logger.warning('the sphinx build {0} was not successful. not running finalize operation'.format(builder))
 
