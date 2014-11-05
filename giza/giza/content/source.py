@@ -64,7 +64,6 @@ def transfer_images(conf, sconf):
         builder_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder_dir)
         image_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_images)
 
-
         safe_create_directory(builder_dir)
         command('rsync -am --include="*.png" --include="*.eps" --exclude="*" {0}/ {1} '.format(image_dir, builder_dir))
         logger.info('migrated images for latex build')
