@@ -118,6 +118,7 @@ def mine_github_pulls(gh, app, conf):
 #################### mdbpr commands #####################
 
 @argh.arg('--path', dest='conf_path', default='.github.yaml')
+@argh.expects_obj
 def setup(args):
     skel = {
         'site': { 'credentials': "~/.giza-credentials.yaml",
@@ -130,6 +131,7 @@ def setup(args):
 
     dump_skel(skel, args)
 
+@argh.expects_obj
 def mine(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
@@ -137,6 +139,7 @@ def mine(args):
 
     pprint(mine_github_pulls(gh, app, conf))
 
+@argh.expects_obj
 def stats(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
@@ -156,6 +159,7 @@ def stats(args):
 
     pprint(result)
 
+@argh.expects_obj
 def actions(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
