@@ -44,7 +44,7 @@ def safe_create_directory(path):
         return True
     except OSError as e:
         if os.path.isdir(path):
-            return True
+            return None
         elif os.path.isfie(path):
             logger.error('{0} is a file not a directory.'.format(e))
             raise e
