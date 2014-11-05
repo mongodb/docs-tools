@@ -47,7 +47,7 @@ def manual_single_html(input_file, output_file):
 
         encode_lines_to_file(output_file, text_lines)
 
-        logging.info('processed singlehtml file.')
+        logger.info('processed singlehtml file.')
 
 #################### Sphinx Post-Processing ####################
 
@@ -82,7 +82,7 @@ def error_pages(sconf, conf):
                                 'meta', error, 'index.html')
             munge_page(fn=page, regex=sub, tag='error-pages')
 
-        logging.info('error-pages: rendered {0} error pages'.format(idx))
+        logger.info('error-pages: rendered {0} error pages'.format(idx))
 
 def finalize_dirhtml_build(sconf, conf):
     builder = sconf.builder
