@@ -80,6 +80,26 @@ def generate_image_pages(dir, name, alt, output, conf):
                         '{6}</div>' ]
             img_str = ''.join(img_tags)
 
+            r.directive('only', 'website and slides', wrap=False)
+            r.newline()
+            r.directive(name='figure',
+                        arg='/images/{0}{1}'.format(name, tag),
+                        fields=options,
+                        indent=3)
+
+            r.newline()
+
+            if img_output['width'] > 600:
+                options[2] = ('figwidth', 600)
+
+            r.directive('only', 'website and html', wrap=False)
+            r.newline()
+            r.directive(name='figure',
+                        arg='/images/{0}{1}'.format(name, tag),
+                        fields=options,
+                        indent=3)
+
+            r.newline()
 
             r.directive('only', 'website and not (html or slides)', wrap=False)
             r.newline()
@@ -88,19 +108,6 @@ def generate_image_pages(dir, name, alt, output, conf):
                                                conf.git.branches.current, name, tag, alt,
                                                img_output['width'], alt_html),
                         indent=3)
-
-            r.newline(count=2)
-
-            if img_output['width'] > 600:
-                options[2] = ('figwidth', 600)
-
-            r.directive('only', 'website and (html or slides)', wrap=False)
-            r.newline()
-            r.directive(name='figure',
-                        arg='/images/{0}{1}'.format(name, tag),
-                        fields=options,
-                        indent=3)
-
 
         r.newline()
 
