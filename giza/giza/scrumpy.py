@@ -41,6 +41,7 @@ def pprint(obj):
 
 #################### scrumpy commands #####################
 
+@argh.expects_obj
 def config(args):
     conf = fetch_config(args)
 
@@ -50,6 +51,7 @@ def config(args):
     pprint(json.dumps(conf.dict(), indent=3))
 
 @argh.arg('--sprint')
+@argh.expects_obj
 def progress(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
@@ -63,6 +65,7 @@ def progress(args):
     pprint(giza.jeerah.progress.report(query_data, conf))
 
 @argh.arg('--sprint')
+@argh.expects_obj
 def planning(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
@@ -75,8 +78,7 @@ def planning(args):
 
     pprint(giza.jeerah.planning.report(query_data, conf))
 
-
-
+@argh.expects_obj
 def triage(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
@@ -91,9 +93,10 @@ def triage(args):
 
 #################### Jira Modification Tasks ####################
 
-@argh.named('create-versions')
 @argh.arg('--sprint')
 @argh.arg('--project')
+@argh.named('create-versions')
+@argh.expects_obj
 def make_versions(args):
     conf = fetch_config(args)
 
@@ -115,6 +118,7 @@ def make_versions(args):
     pprint({ 'created': created, 'project': conf.runstate.project })
 
 @argh.named('mirror-versions')
+@argh.expects_obj
 def mirror_version(args):
     results = { 'created': {}, 'targets': {} }
 
@@ -144,6 +148,7 @@ def mirror_version(args):
 
     pprint(results)
 
+@argh.expects_obj
 def release(args):
     results = { }
 
@@ -170,6 +175,7 @@ def release(args):
 
 
 @argh.arg('--path', dest='user_conf_path', default='.scrumpy.yaml')
+@argh.expects_obj
 def setup(args):
     skel = {
         'site': { 'credentials': "~/.giza-credentials.yaml",
@@ -204,6 +210,7 @@ def setup(args):
 
 @argh.named('setup-credentials')
 @argh.arg('user_conf_path')
+@argh.expects_obj
 def setup_credential_file(args):
     setup_credentials(args)
 
