@@ -42,7 +42,7 @@ def once(args):
 def unused(args):
     c = fetch_config(args)
 
-    render_for_console(included_files_unused(conf=c))
+    render_for_console(include_files_unused(conf=c))
 
 @argh.expects_obj
 def list(args):
