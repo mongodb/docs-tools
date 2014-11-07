@@ -5,7 +5,7 @@ logger = logging.getLogger('giza.operations.deploy')
 from giza.config.helper import fetch_config, new_credentials_config
 from giza.core.app import BuildApp
 from giza.deploy import Deploy, deploy_target
-from giza.operations.sphinx import sphinx_publication
+from giza.operations.sphinx_cmds import sphinx_publication
 from giza.tools.command import command
 from giza.tools.serialization import ingest_yaml_list, dict_from_list
 

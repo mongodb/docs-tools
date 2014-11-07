@@ -225,11 +225,10 @@ def run_sphinx(builder, sconf, conf):
     with Timer("running sphinx build for: {0}, {1}, {2}".format(builder, sconf.language, sconf.edition)):
         out = command(sphinx_cmd, capture=True, ignore=True)
 
-    # out = sphinx_native_worker(sphinx_cmd)
     logger.info('completed sphinx build {0}'.format(builder))
 
     if True: # out.return_code == 0:
-        logger.info('successfully completed {0} sphinx build'.format(builder))
+        logger.info('successfully completed {0} sphinx build ({1})'.format(builder, out.return_code))
 
         finalizer_app = BuildApp(conf)
         finalizer_app.root_app = False

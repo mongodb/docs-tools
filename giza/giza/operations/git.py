@@ -1,9 +1,16 @@
 import logging
+import os
+from tempfile import NamedTemporaryFile
 
 import argh
+from sphinx.application import Sphinx, ENV_PICKLE_FILENAME
+from sphinx.builders.html import get_stable_hash
 
+from giza.core.app import BuildApp
 from giza.core.git import GitRepo
 from giza.config.helper import fetch_config
+from giza.tools.command import command
+from giza.config.sphinx_config import avalible_sphinx_builders
 
 logger = logging.getLogger('giza.operations.git')
 
@@ -80,3 +87,94 @@ def merge(args):
             g.checkout(from_branch)
 
         g.remove_branch(branch_name, force=True)
+
+@argh.expects_obj
+@argh.named("create-branch")
+@argh.arg('git_branch')
+def create_branch(args):
+    conf = fetch_config(args)
+    app = BuildApp(conf)
+    app.pool = 'process'
+
+    g = GitRepo(conf.paths.projectroot)
+
+    branch = conf.runstate.git_branch
+    base_branch = g.current_branch()
+
+    if base_branch == branch:
+        base_branch = 'master'
+        logger.warning('seeding build data for branch "{0}" from "master"'.format(branch))
+
+    branch_builddir = os.path.join(conf.paths.projectroot,
+                                   conf.paths.output, branch)
+
+    base_builddir = os.path.join(conf.paths.projectroot,
+                                   conf.paths.output, base_branch)
+
+    if g.branch_exists(branch):
+        logger.info('checking out branch "{0}"'.format(branch))
+    else:
+        logger.info('creating and checking out a branch named "{0}"'.format(branch))
+
+    g.checkout_branch(branch)
+
+    cmd = "rsync -r --times --checksum {0}/ {1}".format(base_builddir, branch_builddir)
+    logger.info('seeding build directory for "{0}" from "{1}"'.format(branch, base_branch))
+    command(cmd)
+    logger.info('branch creation complete.')
+
+    # get a new config here for the new branch
+    conf = fetch_config(args)
+    for builder in [ b
+                     for b in avalible_sphinx_builders()
+                     if os.path.isdir(os.path.join(conf.paths.projectroot, conf.paths.branch_output, b)) ]:
+        t = app.add('task')
+        t.job = fix_build_environment
+        t.args = (builder, conf)
+        t.target = True
+        t.description = "fix up sphinx environment for builder '{0}'".format(builder)
+
+    app.run()
+
+
+def fix_build_environment(builder, conf):
+    fn = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder, '.buildinfo')
+    logger.info('updating cache for: ' + builder)
+
+    if not os.path.isfile(fn):
+        return
+
+    doctree_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, "doctrees-" + builder)
+
+    sphinx_app = Sphinx(
+        srcdir=os.path.join(conf.paths.projectroot, conf.paths.branch_output, "source"),
+        confdir=conf.paths.projectroot,
+        outdir=os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder),
+        doctreedir=doctree_dir,
+        buildername=builder,
+        status=NamedTemporaryFile(),
+        warning=NamedTemporaryFile()
+        )
+
+    sphinx_app.env.topickle(os.path.join(doctree_dir, ENV_PICKLE_FILENAME))
+
+    with open(fn, 'r') as f:
+        lns = f.readlines()
+        tags_hash_ln = None
+        for ln in lns:
+            if ln.startswith('tags'):
+                tags_hash_ln = ln
+                break
+
+        if tags_hash_ln == None:
+            tags_hash_ln = 'tags: '  + get_stable_hash(sorted(sphinx_app.tags))
+
+    with open(fn, 'w') as f:
+        f.write('# Sphinx build info version 1')
+        f.write('\n\n')
+        f.write('config: ' + get_stable_hash(dict((name, sphinx_app.config[name])
+                                                  for (name, desc) in sphinx_app.config.values.items()
+                                                  if desc[1] == 'html')))
+        f.write('\n')
+        f.write(tags_hash_ln)
+        f.write('\n')

@@ -20,7 +20,7 @@ from giza.core.app import BuildApp
 from giza.config.helper import fetch_config
 from giza.config.project import EditionListConfig
 from giza.operations.deploy import deploy_worker
-from giza.operations.sphinx import sphinx_publication
+from giza.operations.sphinx_cmds import sphinx_publication
 from giza.tools.timing import Timer
 
 logger = logging.getLogger('giza.operations.make')

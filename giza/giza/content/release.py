@@ -155,7 +155,6 @@ def release_tasks(conf, app):
         target = os.path.join(conf.paths.projectroot, conf.paths.includes,
                               'install-curl-release-ent-{0}.rst'.format(rel['system']))
 
-
         t = app.add('task')
         t.job = _generate_release_ent
         t.args = [ rel, target, release_version ]

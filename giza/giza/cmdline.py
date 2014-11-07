@@ -31,7 +31,7 @@ import giza.operations.includes
 import giza.operations.make
 import giza.operations.packaging
 import giza.operations.quickstart
-import giza.operations.sphinx
+import giza.operations.sphinx_cmds
 import giza.operations.translate
 import giza.operations.tx
 
@@ -43,7 +43,7 @@ commands = {
         giza.operations.deploy.publish_and_deploy,
         giza.operations.make.main,
         giza.operations.quickstart.make_project,
-        giza.operations.sphinx.main,
+        giza.operations.sphinx_cmds.main,
         giza.operations.deploy.twofa_code,
         giza.operations.http_serve.start,
         giza.operations.configuration.report_version,
@@ -53,6 +53,7 @@ commands = {
         giza.operations.git.pull_rebase,
         giza.operations.git.cherry_pick,
         giza.operations.git.merge,
+        giza.operations.git.create_branch,
     ],
     'generate': [
         giza.operations.generate.api,

@@ -55,6 +55,7 @@ def dump_file_hashes(conf):
 
 def _refresh_deps(graph, dep_map, conf):
     warned = set()
+    count = 0
     for file, dependents in graph.items():
         if check_hashed_dependency(file, dep_map, conf) is True:
             core_file = normalize_dep_path(file, conf, False)
@@ -73,8 +74,9 @@ def _refresh_deps(graph, dep_map, conf):
                 elif os.path.exists(dep):
                     logger.debug('updating timestamp of "{0}" because of "{1}"'.format(dep, file))
                     os.utime(dep, None)
+                    count += 1
 
-    logger.info('refreshed all deps')
+    logger.info('bumped timestamps for {0} files'.format(count))
 
 def refresh_deps(conf):
     with Timer('resolve dependency graph'):

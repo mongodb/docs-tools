@@ -24,7 +24,7 @@ import giza
 
 from giza.config.helper import fetch_config
 from giza.core.app import BuildApp
-from giza.operations.sphinx import sphinx_publication
+from giza.operations.sphinx_cmds import sphinx_publication
 from giza.tools.command import command, CommandError
 
 @argh.arg('--with-git', action='store_true', dest='quickstart_git')

@@ -34,7 +34,7 @@ def generate_hash_file(fn, conf):
     r.directive('|commit| replace', '``{0}``'.format(commit))
     r.directive('|branch| replace', '``{0}``'.format(conf.git.branches.current))
     r.directive('|hardlink| replace', '{0}/{1}'.format(conf.project.url, conf.git.branches.current))
-    r.directive('|year| replace:: {0}'.format(datetime.date.today().year))
+    r.directive('|year| replace', '{0}'.format(datetime.date.today().year))
 
     try:
         if r.data == existing[:-1]:

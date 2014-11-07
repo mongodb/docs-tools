@@ -51,7 +51,7 @@ class GitRepo(object):
     def cmd(self, *args):
         args = ' '.join(args)
 
-        try: 
+        try:
             return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True)
         except CommandError as e:
             raise GitError(e)
@@ -62,11 +62,11 @@ class GitRepo(object):
     def branch_exists(self, name):
         r = self.cmd('branch --list ' + name).out.split('\n')
 
-        if len(r) == 0:
+        if len(r) < 1:
             return False
-        elif len(r) == 1: 
+        elif len(r) >= 1:
             return True
-        else: 
+        else:
             raise GitError
 
     def branch_file(self, path, branch='master'):
@@ -76,7 +76,15 @@ class GitRepo(object):
         return self.cmd('checkout', ref)
 
     def checkout_branch(self, name, tracking=None):
-        args = ['checkout', '-b', name]
+        if self.current_branch() == name:
+            return
+
+        args = ['checkout']
+
+        if not self.branch_exists(name):
+            args.append('-b')
+
+        args.append(name)
 
         if tracking is not None:
             args.append(tracking)
