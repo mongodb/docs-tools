@@ -56,6 +56,13 @@ from giza.tools.files import rm_rf
 from giza.tools.command import command
 
 def assets_setup(path, branch, repo):
+    """
+    Worker function that clones a repository if one doesn't exist and pulls
+    the repository otherwise.
+    """
+    # TODO: In the future this should be able to pin the repository to a
+    #       specific hash.
+
     if os.path.exists(path):
         g = GitRepo(path)
         g.pull(branch=branch)
@@ -68,8 +75,9 @@ def assets_setup(path, branch, repo):
         g.clone(repo, repo_path=name, branch=branch)
         logger.info('cloned {0} branch from repo {1}'.format(branch, repo))
 
-
 def assets_tasks(conf, app):
+    """Add tasks to an app to create/update the assets."""
+
     if conf.assets is not None:
         gen_app = app.add('app')
 
@@ -96,8 +104,9 @@ def assets_tasks(conf, app):
                     t.args = 'cd {0}; giza generate {1}'.format(path, content_type)
                     t.description('generating objects in {0}'.format(path))
 
-
 def assets_clean(conf, app):
+    """Adds tasks to remove all asset repositories."""
+
     if conf.assets is not None:
         for asset in conf.assets:
             path = os.path.join(conf.paths.projectroot, asset.path)

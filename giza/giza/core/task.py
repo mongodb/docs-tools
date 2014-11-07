@@ -143,6 +143,12 @@ class Task(object):
 
     @property
     def needs_rebuild(self):
+        """
+        Used by the execution application to see if a rebuild is needed. Always
+        returns ``True`` if there is no target or when running in *force* mode,
+        otherwise checks the ``mtime`` of the files using ``check_dependency()``
+        """
+
         if self.target is None:
             logger.warning('no target specified for: ' + str(self.job))
             return True
@@ -170,14 +176,15 @@ def check_dependency(target, dependency):
     Determines if a target requires rebuilding based on a provided
     dependency.
 
-    :param string target: A file name.
+    :param string target: A file name or list of file names.
+    :type target: string, list
 
     :param dependency: A file name or list of file names.
     :type dependency: string, list
 
     :returns: A boolean. If either the ``target`` or ``dependency`` doesn't
        exist, or if the ``target`` was modified more recently than the
-       ``dependency`` returns ``True`` otherwise returns ``False``.
+       ``dependency`` returns ``True``; otherwise ``False``.
 
     :func:`~giza.task.check_dependency()` Accepts dependencies in the form of a
     single file name, or as a list, and will return ``True`` if *any* dependent
@@ -246,6 +253,16 @@ class MapTask(Task):
 ############### Hashed Dependency Checking ###############
 
 def normalize_dep_path(fn, conf, branch):
+    """
+    Given a filename (typically, absolute with regards to the ``source``
+    directory), the configuration object, the ``branch`` boolean, returns a
+    fully qualified path of a source file.
+
+    When ``branch`` is ``False``, that's in the actual ``source/``
+    directory. When ``branch`` is ``True``, that's the proxy-source directory in
+    ``build/<branch>``.
+    """
+
     fn = fn.rstrip()
     if not fn.startswith(conf.paths.projectroot):
         if fn.startswith(conf.paths.branch_source) or fn.startswith(conf.paths.source):
@@ -264,9 +281,11 @@ def normalize_dep_path(fn, conf, branch):
 
 def check_hashed_dependency(fn, dep_map, conf):
     """
-    :return: True when any of the files have changed.
+    :return: ``True`` when any of the files that include ``fn`` have changed since
+        the generation of the the ``dep_map``. Always returns ``True`` if
+        ``dep_map`` is ``None`` (i.e. if this is the first build.)
     """
-    # logger.info('checking dependency for: ' + fn)
+    # logger.info('checking dependency for: ' + fan)
 
     fn = normalize_dep_path(fn, conf, branch=False)
 

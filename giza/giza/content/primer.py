@@ -147,6 +147,9 @@ def primer_migration_tasks(conf, app):
 
         return True
 
+
+########## Task Creators
+
 def clean(conf, app):
     "Removes all migrated primer files according to the current spec."
 
@@ -169,8 +172,6 @@ def clean(conf, app):
     t.description = 'clean primer migrations'
 
     logger.info('clean: removed {0} files'.format(len(targets)))
-
-########## Task Creators
 
 def build_migration_task(target, source, app):
     task = app.add('task')

@@ -56,16 +56,25 @@ def dump_file_hashes(conf):
 def _refresh_deps(graph, dep_map, conf):
     warned = set()
     count = 0
+
+    # For each file in the source tree, bump the timestamp of all files that
+    # include it, if the file changed since the last build.
+
     for file, dependents in graph.items():
         if check_hashed_dependency(file, dep_map, conf) is True:
             core_file = normalize_dep_path(file, conf, False)
             norm_file = normalize_dep_path(file, conf, True)
 
             if os.path.isfile(norm_file) and not os.path.isfile(core_file):
-                # these are generated files in the build/<branch>/source
+                # these are generated files in the build/<branch>/source. No
+                # need to touch these files.
                 continue
             for dep in [ normalize_dep_path(dep, conf, branch=True) for dep in dependents]:
                 if not os.path.exists(core_file):
+                    # this file doesn't exist in the source. Sphinx will
+                    # warn about this file later (though the output silently
+                    # ignores the unavailable content.)
+
                     if core_file in warned:
                         continue
                     else:
@@ -80,8 +89,12 @@ def _refresh_deps(graph, dep_map, conf):
 
 def refresh_deps(conf):
     with Timer('resolve dependency graph'):
+        # resolve a map of the source files to the files they depend on
+        # (i.e. the ones that they include).
         graph = include_files(conf=conf)
 
+        # load, if possible, a mappping of all source files with hashes from the
+        # last build.
         if not os.path.exists(conf.system.dependency_cache):
             dep_map = None
         else:
@@ -95,6 +108,11 @@ def refresh_deps(conf):
 
     with Timer('dependency updates'):
         _refresh_deps(graph, dep_map, conf)
+
+# In previous versions, giza loaded the dep_map in the main thread, and then
+# passed the checks and update to a worker pool, but the pool took ~40 seconds
+# on a large resource, and doing the entire operation serially in a thread takes
+# ~1 second.
 
 def refresh_dependency_tasks(conf, app):
     t = app.add('task')
@@ -110,4 +128,4 @@ def dump_file_hash_tasks(conf, app):
     t.args = [conf]
     t.target = conf.system.dependency_cache
     t.dependency = os.path.join(conf.paths.projectroot, conf.paths.branch_source)
-    t.description = "writing dependency cache"
+    t.description = "writing dependency cache to a file for the next build"
