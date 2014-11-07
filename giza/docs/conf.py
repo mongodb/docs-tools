@@ -49,20 +49,16 @@ version = conf.version.branch
 release = conf.version.release
 
 rst_epilog = '\n'.join([
-    '.. |branch| replace:: ``{0}``'.format(conf.git.branches.current),
+    '.. include:: {0}/hash.rst'.format(conf.paths.includes[len(conf.paths.source):]),
     '.. |copy| unicode:: U+000A9',
-    '.. |year| replace:: {0}'.format(datetime.date.today().year),
-    '.. |hardlink| replace:: {0}/{1}'.format(conf.project.url, conf.git.branches.current)
 ])
 
 pygments_style = 'sphinx'
 
 extlinks = {
+    'hardlink' : ( 'http://docs.mongodb.org/{0}/%s'.format(conf.git.branches.current), ''),
     'issue': ('https://jira.mongodb.org/browse/%s', '' ),
     'api': ('http://api.mongodb.org/%s', ''),
-    'source': ('https://github.com/mongodb/mongo/blob/master/%s', ''),
-    'docsgithub' : ( 'http://github.com/mongodb/docs/blob/{0}/%s'.format(conf.git.branches.current), ''),
-    'hardlink' : ( 'http://docs.mongodb.org/{0}/%s'.format(conf.git.branches.current), ''),
     'manual': ('http://docs.mongodb.org/manual%s', ''),
     'ecosystem': ('http://docs.mongodb.org/ecosystem%s', ''),
     'meta-driver': ('http://docs.mongodb.org/meta-driver/latest%s', ''),

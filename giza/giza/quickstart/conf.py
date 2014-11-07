@@ -48,10 +48,8 @@ version = conf.version.branch
 release = conf.version.release
 
 rst_epilog = '\n'.join([
-    '.. |branch| replace:: ``{0}``'.format(conf.git.branches.current),
+    '.. include:: {0}/hash.rst'.format(conf.paths.includes[len(conf.paths.source):]),
     '.. |copy| unicode:: U+000A9',
-    '.. |year| replace:: {0}'.format(datetime.date.today().year),
-    '.. |hardlink| replace:: {0}/{1}'.format(conf.project.url, conf.git.branches.current)
 ])
 
 pygments_style = 'sphinx'
