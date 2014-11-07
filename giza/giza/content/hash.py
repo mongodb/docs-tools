@@ -14,7 +14,7 @@
 
 import logging
 import os
-
+import datetime
 logger = logging.getLogger('giza.hash')
 
 from rstcloth.rstcloth import RstCloth
