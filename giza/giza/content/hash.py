@@ -32,6 +32,9 @@ def generate_hash_file(fn, conf):
 
     commit = conf.git.commit
     r.directive('|commit| replace', '``{0}``'.format(commit))
+    r.directive('|branch| replace', '``{0}``'.format(conf.git.branches.current))
+    r.directive('|hardlink| replace:: {0}/{1}'.format(conf.project.url, conf.git.branches.current))
+    r.directive('|year| replace:: {0}'.format(datetime.date.today().year))
 
     try:
         if r.data == existing[:-1]:
@@ -59,7 +62,7 @@ def generate_release_file(release_fn, conf):
 
 def hash_tasks(conf, app):
     hash_fn = os.path.join(conf.paths.projectroot,
-                           conf.paths.includes,
+                           conf.paths.branch_includes,
                            'hash.rst')
 
     hash_task = app.add('task')
