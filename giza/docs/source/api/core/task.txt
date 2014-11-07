@@ -14,6 +14,4 @@
 
 .. autofunction:: check_dependency
 
-.. autofunction:: check_multi_dependency
-
 .. autofunction:: check_hashed_dependency
