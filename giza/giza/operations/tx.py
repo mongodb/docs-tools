@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Operations for managing and producing artifacts using the ``gettext`` builder,
+``sphinx-intl``, and Transifex-based translation workflow.
+"""
+
 import logging
 import os.path
 import sys

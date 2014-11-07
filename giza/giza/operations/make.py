@@ -26,6 +26,12 @@ from giza.tools.timing import Timer
 logger = logging.getLogger('giza.operations.make')
 
 def build_reporter(target, deploy_action, build_sphinx, editions, languages, args):
+    """
+    Infers what the "traditional" direct ``giza`` command would be given
+    information from the ``make`` target, to make the ``make`` emulation
+    operation less opaque.
+    """
+
     if len(deploy_action) > 0:
         deploy_action = ' '.join(deploy_action)
 
@@ -57,6 +63,14 @@ def build_reporter(target, deploy_action, build_sphinx, editions, languages, arg
     return cmd
 
 def determine_workload(deploy_action, targets, conf):
+    """
+    Given a string of ``make``-like targets, returns a
+
+    :returns: A boolean that is ``False`` when the operation is *just* and
+        ``True`` when the operation requires a Sphinx invocation.
+
+    :rtype: bool, list
+    """
     build_sphinx = True
     if targets[0] in ('deploy', 'stage', 'push'):
         target = ['publish']
@@ -94,6 +108,13 @@ def determine_workload(deploy_action, targets, conf):
 @argh.named('make')
 @argh.expects_obj
 def main(args):
+    """
+    Emulates ``make``. Pass a list of make targets. Most projects call this
+    using a simple Makefile pass through.
+
+    Calls the underlying functions from ``giza deploy`` and ``giza sphinx``.
+    """
+
     conf = fetch_config(args)
     targets = [ t.split('-') for t in args.make_target ]
 

@@ -35,6 +35,8 @@ from giza.tools.files import rm_rf
 @argh.named('clean')
 @argh.expects_obj
 def main(args):
+    """Removes build artifacts from ``build/`` directory."""
+
     c = Configuration()
     c.ingest(args.conf_path)
     c.runstate = args

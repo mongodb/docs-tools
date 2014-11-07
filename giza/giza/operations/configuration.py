@@ -25,6 +25,8 @@ import giza
 
 @argh.named('version')
 def report_version(args):
+    "Returns current version of giza"
+
     print(giza.__version__)
 
 @argh.arg('--conf_path', '-c')
@@ -33,6 +35,8 @@ def report_version(args):
 @argh.named('config')
 @argh.expects_obj
 def render_config(args):
+    """Returns configuration object for diagnostic purposes."""
+
     c = Configuration()
     c.ingest(args.conf_path)
     c.runstate = args

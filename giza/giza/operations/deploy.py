@@ -38,11 +38,8 @@ import onetimepass as otp
 @argh.expects_obj
 def main(args):
     """
-    Entry point for the deploy operation which just uploads the
-    appropriate (defined in the projects ``config/push.yaml``) files
-    from ``build/public/`` to the web servers.
-
-    The work of the deploy operation itself is in ``deploy_worker()``
+    Uploads all build artifacts to the production environment. Does not build or
+    render artifacts.
     """
 
     c = fetch_config(args)
@@ -59,16 +56,8 @@ def main(args):
 @argh.expects_obj
 def publish_and_deploy(args):
     """
-    Combines the work of the Sphinx builder (in
-    ``giza.operations.sphinx_cmds.sphinx_publication``) with
-    ``deploy_worker()``
-
-    Essentially this is the same as calling: ::
-
-       make publish
-       make deploy
-
-    Historically the build system has provided a ``push`` target for this functionality.
+    Combines the work of ``giza sphinx`` and ``giza deploy``, to produce build
+    artifacts and then upload those artifacts to the servers.
     """
 
     c = fetch_config(args)
@@ -121,10 +110,7 @@ def deploy_worker(c, app):
 @argh.named('code')
 @argh.expects_obj
 def twofa_code(args):
-    """
-    Returns a 2 factor authentication code using the ``otp`` package
-    and access to credentials.
-    """
+    "Returns a 2 factor authentication code."
 
     creds = new_credentials_config()
 

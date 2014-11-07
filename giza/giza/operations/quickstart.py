@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Simple operations to create and bootstrap the content for new projects.
+"""
+
 import inspect
 import logging
 import os
@@ -31,6 +35,11 @@ from giza.tools.command import command, CommandError
 @argh.named('quickstart')
 @argh.expects_obj
 def make_project(args):
+    """
+    Generate a project skeleton. Prefer this operation over
+    ``sphinx-quickstart``. Also builds skeleton HTML artifacts.
+    """
+
     curdir = os.getcwd()
     curdir_list = os.listdir(curdir)
 
@@ -47,7 +56,6 @@ def make_project(args):
             except CommandError:
                 pass
 
-@argh.expects_obj
 def _weak_bootstrapping(args):
     args.languages_to_build = args.editions_to_build = []
     args.builder = 'html'

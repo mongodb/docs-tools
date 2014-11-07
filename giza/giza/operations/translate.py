@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Entry points for managing Moses-based machine translation processes.
+"""
+
 import os
 import sys
 import logging

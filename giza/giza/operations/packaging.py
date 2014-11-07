@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Create and manipulate "packages" of build artifacts that can be used to quickly
+share and deploy artifacts and build environment data.
+"""
+
 import logging
 import datetime
 import os
