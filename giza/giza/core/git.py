@@ -61,13 +61,12 @@ class GitRepo(object):
 
     def branch_exists(self, name):
         r = self.cmd('branch --list ' + name).out.split('\n')
+        r.remove('')
 
-        if len(r) < 1:
-            return False
-        elif len(r) >= 1:
+        if name in r:
             return True
         else:
-            raise GitError
+            return False
 
     def branch_file(self, path, branch='master'):
         return self.cmd('show {branch}:{path}'.format(branch=branch, path=path)).out
