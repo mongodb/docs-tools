@@ -54,7 +54,10 @@ def transfer_source(conf, sconf):
     logger.info('prepared source for sphinx build in {0}'.format(target))
 
 def transfer_images(conf, sconf):
-    if sconf.builder == 'latex':
+    image_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_images)
+    if not os.path.isdir(image_dir):
+        return False
+    elif sconf.builder == 'latex':
 
         if 'edition' in sconf and sconf.edition is not None:
             builder_dir = hyph_concat(sconf.builder, sconf.edition)
@@ -62,7 +65,6 @@ def transfer_images(conf, sconf):
             builder_dir = sconf.builder
 
         builder_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder_dir)
-        image_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_images)
 
         safe_create_directory(builder_dir)
         command('rsync -am --include="*.png" --include="*.eps" --exclude="*" {0}/ {1} '.format(image_dir, builder_dir))
