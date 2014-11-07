@@ -1,3 +1,22 @@
+# Copyright 2014 MongoDB, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
+Helpers and wrappers for performing common maintenance operations on a
+repository with git.
+"""
+
 import logging
 import os
 from tempfile import NamedTemporaryFile
@@ -92,6 +111,17 @@ def merge(args):
 @argh.named("create-branch")
 @argh.arg('git_branch')
 def create_branch(args):
+    """
+    Takes a single branch name and (if necessary) creates a new branch. Then,
+    populates the ``build/<branch>`` directory for the new branch using either
+    the parent branch or ``master``. Safe to run multiple times (after a rebase)
+    to update the build cache from master.
+
+    Also calls ``fix_build_environment()`` to tweak the new build output to
+    update hashes and on-disk copies of the environment to prevent unnecessary
+    full-rebuilds from sphinx.
+    """
+
     conf = fetch_config(args)
     app = BuildApp(conf)
     app.pool = 'process'
@@ -136,8 +166,14 @@ def create_branch(args):
 
     app.run()
 
-
 def fix_build_environment(builder, conf):
+    """
+    Given a builder name and the conf object, this function fixes the build
+    artifacts for the current build to prevent a full rebuild. Currently
+    re-pickles the environment and dumps the ``.buildinfo`` file in the build
+    directory with the correct hashes.
+    """
+
     fn = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder, '.buildinfo')
     logger.info('updating cache for: ' + builder)
 
@@ -153,8 +189,7 @@ def fix_build_environment(builder, conf):
         doctreedir=doctree_dir,
         buildername=builder,
         status=NamedTemporaryFile(),
-        warning=NamedTemporaryFile()
-        )
+        warning=NamedTemporaryFile())
 
     sphinx_app.env.topickle(os.path.join(doctree_dir, ENV_PICKLE_FILENAME))
 
@@ -171,7 +206,7 @@ def fix_build_environment(builder, conf):
 
     with open(fn, 'w') as f:
         f.write('# Sphinx build info version 1')
-        f.write('\n\n')
+        f.write('\n\n') ## current format requires an extra line here.
         f.write('config: ' + get_stable_hash(dict((name, sphinx_app.config[name])
                                                   for (name, desc) in sphinx_app.config.values.items()
                                                   if desc[1] == 'html')))

@@ -106,6 +106,11 @@ commands = {
 }
 
 def get_base_parser():
+    """
+    Adds global arguments/settings giza build process, and creates the top-level
+    argument parser object.
+    """
+
     parser = argh.ArghParser()
     parser.add_argument('--level', '-l',
                         choices=['debug', 'warning', 'info', 'critical', 'error'],
@@ -119,6 +124,21 @@ def get_base_parser():
     return parser
 
 def main():
+    """
+    The main entry point, as specified in the ``setup.py`` file. Adds commands
+    from other subsidiary entry points (specified in the ``commands`` variable
+    above,) and then uses ``arch.dispatch()`` to start the process.
+
+    The ``RuntimeStateConfig()`` object is created here and handed to the parser
+    as the object that will recive all command line data, rather than using a
+    standard argparse namespace object. This allows all runtime argument parsing
+    to happen inside of these config objects rather than spread among all of the
+    entry points.
+
+    This function catches and recovers from :exc:`KeyboardInterupt` which means
+    that doesn't dump a stack trace following a Control-C.
+    """
+
     parser = get_base_parser()
 
     for namespace, entry_points in commands.items():

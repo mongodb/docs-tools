@@ -1,3 +1,23 @@
+# Copyright 2014 MongoDB, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
+Entry points that
+
+"""
+
+
 import os.path
 import logging
 logger = logging.getLogger('giza.operations.deploy')
@@ -17,6 +37,14 @@ import onetimepass as otp
 @argh.named('deploy')
 @argh.expects_obj
 def main(args):
+    """
+    Entry point for the deploy operation which just uploads the
+    appropriate (defined in the projects ``config/push.yaml``) files
+    from ``build/public/`` to the web servers.
+
+    The work of the deploy operation itself is in ``deploy_worker()``
+    """
+
     c = fetch_config(args)
     app = BuildApp(c)
 
@@ -30,6 +58,19 @@ def main(args):
 @argh.named('push')
 @argh.expects_obj
 def publish_and_deploy(args):
+    """
+    Combines the work of the Sphinx builder (in
+    ``giza.operations.sphinx_cmds.sphinx_publication``) with
+    ``deploy_worker()``
+
+    Essentially this is the same as calling: ::
+
+       make publish
+       make deploy
+
+    Historically the build system has provided a ``push`` target for this functionality.
+    """
+
     c = fetch_config(args)
     app = BuildApp(c)
 
@@ -40,10 +81,17 @@ def publish_and_deploy(args):
         logger.warning(sphinx_ret + ' sphinx build(s) failed, and build not forced. not deploying.')
 
 def deploy_worker(c, app):
+    """
+    Deploys the build. The logic for generating the rsync commands is
+    in ``giza.deploy``, and the configuration data is typically in
+    ``config/push``.
+
+    This function glues the config with the rsync command creation and then
+    runs the commands.
+    """
+
     pconf = c.system.files.data.push
     pconf = dict_from_list('target', pconf)
-
-    backgrounds = []
 
     for target in c.runstate.push_targets:
         d = Deploy(c)
@@ -73,6 +121,11 @@ def deploy_worker(c, app):
 @argh.named('code')
 @argh.expects_obj
 def twofa_code(args):
+    """
+    Returns a 2 factor authentication code using the ``otp`` package
+    and access to credentials.
+    """
+
     creds = new_credentials_config()
 
     print(otp.get_totp(creds.corp.seed))

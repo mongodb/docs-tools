@@ -31,14 +31,16 @@ running tasks.
 Content Generation
 ------------------
 
-To maximize clarity and efficiency, :mod:`giza` based sites prefer to
-generate content into static files before running ``sphinx-build`` to
-avoid duplicating work inside of the ``sphinx-build`` process, and to
-avoid the overhead and complexity of Sphinx extensions.
+:mod:`giza` based sites prefer to generate content into static files
+before running ``sphinx-build``. Manipulating content in the within
+the Sphinx process is difficult because you have interact with content
+in a DOM-like interface which is opaque difficult to introspect, and
+there are limited opportunities for optimization within the Sphinx
+process itself.
 
 All content generation code is in the :mod:`giza.content` package, and
 uses `rstcloth <https://pypi.python.org/pypi/rstcloth/>`_ to generate
-reStructuredText directly from Python.
+and write reStructuredText from Python.
 
 The content generation process has the following stages:
 
@@ -96,7 +98,7 @@ publication artifacts or translation testing. A single ``giza`` can
 build as many versions of a single resource as needed at one time.
 
 Additional configuration for the sphinx build process is
-in the ``sphinx_locial`` configuration structure,
+in the ``sphinx_local`` configuration structure,
 which is typically ``config/sphinx_local.yaml``, and accessible in the
 ``conf.system.files.data.sphinx_local`` in the configuration
 object. Before a sphinx build starts
