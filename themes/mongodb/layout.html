@@ -16,11 +16,11 @@
 {%- endmacro -%}
 
 {%- macro editlink(type) -%}
-  <a class="edit-link" href="https://github.com/{{ github_organization }}/{{theme_repo_name}}/blob/{{theme_branch}}/locale/zh/LC_MESSAGES/{{pagename}}.po" target="_blank" title="Edit {{pagename}}.txt on GitHub">
+  <a class="edit-link" href="https://github.com/{{ github_organization }}/{{theme_repo_name}}/edit/{{theme_branch}}/locale/zh/LC_MESSAGES/{{pagename}}.po" target="_blank" title="直接在Github上翻译或者纠错本页面">
     {% if type == 'icon' %}
-      <span class="icon-edit"></span> <span>Edit on Github</span>
+      <span class="icon-edit"></span> <span>翻译或纠错本页面</span>
     {% else %}
-      <span>Edit on Github</span>
+      <span>直接翻译或纠错本页面</span>
     {% endif %}
   </a>
 {%- endmacro -%}

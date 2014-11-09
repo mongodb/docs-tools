@@ -17,6 +17,10 @@
 {%- macro editlink() -%}
   {%- block editlink %}
     <a class="edit-link" href="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub"><span class="icon-edit"></span></a>
+     <a class="edit-link" href="https://github.com/{{ github_organization }}/{{theme_repo_name}}/edit/{{theme_branch}}/locale/zh/LC_MESSAGES/{{pagename}}.po" target="_blank" title="直接在Github上翻译或者纠错本页面">
+      <span>直接翻译或纠错本页面</span>
+  </a>
+
   {%- endblock -%}
 {%- endmacro -%}
 
