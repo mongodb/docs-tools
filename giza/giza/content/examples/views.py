@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Takes the ingested and processed data from all examples and renders the content
+into reStructuredText using rstcloth.
+"""
+
 import logging
 
 logger = logging.getLogger('giza.content.examples.views')
@@ -19,6 +24,17 @@ logger = logging.getLogger('giza.content.examples.views')
 from rstcloth.rstcloth import RstCloth
 
 def full_example(collection, examples):
+    """
+    :pram collection: An object with collection information and description.
+
+    :pram examples:  An object with examples, procedures and results.
+
+    See :mod:`giza.content.examples.modules` for full documentation of the
+    example data format.
+
+    :returns: A populated ``RstCloth()`` object with the content of one example.
+    """
+
     r = RstCloth()
 
     if collection.options.show_title is True:

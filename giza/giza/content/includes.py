@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Controls the generation of the ``meta/includes.txt`` file which provides a
+full-overview of all included files, along with an easy generation of
+:mod:`giza.includes` data to make it easy to undersatnd the relationship between
+include files and their use. For use in documentation development only.
+"""
+
 import logging
 import os.path
 

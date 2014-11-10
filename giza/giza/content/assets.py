@@ -95,6 +95,9 @@ def assets_tasks(conf, app):
                        'branch': asset.branch,
                        'repo': asset.repository }
 
+            # If you specify a list of "generate" items, giza will call ``giza
+            # generate`` to build content after updating the
+            # repository. Deprecated, and largely unused.
             if 'generate' in asset:
                 for content_type in asset.generate:
                     t = gen_app.add('task')

@@ -12,12 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Glues the reading and processing (:mod:`giza.content.examples.inheritance`) of
+the example data (:mod:`giza.content.examples.models`) to the generation of the
+output format (:mod:`giza.content.examples.views`).
+"""
+
 import logging
 import os
 
 logger = logging.getLogger('giza.content.examples')
 
-from giza.tools.files import expand_tree
+from giza.tools.files import expand_tree, safe_create_directory, verbose_remove
 from giza.content.examples.inheritance import ExampleDataCache
 from giza.content.examples.views import full_example
 
@@ -26,6 +32,10 @@ def write_full_example(collection, examples, fn):
     content.write(fn)
 
 def example_tasks(conf, app):
+    # In the beginning of this operation, which executes in the main thread, we
+    # read all files in "source/includes/" and sub-directories hat start with
+    # "example-*"
+
     include_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)
     fn_prefix = os.path.join(include_dir, 'example')
 
@@ -33,10 +43,11 @@ def example_tasks(conf, app):
                         expand_tree(include_dir, 'yaml')
                         if fn.startswith(fn_prefix) ]
 
+    # process the corpus of example data.
     d = ExampleDataCache(example_sources, conf)
 
-    if len(d) > 0 and not os.path.isdir(fn_prefix):
-        os.makedirs(fn_prefix)
+    if len(d) > 0:
+        safe_create_directory(fn_prefix)
 
     for fn in d.cache.keys():
         exmpf = d.cache[fn]
@@ -68,3 +79,9 @@ def example_clean(conf, app):
         out_fn = os.path.join(conf.paths.projectroot,
                               conf.paths.branch_source,
                               'includes', 'examples', basename) + '.rst'
+
+        t = app.add('task')
+        t.target = True
+        t.dependency = out_fn
+        t.job = verbose_remove
+        t.args = [out_fn]

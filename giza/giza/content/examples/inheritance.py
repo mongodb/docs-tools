@@ -12,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Defines the ways that example content can inherit content from other
+examples. This module holds two classes: a representation of a single file that
+contains a set of examples and
+
+See :mod:`giza.core.inheritance`
+"""
+
 import logging
 import os.path
 
@@ -28,17 +36,20 @@ from giza.tools.serialization import ingest_yaml_list
 class ExampleError(Exception): pass
 
 class ExampleFile(DataContentBase):
-    def ingest(self, src):
-        if not isinstance(src, list):
-            if os.path.isfile(src):
-                src = ingest_yaml_list(src)
-            else:
-                m = '{0} is not a valid example file.'
-                logger.error(m)
-                raise InheritableContentError(m)
+    """
+    There is a one to one mapping of example files and output examples. Each
+    example file has some "starting data," or a "collection" and then a sequence
+    of operation and result pairs (i.e. "examples") that contain both a sequence
+    of operations *and* an expected result. Each example *must* have a
+    collection, and typically has 1 or more output examples.
 
-        for doc in src:
-            self.add(doc)
+    The ``ingest()`` method adds a check to ensure to produce an error to ensure
+    that there's a "collection" value, while ``add()`` and ``fetch()`` capture
+    collection and examples separately.
+    """
+
+    def ingest(self, src):
+        super(ExampleFile, self).ingest(src)
 
         if self.collection is None:
             m = 'all examples must have a collection'

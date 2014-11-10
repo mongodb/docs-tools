@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Contains schema, type checking, and validation structures for the data in
+example files.
+"""
+
 import sys
 import logging
 

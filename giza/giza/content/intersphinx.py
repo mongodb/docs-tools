@@ -12,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Alternate implementation of the system that fetches intersphinx inventories from
+other Sphinx sites. Implemented separately to avoid using Sphinx so that that
+Giza can check and update inventories once per build-run rather than once per
+build run. Useful for minimizing the start-up time for ``sphinx-build`` and
+useful for reducing redundant work in parallel build situations.
+"""
+
 import time
 import os
 import logging

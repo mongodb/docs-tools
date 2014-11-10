@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Generates per-build "buildinfo" artifacts that access to build-time data,
+including the release.txt file that has the hash that reflects the version of
+the source reflected in a build, as well as content useable in the includes
+directory so that you can reference the commit in the documentation text.
+"""
+
 import logging
 import os
 import datetime
@@ -32,9 +39,6 @@ def generate_hash_file(fn, conf):
 
     commit = conf.git.commit
     r.directive('|commit| replace', '``{0}``'.format(commit))
-    # r.directive('|branch| replace', '``{0}``'.format(conf.git.branches.current))
-    # r.directive('|hardlink| replace', '{0}/{1}'.format(conf.project.url, conf.git.branches.current))
-    # r.directive('|year| replace', '{0}'.format(datetime.date.today().year))
 
     try:
         if r.data == existing[:-1]:

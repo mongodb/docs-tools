@@ -12,6 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+This module creates captures hashes of all content in the repository and stores
+this information between builds, so that the build system has the ability to
+test which files change in between builds, so that ``giza`` does not need to
+rely on ``mtime``, which can change following branch operations in git.
+
+Furthermore the tasks created as part of the build here use the implicit
+relationship between source files determined by :mod:`giza.includes` in
+combination with this cache of file hashes to ensure that Sphinx does not skip
+building files.
+"""
+
 import datetime
 import json
 import logging
@@ -19,7 +31,7 @@ import os
 
 from giza.includes import include_files
 from giza.core.task import check_hashed_dependency, normalize_dep_path
-from giza.tools.files import expand_tree, md5_file
+from giza.tools.files import expand_tree, md5_file, safe_create_directory
 from giza.tools.timing import Timer
 
 logger = logging.getLogger('giza.content.dependencies')
@@ -41,10 +53,7 @@ def dump_file_hashes(conf):
         if os.path.exists(fn):
             fmap[fn] = md5_file(fn)
 
-    output_dir = os.path.dirname(output)
-
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    safe_create_directory(os.path.dirname(output))
 
     with open(output, 'w') as f:
         json.dump(o, f)
