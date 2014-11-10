@@ -24,7 +24,7 @@ output-specific images and potentially translate the text in the diagrams. By
 generating all of the ``rst`` to inclde the images, its possible display and
 maintain the presentation of images systematically and centrally.
 
-The format of the image specification is:
+The format of the image specification is: ::
 
   {
     "name": <imgBaseName>,

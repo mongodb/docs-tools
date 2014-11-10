@@ -13,10 +13,8 @@
 # limitations under the License.
 
 """
-Entry points that
-
+Entry points that send locally built content to web servers.
 """
-
 
 import os.path
 import logging
