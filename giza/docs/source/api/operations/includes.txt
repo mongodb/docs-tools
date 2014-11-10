@@ -2,6 +2,6 @@
 ``includes`` -- Implicit Dependency Introspection
 =================================================
 
-.. automodule:: giza.operations.
+.. automodule:: giza.operations.includes
    :members:
    :undoc-members:

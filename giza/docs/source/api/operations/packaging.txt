@@ -2,6 +2,6 @@
 ``packaging`` -- Reusable Build Artifact Creation
 =================================================
 
-.. automodule:: giza.operations.
+.. automodule:: giza.operations.packaging
    :members:
    :undoc-members:
