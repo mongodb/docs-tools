@@ -1,3 +1,7 @@
-====================================
-``intersphinx`` -- Generate Symlinks
-====================================
+==============================
+``links`` -- Generate Symlinks
+==============================
+
+.. automodule:: giza.content.links
+   :members:
+   :undoc-members:

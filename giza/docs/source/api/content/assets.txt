@@ -3,6 +3,5 @@
 ===================================
 
 .. automodule:: giza.content.assets
-   :members: 
+   :members:
    :undoc-members:
-   

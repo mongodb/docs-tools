@@ -1,7 +1,7 @@
 =====================================
-``includes`` -- Include File Overview
+``tasks`` -- Integration for Examples
 =====================================
 
-.. automodule:: giza.content.includes
+.. automodule:: giza.content.examples.tasks
    :members:
    :undoc-members:

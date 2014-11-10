@@ -1,3 +1,7 @@
 ==================================
 ``tasks`` -- Integration for Steps
 ==================================
+
+.. automodule:: giza.content.steps.tasks
+   :members:
+   :undoc-members:

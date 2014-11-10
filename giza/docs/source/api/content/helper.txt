@@ -3,3 +3,5 @@
 =============================
 
 .. autofunction:: giza.content.helper.edition_check
+   :members:
+   :undoc-members:

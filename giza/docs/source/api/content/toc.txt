@@ -1,3 +1,7 @@
 ======================================
 ``toc`` -- Generate Tables of Contents
 ======================================
+
+.. automodule:: giza.content.steps.toc
+   :members:
+   :undoc-members:

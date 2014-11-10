@@ -1,3 +1,7 @@
 ===================================================
 ``intersphinx`` -- Download Interpshinx Inventories
 ===================================================
+
+.. automodule:: giza.content.intersphinx
+   :members:
+   :undoc-members:

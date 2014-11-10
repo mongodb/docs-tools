@@ -1,3 +1,7 @@
 =========================================
 ``images`` -- Image Generator and Display
 =========================================
+
+.. automodule:: giza.content.images
+   :members:
+   :undoc-members:

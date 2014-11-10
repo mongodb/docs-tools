@@ -1,7 +1,7 @@
 ======================================
-``manpages`` -- Process Manpage Output
+``models`` -- Data Models for Examples
 ======================================
 
-.. automodule:: giza.content.manpages
+.. automodule:: giza.content.examples.models
    :members:
    :undoc-members:

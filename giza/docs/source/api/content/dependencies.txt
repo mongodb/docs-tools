@@ -3,3 +3,5 @@
 =========================================
 
 .. automodule:: giza.content.dependencies
+   :members:
+   :undoc-members:

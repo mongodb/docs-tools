@@ -1,3 +1,7 @@
 ================================
 ``views`` -- Rendering for Steps
 ================================
+
+.. automodule:: giza.content.steps.views
+   :members:
+   :undoc-members:

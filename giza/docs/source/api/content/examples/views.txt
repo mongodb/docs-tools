@@ -1,7 +1,7 @@
 ===================================
-``models`` -- Data Models for Steps
+``views`` -- Rendering for Examples
 ===================================
 
-.. automodule:: giza.content.steps.models
+.. automodule:: giza.content.Examples.views
    :members:
    :undoc-members:

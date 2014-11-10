@@ -1,3 +1,7 @@
 ================================
 ``table`` -- Generate RST Tables
 ================================
+
+.. automodule:: giza.content.steps.table
+   :members:
+   :undoc-members:
