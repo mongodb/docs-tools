@@ -1,0 +1,19 @@
+===============
+Giza Operations
+===============
+
+.. toctree::
+
+   /api/operations/clean
+   /api/operations/configuration
+   /api/operations/deploy
+   /api/operations/generate
+   /api/operations/git
+   /api/operations/http_serve
+   /api/operations/includes
+   /api/operations/make
+   /api/operations/packaging
+   /api/operations/quickstart
+   /api/operations/sphinx_cmds
+   /api/operations/translate
+   /api/operations/tx

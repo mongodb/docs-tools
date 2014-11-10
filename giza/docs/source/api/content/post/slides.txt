@@ -1,0 +1,7 @@
+=================================
+``Slides`` -- Process HTML Slides
+=================================
+
+.. automodule:: giza.content.post.slides
+   :members:
+   :undoc-members:

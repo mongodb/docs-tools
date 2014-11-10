@@ -1,0 +1,7 @@
+==============================================================
+``sites`` -- Process Primary Site Output and Generate Sitemaps
+==============================================================
+
+.. automodule:: giza.content.post.sites
+   :members:
+   :undoc-members:

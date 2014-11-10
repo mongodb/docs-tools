@@ -1,0 +1,7 @@
+==================================
+``generate`` -- Content Generation
+==================================
+
+.. automodule:: giza.operations.generate
+   :members:
+   :undoc-members:

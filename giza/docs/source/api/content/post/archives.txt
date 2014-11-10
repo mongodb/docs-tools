@@ -1,0 +1,7 @@
+=======================================================
+``archives`` -- Downloadable Archives for Build Targets
+=======================================================
+
+.. automodule:: giza.content.post.archives
+   :members:
+   :undoc-members:

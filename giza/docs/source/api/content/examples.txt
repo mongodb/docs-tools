@@ -9,4 +9,4 @@
    /api/content/examples/models
    /api/content/examples/views
    /api/content/examples/inheritance
-   /api/content/examples/task
+   /api/content/examples/tasks

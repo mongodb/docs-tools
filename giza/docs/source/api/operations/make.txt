@@ -1,7 +1,7 @@
 ===================================
-``views`` -- Rendering for Examples
+``make`` -- Makefile Emulation Mode
 ===================================
 
-.. automodule:: giza.content.examples.views
+.. automodule:: giza.operations.make
    :members:
    :undoc-members:
