@@ -12,10 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Contains the output specification for redirects (i.e. ``.htaccess`` files,) as
+well as integration into the :class:`giza.core.app.BuildApp()`
+infrastructure. All of the data processing and definition happens in
+:mod:`giza.config.redirects`.
+"""
+
 import os.path
 import logging
 
-logger = logging.getLogger('giza.content.post.sites')
+logger = logging.getLogger('giza.content.post.redirects')
 
 from giza.tools.serialization import ingest_yaml_list
 

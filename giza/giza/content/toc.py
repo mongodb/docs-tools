@@ -12,6 +12,48 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Generate tables of contents. The ``.yaml`` specification has the following
+schema: ::
+
+   {
+     "name": <string>,
+     "file": /<path>,
+     "description": "<string>",
+     "edition": <string>
+   }
+
+The ``edition`` field is optional. When specified the item is only included when
+the document passes :func:`giza.content.helper.edition_check()` predicate. The
+``name`` field is optional and make it possible to specify a different
+string for the link in the ``toctree``.
+
+The generator considers all ``.yaml`` files in the ``source/includes/`` directory that
+have the following prefixes:
+
+- ``ref-toc`` (reference operators)
+
+- ``toc``
+
+Files with ``-spec`` following the prefix are handled by a different code
+path. The output of the generator is in the ``source/includes/toc/``
+directory. For each source file, the generator produces the following output
+files:
+
+- a file without any prefix using the same base-name as the source file that
+  contains a ``toc`` tree. (For all non-``spec`` files.)
+
+- a ``table-<basename>`` file for all files that begin with ``ref``. These
+  present the table of contents data for all API methods and object data.
+
+- a ``dfn-list-<basename>`` file for all files that begin with ``toc-``. These
+  present the page names and descriptions for all core content in a plain
+  definition-list style.
+
+All ``spec`` files in addition to the ``table-`` and ``dfn-list`` files do not
+affect the structure or organization of resource as a whole.
+"""
+
 import logging
 import os.path
 

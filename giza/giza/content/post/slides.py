@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+For slides builds, build a tarball and migrate source to the output
+directory. Modeled on the :mod:`giza.content.post.json_output` and
+:mod:`giza.content.post.html` post-processing operation.
+"""
+
 import os
 import logging
 

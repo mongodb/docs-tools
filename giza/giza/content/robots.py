@@ -12,6 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Generates a ``robot.txt`` file in the output directory. Use to exclude content
+from search engines that respect ``robots.txt``. Robots definitions resemble the
+following: ::
+
+   {
+     "file": "/<path>",
+     "branches": [
+       <string,>
+       # ..
+       <string>
+     ]
+   }
+
+You can specify "``{{published}}``" as a string in the branches array, to
+exclude a path from all published branches, current and future.
+"""
+
 import os
 import logging
 

@@ -12,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Generate ``rst`` tables from ``yaml`` files in the ``source/includes`` directory
+that begin with ``table-``. Uses the table builder capacity in the
+:mod:`rstcloth.table` module.
+
+Legacy implementation.
+"""
+
 import os.path
 import logging
 

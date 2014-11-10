@@ -12,6 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Responsible for converting the Sphinx configuration stored by projects and used
+by giza, into a ``sphinx-build`` invocation. See
+:func:`giza.content.sphinx.run_sphinx` for the core of this operation.
+
+:mod:`giza.content.sphinx` also contains:
+
+- the error message processing, which normalizes references to paths,
+  deduplicates log messages given multiple builds or multi-process Sphinx
+  operation, and removes non-actionable messages. See
+  :func:`giza.content.sphinx.output_sphinx_stream()`,
+  :func:`giza.content.sphinx.is_msg_worth()` and
+  :func:`giza.content.sphinx.path_normalization()`.
+
+- the orchestration of all post-processing. See
+  :func:`giza.content.sphinx.finalize_sphinx_build()`.
+"""
+
 import collections
 import logging
 import os.path
@@ -29,10 +47,10 @@ from giza.tools.files import safe_create_directory
 from giza.tools.timing import Timer
 from giza.config.helper import get_config_paths
 from giza.content.links import create_manual_symlink, get_public_links
-from giza.content.manpages import manpage_url_tasks
 from giza.content.post.json_output import json_output_tasks
 from giza.content.post.singlehtml import finalize_single_html_tasks
 from giza.content.post.archives import man_tarball, html_tarball, get_tarball_name
+from giza.content.post.manpages import manpage_url_tasks
 from giza.content.post.gettext import gettext_tasks
 from giza.content.post.slides import slide_tasks
 from giza.content.post.latex import pdf_tasks
@@ -302,7 +320,7 @@ def finalize_sphinx_build(sconf, conf, app):
         task.target = [get_tarball_name('man', conf),
                        get_tarball_name('link-man', conf)]
         task.args = [target, conf]
-        task.description = "creating tarball for manpages"
+        task.description = "creating tarball for 1manpages"
     elif target == 'slides':
         app.pool = 'thread'
         slide_tasks(sconf, conf, app)

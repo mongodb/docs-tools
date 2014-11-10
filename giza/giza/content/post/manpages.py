@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Post processing of the output of the Sphinx manpage output. Used to get proper
+fully qualified links and fix flaws in the output.
+"""
+
 import re
 import os
 import logging
@@ -22,6 +27,7 @@ from giza.tools.files import expand_tree
 
 #################### Manpage Processing ####################
 
+# this is a precursor to giza.tools.transformation and should be re-implemented.
 def manpage_url(regex_obj, input_file):
     with open(input_file, 'r') as f:
         manpage = f.read()

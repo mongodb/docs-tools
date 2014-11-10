@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Creates symbolic links in the build output based on definitions in the
+(typically) "build/conf/integration.yaml" file in the ``base.links`` key.
+"""
+
 import os.path
 from giza.tools.files import create_link
 from giza.tools.serialization import ingest_yaml_doc

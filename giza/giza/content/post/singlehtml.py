@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Post-processing for Sphinx's ``singlehtml`` builder. Modifies links and
+post-processes sites for projects that use ``contents.txt`` rather than
+``index.txt`` as the root document.
+"""
+
 import os.path
 import logging
 import re
@@ -47,7 +53,7 @@ def manual_single_html(input_file, output_file):
 
         logging.info('processed singlehtml file.')
 
-
+# TODO: convert this to use common infrastructure in giza.tools.transformations.
 def finalize_single_html_tasks(builder, conf, app):
     single_html_dir = get_single_html_dir(conf)
 

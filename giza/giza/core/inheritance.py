@@ -214,7 +214,7 @@ class DataContentBase(RecursiveConfigurationBase):
             try:
                 self.add(doc)
             except Exception as e:
-                logger.error('could not inherit, because: ' + e)
+                logger.error('could not inherit, because: ' + str(e))
                 logger.debug(doc)
 
     def add(self, doc):

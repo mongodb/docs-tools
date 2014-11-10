@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Post-process all output produced by JSON to add a "text" field to these
+documents that omits the XML data injected into this format by default so that
+search tools can use this data to index content. Also generates a file with a
+list of paths in the output.
+"""
+
 import json
 import re
 import os

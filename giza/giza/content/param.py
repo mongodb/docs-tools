@@ -12,6 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Generates documentation for command/function/method arguments. Renders
+information in a table for HTML outputs and using Sphinx's default argument
+formatting for PDF output.
+
+Legacy implementation.
+
+*Param* source files are all ``.yaml`` files in the ``reference`` directory of
+the source tree. All output is written to ``.rst`` files in the source tree.
+"""
+
 import os.path
 import logging
 

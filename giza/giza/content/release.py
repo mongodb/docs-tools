@@ -12,6 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Generates include files with instructions for downloading and extracting MongoDB
+archives with version numbers based on the version of MongoDB defined in the
+``conf`` structure.
+
+Legacy implementation. Should be replaced by some generic a template-compatible
+redirect generation tool in the near future.
+"""
+
 import logging
 import os.path
 

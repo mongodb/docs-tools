@@ -12,6 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Content migration and transformation engine that makes it possible to import and
+reuse content from repository, or project in another. Migration specifications
+can also include transformation specifications to trim content from a source
+file, append content to a file, or apply a regular expression substitution.
+
+Developed for the Primer/Getting Started section. Configuration files are all
+``.yaml`` files in the *config* directory that have the substring "migration" in
+them. Uses the functions in :mod:`giza.tools.transformation` and
+:mod:`giza.tools.files` to perform the action, and just adds migration and
+transformation tasks to a :class:`giza.core.app.BuildApp()` instance.
+"""
+
 import os
 import logging
 

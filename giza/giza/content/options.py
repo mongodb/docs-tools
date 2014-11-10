@@ -12,6 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+System to generate documentation of command-line and configuration file options
+from a shared source.
+
+Legacy implementation that served as the inspiration for
+:mod:`giza.core.inheritance`, and will be revised to use this
+infrastructure. This implementation is novel because:
+
+- One source file generates many target files.
+
+- Source material can contain tokens which are replaced during generation using
+  Jinja templates.
+"""
+
 import os
 import logging
 from copy import deepcopy

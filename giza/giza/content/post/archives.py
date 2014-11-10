@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Worker functions that create artifacts for archives of build targets that are
+distributed as tarballs (i.e. html sites, manpages, and slides) for offline use.
+"""
+
 import os
 import logging
 

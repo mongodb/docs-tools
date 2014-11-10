@@ -28,27 +28,6 @@ from giza.tools.files import (expand_tree, create_link, copy_if_needed,
                               safe_create_directory)
 from giza.content.post.singlehtml import get_single_html_dir
 
-def manual_single_html(input_file, output_file):
-    # don't rebuild this if its not needed.
-    if check_dependency(output_file, input_file) is False:
-        logging.info('singlehtml not changed, not reprocessing.')
-        return False
-    else:
-        text_lines = decode_lines_from_file(input_file)
-
-        regexes = [
-            (re.compile('href="contents.html'), 'href="index.html'),
-            (re.compile('name="robots" content="index"'), 'name="robots" content="noindex"'),
-            (re.compile('href="genindex.html'), 'href="../genindex/')
-        ]
-
-        for regex, subst in regexes:
-            text_lines = [ regex.sub(subst, text) for text in text_lines ]
-
-        encode_lines_to_file(output_file, text_lines)
-
-        logger.info('processed singlehtml file.')
-
 #################### Sphinx Post-Processing ####################
 
 def finalize_epub_build(builder, conf):

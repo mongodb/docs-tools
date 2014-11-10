@@ -42,6 +42,8 @@ def download_file(file, url):
     command(' '.join(cmd))
     logger.info('downloaded {0}'.format(file))
 
+    return True
+
 def file_timestamp(path):
     return os.stat(path)[8]
 
