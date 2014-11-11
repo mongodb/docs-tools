@@ -24,6 +24,7 @@ from giza.config.main import Configuration
 import giza
 
 @argh.named('version')
+@argh.expects_obj
 def report_version(args):
     "Returns current version of giza"
 
