@@ -86,7 +86,7 @@ def edition_check(data, conf):
 def get_all_languages():
     all_languages = [ 'none' ]
 
-    for lexters in get_all_lexers():
+    for lexers in get_all_lexers():
         all_languages.extend(lexers[1])
 
     return all_languages
