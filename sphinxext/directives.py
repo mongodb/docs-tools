@@ -67,7 +67,7 @@ class Instructor(MongoDBNode):
     def run(self):
         self.arguments = ['instructor']
 
-        ret = make_admonition(instructor_node, self.name, [_('Instructor')],
+        ret = make_admonition(instructor_node, self.name, [_('Instructor Note')],
                               self.options, self.content, self.lineno, self.content_offset,
                               self.block_text, self.state, self.state_machine)
 
