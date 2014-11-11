@@ -61,7 +61,8 @@ class GitRepo(object):
 
     def branch_exists(self, name):
         r = self.cmd('branch --list ' + name).out.split('\n')
-        r.remove('')
+        if '' in r:
+            r.remove('')
 
         if name in r:
             return True
