@@ -123,8 +123,8 @@ def generate_image_pages(dir, name, alt, output, conf):
 
             r.newline()
 
-            if img_output['width'] > 600:
-                options[2] = ('figwidth', 600)
+            if img_output['width'] > 740:
+                options[2] = ('figwidth', 740)
 
             r.directive('only', 'website and html', wrap=False)
             r.newline()
