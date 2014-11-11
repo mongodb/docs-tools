@@ -100,13 +100,14 @@ def triage(args):
 def make_versions(args):
     conf = fetch_config(args)
 
+
     j = JeerahClient(conf)
     j.connect()
 
     current_versions = [strip_name(v.name) for v in j.versions(conf.runstate.project)]
 
     created = []
-    for v in getattr(conf.sprints, conf.runstate.sprint):
+    for v in conf.sprints.get_sprint(conf.runstate.sprint).fix_versions:
         v = strip_name(v)
         if v not in current_versions:
             j.create_version(conf.runstate.project, v, release=False)
