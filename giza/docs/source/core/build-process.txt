@@ -28,8 +28,107 @@ definition of tasks happens in the entry point functions
 in the :mod:`giza.content` package, where near the procedures for
 running tasks.
 
+Implementation
+--------------
+
+The following procedure outlines the flow of control in a prototypical
+build examples. The following procedure also highlights the
+differences
+
+1. The main ``giza`` entry point is the :func:`giza.cmdline.main()`
+   function which using :mod:`argh` to assemble subsidiary entry
+   points and dispatch control to other operations. Build operations
+   have the following entry points:
+
+   - If you use the *makefile emulation* mode, all commands enter
+     through :mod:`giza.operations.make` which parses the a make-like
+     target and then calls the appropriate ``giza``-functions
+     internally and prints the corresponding "native" giza
+     command. In common practice most invocations enter through this
+     path, thinking about :mod:`giza.operations.make` as the "main
+     entry" point is probably confusing.
+
+   - :func:`giza.operations.sphinx_cmds.main()` is the entry point for
+     all "plain" sphinx builds.
+
+   - The "push" target, which builds a full documentation set before
+     deploying the artifcats, (both ``make push`` or ``giza push -t
+     <target>``) uses :func:`giza.operations.deploy.publish_and_deploy()`.
+
+2. Regardless of entry point, ``giza`` collects a list of sphinx
+   builders, as well as lists of editions and human language
+   translations and invokes
+   :func:`giza.operations.sphinx_cmds.sphinx_publication()`, which
+   orchestrates the Sphinx preparation, running, and
+   post-processing. Sphinx builders are:
+
+   - ``publish``, which is a shortcut for the full collection of
+     Sphinx builders defined in the``integration`` configuration file for the
+     publication build. Typically this is: ``dirhtml`` (primary format,) ``html``
+     (for tarball,)``epub``, ``singlehtml``, ``latex`` (for pdf,) and
+     ``json`` (for search integration,) and
+
+   - a valid Sphinx build target defined by the current sphinx builder
+
+3. :func:`giza.operations.sphinx_cmds.sphinx_publication()` begins
+   adding tasks for the build
+   (i.e. :func:`giza.operations.sphinx_cmds.build_prep_tasks()`,) and
+   then builds an iterator that yields an``(edition, language,
+   builder)`` tuple for every combination in the current process, to
+   begin adding the remainder of the build tasks.
+
+4. **If** the :attr:`giza.config.paths.branch_source` has not already been
+   created and processed, in
+   :func:`~giza.operations.sphinx_cmds.sphinx_publication()` follows a
+   branch that:
+
+   - adds tasks to process the source and populate the
+     :attr:`~giza.config.paths.branch_source` directory
+     (:func:`giza.content.source.source_tasks()`),
+
+   - generate content in the *proxy source* directory
+     (:func:`giza.operations.sphinx_cmds.build_content_generation_tasks()`),
+
+   - refresh the time stamps of source file
+     :attr:`~giza.config.paths.branch_source` to reflect actual
+     changes in content based on the implicit dependency graph between
+     files (:func:`giza.content.dependencies.refresh_dependency_tasks()`
+     and :func:`giza.content.dependencies.dump_file_hash_tasks()`),
+
+   - to support generation of offset printing-compatible PDFs, migrate ``.eps``
+     image files to the ``latex`` build directory
+     (:func:`giza.content.source.latex_image_transfer_tasks()`),
+
+5. Still in :func:`~giza.operations.sphinx_cmds.sphinx_publication()`
+   add tasks to run Sphinx
+   itself (:func:`giza.content.sphinx.sphinx_tasks()`).
+
+6. Execute all tasks. Tasks run (essentially) in the order described
+   above (order of addition,) though groups of tasks typically execute
+   in parallel.
+
+7. Process and print all output from sphinx
+   (:func:`giza.content.sphinx.output_sphinx_stream()`,) normalizing
+   paths and de-duplicating messages from multiple builds.
+
+8. If executing from
+   :func:`giza.operations.deploy.publish_and_deploy()` (i.e. as a
+   "``push``") and the sphinx processes all executed with a zero-exit
+   status, deploy the build as specified
+   (:func:`giza.operations.deploy.deploy_worker()`). The specifics of
+   the deploy operation are:
+
+   - pull the deploy specification from the ``push.yaml`` file.
+
+   - build deploy commands using :class:`giza.deploy.Deploy()`.
+
+   - run deploy commands in the worker pool.
+
+Discussion
+----------
+
 Content Generation
-------------------
+~~~~~~~~~~~~~~~~~~
 
 :mod:`giza` based sites prefer to generate content into static files
 before running ``sphinx-build``. Manipulating content in the within
@@ -126,7 +225,7 @@ Finally :func:`giza.content.sphinx.run_sphinx()`, runs tasks defined
 by :mod:`giza.content.sphinx.finalize_sphinx_build()`.
 
 Post Processing
----------------
+~~~~~~~~~~~~~~~
 
 See the :mod:`giza.content.post` package for all post-processing
 tasks. The post-processing tasks get called from
@@ -138,7 +237,7 @@ the ``sphinx-build`` command in
    finish successfully.
 
 Deploy
-------
+~~~~~~
 
 Deploying completed builds to production happens by running a sequence
 of ``rsync`` commands defined in the ``push`` configuration structure,
