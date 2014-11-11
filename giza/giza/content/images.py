@@ -114,12 +114,6 @@ def generate_image_pages(dir, name, alt, output, conf):
             r.newline()
             r.directive('raw', 'latex', content=tex_figure, indent=3)
         else:
-            alt_html = publish_parts(alt, writer_name='html')['body'].strip()
-            img_tags = ['<div class="figure align-center" style="max-width:{5};">',
-                        '<img src="{0}/{1}/_images/{2}{3}" alt="{4}">', '</img>',
-                        '{6}</div>' ]
-            img_str = ''.join(img_tags)
-
             r.directive('only', 'website and slides', wrap=False)
             r.newline()
             r.directive(name='figure',
@@ -143,6 +137,10 @@ def generate_image_pages(dir, name, alt, output, conf):
 
             r.directive('only', 'website and not (html or slides)', wrap=False)
             r.newline()
+            img_str = ''.join(['<div class="figure align-center" style="max-width:{5};">',
+                               '<img src="{0}/{1}/_images/{2}{3}" alt="{4}">', '</img>',
+                               '{6}</div>' ])
+            alt_html = publish_parts(alt, writer_name='html')['body'].strip()
             r.directive(name='raw', arg='html',
                         content=img_str.format(conf.project.url,
                                                conf.git.branches.current, name, tag, alt,
