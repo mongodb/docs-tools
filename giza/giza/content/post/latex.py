@@ -67,6 +67,7 @@ def _render_tex_into_pdf(fn, deployed_path, path, output_format="pdf"):
                 continue
             else:
                 logger.error('pdf build encountered error running pdflatex, investigate on {0}. terminating'.format(base_fn))
+                logger.error(cmd)
                 return False
 
     pdf_fn = os.path.splitext(fn)[0] + '.pdf'

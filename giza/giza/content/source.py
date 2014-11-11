@@ -66,12 +66,13 @@ def transfer_source(conf, sconf):
     exclusions = "--exclude=" + ' --exclude='.join([ os.path.join('includes', 'steps'),
                                                      os.path.join('includes', 'toc'),
                                                      os.path.join('includes', 'option'),
-                                                     image_dir + "*.png",
-                                                     image_dir + "*.rst",
-                                                     image_dir + "*.eps",
+                                                     image_dir + os.path.sep + "*.png",
+                                                     image_dir + os.path.sep + "*.rst",
+                                                     image_dir + os.path.sep + "*.eps",
                                                      ])
 
-    command('rsync --times --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions))
+    cmd = 'rsync --times --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions)
+    command(cmd)
 
     # remove files from the source tree specified in the sphinx config for this
     # build.
