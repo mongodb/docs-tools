@@ -123,9 +123,6 @@ def generate_image_pages(dir, name, alt, output, conf):
 
             r.newline()
 
-            if img_output['width'] > 740:
-                options[2] = ('figwidth', 740)
-
             r.directive('only', 'website and html', wrap=False)
             r.newline()
             r.directive(name='figure',
@@ -134,6 +131,9 @@ def generate_image_pages(dir, name, alt, output, conf):
                         indent=3)
 
             r.newline()
+
+            if img_output['width'] > 740:
+                options[2] = ('figwidth', 740)
 
             r.directive('only', 'website and not (html or slides)', wrap=False)
             r.newline()
