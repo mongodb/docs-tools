@@ -228,7 +228,7 @@ def image_tasks(conf, app):
         t.args = image # as kwargs
         t.description = "generating rst include file {0} for {1}".format(rst_file, source_core)
         t.target = rst_file
-        t.dependency = meta_file
+        t.dependency = [meta_file, os.path.abspath(__file__) ]
         logger.debug('adding task for image rst file: {0}'.format(rst_file))
 
         for output in image['output']:
@@ -276,4 +276,4 @@ def image_clean(conf, app):
             if 'tag' in output:
                 rm_tag_image.args = dot_concat(hyph_concat(source_base, output['tag']), 'png')
             else:
-                rm_tag_image.args = dot_concat(source_base, 'png')
+                rm_tag_image.args = dot_concat(source_base, 'png')s
