@@ -276,4 +276,4 @@ def image_clean(conf, app):
             if 'tag' in output:
                 rm_tag_image.args = dot_concat(hyph_concat(source_base, output['tag']), 'png')
             else:
-                rm_tag_image.args = dot_concat(source_base, 'png')s
+                rm_tag_image.args = dot_concat(source_base, 'png')
