@@ -102,6 +102,8 @@ def trim_leading_slash_from_pages(page):
 def resolve_page_path(page, conf):
     if page['target'].startswith('/'):
         fq_target = page['target']
+    elif '{root}' in page['target']:
+        fq_target = page['target'].format(root=conf.paths.projectroot)
     else:
         fq_target = os.path.join(conf.paths.projectroot, conf.paths.source, page['target'])
 
