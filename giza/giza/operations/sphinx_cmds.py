@@ -19,9 +19,8 @@ Main controlling operations for running Sphinx builds.
 import logging
 import os.path
 import argh
-import itertools
 
-from giza.config.helper import fetch_config
+from giza.config.helper import fetch_config, get_builder_jobs
 from giza.core.app import BuildApp
 
 logger = logging.getLogger('giza.operations.sphinx')
@@ -109,8 +108,7 @@ def sphinx_publication(c, args, app):
     # this loop will produce an app for each language/edition/builder combination
     build_source_copies = set()
 
-    jobs = [a for a in itertools.product(c.runstate.editions_to_build, c.runstate.languages_to_build, c.runstate.builder)]
-    for edition, language, builder in jobs:
+    for edition, language, builder in get_builder_jobs(c):
         build_config, sconf = get_sphinx_build_configuration(edition, language, builder, args)
 
         # only do these tasks once per-language+edition combination
