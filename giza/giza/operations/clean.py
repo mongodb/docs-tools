@@ -27,28 +27,41 @@ import argh
 
 from giza.core.app import BuildApp
 from giza.config.main import Configuration
+from giza.config.helper import fetch_config, get_builder_jobs
 from giza.tools.files import rm_rf
+from giza.tools.strings import hyph_concat
+from giza.config.sphinx_config import resolve_builder_path
 
-@argh.arg('--conf_path', '-c')
-@argh.arg('--builder', '-b', dest='builder_to_delete')
+@argh.arg('--builder', '-b')
+@argh.arg('--git_branch', default=None)
+@argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
+@argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
 @argh.arg('--length', default=None, type=int, dest='days_to_save')
 @argh.named('clean')
 @argh.expects_obj
 def main(args):
-    """Removes build artifacts from ``build/`` directory."""
+    """
+    Removes build artifacts from ``build/`` directory.
+    """
 
-    c = Configuration()
-    c.ingest(args.conf_path)
-    c.runstate = args
+    c = fetch_config(args)
     app = BuildApp(c)
 
-    to_remove = []
-    if c.runstate.builder_to_delete is not None:
-        builder = c.runstate.builder_to_delete
-        to_remove.append( os.path.join(c.paths.branch_output, 'doctrees-' + builder))
-        to_remove.append( os.path.join(c.paths.branch_output, builder))
-        m = 'remove artifacts associated with the {0} builder in {1}'
-        logger.debug(m.format(builder, c.git.branches.current))
+    to_remove = set()
+
+    if c.runstate.git_branch is not None:
+        to_remove.add(os.path.join(c.paths.projectroot, c.paths.branch_output))
+
+    if c.runstate.builder != []:
+        for edition, language, builder in get_builder_jobs(c):
+            builder_path = resolve_builder_path(builder, edition, language, c)
+
+            to_remove.add(builder_path)
+            dirpath, base = os.path.split(builder_path)
+            to_remove.add(os.path.join(dirpath, 'doctrees-' + base))
+
+            m = 'remove artifacts associated with the {0} builder in {1} ({2}, {3})'
+            logger.debug(m.format(builder, c.git.branches.current, edition, language))
 
     if c.runstate.days_to_save is not None:
         published_branches = [ 'docs-tools', 'archive', 'public', 'primer', c.git.branches.current ]
@@ -63,8 +76,8 @@ def main(args):
             elif not os.path.isdir(build):
                 continue
             elif os.stat(build).st_mtime > c.runstate.days_to_save:
-                to_remove.append(build)
-                to_remove.append(os.path.join(c.paths.projectroot, c.paths.output, 'public', branch))
+                to_remove.add(build)
+                to_remove.add(os.path.join(c.paths.projectroot, c.paths.output, 'public', branch))
                 logger.debug('removed stale artifacts: "{0}" and "build/public/{0}"'.format(branch))
 
     for fn in to_remove:
