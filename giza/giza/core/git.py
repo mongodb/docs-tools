@@ -141,6 +141,13 @@ class GitRepo(object):
 
         return self.cmd(*args)
 
+    def commit_messages(self, num=1):
+        args = ['log', '--oneline', '--max-count=' + str(num) ]
+        log = self.cmd(*args)
+
+        return [ ' '.join(m.split(' ')[1:])
+                 for m in log.out.split('\n') ]
+
     def cherry_pick(self, *args):
         if len(args) == 1:
             args = args[0]
