@@ -155,16 +155,20 @@ def generate_list_file(outputs, path, conf):
     with open(path, 'w') as f:
         for fn in outputs:
             if os.path.isfile(fn) is True:
-                f.write( '/'.join([ url, fn.split('/', 3)[3:][0]]) )
+                line = '/'.join([ url, fn.split('/', 3)[3:][0]])
+                f.write(line)
                 f.write('\n')
 
     logger.info('rebuilt inventory of json output.')
 
 
 def get_site_url(conf):
-    url = [conf.project.url ]
+    url = [conf.project.url]
 
     if conf.project.basepath not in ('', None):
         url.append(conf.project.basepath)
+
+    if conf.project.branched is True and 'editions' in conf.project:
+        url.append(conf.git.branches.current)
 
     return url
