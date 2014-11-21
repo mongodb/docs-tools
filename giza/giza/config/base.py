@@ -17,13 +17,14 @@ import os.path
 
 logger = logging.getLogger('giza.config.base')
 
-from giza.tools.serialization import ingest_yaml_doc
+from giza.tools.serialization import ingest_yaml_doc, ingest_json_doc, write_json, write_yaml
 
 class ConfigurationError(Exception):
     pass
 
 class ConfigurationBase(object):
     _option_registry = []
+    _version = 0
 
     def __init__(self, input_obj=None):
         self._state = {}
@@ -35,7 +36,12 @@ class ConfigurationBase(object):
         elif isinstance(input_obj, dict):
             pass
         elif not isinstance(input_obj, ConfigurationBase) and os.path.isfile(input_obj):
-            input_obj = ingest_yaml_doc(input_obj)
+            if input_obj.endswith('json'):
+                input_obj = ingest_json_doc(input_obj)
+            elif input_obj.endswith('yaml'):
+                input_obj = ingest_yaml_doc(input_obj)
+            else:
+                logger.error("file {0} has unknown data format".format(input_obj))
         else:
             msg = 'cannot ingest Configuration obj from object with type {0}'.format(type(input_obj))
             logger.critical(msg)
@@ -91,20 +97,45 @@ class ConfigurationBase(object):
     def __repr__(self):
         return str(self.dict())
 
-    def dict(self):
+    def dict(self, safe=True):
         d = {}
-        for k,v in self.state.items():
-            if k.startswith('_'):
-                continue
-            elif k in ('pass', 'password', 'token'):
-                d[k] = 'redacted'
-            elif isinstance(v, ConfigurationBase):
-                d[k] = v.dict()
+
+        def get_dict_value(v):
+            if isinstance(v, ConfigurationBase):
+                return v.dict(safe)
             elif isinstance(v, list) and len(v) > 0 and isinstance(v[0], ConfigurationBase):
-                d[k] = [i.dict() for i in v ]
+                return [i.dict() for i in v ]
+            elif isinstance(v, dict):
+                sub_d = {}
+                for key,value, in v.items():
+                    sub_d[key] = get_dict_value(value)
+                return sub_d
             elif self._is_value_type(v):
-                d[k] = v
+                return v
+            else:
+                return 'error'
+
+        for key, value in self.state.items():
+            if safe in (True, None):
+                if key.startswith('_'):
+                    continue
+                elif key in ('pass', 'password', 'token'):
+                    d[key] = 'redacted'
+                else:
+                    d[key] = get_dict_value(value)
+            elif safe is False:
+                d[key] = get_dict_value(value)
+
         return d
+
+    def write(self, fn):
+        if 'v' not in self.state:
+            self.state['v'] = self._version
+
+        if fn.endswith('json'):
+            write_json(self.dict(safe=False), fn)
+        elif fn.endswith('yaml'):
+            write_yaml(self.dict(safe=False), fn)
 
 class RecursiveConfigurationBase(ConfigurationBase):
     def __init__(self, obj, conf):
