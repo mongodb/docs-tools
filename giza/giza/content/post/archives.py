@@ -45,7 +45,7 @@ def get_tarball_name(builder, conf):
 
 def html_tarball(builder, conf):
     copy_if_needed(os.path.join(conf.paths.projectroot,
-                                conf.paths.includes, 'hash.rst'),
+                                conf.paths.branch_includes, 'hash.rst'),
                    os.path.join(conf.paths.projectroot,
                                 conf.paths.branch_output,
                                 builder, 'release.txt'))
@@ -68,7 +68,7 @@ def html_tarball(builder, conf):
 
 def slides_tarball(builder, conf):
     copy_if_needed(os.path.join(conf.paths.projectroot,
-                                conf.paths.includes, 'hash.rst'),
+                                conf.paths.branch_includes, 'hash.rst'),
                    os.path.join(conf.paths.projectroot,
                                 conf.paths.branch_output,
                                 builder, 'release.txt'))
