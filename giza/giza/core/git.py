@@ -75,6 +75,14 @@ class GitRepo(object):
     def checkout(self, ref):
         return self.cmd('checkout', ref)
 
+    def create_branch(self, name, tracking=None):
+        args = ['branch', name]
+
+        if tracking is not None:
+            args.append(tracking)
+
+        return self.cmd(*args)
+
     def checkout_branch(self, name, tracking=None):
         if self.current_branch() == name:
             return
