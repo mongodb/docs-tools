@@ -44,7 +44,7 @@ conf['directives'] = [
     },
     {
         'name': 'operator',
-        'tag': 'op',
+        'tag': 'metaOp',
         'description': 'operator',
         'prepend': True,
         'callable': False,
