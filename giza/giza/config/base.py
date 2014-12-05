@@ -15,6 +15,8 @@
 import logging
 import os.path
 
+from contextlib import contextmanager
+
 logger = logging.getLogger('giza.config.base')
 
 from giza.tools.serialization import ingest_yaml_doc, ingest_json_doc, write_json, write_yaml
@@ -27,6 +29,7 @@ class ConfigurationBase(object):
     _version = 0
 
     def __init__(self, input_obj=None):
+        self._source_fn = None
         self._state = {}
         self.ingest(input_obj)
 
@@ -36,6 +39,8 @@ class ConfigurationBase(object):
         elif isinstance(input_obj, dict):
             pass
         elif not isinstance(input_obj, ConfigurationBase) and os.path.isfile(input_obj):
+            self._source_fn = input_obj
+
             if input_obj.endswith('json'):
                 input_obj = ingest_json_doc(input_obj)
             elif input_obj.endswith('yaml'):
@@ -49,7 +54,6 @@ class ConfigurationBase(object):
 
         for key, value in input_obj.items():
             setattr(self, key, value)
-            logger.debug('setting {0} using default setter in {1} object'.format(key, type(self)))
 
     def __getattr__(self, key):
         try:
@@ -128,7 +132,14 @@ class ConfigurationBase(object):
 
         return d
 
-    def write(self, fn):
+    def write(self, fn=None):
+        if fn is None:
+            if self._source_fn is None:
+                logger.error('cannot write object to unspecified file.')
+                return
+            else:
+                fn = self._source_fn
+
         if 'v' not in self.state:
             self.state['v'] = self._version
 
@@ -136,6 +147,15 @@ class ConfigurationBase(object):
             write_json(self.dict(safe=False), fn)
         elif fn.endswith('yaml'):
             write_yaml(self.dict(safe=False), fn)
+
+    @classmethod
+    @contextmanager
+    def persisting(cls, fn):
+        data = cls(fn)
+
+        yield data
+
+        data.write(fn)
 
 class RecursiveConfigurationBase(ConfigurationBase):
     def __init__(self, obj, conf):

@@ -59,6 +59,12 @@ class GitRepo(object):
     def remotes(self):
         return self.cmd('remote').out.split('\n')
 
+    def author_email(self, sha=None):
+        if sha is None:
+            sha = self.sha()
+
+        return self.cmd('log', sha + '~..' + sha, "--pretty='format:%ae'").out
+
     def branch_exists(self, name):
         r = self.cmd('branch --list ' + name).out.split('\n')
         if '' in r:

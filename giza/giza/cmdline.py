@@ -34,9 +34,11 @@ import giza.operations.quickstart
 import giza.operations.sphinx_cmds
 import giza.operations.translate
 import giza.operations.tx
+import giza.operations.code_review
 
 commands = {
     'main': [
+        giza.operations.code_review.worker,
         giza.operations.clean.main,
         giza.operations.configuration.render_config,
         giza.operations.deploy.main,
