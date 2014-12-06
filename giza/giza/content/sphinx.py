@@ -93,6 +93,7 @@ def get_sphinx_args(sconf, conf):
 
     if is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version):
         if 'serial_sphinx' in conf.runstate:
+            logger.info('running with serial sphinx processes')
             if conf.runstate.serial_sphinx == "publish":
                 if ((len(conf.runstate.builder) >= 1 or 'publish' in conf.runstate.builder) or
                     len(conf.runstate.languages_to_build) >= 1 or
@@ -101,15 +102,19 @@ def get_sphinx_args(sconf, conf):
                 else:
                     o.append(' '.join( [ '-j', str(cpu_count()) ]))
             elif conf.runstate.serial_sphinx is False:
+                logger.info('running with parallelized sphinx processes')
                 o.append(' '.join( [ '-j', str(cpu_count()) ]))
             elif (isinstance(conf.runstate.serial_sphinx, (int, long, float)) and
                   conf.runstate.serial_sphinx > 1):
+                logger.info('running with parallelized sphinx processes')
                 o.append(' '.join(['-j', str(conf.runstate.serial_sphinx)]))
             else:
                 pass
         elif len(conf.runstate.builder) >= cpu_count():
+            logger.info('running with serail sphinx processes')
             pass
         else:
+            logger.info('running with parallelized sphinx processes')
             o.append(' '.join( [ '-j', str(cpu_count()) ]))
 
     o.append(' '.join( [ '-c', conf.paths.projectroot ] ))
@@ -212,6 +217,8 @@ def is_msg_worthy(l):
     elif l.endswith('should look like "-opt args", "--opt args" or "/opt args" or "+opt args"'):
         return False
     elif l.endswith('should look like "opt", "-opt args", "--opt args" or "/opt args"'):
+        return False
+    elif 'nonlocal image URI found' in l:
         return False
     else:
         return True
