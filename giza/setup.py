@@ -29,7 +29,7 @@ setup(
     install_requires=REQUIRES,
     package_data={'giza': ['quickstart/*']},
     extras_require={
-        'jira': ['jira-python', 'pyOpenSSL', 'ndg-httpsclient', 'pyasn1'],
+        'jira': ['jira-python', 'pyOpenSSL', 'ndg-httpsclient', 'pyasn1', 'requests=>2.1.0'],
         'github': ['github3.py']
     },
     classifiers=[
