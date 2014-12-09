@@ -21,6 +21,7 @@ units.
 """
 
 import copy
+import collections
 import logging
 import os.path
 
@@ -45,6 +46,31 @@ class InheritableContentBase(RecursiveConfigurationBase):
     """
 
     _option_registry = ['pre', 'post', 'final', 'ref', 'content', 'edition']
+
+    @property
+    def replacement(self):
+        if 'replacement' in self.state:
+            return self.state['replacement']
+        else:
+            return {}
+
+    @replacement.setter
+    def replacement(self, value):
+        if 'replacement' not in self.state:
+            self.state['replacement'] = {}
+
+        if isinstance(value, dict):
+            value_iter = value.items()
+        elif isinstance(value, collections.Iterable):
+            for item in value:
+                if len(item) != 2:
+                    raise TypeError
+            value_iter = value
+        else:
+            raise TypeError
+
+        for k, v in value_iter:
+            self.state['replacement'][k] = v
 
     @property
     def title(self):
@@ -92,11 +118,21 @@ class InheritableContentBase(RecursiveConfigurationBase):
     def resolve(self, data):
         if self._is_resolveable(data):
             try:
+                if self.replacement:
+                    replacements = copy.deepcopy(self.replacement)
+                else:
+                    replacements = {}
+
                 base = data.fetch(self.source.file, self.source.ref)
                 base.resolve(data)
 
+                if replacements != base.replacement:
+                    replacements.update(base.replacement)
+                    base.replacement = replacements
+
                 base.state.update(self.state)
                 self.state.update(base.state)
+
                 self.source.resolved = True
                 return True
             except InheritableContentError as e:
@@ -106,6 +142,22 @@ class InheritableContentBase(RecursiveConfigurationBase):
             m = 'cannot find {0} and ref "{1}" do not exist'.format(self.source.file, self.source.ref)
             logger.error(m)
             raise InheritableContentError(m)
+
+    def render(self):
+        if self.replacement:
+            attempts = range(10)
+
+            for key in self.state.keys():
+                if isinstance(self.state[key], collections.Iterable):
+                    if '{{' not in self.state[key]:
+                        continue
+
+                    for i in attempts:
+                        template = Template(self.state[key])
+                        self.state[key] = template.render(**self.replacement)
+
+                        if '{{' not in self.state[key]:
+                            break
 
 class InheritanceReference(RecursiveConfigurationBase):
     """
@@ -270,6 +322,8 @@ class DataContentBase(RecursiveConfigurationBase):
             return True
 
     def resolve(self):
+        """Resolves all inheritance."""
+
         for exmp in self.content.values():
             exmp.resolve(self.data)
 
