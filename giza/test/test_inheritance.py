@@ -30,7 +30,6 @@ class DummyContent(DataContentBase):
 class DummyCache(DataCache):
     content_class = DummyContent
 
-
 def get_inheritance_data_files():
     return [
         os.path.abspath(os.path.join(os.path.dirname(__file__), 'data-inheritance', fn))
@@ -204,3 +203,19 @@ class TestInheritedContentResolution(TestCase):
             for doc in data.content.values():
                 if 'source' in doc:
                     self.assertTrue(doc.source.resolved)
+
+class TestBaseTemplateRendering(TestCase):
+    @classmethod
+    def setUp(self):
+        self.c = Configuration()
+        self.c.runstate = RuntimeStateConfig()
+
+        self.data = DummyRecord({}, self.c)
+        self.data.replacement = { 'state': 'foo' }
+
+    def test_replacement(self):
+        self.data.pre = 'this is a {{state}} test'
+        self.assertTrue('{{' in self.data.pre)
+        self.data.render()
+        self.assertFalse('{{' in self.data.pre)
+        self.assertTrue('foo' in self.data.pre)

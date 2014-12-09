@@ -27,6 +27,8 @@ import os.path
 
 logger = logging.getLogger('giza.core.inheritance')
 
+from jinja2 import Template
+
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 from giza.tools.serialization import ingest_yaml_list
 from giza.content.helper import level_characters, edition_check
