@@ -17,16 +17,40 @@ import sys
 
 logger = logging.getLogger('giza.content.options.models')
 
-from giza.core.inheritance import InheritableContentBase
+from giza.core.inheritance import InheritableContentBase, InheritanceReference
 from giza.config.base import ConfigurationBase
 
 if sys.version_info >= (3, 0):
     basestring = str
 
-class OptionsData(InheritableContentBase):
-    def __init__(self, input_obj):
-        self._option_registry.append('description')
-        super(OptionsData, self).__init__(input_obj)
+class OptionData(InheritableContentBase):
+    def __init__(self, input_obj, conf):
+        self._option_registry.extend([
+            'description',
+            'name',
+            'args',
+            'aliases',
+            'default',
+            'type' ])
+
+        super(OptionData, self).__init__(input_obj, conf)
+
+    @property
+    def source(self):
+        if 'source' in self.state:
+            return self.state['source']
+        else:
+            return None
+
+    @source.setter
+    def source(self, value):
+        value['ref'] = (value['program'], value['name'])
+        del value['program']
+        del value['name']
+
+        self.state['source'] = InheritanceReference(value, self.conf)
+
+    inherit = source
 
     @property
     def program(self):
@@ -63,7 +87,9 @@ class OptionsData(InheritableContentBase):
 
     @directive.setter
     def directive(self, value):
-        if value in ('option', 'data', 'setting') or value.endswith('setting'):
+        if (value in ('option', 'data', 'setting',
+                      'method', 'function', 'class') or
+           value.endswith('setting')):
             self.state['directive'] = value
         else:
             raise TypeError

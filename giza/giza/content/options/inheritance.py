@@ -24,5 +24,22 @@ class OptionError(Exception): pass
 class OptionFile(DataContentBase):
     content_class = OptionData
 
+    def add(self, doc):
+        content = self.content_class(doc, self.conf)
+
+        ref = (content.program, content.name)
+
+        if not content.is_resolved():
+            content.resolve(self.data)
+
+        self.content[ref] = content
+
+
 class OptionDataCache(DataCache):
     content_class = OptionFile
+
+    @property
+    def options(self):
+        for fn in self.cache:
+            for option in self.cache[fn].content.values():
+                yield option
