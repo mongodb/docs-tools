@@ -50,7 +50,7 @@ def option_tasks(conf, app):
     if len(option_sources) and not os.path.isdir(fn_prefix):
         os.makedirs(fn_prefix)
 
-    for option in o.options:
+    for dep_fn, option in o.options:
         if option.program.startswith('_'):
             continue
 
@@ -58,7 +58,7 @@ def option_tasks(conf, app):
 
         t = app.add('task')
         t.target = out_fn
-        t.dependency = None
+        t.dependency = dep_fn
         t.job = write_options
         t.args = (option, out_fn, conf)
 

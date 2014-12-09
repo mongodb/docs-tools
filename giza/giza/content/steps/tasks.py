@@ -27,7 +27,7 @@ def write_steps(steps, fn, conf):
     logger.debug('wrote steps to: '  + fn)
 
 def get_step_fn_prefix(conf):
-    return os.path.join(conf.paths.projectroot, conf.paths.includes, 'steps')
+    return os.path.join(conf.paths.projectroot, conf.paths.branch_includes, 'steps')
 
 def step_outputs(conf):
     include_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)

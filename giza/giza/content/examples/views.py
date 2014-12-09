@@ -37,6 +37,7 @@ def full_example(collection, examples):
 
     r = RstCloth()
 
+    collection.render()
     if collection.options.show_title is True:
         if len(examples) == 1:
             ex_str = 'Example'
@@ -69,6 +70,7 @@ def full_example(collection, examples):
             r.newline()
 
     for idx, example in enumerate(examples):
+        example.render()
         if idx != 0 :
             r.newline(2)
 

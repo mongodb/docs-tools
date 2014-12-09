@@ -42,4 +42,4 @@ class OptionDataCache(DataCache):
     def options(self):
         for fn in self.cache:
             for option in self.cache[fn].content.values():
-                yield option
+                yield fn, option
