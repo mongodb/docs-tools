@@ -16,7 +16,7 @@ import logging
 
 logger = logging.getLogger('giza.content.steps.views')
 
-from giza.content.helper import edition_check, character_levels
+from giza.content.helper import character_levels
 from rstcloth.rstcloth import RstCloth
 
 def render_steps(steps, conf):
@@ -30,6 +30,8 @@ def render_steps(steps, conf):
                    '</div>')
 
     for idx, step in enumerate(steps.steps):
+        step.render() # run replacements
+
         if 'number' not in step:
             step.number = idx
 

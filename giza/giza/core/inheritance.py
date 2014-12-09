@@ -51,10 +51,10 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     @property
     def replacement(self):
-        if 'replacement' in self.state:
-            return self.state['replacement']
-        else:
-            return {}
+        if 'replacement' not in self.state:
+            self.replacement = {}
+
+        return self.state['replacement']
 
     @replacement.setter
     def replacement(self, value):
@@ -115,6 +115,12 @@ class InheritableContentBase(RecursiveConfigurationBase):
             return not self.is_resolved() and self.source.file in data.cache
         except AttributeError:
             logger.warning(str(data) + ' is not resolvable')
+            return False
+
+    def has_field(self, name):
+        if name in self and getattr(self, name, None) is not None:
+            return True
+        else:
             return False
 
     def resolve(self, data):
@@ -277,10 +283,12 @@ class DataContentBase(RecursiveConfigurationBase):
                 ref = doc['source']['ref']
             elif 'inherit' in doc:
                 ref = doc['inherit']['ref']
+            else:
+                ref = None
+        else:
+            ref = doc['ref']
 
-            doc['ref'] = ref
-
-        if doc['ref'] not in self.content:
+        if ref not in self.content:
             if isinstance(doc, self.content_class):
                 content = doc
             else:

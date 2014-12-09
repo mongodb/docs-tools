@@ -17,7 +17,7 @@ import logging
 
 logger = logging.getLogger('giza.content.steps.tasks')
 
-from giza.tools.files import expand_tree
+from giza.tools.files import expand_tree, verbose_remove
 from giza.content.steps.inheritance import StepDataCache
 from giza.content.steps.views import render_steps
 
@@ -26,14 +26,20 @@ def write_steps(steps, fn, conf):
     content.write(fn)
     logger.debug('wrote steps to: '  + fn)
 
-def step_tasks(conf, app):
+def get_step_fn_prefix(conf):
+    return os.path.join(conf.paths.projectroot, conf.paths.includes, 'steps')
+
+def step_outputs(conf):
     include_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)
-    fn_prefix = os.path.join(include_dir, 'steps')
+    fn_prefix = get_step_fn_prefix(conf)
 
-    step_sources = [ fn for fn in
-                     expand_tree(include_dir, 'yaml')
-                     if fn.startswith(fn_prefix) ]
+    return [ fn for fn in
+             expand_tree(include_dir, 'yaml')
+             if fn.startswith(fn_prefix) ]
 
+def step_tasks(conf, app):
+    fn_prefix = get_step_fn_prefix(conf)
+    step_sources = step_outputs(conf)
     s = StepDataCache(step_sources, conf)
 
     if len(step_sources) and not os.path.isdir(fn_prefix):
@@ -45,8 +51,8 @@ def step_tasks(conf, app):
         basename = fn[len(fn_prefix)+1:-5]
 
         out_fn = os.path.join(conf.paths.projectroot,
-                              conf.paths.branch_source,
-                              'includes', 'steps', basename) + '.rst'
+                              conf.paths.branch_includes,
+                              'steps', basename) + '.rst'
 
         t = app.add('task')
         t.target = out_fn

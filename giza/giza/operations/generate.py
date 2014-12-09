@@ -221,3 +221,15 @@ def source(args):
     build_content_generation_tasks(conf, source_app)
 
     app.run()
+
+@argh.expects_obj
+@argh.named('new-options')
+def new_options(args):
+    conf = fetch_config(args)
+    app = BuildApp(conf)
+
+    from giza.content.options.tasks import option_tasks
+
+    option_tasks(conf, app)
+
+    app.run()

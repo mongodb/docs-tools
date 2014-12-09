@@ -70,7 +70,8 @@ commands = {
         giza.operations.generate.examples,
         giza.operations.generate.redirects,
         giza.operations.generate.robots,
-        giza.operations.generate.source
+        giza.operations.generate.source,
+        giza.operations.generate.new_options
     ],
     'includes': [
         giza.operations.includes.recursive,
