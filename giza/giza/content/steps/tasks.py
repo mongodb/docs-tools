@@ -30,7 +30,7 @@ def get_step_fn_prefix(conf):
     return os.path.join(conf.paths.projectroot, conf.paths.branch_includes, 'steps')
 
 def step_outputs(conf):
-    include_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)
+    include_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
     fn_prefix = get_step_fn_prefix(conf)
 
     return [ fn for fn in

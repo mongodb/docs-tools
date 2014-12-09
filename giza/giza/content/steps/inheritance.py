@@ -31,6 +31,7 @@ class StepFile(DataContentBase):
 
         if len(self._ordered_content) == 0:
             ret = []
+
             for step in self.content.values():
                 step.resolve(self.data)
                 ret.append((step.number, step))
@@ -44,14 +45,14 @@ class StepFile(DataContentBase):
         return self._ordered_content
 
     def add(self, doc):
-        super(StepFile, self).add(doc)
+        content = super(StepFile, self).add(doc)
 
         if not hasattr(self, '_step_counter'):
             self._step_counter = 1
         else:
             self._step_counter += 1
 
-        obj = self.content[doc['ref']]
+        obj = self.content[content.ref]
 
         if 'number' not in obj:
             obj.number = self._step_counter

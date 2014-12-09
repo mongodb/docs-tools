@@ -23,10 +23,10 @@ from giza.content.options.inheritance import OptionDataCache
 from giza.content.options.views import render_options
 
 def get_option_fn_prefix(conf):
-    return os.path.join(conf.paths.projectroot, conf.paths.includes, 'option')
+    return os.path.join(conf.paths.projectroot, conf.paths.branch_includes, 'option')
 
 def option_outputs(conf):
-    include_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)
+    include_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
 
     fn_prefix = get_option_fn_prefix(conf)
 
@@ -57,8 +57,8 @@ def option_tasks(conf, app):
         t.target = out_fn
         t.dependency = dep_fn
         t.job = write_options
-        t.args = (option, out_fn, conf)
-        t.description = 'generating option file "{0}" from "{1}"'.format(out_fn, dep_fn)
+        t.args = (option, output_fn, conf)
+        t.description = 'generating option file "{0}" from "{1}"'.format(output_fn, dep_fn)
 
 def option_clean(conf, app):
     for fn in option_outputs(conf):

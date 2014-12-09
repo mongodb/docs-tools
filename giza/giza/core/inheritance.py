@@ -146,7 +146,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
             except InheritableContentError as e:
                 logger.error(e)
 
-        if self.source is not None and not self.source.is_resolved():
+        if not self.is_resolved():
             m = 'cannot find {0} and ref "{1}" do not exist'.format(self.source.file, self.source.ref)
             logger.error(m)
             raise InheritableContentError(m)
@@ -199,17 +199,20 @@ class InheritanceReference(RecursiveConfigurationBase):
 
     @file.setter
     def file(self, value):
-        if 'file' in self.state and os.path.exists(self.state['file']):
-            return
+        # if 'file' in self.state and os.path.isfile(self.state['file']):
+        #     return
 
         fns = set([ # value,  os.path.abspath(value),
                    os.path.join(self.conf.paths.projectroot, value),
                    os.path.join(self.conf.paths.projectroot,
-                                self.conf.paths.includes, value) ])
+                                self.conf.paths.branch_includes, value),
+                   # os.path.join(self.conf.paths.projectroot,
+                   #              self.conf.paths.includes, value)
+                                ])
 
         try:
             fns.add(os.path.join(self.conf.paths.projectroot,
-                                    self.conf.paths.source, value))
+                                 self.conf.paths.source, value))
         except KeyError:
             pass
 
@@ -274,19 +277,21 @@ class DataContentBase(RecursiveConfigurationBase):
             try:
                 self.add(doc)
             except Exception as e:
-                logger.error('could not inherit, because: ' + str(e))
+                logger.debug('could not inherit, because: ' + str(e))
                 logger.debug(doc)
 
     def add(self, doc):
-        if 'ref' not in doc:
-            if 'source' in doc:
-                ref = doc['source']['ref']
-            elif 'inherit' in doc:
-                ref = doc['inherit']['ref']
-            else:
-                ref = None
-        else:
+        if 'ref' in doc:
             ref = doc['ref']
+        elif 'source' in doc:
+            ref = doc['source']['ref']
+        elif 'inherit' in doc:
+            ref = doc['inherit']['ref']
+        else:
+            ref = None
+
+        if 'ref' not in doc and ref is not None:
+            doc['ref'] = ref
 
         if ref not in self.content:
             if isinstance(doc, self.content_class):
@@ -296,6 +301,9 @@ class DataContentBase(RecursiveConfigurationBase):
                     content = self.content_class(doc)
                 except TypeError:
                     content = self.content_class(doc, self.conf)
+
+            if ref is not None:
+                content.ref = ref
 
             self.content[content.ref] = content
 
@@ -387,7 +395,10 @@ class DataCache(RecursiveConfigurationBase):
     def fetch(self, fn, ref):
         if fn not in self.cache:
             logger.error('file "{0}" is not included.'.format(fn))
-            raise InheritableContentError
+            if os.path.isfile(fn):
+                self.add_file(fn)
+            else:
+                raise InheritableContentError
 
         if self.cache[fn] == []:
             self.add_file(fn)
