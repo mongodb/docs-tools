@@ -31,7 +31,6 @@ from giza.tools.files import rm_rf
 from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images import image_tasks, image_clean
 from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
-from giza.content.options import option_tasks, option_clean
 from giza.content.param import api_tasks, api_clean
 from giza.content.table import table_tasks, table_clean
 from giza.content.toc import toc_tasks, toc_clean
@@ -39,6 +38,7 @@ from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
 from giza.content.examples.tasks import example_tasks
 from giza.content.steps.tasks import step_tasks, step_clean
+from giza.content.options.tasks import option_tasks, option_clean
 
 from giza.content.primer import primer_migration_tasks
 from giza.content.primer import clean as primer_clean
@@ -219,17 +219,5 @@ def source(args):
 
     source_app = prep_app.add('app')
     build_content_generation_tasks(conf, source_app)
-
-    app.run()
-
-@argh.expects_obj
-@argh.named('new-options')
-def new_options(args):
-    conf = fetch_config(args)
-    app = BuildApp(conf)
-
-    from giza.content.options.tasks import option_tasks
-
-    option_tasks(conf, app)
 
     app.run()

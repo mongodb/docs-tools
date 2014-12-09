@@ -31,12 +31,12 @@ from giza.content.assets import assets_tasks
 from giza.content.images import image_tasks
 from giza.content.intersphinx import intersphinx_tasks
 from giza.content.release import release_tasks
-from giza.content.options import option_tasks
 from giza.content.param import api_tasks
 from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
 from giza.content.source import source_tasks, latex_image_transfer_tasks
 from giza.content.toc import toc_tasks
+from giza.content.options.tasks import option_tasks
 from giza.content.examples.tasks import example_tasks
 from giza.content.steps.tasks import step_tasks
 from giza.content.dependencies import refresh_dependency_tasks, dump_file_hash_tasks
