@@ -35,12 +35,8 @@ def option_outputs(conf):
              if fn.startswith(fn_prefix) ]
 
 def write_options(option, fn, conf):
-    output_fn = os.path.join(get_option_fn_prefix(conf), fn)
-    fn_prefix = get_option_fn_prefix(conf)
     content = render_options(option, conf)
-
-    content.write(output_fn)
-    logger.info("wrote data to " + output_fn)
+    content.write(fn)
 
 def option_tasks(conf, app):
     fn_prefix = get_option_fn_prefix(conf)
@@ -55,12 +51,14 @@ def option_tasks(conf, app):
             continue
 
         out_fn = hyph_concat(option.directive, option.program, option.name) + '.rst'
+        output_fn = os.path.join(fn_prefix, out_fn)
 
         t = app.add('task')
         t.target = out_fn
         t.dependency = dep_fn
         t.job = write_options
         t.args = (option, out_fn, conf)
+        t.description = 'generating option file "{0}" from "{1}"'.format(out_fn, dep_fn)
 
 def option_clean(conf, app):
     for fn in option_outputs(conf):
