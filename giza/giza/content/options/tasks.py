@@ -55,8 +55,8 @@ def option_tasks(conf, app):
         output_fn = os.path.join(fn_prefix, out_fn)
 
         t = app.add('task')
-        t.target = out_fn
-        t.dependency = [dep_fn, conf.runstate.conf_path ]
+        t.target = output_fn
+        t.dependency = [dep_fn, conf.runstate.conf_path]
         t.job = write_options
         t.args = (option, output_fn, conf)
         t.description = 'generating option file "{0}" from "{1}"'.format(output_fn, dep_fn)

@@ -130,20 +130,20 @@ class InheritableContentBase(RecursiveConfigurationBase):
     def resolve(self, data):
         if self._is_resolveable(data):
             try:
-                if self.replacement:
-                    replacements = copy.deepcopy(self.replacement)
-                else:
-                    replacements = {}
-
                 base = data.fetch(self.source.file, self.source.ref)
                 base.resolve(data)
 
-                if replacements != base.replacement:
-                    replacements.update(base.replacement)
-                    base.replacement = replacements
+                needs_replacement = self.replacement != base.replacement
+
+                if needs_replacement:
+                    replacement = copy.deepcopy(base.replacement)
+                    replacement.update(self.replacement)
 
                 base.state.update(self.state)
                 self.state.update(base.state)
+
+                if needs_replacement:
+                    self.replacement = replacement
 
                 self.source.resolved = True
                 return True
