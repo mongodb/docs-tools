@@ -24,6 +24,7 @@ import copy
 import collections
 import logging
 import os.path
+import sys
 
 logger = logging.getLogger('giza.core.inheritance')
 
@@ -32,6 +33,9 @@ from jinja2 import Template
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 from giza.tools.serialization import ingest_yaml_list
 from giza.content.helper import level_characters, edition_check
+
+if sys.version_info >= (3, 0):
+    basestring = str
 
 class InheritableContentError(Exception):
     """
@@ -157,15 +161,34 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
             for key in self.state.keys():
                 if isinstance(self.state[key], collections.Iterable):
-                    if '{{' not in self.state[key]:
-                        continue
+                    should_resplit = None
+
+                    if isinstance(self.state[key], list):
+                        for it in self.state[key]:
+                            if not isinstance(it, basestring):
+                                should_resplit = False
+                        if should_resplit is None:
+                            should_resplit = True
+                            self.state[key] = '\n'.join(self.state[key])
 
                     for i in attempts:
+                        if '{{' not in self.state[key]:
+                            break
+
                         template = Template(self.state[key])
                         self.state[key] = template.render(**self.replacement)
 
                         if '{{' not in self.state[key]:
                             break
+
+                    if should_resplit is True:
+                        self.state[key] = self.state[key].split('\n')
+                elif isinstance(self.state[key], InheritableContentBase):
+                    if len(self.state[key].replacement) == 0:
+                        self.state[key].replacement = self.replacement
+
+                    self.state[key].render()
+
 
 class InheritanceReference(RecursiveConfigurationBase):
     """
@@ -277,8 +300,8 @@ class DataContentBase(RecursiveConfigurationBase):
             try:
                 self.add(doc)
             except Exception as e:
-                logger.debug('could not inherit, because: ' + str(e))
-                logger.debug(doc)
+                logger.error('could not inherit, because: ' + str(e))
+                logger.info(doc)
 
     def add(self, doc):
         if 'ref' in doc:
