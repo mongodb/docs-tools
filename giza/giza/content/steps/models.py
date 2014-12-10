@@ -124,17 +124,17 @@ class StepData(HeadingMixin, InheritableContentBase):
         if isinstance(value, ActionContent):
             self.state['action'] = [ value ]
         elif isinstance(value, dict):
-            self.state['action'] = [ ActionContent(value) ]
+            self.state['action'] = [ ActionContent(value, self.conf) ]
         elif isinstance(value, list):
             actions = []
             for item in value:
                 if isinstance(item, ActionContent):
                     actions.append(item)
                 else:
-                    actions.append(ActionContent(item))
+                    actions.append(ActionContent(item, self.conf))
             self.state['action'] = actions
 
-class ActionContent(HeadingMixin, ConfigurationBase):
+class ActionContent(HeadingMixin, InheritableContentBase):
     _option_registry = [ 'pre', 'post', 'content']
 
     @property
