@@ -39,6 +39,7 @@ from giza.content.redirects import make_redirect, redirect_tasks
 from giza.content.examples.tasks import example_tasks
 from giza.content.steps.tasks import step_tasks, step_clean
 from giza.content.options.tasks import option_tasks, option_clean
+from giza.content.release.tasks import release_tasks, release_clean
 
 from giza.content.primer import primer_migration_tasks
 from giza.content.primer import clean as primer_clean
@@ -149,6 +150,19 @@ def primer(args):
         primer_clean(c, app)
     else:
         primer_migration_tasks(c, app)
+
+    app.run()
+
+@argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
+def release(args):
+    c = fetch_config(args)
+    app = BuildApp(c)
+
+    if c.runstate.clean_generated is True:
+        release_clean(c, app)
+    else:
+        release_tasks(c, app)
 
     app.run()
 

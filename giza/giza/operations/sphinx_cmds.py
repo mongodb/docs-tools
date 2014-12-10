@@ -30,12 +30,12 @@ from giza.content.includes import includes_tasks
 from giza.content.assets import assets_tasks
 from giza.content.images import image_tasks
 from giza.content.intersphinx import intersphinx_tasks
-from giza.content.release import release_tasks
 from giza.content.param import api_tasks
 from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
 from giza.content.source import source_tasks, latex_image_transfer_tasks
 from giza.content.toc import toc_tasks
+from giza.content.release.tasks import release_tasks
 from giza.content.options.tasks import option_tasks
 from giza.content.examples.tasks import example_tasks
 from giza.content.steps.tasks import step_tasks
@@ -192,7 +192,6 @@ def build_prep_tasks(conf, app):
     assets_tasks(conf, app)
     includes_tasks(conf, app)
     intersphinx_tasks(conf, app)
-    release_tasks(conf, app)
     api_tasks(conf, app)
     table_tasks(conf, app)
 
@@ -210,6 +209,7 @@ def build_content_generation_tasks(conf, app):
     redirect_tasks(conf, app)
     image_tasks(conf, app)
     step_tasks(conf, app)
+    release_tasks(conf, app)
     toc_tasks(conf, app)
     option_tasks(conf, app)
     example_tasks(conf, app)
