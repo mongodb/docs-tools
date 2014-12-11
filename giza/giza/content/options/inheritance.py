@@ -37,9 +37,3 @@ class OptionFile(DataContentBase):
 
 class OptionDataCache(DataCache):
     content_class = OptionFile
-
-    @property
-    def options(self):
-        for fn in self.cache:
-            for option in self.cache[fn].content.values():
-                yield fn, option

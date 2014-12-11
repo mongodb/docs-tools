@@ -22,9 +22,3 @@ class ReleaseFile(DataContentBase):
 
 class ReleaseDataCache(DataCache):
     content_class = ReleaseFile
-
-    @property
-    def files(self):
-        for fn in self.cache:
-            for data in self.cache[fn].content.values():
-                yield fn, data

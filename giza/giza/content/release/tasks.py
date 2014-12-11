@@ -45,7 +45,7 @@ def release_tasks(conf, app):
     if len(release_sources) and not os.path.isdir(fn_prefix):
         os.makedirs(fn_prefix)
 
-    for dep_fn, release in rel.files:
+    for dep_fn, release in rel.content_iter():
         if release.ref.startswith('_'):
             continue
 

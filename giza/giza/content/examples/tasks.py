@@ -49,8 +49,7 @@ def example_tasks(conf, app):
     if len(d) > 0:
         safe_create_directory(fn_prefix)
 
-    for fn in d.cache.keys():
-        exmpf = d.cache[fn]
+    for fn, exmpf in d.file_iter():
         basename = fn[len(fn_prefix)+1:-5]
 
         out_fn = os.path.join(conf.paths.projectroot,

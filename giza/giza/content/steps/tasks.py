@@ -45,9 +45,7 @@ def step_tasks(conf, app):
     if len(step_sources) and not os.path.isdir(fn_prefix):
         os.makedirs(fn_prefix)
 
-    for fn in s.cache.keys():
-        stepf = s.cache[fn]
-
+    for fn, stepf in s.file_iter():
         basename = fn[len(fn_prefix)+1:-5]
 
         out_fn = os.path.join(conf.paths.projectroot,
