@@ -432,7 +432,7 @@ class DataCache(RecursiveConfigurationBase):
         for fn in self.cache:
             yield fn, self.cache[fn]
 
-    def content_iter(self)
+    def content_iter(self):
         for fn in self.cache:
             for data in self.cache[fn].content.values():
                 yield fn, data
