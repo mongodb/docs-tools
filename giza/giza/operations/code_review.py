@@ -60,7 +60,7 @@ def worker(args):
                 cr_data.commits.append(g.sha())
 
             if len(cr_data.commits) >= 2:
-                use_hash = str(':'.join([cr_data.commits[0][0:8], cr_data.commits[-1][0:8]]))
+                use_hash = str('..'.join([cr_data.commits[0][0:8], cr_data.commits[-1][0:8]]))
             else:
                 use_hash = str(cr_data.commits[-1])
 
