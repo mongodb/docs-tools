@@ -23,6 +23,7 @@ from giza.core.git import GitRepo
 from giza.config.code_review import CodeReviewConfiguration
 from giza.config.helper import fetch_config, new_credentials_config
 
+from giza.operations.includes import render_for_console
 from giza.tools.command import command
 logger = logging.getLogger('giza.operations.code_review')
 
@@ -35,18 +36,19 @@ def safe_create_code_review_data_file(fn):
         logger.info('created new code review cache')
 
 
-@argh.named('cr')
+def get_cr_data_file(conf):
+    return os.path.join(conf.paths.projectroot, '.git', 'code_review_mapping.json')
+
+@argh.named('send')
 @argh.expects_obj
-def worker(args):
-    """
-    Creates or updates a code review case.
-    """
+def create_or_update(args):
+    "Creates or updates a code review case."
 
     conf = fetch_config(args)
     creds = new_credentials_config()
     g = GitRepo(conf.paths.projectroot)
 
-    cr_data_file = os.path.join(conf.paths.projectroot, '.git', 'code_review_mapping.json')
+    cr_data_file = get_cr_data_file(conf)
     safe_create_code_review_data_file(cr_data_file)
 
     with CodeReviewConfiguration.persisting(cr_data_file) as data:
@@ -74,6 +76,67 @@ def worker(args):
             logger.info('creating new code review.')
             create_code_review(data, g, creds)
 
+
+@argh.expects_obj
+def list(args):
+    "Lists tracked code reviews."
+
+    conf = fetch_config(args)
+    cr_data_file = get_cr_data_file(conf)
+    safe_create_code_review_data_file(cr_data_file)
+
+    crconf = CodeReviewConfiguration(cr_data_file)
+
+    render_for_console([ k for k in crconf.branches.keys()])
+
+@argh.expects_obj
+@argh.arg('_branch_name', nargs='*')
+def close(args):
+    "Removes a tracked code review."
+
+    conf = fetch_config(args)
+    cr_data_file = get_cr_data_file(conf)
+    safe_create_code_review_data_file(cr_data_file)
+    g = GitRepo(conf.paths.projectroot)
+
+    with CodeReviewConfiguration.persisting(cr_data_file) as data:
+        branches = data.branches.keys()
+
+        for to_delete in args._branch_name:
+            if to_delete in branches:
+                del data.branches[to_delete]
+                logger.info('removed tracked code review for: ' + to_delete)
+            else:
+                logger.info("not tracking a code review for: " + to_delete)
+
+            try:
+                g.remove_branch(to_delete, args.force)
+                logger.info('removed branch: ' + to_delete)
+            except:
+                logger.error('could not remove branch: ' + to_delete)
+
+@argh.expects_obj
+@argh.arg('_branch_name')
+def checkout(args):
+    "Checks out a tracked code review branch."
+
+    conf = fetch_config(args)
+    g = GitRepo(conf.paths.projectroot)
+
+    cr_data_file = get_cr_data_file(conf)
+    safe_create_code_review_data_file(cr_data_file)
+    crconf = CodeReviewConfiguration(cr_data_file)
+
+    if args._branch_name in crconf.branches:
+        try:
+            g.checkout(args._branch_name)
+            logger.info('checked out: ' + args._branch_name)
+        except:
+            logger.error('could not checkout branch: ' + args._branch_name)
+    else:
+        m = "no branch named {0} tracked. Please use another method to checkout this branch"
+        logger.warning(m.format(args._branch_name))
+
 ##### Worker functions to create or update code reviews
 
 def update_code_review(cr_data, g, use_hash):
@@ -83,7 +146,7 @@ def update_code_review(cr_data, g, use_hash):
         '--nojira',
         '--email', g.author_email(),
         '-m', '"'+ cr_data.original_name + '"',
-        '-i', cr_data.issue,
+        '-i', cr_data.issue
     ]
 
     if len(cr_data.commits) > 2:
@@ -101,13 +164,14 @@ def update_code_review(cr_data, g, use_hash):
 def create_code_review(data, g, creds):
     branch_data = data.get_branch(g.current_branch())
 
-    cmd = ['upload.py',
-           '-y',
-           '--jira_user', creds.jira.username,
-           '--email', g.author_email(),
-           '-m', '"' + g.commit_messages()[0] + '"',
-           branch_data.commits[-1],
-    ]
+    cmd = ['upload.py', '-y']
+
+    if creds is not None:
+        cmd.extend(['--jira_user', creds.jira.username])
+
+    cmd.extend([ '--email', g.author_email(),
+                 '-m', '"' + g.commit_messages()[0] + '"',
+                 branch_data.commits[-1]])
 
     cr_upload = command(cmd, capture=True)
     branch_data.issue = get_issue_number(cr_upload.out)

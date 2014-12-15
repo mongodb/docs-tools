@@ -28,9 +28,16 @@ from giza.config.credentials import CredentialsConfig, get_credentials_skeleton
 
 def new_credentials_config(conf_path=None):
     if conf_path is None:
-        conf_path = os.path.expanduser("~/.mongodb-jira.yaml")
+        for fn in [ os.path.expanduser("~/.giza-credentials.yaml"),
+                    os.path.expanduser("~/.mongodb-jira.yaml") ]:
+            if os.path.isfile(fn):
+                conf_path = fn
+                break
 
-    return CredentialsConfig(conf_path)
+    if conf_path is None and not (os.path.isfile(conf_path) or isinstance(conf_path, dict)):
+        return None
+    else:
+        return CredentialsConfig(conf_path)
 
 def fetch_config(args):
     c = Configuration()

@@ -38,7 +38,6 @@ import giza.operations.code_review
 
 commands = {
     'main': [
-        giza.operations.code_review.worker,
         giza.operations.clean.main,
         giza.operations.configuration.render_config,
         giza.operations.deploy.main,
@@ -56,6 +55,12 @@ commands = {
         giza.operations.git.cherry_pick,
         giza.operations.git.merge,
         giza.operations.git.create_branch,
+    ],
+    'cr': [
+        giza.operations.code_review.create_or_update,
+        giza.operations.code_review.list,
+        giza.operations.code_review.close,
+        giza.operations.code_review.checkout,
     ],
     'generate': [
         giza.operations.generate.api,
