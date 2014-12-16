@@ -25,6 +25,7 @@ from giza.config.helper import fetch_config, new_credentials_config
 
 from giza.operations.includes import render_for_console
 from giza.tools.command import command
+
 logger = logging.getLogger('giza.operations.code_review')
 
 def safe_create_code_review_data_file(fn):
@@ -39,46 +40,9 @@ def safe_create_code_review_data_file(fn):
 def get_cr_data_file(conf):
     return os.path.join(conf.paths.projectroot, '.git', 'code_review_mapping.json')
 
-@argh.named('send')
 @argh.expects_obj
-def create_or_update(args):
-    "Creates or updates a code review case."
-
-    conf = fetch_config(args)
-    creds = new_credentials_config()
-    g = GitRepo(conf.paths.projectroot)
-
-    cr_data_file = get_cr_data_file(conf)
-    safe_create_code_review_data_file(cr_data_file)
-
-    with CodeReviewConfiguration.persisting(cr_data_file) as data:
-        if g.current_branch() in data.branches:
-            cr_data = data.branches[g.current_branch()]
-            if len(cr_data.commits) > 1 and g.sha('HEAD~') == cr_data.commits[-2]:
-                # the last commit was amended, so replace it:
-                if g.sha('HEAD') != cr_data.commits[-1]:
-                    cr_data.commits[-1] = g.sha('HEAD')
-            elif g.sha() not in cr_data.commits:
-                cr_data.commits.append(g.sha())
-
-            if len(cr_data.commits) >= 2:
-                use_hash = str('..'.join([cr_data.commits[0][0:8], cr_data.commits[-1][0:8]]))
-            else:
-                use_hash = str(cr_data.commits[-1])
-
-            logger.info('updating an existing code review.')
-            update_code_review(cr_data, g, use_hash)
-        else:
-            data.set_branch(g.current_branch(), { 'original_name': g.commit_messages()[0],
-                                                  'commits': [ g.sha('HEAD~'), g.sha() ],
-                                    })
-
-            logger.info('creating new code review.')
-            create_code_review(data, g, creds)
-
-
-@argh.expects_obj
-def list(args):
+@argh.named('list')
+def list_reviews(args):
     "Lists tracked code reviews."
 
     conf = fetch_config(args)
@@ -136,6 +100,45 @@ def checkout(args):
     else:
         m = "no branch named {0} tracked. Please use another method to checkout this branch"
         logger.warning(m.format(args._branch_name))
+
+
+
+@argh.named('send')
+@argh.expects_obj
+def create_or_update(args):
+    "Creates or updates a code review case."
+
+    conf = fetch_config(args)
+    creds = new_credentials_config()
+    g = GitRepo(conf.paths.projectroot)
+
+    cr_data_file = get_cr_data_file(conf)
+    safe_create_code_review_data_file(cr_data_file)
+
+    with CodeReviewConfiguration.persisting(cr_data_file) as data:
+        if g.current_branch() in data.branches:
+            cr_data = data.branches[g.current_branch()]
+            if len(cr_data.commits) > 1 and g.sha('HEAD~') == cr_data.commits[-2]:
+                # the last commit was amended, so replace it:
+                if g.sha('HEAD') != cr_data.commits[-1]:
+                    cr_data.commits[-1] = g.sha('HEAD')
+            elif g.sha() not in cr_data.commits:
+                cr_data.commits.append(g.sha())
+
+            if len(cr_data.commits) >= 2:
+                use_hash = str('..'.join([cr_data.commits[0][0:8], cr_data.commits[-1][0:8]]))
+            else:
+                use_hash = str(cr_data.commits[-1])
+
+            logger.info('updating an existing code review.')
+            update_code_review(cr_data, g, use_hash)
+        else:
+            data.set_branch(g.current_branch(), { 'original_name': g.commit_messages()[0],
+                                                  'commits': [ g.sha('HEAD~'), g.sha() ],
+                                    })
+
+            logger.info('creating new code review.')
+            create_code_review(data, g, creds)
 
 ##### Worker functions to create or update code reviews
 

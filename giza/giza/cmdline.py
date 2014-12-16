@@ -58,7 +58,7 @@ commands = {
     ],
     'cr': [
         giza.operations.code_review.create_or_update,
-        giza.operations.code_review.list,
+        giza.operations.code_review.list_reviews,
         giza.operations.code_review.close,
         giza.operations.code_review.checkout,
     ],
