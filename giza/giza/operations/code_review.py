@@ -181,10 +181,12 @@ def create_code_review(data, g, creds):
     data.set_branch(g.current_branch(), branch_data)
 
     issue_url = get_issue_url(cr_upload.out)
-    if issue_url is not None:
+    if issue_url is None:
+        logger.error('failed to create issue')
+    elif len(issue_url) < 80:
         logger.info('created issue: ' + issue_url)
     else:
-        logger.error('failed to create issue')
+        logger.info('created new code review issue')
 
 ##### Output processing
 
