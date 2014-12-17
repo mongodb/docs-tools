@@ -105,7 +105,7 @@ def merge(args):
         if g.current_branch != from_branch:
             g.checkout(from_branch)
 
-        g.remove_branch(branch_name, force=True)
+        g.remove_branch(branch_name, force=False)
 
 @argh.expects_obj
 @argh.named("create-branch")
