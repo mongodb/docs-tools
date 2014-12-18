@@ -24,7 +24,7 @@ from contextlib import contextmanager
 
 from giza.tools.command import command, CommandError
 
-logger = logging.getLogger('giza.git')
+logger = logging.getLogger('giza.core.git')
 
 class GitError(Exception): pass
 
