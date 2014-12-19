@@ -75,7 +75,7 @@ def full_example(collection, examples):
         if idx != 0 :
             r.newline(2)
 
-        if len(examples) > 1:
+        if len(examples) > 1 and 'title' in example:
             getattr(r, 'h' + str(example.title.level))(example.title.text)
             r.newline()
 
@@ -101,7 +101,8 @@ def full_example(collection, examples):
             r.content(example.post)
             r.newline()
 
-        if example.results is not None:
+
+        if 'results' in example and example.results is not None:
             r.codeblock(content=example.results,
                         language='javascript')
 
