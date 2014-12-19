@@ -135,7 +135,7 @@ def sphinx_publication(c, args, app):
             # to copy images in this case.
             latex_image_transfer_tasks(build_config, sconf, prep_app)
 
-            msg = 'prepared source for ({0}, {1}, {2}) in {3}'
+            msg = 'added source tasks for ({0}, {1}, {2}) in {3}'
             logger.info(msg.format(builder, language, edition, build_config.paths.branch_source))
 
         # Add sphinx tasks for this builder/language/edition combination
