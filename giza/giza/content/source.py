@@ -65,6 +65,8 @@ def transfer_source(conf, sconf):
     # the target so we can have more incremental builds.
     exclusions = "--exclude=" + ' --exclude='.join([ os.path.join('includes', 'steps'),
                                                      os.path.join('includes', 'toc'),
+                                                     os.path.join('includes', 'release'),
+                                                     os.path.join('includes', 'example'),
                                                      os.path.join('includes', 'option'),
                                                      image_dir + os.path.sep + "*.png",
                                                      image_dir + os.path.sep + "*.rst",
@@ -79,7 +81,7 @@ def transfer_source(conf, sconf):
     source_exclusion(conf, sconf)
     os.utime(target, None)
 
-    logger.info('prepared source for sphinx build in {0}'.format(target))
+    logger.info('prepared and migrated source for sphinx build in {0}'.format(target))
 
 def source_exclusion(conf, sconf):
     ct = 0
