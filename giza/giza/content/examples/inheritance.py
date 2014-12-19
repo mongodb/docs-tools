@@ -51,10 +51,11 @@ class ExampleFile(DataContentBase):
     def ingest(self, src):
         super(ExampleFile, self).ingest(src)
 
-        if self.collection is None:
-            m = 'all examples must have a collection'
-            logger.error(m)
-            raise InheritableContentError(m)
+        #if self.collection is not self.collection:
+        #    logger.error(self.state)
+        #    m = 'all examples must have a collection'
+        #    logger.error(m)
+        #    raise InheritableContentError(m)
 
     @property
     def collection(self):

@@ -37,17 +37,18 @@ def full_example(collection, examples):
 
     r = RstCloth()
 
-    collection.render()
-    if collection.options.show_title is True:
-        if len(examples) == 1:
-            ex_str = 'Example'
-        else:
-            ex_str = 'Examples'
-
-        r.h2(ex_str)
-        r.newline()
-
     if collection is not None:
+        collection.render()
+
+        if collection.options.show_title is True:
+            if len(examples) == 1:
+                ex_str = 'Example'
+            else:
+                ex_str = 'Examples'
+
+            r.h2(ex_str)
+            r.newline()
+
         if 'pre' in collection:
             r.content(collection.pre)
             r.newline()
