@@ -45,7 +45,7 @@ def dump_file_hashes(conf):
           'files': { }
         }
 
-    files = expand_tree(os.path.join(conf.paths.projectroot, conf.paths.source), None)
+    files = expand_tree(os.path.join(conf.paths.projectroot, conf.paths.branch_source), None)
 
     fmap = o['files']
 
