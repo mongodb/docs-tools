@@ -108,6 +108,27 @@ def merge(args):
         g.remove_branch(branch_name, force=False)
 
 @argh.expects_obj
+@argh.named("setup-branches")
+def setup_branches(args):
+    conf = fetch_config(args)
+
+    g = GitRepo(c.paths.projectroot)
+
+    if 'upstream' in g.remotes():
+        remote = 'upstream'
+    else:
+        remote = 'origin'
+
+    for pbranch in conf.git.branches.published:
+        if g.branch_exists(pbranch):
+            continue
+        else:
+            tracking_branch = '/'.join([remote, pbranch])
+            g.create_branch(pbranch, tracking=tracking_branch)
+            logger.info('created branch "{0}" tracking "{1}"'.format(pbranch, tracking_branch))
+
+
+@argh.expects_obj
 @argh.named("create-branch")
 @argh.arg('git_branch')
 def create_branch(args):
