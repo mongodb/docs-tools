@@ -1628,3 +1628,7 @@ h6 .guilabel {
 li.current > a > .fa.expand-icon:before {
     content: ""; /* fa-minus */
 }
+
+.slides-link {
+    float: right;
+}
