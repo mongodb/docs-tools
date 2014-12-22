@@ -127,10 +127,10 @@ class TestDataCache(TestCase):
         self.assertEqual(self.data.cache, {})
 
         for fn in files:
-            with self.assertRaises(InheritableContentError):
-                content = self.data.fetch(fn, 1)
-
-            self.assertNotIn(fn, self.data)
+            if not os.path.isfile(fn):
+                with self.assertRaises(InheritableContentError):
+                    content = self.data.fetch(fn, 1)
+                self.assertNotIn(fn, self.data)
 
 class TestDataContentBase(TestCase):
     @classmethod
