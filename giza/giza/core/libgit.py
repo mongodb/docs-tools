@@ -50,7 +50,7 @@ class GitRepo(object):
 
         if commit is None or not isinstance(commit, pygit2.Commit):
             return ""
-        else
+        else:
             return commit.author
 
     def branch_exists(self, name):
