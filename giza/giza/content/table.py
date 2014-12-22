@@ -80,7 +80,7 @@ def _generate_tables(source, target, list_target):
 #################### Table Source Iterators ####################
 
 def table_sources(conf):
-    for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.includes), 'yaml'):
+    for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.branch_includes), 'yaml'):
         if os.path.basename(source).startswith('table'):
             yield source
 

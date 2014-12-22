@@ -24,7 +24,7 @@ from giza.content.steps.views import render_steps
 def write_steps(steps, fn, conf):
     content = render_steps(steps, conf)
     content.write(fn)
-    logger.debug('wrote steps to: '  + fn)
+    logger.info('wrote steps to: '  + fn)
 
 def get_step_fn_prefix(conf):
     return os.path.join(conf.paths.projectroot, conf.paths.branch_includes, 'steps')

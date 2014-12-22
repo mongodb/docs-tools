@@ -44,7 +44,7 @@ from giza.content.release.tasks import release_tasks, release_clean
 from giza.content.primer import primer_migration_tasks
 from giza.content.primer import clean as primer_clean
 
-from giza.operations.sphinx_cmds import build_prep_tasks, build_content_generation_tasks
+from giza.operations.sphinx_cmds import build_content_generation_tasks
 from giza.content.source import source_tasks
 from giza.config.sphinx_config import render_sconf
 from giza.content.dependencies import refresh_dependency_tasks
@@ -220,18 +220,13 @@ def source(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
 
-    build_prep_tasks(conf, app)
-
     sconf = render_sconf(args.edition, 'html', args.language, conf)
 
     prep_app = app.add('app')
-    source_tasks(conf, sconf, prep_app)
-    refresh_dependency_tasks(conf, prep_app)
+    source_tasks(build_config, sconf, prep_app)
+    prep_app.run()
 
-    primer_app = app.add('app')
-    primer_migration_tasks(conf, primer_app)
-
-    source_app = prep_app.add('app')
-    build_content_generation_tasks(conf, source_app)
+    build_content_generation_tasks(build_config, prep_app.add('app'))
+    refresh_dependency_tasks(build_config, prep_app.add('app'))
 
     app.run()

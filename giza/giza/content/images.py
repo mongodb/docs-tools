@@ -151,7 +151,7 @@ def generate_image_pages(dir, name, alt, output, conf):
 
     image_rst_file_path = os.path.join(conf.paths.projectroot, image + '.rst')
     r.write(image_rst_file_path)
-    logger.info('generated include file {0}.rst'.format(image))
+    logger.debug('generated include file {0}.rst'.format(image))
 
 def _get_inkscape_cmd():
     if sys.platform in ['linux', 'linux2']:
@@ -254,7 +254,7 @@ def image_tasks(conf, app):
             t.job = _generate_images
             t.args = [ inkscape_cmd, output['dpi'], output['width'], target_img, source_file ]
             t.target = target_img
-            t.dependency = [ meta_file, source_core ]
+            t.dependency = [ source_core ]
             t.description = 'generating image file {0} from {1}'.format(target_img, source_core)
             logger.debug('adding image creation job for {0}'.format(target_img))
 

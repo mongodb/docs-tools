@@ -232,7 +232,7 @@ def generate_params(params, fn, conf):
 #################### Source Iterators ####################
 
 def api_sources(conf):
-    return expand_tree(os.path.join(conf.paths.projectroot, conf.paths.source, 'reference'), 'yaml')
+    return expand_tree(os.path.join(conf.paths.projectroot, conf.paths.branch_source, 'reference'), 'yaml')
 
 def api_target(source):
     return dot_concat(os.path.splitext(source)[0], 'rst')

@@ -234,12 +234,12 @@ def add_meta(r, page_name, record):
             r.newline()
 
 def includes_tasks(conf, app):
-    includes_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)
-    meta_dir = os.path.join(conf.paths.projectroot, conf.paths.source, 'meta')
+    includes_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
+    meta_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_source, 'meta')
 
     if os.path.exists(includes_dir) and os.path.exists(meta_dir):
         overview_fn = os.path.join(conf.paths.projectroot,
-                                   conf.paths.includes,
+                                   conf.paths.branch_includes,
                                    'generated',
                                    'overview.rst')
 

@@ -18,6 +18,7 @@ organizing framework for running larger sequences of operations.
 """
 
 import logging
+import random
 
 logger = logging.getLogger('giza.app')
 
@@ -60,6 +61,7 @@ class BuildApp(object):
         self.results = []
         self.worker_pool = None
         self.default_pool = self.conf.runstate.runner
+        self.randomize = False
 
         self.pool_mapping = {
             'thread': ThreadPool,
@@ -149,14 +151,10 @@ class BuildApp(object):
 
     @property
     def queue_has_apps(self):
-        if len(self.queue) <= 1:
-            return False
-        elif len(self.queue) >= 2:
-            num_apps = len([ t for t in self.queue if isinstance(t, BuildApp)])
-            if num_apps == 0:
-                return False
-            elif num_apps >= 1:
-                return True
+        num_apps = len([ True for t in self.queue if isinstance(t, BuildApp)])
+
+        if num_apps >= 1:
+            return True
         else:
             return False
 
@@ -249,6 +247,9 @@ class BuildApp(object):
                         self.results.append(j.run())
                         group = []
                 elif len(group) > 1:
+                    if self.randomize is True:
+                        random.shuffle(group)
+
                     self.results.extend(self.pool.runner(group))
                     group = []
 
@@ -256,7 +257,7 @@ class BuildApp(object):
                     task.pool = self.pool
 
                 if isinstance(task, MapTask):
-                    self.results.extend(self.pool.runner([j]))
+                    self.results.extend(self.pool.runner([task]))
                 elif isinstance(task, Task):
                     self.results.append(task.run())
                 else:
@@ -273,6 +274,8 @@ class BuildApp(object):
         elif self.queue_has_apps is True:
             self._run_mixed_queue()
         else:
+            if self.randomize is True:
+                random.shuffle(self.queue)
             self.results.extend(self.pool.runner(self.queue))
 
         self.queue = []

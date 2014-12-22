@@ -27,7 +27,6 @@ logger = logging.getLogger('giza.operations.sphinx')
 
 from giza.content.robots import robots_txt_tasks
 from giza.content.includes import includes_tasks
-from giza.content.assets import assets_tasks
 from giza.content.images import image_tasks
 from giza.content.intersphinx import intersphinx_tasks
 from giza.content.param import api_tasks
@@ -41,7 +40,6 @@ from giza.content.examples.tasks import example_tasks
 from giza.content.steps.tasks import step_tasks
 from giza.content.dependencies import refresh_dependency_tasks, dump_file_hash_tasks
 from giza.content.sphinx import sphinx_tasks, output_sphinx_stream, finalize_sphinx_build
-from giza.content.primer import primer_migration_tasks
 from giza.content.redirects import redirect_tasks
 
 from giza.config.sphinx_config import render_sconf
@@ -77,29 +75,24 @@ def sphinx_publication(c, args, app):
 
     Adds all required tasks to build a Sphinx site. Specifically:
 
-    1. Adds a group of early-stage tasks to generate content (e.g. assets,
-       intersphinx) that do not have dependencies.
-
-    2. Iterates through the (language * builder * edition) combination and adds
+    1. Iterates through the (language * builder * edition) combination and adds
        tasks to generate the content in the
        <build>/<branch>/source<-edition<-language>> directory. There is one
        version of the <build>/<branch>/source directory for every
        language/edition combination, but multiple builders can use the same
        diretory as needed.
 
-    3. Add a task to run the ``sphinx-build`` task.
+    2. Add a task to run the ``sphinx-build`` task.
 
-    4. Run all tasks in proper order.
+    3. Run all tasks in proper order.
 
-    5. Process and print the output of ``sphinx-build``.
+    4. Process and print the output of ``sphinx-build``.
 
     :return: The sum of all return codes from all ``sphinx-build`` tasks. All
              non-zero statuses represent errors.
 
     :rtype: int
     """
-
-    build_prep_tasks(c, app)
 
     # sphinx-build tasks are separated into their own app.
     sphinx_app = BuildApp(c)
@@ -121,6 +114,10 @@ def sphinx_publication(c, args, app):
             # this is where we add tasks to transfer the source into the
             # ``build/<branch>/source`` directory.
             source_tasks(build_config, sconf, prep_app)
+
+            # have to migrate source early (here) for the rest of the tasks to
+            # register correctly.
+            prep_app.run()
 
             # these operation groups each execute in isolation of each-other and should.
             build_content_generation_tasks(build_config, prep_app.add('app'))
@@ -177,24 +174,6 @@ def get_sphinx_build_configuration(edition, language, builder, args):
 
     return conf, sconf
 
-def build_prep_tasks(conf, app):
-    """
-    :param Configuration conf: The current build configuration object.
-
-    :param BuildApp app: A :class:`~giza.core.app.BuildApp()` object.
-
-    Add tasks to the ``app`` for all tasks that modify the content in the
-    *actual* source directory.
-    """
-
-    primer_migration_tasks(conf, app)
-    robots_txt_tasks(conf, app)
-    assets_tasks(conf, app)
-    includes_tasks(conf, app)
-    intersphinx_tasks(conf, app)
-    api_tasks(conf, app)
-    table_tasks(conf, app)
-
 def build_content_generation_tasks(conf, app):
     """
     :param Configuration conf: The current build configuration object.
@@ -204,8 +183,14 @@ def build_content_generation_tasks(conf, app):
     Add tasks to the ``app`` for all tasks that modify the content in
     ``build/<branch>/source`` directory.
     """
+    app.randomize = True
 
+    robots_txt_tasks(conf, app)
+    intersphinx_tasks(conf, app)
+    includes_tasks(conf, app)
+    table_tasks(conf, app)
     hash_tasks(conf, app)
+    api_tasks(conf, app)
     redirect_tasks(conf, app)
     image_tasks(conf, app)
     step_tasks(conf, app)

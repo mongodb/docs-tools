@@ -37,6 +37,8 @@ from shutil import rmtree
 
 logger = logging.getLogger('giza.content.source')
 
+from giza.content.primer import primer_migration_tasks
+from giza.content.assets import assets_tasks
 from giza.content.dependencies import dump_file_hashes
 from giza.tools.command import command
 from giza.tools.files import InvalidFile, safe_create_directory
@@ -60,6 +62,7 @@ def transfer_source(conf, sconf):
 
     source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
     image_dir = os.path.join(conf.paths.images[len(conf.paths.source)+1:])
+    ref_dir = os.path.join(conf.paths.projectroot, conf.paths.source, 'reference')
 
     # we don't want rsync to delete directories that hold generated content in
     # the target so we can have more incremental builds.
@@ -68,10 +71,16 @@ def transfer_source(conf, sconf):
                                                      os.path.join('includes', 'release'),
                                                      os.path.join('includes', 'example'),
                                                      os.path.join('includes', 'option'),
+                                                     os.path.join('includes', 'table'),
+                                                     os.path.join('includes', 'generated'),
+                                                     os.path.join(ref_dir, 'method') + os.path.sep + "*.rst",
+                                                     os.path.join(ref_dir, 'command') + os.path.sep + "*.rst",
+                                                     os.path.join(ref_dir, 'operator', 'query') + os.path.sep + "*.rst",
+                                                     os.path.join(ref_dir, 'operator', 'aggregation') + os.path.sep + "*.rst",
+                                                     ref_dir + os.path.sep + "*.rst",
                                                      image_dir + os.path.sep + "*.png",
                                                      image_dir + os.path.sep + "*.rst",
-                                                     image_dir + os.path.sep + "*.eps",
-                                                     ])
+                                                     image_dir + os.path.sep + "*.eps", ])
 
     cmd = 'rsync --times --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions)
     command(cmd)
@@ -133,6 +142,11 @@ def latex_image_transfer_tasks(conf, sconf, app):
     t.description = 'transferring images to build directory to {0}'.format(conf.paths.branch_source)
 
 def source_tasks(conf, sconf, app):
+    pre_app = app.add('app')
+    assets_tasks(conf, pre_app)
+    primer_migration_tasks(conf, pre_app)
+    pre_app.run()
+
     t = app.add('task')
     t.job = transfer_source
     t.args = [conf, sconf]
