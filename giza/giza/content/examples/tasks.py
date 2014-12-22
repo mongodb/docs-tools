@@ -36,7 +36,7 @@ def example_tasks(conf, app):
     # read all files in "source/includes/" and sub-directories hat start with
     # "example-*"
 
-    include_dir = os.path.join(conf.paths.projectroot, conf.paths.includes)
+    include_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
     fn_prefix = os.path.join(include_dir, 'example')
 
     example_sources = [ fn for fn in
@@ -53,8 +53,7 @@ def example_tasks(conf, app):
         basename = fn[len(fn_prefix)+1:-5]
 
         out_fn = os.path.join(conf.paths.projectroot,
-                              conf.paths.branch_source,
-                              'includes', 'examples', basename) + '.rst'
+                              conf.paths.branch_includes, 'examples', basename) + '.rst'
 
         t = app.add('task')
         t.target = out_fn
@@ -76,8 +75,7 @@ def example_clean(conf, app):
         basename = fn[len(fn_prefix)+1:-5]
 
         out_fn = os.path.join(conf.paths.projectroot,
-                              conf.paths.branch_source,
-                              'includes', 'examples', basename) + '.rst'
+                              conf.paths.branch_includes, 'examples', basename) + '.rst'
 
         t = app.add('task')
         t.target = True

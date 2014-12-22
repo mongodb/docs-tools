@@ -69,7 +69,7 @@ def transfer_source(conf, sconf):
     exclusions = "--exclude=" + ' --exclude='.join([ os.path.join('includes', 'steps'),
                                                      os.path.join('includes', 'toc'),
                                                      os.path.join('includes', 'release'),
-                                                     os.path.join('includes', 'example'),
+                                                     os.path.join('includes', 'examples'),
                                                      os.path.join('includes', 'option'),
                                                      os.path.join('includes', 'table'),
                                                      os.path.join('includes', 'generated'),
