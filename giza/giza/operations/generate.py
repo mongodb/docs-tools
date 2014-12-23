@@ -223,10 +223,10 @@ def source(args):
     sconf = render_sconf(args.edition, 'html', args.language, conf)
 
     prep_app = app.add('app')
-    source_tasks(build_config, sconf, prep_app)
+    source_tasks(conf, sconf, prep_app)
     prep_app.run()
 
-    build_content_generation_tasks(build_config, prep_app.add('app'))
-    refresh_dependency_tasks(build_config, prep_app.add('app'))
+    build_content_generation_tasks(conf, prep_app.add('app'))
+    refresh_dependency_tasks(conf, prep_app.add('app'))
 
     app.run()

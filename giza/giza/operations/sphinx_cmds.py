@@ -20,7 +20,7 @@ import logging
 import os.path
 import argh
 
-from giza.config.helper import fetch_config, get_builder_jobs
+from giza.config.helper import fetch_config, get_builder_jobs, register_content_generators
 from giza.core.app import BuildApp
 
 logger = logging.getLogger('giza.operations.sphinx')
@@ -34,10 +34,6 @@ from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
 from giza.content.source import source_tasks, latex_image_transfer_tasks
 from giza.content.toc import toc_tasks
-from giza.content.release.tasks import release_tasks
-from giza.content.options.tasks import option_tasks
-from giza.content.examples.tasks import example_tasks
-from giza.content.steps.tasks import step_tasks
 from giza.content.dependencies import refresh_dependency_tasks, dump_file_hash_tasks
 from giza.content.sphinx import sphinx_tasks, output_sphinx_stream, finalize_sphinx_build
 from giza.content.redirects import redirect_tasks
@@ -171,6 +167,7 @@ def get_sphinx_build_configuration(edition, language, builder, args):
 
     conf = fetch_config(args)
     sconf = render_sconf(edition, builder, language, conf)
+    register_content_generators(conf)
 
     return conf, sconf
 
@@ -185,6 +182,10 @@ def build_content_generation_tasks(conf, app):
     """
     app.randomize = True
 
+    for content, func in conf.system.content.task_generators:
+        func(conf, app)
+        logger.info('added tasks for content generator "{0}" ({1})'.format(content.name, conf.project.edition))
+
     robots_txt_tasks(conf, app)
     intersphinx_tasks(conf, app)
     includes_tasks(conf, app)
@@ -193,8 +194,4 @@ def build_content_generation_tasks(conf, app):
     api_tasks(conf, app)
     redirect_tasks(conf, app)
     image_tasks(conf, app)
-    step_tasks(conf, app)
-    release_tasks(conf, app)
     toc_tasks(conf, app)
-    option_tasks(conf, app)
-    example_tasks(conf, app)

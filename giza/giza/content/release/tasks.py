@@ -17,39 +17,33 @@ import logging
 
 logger = logging.getLogger('giza.content.release.tasks')
 
-from giza.tools.files import expand_tree, verbose_remove
+from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
 from giza.content.release.inheritance import ReleaseDataCache
 from giza.content.release.views import render_releases
+from giza.config.content import new_content_type
 
-def get_release_fn_prefix(conf):
-    return os.path.join(conf.paths.projectroot, conf.paths.branch_includes, 'release')
-
-def release_outputs(conf):
-    include_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
-
-    fn_prefix = get_release_fn_prefix(conf)
-
-    return [ fn for fn in
-             expand_tree(include_dir, 'yaml')
-             if fn.startswith(fn_prefix) ]
+def register_releases(conf):
+    conf.system.content.add(name='releases', definition=new_content_type(name='release', task_generator=release_tasks, conf=conf))
 
 def write_release_file(release, fn, conf):
     content = render_releases(release, conf)
     content.write(fn)
+    logger.info('wrote release content: ' + fn)
 
 def release_tasks(conf, app):
-    fn_prefix = get_release_fn_prefix(conf)
-    release_sources = release_outputs(conf)
+    register_releases(conf)
+    release_sources = conf.system.content.releases.sources
+
     rel = ReleaseDataCache(release_sources, conf)
 
-    if len(release_sources) and not os.path.isdir(fn_prefix):
-        os.makedirs(fn_prefix)
+    if len(release_sources) > 0 and not os.path.isdir(conf.system.content.releases.output_dir):
+        safe_create_directory(conf.system.content.releases.output_dir)
 
     for dep_fn, release in rel.content_iter():
         if release.ref.startswith('_'):
             continue
 
-        out_fn = os.path.join(fn_prefix, release.ref) + '.rst'
+        out_fn = os.path.join(conf.system.content.releases.fn_prefix, release.ref) + '.rst'
 
         t = app.add('task')
         t.job = write_release_file
@@ -59,8 +53,12 @@ def release_tasks(conf, app):
         t.description = 'generating release spec file: ' + out_fn
 
 def release_clean(conf, app):
-    for fn in release_outputs(conf):
+    register_releases(conf)
+
+    for fn in conf.system.content.releases.sources:
         task = app.add('task')
+        task.target = True
+        task.dependency = fn
         task.job = verbose_remove
         task.args = [fn]
         task.description = 'removing {0}'.format(fn)

@@ -21,6 +21,8 @@ import json
 import argh
 
 from giza.config.main import Configuration
+from giza.config.content import new_content_type
+from giza.config.helper import register_content_generators, fetch_config
 import giza
 
 @argh.named('version')
@@ -38,13 +40,11 @@ def report_version(args):
 def render_config(args):
     """Returns configuration object for diagnostic purposes."""
 
-    c = Configuration()
-    c.ingest(args.conf_path)
-    c.runstate = args
+    c = fetch_config(args)
+    register_content_generators(c)
 
     # the following values are rendered lazily. we list them here so that the
     # final object will be useful to inspect.
-
     dynamics = [ c.git.commit, c.paths.public, c.git.branches.current,
                  c.git.branches.manual, c.git.branches.published,
                  c.paths.branch_output, c.paths.buildarchive,
@@ -53,7 +53,7 @@ def render_config(args):
                  c.version.published, c.version.stable, c.version.upcoming,
                  c.project.edition, c.deploy, c.paths.global_config,
                  c.project.branched, c.system.dependency_cache,
-                 c.paths.public_site_output,
+                 c.paths.public_site_output, c.system.content,
                  c.runstate.runner, c.runstate.force, c.system.files,
                  c.system.files.paths, c.system.files.data, c.paths.htaccess
                ]

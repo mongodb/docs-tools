@@ -26,6 +26,11 @@ from giza.config.runtime import RuntimeStateConfig
 from giza.config.project import get_path_prefix
 from giza.config.credentials import CredentialsConfig, get_credentials_skeleton
 
+from giza.content.release.tasks import register_releases
+from giza.content.options.tasks import register_options
+from giza.content.examples.tasks import register_examples
+from giza.content.steps.tasks import register_steps
+
 def new_credentials_config(conf_path=None):
     if conf_path is None:
         for fn in [ os.path.expanduser("~/.giza-credentials.yaml"),
@@ -45,6 +50,12 @@ def fetch_config(args):
     c.runstate = args
 
     return c
+
+def register_content_generators(conf):
+    register_releases(conf)
+    register_examples(conf)
+    register_options(conf)
+    register_steps(conf)
 
 def new_skeleton_config(conf=None):
     if conf is None:

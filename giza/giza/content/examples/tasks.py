@@ -24,8 +24,12 @@ import os
 logger = logging.getLogger('giza.content.examples')
 
 from giza.tools.files import expand_tree, safe_create_directory, verbose_remove
+from giza.config.content import new_content_type
 from giza.content.examples.inheritance import ExampleDataCache
 from giza.content.examples.views import full_example
+
+def register_examples(conf):
+    conf.system.content.add(name='examples', definition=new_content_type(name='examples', task_generator=example_tasks, conf=conf))
 
 def write_full_example(collection, examples, fn):
     content = full_example(collection, examples)
@@ -33,49 +37,38 @@ def write_full_example(collection, examples, fn):
 
 def example_tasks(conf, app):
     # In the beginning of this operation, which executes in the main thread, we
-    # read all files in "source/includes/" and sub-directories hat start with
+    # read all files in "source/includes/" and sub-directories that start with
     # "example-*"
 
-    include_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
-    fn_prefix = os.path.join(include_dir, 'example')
-
-    example_sources = [ fn for fn in
-                        expand_tree(include_dir, 'yaml')
-                        if fn.startswith(fn_prefix) ]
+    register_examples(conf)
+    example_sources = conf.system.content.examples.sources
 
     # process the corpus of example data.
     d = ExampleDataCache(example_sources, conf)
 
-    if len(d) > 0:
-        safe_create_directory(fn_prefix)
+    if len(example_sources) > 0 and not os.path.isdir(conf.system.content.examples.output_dir):
+        safe_create_directory(conf.system.content.examples.output_dir)
 
     for fn, exmpf in d.file_iter():
-        basename = fn[len(fn_prefix)+1:-5]
-
-        out_fn = os.path.join(conf.paths.projectroot,
-                              conf.paths.branch_includes, 'examples', basename) + '.rst'
+        basename = conf.system.content.examples.get_basename(fn)
+        out_fn = os.path.join(conf.system.content.examples.output_dir, basename) + '.rst'
 
         t = app.add('task')
         t.target = out_fn
         t.dependency = fn
         t.job = write_full_example
         t.args = (exmpf.collection, exmpf.examples, out_fn)
-        t.description = 'generate an example for ' + basename
+        t.description = 'generate an example for ' + fn
 
     logger.debug('added all tasks for example generation')
 
 def example_clean(conf, app):
-    fn_prefix = os.path.join(include_dir, 'example')
+    register_examples(conf)
 
-    example_sources = [ fn for fn in
-                        expand_tree(include_dir, 'yaml')
-                        if fn.startswith(fn_prefix) ]
+    for fn in conf.system.content.examples.sources:
+        basename = conf.system.content.examples.get_basename(fn)
 
-    for fn in example_sources:
-        basename = fn[len(fn_prefix)+1:-5]
-
-        out_fn = os.path.join(conf.paths.projectroot,
-                              conf.paths.branch_includes, 'examples', basename) + '.rst'
+        out_fn = os.path.join(conf.system.content.examples.output_dir, basename) + '.rst'
 
         t = app.add('task')
         t.target = True

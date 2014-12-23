@@ -62,25 +62,26 @@ def transfer_source(conf, sconf):
 
     source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
     image_dir = os.path.join(conf.paths.images[len(conf.paths.source)+1:])
-    ref_dir = os.path.join(conf.paths.projectroot, conf.paths.source, 'reference')
+    ref_dir = 'reference'
+
+    exclusions = [ os.path.join('includes', 'toc'),
+                   os.path.join('includes', 'table'),
+                   os.path.join('includes', 'generated'),
+                   os.path.join(ref_dir, 'method') + os.path.sep + "*.rst",
+                   os.path.join(ref_dir, 'command') + os.path.sep + "*.rst",
+                   os.path.join(ref_dir, 'operator', 'query') + os.path.sep + "*.rst",
+                   os.path.join(ref_dir, 'operator', 'aggregation') + os.path.sep + "*.rst",
+                   ref_dir + os.path.sep + "*.rst",
+                   image_dir + os.path.sep + "*.png",
+                   image_dir + os.path.sep + "*.rst",
+                   image_dir + os.path.sep + "*.eps" ]
+
+    prefix_len = len(os.path.join(conf.paths.projectroot, conf.paths.branch_source)) + 1
+    exclusions.extend([ o for o in conf.system.content.output_directories(prefix_len) ])
 
     # we don't want rsync to delete directories that hold generated content in
     # the target so we can have more incremental builds.
-    exclusions = "--exclude=" + ' --exclude='.join([ os.path.join('includes', 'steps'),
-                                                     os.path.join('includes', 'toc'),
-                                                     os.path.join('includes', 'release'),
-                                                     os.path.join('includes', 'examples'),
-                                                     os.path.join('includes', 'option'),
-                                                     os.path.join('includes', 'table'),
-                                                     os.path.join('includes', 'generated'),
-                                                     os.path.join(ref_dir, 'method') + os.path.sep + "*.rst",
-                                                     os.path.join(ref_dir, 'command') + os.path.sep + "*.rst",
-                                                     os.path.join(ref_dir, 'operator', 'query') + os.path.sep + "*.rst",
-                                                     os.path.join(ref_dir, 'operator', 'aggregation') + os.path.sep + "*.rst",
-                                                     ref_dir + os.path.sep + "*.rst",
-                                                     image_dir + os.path.sep + "*.png",
-                                                     image_dir + os.path.sep + "*.rst",
-                                                     image_dir + os.path.sep + "*.eps", ])
+    exclusions = "--exclude=" + ' --exclude='.join(exclusions)
 
     cmd = 'rsync --times --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions)
     command(cmd)
@@ -132,7 +133,7 @@ def transfer_images(conf, sconf):
         cmd = 'rsync -am --include="*.png" --include="*.jpg" --include="*.eps" --exclude="*" {0}/ {1} '.format(image_dir, builder_dir)
 
         command(cmd)
-        command(cmd.replace('images', 'figures'))
+        command(cmd.replace('images', 'figures'), ignore=True)
 
         logger.info('migrated images for latex build')
 

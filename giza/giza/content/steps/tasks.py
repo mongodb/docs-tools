@@ -17,40 +17,32 @@ import logging
 
 logger = logging.getLogger('giza.content.steps.tasks')
 
-from giza.tools.files import expand_tree, verbose_remove
+from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
 from giza.content.steps.inheritance import StepDataCache
 from giza.content.steps.views import render_steps
+from giza.config.content import new_content_type
+
+def register_steps(conf):
+    conf.system.content.add(name='steps', definition=new_content_type(name='steps', task_generator=step_tasks, conf=conf))
 
 def write_steps(steps, fn, conf):
     content = render_steps(steps, conf)
     content.write(fn)
     logger.info('wrote steps to: '  + fn)
 
-def get_step_fn_prefix(conf):
-    return os.path.join(conf.paths.projectroot, conf.paths.branch_includes, 'steps')
-
-def step_outputs(conf):
-    include_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
-    fn_prefix = get_step_fn_prefix(conf)
-
-    return [ fn for fn in
-             expand_tree(include_dir, 'yaml')
-             if fn.startswith(fn_prefix) ]
-
 def step_tasks(conf, app):
-    fn_prefix = get_step_fn_prefix(conf)
-    step_sources = step_outputs(conf)
+    register_steps(conf)
+
+    step_sources = conf.system.content.steps.sources
     s = StepDataCache(step_sources, conf)
 
-    if len(step_sources) and not os.path.isdir(fn_prefix):
-        os.makedirs(fn_prefix)
+    if len(step_sources) > 0 and not os.path.isdir(conf.system.content.steps.output_dir):
+        safe_create_directory(conf.system.content.steps.output_dir)
 
     for fn, stepf in s.file_iter():
-        basename = fn[len(fn_prefix)+1:-5]
+        basename = conf.system.content.steps.get_basename(fn)
 
-        out_fn = os.path.join(conf.paths.projectroot,
-                              conf.paths.branch_includes,
-                              'steps', basename) + '.rst'
+        out_fn = os.path.join(conf.system.content.steps.output_dir, basename) + '.rst'
 
         t = app.add('task')
         t.target = out_fn
@@ -60,8 +52,12 @@ def step_tasks(conf, app):
         t.description = 'generate an stepfile for ' + fn
 
 def step_clean(conf, app):
-    for fn in step_outputs(conf):
+    register_steps(conf)
+
+    for fn in conf.system.content.steps.sources:
         task = app.add('task')
+        task.target = True
+        task.dependnecy = fn
         task.job = verbose_remove
         task.args = [fn]
         task.description = 'removing {0}'.format(fn)

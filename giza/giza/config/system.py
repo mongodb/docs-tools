@@ -25,6 +25,7 @@ from giza.config.intersphinx import IntersphinxConfig
 from giza.config.translate import TranslateConfig
 from giza.config.corpora import CorporaConfig
 from giza.config.redirects import HtaccessData
+from giza.config.content import ContentRegistry
 from giza.tools.serialization import ingest_yaml_list
 
 class SystemConfig(RecursiveConfigurationBase):
@@ -103,6 +104,13 @@ class SystemConfig(RecursiveConfigurationBase):
     @runstate.setter
     def runstate(self, value):
         self.conf.runstate = value
+
+    @property
+    def content(self):
+        if 'content' not in self.state:
+            self.state['content'] = ContentRegistry()
+
+        return self.state['content']
 
 class SystemToolsConfig(ConfigurationBase):
     @property
