@@ -28,7 +28,7 @@ logger = logging.getLogger('giza.content.post.json_output')
 
 from giza.tools.command import command
 from giza.tools.strings import dot_concat
-from giza.tools.files import expand_tree, copy_if_needed
+from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
 from giza.tools.transformation import munge_content
 
 ########## Process Sphinx Json Output ##########
@@ -42,10 +42,7 @@ def json_output(conf):
     cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {src} {dst}'
 
     json_dst = os.path.join(conf.paths.projectroot, conf.paths.public_site_output, 'json')
-
-    if not os.path.exists(json_dst):
-        logger.debug('created directories for {0}'.format(json_dst))
-        os.makedirs(json_dst)
+    safe_create_directory(json_dst)
 
     builder = 'json'
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
@@ -144,13 +141,11 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
 
 def generate_list_file(outputs, path, conf):
     dirname = os.path.dirname(path)
+    safe_create_directory(dirname)
 
     url = get_site_url(conf)
     url.append('json')
     url = '/'.join(url)
-
-    if not os.path.exists(dirname):
-        os.mkdir(dirname)
 
     with open(path, 'w') as f:
         for fn in outputs:
@@ -160,7 +155,6 @@ def generate_list_file(outputs, path, conf):
                 f.write('\n')
 
     logger.info('rebuilt inventory of json output.')
-
 
 def get_site_url(conf):
     url = [conf.project.url]
