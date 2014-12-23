@@ -132,7 +132,7 @@ def transfer_images(conf, sconf):
         cmd = 'rsync -am --include="*.png" --include="*.jpg" --include="*.eps" --exclude="*" {0}/ {1} '.format(image_dir, builder_dir)
 
         command(cmd)
-        command(cmd.replace('includes', 'figures'))
+        command(cmd.replace('images', 'figures'))
 
         logger.info('migrated images for latex build')
 
