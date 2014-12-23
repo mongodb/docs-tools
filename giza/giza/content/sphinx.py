@@ -37,8 +37,6 @@ import pkg_resources
 import re
 import sys
 
-from multiprocessing import cpu_count
-
 logger = logging.getLogger('giza.content.sphinx')
 
 from giza.core.app import BuildApp
@@ -100,22 +98,22 @@ def get_sphinx_args(sconf, conf):
                     len(conf.runstate.editions_to_build) >= 1):
                     pass
                 else:
-                    o.append(' '.join( [ '-j', str(cpu_count()) ]))
+                    o.append(' '.join( [ '-j', str(conf.runstate.pool_size) ]))
             elif conf.runstate.serial_sphinx is False:
                 logger.info('running with parallelized sphinx processes')
-                o.append(' '.join( [ '-j', str(cpu_count()) ]))
+                o.append(' '.join( [ '-j', str(conf.runstate.pool_size) ]))
             elif (isinstance(conf.runstate.serial_sphinx, (int, long, float)) and
                   conf.runstate.serial_sphinx > 1):
                 logger.info('running with parallelized sphinx processes')
                 o.append(' '.join(['-j', str(conf.runstate.serial_sphinx)]))
             else:
                 pass
-        elif len(conf.runstate.builder) >= cpu_count():
+        elif len(conf.runstate.builder) >= conf.runstate.pool_size:
             logger.info('running with serail sphinx processes')
             pass
         else:
             logger.info('running with parallelized sphinx processes')
-            o.append(' '.join( [ '-j', str(cpu_count()) ]))
+            o.append(' '.join( [ '-j', str(conf.runstate.pool_size) ]))
 
     o.append(' '.join( [ '-c', conf.paths.projectroot ] ))
 

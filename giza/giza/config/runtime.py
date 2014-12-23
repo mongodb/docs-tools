@@ -16,7 +16,7 @@ import logging
 import os.path
 import yaml
 
-from multiprocessing import cpu_count
+import multiprocessing
 
 logger = logging.getLogger('giza.config.runtime')
 
@@ -137,9 +137,12 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
     @property
     def pool_size(self):
         if 'pool_size' not in self.state:
-            return cpu_count()
-        else:
-            return self.state['pool_size']
+            try:
+                self.state['pool_size'] = multiprocessing.cpu_count()
+            except:
+                self.state['pool_size'] = 1
+
+        return self.state['pool_size']
 
     @pool_size.setter
     def pool_size(self, value):
