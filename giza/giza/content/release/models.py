@@ -25,6 +25,10 @@ class ReleaseData(HeadingMixin, InheritableContentBase):
     _option_registry = [ 'ref', 'description', 'pre', 'post', 'content']
 
     @property
+    def target(self):
+        return os.path.join(self.conf.system.content.releases.fn_prefix, self.ref) + '.rst'
+
+    @property
     def code(self):
         return self.state['code']
 

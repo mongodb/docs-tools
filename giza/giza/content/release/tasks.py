@@ -40,25 +40,22 @@ def release_tasks(conf, app):
         safe_create_directory(conf.system.content.releases.output_dir)
 
     for dep_fn, release in rel.content_iter():
-        if release.ref.startswith('_'):
-            continue
-
-        out_fn = os.path.join(conf.system.content.releases.fn_prefix, release.ref) + '.rst'
-
         t = app.add('task')
         t.job = write_release_file
-        t.target = out_fn
+        t.target = release.target
         t.dependency = dep_fn
-        t.args = (release, out_fn, conf)
-        t.description = 'generating release spec file: ' + out_fn
+        t.args = (release, release.target, conf)
+        t.description = 'generating release spec file: ' + release.target
 
 def release_clean(conf, app):
     register_releases(conf)
 
-    for fn in conf.system.content.releases.sources:
+    rel = ReleaseDataCache(conf.system.content.releases.sources, conf)
+
+    for dep, release in rel.content_iter():
         task = app.add('task')
         task.target = True
         task.dependency = fn
         task.job = verbose_remove
-        task.args = [fn]
+        task.args = [release.target]
         task.description = 'removing {0}'.format(fn)
