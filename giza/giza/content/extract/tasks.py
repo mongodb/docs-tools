@@ -50,8 +50,8 @@ def extract_tasks(conf, app):
 
         include_statement = get_include_statement(extract.target)
 
-        for verb, adjc, noun [ (prepend_to_file, 'prepend', extract.prepend),
-                               (append_to_file, 'append', extract.append) ]:
+        for verb, adjc, noun in [ (prepend_to_file, 'prepend', extract.prepend),
+                                  (append_to_file, 'append', extract.append) ]:
             if noun:
                 if not isinstance(noun, list):
                     files = [noun]

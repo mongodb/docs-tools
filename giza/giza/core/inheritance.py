@@ -25,7 +25,7 @@ import collections
 import logging
 import os.path
 import sys
-
+import copy
 logger = logging.getLogger('giza.core.inheritance')
 
 from jinja2 import Template
@@ -53,17 +53,26 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     _option_registry = ['pre', 'post', 'final', 'ref', 'content', 'edition']
 
+    def _set_defualt_replacement(self):
+        if 'replacement' in self.state:
+            return
+        else:
+            if 'replacements' in self.conf.system.files.data:
+                self.state['replacement'] = copy.deepcopy(self.conf.system.files.data.replacements)
+            elif 'replacement' in self.conf.system.files.data:
+                self.state['replacement'] = copy.deepcopy(self.conf.system.files.data.replacement)
+            else:
+                self.state['replacement'] = {}
+
     @property
     def replacement(self):
-        if 'replacement' not in self.state:
-            self.replacement = {}
+        self._set_default_replacement()
 
         return self.state['replacement']
 
     @replacement.setter
     def replacement(self, value):
-        if 'replacement' not in self.state:
-            self.state['replacement'] = {}
+        self._set_default_replacement()
 
         if isinstance(value, dict):
             value_iter = value.items()
