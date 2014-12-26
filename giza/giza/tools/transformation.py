@@ -72,6 +72,13 @@ def append_to_file(fn, text):
         f.write('\n')
         f.write(text)
 
+def prepend_to_file(fn, text): 
+    with open(fn, 'r') as f:
+        body = f.readlines()
+
+    with open(fn, 'w') as f:
+        f.write(text)
+        f.writelines(body)
 
 def process_page(fn, output_fn, regex, app, builder='processor', copy='always'):
     t = app.add('task')

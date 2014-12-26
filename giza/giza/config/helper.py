@@ -27,6 +27,7 @@ from giza.config.project import get_path_prefix
 from giza.config.credentials import CredentialsConfig, get_credentials_skeleton
 
 from giza.content.release.tasks import register_releases
+from giza.content.extract.tasks import register_extracts
 from giza.content.options.tasks import register_options
 from giza.content.examples.tasks import register_examples
 from giza.content.steps.tasks import register_steps
@@ -55,6 +56,7 @@ def register_content_generators(conf):
     register_releases(conf)
     register_examples(conf)
     register_options(conf)
+    register_extracts(conf)
     register_steps(conf)
 
 def new_skeleton_config(conf=None):
