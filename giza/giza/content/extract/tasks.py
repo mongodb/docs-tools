@@ -50,30 +50,18 @@ def extract_tasks(conf, app):
 
         include_statement = get_include_statement(extract.target)
 
-        if extract.prepend:
-            if not isinstance(extract.prepend, list):
-                prepend_files = [extract.prepend]
-            else:
-                prepend_files = extract.prepend
+        for verb, adjc, noun [ (prepend_to_file, 'prepend', extract.prepend),
+                               (append_to_file, 'append', extract.append) ]:
+            if noun:
+                if not isinstance(noun, list):
+                    files = [noun]
+                else:
+                    files = files
 
-            for fn in prepend_files:
-                t = app.add('task')
-                t.target = fn
-                t.dependency = extract.target
-                t.job = prepend_to_file
-                t.args = (fn, include_statement)
-                t.description = "prepending extract include for '{0}' to '{1}'".format(extract.target, fn)
-
-        if extract.append: 
-            if not isinstance(extract.append, list):
-                append_files = [extract.append]
-            else: 
-                append_files = extract.append
-
-            for fn in append_files:
-                t = app.add('task')
-                t.target = fn
-                t.dependency = extract.target
-                t.job = append_to_file
-                t.args = (fn, include_statement)
-                t.description = "appending extract include for '{0}' to '{1}'".format(extract.target, fn)
+                for fn in files:
+                    t = app.add('task')
+                    t.target = fn
+                    t.dependency = [extract.target, dep_fn]
+                    t.job = verb
+                    t.args = (fn, include_statement)
+                    t.description = "{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn)
