@@ -36,7 +36,14 @@ class ConfigurationBase(object):
     def ingest(self, input_obj=None):
         if input_obj is None:
             return
-        elif isinstance(input_obj, dict):
+
+        input_obj = self._prep_load_data(input_obj)
+
+        for key, value in input_obj.items():
+            setattr(self, key, value)
+
+    def _prep_load_data(self, input_obj):
+        if isinstance(input_obj, dict):
             pass
         elif not isinstance(input_obj, ConfigurationBase) and os.path.isfile(input_obj):
             self._source_fn = input_obj
@@ -52,8 +59,7 @@ class ConfigurationBase(object):
             logger.critical(msg)
             raise TypeError(msg)
 
-        for key, value in input_obj.items():
-            setattr(self, key, value)
+        return input_obj
 
     def __getattr__(self, key):
         try:

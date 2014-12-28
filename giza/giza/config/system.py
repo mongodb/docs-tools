@@ -26,6 +26,7 @@ from giza.config.translate import TranslateConfig
 from giza.config.corpora import CorporaConfig
 from giza.config.redirects import HtaccessData
 from giza.config.content import ContentRegistry
+from giza.config.replacements import ReplacementData
 from giza.tools.serialization import ingest_yaml_list
 
 class SystemConfig(RecursiveConfigurationBase):
@@ -322,6 +323,7 @@ class SystemConfigData(RecursiveConfigurationBase):
             # recur_mapping for config objects that subclass RecursiveConfigurationBase
             recur_mapping = {
                 'translate': TranslateConfig,
+                'replacement': ReplacementData,
             }
 
             if basename in mapping:

@@ -17,8 +17,6 @@ from rstcloth.rstcloth import RstCloth
 def get_replacements(conf): 
     if "replacement" in conf.system.data.files:
         mapping = conf.system.data.files.replacement
-    elif "replacements" in conf.system.data.files::
-        mapping = conf.system.data.files.replacements
     else:
         return []
         
@@ -26,5 +24,5 @@ def get_replacements(conf):
 
     for k, v in mapping.items():
         r.replacement(k, v)
-    
+
     return r.data
