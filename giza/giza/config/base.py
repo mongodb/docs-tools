@@ -33,7 +33,7 @@ class ConfigurationBase(object):
         self._state = {}
         self.ingest(input_obj)
 
-    def ingest(self, input_obj=None):
+    def ingest(self, input_obj):
         if input_obj is None:
             return
 
@@ -68,7 +68,7 @@ class ConfigurationBase(object):
             if key in self._option_registry:
                 return self.state[key]
             else:
-                m = 'key "{0}" in configuration object does not exist'.format(key)
+                m = 'key "{0}" in configuration object ({1}) does not exist'.format(key, type(self))
                 if not key.startswith('__'):
                     logger.debug(m)
                 raise AttributeError(m, e.message)

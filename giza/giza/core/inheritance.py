@@ -53,39 +53,45 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     _option_registry = ['pre', 'post', 'final', 'ref', 'content', 'edition']
 
-    def _set_defualt_replacement(self):
-        if 'replacement' in self.state:
-            return
+
+    def _get_default_replacement(self):
+        if 'replacement' in self.conf.system.files.data:
+            base = copy.deepcopy(self.conf.system.files.data.replacement)
         else:
-            if 'replacements' in self.conf.system.files.data:
-                self.state['replacement'] = copy.deepcopy(self.conf.system.files.data.replacements)
-            elif 'replacement' in self.conf.system.files.data:
-                self.state['replacement'] = copy.deepcopy(self.conf.system.files.data.replacement)
-            else:
-                self.state['replacement'] = {}
+            base = {}
+
+        return base
 
     @property
     def replacement(self):
-        self._set_default_replacement()
+        if 'replacement' not in self.state:
+            self.state['replacement'] = self._get_default_replacement()
 
         return self.state['replacement']
 
     @replacement.setter
     def replacement(self, value):
-        self._set_default_replacement()
+        if 'replacement' in self.state:
+            if value in ({}, None):
+                return
+            base = self.state['replacement']
+        else:
+            base = self._get_default_replacement()
 
         if isinstance(value, dict):
-            value_iter = value.items()
+            base.update(value)
+            self.state['replacement'] = base
         elif isinstance(value, collections.Iterable):
             for item in value:
                 if len(item) != 2:
                     raise TypeError
-            value_iter = value
+
+            addition = dict(value)
+            base.update(addition)
+            self.state['replacement'] = base
         else:
             raise TypeError
 
-        for k, v in value_iter:
-            self.state['replacement'][k] = v
 
     @property
     def title(self):
@@ -166,6 +172,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     def render(self):
         if self.replacement:
+
             attempts = range(10)
 
             for key in self.state.keys():
@@ -440,7 +447,6 @@ class DataCache(RecursiveConfigurationBase):
     def file_iter(self):
         for fn in self.cache:
             yield fn, self.cache[fn]
-
 
     def content_iter(self):
         for fn in self.cache:
