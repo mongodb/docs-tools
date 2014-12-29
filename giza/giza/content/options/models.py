@@ -31,7 +31,7 @@ class OptionData(InheritableContentBase):
             'args',
             'aliases',
             'default',
-            'type' ])
+            'type'])
 
         super(OptionData, self).__init__(input_obj, conf)
 
