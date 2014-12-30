@@ -79,7 +79,8 @@ class GitRepo(object):
         return self.cmd('show {branch}:{path}'.format(branch=branch, path=path)).out
 
     def checkout(self, ref):
-        return self.cmd('checkout', ref)
+        self.cmd('checkout', ref)
+        return True
 
     def create_branch(self, name, tracking=None):
         args = ['branch', name]

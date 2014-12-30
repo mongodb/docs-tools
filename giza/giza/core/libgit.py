@@ -54,14 +54,19 @@ class GitRepo(object):
             return commit.author
 
     def branch_exists(self, name):
-
-        pass
+        return name in repo.listall_branches()
 
     def branch_file(self, path, branch="master"):
-        pass
+        ref = self.repo.lookup_branch(branch)
+        head = self.repo.lookup_reference(ref.name)
+        commit = self.repo.get(head.target)
+
+        return self.repo[commit.tree[path].id]
 
     def checkout(self, ref):
-        pass
+        self.repo.checkout(refnmae='HEAD', ref)
+
+        return True
 
     def checkout_branch(self, name, tracking=None):
         pass
