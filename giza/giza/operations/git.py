@@ -19,17 +19,15 @@ repository with git.
 
 import logging
 import os
-from tempfile import NamedTemporaryFile
 
 import argh
-from sphinx.application import Sphinx, ENV_PICKLE_FILENAME
-from sphinx.builders.html import get_stable_hash
 
 from giza.core.app import BuildApp
 from giza.core.git import GitRepo
 from giza.config.helper import fetch_config
 from giza.tools.command import command
 from giza.config.sphinx_config import avalible_sphinx_builders
+from giza.operations.build_env import fix_build_env_tasks, get_existing_builders
 
 logger = logging.getLogger('giza.operations.git')
 
@@ -138,14 +136,12 @@ def create_branch(args):
     the parent branch or ``master``. Safe to run multiple times (after a rebase)
     to update the build cache from master.
 
-    Also calls ``fix_build_environment()`` to tweak the new build output to
-    update hashes and on-disk copies of the environment to prevent unnecessary
-    full-rebuilds from sphinx.
+    Also calls :method:`~giza.operations.build_env.fix_build_environment()` to
+    tweak the new build output to update hashes and on-disk copies of the
+    environment to prevent unnecessary full-rebuilds from sphinx.
     """
 
     conf = fetch_config(args)
-    app = BuildApp(conf)
-    app.pool = 'process'
 
     g = GitRepo(conf.paths.projectroot)
 
@@ -176,61 +172,10 @@ def create_branch(args):
 
     # get a new config here for the new branch
     conf = fetch_config(args)
-    for builder in [ b
-                     for b in avalible_sphinx_builders()
-                     if os.path.isdir(os.path.join(conf.paths.projectroot, conf.paths.branch_output, b)) ]:
-        t = app.add('task')
-        t.job = fix_build_environment
-        t.args = (builder, conf)
-        t.target = True
-        t.description = "fix up sphinx environment for builder '{0}'".format(builder)
+    builders = get_existing_builders(conf)
+    app = BuildApp(conf)
+    app.pool = 'process'
+
+    fix_builder_env_tasks(builders, app)
 
     app.run()
-
-def fix_build_environment(builder, conf):
-    """
-    Given a builder name and the conf object, this function fixes the build
-    artifacts for the current build to prevent a full rebuild. Currently
-    re-pickles the environment and dumps the ``.buildinfo`` file in the build
-    directory with the correct hashes.
-    """
-
-    fn = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder, '.buildinfo')
-    logger.info('updating cache for: ' + builder)
-
-    if not os.path.isfile(fn):
-        return
-
-    doctree_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, "doctrees-" + builder)
-
-    sphinx_app = Sphinx(
-        srcdir=os.path.join(conf.paths.projectroot, conf.paths.branch_output, "source"),
-        confdir=conf.paths.projectroot,
-        outdir=os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder),
-        doctreedir=doctree_dir,
-        buildername=builder,
-        status=NamedTemporaryFile(),
-        warning=NamedTemporaryFile())
-
-    sphinx_app.env.topickle(os.path.join(doctree_dir, ENV_PICKLE_FILENAME))
-
-    with open(fn, 'r') as f:
-        lns = f.readlines()
-        tags_hash_ln = None
-        for ln in lns:
-            if ln.startswith('tags'):
-                tags_hash_ln = ln
-                break
-
-        if tags_hash_ln == None:
-            tags_hash_ln = 'tags: '  + get_stable_hash(sorted(sphinx_app.tags))
-
-    with open(fn, 'w') as f:
-        f.write('# Sphinx build info version 1')
-        f.write('\n\n') ## current format requires an extra line here.
-        f.write('config: ' + get_stable_hash(dict((name, sphinx_app.config[name])
-                                                  for (name, desc) in sphinx_app.config.values.items()
-                                                  if desc[1] == 'html')))
-        f.write('\n')
-        f.write(tags_hash_ln)
-        f.write('\n')

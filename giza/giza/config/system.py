@@ -90,13 +90,28 @@ class SystemConfig(RecursiveConfigurationBase):
         if value is not None:
             self.state['dependency_cache'] = value
         else:
-            p = [ self.conf.paths.projectroot, self.conf.paths.branch_output ]
+            self.state['dependency_cache'] = os.path.join(self.conf.paths.projectroot,
+                                                          self.dependency_cache_fn)
+
+    @property
+    def dependency_cache_fn(self):
+        if 'dependency_cache_fn' not in self.state:
+            self.dependency_cache_fn = None
+
+        return self.state['dependency_cache_fn']
+
+    @dependency_cache_fn.setter
+    def dependency_cache_fn(self, value):
+        if value is None:
+            p = [ self.conf.paths.branch_output ]
             if self.conf.project.edition is None:
                 p.append('dependencies.json')
             else:
                 p.append('dependencies-' + self.conf.project.edition + '.json')
 
-            self.state['dependency_cache'] = os.path.sep.join(p)
+            self.state['dependency_cache_fn'] = os.path.sep.join(p)
+        else:
+            self.state['dependency_cache_fn'] = value
 
     @property
     def runstate(self):

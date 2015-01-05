@@ -33,7 +33,7 @@ import argh
 
 from giza.config.helper import fetch_config
 from giza.tools.serialization import dict_from_list
-from giza.tools.files import safe_create_directory
+from giza.tools.files import safe_create_directory, FileNotFoundError
 from giza.operations.deploy import deploy_worker
 
 ############### Helper ###############
@@ -94,7 +94,7 @@ def create_package(target, conf):
     files_to_archive = []
 
     if conf.project.branched is True:
-        artifacts = (os.path.join(input_path, conf.git.branches.current), conf.git.branches.current)
+        artifacts = (os.path.join(conf.paths.output, conf.git.branches.current), conf.git.branches.current)
     else:
         artifacts = (os.path.join(conf.paths.projectroot, conf.paths.output, pconf['paths']['local']),
                      os.path.split(pconf['paths']['local'])[-1])
@@ -114,12 +114,12 @@ def create_package(target, conf):
 
     create_archive(files_to_archive, archive_fn)
 
-    logger.info('wrote build package to: {0}'.format(arc_fn))
+    logger.info('wrote build package to: {0}'.format(archive_fn))
 
 def extract_package(conf):
     if conf.runstate.package_path.startswith('http'):
         path = fetch_package(path, conf)
-    elif os.path.exists(conf.runstate.package_path):
+    elif os.path.isfile(conf.runstate.package_path):
         path = conf.runstate.package_path
     else:
         m = "package {0} does not exist".format(conf.runstate.package_path)
@@ -140,24 +140,29 @@ def extract_package(conf):
     return new_conf
 
 def fetch_package(path, conf):
-    if not path.startswith('http') and os.path.exists(path):
+    if path.startswith('http'):
+
+        local_path = path.split('/')[-1]
+
+        tar_path = os.path.join(conf.paths.projectroot,
+                                conf.paths.buildarchive,
+                                local_path)
+
+        if not os.path.exists(tar_path):
+            with closing(urllib2.urlopen(path)) as u:
+                with open(tar_path, 'w') as f:
+                    f.write(u.read())
+            logger.info('downloaded {0}'.format(local_path))
+        else:
+            logger.info('{0} exists locally, not downloading.'.format(local_path))
+
+        return tar_path
+    elif os.path.isfile(path):
         return path
-
-    local_path = path.split('/')[-1]
-
-    tar_path = os.path.join(conf.paths.projectroot,
-                            conf.paths.buildarchive,
-                            local_path)
-
-    if not os.path.exists(tar_path):
-        with closing(urllib2.urlopen(path)) as u:
-            with open(tar_path, 'w') as f:
-                f.write(u.read())
-        logger.info('downloaded {0}'.format(local_path))
     else:
-        logger.info('{0} exists locally, not downloading.'.format(local_path))
-
-    return tar_path
+        msg = 'no archive named "{0}" exists'.format(path)
+        logger.error(msg)
+        raise FileNotFoundError(msg)
 
 #################### Command Entry Points ####################
 

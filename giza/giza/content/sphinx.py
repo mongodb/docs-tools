@@ -227,8 +227,8 @@ def printer(string):
 #################### Builder Operation ####################
 
 def run_sphinx(builder, sconf, conf):
-    if safe_create_directory(sconf.build_output):
-        logger.info('created directory "{1}" for sphinx builder {0}'.format(builder, sconf.build_output))
+    if safe_create_directory(sconf.fq_build_output):
+        logger.info('created directory "{1}" for sphinx builder {0}'.format(builder, sconf.fq_build_output))
 
     if 'language' in sconf and sconf.language is not None:
         command('sphinx-intl build --language=' + sconf.language)
@@ -240,9 +240,9 @@ def run_sphinx(builder, sconf, conf):
 
     sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output),
-                            os.path.basename(sconf.build_output),
+                            sconf.build_output,
                             os.path.join(conf.paths.projectroot, conf.paths.branch_source),
-                            sconf.build_output)
+                            sconf.fq_build_output)
 
     logger.debug(sphinx_cmd)
     with Timer("running sphinx build for: {0}, {1}, {2}".format(builder, sconf.language, sconf.edition)):

@@ -56,7 +56,7 @@ def resolve_builder_path(builder, edition, language, conf):
     if language is not None and language != 'en':
         dirname = hyph_concat(dirname, language)
 
-    return os.path.join(conf.paths.projectroot, conf.paths.branch_output, dirname)
+    return dirname
 
 def avalible_sphinx_builders():
     builders = sphinx.builders.BUILTIN_BUILDERS.keys()
@@ -126,17 +126,27 @@ class SphinxConfig(RecursiveConfigurationBase):
 
     @property
     def build_output(self):
-        path = resolve_builder_path(self.builder, self.edition, self.language, self.conf)
-
         if 'build_output' not in self.state:
-            self.state['build_output'] = path
+            self.build_output = None
 
-        return path
+        return self.state['build_output']
 
     @build_output.setter
     def build_output(self, value):
+        if value is None:
+            path = resolve_builder_path(self.builder, self.edition, self.language, self.conf)
+            self.state['build_output'] = path
+        else:
+            self.state['build_output'] = path
+
+    @property
+    def fq_build_output(self):
         if 'build_output' not in self.state:
-            self.state['build_output'] = value
+            self.build_output = None
+
+        return os.path.join(self.conf.paths.projectroot,
+                            self.conf.paths.branch_output,
+                            self.build_output)
 
     @property
     def language(self):

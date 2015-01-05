@@ -53,9 +53,10 @@ def render_config(args):
                  c.version.published, c.version.stable, c.version.upcoming,
                  c.project.edition, c.deploy, c.paths.global_config,
                  c.project.branched, c.system.dependency_cache,
-                 c.paths.public_site_output, c.system.content,
-                 c.runstate.runner, c.runstate.force, c.system.files,
-                 c.system.files.paths, c.system.files.data, c.paths.htaccess
+                 c.system.dependency_cache_fn, c.paths.public_site_output,
+                 c.system.content, c.runstate.runner, c.runstate.force,
+                 c.system.files, c.system.files.paths, c.system.files.data,
+                 c.paths.htaccess
                ]
 
     print('--- ' + "str of config object >>>")

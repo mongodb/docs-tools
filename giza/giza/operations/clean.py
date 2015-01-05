@@ -55,6 +55,7 @@ def main(args):
     if c.runstate.builder != []:
         for edition, language, builder in get_builder_jobs(c):
             builder_path = resolve_builder_path(builder, edition, language, c)
+            builder_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder_path)
 
             to_remove.add(builder_path)
             dirpath, base = os.path.split(builder_path)

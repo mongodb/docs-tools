@@ -30,6 +30,7 @@ import giza.operations.http_serve
 import giza.operations.includes
 import giza.operations.make
 import giza.operations.packaging
+import giza.operations.build_env
 import giza.operations.quickstart
 import giza.operations.sphinx_cmds
 import giza.operations.translate
@@ -92,6 +93,10 @@ commands = {
         giza.operations.packaging.unwind,
         giza.operations.packaging.create,
         giza.operations.packaging.deploy,
+    ],
+    'env': [
+        giza.operations.build_env.package,
+        giza.operations.build_env.extract,
     ],
     'translate': [
         giza.operations.translate.create_corpora,

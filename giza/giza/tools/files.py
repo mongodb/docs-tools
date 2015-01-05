@@ -17,6 +17,7 @@ import os
 import shutil
 import tarfile
 import logging
+import contextlib
 
 logger = logging.getLogger('giza.files')
 
@@ -28,6 +29,16 @@ class InvalidFile(Exception):
 
 class FileOperationError(Exception):
     pass
+
+@contextlib.contextmanager
+def cd(path):
+    cur_dir = os.getcwd()
+
+    os.chdir(path)
+
+    yield
+
+    os.chdir(cur_dir)
 
 class FileLogger(object):
     def __init__(self, logger, level=logging.INFO):
