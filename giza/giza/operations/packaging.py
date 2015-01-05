@@ -33,11 +33,14 @@ import argh
 
 from giza.config.helper import fetch_config
 from giza.tools.serialization import dict_from_list
+from giza.tools.files import safe_create_directory
 from giza.operations.deploy import deploy_worker
 
 ############### Helper ###############
 
-def package_filename(archive_path, target, conf):
+def package_filename(target, conf):
+    archive_path = os.path.join(conf.paths.projectroot, conf.paths.buildarchive)
+
     fn = [ conf.project.name ]
 
     if target is not None:
@@ -52,8 +55,6 @@ def package_filename(archive_path, target, conf):
     fn = os.path.join(archive_path, '-'.join(fn) + '.tar.gz')
 
     return fn
-
-#################### Worker Functions ####################
 
 def dump_config(conf):
     # make sure the object is fully resolved before we put it into storage
@@ -70,45 +71,48 @@ def dump_config(conf):
 
     return conf_dump_path
 
+def create_archive(files_to_archive, tarball_name):
+    # ready to write the tarball
+
+    safe_create_directory(os.path.dirname(tarball_name))
+
+    with tarfile.open(tarball_name, 'w:gz') as t:
+        for fn, arc_fn in files_to_archive:
+            t.add(name=fn, arcname=arc_fn)
+
+#################### Worker Functions ####################
+
 def create_package(target, conf):
+    logger.info('creating package for target "{0}"'.format(target))
+
     if target is None:
         pconf = conf.system.files.data.push[0]
         target = pconf['target']
     else:
-        pconf = dict_from_list(conf.system.files.data.push)[target]
+        pconf = dict_from_list('target', conf.system.files.data.push)[target]
 
-    logger.info('creating package for target "{0}"'.format(target))
-
-    conf_dump_path = dump_config(conf)
-
-    arc_path = os.path.join(conf.paths.projectroot, conf.paths.buildarchive)
-    arc_fn = package_filename(arc_path, target, conf)
-    if not os.path.exists(arc_path):
-        os.makedirs(arc_path)
-
-    input_path = os.path.join(conf.paths.projectroot,
-                              conf.paths.output,
-                              pconf['paths']['local'])
-    output_path_name = conf.git.branches.current
+    files_to_archive = []
 
     if conf.project.branched is True:
-        input_path = os.path.join(input_path, conf.git.branches.current)
+        artifacts = (os.path.join(input_path, conf.git.branches.current), conf.git.branches.current)
     else:
-        output_path_name = os.path.split(pconf['paths']['local'])[-1]
+        artifacts = (os.path.join(conf.paths.projectroot, conf.paths.output, pconf['paths']['local']),
+                     os.path.split(pconf['paths']['local'])[-1])
 
-    # ready to write the tarball
-    with tarfile.open(arc_fn, 'w:gz') as t:
-        t.add(name=input_path,
-              arcname=output_path_name)
-        t.add(conf_dump_path, arcname=os.path.basename(conf_dump_path))
+    files_to_archive.append(artifacts)
 
-        if 'static' in pconf['paths']:
-            for path in pconf['paths']['static']:
-                rendered_path = os.path.join(conf.paths.projectroot,
-                                             conf.paths.public, path)
-                if os.path.exists(rendered_path):
-                    t.add(name=rendered_path,
-                          arcname=path)
+    if 'static' in pconf['paths']:
+        files_to_archive.extend([
+            (os.path.join(conf.paths.projectroot, conf.paths.public, path), path)
+            for path in pconf['paths']['static']
+            if os.path.exists(os.path.join(conf.paths.projectroot, conf.paths.public, path))
+        ])
+
+    conf_dump_path = dump_config(conf)
+    archive_fn = package_filename(target, conf)
+    files_to_archive.append((conf_dump_path, os.path.basename(conf_dump_path)))
+
+    create_archive(files_to_archive, archive_fn)
 
     logger.info('wrote build package to: {0}'.format(arc_fn))
 
@@ -157,7 +161,7 @@ def fetch_package(path, conf):
 
 #################### Command Entry Points ####################
 
-@argh.arg('--target', '-t', nargs=1, default=[None], dest='push_targets')
+@argh.arg('--target', '-t', nargs=1, dest='push_targets')
 @argh.expects_obj
 def create(args):
     conf = fetch_config(args)
