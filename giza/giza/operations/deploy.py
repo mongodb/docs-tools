@@ -45,6 +45,9 @@ def main(args):
 
     deploy_worker(c, app)
 
+    if c.runstate.dry_run is False:
+        app.run()
+
 @argh.arg('--deploy', '-d', nargs='*', dest='push_targets')
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
@@ -64,6 +67,9 @@ def publish_and_deploy(args):
     sphinx_ret = sphinx_publication(c, args, app)
     if sphinx_ret == 0 or c.runstate.force is True:
         deploy_worker(c, app)
+
+        if c.runstate.dry_run is False:
+            app.run()
     else:
         logger.warning(sphinx_ret + ' sphinx build(s) failed, and build not forced. not deploying.')
 
@@ -100,8 +106,6 @@ def deploy_worker(c, app):
             if c.runstate.dry_run is True:
                 logger.info('dry run: {0}'.format(' '.join(cmd)))
 
-    if c.runstate.dry_run is False:
-        app.run()
 
     logger.info('completed deploy for: {0}'.format(' '.join(c.runstate.push_targets)))
 
