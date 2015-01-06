@@ -16,16 +16,12 @@ import logging
 import copy
 import argh
 
-from pprint import pprint
-
 from giza.core.app import BuildApp
 from giza.config.helper import fetch_config
-from giza.config.project import EditionListConfig
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.operations.deploy import deploy_tasks
 from giza.operations.sphinx_cmds import sphinx_publication
-from giza.operations.build_env import package_build_env, env_package_worker
-from giza.tools.timing import Timer
+from giza.operations.build_env import env_package_worker
 from giza.tools.serialization import dict_from_list
 from giza.tools.strings import hyph_concat
 
@@ -130,7 +126,6 @@ def main(args):
             add_sphinx_build_options(packaging_opts, False, options, conf)
         else:
             logger.error('target: {0} not defined in the make interface'.format(action))
-
 
     with BuildApp.context(conf) as app:
         if sphinx_opts in tasks:
