@@ -17,6 +17,7 @@
 organizing framework for running larger sequences of operations.
 """
 
+import contextlib
 import logging
 import random
 
@@ -280,3 +281,12 @@ class BuildApp(object):
 
         self.queue = []
         return self.results
+
+    @classmethod
+    @contextlib.contextmanager
+    def context(cls, conf):
+        app = cls(conf)
+
+        yield app
+
+        app.run()
