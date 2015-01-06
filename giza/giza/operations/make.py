@@ -29,7 +29,6 @@ to this mode of giza operation, with the following target:
        giza make %@
 """
 
-
 import logging
 import copy
 import argh
