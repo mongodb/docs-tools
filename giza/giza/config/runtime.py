@@ -338,7 +338,9 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @editions_to_build.setter
     def editions_to_build(self, value):
-        if isinstance(value, list):
+        if value == [] or value is None:
+            self.state['editions_to_build'] = [None]
+        elif isinstance(value, list):
             self.state['editions_to_build'] = value
         else:
             self.state['editions_to_build'] = [value]
@@ -349,7 +351,9 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @languages_to_build.setter
     def languages_to_build(self, value):
-        if isinstance(value, list):
+        if value == [] or value is None:
+            self.state['languages_to_build'] = [None]
+        elif isinstance(value, list):
             self.state['languages_to_build'] = value
         else:
             self.state['languages_to_build'] = [value]
