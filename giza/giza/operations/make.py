@@ -12,6 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+:mod:`giza.operations.make` provides an alternate method for running build
+operations, by specifying operations as a list of strings that resemble ``make``
+targets. These targets are compatible with the targets created in the default
+``sphinx-quickstart`` ``makefile``, and also supports a number of additional
+options for specifying "editions" and human-language variants of build
+operations, as well as deployment ("push") and packaging operations.
+
+Many projects retain a default makefile that passes all make operations through
+to this mode of giza operation, with the following target:
+
+.. code-block:: makefile
+
+   %:
+       giza make %@
+"""
+
+
 import logging
 import copy
 import argh
@@ -28,6 +46,16 @@ from giza.tools.strings import hyph_concat
 logger = logging.getLogger('giza.operations.make')
 
 def derive_command(name, conf):
+    """
+    :param str name: The name of a build operation. Currently supports
+        ``sphinx``, ``env``, ``deploy``. Unknown operations are ignored.
+
+    :param Configuration conf: The top level configuration object.
+
+    Given a ``conf`` object and the name of the operation, logs a message with a
+    complete specific giza command that describes an equivalent specific command.
+    """
+
     if name in ('sphinx', 'env'):
         cmd = ["giza", name]
 
@@ -58,6 +86,17 @@ def derive_command(name, conf):
         logger.info('running deploy operation, equivalent to: ' + ' '.join(cmd))
 
 def add_sphinx_build_options(action_spec, action, options, conf):
+    """
+    :param dict action_spec: A reference to a dictionary that defines a
+
+    Modifies the ``action_spec`` document to define a build operation with the
+    appropriate options, based on the operation (``action``) and the
+    ``options``.
+
+    If the options do not specify one or more editions in a project that uses
+    editions, will add all configured editions to the build operation.
+    """
+
     sphinx_builders = avalible_sphinx_builders()
 
     if action in sphinx_builders:
@@ -79,9 +118,44 @@ def add_sphinx_build_options(action_spec, action, options, conf):
 @argh.named('make')
 @argh.expects_obj
 def main(args):
+    """
+    Provides a way to specify make-like targets to invoke giza
+    operations. Targets take a <action>-<option<-option>> form.
+    """
+    targets = [ (t[0], t[1:]) for t in [ t.split("-") for t in args.make_target ] ]
+
     conf = fetch_config(args)
 
-    targets = [ (t[0], t[1:]) for t in [ t.split("-") for t in args.make_target ] ]
+    run_make_operations(targets, conf)
+
+def run_make_operations(targets, conf):
+    """
+    :param list targets: A list of tuples in the form of ``(<action>, [option,
+         option])`` that define build targets.
+
+    :param Configuration conf: The top level configuration object.
+
+    Parses the ``targets`` list and runs tasks defined, including all specified
+    sphinx targets, all ``push`` deployment targets, and will create the ``env``
+    packages. Noteworthy behavior:
+
+    - The order of options *except* for the action in the first option is not
+      important.
+
+    - If you run ``push`` target with the ``deploy`` option
+      (i.e. ``push-deploy`` or ``push-<edition>-deploy``), ``giza`` will *not*
+      run the ``publish`` Sphinx build.
+
+    - This interface assumes that all deployment targets (defined in each
+      project begin with ``push-`` or ``stage-``.) If you have a project with
+      different deployment targets, you will need to call ``giza deploy``
+      directly.
+
+    - The ``env`` cache targets take the same options as the Sphinx builders and
+      package the environment for only those builders. If you specify ``env``
+      after a Sphinx target, ``giza`` will build the cache for only that
+      package.
+    """
 
     sphinx_opts = { "worker": sphinx_publication,
                     "languages": set(),
@@ -136,6 +210,7 @@ def main(args):
             derive_command('sphinx', conf)
 
             sphinx_opts['worker'](conf, conf.runstate, app)
+
         if push_opts in tasks:
             conf.runstate.push_targets = list(push_opts['targets'])
             push_opts['worker'](conf, app)
