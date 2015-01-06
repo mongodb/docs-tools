@@ -43,12 +43,12 @@ commands = {
         giza.operations.configuration.render_config,
         giza.operations.deploy.main,
         giza.operations.deploy.publish_and_deploy,
-        giza.operations.make.main,
         giza.operations.quickstart.make_project,
         giza.operations.sphinx_cmds.main,
         giza.operations.deploy.twofa_code,
         giza.operations.http_serve.start,
         giza.operations.configuration.report_version,
+        giza.operations.make.main
     ],
     'git': [
         giza.operations.git.apply_patch,

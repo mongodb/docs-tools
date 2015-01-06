@@ -13,180 +13,144 @@
 # limitations under the License.
 
 import logging
-
+import copy
 import argh
+
+from pprint import pprint
 
 from giza.core.app import BuildApp
 from giza.config.helper import fetch_config
 from giza.config.project import EditionListConfig
+from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.operations.deploy import deploy_worker
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.operations.build_env import package_build_env, env_package_worker
 from giza.tools.timing import Timer
+from giza.tools.serialization import dict_from_list
+from giza.tools.strings import hyph_concat
 
 logger = logging.getLogger('giza.operations.make')
 
-def build_reporter(target, deploy_action, make_packages, build_sphinx, editions, languages, args):
-    """
-    Infers what the "traditional" direct ``giza`` command would be given
-    information from the ``make`` target, to make the ``make`` emulation
-    operation less opaque.
-    """
+def derive_command(name, conf):
+    if name in ('sphinx', 'env'):
+        cmd = ["giza", name]
 
-    if len(deploy_action) > 0:
-        deploy_action = ' '.join(deploy_action)
+        if conf.runstate.serial_sphinx is True:
+            cmd.append('--serial_sphinx')
 
-    target_set = set()
-    for t in target:
-        if isinstance(t, list):
-            target_set.update(t)
-        else:
-            target_set.add(t)
+        if len(conf.runstate.builder) > 0:
+            cmd.append('--builder')
+            cmd.append(' '.join(conf.runstate.builder))
 
-    target = list(target_set)
-    if make_packages is True:
-        cmd = "giza env --builder "  + ' '.join(target)
-    elif deploy_action:
-        if build_sphinx:
-            cmd = 'giza push --deploy ' + deploy_action + ' --builder ' + ' '.join(target)
-        else:
-            cmd = 'giza deploy --target ' + deploy_action
-    else:
-        cmd = 'giza sphinx --builder ' + ' '.join(target)
+        if len(conf.runstate.editions_to_build) > 0 and conf.runstate.editions_to_build[0] is not None:
+            cmd.append('--edition')
+            cmd.append(' '.join(conf.runstate.editions_to_build))
 
-    if build_sphinx or make_packages:
-        if editions and None not in editions:
-            cmd += ' --edition ' + ' '.join(editions)
-        if languages and None not in languages:
-            cmd += ' --languages ' + ' '.join(languages)
+        if len(conf.runstate.languages_to_build) > 0 and conf.runstate.languages_to_build[0] is not None:
+            cmd.append('--language')
+            cmd.append(' '.join(conf.runstate.languages_to_build))
 
-    if args.serial_sphinx is True:
-        cmd += ' --serial_sphinx'
+        if name == 'sphinx':
+            logger.info('running sphinx build operation, equivalent to: ' + ' '.join(cmd))
+        elif name == 'env':
+            logger.info('running env cache operation, equivalent to: ' + ' '.join(cmd))
+    elif name == 'deploy':
+        cmd = ["giza deploy"]
+        cmd.append('--target')
+        cmd.append(' '.joni(conf.runstate.push_targets))
 
-    return cmd
+        logger.info('running deploy operation, equivalent to: ' + ' '.join(cmd))
 
-def determine_workload(targets, conf):
-    """
-    Given a string of ``make``-like targets, returns a
+def add_sphinx_build_options(action_spec, action, options, conf):
+    sphinx_builders = avalible_sphinx_builders()
 
-    :returns: A boolean that is ``False`` when the operation is *just* and
-        ``True`` when the operation requires a Sphinx invocation.
+    if action in sphinx_builders:
+        action_spec['builders'].add(action)
 
-    :rtype: bool, list
-    """
-    build_sphinx = True
-    make_packages = False
-    deploy_actions = []
+    for build_option in options:
+        if build_option in sphinx_builders:
+            action_spec['builders'].add(build_option)
+        elif build_option in conf.project.edition_list:
+            action_spec['editions'].add(build_option)
+        elif build_option in conf.system.files.data.integration:
+            action_spec['languages'].add(build_option)
 
-    if targets[0] in ('deploy', 'stage', 'push'):
-        target = ['publish']
-
-        if targets[0] == 'giza':
-            targets = targets[1:]
-
-        if targets[0] == 'deploy':
-            build_sphinx = False
-            targets = targets[1:]
-
-        target_str = '-'.join(targets)
-
-        for t in conf.system.files.data.push:
-            if targets[0].startswith(t['target']) or target_str.startswith(t['target']):
-                deploy_action.append( t['target'])
-    elif targets[0] == 'env':
-        build_sphinx = False
-        make_packages = True
-        target = targets[1:]
-    elif targets[0].startswith('package'):
-        logger.error("make interface does not contain support for artifact packaging")
-    else:
-        supported_targets = set([ target.split('-')[0]
-                                  for target in conf.system.files.data.integration['base']['targets']
-                                  if '/' not in target and
-                                  not target.startswith('htaccess') ])
-
-        target = []
-        for t in targets:
-            if t in supported_targets:
-                target.append(t)
-
-        if not target:
-            target = ['publish']
-
-    return build_sphinx, make_packages, target, deploy_actions
+    if 'editions' in conf.project and len(action_spec['editions']) == 0:
+        action_spec['editions'].update(conf.project.edition_list)
 
 @argh.arg('make_target', nargs="*")
 @argh.arg('--serial_sphinx', action='store_true')
 @argh.named('make')
 @argh.expects_obj
 def main(args):
-    """
-    Emulates ``make``. Pass a list of make targets. Most projects call this
-    using a simple Makefile pass through.
-
-    Calls the underlying functions from ``giza deploy`` and ``giza sphinx``.
-    """
-
     conf = fetch_config(args)
-    targets = [ t.split('-') for t in args.make_target ]
 
-    build_sphinx = True
-    make_packages = False
-    deploy_action = []
-    sphinx_targets = []
+    targets = [ (t[0], t[1:]) for t in [ t.split("-") for t in args.make_target ] ]
 
-    for t in targets:
-        should_build, should_make_packages, sphinx_targets, deploys = determine_workload(t, conf)
+    sphinx_opts = { "worker": sphinx_publication,
+                    "languages": set(),
+                    "editions": set(),
+                    "builders": set() }
+    push_opts = { "worker": deploy_worker,
+                  "targets": set() }
+    packaging_opts = { }
 
-        sphinx_targets.extend(sphinx_targets)
-        deploy_action.extend(deploys)
+    sphinx_builders = avalible_sphinx_builders()
+    deploy_configs = dict_from_list('target', conf.system.files.data.push)
 
-        if make_packages is False and should_make_packages is True:
-            make_packages = should_make_packages
-        if build_sphinx is True and should_build is False:
-            build_sphinx = should_build
+    tasks = []
+    for action, options in targets:
+        if action in sphinx_builders:
+            tasks.append(sphinx_opts)
 
-    sphinx_targets = list(set(sphinx_targets))
+            add_sphinx_build_options(sphinx_opts, action, options, conf)
+        elif action in ('stage', 'push'):
+            tasks.append(push_opts)
 
-    editions = []
-    languages = []
-    for target_options in targets:
-        for option in target_options:
-            if option in conf.project.edition_list:
-                editions.append(option)
+            if 'deploy' not in options:
+                sphinx_opts['builders'].add('publish')
+                tasks.append(sphinx_opts)
 
-        target_string = '-'.join(target_options)
-        if target_string in conf.system.files.data.integration:
-            languages.append(target_string)
+            for build_option in options:
+                if build_option == 'deploy':
+                    continue
 
-    if not editions:
-        if len(conf.project.editions) > 0:
-            editions = conf.project.edition_list
+                deploy_target_name = hyph_concat(action, build_option)
+
+                if deploy_target_name in deploy_configs:
+                    push_opts['targets'].add(deploy_target_name)
+
+        elif action.startswith('env'):
+            if len(packaging_opts) > 0:
+                packaging_opts = copy.copy(sphinx_opts)
+                packaging_opts['worker'] = env_package_worker
+
+            tasks.append(packaging_opts)
+            add_sphinx_build_options(packaging_opts, False, options, conf)
         else:
-            editions = [None]
+            logger.error('target: {0} not defined in the make interface'.format(action))
 
-    if not languages:
-        languages = [None]
 
-    cmd = build_reporter(sphinx_targets, deploy_action, make_packages, build_sphinx, editions, languages, args)
-    logger.info('running: ' + cmd)
+    with BuildApp.context(conf) as app:
+        if sphinx_opts in tasks:
+            conf.runstate.languages_to_build = list(sphinx_opts['languages'])
+            conf.runstate.editions_to_build = list(sphinx_opts['editions'])
+            conf.runstate.builder = list(sphinx_opts['builders'])
 
-    args.push_targets = deploy_action
-    args.languages_to_build = languages
-    args.editions_to_build = editions
-    args.builder = sphinx_targets
-    conf.runstate = args
+            derive_command('sphinx', conf)
 
-    app = BuildApp(conf)
+            sphinx_opts['worker'](conf, conf.runstate, app)
+        if push_opts in tasks:
+            conf.runstate.push_targets = list(push_opts['targets'])
+            push_opts['worker'](conf, app)
 
-    if build_sphinx:
-        with Timer("full sphinx build for: " + ' '.join(sphinx_targets)):
-            sphinx_publication(conf, args, app)
+            derive_command('deploy', conf)
 
-    if deploy_action:
-        with Timer("deploy build for: " + ' '.join(sphinx_targets)):
-            deploy_worker(conf, app)
+        if packaging_opts in tasks:
+            derive_command('env', conf)
 
-    if make_packages:
-        with Timer("making packages for: " + ' '.join(sphinx_targets)):
-            env_package_worker(conf.runstate, conf)
+            task = app.add('task')
+            task.job = env_package_worker
+            task.args = (conf.runstate, conf)
+            task.target = False
+            task.dependency = False
