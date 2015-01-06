@@ -74,10 +74,10 @@ def finalize_dirhtml_build(sconf, conf):
                        target_file=os.path.join(single_html_dir, 'search.html'))
 
     dest = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
-    m_cmd = command('rsync -a {source}/ {destination}'.format(source=sconf.build_output,
+    m_cmd = command('rsync -a {source}/ {destination}'.format(source=sconf.fq_build_output,
                                                               destination=dest))
 
-    logger.info('"{0}" migrated build from {1} to {2}, with result {3}'.format(sconf.name, sconf.build_output, dest, m_cmd.return_code))
+    logger.info('"{0}" migrated build from {1} to {2}, with result {3}'.format(sconf.name, sconf.fq_build_output, dest, m_cmd.return_code))
 
     if 'excluded_files' in sconf:
         fns = [ os.path.join(conf.paths.projectroot,
