@@ -34,7 +34,7 @@ import argh
 from giza.config.helper import fetch_config
 from giza.tools.serialization import dict_from_list
 from giza.tools.files import safe_create_directory, FileNotFoundError
-from giza.operations.deploy import deploy_worker
+from giza.operations.deploy import deploy_tasks
 
 ############### Helper ###############
 
@@ -200,7 +200,10 @@ def deploy(args):
     app = BuildApp(new_conf)
 
     logger.info('beginning deploy now.')
-    deploy_worker(conf, app)
+    deploy_tasks(conf, app)
+
+    if conf.runstate.dry_run is False:
+        app.run()
 
 @argh.arg('--path', dest='package_path')
 @argh.expects_obj

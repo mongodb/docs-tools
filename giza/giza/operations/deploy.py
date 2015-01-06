@@ -43,7 +43,7 @@ def main(args):
     c = fetch_config(args)
     app = BuildApp(c)
 
-    deploy_worker(c, app)
+    deploy_tasks(c, app)
 
     if c.runstate.dry_run is False:
         app.run()
@@ -66,14 +66,14 @@ def publish_and_deploy(args):
 
     sphinx_ret = sphinx_publication(c, args, app)
     if sphinx_ret == 0 or c.runstate.force is True:
-        deploy_worker(c, app)
+        deploy_tasks(c, app)
 
         if c.runstate.dry_run is False:
             app.run()
     else:
         logger.warning(sphinx_ret + ' sphinx build(s) failed, and build not forced. not deploying.')
 
-def deploy_worker(c, app):
+def deploy_tasks(c, app):
     """
     Deploys the build. The logic for generating the rsync commands is
     in ``giza.deploy``, and the configuration data is typically in

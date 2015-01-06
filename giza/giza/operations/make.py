@@ -22,7 +22,7 @@ from giza.core.app import BuildApp
 from giza.config.helper import fetch_config
 from giza.config.project import EditionListConfig
 from giza.config.sphinx_config import avalible_sphinx_builders
-from giza.operations.deploy import deploy_worker
+from giza.operations.deploy import deploy_tasks
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.operations.build_env import package_build_env, env_package_worker
 from giza.tools.timing import Timer
@@ -57,7 +57,7 @@ def derive_command(name, conf):
     elif name == 'deploy':
         cmd = ["giza deploy"]
         cmd.append('--target')
-        cmd.append(' '.joni(conf.runstate.push_targets))
+        cmd.append(' '.join(conf.runstate.push_targets))
 
         logger.info('running deploy operation, equivalent to: ' + ' '.join(cmd))
 
@@ -91,7 +91,7 @@ def main(args):
                     "languages": set(),
                     "editions": set(),
                     "builders": set() }
-    push_opts = { "worker": deploy_worker,
+    push_opts = { "worker": deploy_tasks,
                   "targets": set() }
     packaging_opts = { }
 
@@ -110,6 +110,7 @@ def main(args):
             if 'deploy' not in options:
                 sphinx_opts['builders'].add('publish')
                 tasks.append(sphinx_opts)
+                add_sphinx_build_options(sphinx_opts, action, options, conf)
 
             for build_option in options:
                 if build_option == 'deploy':
