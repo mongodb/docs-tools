@@ -182,14 +182,9 @@ def run_make_operations(targets, conf):
                 add_sphinx_build_options(sphinx_opts, action, options, conf)
 
             for build_option in options:
-                if build_option == 'deploy':
-                    continue
-
                 deploy_target_name = hyph_concat(action, build_option)
-
                 if deploy_target_name in deploy_configs:
                     push_opts['targets'].add(deploy_target_name)
-
         elif action.startswith('env'):
             if len(packaging_opts) > 0:
                 packaging_opts = copy.copy(sphinx_opts)
