@@ -25,10 +25,10 @@ from giza.config.content import new_content_type
 from giza.core.task import Task
 
 def register_extracts(conf):
-    conf.system.content.add(name='extracts', definition=new_content_type(name='extract', task_generator=extract_tasks, conf=conf))
+    conf.system.content.add(name='extracts', definition=new_content_type(name='extracts', task_generator=extract_tasks, conf=conf))
 
 def write_extract_file(extract, fn):
-    content = render_extract(extract)
+    content = render_extracts(extract)
     content.write(fn)
     logger.info('wrote extract file: ' + fn)
 
@@ -49,7 +49,7 @@ def extract_tasks(conf):
         t.args = (extract, extract.target)
         tasks.append(t)
 
-        include_statement = get_include_statement(extract.target)
+        include_statement = get_include_statement(extract.target_project_path)
 
         for verb, adjc, noun in [ (prepend_to_file, 'prepend', extract.prepend),
                                   (append_to_file, 'append', extract.append) ]:
@@ -62,7 +62,7 @@ def extract_tasks(conf):
                 for fn in files:
                     t = Task(job=verb,
                              target=fn,
-                             dependency=[extract.target, dep_fn],
+                             dependency=dep_fn,
                              description="{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn))
                     t.args = (fn, include_statement)
                     tasks.append(t)

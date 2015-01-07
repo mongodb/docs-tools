@@ -24,18 +24,18 @@ def render_extracts(extract):
     r = RstCloth()
     extract.render()
 
-    indent = 0
-    if 'class' in extract:
-        r.directive('class', extract.class)
-        indent = 3
+    if 'style' in extract:
+        r.directive('rst-class', extract.style)
+        r.newline()
 
-    render_action(extract, indent=indent, level=extract.level, r=r)
+    render_action(extract, indent=0, level=extract.level, r=r)
 
     return r
 
 def get_include_statement(include_file):
     r = RstCloth()
     r.newline()
+
     r.directive('include', include_file)
     r.newline()
 

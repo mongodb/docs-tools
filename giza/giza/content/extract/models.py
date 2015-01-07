@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import os.path
 
 logger = logging.getLogger('giza.content.extract.models')
 
@@ -39,16 +40,22 @@ class ExtractData(HeadingMixin, InheritableContentBase):
         self._set_file('prepend')
 
     @property
-    def class(self):
-        return self.state['class']
+    def style(self):
+        return self.state['style']
 
-    @class.setter
-    def class(self, value):
-        self.state['class'] = value
+    @style.setter
+    def style(self, value):
+        self.state['style'] = value
 
     @property
     def target(self):
         return os.path.join(self.conf.system.content.extracts.output_dir, self.ref) + '.rst'
+
+    @property
+    def target_project_path(self):
+        offset = len(os.path.join(self.conf.paths.projectroot, self.conf.paths.branch_source))
+
+        return self.target[offset:]
 
     ## The actual implementation for prepend/append
     def _get_file(self, kind):
@@ -58,6 +65,9 @@ class ExtractData(HeadingMixin, InheritableContentBase):
             return False
 
     def _set_file(self, value, kind):
+        if value.startswith(os.path.sep):
+            value = value[1:]
+
         paths = [ os.path.abspath(value),
                   os.path.join(self.conf.paths.projectroot, value),
                   os.path.join(self.conf.paths.projectroot,
