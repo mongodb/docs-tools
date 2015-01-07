@@ -187,8 +187,12 @@ def run_make_operations(targets, conf):
                 add_sphinx_build_options(sphinx_opts, action, options, conf)
                 conf.runstate.fast = False
 
+            if action in deploy_configs:
+                push_opts['targets'].add(action)
+
             for build_option in options:
                 deploy_target_name = hyph_concat(action, build_option)
+
                 if build_option in deploy_configs:
                     push_opts['targets'].add(build_option)
                 elif deploy_target_name in deploy_configs:
