@@ -25,6 +25,8 @@ if sys.version_info >= (3, 0):
     basestring = str
 
 class HeadingMixin(object):
+    _default_level = 3
+
     @property
     def title(self):
         return self.heading
@@ -47,11 +49,11 @@ class HeadingMixin(object):
             if 'level' not in self.state and 'character' in value and value['character'] in level_characters:
                 self.state['level'] = level_characters[value['character']]
             else:
-                self.state['level'] = 3
+                self.state['level'] = self._default_level
         else:
             self.state['heading'] = value
             if 'level' not in self.state:
-                self.state['level'] = 3
+                self.state['level'] = self._default_level
 
     @property
     def level(self):

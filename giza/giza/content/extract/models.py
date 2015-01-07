@@ -19,7 +19,9 @@ logger = logging.getLogger('giza.content.extract.models')
 from giza.core.inheritance import InheritableContentBase
 from giza.content.steps.models import HeadingMixin
 
-class ExtractData(HeadingMixin, InheritableContentBase): 
+class ExtractData(HeadingMixin, InheritableContentBase):
+    _default_level = 2
+
     @property
     def append(self):
         return self._get_file('append')
@@ -37,20 +39,20 @@ class ExtractData(HeadingMixin, InheritableContentBase):
         self._set_file('prepend')
 
     @property
-    def target(self): 
+    def target(self):
         return os.path.join(self.conf.system.content.extracts.output_dir, self.ref) + '.rst'
 
     ## The actual implementation for prepend/append
     def _get_file(self, kind):
         if kind in self.state:
             return self.state[kind]
-        else: 
+        else:
             return False
 
     def _set_file(self, value, kind):
         paths = [ os.path.abspath(value),
                   os.path.join(self.conf.paths.projectroot, value),
-                  os.path.join(self.conf.paths.projectroot, 
+                  os.path.join(self.conf.paths.projectroot,
                                self.conf.paths.branch_source, value),
                   os.path.join(self.conf.paths.projectroot,
                                self.conf.paths.branch_includes, value) ]
