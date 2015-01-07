@@ -111,11 +111,7 @@ def command(command, capture=True, ignore=False, logger=None):
 
     with open(tmp_out.name, 'w') as tout:
         with open(tmp_err.name, 'w') as terr:
-            p = subprocess.Popen(command, stdout=tout, stderr=terr, shell=True)
-
-            while True:
-                if p.poll() is not None:
-                    break
+            returncode = subprocess.call(command, stdout=tout, stderr=terr, shell=True)
 
     if capture is False:
         stdout = ""
@@ -129,7 +125,7 @@ def command(command, capture=True, ignore=False, logger=None):
     out = CommandResult(cmd=command,
                         err=stderr,
                         out=stdout,
-                        return_code=p.returncode)
+                        return_code=returncode)
     out.captured = capture
 
     if log_output is True and capture is True:
