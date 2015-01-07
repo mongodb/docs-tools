@@ -92,7 +92,7 @@ class WorkerPool(object):
             for job, err in errors:
                 error_list.append(e)
                 if job.description is None:
-                    logger.error("encountered error '{0}' in {1} with args ({2})".format(e, job.job, job.args))
+                    logger.error("encountered error '{0}' in {1}".format(e, job.job))
                 else:
                     logger.error("'{0}' encountered error: {1}, exiting.".format(job.description, e))
 
