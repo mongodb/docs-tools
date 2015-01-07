@@ -60,7 +60,7 @@ class HeadingMixin(object):
         if 'level' in self.state:
             return self.state['level']
         else:
-            return 3
+            return self._default_level
 
     @level.setter
     def level(self, value):

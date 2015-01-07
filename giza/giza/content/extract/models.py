@@ -39,6 +39,14 @@ class ExtractData(HeadingMixin, InheritableContentBase):
         self._set_file('prepend')
 
     @property
+    def class(self):
+        return self.state['class']
+
+    @class.setter
+    def class(self, value):
+        self.state['class'] = value
+
+    @property
     def target(self):
         return os.path.join(self.conf.system.content.extracts.output_dir, self.ref) + '.rst'
 

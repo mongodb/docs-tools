@@ -16,6 +16,7 @@ import logging
 import os.path
 
 from rstcloth.rstcloth import RstCloth
+from giza.content.steps.views import render_action
 
 logger = logging.getLogger('giza.content.extracts.views')
 
@@ -23,7 +24,12 @@ def render_extracts(extract):
     r = RstCloth()
     extract.render()
 
-    render_action(release, indent=0, level=2, r=r)
+    indent = 0
+    if 'class' in extract:
+        r.directive('class', extract.class)
+        indent = 3
+
+    render_action(extract, indent=indent, level=extract.level, r=r)
 
     return r
 
@@ -34,4 +40,3 @@ def get_include_statement(include_file):
     r.newline()
 
     return '\n'.join(r.data)
-    
