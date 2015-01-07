@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import logging
 
 logger = logging.getLogger('giza.main')
@@ -165,6 +164,7 @@ def main():
         argh.dispatch(parser, namespace=args)
     except KeyboardInterrupt:
         logger.error('operation interrupted by user.')
+
 
 if __name__ == '__main__':
     main()

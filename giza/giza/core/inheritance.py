@@ -172,7 +172,6 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     def render(self):
         if self.replacement:
-
             attempts = range(10)
 
             for key in self.state.keys():
