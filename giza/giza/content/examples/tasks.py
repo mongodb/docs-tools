@@ -41,7 +41,6 @@ def example_tasks(conf):
     # read all files in "source/includes/" and sub-directories that start with
     # "example-*"
 
-    register_examples(conf)
     example_sources = conf.system.content.examples.sources
 
     # process the corpus of example data.

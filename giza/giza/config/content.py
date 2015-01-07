@@ -95,8 +95,7 @@ class ContentRegistry(ConfigurationBase):
                 self.state[name] = definition
 
     def iterator(self):
-        for dfn in self.state.keys():
-            yield self.state[dfn]
+        return self.state.values()
 
     def output_directories(self, prefix_len=0):
         for content_type in self.iterator():
@@ -104,5 +103,5 @@ class ContentRegistry(ConfigurationBase):
 
     @property
     def task_generators(self):
-        for content in self.iterator():
+        for content in self.state.values():
             yield content, content.task_generator

@@ -33,8 +33,6 @@ def write_options(option, fn, conf):
     logger.info('wrote options file: ' + fn)
 
 def option_tasks(conf):
-    register_options(conf)
-
     option_sources = conf.system.content.options.sources
     o = OptionDataCache(option_sources, conf)
 

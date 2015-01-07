@@ -50,21 +50,25 @@ def fetch_config(args):
     c.ingest(args.conf_path)
     c.runstate = args
 
+    register_content_generators(c)
+
     return c
 
 def register_content_generators(conf):
+    logger.debug("registering content generators with config")
     register_options(conf)
     register_steps(conf)
     register_releases(conf)
     register_examples(conf)
     register_extracts(conf)
 
-
 def new_skeleton_config(conf=None):
     if conf is None:
         conf = Configuration()
         args = RuntimeStateConfig()
         conf.runstate = args
+
+        register_content_generators(c)
 
         return conf
     else:

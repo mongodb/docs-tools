@@ -32,8 +32,6 @@ def write_steps(steps, fn, conf):
     logger.info('wrote steps to: '  + fn)
 
 def step_tasks(conf):
-    register_steps(conf)
-
     step_sources = conf.system.content.steps.sources
     s = StepDataCache(step_sources, conf)
 

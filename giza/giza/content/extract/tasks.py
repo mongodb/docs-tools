@@ -33,7 +33,6 @@ def write_extract_file(extract, fn):
     logger.info('wrote extract file: ' + fn)
 
 def extract_tasks(conf):
-    register_extracts(conf)
     extract_sources = conf.system.content.extracts.sources
 
     extracts = ExtractDataCache(extract_sources, conf)

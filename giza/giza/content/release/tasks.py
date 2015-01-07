@@ -32,7 +32,6 @@ def write_release_file(release, fn, conf):
     logger.info('wrote release content: ' + fn)
 
 def release_tasks(conf):
-    register_releases(conf)
     release_sources = conf.system.content.releases.sources
 
     rel = ReleaseDataCache(release_sources, conf)
@@ -55,8 +54,6 @@ def release_tasks(conf):
     return tasks
 
 def release_clean(conf, app):
-    register_releases(conf)
-
     rel = ReleaseDataCache(conf.system.content.releases.sources, conf)
 
     for dep, release in rel.content_iter():

@@ -167,7 +167,6 @@ def get_sphinx_build_configuration(edition, language, builder, args):
 
     conf = fetch_config(args)
     sconf = render_sconf(edition, builder, language, conf)
-    register_content_generators(conf)
 
     return conf, sconf
 

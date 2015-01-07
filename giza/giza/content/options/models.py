@@ -24,16 +24,8 @@ if sys.version_info >= (3, 0):
     basestring = str
 
 class OptionData(InheritableContentBase):
-    def __init__(self, input_obj, conf):
-        self._option_registry.extend([
-            'description',
-            'name',
-            'args',
-            'aliases',
-            'default',
-            'type'])
-
-        super(OptionData, self).__init__(input_obj, conf)
+    _option_registry = ['pre', 'post', 'final', 'ref', 'content', 'edition',
+                        'description', 'name', 'args', 'aliases', 'default', 'type']
 
     @property
     def source(self):

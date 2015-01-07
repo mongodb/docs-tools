@@ -53,7 +53,6 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     _option_registry = ['pre', 'post', 'final', 'ref', 'content', 'edition']
 
-
     def _get_default_replacement(self):
         if 'replacement' in self.conf.system.files.data:
             base = copy.deepcopy(self.conf.system.files.data.replacement)
