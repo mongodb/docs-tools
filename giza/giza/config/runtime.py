@@ -115,6 +115,22 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
         logger.debug('set logging level to: ' + value)
 
     @property
+    def fast(self):
+        if 'fast_and_loose' not in self.state:
+            return False
+        else:
+            return self.state['fast_and_loose']
+
+    @fast.setter
+    def fast(self, value):
+        if value is True:
+            self.state['fast_and_loose'] = value
+        elif value is False:
+            pass
+        else:
+            logger.warning('invalid option for "fast" build option')
+
+    @property
     def runner(self):
         if 'runner' not in self.state:
             self.runner = None
@@ -283,6 +299,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
         if 'builder' not in self.state:
             return [ ]
         elif 'publish' in self.state['builder']:
+            self.fast = False
             self.state['builder'].remove('publish')
 
             if 'integration' in self.conf.system.files.data:

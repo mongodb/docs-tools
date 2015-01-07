@@ -124,7 +124,6 @@ def main(args):
     targets = [ (t[0], t[1:]) for t in [ t.split("-") for t in args.make_target ] ]
 
     conf = fetch_config(args)
-
     run_make_operations(targets, conf)
 
 def run_make_operations(targets, conf):
@@ -200,6 +199,9 @@ def run_make_operations(targets, conf):
             conf.runstate.languages_to_build = list(sphinx_opts['languages'])
             conf.runstate.editions_to_build = list(sphinx_opts['editions'])
             conf.runstate.builder = list(sphinx_opts['builders'])
+
+            if 'publish' in conf.runstate.builder:
+                conf.runstate.fast = False
 
             derive_command('sphinx', conf)
 

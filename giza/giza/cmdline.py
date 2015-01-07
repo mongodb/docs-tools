@@ -132,6 +132,7 @@ def get_base_parser():
     parser.add_argument('--event', default=None, dest='runner', const='event', action='store_const')
     parser.add_argument('--process', default=None, dest='runner', const='process', action='store_const')
     parser.add_argument('--force', '-f', default=False, action='store_true')
+    parser.add_argument('--fast', action='store_true')
 
     return parser
 
@@ -164,7 +165,6 @@ def main():
         argh.dispatch(parser, namespace=args)
     except KeyboardInterrupt:
         logger.error('operation interrupted by user.')
-
 
 if __name__ == '__main__':
     main()

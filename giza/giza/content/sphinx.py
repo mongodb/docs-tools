@@ -254,8 +254,10 @@ def run_sphinx(builder, sconf, conf):
         logger.info('successfully completed {0} sphinx build ({1})'.format(builder, out.return_code))
 
         finalizer_app = BuildApp(conf)
+        finalizer_app.pool = "thread"
         finalizer_app.root_app = False
         finalize_sphinx_build(sconf, conf, finalizer_app)
+
         with Timer("finalize sphinx {0} build".format(builder)):
             finalizer_app.run()
     else:
@@ -285,16 +287,14 @@ def finalize_sphinx_build(sconf, conf, app):
     target = sconf.builder
     logger.info('starting to finalize the Sphinx build {0}'.format(target))
 
-    if target == 'html':
-        app.pool = 'serial'
+    if target == 'html' and not conf.runstate.fast:
         task = app.add('task')
         task.job = html_tarball
         task.target = [get_tarball_name('html', conf),
                        get_tarball_name('link-html', conf)]
         task.args = [sconf.name, conf]
         task.description = "creating tarball for html archive"
-    elif target == 'dirhtml':
-        app.pool = 'thread'
+    elif target == 'dirhtml' and not conf.runstate.fast:
         for job in (finalize_dirhtml_build, error_pages):
             task = app.add('task')
             task.job = job
@@ -312,13 +312,11 @@ def finalize_sphinx_build(sconf, conf, app):
             link_task.args = [conf]
             link_task.description = "create the 'manual' symlink"
     elif target == 'epub':
-        app.pool = 'serial'
         task = app.add('task')
         task.job = finalize_epub_build
         task.args = (target, conf)
         task.description = 'finalizing epub build'
     elif target == 'man':
-        app.pool = 'thread'
         manpage_url_tasks(target, conf, app)
         task = app.add('task')
         task.job = man_tarball
@@ -326,23 +324,17 @@ def finalize_sphinx_build(sconf, conf, app):
                        get_tarball_name('link-man', conf)]
         task.args = [target, conf]
         task.description = "creating tarball for 1manpages"
-    elif target == 'slides':
-        app.pool = 'thread'
+    elif target == 'slides' and not conf.runstate.fast:
         slide_tasks(sconf, conf, app)
     elif target == 'json':
-        app.pool = 'thread'
         json_output_tasks(conf, app)
     elif target == 'singlehtml':
-        app.pool = 'thread'
         finalize_single_html_tasks(target, conf, app)
     elif target == 'latex':
-        app.pool = 'thread'
         pdf_tasks(sconf, conf, app)
     elif target == 'gettext':
-        app.pool = 'thread'
         gettext_tasks(conf, app)
     elif target == 'linkcheck':
-        app.pool = 'serial'
         task = app.add('task')
         task.job = printer
         task.target = os.path.join(conf.paths.projectroot,
