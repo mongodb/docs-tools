@@ -34,7 +34,12 @@ class PoolResultsError(Exception): pass
 def run_task(task):
     "helper to call run method on task so entire operation can be pickled for process pool support"
 
-    return task.run()
+    try:
+        result = task.run()
+    except KeyboardInterrupt:
+        logger.error('task received interrupt.')
+
+    return result
 
 class WorkerPool(object):
     def __enter__(self):
@@ -82,7 +87,11 @@ class WorkerPool(object):
                 if ret is None:
                     retval.append(ret)
                 else:
-                    retval.append(ret.get())
+                    try:
+                        retval.append(ret.get())
+                    except KeyboardInterrupt:
+                        logger.critical("received keyboard interrupt. exiting")
+                        return
             except Exception as e:
                 has_errors = True
                 errors.append((job, e))
