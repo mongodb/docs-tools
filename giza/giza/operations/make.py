@@ -56,7 +56,11 @@ def derive_command(name, conf):
     """
 
     if name in ('sphinx', 'env'):
-        cmd = ["giza", name]
+        cmd = ["giza"]
+        if conf.runstate.fast is True:
+            cmd.append('--fast')
+
+        cmd.append(name)
 
         if conf.runstate.serial_sphinx is True:
             cmd.append('--serial_sphinx')
@@ -108,6 +112,8 @@ def add_sphinx_build_options(action_spec, action, options, conf):
             action_spec['editions'].add(build_option)
         elif build_option in conf.system.files.data.integration:
             action_spec['languages'].add(build_option)
+        elif build_option == 'fast' and action != 'publish' and 'publish' not in options:
+            conf.runstate.fast = True
 
     if 'editions' in conf.project and len(action_spec['editions']) == 0:
         action_spec['editions'].update(conf.project.edition_list)
@@ -179,6 +185,7 @@ def run_make_operations(targets, conf):
                 sphinx_opts['builders'].add('publish')
                 tasks.append(sphinx_opts)
                 add_sphinx_build_options(sphinx_opts, action, options, conf)
+                conf.runstate.fast = False
 
             for build_option in options:
                 deploy_target_name = hyph_concat(action, build_option)

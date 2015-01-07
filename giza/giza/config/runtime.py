@@ -123,10 +123,8 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
     @fast.setter
     def fast(self, value):
-        if value is True:
+        if isinstance(value, bool):
             self.state['fast_and_loose'] = value
-        elif value is False:
-            pass
         else:
             logger.warning('invalid option for "fast" build option')
 
