@@ -189,7 +189,9 @@ def run_make_operations(targets, conf):
 
             for build_option in options:
                 deploy_target_name = hyph_concat(action, build_option)
-                if deploy_target_name in deploy_configs:
+                if build_option in deploy_configs:
+                    push_opts['targets'].add(build_option)
+                elif deploy_target_name in deploy_configs:
                     push_opts['targets'].add(deploy_target_name)
         elif action.startswith('env'):
             if len(packaging_opts) > 0:
@@ -228,3 +230,5 @@ def run_make_operations(targets, conf):
             task.args = (conf.runstate, conf)
             task.target = False
             task.dependency = False
+
+        app.run()
