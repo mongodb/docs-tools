@@ -72,7 +72,7 @@ def steps(args):
     if c.runstate.clean_generated is True:
         step_clean(c, app)
     else:
-        step_tasks(c, app)
+        app.extend_queue(step_tasks(c))
 
     app.run()
 
@@ -85,7 +85,7 @@ def options(args):
         option_clean(c)
     else:
         app = BuildApp(c)
-        option_tasks(c, app)
+        app.extend_queue(option_tasks(c))
         app.run()
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
@@ -162,7 +162,7 @@ def release(args):
     if c.runstate.clean_generated is True:
         release_clean(c, app)
     else:
-        release_tasks(c, app)
+        app.extend_queue(release_tasks(c))
 
     app.run()
 
@@ -184,7 +184,7 @@ def examples(args):
     c = fetch_config(args)
     app = BuildApp(c)
 
-    example_tasks(c, app)
+    app.extend_queue(example_tasks(c))
 
     app.run()
 

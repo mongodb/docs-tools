@@ -53,11 +53,12 @@ def fetch_config(args):
     return c
 
 def register_content_generators(conf):
+    register_options(conf)
+    register_steps(conf)
     register_releases(conf)
     register_examples(conf)
-    register_options(conf)
     register_extracts(conf)
-    register_steps(conf)
+
 
 def new_skeleton_config(conf=None):
     if conf is None:

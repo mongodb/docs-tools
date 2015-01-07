@@ -21,6 +21,7 @@ from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
 from giza.content.release.inheritance import ReleaseDataCache
 from giza.content.release.views import render_releases
 from giza.config.content import new_content_type
+from giza.core.task import Task
 
 def register_releases(conf):
     conf.system.content.add(name='releases', definition=new_content_type(name='release', task_generator=release_tasks, conf=conf))
@@ -30,7 +31,7 @@ def write_release_file(release, fn, conf):
     content.write(fn)
     logger.info('wrote release content: ' + fn)
 
-def release_tasks(conf, app):
+def release_tasks(conf):
     register_releases(conf)
     release_sources = conf.system.content.releases.sources
 
@@ -39,13 +40,19 @@ def release_tasks(conf, app):
     if len(release_sources) > 0 and not os.path.isdir(conf.system.content.releases.output_dir):
         safe_create_directory(conf.system.content.releases.output_dir)
 
+    tasks = []
+
     for dep_fn, release in rel.content_iter():
-        t = app.add('task')
-        t.job = write_release_file
-        t.target = release.target
-        t.dependency = dep_fn
+        t = Task(job=write_release_file,
+                 description='generating release spec file: ' + release.target,
+                 target=release.target,
+                 dependency=dep_fn)
         t.args = (release, release.target, conf)
-        t.description = 'generating release spec file: ' + release.target
+
+        tasks.append(t)
+
+    logger.info("added tasks for {0} release generation tasks".format(len(tasks)))
+    return tasks
 
 def release_clean(conf, app):
     register_releases(conf)

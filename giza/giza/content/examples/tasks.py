@@ -27,6 +27,7 @@ from giza.tools.files import expand_tree, safe_create_directory, verbose_remove
 from giza.config.content import new_content_type
 from giza.content.examples.inheritance import ExampleDataCache
 from giza.content.examples.views import full_example
+from giza.core.task import Task
 
 def register_examples(conf):
     conf.system.content.add(name='examples', definition=new_content_type(name='examples', task_generator=example_tasks, conf=conf))
@@ -35,7 +36,7 @@ def write_full_example(collection, examples, fn):
     content = full_example(collection, examples)
     content.write(fn)
 
-def example_tasks(conf, app):
+def example_tasks(conf):
     # In the beginning of this operation, which executes in the main thread, we
     # read all files in "source/includes/" and sub-directories that start with
     # "example-*"
@@ -49,18 +50,21 @@ def example_tasks(conf, app):
     if len(example_sources) > 0 and not os.path.isdir(conf.system.content.examples.output_dir):
         safe_create_directory(conf.system.content.examples.output_dir)
 
+    tasks = []
     for fn, exmpf in d.file_iter():
         basename = conf.system.content.examples.get_basename(fn)
         out_fn = os.path.join(conf.system.content.examples.output_dir, basename) + '.rst'
 
-        t = app.add('task')
-        t.target = out_fn
-        t.dependency = fn
-        t.job = write_full_example
+        t = Task(job=write_full_example,
+                 description='generate an example for ' + fn,
+                 target=out_fn,
+                 dependency=fn,)
         t.args = (exmpf.collection, exmpf.examples, out_fn)
-        t.description = 'generate an example for ' + fn
 
-    logger.debug('added all tasks for example generation')
+        tasks.append(task)
+
+    logger.info("added tasks for {0} example generation tasks".format(len(tasks)))
+    return tasks
 
 def example_clean(conf, app):
     register_examples(conf)

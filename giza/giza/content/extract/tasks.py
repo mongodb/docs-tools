@@ -22,6 +22,7 @@ from giza.tools.transformation import append_to_file, prepend_to_file
 from giza.content.extract.inheritance import ExtractDataCache
 from giza.content.extract.views import render_extracts, get_include_statement
 from giza.config.content import new_content_type
+from giza.core.task import Task
 
 def register_extracts(conf):
     conf.system.content.add(name='extracts', definition=new_content_type(name='extract', task_generator=extract_tasks, conf=conf))
@@ -31,7 +32,7 @@ def write_extract_file(extract, fn):
     content.write(fn)
     logger.info('wrote extract file: ' + fn)
 
-def extract_tasks(conf, app):
+def extract_tasks(conf):
     register_extracts(conf)
     extract_sources = conf.system.content.extracts.sources
 
@@ -40,13 +41,14 @@ def extract_tasks(conf, app):
     if len(extract_sources) > 0 and not os.path.isdir(conf.system.content.extracts.output_dir):
         safe_create_directory(conf.system.content.extracts.output_dir)
 
+    tasks = []
     for dep_fn, extract in extracts.content_iter():
-        t = app.add('task')
-        t.target = extract.target
-        t.dependecy = dep_fn
-        t.job = write_extract_file
+        t = Task(job=write_extract_file,
+                 description="generating extract file: " + extract.target,
+                 target=extract.target,
+                 dependency=dep_fn)
         t.args = (extract, extract.target)
-        t.description = "generating extract file: " + extract.target
+        tasks.append(t)
 
         include_statement = get_include_statement(extract.target)
 
@@ -59,9 +61,13 @@ def extract_tasks(conf, app):
                     files = files
 
                 for fn in files:
-                    t = app.add('task')
-                    t.target = fn
-                    t.dependency = [extract.target, dep_fn]
-                    t.job = verb
+                    t = Task(job=verb,
+                             target=fn,
+                             dependency=[extract.target, dep_fn],
+                             description="{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn))
                     t.args = (fn, include_statement)
-                    t.description = "{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn)
+                    tasks.append(t)
+
+    logger.info("added tasks for {0} extract generation tasks".format(len(tasks)))
+
+    return tasks

@@ -22,6 +22,7 @@ from giza.tools.strings import hyph_concat
 from giza.content.options.inheritance import OptionDataCache
 from giza.content.options.views import render_options
 from giza.config.content import new_content_type
+from giza.core.task import Task
 
 def register_options(conf):
     conf.system.content.add(name='options', definition=new_content_type(name='option', task_generator=option_tasks, conf=conf))
@@ -31,7 +32,7 @@ def write_options(option, fn, conf):
     content.write(fn)
     logger.info('wrote options file: ' + fn)
 
-def option_tasks(conf, app):
+def option_tasks(conf):
     register_options(conf)
 
     option_sources = conf.system.content.options.sources
@@ -40,6 +41,7 @@ def option_tasks(conf, app):
     if len(option_sources) > 0 and not os.path.isdir(conf.system.content.options.output_dir):
         safe_create_directory(conf.system.content.options.output_dir)
 
+    tasks = []
     for dep_fn, option in o.content_iter():
         if option.program.startswith('_'):
             continue
@@ -47,12 +49,16 @@ def option_tasks(conf, app):
         out_fn = hyph_concat(option.directive, option.program, option.name) + '.rst'
         output_fn = os.path.join(conf.system.content.options.fn_prefix, out_fn)
 
-        t = app.add('task')
-        t.target = output_fn
-        t.dependency = [dep_fn]
-        t.job = write_options
+        t = Task(job=write_options,
+                 description='generating option file "{0}" from "{1}"'.format(output_fn, dep_fn),
+                 target=output_fn,
+                 dependency=[dep_fn])
         t.args = (option, output_fn, conf)
-        t.description = 'generating option file "{0}" from "{1}"'.format(output_fn, dep_fn)
+
+        tasks.append(t)
+
+    logger.info("added tasks for {0} option generation tasks".format(len(tasks)))
+    return tasks
 
 def option_clean(conf, app):
     register_options(conf)

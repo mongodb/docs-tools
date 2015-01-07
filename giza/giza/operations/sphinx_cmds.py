@@ -182,9 +182,17 @@ def build_content_generation_tasks(conf, app):
     """
     app.randomize = True
 
-    for content, func in conf.system.content.task_generators:
-        func(conf, app)
-        logger.info('added tasks for content generator "{0}" ({1})'.format(content.name, conf.project.edition))
+    with Timer("adding content tasks"):
+        for content, func in conf.system.content.task_generators:
+            t = app.add('task')
+            t.job = func
+            t.args = [conf]
+            t.target = True
+
+        results = app.run()
+
+        for content_generator_tasks in results:
+            app.extend_queue(content_generator_tasks)
 
     robots_txt_tasks(conf, app)
     intersphinx_tasks(conf, app)

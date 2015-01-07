@@ -21,6 +21,7 @@ from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
 from giza.content.steps.inheritance import StepDataCache
 from giza.content.steps.views import render_steps
 from giza.config.content import new_content_type
+from giza.core.task import Task
 
 def register_steps(conf):
     conf.system.content.add(name='steps', definition=new_content_type(name='steps', task_generator=step_tasks, conf=conf))
@@ -30,7 +31,7 @@ def write_steps(steps, fn, conf):
     content.write(fn)
     logger.info('wrote steps to: '  + fn)
 
-def step_tasks(conf, app):
+def step_tasks(conf):
     register_steps(conf)
 
     step_sources = conf.system.content.steps.sources
@@ -39,17 +40,22 @@ def step_tasks(conf, app):
     if len(step_sources) > 0 and not os.path.isdir(conf.system.content.steps.output_dir):
         safe_create_directory(conf.system.content.steps.output_dir)
 
+    tasks = []
     for fn, stepf in s.file_iter():
         basename = conf.system.content.steps.get_basename(fn)
 
         out_fn = os.path.join(conf.system.content.steps.output_dir, basename) + '.rst'
 
-        t = app.add('task')
-        t.target = out_fn
-        t.dependency = fn
-        t.job = write_steps
+        t = Task(job=write_steps,
+                 description='generate a stepfile for ' + fn,
+                 target=out_fn,
+                 dependency=fn)
         t.args = (stepf, out_fn, conf)
-        t.description = 'generate an stepfile for ' + fn
+
+        tasks.append(t)
+
+    logger.info("added tasks for {0} step generation tasks".format(len(tasks)))
+    return tasks
 
 def step_clean(conf, app):
     register_steps(conf)

@@ -164,6 +164,10 @@ class BuildApp(object):
             self.worker_pool.close()
             self.worker_pool = None
 
+    def extend_queue(self, tasks):
+        for task in tasks:
+            self.add(task)
+
     def add(self, task=None):
         """
         Adds a new :class:`~giza.app.BuildApp()` or :class:`~giza.task.Task()`
