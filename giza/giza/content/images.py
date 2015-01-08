@@ -231,6 +231,9 @@ def image_tasks(conf, app):
         t.dependency = [meta_file, os.path.abspath(__file__) ]
         logger.debug('adding task for image rst file: {0}'.format(rst_file))
 
+        if conf.runstate.fast is True:
+            continue
+
         for output in image['output']:
             if output['type'] == 'offset':
                 build_type = 'eps'
