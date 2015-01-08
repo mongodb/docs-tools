@@ -58,23 +58,20 @@ def toc(args):
     if c.runstate.clean_generated is True:
         toc_clean(c)
     else:
-        app = BuildApp(c)
-        toc_tasks(c, app)
-        app.run()
+        with BuildApp.context(c) as app:
+            toc_tasks(c, app)
 
 @argh.arg('--edition', '-e')
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def steps(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
-    if c.runstate.clean_generated is True:
-        step_clean(c, app)
-    else:
-        app.extend_queue(step_tasks(c))
-
-    app.run()
+    with BuildApp.context(c) as app:
+        if c.runstate.clean_generated is True:
+            step_clean(c, app)
+        else:
+            app.extend_queue(step_tasks(c))
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
@@ -84,35 +81,30 @@ def options(args):
     if c.runstate.clean_generated is True:
         option_clean(c)
     else:
-        app = BuildApp(c)
-        app.extend_queue(option_tasks(c))
-        app.run()
+        with BuildApp.context(c) as app:
+            app.extend_queue(option_tasks(c))
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def api(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
-    if c.runstate.clean_generated is True:
-        api_clean(c, app)
-    else:
-        api_tasks(c, app)
-
-    app.run()
+    with BuildApp.context(c) as app:
+        if c.runstate.clean_generated is True:
+            api_clean(c, app)
+        else:
+            api_tasks(c, app)
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def assets(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
-    if c.runstate.clean_generated is True:
-        assets_clean(c, app)
-    else:
-        assets_tasks(c, app)
-
-    app.run()
+    with BuildApp.context(c) as app:
+        if c.runstate.clean_generated is True:
+            assets_clean(c, app)
+        else:
+            assets_tasks(c, app)
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
@@ -120,84 +112,71 @@ def images(args):
     c = fetch_config(args)
     app = BuildApp(c)
 
-    if c.runstate.clean_generated is True:
-        image_clean(c, app)
-    else:
-        image_tasks(c, app)
-
-    app.run()
+    with BuildApp.context(c) as app:
+        if c.runstate.clean_generated is True:
+            image_clean(c, app)
+        else:
+            image_tasks(c, app)
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def intersphinx(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
-    if c.runstate.clean_generated is True:
-        intersphinx_clean(c, app)
-    else:
-        intersphinx_tasks(c, app)
-
-    app.run()
+    with BuildApp.context(c) as app:
+        if c.runstate.clean_generated is True:
+            intersphinx_clean(c, app)
+        else:
+            intersphinx_tasks(c, app)
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def primer(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
-    if c.runstate.clean_generated is True:
-        primer_clean(c, app)
-    else:
-        primer_migration_tasks(c, app)
-
-    app.run()
+    with BuildApp.context(c) as app:
+        if c.runstate.clean_generated is True:
+            primer_clean(c, app)
+        else:
+            primer_migration_tasks(c, app)
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def release(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
-    if c.runstate.clean_generated is True:
-        release_clean(c, app)
-    else:
-        app.extend_queue(release_tasks(c))
-
-    app.run()
+    with BuildApp.context(c) as app:
+        if c.runstate.clean_generated is True:
+            release_clean(c, app)
+        else:
+            app.extend_queue(release_tasks(c))
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def tables(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
-    if c.runstate.clean_generated is True:
-        table_clean(c, app)
-    else:
-        table_tasks(c, app)
-
-    app.run()
+    with BuildApp.context(c) as app:
+        if c.runstate.clean_generated is True:
+            table_clean(c, app)
+        else:
+            table_tasks(c, app)
 
 @argh.expects_obj
 def examples(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
-    app.extend_queue(example_tasks(c))
-
-    app.run()
+    with BuildApp.context(c) as app:
+        app.extend_queue(example_tasks(c))
 
 @argh.arg('--edition', '-e')
 @argh.expects_obj
 def robots(args):
     c = fetch_config(args)
-    app = BuildApp(c)
-    app.pool = 'serial'
 
-    robots_txt_tasks(c, app)
-
-    app.run()
+    with BuildApp.context(c) as app:
+        app.pool = 'serial'
+        robots_txt_tasks(c, app)
 
 @argh.arg('--edition', '-e')
 @argh.arg('--print', '-p', default=False, action='store_true', dest='dry_run')
@@ -208,25 +187,19 @@ def redirects(args):
     if args.dry_run is True:
         print(''.join(make_redirect(c)))
     else:
-        app = BuildApp(c)
-
-        redirect_tasks(c, app)
-        app.run()
+        with BuildApp.context(c) as app:
+            redirect_tasks(c, app)
 
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')
 @argh.expects_obj
 def source(args):
     conf = fetch_config(args)
-    app = BuildApp(conf)
 
     sconf = render_sconf(args.edition, 'html', args.language, conf)
+    with BuildApp.context(conf) as app:
+        with app.context(conf) as prep_app:
+            source_tasks(conf, sconf, prep_app)
 
-    prep_app = app.add('app')
-    source_tasks(conf, sconf, prep_app)
-    prep_app.run()
-
-    build_content_generation_tasks(conf, prep_app.add('app'))
-    refresh_dependency_tasks(conf, prep_app.add('app'))
-
-    app.run()
+        build_content_generation_tasks(conf, app.add('app'))
+        refresh_dependency_tasks(conf, app.add('app'))

@@ -234,5 +234,3 @@ def run_make_operations(targets, conf):
             task.args = (conf.runstate, conf)
             task.target = False
             task.dependency = False
-
-        app.run()

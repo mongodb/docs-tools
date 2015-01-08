@@ -289,7 +289,10 @@ class BuildApp(object):
     @classmethod
     @contextlib.contextmanager
     def context(cls, conf):
-        app = cls(conf)
+        try:
+            app = cls.add('app')
+        except:
+            app = cls(conf)
 
         yield app
 
