@@ -313,9 +313,12 @@ class DataContentBase(RecursiveConfigurationBase):
                 continue
             try:
                 self.add(doc)
+            except RuntimeError:
+                pass
             except Exception as e:
                 logger.error('could not inherit, because: ' + str(e))
                 logger.info(doc)
+                raise e
 
     def add(self, doc):
         if 'ref' in doc:

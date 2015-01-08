@@ -65,19 +65,22 @@ class ExtractData(HeadingMixin, InheritableContentBase):
             return False
 
     def _set_file(self, value, kind):
-        if value.startswith(os.path.sep):
-            value = value[1:]
+        if not isinstance(value, list):
+            value = [value]
 
-        paths = [ os.path.abspath(value),
-                  os.path.join(self.conf.paths.projectroot, value),
-                  os.path.join(self.conf.paths.projectroot,
-                               self.conf.paths.branch_source, value),
-                  os.path.join(self.conf.paths.projectroot,
-                               self.conf.paths.branch_includes, value) ]
+        paths = []
+        for fn in value:
+            if fn.startswith(os.path.sep):
+                fn = fn[1:]
+            for path in [ os.path.abspath(fn),
+                          os.path.join(self.conf.paths.projectroot, fn),
+                          os.path.join(self.conf.paths.projectroot,
+                                       self.conf.paths.branch_source, fn),
+                          os.path.join(self.conf.paths.projectroot,
+                                       self.conf.paths.branch_includes, fn) ]:
+                if os.path.isfile(path):
+                    paths.append(path)
 
-        for path in paths:
-            if os.path.isfile(path):
-                self.state[kind] = path
-                return
-
-        logger.error('cannot {0} to non existing file "{1}", skipping.'.format(kind, value))
+        self.state[kind] = paths
+        if len(value) > 0 and len(paths) < 0:
+            logger.error('cannot {0} to non existing file "{1}", skipping.'.format(kind, value))

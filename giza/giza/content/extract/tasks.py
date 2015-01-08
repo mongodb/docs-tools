@@ -57,7 +57,7 @@ def extract_tasks(conf):
                 if not isinstance(noun, list):
                     files = [noun]
                 else:
-                    files = files
+                    files = noun
 
                 for fn in files:
                     t = Task(job=verb,
