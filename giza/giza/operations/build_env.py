@@ -24,7 +24,7 @@ import argh
 from sphinx.application import Sphinx, ENV_PICKLE_FILENAME
 from sphinx.builders.html import get_stable_hash
 
-from giza.config.sphinx_config import resolve_builder_path
+from giza.config.sphinx_config import avalible_sphinx_builders, resolve_builder_path
 from giza.operations.packaging import fetch_package
 from giza.operations.sphinx_cmds import get_sphinx_build_configuration
 from giza.tools.files import cd, safe_create_directory, FileNotFoundError
@@ -150,7 +150,7 @@ def fix_build_env(builder, conf):
 
 #################### Task Creators ####################
 
-def fix_build_env_tasks(builders, app):
+def fix_build_env_tasks(builders, conf, app):
     for builder in builders:
         t = app.add('task')
         t.job = fix_build_env
@@ -180,6 +180,6 @@ def extract(args):
     extract_package_at_root(path, conf)
 
     builders = get_existing_builders(conf)
-    fix_builder_env_tasks(builders, app)
+    fix_build_env_tasks(builders, conf, app)
 
     app.run()

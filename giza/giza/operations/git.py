@@ -26,7 +26,6 @@ from giza.core.app import BuildApp
 from giza.core.git import GitRepo
 from giza.config.helper import fetch_config
 from giza.tools.command import command
-from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.operations.build_env import fix_build_env_tasks, get_existing_builders
 
 logger = logging.getLogger('giza.operations.git')
@@ -176,6 +175,6 @@ def create_branch(args):
     app = BuildApp(conf)
     app.pool = 'process'
 
-    fix_builder_env_tasks(builders, app)
+    fix_build_env_tasks(builders, conf, app)
 
     app.run()
