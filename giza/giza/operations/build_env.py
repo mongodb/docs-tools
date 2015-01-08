@@ -173,13 +173,10 @@ def package(args):
 @argh.expects_obj
 def extract(args):
     conf = fetch_config(args)
-    app = BuildApp(conf)
-    app.pool = 'process'
 
-    path = fetch_package(args._path, conf)
-    extract_package_at_root(path, conf)
+    with BuildApp.context(conf) as app:
+        path = fetch_package(args._path, conf)
+        extract_package_at_root(path, conf)
 
-    builders = get_existing_builders(conf)
-    fix_build_env_tasks(builders, conf, app)
-
-    app.run()
+        builders = get_existing_builders(conf)
+        fix_build_env_tasks(builders, conf, app)
