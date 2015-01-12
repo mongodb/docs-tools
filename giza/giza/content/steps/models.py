@@ -14,6 +14,7 @@
 
 import logging
 import sys
+import jinja2
 
 logger = logging.getLogger('giza.content.steps.models')
 
@@ -162,3 +163,23 @@ class ActionContent(HeadingMixin, InheritableContentBase):
             m = '{0} is not a supported language'.format(value)
             logger.error(m)
             TypeError(m)
+
+
+    def render(self):
+        if self.replacement and 'code' in self:
+            super(ActionContent, self).render()
+            code_block = '\n'.join(self.code)
+
+            attempts = range(10)
+            for attempt in attempts:
+                if "{{" in code_block:
+                    template = jinja2.Template(code_block)
+                    code_block = template.render(**self.replacement)
+                    if "{{" not in code_block:
+                        self.code = code_block
+                        return
+                elif attempt == 0:
+                    return
+                else:
+                    self.code = code_block
+                    return

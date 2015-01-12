@@ -78,6 +78,8 @@ def render_step_content(step, indent, r):
 
     if 'action' in step:
         for action in step.action:
+            action.replacement = step.replacement
+            action.render()
             render_action(action, indent, step.level + 1, r)
 
     if 'content' in step:

@@ -28,7 +28,7 @@ import sys
 import copy
 logger = logging.getLogger('giza.core.inheritance')
 
-from jinja2 import Template
+import jinja2
 
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 from giza.tools.serialization import ingest_yaml_list
@@ -184,14 +184,12 @@ class InheritableContentBase(RecursiveConfigurationBase):
                         if should_resplit is None:
                             should_resplit = True
                             self.state[key] = '\n'.join(self.state[key])
-
                     for i in attempts:
                         if '{{' not in self.state[key]:
                             break
 
-                        template = Template(self.state[key])
+                        template = jinja2.Template(self.state[key])
                         self.state[key] = template.render(**self.replacement)
-
                         if '{{' not in self.state[key]:
                             break
 
@@ -456,7 +454,6 @@ class DataCache(RecursiveConfigurationBase):
                     continue
                 else:
                     yield fn, data
-
 
 class TitleData(ConfigurationBase):
     _option_registry = ['text']
