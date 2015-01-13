@@ -59,8 +59,7 @@ def ingest_yaml(filename):
             logger.error("error decoding yaml in: " + filename)
             raise InvalidFile(filename)
 
-        for i in data:
-            o.append(i)
+        o.extend(data)
 
     if len(o) == 1:
         o = o[0]
@@ -92,9 +91,8 @@ def ingest_json(filename):
         try:
             o = json.load(f)
         except:
-            o = []
-            for doc in f.readlines():
-                o.append(json.loads(doc))
+            o = [ json.loads(doc)
+                  for doc in f.readlines() ]
 
     if isinstance(o, list) and len(o) == 1:
         o = o[0]
