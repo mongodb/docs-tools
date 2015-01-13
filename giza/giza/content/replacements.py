@@ -14,13 +14,21 @@
 
 from rstcloth.rstcloth import RstCloth
 
-def get_replacements(conf): 
-    if "replacement" in conf.system.data.files:
-        mapping = conf.system.data.files.replacement
+def get_replacements(conf):
+    if "replacement" in conf.system.files.data:
+        mapping = conf.system.files.data.replacement
     else:
         return []
-        
+
     r = RstCloth()
+
+    try:
+        if conf.version.release != "Upcoming":
+            mapping['release-string'] = "-- {0} Release".format(conf.version.release)
+        else:
+            mapping['release-string'] = "\ "
+    except:
+        pass
 
     for k, v in mapping.items():
         r.replacement(k, v)

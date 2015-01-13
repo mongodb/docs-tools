@@ -16,27 +16,40 @@ from giza.config.base import RecursiveConfigurationBase
 from giza.tools.serialization import dict_from_list
 
 class ReplacementData(RecursiveConfigurationBase):
-    def ingest(self, input_obj): 
-        input_obj = self._prep_load_data(input_obj)
-
-        if isinstance(input_obj, dict):
-            if 'edition' in input_obj and input_obj['edition'] == self.conf.project.edition:
-                super(ReplacementData, self).intest(input_obj)
-                return
+    def ingest(self, input_obj):
+        if isinstance(input_obj, list):
+            if len(input_obj) == 1 and isinstance(input_obj[0], dict) :
+                input_obj = input_obj[0]
             else:
-                raise TypeError("replacement data is malformed given edition configuration.")
-        elif not isinstance(input_obj, list):
-            raise TypeError("replacement data must be a list or stream of documents.")
-        else:
-            mapping = dict_from_list('edition', input_obj)
+                try:
+                    input_obj = dict_from_list('edition', input_obj)
+                except KeyError:
+                    logger.error("replacement specification is malformed. documents need editions")
+                    return
 
-            if self.conf.project.edition in mapping:
-                if isinstance(mapping[self.conf.project.edition], dict):
-                    self.state = mapping[self.conf.project.edition]
-                else: 
-                    TypeError("the replacements for the {0} edition are malformed".format(self.conf.project.edition))
-            else: 
-                raise TypeError("no replacements configured for edition: " + self.conf.project.edition)
+        if self.conf.project.edition == self.conf.project.name:
+            if self.conf.project.name in input_obj:
+                self._update_tokens(input_obj[self.conf.project.name])
+            else:
+                if self._validate_tokens(input_obj) is True:
+                    self._update_tokens(input_obj)
+
+        if self.conf.project.edition in input_obj:
+            self._update_tokens(input_obj[self.conf.project.edition])
+
+    def _validate_tokens(self, tokens):
+        for value in input_obj.items():
+            if isinstance(value, dict):
+                logger.error("replacement tokens cannot specify mappings")
+                return False
+
+        return True
+
+    def _update_tokens(self, new_keys):
+        if 'tokens' in new_keys:
+            self.state.update(new_keys['tokens'])
+        else:
+            self.state.update(new_keys)
 
     def items(self):
         return self.state.items()
@@ -46,3 +59,6 @@ class ReplacementData(RecursiveConfigurationBase):
 
     def values(self):
         return self.state.values()
+
+    def update(self, value):
+        self._update_tokens(value)

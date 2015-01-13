@@ -55,7 +55,11 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     def _get_default_replacement(self):
         if 'replacement' in self.conf.system.files.data:
-            base = copy.deepcopy(self.conf.system.files.data.replacement)
+            base = self.conf.system.files.data.replacement
+            if isinstance(base, dict):
+                base = copy.deepcopy(base)
+            else:
+                base = copy.deepcopy(base.dict())
         else:
             base = {}
 
@@ -90,7 +94,6 @@ class InheritableContentBase(RecursiveConfigurationBase):
             self.state['replacement'] = base
         else:
             raise TypeError
-
 
     @property
     def title(self):

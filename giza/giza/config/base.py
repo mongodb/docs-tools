@@ -69,7 +69,7 @@ class ConfigurationBase(object):
                 return self.state[key]
             else:
                 m = 'key "{0}" in configuration object ({1}) does not exist'.format(key, type(self))
-                if not key.startswith('__'):
+                if not key.startswith('_'):
                     logger.debug(m)
                 raise AttributeError(m, e.message)
 

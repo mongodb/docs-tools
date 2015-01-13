@@ -338,7 +338,6 @@ class SystemConfigData(RecursiveConfigurationBase):
             # recur_mapping for config objects that subclass RecursiveConfigurationBase
             recur_mapping = {
                 'translate': TranslateConfig,
-                'replacement': ReplacementData,
             }
 
             if basename in mapping:
@@ -350,6 +349,9 @@ class SystemConfigData(RecursiveConfigurationBase):
                 l.conf = self.conf
                 l.extend(data)
                 data = l
+            elif basename == 'replacement':
+                data = ReplacementData(data, self.conf)
+                return data
 
             if len(data) == 1 and basename not in self._always_list_configs:
                 return data[0]
