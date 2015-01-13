@@ -14,6 +14,11 @@
 
 import json
 import yaml
+import logging
+
+logger = logging.getLogger("giza.tools.serialization")
+
+from giza.tools.files import InvalidFile
 
 def ingest_yaml_list(*filenames):
     o = []
@@ -48,7 +53,11 @@ def ingest_yaml_doc(filename, force=False):
 def ingest_yaml(filename):
     o = []
     with open(filename, 'r') as f:
-        data = yaml.load_all(f)
+        try:
+            data = yaml.load_all(f)
+        except:
+            logger.error("error decoding yaml in: " + filename)
+            raise InvalidFile(filename)
 
         for i in data:
             o.append(i)
