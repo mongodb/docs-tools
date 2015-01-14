@@ -13,5 +13,6 @@ docsprod:
   args:
     - '--chmod=Dg+s,ug+w,Fo-w'
     - '--rsh="ssh -o ProxyCommand=''ssh -q ssh1.vpc3.10gen.cc nc %h %p''"'
+    - '--rsync-path="sudo -u docsmmms-prod rsync"'
   input: code
 ...
