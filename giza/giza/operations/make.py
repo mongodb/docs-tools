@@ -32,6 +32,7 @@ to this mode of giza operation, with the following target:
 import logging
 import copy
 import argh
+import itertools
 
 from giza.core.app import BuildApp
 from giza.config.helper import fetch_config
@@ -166,7 +167,8 @@ def run_make_operations(targets, conf):
                     "editions": set(),
                     "builders": set() }
     push_opts = { "worker": deploy_tasks,
-                  "targets": set() }
+                  "targets": set(),
+                  "type": None }
     packaging_opts = { }
 
     sphinx_builders = avalible_sphinx_builders()
@@ -180,6 +182,7 @@ def run_make_operations(targets, conf):
             add_sphinx_build_options(sphinx_opts, action, options, conf)
         elif action in ('stage', 'push'):
             tasks.append(push_opts)
+            push_opts['type'] = action
 
             if 'deploy' not in options:
                 sphinx_opts['builders'].add('publish')
@@ -218,13 +221,22 @@ def run_make_operations(targets, conf):
 
             derive_command('sphinx', conf)
 
-            sphinx_opts['worker'](conf, conf.runstate, app)
+            # sphinx_opts['worker'](conf, conf.runstate, app)
 
         if push_opts in tasks:
+            if len(push_opts['targets']) == 0:
+                for lang, edition in itertools.product(conf.runstate.languages_to_build, conf.runstate.editions_to_build):
+                    push_target_name = [ push_opts['type'] ]
+                    for opt in (edition, lang):
+                        if opt is not None:
+                            push_target_name.append(opt)
+                    push_target_name = '-'.join(push_target_name)
+                    push_opts['targets'].add(push_target_name)
+
             conf.runstate.push_targets = list(push_opts['targets'])
             push_opts['worker'](conf, app)
-
             derive_command('deploy', conf)
+
 
         if packaging_opts in tasks:
             derive_command('env', conf)

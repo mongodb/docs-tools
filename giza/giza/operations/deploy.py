@@ -106,7 +106,6 @@ def deploy_tasks(c, app):
             if c.runstate.dry_run is True:
                 logger.info('dry run: {0}'.format(' '.join(cmd)))
 
-
     logger.info('completed deploy for: {0}'.format(' '.join(c.runstate.push_targets)))
 
 @argh.named('code')
