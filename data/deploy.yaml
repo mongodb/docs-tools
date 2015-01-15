@@ -2,7 +2,10 @@ production:
   hosts:
     - 'www-c1.10gen.cc'
     - 'www-c2.10gen.cc'
-  args: ['--rsh="ssh"', '--rsync-path="sudo -u www rsync"']
+  args:
+    - '--rsh="ssh"',
+    - '--rsync-path="sudo -u www rsync"'
+    - '--omit-dir-times'
 staging:
   hosts:
     - 'public@test.docs.10gen.cc'
@@ -13,6 +16,7 @@ docsprod:
   args:
     - '--chmod=Dg+s,ug+w,Fo-w'
     - '--rsh="ssh -o ProxyCommand=''ssh -q ssh1.vpc3.10gen.cc nc %h %p''"'
+    - '--omit-dir-times'
     # - '--rsync-path="sudo -u docsmms-prod rsync"'
   input: code
 ...
