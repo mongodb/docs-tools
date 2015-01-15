@@ -3,7 +3,7 @@ production:
     - 'www-c1.10gen.cc'
     - 'www-c2.10gen.cc'
   args:
-    - '--rsh="ssh"',
+    - '--rsh="ssh"'
     - '--rsync-path="sudo -u www rsync"'
     - '--omit-dir-times'
 staging:
