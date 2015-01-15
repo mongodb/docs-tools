@@ -221,7 +221,7 @@ def run_make_operations(targets, conf):
 
             derive_command('sphinx', conf)
 
-            # sphinx_opts['worker'](conf, conf.runstate, app)
+            sphinx_opts['worker'](conf, conf.runstate, app)
 
         if push_opts in tasks:
             if len(push_opts['targets']) == 0:
