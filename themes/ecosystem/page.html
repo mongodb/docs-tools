@@ -11,3 +11,12 @@
    <a href="http://www.mongodb.org/get-involved">Community</a>
    <a href="http://blog.mongodb.org">Blog</a>
 {% endblock %}
+
+{%- block endjs -%}
+	<script>
+		$( ".compatibility td:contains('Incompatible')").addClass('driver-incompatible');
+		$( ".compatibility td:contains('Untested')").addClass('driver-untested');
+		$( ".compatibility td:contains('Compatible')").addClass('driver-compatible')
+		$( ".compatibility td:contains('Unknown')").addClass('driver-unknown')
+	</script>
+{%- endblock -%}

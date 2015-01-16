@@ -340,6 +340,79 @@ table.citation td {
     border-bottom: none;
 }
 
+/* awesometable tables are for driver compatibility matrices */
+
+table.compatibility{
+    border-collapse: collapse;
+    color: rgb(73,71,71);
+    display: table-cell;
+    font-family: 'PT Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+}
+
+table.compatibility th{
+    text-align: center;
+    font-weight: normal;
+}
+
+table.compatibility th,
+table.compatibility td{
+    border: rgb(235,235,237);
+    border-style: solid;
+    border-width: 1px;
+}
+
+table.compatibility tr td:first-child,
+table.compatibility tr th:first-child{
+    border-left-style: none;
+    border-left-width: 0px;
+    text-align: left;
+}
+
+.driver-incompatible{
+    background-color: #ed271c;
+    color: #ed271c;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.driver-untested{
+    background-color: #ffb618;
+    color: #ffb618;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.driver-compatible{
+    background-color: #6ba442;
+    color: #6ba442;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.driver-unknown{
+    background-color: #E86B22;
+    color: #E86B22;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 /* -- other body styles ----------------------------------------------------- */
 
 ol.arabic {
