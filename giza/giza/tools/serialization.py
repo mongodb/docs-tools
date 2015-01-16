@@ -75,6 +75,8 @@ def write_yaml(input, filename):
         else:
             raise Exception('cannot dump $s objects to yaml.' % str(type(input)))
 
+        f.write('...\n')
+
 def write_json(input, filename):
     with open(filename, 'w') as f:
         if isinstance(input, (dict, list)):
