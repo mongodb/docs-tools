@@ -147,7 +147,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
     def resolve(self, data):
         if self._is_resolveable(data):
             try:
-                base = data.fetch(self.source.file, self.source.ref)
+                base = copy.deepcopy(data.fetch(self.source.file, self.source.ref))
                 base.resolve(data)
 
                 needs_replacement = self.replacement != base.replacement
@@ -276,6 +276,7 @@ class DataContentBase(RecursiveConfigurationBase):
         self._state = { 'content': { } }
         self._content = self._state['content']
         self._conf = None
+        self._ordering = []
         self.conf = conf
         self.data = data
         self.ingest(src)
@@ -285,6 +286,10 @@ class DataContentBase(RecursiveConfigurationBase):
             return True
         else:
             return False
+
+    @property
+    def ordering(self):
+        return self._ordering
 
     @property
     def content(self):
@@ -313,7 +318,8 @@ class DataContentBase(RecursiveConfigurationBase):
             if edition_check(doc, self.conf) is False:
                 continue
             try:
-                self.add(doc)
+                content = self.add(doc)
+                self._ordering.append(content.ref)
             except RuntimeError:
                 pass
             except Exception as e:
@@ -365,7 +371,7 @@ class DataContentBase(RecursiveConfigurationBase):
             if not content.is_resolved():
                 content.resolve(self)
 
-            return copy.deepcopy(content)
+            return content
         else:
             m = 'content with ref "{0}" not found'.format(ref)
             logger.error(m)

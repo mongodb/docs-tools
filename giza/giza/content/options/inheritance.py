@@ -34,6 +34,7 @@ class OptionFile(DataContentBase):
 
         self.content[ref] = content
 
+        return content
 
 class OptionDataCache(DataCache):
     content_class = OptionFile

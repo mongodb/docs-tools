@@ -57,5 +57,7 @@ class StepFile(DataContentBase):
         if 'number' not in obj:
             obj.number = self._step_counter
 
+        return obj
+
 class StepDataCache(DataCache):
     content_class = StepFile
