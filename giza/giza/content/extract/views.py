@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-import os.path
 
 from rstcloth.rstcloth import RstCloth
 from giza.content.steps.views import render_action

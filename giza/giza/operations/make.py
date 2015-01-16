@@ -237,7 +237,6 @@ def run_make_operations(targets, conf):
             push_opts['worker'](conf, app)
             derive_command('deploy', conf)
 
-
         if packaging_opts in tasks:
             derive_command('env', conf)
 

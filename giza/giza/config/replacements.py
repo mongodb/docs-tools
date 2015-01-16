@@ -38,7 +38,7 @@ class ReplacementData(RecursiveConfigurationBase):
             self._update_tokens(input_obj[self.conf.project.edition])
 
     def _validate_tokens(self, tokens):
-        for value in input_obj.items():
+        for value in tokens.items():
             if isinstance(value, dict):
                 logger.error("replacement tokens cannot specify mappings")
                 return False
