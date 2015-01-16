@@ -13,19 +13,58 @@
 # limitations under the License.
 
 import os.path
+import itertools
 from giza.config.base import ConfigurationBase
 from giza.tools.files import expand_tree
 
 ###### Data Model ######
 
 class ContentType(ConfigurationBase):
-    _option_registry = ['name', 'dir']
+    _option_registry = ['dir']
 
     @property
     def sources(self):
-        return [ fn for fn in
-                 expand_tree(self.dir, 'yaml')
-                 if fn.startswith(self.fn_prefix) ]
+        files = expand_tree(self.dir, 'yaml')
+
+        sources = set()
+        for prefix, fn in itertools.product(self.prefixes, files):
+            if fn.startswith(self.output_dir[:-1]):
+                sources.add(fn)
+
+        return list(sources)
+
+    @property
+    def prefixes(self):
+        if 'prefixes' not in self.state:
+            self.prefixes = []
+
+        return self.state['prefixes']
+
+    @prefixes.setter
+    def prefixes(self, value):
+        if 'prefixes' not in self.state:
+            self.state['prefixes'] = []
+
+        if not value or value is None:
+            return
+
+        if not isinstance(value, list):
+            value = [value]
+
+        for prefix in value:
+            if prefix in self.state['prefixes']:
+                continue
+            else:
+                self.state['prefixes'].append(prefix)
+
+    @property
+    def name(self):
+        return self.state['name']
+
+    @name.setter
+    def name(self, value):
+        self.state['name'] = value
+        self.prefixes = value
 
     @property
     def fn_prefix(self):
@@ -65,7 +104,7 @@ class ContentType(ConfigurationBase):
 
 ###### Factories ######
 
-def new_content_type(name, conf, task_generator=None, source_dir=None, output_dir=None):
+def new_content_type(name, conf, task_generator=None, source_dir=None, output_dir=None, prefixes=None):
     if source_dir is None:
         source_dir = os.path.join(conf.paths.projectroot,
                                   conf.paths.branch_includes)
@@ -77,6 +116,9 @@ def new_content_type(name, conf, task_generator=None, source_dir=None, output_di
     c.name = name
     c.dir = source_dir
     c.output_dir = output_dir
+
+    if prefixes is not None:
+        c.prefixes = prefixes
 
     if task_generator is not None:
         c.task_generator = task_generator
