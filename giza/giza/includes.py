@@ -102,28 +102,23 @@ def generated_includes(conf):
     for fn in expand_tree(os.path.join(conf.paths.includes), input_extension='yaml'):
         base = os.path.basename(fn)
 
+        # example/toc-specs files, for the purpose of this have the same
+        # structure as steps, so we can just use that
         if base.startswith('toc-spec'):
-            toc_spec_files.append(fn)
+            step_files.append(fn)
         elif base.startswith('ref-spec'):
-            toc_spec_files.append(fn)
+            step_files.append(fn)
         elif base.startswith('steps'):
             step_files.append(fn)
         elif base.startswith('example'):
-            # example files, for the purpose of this have the same structure as
-            # steps, so we can just use that:
+            step_files.append(fn)
+        elif base.startswith('extract'):
+            step_files.append(fn)
+        elif base.startswith('release'):
             step_files.append(fn)
 
     maskl = len(conf.paths.source)
     path_prefix = conf.paths.includes[len(conf.paths.source):]
-    for spec_file in toc_spec_files:
-        if os.path.exists(spec_file):
-            data = ingest_yaml_doc(spec_file)
-        else:
-            continue
-
-        deps = [ os.path.join(path_prefix, i ) for i in data['sources']]
-
-        mapping[spec_file[maskl:]] = deps
 
     for step_def in step_files:
         data = ingest_yaml_list(step_def)

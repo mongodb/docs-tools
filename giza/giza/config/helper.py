@@ -31,6 +31,7 @@ from giza.content.extract.tasks import register_extracts
 from giza.content.options.tasks import register_options
 from giza.content.examples.tasks import register_examples
 from giza.content.steps.tasks import register_steps
+from giza.content.contents.tasks import register_toc
 
 def new_credentials_config(conf_path=None):
     if conf_path is None:
@@ -61,6 +62,7 @@ def register_content_generators(conf):
     register_releases(conf)
     register_examples(conf)
     register_extracts(conf)
+    register_toc(conf)
 
 def new_skeleton_config(conf=None):
     if conf is None:
