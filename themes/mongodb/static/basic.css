@@ -348,6 +348,12 @@ table.compatibility{
     display: table-cell;
     font-family: 'PT Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 14px;
+    width: 100%;
+    table-layout: fixed;
+}
+
+table.docutils.compatibility{
+    line-height: 14px;
 }
 
 table.compatibility th{
@@ -362,11 +368,23 @@ table.compatibility td{
     border-width: 1px;
 }
 
-table.compatibility tr td:first-child,
-table.compatibility tr th:first-child{
+table.compatibility tr td:nth-child(2),
+table.compatibility tr th:nth-child(2){
     border-left-style: none;
     border-left-width: 0px;
     text-align: left;
+    white-space: nowrap;
+}
+
+table.compatibility tr:first-child th,
+table.compatibility tr td:first-child{
+    border-style: none;
+    border-width: 0px;
+    font-weight: bold;
+}
+
+table.compatibility tr td:first-child{
+    white-space: nowrap;
 }
 
 .driver-incompatible{
