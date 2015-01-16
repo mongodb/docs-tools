@@ -99,23 +99,19 @@ def generated_includes(conf):
     step_files = []
     mapping = {}
 
+    content_prefixes = []
+    for _, prefixes in conf.system.content.content_prefixes:
+        content_prefixes.extend(prefixes)
+
     for fn in expand_tree(os.path.join(conf.paths.includes), input_extension='yaml'):
         base = os.path.basename(fn)
 
         # example/toc-specs files, for the purpose of this have the same
         # structure as steps, so we can just use that
-        if base.startswith('toc-spec'):
-            step_files.append(fn)
-        elif base.startswith('ref-spec'):
-            step_files.append(fn)
-        elif base.startswith('steps'):
-            step_files.append(fn)
-        elif base.startswith('example'):
-            step_files.append(fn)
-        elif base.startswith('extract'):
-            step_files.append(fn)
-        elif base.startswith('release'):
-            step_files.append(fn)
+        for prefix in content_prefixes:
+            if base.startswith(prefix):
+                step_files.append(fn)
+                break
 
     maskl = len(conf.paths.source)
     path_prefix = conf.paths.includes[len(conf.paths.source):]

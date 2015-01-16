@@ -147,3 +147,8 @@ class ContentRegistry(ConfigurationBase):
     def task_generators(self):
         for content in self.state.values():
             yield content, content.task_generator
+
+    @property
+    def content_prefixes(self):
+        for name, content in self.state.items():
+            yield name, content.prefixes

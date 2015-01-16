@@ -201,4 +201,3 @@ def build_content_generation_tasks(conf, app):
     api_tasks(conf, app)
     redirect_tasks(conf, app)
     image_tasks(conf, app)
-    # toc_tasks(conf, app)
