@@ -70,7 +70,10 @@ def new_skeleton_config(conf=None):
         args = RuntimeStateConfig()
         conf.runstate = args
 
-        register_content_generators(c)
+        try:
+            register_content_generators(conf)
+        except KeyError:
+            logger.warning("cannot register content generators")
 
         return conf
     else:
