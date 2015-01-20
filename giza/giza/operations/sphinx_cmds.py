@@ -110,10 +110,8 @@ def sphinx_publication(c, args, app):
             # this is where we add tasks to transfer the source into the
             # ``build/<branch>/source`` directory.
             source_tasks(build_config, sconf, prep_app)
-
-            # have to migrate source early (here) for the rest of the tasks to
-            # register correctly.
-            prep_app.run()
+            # this function runs the entire prep_app compiled until now, so that
+            # the content generation tasks are created properly
 
             # these operation groups each execute in isolation of each-other and should.
             build_content_generation_tasks(build_config, prep_app.add('app'))

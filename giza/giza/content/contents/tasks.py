@@ -66,7 +66,7 @@ def toc_tasks(conf):
 
         toc_items = toc_data.ordered_items()
 
-        if toc_data.is_spec is False:
+        if toc_data.is_spec() is False:
             out_fn = os.path.join(conf.system.content.toc.output_dir, fn_basename)
             t = Task(job=write_toc_tree_output,
                      target=out_fn,
