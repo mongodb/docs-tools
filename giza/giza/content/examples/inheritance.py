@@ -67,13 +67,15 @@ class ExampleFile(DataContentBase):
         else:
             raise TypeError
 
-
     @property
     def examples(self):
-        return [ example
-                 for example in self.content.values()
-                 if 'collection' not in example
-        ]
+        l = []
+        for ref in self.ordering:
+            example = self.fetch(ref)
+            if 'collection' not in example:
+                l.append(example)
+
+        return l
 
     def add(self, doc):
         if 'collection' in doc:
