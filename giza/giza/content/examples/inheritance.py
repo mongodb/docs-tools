@@ -92,6 +92,8 @@ class ExampleFile(DataContentBase):
 
             if not self.collection.is_resolved():
                 self.collection.resolve(self.data)
+
+            return self.collection
         elif 'operation' in doc:
             op = ExampleCase(doc, self.conf)
             if op.ref in self.content:
@@ -103,6 +105,8 @@ class ExampleFile(DataContentBase):
                 if not op.is_resolved():
                     op.resolve(self.data)
                 logger.debug('added operation {0}'.format(op.name))
+
+            return op
 
     def fetch(self, ref):
         if ref == self.collection.name:

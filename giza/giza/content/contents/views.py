@@ -57,7 +57,12 @@ def render_dfn_list(toc_items):
             else:
                 dfn_heading = r.role('doc', entry.file)
 
-            r.definition(dfn_heading, entry.description, indent=idnt)
+            if 'description' in entry:
+                description = entry.description
+            else:
+                description = ''
+
+            r.definition(dfn_heading, description, indent=idnt)
             r.newline()
 
     return r

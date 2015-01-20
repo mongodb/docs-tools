@@ -60,7 +60,7 @@ def example_tasks(conf):
                  dependency=fn,)
         t.args = (exmpf.collection, exmpf.examples, out_fn)
 
-        tasks.append(task)
+        tasks.append(t)
 
     logger.info("added tasks for {0} example generation tasks".format(len(tasks)))
     return tasks
