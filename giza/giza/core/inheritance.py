@@ -122,6 +122,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
         self.state['source'] = InheritanceReference(value, self.conf)
 
     inherit = source
+
     def is_resolved(self):
         if self.source is None:
             return True
@@ -163,6 +164,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
                     self.replacement = replacement
 
                 self.source.resolved = True
+
                 return True
             except InheritableContentError as e:
                 logger.error(e)

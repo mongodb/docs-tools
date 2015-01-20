@@ -23,7 +23,7 @@ import logging
 logger = logging.getLogger('giza.content.examples.models')
 
 from giza.config.base import ConfigurationBase
-from giza.core.inheritance import InheritableContentBase
+from giza.core.inheritance import InheritableContentBase, InheritableContentError
 from giza.content.helper import get_all_languages
 
 if sys.version_info >= (3, 0):
@@ -100,6 +100,21 @@ class ExampleOptions(ConfigurationBase):
         else:
             raise TypeError
 
+    @property
+    def base_file(self):
+        if 'is_base_file' not in self.state:
+            return False
+        else:
+            return self.state['is_base_file']
+
+    @base_file.setter
+    def base_file(self, value):
+        if isinstance(value, bool):
+            self.state['is_base_file'] = value
+        else:
+            raise TypeError
+
+
 class ExampleOperationBlock(ConfigurationBase):
     _option_registry = ['pre', 'post', 'final']
 
@@ -130,7 +145,12 @@ class ExampleOperationBlock(ConfigurationBase):
 class ExampleCase(InheritableContentBase):
     @property
     def operation(self):
-        return self.state['operation']
+        if 'operation' in self.state:
+            return self.state['operation']
+        elif self.ref.startswith("_"):
+            return ""
+        else:
+            raise InheritableContentError('no operation specified in: ' + self.ref)
 
     @operation.setter
     def operation(self, value):

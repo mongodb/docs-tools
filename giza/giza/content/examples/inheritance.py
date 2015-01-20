@@ -48,15 +48,6 @@ class ExampleFile(DataContentBase):
     collection and examples separately.
     """
 
-    def ingest(self, src):
-        super(ExampleFile, self).ingest(src)
-
-        #if self.collection is not self.collection:
-        #    logger.error(self.state)
-        #    m = 'all examples must have a collection'
-        #    logger.error(m)
-        #    raise InheritableContentError(m)
-
     @property
     def collection(self):
         if 'collection' not in self.state:
@@ -76,6 +67,7 @@ class ExampleFile(DataContentBase):
         else:
             raise TypeError
 
+
     @property
     def examples(self):
         return [ example
@@ -84,9 +76,6 @@ class ExampleFile(DataContentBase):
         ]
 
     def add(self, doc):
-        if edition_check(doc, self.conf) is False:
-            return
-
         if 'collection' in doc:
             self.collection = ExampleData(doc, self.conf)
 
@@ -94,7 +83,7 @@ class ExampleFile(DataContentBase):
                 self.collection.resolve(self.data)
 
             return self.collection
-        elif 'operation' in doc:
+        else:
             op = ExampleCase(doc, self.conf)
             if op.ref in self.content:
                 m = 'example named {0} already exists'.format(op.ref)

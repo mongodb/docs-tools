@@ -51,6 +51,8 @@ def example_tasks(conf):
 
     tasks = []
     for fn, exmpf in d.file_iter():
+        if exmpf.collection is None or exmpf.collection.options.base_file is True:
+            continue
         basename = conf.system.content.examples.get_basename(fn)
         out_fn = os.path.join(conf.system.content.examples.output_dir, basename) + '.rst'
 
