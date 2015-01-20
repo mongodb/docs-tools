@@ -107,7 +107,7 @@ def assets_tasks(conf, app):
                      'branch': asset.branch,
                      'repo': asset.repository }
 
-            if 'commit' is in asset:
+            if 'commit' in asset:
                 args['commit'] = asset.commit
 
             t.args = args
