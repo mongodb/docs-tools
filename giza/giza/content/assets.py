@@ -55,7 +55,7 @@ from giza.core.git import GitRepo
 from giza.tools.files import rm_rf
 from giza.tools.command import command
 
-def assets_setup(path, branch, repo):
+def assets_setup(path, branch, repo, commit=None):
     """
     Worker function that clones a repository if one doesn't exist and pulls
     the repository otherwise.
@@ -65,8 +65,16 @@ def assets_setup(path, branch, repo):
 
     if os.path.exists(path):
         g = GitRepo(path)
-        g.pull(branch=branch)
-        logger.info('updated {0} repository'.format(path))
+
+        if commit is None:
+            g.pull(branch=branch)
+            logger.info('updated {0} repository'.format(path))
+            return
+        elif g.sha() == commit or g.sha().startswith(commit):
+            logger.info('repository {0} is currently at ({1})'.format(path, commit))
+        else:
+            g.checkout(commit)
+            logger.info('update  {0} repository to ({1})'.format(path, commit))
     else:
         base, name = os.path.split(path)
 
@@ -74,6 +82,10 @@ def assets_setup(path, branch, repo):
 
         g.clone(repo, repo_path=name, branch=branch)
         logger.info('cloned {0} branch from repo {1}'.format(branch, repo))
+
+        if commit is not None and g.sha() == commit or g.sha().startswith(commit):
+            g.checkout(commit)
+            logger.info('repository {0} is currently at ({1})'.format(path, commit))
 
 def assets_tasks(conf, app):
     """Add tasks to an app to create/update the assets."""
@@ -91,9 +103,14 @@ def assets_tasks(conf, app):
             t.target = path
             t.depends = None
             t.description = "setup assets for: {0} in {1}".format(asset.repository, path)
-            t.args = { 'path': path,
-                       'branch': asset.branch,
-                       'repo': asset.repository }
+            args = { 'path': path,
+                     'branch': asset.branch,
+                     'repo': asset.repository }
+
+            if 'commit' is in asset:
+                args['commit'] = asset.commit
+
+            t.args = args
 
             # If you specify a list of "generate" items, giza will call ``giza
             # generate`` to build content after updating the

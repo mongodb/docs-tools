@@ -15,7 +15,7 @@
 from giza.config.base import ConfigurationBase
 
 class AssetsConfig(ConfigurationBase):
-    _option_registry = ['path', 'branch', 'repository']
+    _option_registry = ['path', 'branch', 'repository', 'commit']
 
     @property
     def generate(self):
@@ -27,4 +27,3 @@ class AssetsConfig(ConfigurationBase):
             self.state['generate'] = value
         else:
             raise TypeError
-
