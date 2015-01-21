@@ -60,7 +60,10 @@ class WorkerPool(object):
 
         if len(jobs) == 1 and not isinstance(jobs[0], MapTask):
             j = jobs[0]
-            results.append((j, j.run()))
+            if j.needs_rebuild is True:
+                results.append((j, j.run()))
+            else:
+                logger.debug("{0} does not need a rebuild".format(j.target))
         else:
             for job in jobs:
                 if not hasattr(job, 'run'):
