@@ -156,8 +156,16 @@ class ConfigurationBase(object):
 
     @classmethod
     @contextmanager
-    def persisting(cls, fn):
-        data = cls(fn)
+    def persisting(cls, fn, override=False):
+        if not os.path.isfile(fn):
+            write_json({}, fn)
+
+        if override is False:
+            data = cls(fn)
+        elif override is True:
+            data = cls()
+            input_data = data._prep_load_data(fn)
+            data.state.update(input_data)
 
         yield data
 
