@@ -94,7 +94,7 @@ def clean(args):
     c = fetch_config(args)
 
     for fn in include_files_unused(conf=c):
-        fn = os.path.join(conf.paths.source, fn[1:])
+        fn = os.path.join(c.paths.source, fn[1:])
         if os.path.exists(fn):
             os.remove(fn)
             logger.info("removed {0}, which was an unused include file.".format(fn))
