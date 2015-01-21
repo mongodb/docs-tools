@@ -44,12 +44,14 @@ class Task(object):
     no-op, unless forced.
     """
 
-    def __init__(self, job=None, description=None, target=None, dependency=None):
+    def __init__(self, job=None, args=None, description=None, target=None, dependency=None):
         """
         All arguments are optional. You can define a :class:`~giza.task.Task()`
         either upon creation, or after creation by modifying attributes.
 
         :param callable job: A callable object that the task will execute.
+
+        :param args: An argument list or mapping.
 
         :param string description: Describes the task. Used in error messages.
 
@@ -70,6 +72,9 @@ class Task(object):
 
         self.target = target
         self.dependency = dependency
+
+        if args is not None:
+            self.args = args
 
         logger.debug('created task object calling {0}, for {1}'.format(job, description))
         self._task_id = None
