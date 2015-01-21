@@ -288,7 +288,7 @@ class BuildApp(object):
 
     @classmethod
     @contextlib.contextmanager
-    def context(cls, conf):
+    def context(cls, conf=None):
         app = cls(conf)
 
         yield app
