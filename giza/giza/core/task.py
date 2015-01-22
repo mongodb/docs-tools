@@ -100,6 +100,7 @@ class Task(object):
 
     @target.setter
     def target(self, value):
+
         self._target = value
 
     def define_dependency_node(self, target, dependency):
@@ -155,7 +156,6 @@ class Task(object):
         """
 
         if self.target is None:
-            logger.warning('no target specified for: ' + str(self.job))
             return True
         elif self.dependency is None or self.conf.runstate.force is True:
             return True

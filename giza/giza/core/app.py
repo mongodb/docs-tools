@@ -230,12 +230,14 @@ class BuildApp(object):
                 j.pool = self.pool
 
             self.results.extend(j.run())
-        elif isinstance(j, MapTask):
-            self.results.extend(self.pool.runner([j]))
-        elif isinstance(j, Task):
-            self.results.append(j.run())
         else:
-            raise TypeError
+            if j.needs_rebuild is True:
+                if isinstance(j, MapTask):
+                    self.results.extend(self.pool.runner([j]))
+                elif isinstance(j, Task):
+                    self.results.append(j.run())
+                else:
+                    raise TypeError
 
     def _run_mixed_queue(self):
         group = [ ]
