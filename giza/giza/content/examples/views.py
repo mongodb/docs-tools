@@ -104,8 +104,8 @@ def full_example(collection, examples):
 
         if 'results' in example and example.results is not None:
             num_langs = len(lang)
-            lang = lang[0]
-            if len(num_langs) > 1:
+            lang = list(lang)[0]
+            if num_langs > 1:
                 msg = 'specified more than one language for examples {0}, using {1} for results'
                 logger.warning(msg.foramt(example.ref, lang))
 
