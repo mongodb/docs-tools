@@ -72,14 +72,15 @@ class ExtractData(HeadingMixin, InheritableContentBase):
         for fn in value:
             if fn.startswith(os.path.sep):
                 fn = fn[1:]
-            for path in [ os.path.abspath(fn),
+            for path in [ os.path.join(self.conf.paths.projectroot,
+                                       self.conf.paths.branch_source, fn),
                           os.path.join(self.conf.paths.projectroot, fn),
                           os.path.join(self.conf.paths.projectroot,
-                                       self.conf.paths.branch_source, fn),
-                          os.path.join(self.conf.paths.projectroot,
-                                       self.conf.paths.branch_includes, fn) ]:
+                                       self.conf.paths.branch_includes, fn),
+                          os.path.abspath(fn) ]:
                 if os.path.isfile(path):
                     paths.append(path)
+                    break
 
         self.state[kind] = paths
         if len(value) > 0 and len(paths) < 0:
