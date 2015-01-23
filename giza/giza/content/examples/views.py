@@ -83,11 +83,13 @@ def full_example(collection, examples):
             r.content(example.pre)
             r.newline()
 
+        lang = set()
         for op in example.operation:
             if 'pre' in op:
                 r.content(op.pre)
                 r.newline()
 
+            lang.add(op.language)
             r.codeblock(content=op.code,
                         language=op.language)
             r.newline()
@@ -96,15 +98,19 @@ def full_example(collection, examples):
                 r.content(op.post)
                 r.newline()
 
-
         if 'post' in example:
             r.content(example.post)
             r.newline()
 
-
         if 'results' in example and example.results is not None:
+            num_langs = len(lang)
+            lang = lang[0]
+            if len(num_langs) > 1:
+                msg = 'specified more than one language for examples {0}, using {1} for results'
+                logger.warning(msg.foramt(example.ref, lang))
+
             r.codeblock(content=example.results,
-                        language='javascript')
+                        language=lang)
 
         if 'final' in example:
             r.newline()
