@@ -10,7 +10,7 @@ REQUIRES = [
     'onetimepass',
     'polib',
     'pyyaml',
-    'rstcloth>=0.2.3',
+    'rstcloth>=0.2.4',
     'sphinx-intl',
     'sphinx==1.2.3',
     'sphinxcontrib-httpdomain',
