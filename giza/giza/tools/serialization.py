@@ -80,7 +80,7 @@ def write_yaml(input, filename):
 def write_json(input, filename):
     with open(filename, 'w') as f:
         if isinstance(input, (dict, list)):
-            json.dump(input, f, indent=3)
+            json.dump(input, f, indent=3, sort_keys=True)
         else:
             raise Exception('cannot dump $s objects to json.' % str(type(input)))
 
