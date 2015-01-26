@@ -187,4 +187,7 @@ def main():
     if args.level == 'info':
         args.level = 'warning'
 
+    if args.runner == 'process':
+        logger.warning('this operation does not support multiprocessing, falling back to threads')
+        args.runner = 'thread'
     argh.dispatch(parser, namespace=args)
