@@ -37,7 +37,7 @@ class ExtractData(HeadingMixin, InheritableContentBase):
 
     @prepend.setter
     def prepend(self, value):
-        self._set_file('prepend')
+        self._set_file(value, 'prepend')
 
     @property
     def style(self):
