@@ -11,6 +11,7 @@ import datetime
 import logging
 
 from giza.config.runtime import RuntimeStateConfig
+from giza.content.replacements import get_replacements
 from giza.config.helper import fetch_config, get_versions, get_manual_path
 from giza.tools.strings import dot_concat
 
@@ -51,6 +52,9 @@ rst_epilog = '\n'.join([
     '.. include:: {0}/hash.rst'.format(conf.paths.includes[len(conf.paths.source):]),
     '.. |copy| unicode:: U+000A9',
 ])
+
+rst_epilog.extend(get_replacements(conf))
+rst_epilog = '\n'.join(rst_epilog)
 
 pygments_style = 'sphinx'
 
