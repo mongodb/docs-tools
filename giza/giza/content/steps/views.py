@@ -44,10 +44,11 @@ def render_steps(steps, conf):
                     indent=3)
         r.newline()
 
-        r.heading(text=step.heading,
-                  char=character_levels[step.level],
-                  indent=3)
-        r.newline()
+        if 'heading' in step:
+            r.heading(text=step.heading,
+                      char=character_levels[step.level],
+                      indent=3)
+            r.newline()
 
         render_step_content(step, 3, r)
 
@@ -60,10 +61,17 @@ def render_steps(steps, conf):
         r.directive('only', 'latex or epub')
         r.newline()
 
-        r.heading(text="Step {0}: {1}".format(step.number, step.heading),
-                  char=character_levels[step.level],
-                  indent=3)
-        r.newline()
+
+        if 'heading' in step:
+            r.heading(text="Step {0}: {1}".format(step.number, step.heading),
+                      char=character_levels[step.level],
+                      indent=3)
+            r.newline()
+        else:
+            r.heading(text="Step {0}".format(step.number),
+                      char=character_levels[step.level],
+                      indent=3)
+            r.newline()
 
         render_step_content(step, 3, r)
 
@@ -96,9 +104,14 @@ def render_step_content(step, indent, r):
 
 def render_action(action, indent, level, r):
     if 'heading' in action:
-        r.heading(text=action.heading,
-                  char=character_levels[level],
-                  indent=indent)
+        if level in ('title', 0, 1):
+            r.titleg(text=action.heading,
+                     char=character_levels[level],
+                     indent=indent)
+        else:
+            r.heading(text=action.heading,
+                      char=character_levels[level],
+                      indent=indent)
         r.newline()
 
     if 'pre' in action:
