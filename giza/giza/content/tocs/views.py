@@ -14,7 +14,7 @@
 
 import logging
 
-logger = logging.getLogger('giza.content.toc.views')
+logger = logging.getLogger('giza.content.tocs.views')
 
 from rstcloth.rstcloth import RstCloth
 from rstcloth.table import TableBuilder, RstTable, TableData

@@ -15,10 +15,10 @@
 import logging
 import os.path
 
-logger = logging.getLogger('giza.content.contents.tasks')
+logger = logging.getLogger('giza.content.tocs.tasks')
 
-from giza.content.contents.inheritance import TocDataCache
-from giza.content.contents.views import render_toctree, render_dfn_list, render_toc_table
+from giza.content.tocs.inheritance import TocDataCache
+from giza.content.tocs.views import render_toctree, render_dfn_list, render_toc_table
 from giza.tools.files import safe_create_directory
 from giza.tools.strings import hyph_concat
 from giza.config.content import new_content_type

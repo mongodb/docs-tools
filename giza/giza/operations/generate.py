@@ -33,9 +33,9 @@ from giza.content.images import image_tasks, image_clean
 from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
 from giza.content.param import api_tasks, api_clean
 from giza.content.table import table_tasks, table_clean
-from giza.content.toc import toc_tasks, toc_clean
 from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
+from giza.content.tocs.tasks import toc_tasks
 from giza.content.examples.tasks import example_tasks
 from giza.content.steps.tasks import step_tasks, step_clean
 from giza.content.options.tasks import option_tasks, option_clean
@@ -50,16 +50,12 @@ from giza.config.sphinx_config import render_sconf
 from giza.content.dependencies import refresh_dependency_tasks
 
 @argh.arg('--edition', '-e')
-@argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def toc(args):
     c = fetch_config(args)
 
-    if c.runstate.clean_generated is True:
-        toc_clean(c)
-    else:
-        with BuildApp.context(c) as app:
-            toc_tasks(c, app)
+    with BuildApp.context(c) as app:
+        toc_tasks(c, app)
 
 @argh.arg('--edition', '-e')
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")

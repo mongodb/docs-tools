@@ -15,7 +15,7 @@
 import logging
 import sys
 
-logger = logging.getLogger('giza.content.contents.models')
+logger = logging.getLogger('giza.content.tocs.models')
 
 from giza.core.inheritance import InheritableContentBase
 

@@ -33,7 +33,6 @@ from giza.content.param import api_tasks
 from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
 from giza.content.source import source_tasks, latex_image_transfer_tasks
-from giza.content.toc import toc_tasks
 from giza.content.dependencies import refresh_dependency_tasks, dump_file_hash_tasks
 from giza.content.sphinx import sphinx_tasks, output_sphinx_stream, finalize_sphinx_build
 from giza.content.redirects import redirect_tasks

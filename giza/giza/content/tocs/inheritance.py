@@ -14,10 +14,10 @@
 
 import logging
 
-logger = logging.getLogger('giza.content.contents.inheritance')
+logger = logging.getLogger('giza.content.tocs.inheritance')
 
 from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache
-from giza.content.contents.models import TocData
+from giza.content.tocs.models import TocData
 
 class TocError(InheritableContentError): pass
 
