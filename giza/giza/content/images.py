@@ -191,7 +191,7 @@ def get_images_metadata_file(conf):
         return None
     elif base.startswith('/'):
         base = base[1:]
-        return os.path.join(conf.paths.projectroot, base)
+        return os.path.join(conf.paths.projectroot, conf.paths.branch_output, base)
     else:
         return os.path.join(conf.paths.projectroot, conf.paths.builddata, base)
 
