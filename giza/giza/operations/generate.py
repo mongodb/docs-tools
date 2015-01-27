@@ -54,8 +54,10 @@ from giza.content.dependencies import refresh_dependency_tasks
 def toc(args):
     c = fetch_config(args)
 
+
     with BuildApp.context(c) as app:
-        toc_tasks(c, app)
+        for task in toc_tasks(c):
+            app.add(task)
 
 @argh.arg('--edition', '-e')
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
