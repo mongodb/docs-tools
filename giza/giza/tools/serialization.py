@@ -16,6 +16,13 @@ import json
 import yaml
 import logging
 
+class literal_str(unicode): pass
+
+def literal_representer(dumper, data):
+    return dumper.represent_scalar(u'tag:yaml.org,2002:str', data, style='|')
+
+yaml.add_representer(literal_str, literal_representer)
+
 logger = logging.getLogger("giza.tools.serialization")
 
 from giza.tools.files import InvalidFile
@@ -69,9 +76,9 @@ def ingest_yaml(filename):
 def write_yaml(input, filename):
     with open(filename, 'w') as f:
         if isinstance(input, list):
-            f.write(yaml.safe_dump_all(input, default_flow_style=False))
+            f.write(yaml.dump_all(input, default_flow_style=False))
         elif isinstance(input, dict):
-            f.write(yaml.safe_dump(input, default_flow_style=False))
+            f.write(yaml.dump(input, default_flow_style=False))
         else:
             raise Exception('cannot dump $s objects to yaml.' % str(type(input)))
 
