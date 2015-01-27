@@ -57,6 +57,7 @@ def toc_tasks(conf):
 
     tasks = []
     for dep_fn, toc_data in tocs.file_iter():
+        deps = [dep_fn]
         if 'ref-toc-' in dep_fn:
             base_offset = 8
         else:
@@ -68,19 +69,22 @@ def toc_tasks(conf):
 
         if toc_data.is_spec() is False:
             out_fn = os.path.join(conf.system.content.toc.output_dir, fn_basename)
+
             t = Task(job=write_toc_tree_output,
                      target=out_fn,
                      dependency=dep_fn,
                      description="writing toctree to '{0}'".format(out_fn))
             t.args = (out_fn, toc_items)
             tasks.append(t)
+        else:
+            deps.extend(toc_data.spec_deps())
 
         if 'ref-toc' in dep_fn:
             out_fn = os.path.join(conf.system.content.toc.output_dir, hyph_concat('table', fn_basename))
 
             reft = Task(job=write_toc_table,
                         target=out_fn,
-                        dependency=dep_fn,
+                        dependency=deps,
                         description="write table of contents generator".format(out_fn))
             reft.args = (out_fn, toc_items)
             tasks.append(reft)
@@ -88,7 +92,7 @@ def toc_tasks(conf):
             out_fn = os.path.join(conf.system.content.toc.output_dir, hyph_concat('dfn-list', fn_basename))
             dt = Task(job=write_dfn_list_output,
                       target=out_fn,
-                      dependency=dep_fn,
+                      dependency=deps,
                       description="write definition list toc to '{0}'".format(out_fn))
             dt.args = (out_fn, toc_items)
             tasks.append(dt)
