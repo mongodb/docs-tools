@@ -131,16 +131,16 @@ def transform_data(task, data, fn, silent, conf):
 
             continue
 
+        if doc['object']['name'].endswith('()'):
+            doc['object']['name'] = doc['object']['name'][:-2]
+
         if silent is False and ('interface' in meta and meta['interface'] != doc['object']['type']):
             logger.warning("interface type (cmd, method) values do not agree in: " + fn)
         meta['interface'] = doc['object']['type']
 
         if silent is False and ('operation' in meta and meta['operation'] != doc['object']['name']):
             logger.warning("calling operation names do not agree in: " + fn)
-        if doc['object']['name'].endswith('()'):
-            meta['operation'] = doc['object']['name'][:-2]
-        else:
-            meta['operation'] = doc['object']['name']
+        meta['operation'] = doc['object']['name']
 
         if silent is False and ('arg_name' in meta and meta['arg_name'] != doc['field']['type']):
             logger.warning('argument types do not agree in: ' + fn)
