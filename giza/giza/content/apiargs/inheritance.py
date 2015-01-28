@@ -26,7 +26,7 @@ class ApiArgFile(DataContentBase):
     def field_type(self):
         name = set()
 
-        for content in self.content.items():
+        for content in self.content.values():
             name.add(content.arg_name)
 
         if len(name) > 1:

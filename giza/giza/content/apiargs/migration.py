@@ -21,7 +21,8 @@ logger = logging.getLogger('giza.content.apiargs.migration')
 
 from giza.tools.serialization import ingest_yaml_list, write_yaml, literal_str
 from giza.tools.strings import hyph_concat
-from giza.tools.files import expand_tree, safe_create_directory, rm_rf
+from giza.tools.files import expand_tree, safe_create_directory, rm_rf, verbose_remove
+from giza.core.task import check_dependency
 
 def task(task, conf):
     if task == 'source':
@@ -37,20 +38,26 @@ def task(task, conf):
         logger.critical('cannot perform apiarg migration for: ' + str(task))
         return
 
-    new_apiarg = []
+    new_records = []
+    new_basenames = []
     new_fns = []
+    old_fns = []
+
     for fn in legacy_tables:
         new_data, new_fn = migrate_legacy_apiarg(task, fn, conf)
         if new_fn in new_fns:
             logger.error("duplicate: {0}, from: {1}".format(os.path.basename(new_fn), os.path.basename(fn)))
         else:
-            new_fns.append(new_fn[offset:])
-            new_apiarg.append((new_fn, new_data))
+            new_basenames.append(new_fn[offset:])
+            new_fns.append(new_fn)
+            new_records.append(new_data)
+            old_fns.append(fn)
 
-    for fn, data in new_apiarg:
-        write_yaml(data, fn)
-    # for fn in legacy_tables:
-    #     os.remove(fn)
+    task_maker = zip(new_basenames, new_records, old_fns, new_fns)
+
+    for basename, data, old_fn, new_fn in task_maker:
+        write_yaml(data, new_fn)
+        # verbose_remove(old_fn)
 
     new_sources = conf.system.content.apiargs.sources
 
@@ -60,7 +67,7 @@ def task(task, conf):
         logger.info('legacy apiargs tables migrated successfully.')
 
     legacy_tables = [ fn[offset:] for fn in legacy_tables ]
-    return zip(legacy_tables, new_fns)
+    return zip(legacy_tables, new_basenames)
 
 def migrate_legacy_apiarg(task, fn, conf, silent=False):
     legacy_data = ingest_yaml_list(fn)

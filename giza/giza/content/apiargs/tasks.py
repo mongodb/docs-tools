@@ -20,11 +20,18 @@ logger = logging.getLogger('giza.content.apiargs.tasks')
 from giza.tools.files import expand_tree, safe_create_directory
 from giza.content.apiargs.migration import task as migration_task
 from giza.content.apiargs.inheritance import ApiArgDataCache
+from giza.content.apiargs.views import render_apiargs
 from giza.config.content import new_content_type
 from giza.tools.timing import Timer
+from giza.core.task import Task
 
 def register_apiargs(conf):
     conf.system.content.add(name='apiargs', definition=new_content_type(name='apiargs', task_generator=apiarg_tasks, conf=conf))
+
+def write_apiargs(apiargs, fn):
+    content = render_apiargs(apiargs)
+    content.write(fn)
+    # logger.info('wrote apiarg table to: ' + fn)
 
 def apiarg_tasks(conf):
     with Timer('apiargs migrations'):
@@ -37,8 +44,18 @@ def apiarg_tasks(conf):
         safe_create_directory(conf.system.content.apiargs.output_dir)
 
     tasks = []
-    # for dep_fn, table in a.file_iter():
-    #     print dep_fn
+    for dep_fn, apiargs in a.file_iter():
+        basename = conf.system.content.steps.get_basename(dep_fn)[2:]
+        out_fn = os.path.join(conf.system.content.apiargs.output_dir, basename) + '.rst'
 
-    logger.info('new apiargs not yet implemented, but there are {0} of them'.format(str(len(conf.system.content.apiargs.sources))))
-    return []
+        t = Task(job=write_apiargs,
+                 args=(apiargs, out_fn),
+                 target=out_fn,
+                 dependency=dep_fn,
+                 description="write apiarg table for: " + dep_fn)
+        tasks.append(t)
+
+    logger.info('new apiargs not yet implemented, but there are {0} of them'.format(len(conf.system.content.apiargs.sources)))
+    logger.info('added tasks for {0} apiarg table generation tasks'.format(len(tasks)))
+
+    return tasks

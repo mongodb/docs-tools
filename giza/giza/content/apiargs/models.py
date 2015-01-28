@@ -14,23 +14,58 @@
 
 import sys
 import copy
+import logging
 
 from giza.core.inheritance import InheritableContentBase, InheritanceReference
+
+logger = logging.getLogger('giza.content.apiargs.models')
 
 if sys.version_info >= (3, 0):
     basestring = str
 
+field_type = {
+    'param' : 'Parameter',
+    'field': 'Field',
+    'arg': 'Argument',
+    'option': 'Option',
+    'flag': 'Flag',
+}
+
 class ApiArgData(InheritableContentBase):
     _option_registry = [
-                         'arg_name', # TODO validate because limited field types
                          'interface', # TODO validate because limited possibilities
                          'operation'
                        ]
 
     @property
+    def arg_name(self):
+        return self.state['arg_name']
+
+    def arg_name_rendered(self):
+        if 'arg_name' not in self.state:
+            return field_type['arg']
+        else:
+            if self.arg_name in field_type:
+                return field_type[self.arg_name]
+            else:
+                return field_type['arg']
+
+    @arg_name.setter
+    def arg_name(self, value):
+        if value in field_type:
+            self.state['arg_name'] = value
+        else:
+            logger.error('incorrect argname format: ' + str(value))
+            self.state['arg_name'] = value
+            # raise TypeError
+
+    @property
     def description(self):
         if self.optional is True:
-            return 'Optional. ' + self.state['description']
+            if 'description' not in self.state:
+                return 'Optional.'
+            else:
+                return 'Optional. ' + self.state['description']
         else:
             return self.state['description']
 
@@ -46,11 +81,14 @@ class ApiArgData(InheritableContentBase):
             value = value[11:]
             self.optional = True
 
-        self.state['description'] = value
+        self.state['description'] = value.strip()
 
     @property
     def type(self):
-        return self.state['type']
+        if 'type' not in self.state:
+            return ''
+        else:
+            return self.state['type']
 
     @type.setter
     def type(self, value):

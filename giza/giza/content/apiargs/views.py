@@ -16,21 +16,17 @@ from rstcloth.rstcloth import RstCloth
 from rstcloth.rstcloth import fill
 from rstcloth.table import TableData, TableBuilder, ListTable
 
-field_type = {
-    'param' : 'Parameter',
-    'field': 'Field',
-    'arg': 'Argument',
-    'option': 'Option',
-    'flag': 'Flag',
-}
-
-def render_apiargs(apiargs, conf):
+def render_apiargs(apiargs):
     r = RstCloth()
 
     r.directive('only', '(html or singlehtml or dirhtml)')
+    r.newline()
     render_apiarg_table(r, apiargs)
 
+    r.newline()
+
     r.directive('only', '(texinfo or latex or epub)')
+    r.newline()
     render_apiarg_fields(r, apiargs)
 
     return r
@@ -51,16 +47,37 @@ def render_apiarg_table(r, apiargs):
     if num_columns == 2:
         widths = [ 20, 80 ]
         for entry in apiargs.ordering:
+            entry = apiargs.fetch(entry)
             table.add_row([RstCloth.pre(entry.name),
-                           entry.description])
+                           fill(string=entry.description, first=0, hanging=3, wrap=False)])
     elif num_columns == 3:
         widths = [ 20, 20, 80 ]
         for entry in apiargs.ordering:
+            entry = apiargs.fetch(entry)
             table.add_row([RstCloth.pre(entry.name),
                            entry.type_for_table_output(),
-                           entry.description])
+                           fill(string=entry.description, first=0, hanging=3, wrap=False)])
 
     r.content(TableBuilder(ListTable(table, widths=widths)).output, indent=3)
 
 def render_apiarg_fields(r, apiargs):
-    pass
+    for content in apiargs.ordering:
+        content = apiargs.fetch(content)
+
+        field_name = [ content.arg_name ]
+
+        if content.type != '':
+            field_name.append(', '.join(content.type))
+
+        field_name.append(content.name)
+
+        field_content = fill(string=content.description,
+                             first=0,
+                             hanging=6,
+                             wrap=False)
+
+        r.field(name=' '.join(field_name),
+                value=field_content,
+                indent=3,
+                wrap=False)
+        r.newline()
