@@ -82,7 +82,7 @@ def transfer_source(conf, sconf):
     # the target so we can have more incremental builds.
     exclusions = "--exclude=" + ' --exclude='.join(exclusions)
 
-    cmd = 'rsync --times --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions)
+    cmd = 'rsync --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions)
     command(cmd)
 
     # remove files from the source tree specified in the sphinx config for this

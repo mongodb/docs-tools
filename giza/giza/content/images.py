@@ -215,7 +215,7 @@ def image_tasks(conf, app):
 
         source_base = os.path.join(conf.paths.projectroot, image['dir'], image['name'])
         source_file = dot_concat(source_base, 'svg')
-        source_core = os.path.join(conf.paths.projectroot, conf.paths.images, image['name'] + '.svg' )
+        source_core = os.path.join(conf.paths.projectroot, conf.paths.branch_images, image['name'] + '.svg' )
         rst_file = dot_concat(source_base, 'rst')
 
         if not os.path.isfile(source_core):
