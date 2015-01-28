@@ -49,6 +49,8 @@ from giza.content.source import source_tasks
 from giza.config.sphinx_config import render_sconf
 from giza.content.dependencies import refresh_dependency_tasks
 
+import giza.content.apiargs.migration
+
 @argh.arg('--edition', '-e')
 @argh.expects_obj
 def toc(args):
@@ -196,8 +198,19 @@ def source(args):
 
     sconf = render_sconf(args.edition, 'html', args.language, conf)
     with BuildApp.context(conf) as app:
-        with app.context(conf) as prep_app:
-            source_tasks(conf, sconf, prep_app)
+        prep_app = app.add('app')
+        source_tasks(conf, sconf, prep_app)
+        prep_app.run()
 
         build_content_generation_tasks(conf, app.add('app'))
         refresh_dependency_tasks(conf, app.add('app'))
+
+@argh.expects_obj
+def migration(args):
+    conf = fetch_config(args)
+
+    with BuildApp.context(conf) as app:
+        name_changes = giza.content.apiargs.migration.task(task='source', conf=conf)
+
+        for task in giza.content.apiargs.migration.file_munge_tasks(name_changes, 'source', conf):
+            app.add(task)

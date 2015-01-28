@@ -18,7 +18,6 @@ import logging
 logger = logging.getLogger('giza.content.apiargs.tasks')
 
 from giza.tools.files import expand_tree, safe_create_directory
-from giza.content.apiargs.migration import task as migration_task
 from giza.content.apiargs.inheritance import ApiArgDataCache
 from giza.content.apiargs.views import render_apiargs
 from giza.config.content import new_content_type
@@ -31,12 +30,9 @@ def register_apiargs(conf):
 def write_apiargs(apiargs, fn):
     content = render_apiargs(apiargs)
     content.write(fn)
-    # logger.info('wrote apiarg table to: ' + fn)
+    logger.info('wrote apiarg table to: ' + fn)
 
 def apiarg_tasks(conf):
-    with Timer('apiargs migrations'):
-        name_changes = migration_task(task='branch', conf=conf)
-
     apiarg_sources = conf.system.content.apiargs.sources
     a = ApiArgDataCache(apiarg_sources, conf)
 
@@ -55,7 +51,6 @@ def apiarg_tasks(conf):
                  description="write apiarg table for: " + dep_fn)
         tasks.append(t)
 
-    logger.info('new apiargs not yet implemented, but there are {0} of them'.format(len(conf.system.content.apiargs.sources)))
     logger.info('added tasks for {0} apiarg table generation tasks'.format(len(tasks)))
 
     return tasks

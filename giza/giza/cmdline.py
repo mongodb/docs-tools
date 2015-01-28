@@ -77,6 +77,7 @@ commands = {
         giza.operations.generate.robots,
         giza.operations.generate.source,
         giza.operations.generate.release,
+        giza.operations.generate.migration,
     ],
     'includes': [
         giza.operations.includes.recursive,

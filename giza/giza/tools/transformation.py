@@ -33,7 +33,6 @@ def munge_page(fn, regex, out_fn=None,  tag='build'):
 
     if len(page_lines) > 0:
         encode_lines_to_file(out_fn, page_lines)
-        logger.info('{0}: processed {1}'.format(tag, fn))
     else:
         logger.warning('{0}: did not write {1}'.format(tag, out_fn))
 
@@ -72,7 +71,7 @@ def append_to_file(fn, text):
         f.write('\n')
         f.write(text)
 
-def prepend_to_file(fn, text): 
+def prepend_to_file(fn, text):
     with open(fn, 'r') as f:
         body = f.readlines()
 

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 import logging
 import os
 import copy
@@ -21,8 +22,9 @@ logger = logging.getLogger('giza.content.apiargs.migration')
 
 from giza.tools.serialization import ingest_yaml_list, write_yaml, literal_str
 from giza.tools.strings import hyph_concat
+from giza.tools.transformation import munge_page
 from giza.tools.files import expand_tree, safe_create_directory, rm_rf, verbose_remove
-from giza.core.task import check_dependency
+from giza.core.task import Task
 
 def task(task, conf):
     if task == 'source':
@@ -57,7 +59,8 @@ def task(task, conf):
 
     for basename, data, old_fn, new_fn in task_maker:
         write_yaml(data, new_fn)
-        # verbose_remove(old_fn)
+        if task == 'source':
+            verbose_remove(old_fn)
 
     new_sources = conf.system.content.apiargs.sources
 
@@ -167,3 +170,33 @@ def transform_data(task, data, fn, silent, conf):
         output.append(new_doc)
 
     return output, meta
+
+def file_munge_tasks(name_changes, loc, conf):
+    tasks = []
+
+    if loc == 'branch':
+        return tasks
+
+    name_changes = [
+        (old.replace('.yaml', '.rst'), new.replace('apiargs-', 'apiargs/').replace('.yaml', '.rst'))
+        for old, new in name_changes
+    ]
+
+    if loc == 'source':
+        ref_files = expand_tree(os.path.join(conf.paths.projectroot, conf.paths.branch_source, 'reference'), 'txt')
+    elif loc == 'branch':
+        ref_files = expand_tree(os.path.join(conf.paths.projectroot, conf.paths.source, 'reference'), 'txt')
+
+    for old, new in name_changes:
+        re_pattern = (re.compile(r'include:: ' + old), r'include:: ' + new)
+
+        for ref_file in ref_files:
+            t = Task(job=munge_page,
+                     args=dict(fn=ref_file,
+                               regex=re_pattern),
+                     target=ref_file,
+                     dependency=None,
+                     description='munging reference page')
+            tasks.append(t)
+
+    return tasks
