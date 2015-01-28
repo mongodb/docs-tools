@@ -12,11 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
+logger = logging.getLogger('giza.content.inheritance.apiargs')
+
 from giza.core.inheritance import DataContentBase, DataCache
 from giza.content.apiargs.models import ApiArgData
 
+
 class ApiArgFile(DataContentBase):
     content_class = ApiArgData
+
+    def field_type(self):
+        name = set()
+
+        for content in self.content.items():
+            name.add(content.arg_name)
+
+        if len(name) > 1:
+            logger.warning('too many field types returning one at random.')
+
+        return name.pop()
+
+    def has_type(self):
+        for content in self.content.items():
+            if 'type' in content:
+                return True
+
+        return False
+
 
 class ApiArgDataCache(DataCache):
     content_class = ApiArgFile

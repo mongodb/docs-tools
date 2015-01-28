@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import sys
+import copy
 
 from giza.core.inheritance import InheritableContentBase, InheritanceReference
 
@@ -21,12 +22,60 @@ if sys.version_info >= (3, 0):
 
 class ApiArgData(InheritableContentBase):
     _option_registry = [
-                         'description',
                          'arg_name', # TODO validate because limited field types
                          'interface', # TODO validate because limited possibilities
-                         'operation',
-                         'type' # TODO write validators
+                         'operation'
                        ]
+
+    @property
+    def description(self):
+        if self.optional is True:
+            return 'Optional. ' + self.state['description']
+        else:
+            return self.state['description']
+
+    @description.setter
+    def description(self, value):
+        if isinstance(value, list):
+            value = '\n'.join(value)
+
+        if not isinstance(value, basestring):
+            raise TypeError
+
+        if value.startswith('Optional. '):
+            value = value[11:]
+            self.optional = True
+
+        self.state['description'] = value
+
+    @property
+    def type(self):
+        return self.state['type']
+
+    @type.setter
+    def type(self, value):
+        if 'type' not in self.state:
+            self.state['type'] = []
+
+        if isinstance(value, list):
+            self.state['type'].extend(value)
+        else:
+            self.state['type'].append(value)
+
+    def type_for_field_output(self):
+        return ', '.join(self.type)
+
+    def type_for_table_output(self):
+        if len(self.type) == 0:
+            return ''
+        elif len(self.type) == 1:
+            return self.type[0]
+        elif len(self.type) == 2:
+            return ' or '.join(self.type)
+        else:
+            tmp = copy.copy(self.type)
+            tmp[-1] = ' or ' + tmp[-1]
+            return ', '.join(tmp)
 
     @property
     def source(self):

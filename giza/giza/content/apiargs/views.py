@@ -24,5 +24,43 @@ field_type = {
     'flag': 'Flag',
 }
 
-def render_apiarg_table(apiargs, conf):
+def render_apiargs(apiargs, conf):
+    r = RstCloth()
+
+    r.directive('only', '(html or singlehtml or dirhtml)')
+    render_apiarg_table(r, apiargs)
+
+    r.directive('only', '(texinfo or latex or epub)')
+    render_apiarg_fields(r, apiargs)
+
+    return r
+
+def render_apiarg_table(r, apiargs):
     table = TableData()
+
+    header = [ apiargs.field_type() ]
+
+    if apiargs.has_type() is True:
+        header.append('Type')
+
+    header.append('Description')
+
+    num_columns = len(header)
+    table.add_header(header)
+
+    if num_columns == 2:
+        widths = [ 20, 80 ]
+        for entry in apiargs.ordering:
+            table.add_row([RstCloth.pre(entry.name),
+                           entry.description])
+    elif num_columns == 3:
+        widths = [ 20, 20, 80 ]
+        for entry in apiargs.ordering:
+            table.add_row([RstCloth.pre(entry.name),
+                           entry.type_for_table_output(),
+                           entry.description])
+
+    r.content(TableBuilder(ListTable(table, widths=widths)).output, indent=3)
+
+def render_apiarg_fields(r, apiargs):
+    pass
