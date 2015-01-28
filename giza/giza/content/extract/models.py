@@ -74,9 +74,9 @@ class ExtractData(HeadingMixin, InheritableContentBase):
                 fn = fn[1:]
             for path in [ os.path.join(self.conf.paths.projectroot,
                                        self.conf.paths.branch_source, fn),
-                          os.path.join(self.conf.paths.projectroot, fn),
                           os.path.join(self.conf.paths.projectroot,
                                        self.conf.paths.branch_includes, fn),
+                          os.path.join(self.conf.paths.projectroot, fn),
                           os.path.abspath(fn) ]:
                 if os.path.isfile(path):
                     paths.append(path)

@@ -62,7 +62,7 @@ def extract_tasks(conf):
                 for fn in files:
                     t = Task(job=verb,
                              target=fn,
-                             dependency=dep_fn,
+                             dependency=None,
                              description="{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn))
                     t.args = (fn, include_statement)
                     tasks.append(t)

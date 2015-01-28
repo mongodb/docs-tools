@@ -57,7 +57,6 @@ def append_to_file(fn, text):
         f.write('\n')
         f.write(text)
 
-
 def process_page(fn, output_fn, regex, app, builder='processor'):
     tmp_fn = fn + '~'
 
