@@ -1,0 +1,7 @@
+=============================================
+``views`` -- Rendering for Tables of Contents
+=============================================
+
+.. automodule:: giza.content.tocs.views
+   :members:
+   :undoc-members:

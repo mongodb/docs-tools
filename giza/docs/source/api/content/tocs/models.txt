@@ -1,0 +1,7 @@
+================================================
+``models`` -- Data Models for Tables of Contents
+================================================
+
+.. automodule:: giza.content.tocs.models
+   :members:
+   :undoc-members:

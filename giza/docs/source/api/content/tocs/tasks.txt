@@ -1,0 +1,7 @@
+===============================================
+``tasks`` -- Integration for Tables of Contents
+===============================================
+
+.. automodule:: giza.content.tocs.tasks
+   :members:
+   :undoc-members:
