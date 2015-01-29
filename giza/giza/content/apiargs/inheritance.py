@@ -44,3 +44,4 @@ class ApiArgFile(DataContentBase):
 
 class ApiArgDataCache(DataCache):
     content_class = ApiArgFile
+    content_type = 'apiargs'

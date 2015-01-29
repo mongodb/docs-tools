@@ -61,3 +61,4 @@ class StepFile(DataContentBase):
 
 class StepDataCache(DataCache):
     content_class = StepFile
+    content_type = 'steps'

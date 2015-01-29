@@ -136,6 +136,12 @@ class ContentRegistry(ConfigurationBase):
                 self._option_registry.append(name)
                 self.state[name] = definition
 
+    def get(self, name):
+        if name in self.state:
+            return self.state[name]
+        else:
+            raise AttributeError(name)
+
     def iterator(self):
         return self.state.values()
 

@@ -37,17 +37,8 @@ def write_full_example(collection, examples, fn):
     content.write(fn)
 
 def example_tasks(conf):
-    # In the beginning of this operation, which executes in the main thread, we
-    # read all files in "source/includes/" and sub-directories that start with
-    # "example-*"
-
-    example_sources = conf.system.content.examples.sources
-
-    # process the corpus of example data.
-    d = ExampleDataCache(example_sources, conf)
-
-    if len(example_sources) > 0 and not os.path.isdir(conf.system.content.examples.output_dir):
-        safe_create_directory(conf.system.content.examples.output_dir)
+    d = ExampleDataCache(conf.system.content.examples.sources, conf)
+    d.create_output_dir()
 
     tasks = []
     for fn, exmpf in d.file_iter():
@@ -57,11 +48,10 @@ def example_tasks(conf):
         out_fn = os.path.join(conf.system.content.examples.output_dir, basename) + '.rst'
 
         t = Task(job=write_full_example,
+                 args=(exmpf.collection, exmpf.examples, out_fn),
                  description='generate an example for ' + fn,
                  target=out_fn,
                  dependency=fn,)
-        t.args = (exmpf.collection, exmpf.examples, out_fn)
-
         tasks.append(t)
 
     logger.info("added tasks for {0} example generation tasks".format(len(tasks)))

@@ -26,12 +26,14 @@ import logging
 import os.path
 import sys
 import copy
+
 logger = logging.getLogger('giza.core.inheritance')
 
 import jinja2
 
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 from giza.tools.serialization import ingest_yaml_list
+from giza.tools.files import safe_create_directory
 from giza.content.helper import level_characters, edition_check
 
 if sys.version_info >= (3, 0):
@@ -401,6 +403,7 @@ class DataCache(RecursiveConfigurationBase):
     """
 
     content_class = DataContentBase
+    content_type = None
 
     def __init__(self, files, conf):
         self._cache = {}
@@ -410,6 +413,9 @@ class DataCache(RecursiveConfigurationBase):
     def __len__(self):
         return len(self._cache)
 
+    def __contains__(self, key):
+        return key in self.cache
+
     @property
     def cache(self):
         return self._cache
@@ -417,9 +423,6 @@ class DataCache(RecursiveConfigurationBase):
     @cache.setter
     def cache(self, value):
         logger.warning('cannot set cache record directly')
-
-    def __contains__(self, key):
-        return key in self.cache
 
     def _clear_cache(self, fn):
         self.cache[fn] = []
@@ -465,6 +468,15 @@ class DataCache(RecursiveConfigurationBase):
                     continue
                 else:
                     yield fn, data
+
+    def create_output_dir(self):
+        dirname = self.conf.system.content.get(self.content_type).output_dir
+        if (self.content_type is not None and
+            len(self) > 0 and
+            not os.path.isdir(dirname)):
+
+            safe_create_directory(dirname)
+
 
 class TitleData(ConfigurationBase):
     _option_registry = ['text']

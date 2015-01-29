@@ -22,3 +22,4 @@ class ReleaseFile(DataContentBase):
 
 class ReleaseDataCache(DataCache):
     content_class = ReleaseFile
+    content_type = 'releases'

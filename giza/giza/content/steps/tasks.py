@@ -32,24 +32,19 @@ def write_steps(steps, fn, conf):
     logger.info('wrote steps to: '  + fn)
 
 def step_tasks(conf):
-    step_sources = conf.system.content.steps.sources
-    s = StepDataCache(step_sources, conf)
-
-    if len(step_sources) > 0 and not os.path.isdir(conf.system.content.steps.output_dir):
-        safe_create_directory(conf.system.content.steps.output_dir)
+    s = StepDataCache(conf.system.content.steps.sources, conf)
+    s.create_output_dir()
 
     tasks = []
     for fn, stepf in s.file_iter():
-        basename = conf.system.content.steps.get_basename(fn)
-
-        out_fn = os.path.join(conf.system.content.steps.output_dir, basename) + '.rst'
+        out_fn = os.path.join(conf.system.content.steps.output_dir,
+                              conf.system.content.steps.get_basename(fn)) + '.rst'
 
         t = Task(job=write_steps,
+                 args=(stepf, out_fn, conf),
                  description='generate a stepfile for ' + fn,
                  target=out_fn,
                  dependency=fn)
-        t.args = (stepf, out_fn, conf)
-
         tasks.append(t)
 
     logger.info("added tasks for {0} step generation tasks".format(len(tasks)))

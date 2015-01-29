@@ -48,12 +48,8 @@ def write_toc_table(fn, toc_items):
     logger.info("wrote toc table to: " + fn)
 
 def toc_tasks(conf):
-    toc_sources = conf.system.content.toc.sources
-
-    tocs = TocDataCache(toc_sources, conf)
-
-    if len(toc_sources) > 0 and not os.path.isdir(conf.system.content.toc.output_dir):
-        safe_create_directory(conf.system.content.toc.output_dir)
+    tocs = TocDataCache(conf.system.content.toc.sources, conf)
+    tocs.create_output_dir()
 
     tasks = []
     for dep_fn, toc_data in tocs.file_iter():
@@ -71,10 +67,10 @@ def toc_tasks(conf):
             out_fn = os.path.join(conf.system.content.toc.output_dir, fn_basename)
 
             t = Task(job=write_toc_tree_output,
+                     args=(out_fn, toc_items),
                      target=out_fn,
                      dependency=dep_fn,
                      description="writing toctree to '{0}'".format(out_fn))
-            t.args = (out_fn, toc_items)
             tasks.append(t)
         else:
             deps.extend(toc_data.spec_deps())
@@ -83,18 +79,18 @@ def toc_tasks(conf):
             out_fn = os.path.join(conf.system.content.toc.output_dir, hyph_concat('table', fn_basename))
 
             reft = Task(job=write_toc_table,
+                        args=(out_fn, toc_items),
                         target=out_fn,
                         dependency=deps,
                         description="write table of contents generator".format(out_fn))
-            reft.args = (out_fn, toc_items)
             tasks.append(reft)
         else:
             out_fn = os.path.join(conf.system.content.toc.output_dir, hyph_concat('dfn-list', fn_basename))
             dt = Task(job=write_dfn_list_output,
+                      args=(out_fn, toc_items),
                       target=out_fn,
                       dependency=deps,
                       description="write definition list toc to '{0}'".format(out_fn))
-            dt.args = (out_fn, toc_items)
             tasks.append(dt)
 
     logger.info('added tasks for {0} toc generation tasks'.format(len(tasks)))

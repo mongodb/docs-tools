@@ -33,26 +33,19 @@ def write_options(option, fn, conf):
     logger.info('wrote options file: ' + fn)
 
 def option_tasks(conf):
-    option_sources = conf.system.content.options.sources
-    o = OptionDataCache(option_sources, conf)
-
-    if len(option_sources) > 0 and not os.path.isdir(conf.system.content.options.output_dir):
-        safe_create_directory(conf.system.content.options.output_dir)
+    o = OptionDataCache(conf.system.content.options.sources, conf)
+    o.create_output_dir()
 
     tasks = []
     for dep_fn, option in o.content_iter():
-        if option.program.startswith('_'):
-            continue
-
         out_fn = hyph_concat(option.directive, option.program, option.name) + '.rst'
         output_fn = os.path.join(conf.system.content.options.fn_prefix, out_fn)
 
         t = Task(job=write_options,
+                 args=(option, output_fn, conf),
                  description='generating option file "{0}" from "{1}"'.format(output_fn, dep_fn),
                  target=output_fn,
                  dependency=[dep_fn])
-        t.args = (option, output_fn, conf)
-
         tasks.append(t)
 
     logger.info("added tasks for {0} option generation tasks".format(len(tasks)))

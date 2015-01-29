@@ -33,20 +33,16 @@ def write_extract_file(extract, fn):
     logger.info('wrote extract file: ' + fn)
 
 def extract_tasks(conf):
-    extract_sources = conf.system.content.extracts.sources
-
-    extracts = ExtractDataCache(extract_sources, conf)
-
-    if len(extract_sources) > 0 and not os.path.isdir(conf.system.content.extracts.output_dir):
-        safe_create_directory(conf.system.content.extracts.output_dir)
+    extracts = ExtractDataCache(conf.system.content.extracts.sources, conf)
+    extracts.create_output_dir()
 
     tasks = []
     for dep_fn, extract in extracts.content_iter():
         t = Task(job=write_extract_file,
+                 args=(extract, extract.target),
                  description="generating extract file: " + extract.target,
                  target=extract.target,
                  dependency=dep_fn)
-        t.args = (extract, extract.target)
         tasks.append(t)
 
         include_statement = get_include_statement(extract.target_project_path)
@@ -61,10 +57,10 @@ def extract_tasks(conf):
 
                 for fn in files:
                     t = Task(job=verb,
+                             args=(fn, include_statement),
                              target=fn,
                              dependency=None,
                              description="{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn))
-                    t.args = (fn, include_statement)
                     tasks.append(t)
 
     logger.info("added tasks for {0} extract generation tasks".format(len(tasks)))

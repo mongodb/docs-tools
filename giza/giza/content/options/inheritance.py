@@ -38,3 +38,4 @@ class OptionFile(DataContentBase):
 
 class OptionDataCache(DataCache):
     content_class = OptionFile
+    content_type = 'options'

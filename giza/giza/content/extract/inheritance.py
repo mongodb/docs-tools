@@ -22,3 +22,4 @@ class ExtractFile(DataContentBase):
 
 class ExtractDataCache(DataCache):
     content_class = ExtractFile
+    content_type = 'extracts'

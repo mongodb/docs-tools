@@ -125,3 +125,4 @@ class ExampleFile(DataContentBase):
 
 class ExampleDataCache(DataCache):
     content_class = ExampleFile
+    content_type = 'examples'

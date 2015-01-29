@@ -32,22 +32,16 @@ def write_release_file(release, fn, conf):
     logger.info('wrote release content: ' + fn)
 
 def release_tasks(conf):
-    release_sources = conf.system.content.releases.sources
-
-    rel = ReleaseDataCache(release_sources, conf)
-
-    if len(release_sources) > 0 and not os.path.isdir(conf.system.content.releases.output_dir):
-        safe_create_directory(conf.system.content.releases.output_dir)
+    rel = ReleaseDataCache(conf.system.content.releases.sources, conf)
+    rel.create_output_dir()
 
     tasks = []
-
     for dep_fn, release in rel.content_iter():
         t = Task(job=write_release_file,
+                 args=(release, release.target, conf),
                  description='generating release spec file: ' + release.target,
                  target=release.target,
                  dependency=dep_fn)
-        t.args = (release, release.target, conf)
-
         tasks.append(t)
 
     logger.info("added tasks for {0} release generation tasks".format(len(tasks)))

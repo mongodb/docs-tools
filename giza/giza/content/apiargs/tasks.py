@@ -33,11 +33,8 @@ def write_apiargs(apiargs, fn):
     logger.info('wrote apiarg table to: ' + fn)
 
 def apiarg_tasks(conf):
-    apiarg_sources = conf.system.content.apiargs.sources
-    a = ApiArgDataCache(apiarg_sources, conf)
-
-    if len(apiarg_sources) > 0 and not os.path.isdir(conf.system.content.apiargs.output_dir):
-        safe_create_directory(conf.system.content.apiargs.output_dir)
+    a = ApiArgDataCache(conf.system.content.apiargs.sources, conf)
+    a.create_output_dir()
 
     tasks = []
     for dep_fn, apiargs in a.file_iter():

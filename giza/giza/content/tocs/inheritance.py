@@ -43,7 +43,7 @@ class TocFile(DataContentBase):
     def spec_deps(self):
         deps = []
         for content_item in self.content.values():
-            if content_item.source is None: 
+            if content_item.source is None:
                 continue
             else:
                 deps.append(content_item.source.file)
@@ -52,3 +52,4 @@ class TocFile(DataContentBase):
 
 class TocDataCache(DataCache):
     content_class = TocFile
+    content_type = 'toc'
