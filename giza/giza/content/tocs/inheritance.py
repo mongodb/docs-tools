@@ -16,10 +16,8 @@ import logging
 
 logger = logging.getLogger('giza.content.tocs.inheritance')
 
-from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache
+from giza.core.inheritance import DataContentBase, DataCache
 from giza.content.tocs.models import TocData
-
-class TocError(InheritableContentError): pass
 
 class TocFile(DataContentBase):
     content_class = TocData
@@ -29,7 +27,6 @@ class TocFile(DataContentBase):
             self.fetch(ref)
             for ref in self.ordering
         ]
-
 
     def is_spec(self):
         for content_item in self.content.values():

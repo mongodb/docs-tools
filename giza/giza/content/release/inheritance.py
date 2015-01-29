@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache
+from giza.core.inheritance import DataContentBase, DataCache
 from giza.content.release.models import ReleaseData
-
-class ReleaseError(InheritableContentError): pass
 
 class ReleaseFile(DataContentBase):
     content_class = ReleaseData

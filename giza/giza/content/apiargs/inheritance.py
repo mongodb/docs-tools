@@ -19,7 +19,6 @@ logger = logging.getLogger('giza.content.inheritance.apiargs')
 from giza.core.inheritance import DataContentBase, DataCache
 from giza.content.apiargs.models import ApiArgData
 
-
 class ApiArgFile(DataContentBase):
     content_class = ApiArgData
 
@@ -40,7 +39,6 @@ class ApiArgFile(DataContentBase):
                 return True
 
         return False
-
 
 class ApiArgDataCache(DataCache):
     content_class = ApiArgFile

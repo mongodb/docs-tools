@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache
+from giza.core.inheritance import DataContentBase, DataCache
 from giza.content.extract.models import ExtractData
-
-class ExtractError(InheritableContentError): pass
 
 class ExtractFile(DataContentBase):
     content_class = ExtractData
