@@ -28,7 +28,8 @@ class ContentType(ConfigurationBase):
 
         sources = set()
         for prefix, fn in itertools.product(self.prefixes, files):
-            if fn.startswith(self.output_dir[:-1]):
+            prefix = os.path.join(self.dir, prefix)
+            if fn.startswith(prefix):
                 sources.add(fn)
 
         return list(sources)

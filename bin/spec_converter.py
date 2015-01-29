@@ -29,7 +29,9 @@ def main():
     toc_fns = []
 
     for fn in files:
-        if 'toc' not in fn:
+        if 'ref-spec' in fn:
+            spec_fns.append(fn)
+        elif 'toc' not in fn:
             continue
         elif 'spec-new' in fn:
             continue
@@ -45,7 +47,10 @@ def main():
     tocs = {}
 
     for fn in spec_fns:
-        specs[fn] = ingest_yaml_doc(fn)
+        try:
+            specs[fn] = ingest_yaml_doc(fn)
+        except:
+            continue
 
     for fn in toc_fns:
         tocs[fn] = ingest_yaml_list(fn)

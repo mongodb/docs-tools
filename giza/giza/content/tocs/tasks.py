@@ -28,7 +28,7 @@ def register_toc(conf):
     definition = new_content_type(name='toc',
                                   task_generator=toc_tasks,
                                   conf=conf,
-                                  prefixes=['toc', 'ref-toc'])
+                                  prefixes=['toc', 'ref-toc', 'ref-spec'])
 
     conf.system.content.add(name='toc', definition=definition)
 
@@ -56,6 +56,8 @@ def toc_tasks(conf):
         deps = [dep_fn]
         if 'ref-toc-' in dep_fn:
             base_offset = 8
+        elif 'ref-spec-' in dep_fn:
+            base_offset = 9
         else:
             base_offset = 4
 
@@ -82,8 +84,17 @@ def toc_tasks(conf):
                         args=(out_fn, toc_items),
                         target=out_fn,
                         dependency=deps,
-                        description="write table of contents generator".format(out_fn))
+                        description="write ref toc table to '{0}'".format(out_fn))
             tasks.append(reft)
+        elif 'ref-spec' in dep_fn:
+            out_fn = os.path.join(conf.system.content.toc.output_dir, hyph_concat('table-spec', fn_basename))
+
+            refspec = Task(job=write_toc_table,
+                           args=(out_fn, toc_items),
+                           target=out_fn,
+                           dependency=deps,
+                           description="write ref spec table to '{0}'".format(out_fn))
+            tasks.append(refspec)
         else:
             out_fn = os.path.join(conf.system.content.toc.output_dir, hyph_concat('dfn-list', fn_basename))
             dt = Task(job=write_dfn_list_output,
