@@ -126,3 +126,12 @@ class ExampleFile(DataContentBase):
 class ExampleDataCache(DataCache):
     content_class = ExampleFile
     content_type = 'examples'
+
+    def file_iter(self):
+        for fn in self.cache:
+            data = self.cache[fn]
+
+            if data.collection is None or data.collection.options.base_file is True:
+                continue
+
+            yield fn, data

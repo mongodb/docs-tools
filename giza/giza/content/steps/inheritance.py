@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import os.path
 
 logger = logging.getLogger('giza.content.steps.inheritance')
 
@@ -56,6 +57,11 @@ class StepFile(DataContentBase):
             obj.number = self._step_counter
 
         return obj
+
+    def target(self, fn):
+        ## fn is the source file
+        return os.path.join(self.conf.system.content.steps.output_dir,
+                            self.conf.system.content.steps.get_basename(fn)) + '.rst'
 
 class StepDataCache(DataCache):
     content_class = StepFile

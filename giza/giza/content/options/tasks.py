@@ -38,8 +38,8 @@ def option_tasks(conf):
 
     tasks = []
     for dep_fn, option in o.content_iter():
-        out_fn = hyph_concat(option.directive, option.program, option.name) + '.rst'
-        output_fn = os.path.join(conf.system.content.options.fn_prefix, out_fn)
+        output_fn = os.path.join(conf.system.content.options.fn_prefix,
+                                 hyph_concat(option.directive, option.program, option.name) + '.rst')
 
         t = Task(job=write_options,
                  args=(option, output_fn, conf),

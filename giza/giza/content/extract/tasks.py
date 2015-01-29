@@ -47,21 +47,15 @@ def extract_tasks(conf):
 
         include_statement = get_include_statement(extract.target_project_path)
 
-        for verb, adjc, noun in [ (prepend_to_file, 'prepend', extract.prepend),
+        for verb, adjc, files in [ (prepend_to_file, 'prepend', extract.prepend),
                                   (append_to_file, 'append', extract.append) ]:
-            if noun:
-                if not isinstance(noun, list):
-                    files = [noun]
-                else:
-                    files = noun
-
-                for fn in files:
-                    t = Task(job=verb,
-                             args=(fn, include_statement),
-                             target=fn,
-                             dependency=None,
-                             description="{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn))
-                    tasks.append(t)
+            for fn in files:
+                t = Task(job=verb,
+                         args=(fn, include_statement),
+                         target=fn,
+                         dependency=None,
+                         description="{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn))
+                tasks.append(t)
 
     logger.info("added tasks for {0} extract generation tasks".format(len(tasks)))
 

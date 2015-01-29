@@ -42,16 +42,14 @@ def example_tasks(conf):
 
     tasks = []
     for fn, exmpf in d.file_iter():
-        if exmpf.collection is None or exmpf.collection.options.base_file is True:
-            continue
-        basename = conf.system.content.examples.get_basename(fn)
-        out_fn = os.path.join(conf.system.content.examples.output_dir, basename) + '.rst'
+        out_fn = os.path.join(conf.system.content.examples.output_dir,
+                              conf.system.content.examples.get_basename(fn)) + '.rst'
 
         t = Task(job=write_full_example,
                  args=(exmpf.collection, exmpf.examples, out_fn),
                  description='generate an example for ' + fn,
                  target=out_fn,
-                 dependency=fn,)
+                 dependency=fn)
         tasks.append(t)
 
     logger.info("added tasks for {0} example generation tasks".format(len(tasks)))
@@ -61,9 +59,8 @@ def example_clean(conf, app):
     register_examples(conf)
 
     for fn in conf.system.content.examples.sources:
-        basename = conf.system.content.examples.get_basename(fn)
-
-        out_fn = os.path.join(conf.system.content.examples.output_dir, basename) + '.rst'
+        out_fn = os.path.join(conf.system.content.examples.output_dir,
+                              conf.system.content.examples.get_basename(fn)) + '.rst'
 
         t = app.add('task')
         t.target = True

@@ -17,7 +17,7 @@ import logging
 
 logger = logging.getLogger('giza.content.steps.tasks')
 
-from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
+from giza.tools.files import expand_tree, rm_rf, safe_create_directory
 from giza.content.steps.inheritance import StepDataCache
 from giza.content.steps.views import render_steps
 from giza.config.content import new_content_type
@@ -37,13 +37,10 @@ def step_tasks(conf):
 
     tasks = []
     for fn, stepf in s.file_iter():
-        out_fn = os.path.join(conf.system.content.steps.output_dir,
-                              conf.system.content.steps.get_basename(fn)) + '.rst'
-
         t = Task(job=write_steps,
-                 args=(stepf, out_fn, conf),
+                 args=(stepf, stepf.target(fn), conf),
                  description='generate a stepfile for ' + fn,
-                 target=out_fn,
+                 target=stepf.target(fn),
                  dependency=fn)
         tasks.append(t)
 
@@ -51,12 +48,10 @@ def step_tasks(conf):
     return tasks
 
 def step_clean(conf, app):
-    register_steps(conf)
-
     for fn in conf.system.content.steps.sources:
         task = app.add('task')
         task.target = True
         task.dependnecy = fn
-        task.job = verbose_remove
-        task.args = [fn]
-        task.description = 'removing {0}'.format(fn)
+        task.job = rm_rf
+        task.args = [conf.system.content.steps.output_dir]
+        task.description = 'removing {0}'.format(conf.system.content.steps.output_dir)

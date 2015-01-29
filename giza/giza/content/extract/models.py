@@ -62,7 +62,7 @@ class ExtractData(HeadingMixin, InheritableContentBase):
         if kind in self.state:
             return self.state[kind]
         else:
-            return False
+            return []
 
     def _set_file(self, value, kind):
         if not isinstance(value, list):
