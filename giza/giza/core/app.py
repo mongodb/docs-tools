@@ -168,7 +168,7 @@ class BuildApp(object):
         for task in tasks:
             self.add(task)
 
-    def add(self, task=None):
+    def add(self, task=None, conf=None):
         """
         Adds a new :class:`~giza.app.BuildApp()` or :class:`~giza.task.Task()`
         to the :class:`~giza.app.BuildApp()` object.
@@ -190,6 +190,8 @@ class BuildApp(object):
         :raises: :exc:`TypeError` if the ``task`` argument is invalid.
 
         """
+        if conf is not None:
+            self.conf = conf
 
         if task is None or task in (Task, 'task'):
             t = Task()
