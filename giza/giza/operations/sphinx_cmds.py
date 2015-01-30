@@ -92,6 +92,8 @@ def sphinx_publication(c, args, app):
     :rtype: int
     """
 
+    # Download embedded git repositories and then run migrations before doing
+    # anything else.
     with app.context() as prep_app:
         assets_tasks(c, prep_app)
         primer_migration_tasks(c, prep_app)
@@ -102,7 +104,9 @@ def sphinx_publication(c, args, app):
     builder_jobs = [ ((edition, language, builder), get_sphinx_build_configuration(edition, language, builder, args))
                      for edition, language, builder in get_builder_jobs(c) ]
 
+    # Copy all source to the ``build/<branch>/source`` directory.
     migrate_all_source(builder_jobs, app)
+    # load all generated content and create tasks.
     add_content_generator_tasks(builder_jobs, app)
 
     # sphinx-build tasks are separated into their own app.
@@ -111,12 +115,10 @@ def sphinx_publication(c, args, app):
 
     build_source_copies = set()
     for ((edition, language, builder), (build_config, sconf)) in builder_jobs:
-
-        # only do these tasks once per-language+edition combination
         if build_config.paths.branch_source not in build_source_copies:
+            # only do these tasks once per-language+edition combination
             build_source_copies.add(build_config.paths.branch_source)
 
-            # these operation groups each execute in isolation of each-other and should.
             build_content_generation_tasks(build_config, app)
             refresh_dependency_tasks(build_config, app.add('app'))
 
