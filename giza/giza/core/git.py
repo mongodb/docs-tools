@@ -43,7 +43,10 @@ class GitRepo(object):
 
         if path is None:
             self.path = os.getcwd()
-            self.path = self.cmd('rev-parse', '--show-toplevel')
+            try:
+                self.path = self.cmd('rev-parse', '--show-toplevel')
+            except GitError:
+                logger.error('{0} may not be a git repository'.format(self.path))
         else:
             self.path = path
 
