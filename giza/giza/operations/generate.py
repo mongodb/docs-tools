@@ -32,6 +32,7 @@ from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images import image_tasks, image_clean
 from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
 from giza.content.param import api_tasks, api_clean
+from giza.content.links import create_manual_symlink
 from giza.content.table import table_tasks, table_clean
 from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
@@ -204,6 +205,7 @@ def source(args):
 
         build_content_generation_tasks(conf, app.add('app'))
         refresh_dependency_tasks(conf, app.add('app'))
+        create_manual_symlink(conf)
 
 @argh.expects_obj
 def migration(args):

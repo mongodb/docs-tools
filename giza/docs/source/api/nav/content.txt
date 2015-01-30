@@ -27,4 +27,4 @@ processing the content and output.
    /api/content/sphinx
    /api/content/steps
    /api/content/table
-   /api/content/toc
+   /api/content/tocs
