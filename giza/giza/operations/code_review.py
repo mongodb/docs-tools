@@ -21,7 +21,7 @@ import argh
 
 from giza.core.git import GitRepo
 from giza.config.code_review import CodeReviewConfiguration
-from giza.config.helper import fetch_config, new_credentials_config
+from giza.config.helper import fetch_config, new_skeleton_config, new_credentials_config
 
 from giza.operations.includes import render_for_console
 from giza.tools.command import command
@@ -37,8 +37,13 @@ def safe_create_code_review_data_file(fn):
         logger.info('created new code review cache')
 
 
-def get_cr_data_file(conf):
-    return os.path.join(conf.paths.projectroot, '.git', 'code_review_mapping.json')
+def get_cr_data_file(arg):
+    if isinstance(arg, GitRepo):
+        path = arg.top_level()
+    else:
+        path = arg.paths.projectroot
+
+    return os.path.join(path, '.git', 'code_review_mapping.json')
 
 @argh.expects_obj
 @argh.named('list')
@@ -58,10 +63,12 @@ def list_reviews(args):
 def close(args):
     "Removes a tracked code review."
 
-    conf = fetch_config(args)
-    cr_data_file = get_cr_data_file(conf)
+
+    conf = new_skeleton_config(args)
+    g = GitRepo()
+    cr_data_file = get_cr_data_file(g)
+
     safe_create_code_review_data_file(cr_data_file)
-    g = GitRepo(conf.paths.projectroot)
 
     with CodeReviewConfiguration.persisting(cr_data_file) as data:
         branches = data.branches.keys()
@@ -84,10 +91,10 @@ def close(args):
 def checkout(args):
     "Checks out a tracked code review branch."
 
-    conf = fetch_config(args)
-    g = GitRepo(conf.paths.projectroot)
+    conf = new_skeleton_config(args)
+    g = GitRepo()
+    cr_data_file = get_cr_data_file(g)
 
-    cr_data_file = get_cr_data_file(conf)
     safe_create_code_review_data_file(cr_data_file)
     crconf = CodeReviewConfiguration(cr_data_file)
 
@@ -101,18 +108,16 @@ def checkout(args):
         m = "no branch named {0} tracked. Please use another method to checkout this branch"
         logger.warning(m.format(args._branch_name))
 
-
-
 @argh.named('send')
 @argh.expects_obj
 def create_or_update(args):
     "Creates or updates a code review case."
 
-    conf = fetch_config(args)
     creds = new_credentials_config()
-    g = GitRepo(conf.paths.projectroot)
+    conf = new_skeleton_config(args)
+    g = GitRepo()
+    cr_data_file = get_cr_data_file(g)
 
-    cr_data_file = get_cr_data_file(conf)
     safe_create_code_review_data_file(cr_data_file)
 
     with CodeReviewConfiguration.persisting(cr_data_file) as data:
