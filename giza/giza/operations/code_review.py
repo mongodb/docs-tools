@@ -63,7 +63,6 @@ def list_reviews(args):
 def close(args):
     "Removes a tracked code review."
 
-
     conf = new_skeleton_config(args)
     g = GitRepo()
     cr_data_file = get_cr_data_file(g)
