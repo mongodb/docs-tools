@@ -18,6 +18,10 @@ Creates symbolic links in the build output based on definitions in the
 """
 
 import os.path
+import logging
+
+logger = logging.getLogger('giza.content.links')
+
 from giza.tools.files import create_link
 from giza.tools.serialization import ingest_yaml_doc
 
@@ -56,4 +60,5 @@ def create_manual_symlink(conf):
     public_links = get_public_links(conf)
 
     for name, target in public_links:
+        logger.info('creating link to "{0}", named "{1}"'.format(target, name))
         create_link(target, name)
