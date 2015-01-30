@@ -203,12 +203,23 @@ def source(args):
 
     sconf = render_sconf(args.edition, 'html', args.language, conf)
     with build_app_context(conf) as app:
-        assets_tasks(conf, app)
-        primer_migration_tasks(conf, app)
+        with app.context() pre_app:
+            assets_tasks(conf, pre_app.add('app'))
+            primer_migration_tasks(conf, pre_app)
 
-        prep_app = app.add('app')
-        source_tasks(conf, sconf, prep_app)
-        prep_app.run()
+        with app.context() as source_app:
+            source_tasks(conf, sconf, source_app)
+
+        for content, func in build_config.system.content.task_generators:
+            app.add(Task(job=func,
+                         args=[build_config],
+                         target=True))
+
+        content_generator_tasks = app.run()
+        app.reset()
+
+        for group in content_generator_tasks:
+            app.extend_queue(group)
 
         build_content_generation_tasks(conf, app.add('app'))
         refresh_dependency_tasks(conf, app.add('app'))

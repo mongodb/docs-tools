@@ -95,7 +95,7 @@ def sphinx_publication(c, args, app):
     # Download embedded git repositories and then run migrations before doing
     # anything else.
     with app.context() as prep_app:
-        assets_tasks(c, prep_app)
+        assets_tasks(c, prep_app.add('app'))
         primer_migration_tasks(c, prep_app)
 
     # assemble a for loop of tasks in the form of:

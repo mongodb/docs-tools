@@ -293,9 +293,13 @@ class BuildApp(object):
 
     @contextlib.contextmanager
     def context(self, conf=None):
-        yield self
-
-        self.run()
+        if len(self.queue) == 0:
+            yield self
+            self.run()
+        else:
+            app = self.add('app')
+            yield app
+            app.run()
 
 @contextlib.contextmanager
 def build_app_context(conf=None, app=None):
