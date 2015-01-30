@@ -34,7 +34,7 @@ import copy
 import argh
 import itertools
 
-from giza.core.app import BuildApp
+from giza.core.app import build_app_context
 from giza.config.helper import fetch_config
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.operations.deploy import deploy_tasks
@@ -210,7 +210,7 @@ def run_make_operations(targets, conf):
         else:
             logger.error('target: {0} not defined in the make interface'.format(action))
 
-    with BuildApp.context(conf) as app:
+    with build_app_context(conf) as app:
         if sphinx_opts in tasks:
             conf.runstate.languages_to_build = list(sphinx_opts['languages'])
             conf.runstate.editions_to_build = list(sphinx_opts['editions'])

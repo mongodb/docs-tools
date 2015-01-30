@@ -99,6 +99,7 @@ class BuildApp(object):
         self.dependency = dependency
 
     def reset(self):
+        self.randomize = False
         self.queue = []
         self.results = []
 
@@ -290,11 +291,17 @@ class BuildApp(object):
         self.queue = []
         return self.results
 
-    @classmethod
     @contextlib.contextmanager
-    def context(cls, conf=None):
-        app = cls(conf)
+    def context(self, conf=None):
+        yield self
 
-        yield app
+        self.run()
 
-        app.run()
+@contextlib.contextmanager
+def build_app_context(conf=None, app=None):
+    if app is None:
+        app = BuildApp(conf)
+
+    yield app
+
+    app.run()

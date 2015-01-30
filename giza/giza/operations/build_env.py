@@ -29,6 +29,7 @@ from giza.operations.packaging import fetch_package
 from giza.operations.sphinx_cmds import get_sphinx_build_configuration
 from giza.tools.files import cd, safe_create_directory, FileNotFoundError
 from giza.tools.strings import hyph_concat
+from giza.core.app import build_app_context
 
 logger = logging.getLogger('giza.operations.build_env')
 
@@ -174,7 +175,7 @@ def package(args):
 def extract(args):
     conf = fetch_config(args)
 
-    with BuildApp.context(conf) as app:
+    with build_app_context(conf) as app:
         path = fetch_package(args._path, conf)
         extract_package_at_root(path, conf)
 

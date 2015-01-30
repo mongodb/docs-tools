@@ -25,6 +25,7 @@ logger = logging.getLogger('giza.operations.generate')
 import argh
 
 from giza.core.app import BuildApp
+from giza.core.app import build_app_context
 from giza.config.helper import fetch_config
 from giza.tools.files import rm_rf
 
@@ -57,8 +58,7 @@ import giza.content.apiargs.migration
 def toc(args):
     c = fetch_config(args)
 
-
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         for task in toc_tasks(c):
             app.add(task)
 
@@ -68,7 +68,7 @@ def toc(args):
 def steps(args):
     c = fetch_config(args)
 
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         if c.runstate.clean_generated is True:
             step_clean(c, app)
         else:
@@ -82,7 +82,7 @@ def options(args):
     if c.runstate.clean_generated is True:
         option_clean(c)
     else:
-        with BuildApp.context(c) as app:
+        with build_app_context(c) as app:
             app.extend_queue(option_tasks(c))
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
@@ -90,7 +90,7 @@ def options(args):
 def api(args):
     c = fetch_config(args)
 
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         if c.runstate.clean_generated is True:
             api_clean(c, app)
         else:
@@ -101,7 +101,7 @@ def api(args):
 def assets(args):
     c = fetch_config(args)
 
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         if c.runstate.clean_generated is True:
             assets_clean(c, app)
         else:
@@ -113,7 +113,7 @@ def images(args):
     c = fetch_config(args)
     app = BuildApp(c)
 
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         if c.runstate.clean_generated is True:
             image_clean(c, app)
         else:
@@ -124,7 +124,7 @@ def images(args):
 def intersphinx(args):
     c = fetch_config(args)
 
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         if c.runstate.clean_generated is True:
             intersphinx_clean(c, app)
         else:
@@ -135,7 +135,7 @@ def intersphinx(args):
 def primer(args):
     c = fetch_config(args)
 
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         if c.runstate.clean_generated is True:
             primer_clean(c, app)
         else:
@@ -146,7 +146,7 @@ def primer(args):
 def release(args):
     c = fetch_config(args)
 
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         if c.runstate.clean_generated is True:
             release_clean(c, app)
         else:
@@ -157,7 +157,7 @@ def release(args):
 def tables(args):
     c = fetch_config(args)
 
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         if c.runstate.clean_generated is True:
             table_clean(c, app)
         else:
@@ -167,7 +167,7 @@ def tables(args):
 def examples(args):
     c = fetch_config(args)
 
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         app.extend_queue(example_tasks(c))
 
 @argh.arg('--edition', '-e')
@@ -175,7 +175,7 @@ def examples(args):
 def robots(args):
     c = fetch_config(args)
 
-    with BuildApp.context(c) as app:
+    with build_app_context(c) as app:
         app.pool = 'serial'
         robots_txt_tasks(c, app)
 
@@ -188,8 +188,12 @@ def redirects(args):
     if args.dry_run is True:
         print(''.join(make_redirect(c)))
     else:
-        with BuildApp.context(c) as app:
+        with build_app_context(c) as app:
             redirect_tasks(c, app)
+
+from giza.content.primer import primer_migration_tasks
+from giza.content.assets import assets_tasks
+
 
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')
@@ -198,7 +202,10 @@ def source(args):
     conf = fetch_config(args)
 
     sconf = render_sconf(args.edition, 'html', args.language, conf)
-    with BuildApp.context(conf) as app:
+    with build_app_context(conf) as app:
+        assets_tasks(conf, app)
+        primer_migration_tasks(conf, app)
+
         prep_app = app.add('app')
         source_tasks(conf, sconf, prep_app)
         prep_app.run()
@@ -210,7 +217,7 @@ def source(args):
 def migration(args):
     conf = fetch_config(args)
 
-    with BuildApp.context(conf) as app:
+    with build_app_context(conf) as app:
         name_changes = giza.content.apiargs.migration.task(task='source', conf=conf)
 
         for task in giza.content.apiargs.migration.file_munge_tasks(name_changes, 'source', conf):
