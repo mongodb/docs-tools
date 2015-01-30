@@ -146,15 +146,8 @@ def latex_image_transfer_tasks(conf, sconf, app):
     t.description = 'transferring images to build directory to {0}'.format(conf.paths.branch_source)
 
 def source_tasks(conf, sconf, app):
-    pre_app = app.add('app')
-    assets_tasks(conf, pre_app)
-    primer_migration_tasks(conf, pre_app)
-    pre_app.run()
-
     t = app.add('task')
     t.job = transfer_source
     t.args = [conf, sconf]
     t.target = os.path.join(conf.paths.branch_source)
     t.description = 'transferring source to {0}'.format(conf.paths.branch_source)
-
-    app.run()
