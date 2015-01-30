@@ -205,7 +205,6 @@ def source(args):
 
         build_content_generation_tasks(conf, app.add('app'))
         refresh_dependency_tasks(conf, app.add('app'))
-        create_manual_symlink(conf)
 
 @argh.expects_obj
 def migration(args):
