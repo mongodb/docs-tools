@@ -40,6 +40,7 @@ import sys
 logger = logging.getLogger('giza.content.sphinx')
 
 from giza.core.app import BuildApp
+from giza.core.task import Task
 from giza.tools.command import command
 from giza.tools.files import safe_create_directory
 from giza.tools.timing import Timer
@@ -288,42 +289,42 @@ def finalize_sphinx_build(sconf, conf, app):
     logger.info('starting to finalize the Sphinx build {0}'.format(target))
 
     if target == 'html' and not conf.runstate.fast:
-        task = app.add('task')
-        task.job = html_tarball
-        task.target = [get_tarball_name('html', conf),
-                       get_tarball_name('link-html', conf)]
-        task.args = [sconf.name, conf]
-        task.description = "creating tarball for html archive"
+        app.add(Task(job=html_tarball,
+                     args=(sconf.name, conf),
+                     target=[get_tarball_name('html', conf),
+                             get_tarball_name('link-html', conf)],
+                     dependency=None,
+                     description="creating tarball for html archive"))
     elif target == 'dirhtml' and not conf.runstate.fast:
         for job in (finalize_dirhtml_build, error_pages):
-            task = app.add('task')
-            task.job = job
-            task.target = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
-            task.dependency = None
-            task.args = [sconf, conf]
+            app.add(Task(job=job,
+                         args=(sconf, conf),
+                         target=os.path.join(conf.paths.projectroot, conf.paths.public_site_output),
+                         dependency=None))
 
         if conf.system.branched is True and conf.git.branches.current == 'master':
-            link_task = app.add('task')
-            link_task.job = create_manual_symlink
-            link_task.target = [ t[0] for t in get_public_links(conf) ]
-            link_task.dependency = get_config_paths('integration',conf)
-            link_task.dependency.append(os.path.join(conf.paths.projectroot,
-                                                     conf.paths.public_site_output))
-            link_task.args = [conf]
-            link_task.description = "create the 'manual' symlink"
+            deps = get_config_paths('integration',conf)
+            deps.append(os.path.join(conf.paths.projectroot,
+                                     conf.paths.public_site_output))
+            app.add(Task(job=create_manual_symlink,
+                         args=[conf],
+                         target=[ t[0] for t in get_public_links(conf) ],
+                         dependency=deps,
+                         description='create symlinks'))
     elif target == 'epub':
-        task = app.add('task')
-        task.job = finalize_epub_build
-        task.args = (target, conf)
-        task.description = 'finalizing epub build'
+        app.add(Task(job=finalize_epub_build,
+                     args=(target, conf),
+                     description='finalizing epub build',
+                     dependency=None,
+                     target=True))
     elif target == 'man':
         manpage_url_tasks(target, conf, app)
-        task = app.add('task')
-        task.job = man_tarball
-        task.target = [get_tarball_name('man', conf),
-                       get_tarball_name('link-man', conf)]
-        task.args = [target, conf]
-        task.description = "creating tarball for 1manpages"
+        app.add(Task(job=man_tarball,
+                     args=(target, conf),
+                     target=[get_tarball_name('man', conf),
+                             get_tarball_name('link-man', conf)],
+                     dependency=None,
+                     description="creating tarball for manpages"))
     elif target == 'slides' and not conf.runstate.fast:
         slide_tasks(sconf, conf, app)
     elif target == 'json':
@@ -335,8 +336,8 @@ def finalize_sphinx_build(sconf, conf, app):
     elif target == 'gettext':
         gettext_tasks(conf, app)
     elif target == 'linkcheck':
-        task = app.add('task')
-        task.job = printer
-        task.target = os.path.join(conf.paths.projectroot,
-                                   conf.paths.branch_output, builder, 'output.txt')
-        task.args = '{0}: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)
+        app.add(Task(job=printer,
+                     args=['{0}: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)],
+                     target=os.path.join(conf.paths.projectroot,
+                                         conf.paths.branch_output, builder, 'output.txt'),
+                     dependency=None))
