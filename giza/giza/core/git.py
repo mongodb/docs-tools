@@ -43,6 +43,7 @@ class GitRepo(object):
 
         if path is None:
             self.path = os.getcwd()
+            self.path = self.cmd('rev-parse', '--show-toplevel')
         else:
             self.path = path
 
@@ -55,6 +56,9 @@ class GitRepo(object):
             return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True)
         except CommandError as e:
             raise GitError(e)
+
+    def top_level(self):
+        return self.path
 
     def remotes(self):
         return self.cmd('remote').out.split('\n')
