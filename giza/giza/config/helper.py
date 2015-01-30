@@ -78,7 +78,7 @@ def new_skeleton_config(conf=None):
             logger.warning("cannot register content generators")
 
         return conf
-    elif isinstance(conf, RuntimeStateConfigurationBase):
+    elif isinstance(conf, RuntimeStateConfig):
         return fetch_config(conf)
     else:
         return conf
