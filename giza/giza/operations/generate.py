@@ -203,7 +203,7 @@ def source(args):
 
     sconf = render_sconf(args.edition, 'html', args.language, conf)
     with build_app_context(conf) as app:
-        with app.context() pre_app:
+        with app.context() as pre_app:
             assets_tasks(conf, pre_app.add('app'))
             primer_migration_tasks(conf, pre_app)
 
