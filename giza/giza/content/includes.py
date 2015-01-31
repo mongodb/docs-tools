@@ -32,24 +32,31 @@ from giza.tools.timing import Timer
 from rstcloth.rstcloth import RstCloth
 
 suppressed_page_prefixes = [
+    '/includes/apiargs'
+    '/includes/examples'
+    '/includes/extracts'
     '/includes/generated',
-    '/includes/table',
-    '/includes/steps',
     '/includes/install',
     '/includes/manpage',
-    '/includes/toc',
-    '/includes/ref-toc',
-    '/includes/ref-spec',
     '/includes/metadata',
+    '/includes/options',
+    '/includes/ref-spec',
+    '/includes/ref-toc',
+    '/includes/releases',
+    '/includes/steps',
+    '/includes/table',
+    '/includes/toc',
 ]
 
 def write_include_index(overview_fn, conf):
-    fd = include_file_data(conf)
-    r = build_page(fd, conf)
+    with Timer('include index generator'):
 
-    if r is not None:
-        r.write(overview_fn)
-        logger.info('includes: generated /meta/includes source page.')
+        fd = include_file_data(conf)
+        r = build_page(fd, conf)
+
+        if r is not None:
+            r.write(overview_fn)
+            logger.info('includes: generated /meta/includes source page.')
 
 def include_file_data(conf):
     inc_path = os.path.join(conf.paths.includes)
@@ -234,6 +241,9 @@ def add_meta(r, page_name, record):
             r.newline()
 
 def includes_tasks(conf, app):
+    if conf.runstate.fast:
+        return
+
     includes_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
     meta_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_source, 'meta')
 
