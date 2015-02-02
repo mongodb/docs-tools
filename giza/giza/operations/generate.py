@@ -25,6 +25,7 @@ logger = logging.getLogger('giza.operations.generate')
 import argh
 
 from giza.core.app import BuildApp
+from giza.core.task import Task
 from giza.core.app import build_app_context
 from giza.config.helper import fetch_config
 
@@ -204,15 +205,18 @@ def source(args):
         with app.context() as source_app:
             source_tasks(conf, sconf, source_app)
 
-        for content, func in build_config.system.content.task_generators:
+        for content, func in conf.system.content.task_generators:
             app.add(Task(job=func,
-                         args=[build_config],
+                         args=[conf],
                          target=True))
 
         content_generator_tasks = app.run()
         app.reset()
 
         for group in content_generator_tasks:
+            if group is None:
+                continue
+
             app.extend_queue(group)
 
         build_content_generation_tasks(conf, app.add('app'))
