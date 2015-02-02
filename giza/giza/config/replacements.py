@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from giza.config.base import RecursiveConfigurationBase
-from giza.tools.serialization import dict_from_list
 
 class ReplacementData(RecursiveConfigurationBase):
     def ingest(self, input_obj):
@@ -22,7 +21,7 @@ class ReplacementData(RecursiveConfigurationBase):
                 input_obj = input_obj[0]
             else:
                 try:
-                    input_obj = dict_from_list('edition', input_obj)
+                    input_obj = dict( (item['edition'], item) for item in input_obj )
                 except KeyError:
                     logger.error("replacement specification is malformed. documents need editions")
                     return

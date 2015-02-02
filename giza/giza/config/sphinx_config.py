@@ -31,11 +31,6 @@ def is_legacy_sconf(conf):
     else:
         return False
 
-def get_sconf_base(conf):
-    sconf_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, 'sphinx.yaml')
-
-    return ingest_yaml_doc(sconf_path)
-
 def render_sconf(edition, builder, language, conf):
     sconf_base = get_sconf_base(conf)
 

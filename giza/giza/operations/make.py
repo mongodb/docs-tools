@@ -40,7 +40,6 @@ from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.operations.deploy import deploy_tasks
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.operations.build_env import env_package_worker
-from giza.tools.serialization import dict_from_list
 
 logger = logging.getLogger('giza.operations.make')
 
@@ -171,7 +170,7 @@ def run_make_operations(targets, conf):
     packaging_opts = { }
 
     sphinx_builders = avalible_sphinx_builders()
-    deploy_configs = dict_from_list('target', conf.system.files.data.push)
+    deploy_configs = dict((item['target'], item) for item in conf.system.files.data.push)
 
     tasks = []
     for action, options in targets:

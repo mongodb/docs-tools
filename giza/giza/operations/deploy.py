@@ -25,7 +25,6 @@ from giza.core.app import BuildApp
 from giza.deploy import Deploy, deploy_target
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.tools.command import command
-from giza.tools.serialization import dict_from_list
 
 import argh
 import onetimepass as otp
@@ -82,9 +81,7 @@ def deploy_tasks(c, app):
     This function glues the config with the rsync command creation and then
     runs the commands.
     """
-
-    pconf = c.system.files.data.push
-    pconf = dict_from_list('target', pconf)
+    pconf = dict( (item['target'], item) for item in c.system.files.data.push )
 
     for target in c.runstate.push_targets:
         d = Deploy(c)

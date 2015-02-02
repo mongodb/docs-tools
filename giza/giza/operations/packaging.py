@@ -32,7 +32,6 @@ except ImportError:
 import argh
 
 from giza.config.helper import fetch_config
-from giza.tools.serialization import dict_from_list
 from giza.tools.files import safe_create_directory, FileNotFoundError
 from giza.operations.deploy import deploy_tasks
 
@@ -89,7 +88,7 @@ def create_package(target, conf):
         pconf = conf.system.files.data.push[0]
         target = pconf['target']
     else:
-        pconf = dict_from_list('target', conf.system.files.data.push)[target]
+        pconf = dict((item['target'], item) for item in conf.system.files.data.push)[target]
 
     files_to_archive = []
 
