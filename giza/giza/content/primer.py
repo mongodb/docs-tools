@@ -29,17 +29,25 @@ import os
 import logging
 import re
 
+import yaml
+
 logger = logging.getLogger('giza.content.primer')
 
 from giza.tools.files import copy_if_needed, copy_always, expand_tree, verbose_remove
-from giza.tools.serialization import ingest_yaml_list
 from giza.tools.transformation import process_page, truncate_file, append_to_file
 from giza.core.app import BuildApp
 
 def get_migration_specifications(conf):
-    return [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
-                                                   conf.paths.builddata))
-             if  conf.project.name in os.path.basename(fn) and 'migrations' in fn ]
+    output = []
+
+    for migration_spec in [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
+                                                                  conf.paths.builddata))
+                            if  conf.project.name in os.path.basename(fn) and 'migrations' in fn ]:
+
+        with open(migration_spec, 'r') as f:
+            output.extend(yaml.safe_load_all(f))
+
+    return output
 
 def directory_expansion(source_path, page, conf):
     new_page = { 'sources': expand_tree(source_path, None)}
@@ -122,56 +130,55 @@ def resolve_page_path(page, conf):
 def primer_migration_tasks(conf, app):
     "Migrates all manual files to primer according to the spec. As needed."
 
-    migration_paths = get_migration_specifications(conf)
+    migrations = get_migration_specifications(conf)
+
+    if len(migrations) == 0:
+        return False
+
     second_app = BuildApp()
 
-    if len(migration_paths) == 0:
-        return False
-    else:
-        migrations = ingest_yaml_list(*migration_paths)
+    for page in migrations:
+        if 'sources' in page:
+            migrations.extend(convert_multi_source(page))
+            continue
 
-        for page in migrations:
-            if 'sources' in page:
-                migrations.extend(convert_multi_source(page))
-                continue
+        page = fix_migration_paths(page)
+        fq_target, fq_source = resolve_page_path(page, conf)
 
-            page = fix_migration_paths(page)
-            fq_target, fq_source = resolve_page_path(page, conf)
+        if page['source'].endswith('/'):
+            migrations.extend(directory_expansion(fq_source, page, conf))
+            continue
 
-            if page['source'].endswith('/'):
-                migrations.extend(directory_expansion(fq_source, page, conf))
-                continue
+        page = trim_leading_slash_from_pages(page)
+        prev = build_migration_task(fq_target, fq_source, app)
 
-            page = trim_leading_slash_from_pages(page)
-            prev = build_migration_task(fq_target, fq_source, app)
+        if 'truncate' in page:
+            build_truncate_task(page['truncate'], fq_target, fq_source, app)
 
-            if 'truncate' in page:
-                build_truncate_task(page['truncate'], fq_target, fq_source, app)
+        if 'transform' in page:
+            if not isintance(page['transform'], list):
+                page['transform'] = [page['transform']]
 
-            if 'transform' in page:
-                if not isintance(page['transform'], list):
-                    page['transform'] = [page['transform']]
+            prev.job = copy_always
+            process_page(fn=fq_target,
+                         output_fn=fq_target,
+                         regex=[ (re.compile(rs['regex']), rs['replace'])
+                                 for rs in page['transform'] ],
+                         app=second_app,
+                         builder='primer-processing')
 
-                prev.job = copy_always
-                process_page(fn=fq_target,
-                             output_fn=fq_target,
-                             regex=[ (re.compile(rs['regex']), rs['replace'])
-                                     for rs in page['transform'] ],
-                             app=second_app,
-                             builder='primer-processing')
+        if 'append' in page:
+            prev.job = copy_always
+            build_append_task(page, fq_target, migration_paths, app)
 
-            if 'append' in page:
-                prev.job = copy_always
-                build_append_task(page, fq_target, migration_paths, app)
+    if len(second_app.queue) >= 1:
+        app.add(second_app)
 
-        if len(second_app.queue) >= 1:
-            app.add(second_app)
+    msg = 'added {0} migration jobs'.format(len(migrations))
 
-        msg = 'added {0} migration jobs'.format(len(migrations))
+    logger.info(msg)
 
-        logger.info(msg)
-
-        return True
+    return True
 
 
 ########## Task Creators
@@ -179,8 +186,7 @@ def primer_migration_tasks(conf, app):
 def clean(conf, app):
     "Removes all migrated primer files according to the current spec."
 
-    migration_paths = get_migration_specifications(conf)
-    migrations = ingest_yaml_list(*migration_paths)
+    migrations = get_migration_specifications(conf)
 
     targets = []
     for page in migrations:

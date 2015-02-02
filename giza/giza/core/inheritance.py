@@ -30,9 +30,9 @@ import copy
 logger = logging.getLogger('giza.core.inheritance')
 
 import jinja2
+import yaml
 
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
-from giza.tools.serialization import ingest_yaml_list
 from giza.tools.files import safe_create_directory
 from giza.content.helper import level_characters, edition_check
 
@@ -305,8 +305,9 @@ class DataContentBase(RecursiveConfigurationBase):
             logger.warning('cannot use invalid data cache instance.')
 
     def ingest(self, src):
-        if not isinstance(src, list) and os.path.exists(src):
-            src = ingest_yaml_list(src)
+        if not isinstance(src, list) and os.path.isfile(src):
+            with open(src, 'r') as f:
+                src = [ doc for doc in yaml.safe_load_all(f) ]
 
         for doc in src:
             if edition_check(doc, self.conf) is False:
@@ -453,7 +454,9 @@ class DataCache(RecursiveConfigurationBase):
 
     def add_file(self, fn):
         if fn not in self.cache or self.cache[fn] == []:
-            data = ingest_yaml_list(fn)
+            with open(fn, 'r') as f:
+                data = [ doc for doc in yaml.safe_load_all(f) ]
+
             self.cache[fn] = self.content_class(data, self, self.conf)
         else:
             logger.debug('populated file {0} exists in the cache'.format(fn))
