@@ -25,7 +25,6 @@ import re
 logger = logging.getLogger('giza.content.post.singlehtml')
 
 from giza.core.task import check_dependency
-from giza.tools.strings import hyph_concat
 from giza.tools.files import (expand_tree, copy_if_needed, decode_lines_from_file,
                               encode_lines_to_file, FileNotFoundError, safe_create_directory)
 
@@ -60,7 +59,7 @@ def finalize_single_html_tasks(builder, conf, app):
     safe_create_directory(single_html_dir)
 
     found_src = False
-    for base_path in (builder, hyph_concat(builder, conf.project.edition)):
+    for base_path in (builder, '-'.join((builder, conf.project.edition))):
         if found_src is True:
             break
 

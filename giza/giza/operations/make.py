@@ -41,7 +41,6 @@ from giza.operations.deploy import deploy_tasks
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.operations.build_env import env_package_worker
 from giza.tools.serialization import dict_from_list
-from giza.tools.strings import hyph_concat
 
 logger = logging.getLogger('giza.operations.make')
 
@@ -194,7 +193,7 @@ def run_make_operations(targets, conf):
                 push_opts['targets'].add(action)
 
             for build_option in options:
-                deploy_target_name = hyph_concat(action, build_option)
+                deploy_target_name = '-'.join((action, build_option))
 
                 if build_option in deploy_configs:
                     push_opts['targets'].add(build_option)

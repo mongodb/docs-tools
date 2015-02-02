@@ -26,7 +26,6 @@ logger = logging.getLogger('giza.content.post.latex')
 from giza.content.helper import edition_check
 from giza.tools.command import command
 from giza.tools.serialization import ingest_yaml_list
-from giza.tools.strings import hyph_concat
 from giza.tools.transformation import process_page
 from giza.tools.files import (create_link, copy_if_needed,
                               decode_lines_from_file, encode_lines_to_file)
@@ -98,7 +97,7 @@ def pdf_tasks(sconf, conf, app):
 
     # the path that sphinx writes tex files to are are different for editions.
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
-        latex_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, hyph_concat(target, conf.project.edition))
+        latex_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, '-'.join((target, conf.project.edition)))
     else:
         latex_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, target)
 

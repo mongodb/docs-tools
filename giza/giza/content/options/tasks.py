@@ -18,7 +18,6 @@ import logging
 logger = logging.getLogger('giza.content.options.tasks')
 
 from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
-from giza.tools.strings import hyph_concat
 from giza.content.options.inheritance import OptionDataCache
 from giza.content.options.views import render_options
 from giza.config.content import new_content_type
@@ -39,7 +38,7 @@ def option_tasks(conf):
     tasks = []
     for dep_fn, option in o.content_iter():
         output_fn = os.path.join(conf.system.content.options.fn_prefix,
-                                 hyph_concat(option.directive, option.program, option.name) + '.rst')
+                                 ''.join((option.directive, '-', option.program, '-', option.name, '.rst'))
 
         t = Task(job=write_options,
                  args=(option, output_fn, conf),

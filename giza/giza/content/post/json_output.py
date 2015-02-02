@@ -27,7 +27,6 @@ import logging
 logger = logging.getLogger('giza.content.post.json_output')
 
 from giza.tools.command import command
-from giza.tools.strings import dot_concat
 from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
 from giza.tools.transformation import munge_content
 
@@ -82,10 +81,8 @@ def json_output_tasks(conf, app):
             path = os.path.join(conf.paths.branch_output,
                                 'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
 
-
-
-        fjson = dot_concat(path, 'fjson')
-        json = dot_concat(path, 'json')
+        fjson = path + '.fjson'
+        json = path + '.json'
 
         task = app.add('task')
         task.target = json

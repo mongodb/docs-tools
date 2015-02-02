@@ -64,7 +64,6 @@ from rstcloth.rstcloth import RstCloth
 from giza.tools.command import command
 from giza.tools.files import verbose_remove
 from giza.tools.serialization import ingest_yaml_list
-from giza.tools.strings import dot_concat, hyph_concat
 
 ## Internal Supporting Methods
 
@@ -214,9 +213,9 @@ def image_tasks(conf, app):
         image['conf'] = conf
 
         source_base = os.path.join(conf.paths.projectroot, image['dir'], image['name'])
-        source_file = dot_concat(source_base, 'svg')
+        source_file = source_base + '.svg'
         source_core = os.path.join(conf.paths.projectroot, conf.paths.branch_images, image['name'] + '.svg' )
-        rst_file = dot_concat(source_base, 'rst')
+        rst_file = source_base '.rst'
 
         if not os.path.isfile(source_core):
             logger.error('"{0}" does not exist'.format(source_core))
@@ -271,12 +270,13 @@ def image_clean(conf, app):
 
         rm_rst = app.add('task')
         rm_rst.job = verbose_remove
-        rm_rst.args = dot_concat(source_base, 'rst')
+        rm_rst.args = source_base + '.rst'
 
         for output in image['output']:
             rm_tag_image = app.add('task')
             rm_tag_image.job = verbose_remove
+
             if 'tag' in output:
-                rm_tag_image.args = dot_concat(hyph_concat(source_base, output['tag']), 'png')
+                rm_tag_image.args = ''.join((source_base, '-', output['tag'], '-', '.png'))
             else:
-                rm_tag_image.args = dot_concat(source_base, 'png')
+                rm_tag_image.args = source_base, '.png'

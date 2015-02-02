@@ -20,7 +20,6 @@ logger = logging.getLogger('giza.content.tocs.tasks')
 from giza.content.tocs.inheritance import TocDataCache
 from giza.content.tocs.views import render_toctree, render_dfn_list, render_toc_table
 from giza.tools.files import safe_create_directory
-from giza.tools.strings import hyph_concat
 from giza.config.content import new_content_type
 from giza.core.task import Task
 
@@ -81,7 +80,7 @@ def toc_tasks(conf):
             deps.extend(toc_data.spec_deps())
 
         if 'ref-toc' in dep_fn:
-            out_fn = os.path.join(conf.system.content.toc.output_dir, hyph_concat('table', fn_basename))
+            out_fn = os.path.join(conf.system.content.toc.output_dir, 'table-' + fn_basename))
 
             reft = Task(job=write_toc_table,
                         args=(out_fn, toc_items),
@@ -90,7 +89,7 @@ def toc_tasks(conf):
                         description="write ref toc table to '{0}'".format(out_fn))
             tasks.append(reft)
         elif 'ref-spec' in dep_fn:
-            out_fn = os.path.join(conf.system.content.toc.output_dir, hyph_concat('table-spec', fn_basename))
+            out_fn = os.path.join(conf.system.content.toc.output_dir, 'table-spec-' + fn_basename))
 
             refspec = Task(job=write_toc_table,
                            args=(out_fn, toc_items),
@@ -99,7 +98,7 @@ def toc_tasks(conf):
                            description="write ref spec table to '{0}'".format(out_fn))
             tasks.append(refspec)
         else:
-            out_fn = os.path.join(conf.system.content.toc.output_dir, hyph_concat('dfn-list', fn_basename))
+            out_fn = os.path.join(conf.system.content.toc.output_dir, 'dfn-list-' + fn_basename))
             dt = Task(job=write_dfn_list_output,
                       args=(out_fn, toc_items),
                       target=out_fn,

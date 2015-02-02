@@ -20,7 +20,6 @@ import sphinx.builders
 from giza.config.base import ConfigurationBase
 from giza.config.base import RecursiveConfigurationBase
 from giza.tools.serialization import ingest_yaml_doc
-from giza.tools.strings import hyph_concat
 
 logger = logging.getLogger('giza.config.sphinx_config')
 
@@ -51,10 +50,10 @@ def resolve_builder_path(builder, edition, language, conf):
     dirname = builder
 
     if edition is not None and edition != conf.project.name:
-        dirname = hyph_concat(dirname, edition)
+        dirname = '-'.join((dirname, edition))
 
     if language is not None and language != 'en':
-        dirname = hyph_concat(dirname, language)
+        dirname = '-'.join((dirname, language))
 
     return dirname
 
@@ -98,7 +97,7 @@ class SphinxConfig(RecursiveConfigurationBase):
         if edition is None:
             lookup_opts.append(self.builder)
         else:
-            lookup_opts.append(hyph_concat(self.builder, self.edition))
+            lookup_opts.append('-'.join((self.builder, self.edition)))
 
         base = {}
         for opt in lookup_opts:

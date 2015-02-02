@@ -27,7 +27,6 @@ logger = logging.getLogger('giza.content.table')
 
 from rstcloth.table import TableBuilder, YamlTable, ListTable
 
-from giza.tools.strings import dot_concat, hyph_concat
 from giza.tools.files import expand_tree, verbose_remove
 
 #################### Table Builder ####################
@@ -35,12 +34,12 @@ from giza.tools.files import expand_tree, verbose_remove
 def _get_table_output_name(fn):
     base, leaf = os.path.split(os.path.splitext(fn)[0])
 
-    return dot_concat(os.path.join(base, 'table', leaf[6:]), 'rst')
+    return os.path.join(base, 'table', leaf[6:]) + '.rst'
 
 def _get_list_table_output_name(fn):
     base, leaf = os.path.split(os.path.splitext(fn)[0])
 
-    return dot_concat(hyph_concat(os.path.join(base, 'table', leaf[6:]), 'list'), 'rst')
+    return ''.join((os.path.join(base, 'table', leaf[6:]), '-list', '.rst'))
 
 def make_parent_dirs(*paths):
     for path in paths:

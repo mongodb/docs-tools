@@ -22,7 +22,6 @@ import logging
 
 logger = logging.getLogger('giza.content.post.archives')
 
-from giza.tools.strings import hyph_concat
 from giza.tools.files import copy_if_needed, create_link, tarball
 
 def get_tarball_name(builder, conf):
@@ -31,13 +30,13 @@ def get_tarball_name(builder, conf):
     elif builder == 'link-man':
         fn = "manpages.tar.gz"
     elif builder == 'link-slides':
-        fn = hyph_concat(conf.project.name, 'slides') + '.tar.gz'
+        fn = ''.join((conf.project.name, '-', 'slides', '.tar.gz'))
     elif builder.startswith('man'):
-        fn = hyph_concat('manpages', conf.git.branches.current) + '.tar.gz'
+        fn = ''.join(('manpages', '-', conf.git.branches.current, '.tar.gz'))
     elif builder.startswith('html'):
-        fn = hyph_concat(conf.project.name, conf.git.branches.current) + '.tar.gz'
+        fn = ''.join((conf.project.name, '-', conf.git.branches.current, '.tar.gz'))
     else:
-        fn = hyph_concat(conf.project.name, conf.git.branches.current, builder) + '.tar.gz'
+        fn = ''.join((conf.project.name, '-', conf.git.branches.current, builder, '.tar.gz'))
 
     return os.path.join(conf.paths.projectroot,
                         conf.paths.public_site_output,

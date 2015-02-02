@@ -29,7 +29,6 @@ from giza.config.helper import fetch_config
 from giza.config.sphinx_config import resolve_builder_path
 from giza.core.app import BuildApp
 from giza.tools.command import command
-from giza.tools.strings import hyph_concat
 from giza.tools.files import FileLogger
 
 from sphinx_intl.commands import update_txconfig_resources
@@ -104,7 +103,7 @@ def update(conf):
     if conf.project.edition is not None and conf.project.edition != conf.project.name:
         project_name.append(conf.project.edition)
 
-    project_name = hyph_concat(*project_name)
+    project_name = '-'.join(project_name)
 
     logger.info('starting translation upload with sphinx-intl')
 

@@ -30,7 +30,6 @@ else:
 
 import argh
 from giza.config.helper import fetch_config
-from giza.tools.strings import hyph_concat
 
 class RequestHandler(http_server.SimpleHTTPRequestHandler):
     """Request handler wrapper that hosts files rooted at a particular
@@ -59,7 +58,7 @@ def start(args):
     elif conf.runstate.edition is not None:
         RequestHandler.root = os.path.join(conf.paths.projectroot,
                                            conf.paths.branch_output,
-                                           hyph_concat(args.builder[0], args.edition))
+                                           '-'.join((args.builder[0], args.edition)))
     else:
         RequestHandler.root = os.path.join(conf.paths.projectroot,
                                            conf.paths.branch_output,

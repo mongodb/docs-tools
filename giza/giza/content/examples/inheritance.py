@@ -30,7 +30,6 @@ from giza.content.examples.models import ExampleData, ExampleCase
 from giza.content.helper import edition_check
 from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache
 from giza.tools.serialization import ingest_yaml_list
-from giza.tools.strings import hyph_concat
 
 # Example specific inheritance machinery
 
@@ -89,7 +88,7 @@ class ExampleFile(DataContentBase):
         else:
             op = ExampleCase(doc, self.conf)
             if 'edition' in op:
-                op.ref = hyph_concat(str(op.ref), op.edition)
+                op.ref = '-'.join((str(op.ref), op.edition))
 
             if op.ref in self.content:
                 m = 'example named {0} already exists'.format(op.ref)

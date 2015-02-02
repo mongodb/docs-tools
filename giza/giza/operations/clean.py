@@ -29,7 +29,6 @@ from giza.core.app import BuildApp
 from giza.config.main import Configuration
 from giza.config.helper import fetch_config, get_builder_jobs
 from giza.tools.files import rm_rf
-from giza.tools.strings import hyph_concat
 from giza.config.sphinx_config import resolve_builder_path
 
 @argh.arg('--builder', '-b')

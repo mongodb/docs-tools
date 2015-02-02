@@ -42,7 +42,6 @@ from giza.content.assets import assets_tasks
 from giza.content.dependencies import dump_file_hashes
 from giza.tools.command import command
 from giza.tools.files import InvalidFile, safe_create_directory
-from giza.tools.strings import hyph_concat
 
 ##### Transfer Source Files
 
@@ -116,7 +115,7 @@ def transfer_images(conf, sconf):
     elif sconf.builder == 'latex':
 
         if 'edition' in sconf and sconf.edition is not None:
-            builder_dir = hyph_concat(sconf.builder, sconf.edition)
+            builder_dir = '-'.join((sconf.builder, sconf.edition))
         else:
             builder_dir = sconf.builder
 
