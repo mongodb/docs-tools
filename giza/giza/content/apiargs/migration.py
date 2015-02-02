@@ -143,6 +143,8 @@ def transform_data(task, data, fn, silent, conf):
 
         if doc['object']['name'].endswith('()'):
             doc['object']['name'] = doc['object']['name'][:-2]
+        if 'field' not in doc:
+            doc['field'] = {'optional': False, 'type': 'param'}
 
         if silent is False and ('interface' in meta and meta['interface'] != doc['object']['type']):
             logger.warning("interface type (cmd, method) values do not agree in: " + fn)
@@ -183,9 +185,9 @@ def file_munge_tasks(name_changes, loc, conf):
     ]
 
     if loc == 'source':
-        ref_files = expand_tree(os.path.join(conf.paths.projectroot, conf.paths.branch_source, 'reference'), 'txt')
-    elif loc == 'branch':
         ref_files = expand_tree(os.path.join(conf.paths.projectroot, conf.paths.source, 'reference'), 'txt')
+    elif loc == 'branch':
+        ref_files = expand_tree(os.path.join(conf.paths.projectroot, conf.paths.branch_source, 'reference'), 'txt')
 
     for old, new in name_changes:
         re_pattern = (re.compile(r'include:: ' + old), r'include:: ' + new)
