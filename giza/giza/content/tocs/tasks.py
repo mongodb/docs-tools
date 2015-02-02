@@ -80,7 +80,7 @@ def toc_tasks(conf):
             deps.extend(toc_data.spec_deps())
 
         if 'ref-toc' in dep_fn:
-            out_fn = os.path.join(conf.system.content.toc.output_dir, 'table-' + fn_basename))
+            out_fn = os.path.join(conf.system.content.toc.output_dir, 'table-' + fn_basename)
 
             reft = Task(job=write_toc_table,
                         args=(out_fn, toc_items),
@@ -89,7 +89,7 @@ def toc_tasks(conf):
                         description="write ref toc table to '{0}'".format(out_fn))
             tasks.append(reft)
         elif 'ref-spec' in dep_fn:
-            out_fn = os.path.join(conf.system.content.toc.output_dir, 'table-spec-' + fn_basename))
+            out_fn = os.path.join(conf.system.content.toc.output_dir, 'table-spec-' + fn_basename)
 
             refspec = Task(job=write_toc_table,
                            args=(out_fn, toc_items),
@@ -98,7 +98,7 @@ def toc_tasks(conf):
                            description="write ref spec table to '{0}'".format(out_fn))
             tasks.append(refspec)
         else:
-            out_fn = os.path.join(conf.system.content.toc.output_dir, 'dfn-list-' + fn_basename))
+            out_fn = os.path.join(conf.system.content.toc.output_dir, 'dfn-list-' + fn_basename)
             dt = Task(job=write_dfn_list_output,
                       args=(out_fn, toc_items),
                       target=out_fn,

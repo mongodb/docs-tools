@@ -214,8 +214,8 @@ def image_tasks(conf, app):
 
         source_base = os.path.join(conf.paths.projectroot, image['dir'], image['name'])
         source_file = source_base + '.svg'
-        source_core = os.path.join(conf.paths.projectroot, conf.paths.branch_images, image['name'] + '.svg' )
-        rst_file = source_base '.rst'
+        source_core = os.path.join(conf.paths.projectroot, conf.paths.branch_images, image['name'] + '.svg')
+        rst_file = source_base + '.rst'
 
         if not os.path.isfile(source_core):
             logger.error('"{0}" does not exist'.format(source_core))
