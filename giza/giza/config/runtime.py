@@ -21,8 +21,9 @@ import multiprocessing
 logger = logging.getLogger('giza.config.runtime')
 
 from giza.core.git import GitError
-from giza.config.base import ConfigurationBase, ConfigurationError
+from giza.config.base import ConfigurationBase
 from giza.config.sphinx_config import avalible_sphinx_builders
+from giza.config.error import ConfigurationError
 
 class RuntimeStateConfigurationBase(ConfigurationBase):
     def __init__(self, obj=None):

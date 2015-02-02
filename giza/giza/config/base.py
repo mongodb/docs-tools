@@ -21,9 +21,6 @@ logger = logging.getLogger('giza.config.base')
 
 from giza.tools.serialization import ingest_yaml_doc, ingest_json_doc, write_json, write_yaml
 
-class ConfigurationError(Exception):
-    pass
-
 class ConfigurationBase(object):
     _option_registry = []
     _version = 0
@@ -61,6 +58,9 @@ class ConfigurationBase(object):
 
         return input_obj
 
+    def __contains__(self, key):
+        return key in self.state
+
     def __getattr__(self, key):
         try:
             return object.__getattribute__(self, key)
@@ -73,17 +73,6 @@ class ConfigurationBase(object):
                     logger.debug(m)
                 raise AttributeError(m, e.message)
 
-    @property
-    def state(self):
-        return self._state
-
-    @state.setter
-    def state(self, value):
-        logger.warning('cannot set state record directly')
-
-    def __contains__(self, key):
-        return key in self.state
-
     def __setattr__(self, key, value):
         if key in self._option_registry:
             self.state[key] = value
@@ -93,6 +82,14 @@ class ConfigurationBase(object):
             msg = 'configuration object {0} lacks support for "{1}" value'.format(type(self), key)
             logger.error(msg)
             raise TypeError(msg)
+
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, value):
+        logger.warning('cannot set state record directly')
 
     @staticmethod
     def _is_value_type(value):
