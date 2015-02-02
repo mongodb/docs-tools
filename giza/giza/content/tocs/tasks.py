@@ -32,8 +32,8 @@ def register_toc(conf):
 
     conf.system.content.add(name='toc', definition=definition)
 
-def write_toc_tree_output(fn, toc_items):
-    content = render_toctree(toc_items)
+def write_toc_tree_output(fn, toc_items, is_ref):
+    content = render_toctree(toc_items, is_ref)
     content.write(fn)
     logger.info("wrote toctree to: " + fn)
 
@@ -56,10 +56,13 @@ def toc_tasks(conf):
         deps = [dep_fn]
         if 'ref-toc-' in dep_fn:
             base_offset = 8
+            is_ref = True
         elif 'ref-spec-' in dep_fn:
             base_offset = 9
+            is_ref = True
         else:
             base_offset = 4
+            is_ref = False
 
         fn_basename = os.path.basename(dep_fn)[base_offset:].replace('yaml', 'rst')
 
@@ -69,7 +72,7 @@ def toc_tasks(conf):
             out_fn = os.path.join(conf.system.content.toc.output_dir, fn_basename)
 
             t = Task(job=write_toc_tree_output,
-                     args=(out_fn, toc_items),
+                     args=(out_fn, toc_items, is_ref),
                      target=out_fn,
                      dependency=dep_fn,
                      description="writing toctree to '{0}'".format(out_fn))

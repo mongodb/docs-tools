@@ -19,7 +19,7 @@ logger = logging.getLogger('giza.content.tocs.views')
 from rstcloth.rstcloth import RstCloth
 from rstcloth.table import TableBuilder, RstTable, TableData
 
-def render_toctree(toc_items):
+def render_toctree(toc_items, is_ref=False):
     r = RstCloth()
 
     r.directive('class', 'hidden')
@@ -28,7 +28,7 @@ def render_toctree(toc_items):
     r.newline()
 
     for entry in toc_items:
-        if 'name' in entry:
+        if is_ref is False and 'name' in entry:
             r.content('{0} <{1}>'.format(entry.name, entry.file), indent=6, wrap=False)
         else:
             r.content(entry.file, indent=6, wrap=False)
