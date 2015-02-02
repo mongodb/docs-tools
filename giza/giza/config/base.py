@@ -15,12 +15,11 @@
 import logging
 import os.path
 import json
+import contextlib
 
-from contextlib import contextmanager
+import yaml
 
 logger = logging.getLogger('giza.config.base')
-
-from giza.tools.serialization import ingest_yaml_doc, write_yaml
 
 class ConfigurationBase(object):
     _option_registry = []
@@ -46,13 +45,13 @@ class ConfigurationBase(object):
         elif not isinstance(input_obj, ConfigurationBase) and os.path.isfile(input_obj):
             self._source_fn = input_obj
 
-            if input_obj.endswith('json'):
-                with open(input_obj, 'r') as f:
+            with open(input_obj, 'r') as f:
+                if input_obj.endswith('json'):
                     input_obj = json.load(f)
-            elif input_obj.endswith('yaml'):
-                input_obj = ingest_yaml_doc(input_obj)
-            else:
-                logger.error("file {0} has unknown data format".format(input_obj))
+                elif input_obj.endswith('yaml'):
+                    input_obj = yaml.safe_load(f)
+                else:
+                    logger.error("file {0} has unknown data format".format(input_obj))
         else:
             msg = 'cannot ingest Configuration obj from object with type {0}'.format(type(input_obj))
             logger.critical(msg)
@@ -155,7 +154,7 @@ class ConfigurationBase(object):
             write_yaml(self.dict(safe=False), fn)
 
     @classmethod
-    @contextmanager
+    @contextlib.contextmanager
     def persisting(cls, fn, override=False):
         if not os.path.isfile(fn):
             write_json({}, fn)

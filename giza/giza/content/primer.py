@@ -27,12 +27,14 @@ transformation tasks to a :class:`giza.core.app.BuildApp()` instance.
 
 import os
 import logging
+import re
 
 logger = logging.getLogger('giza.content.primer')
 
 from giza.tools.files import copy_if_needed, copy_always, expand_tree, verbose_remove
 from giza.tools.serialization import ingest_yaml_list
-from giza.tools.transformation import post_process_tasks, truncate_file, append_to_file
+from giza.tools.transformation import process_page, truncate_file, append_to_file
+from giza.core.app import BuildApp
 
 def get_migration_specifications(conf):
     return [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
@@ -56,7 +58,6 @@ def directory_expansion(source_path, page, conf):
                                    p['source'][len(source_path)+1:])
 
         pages.append(p)
-
 
     return pages
 
@@ -122,13 +123,13 @@ def primer_migration_tasks(conf, app):
     "Migrates all manual files to primer according to the spec. As needed."
 
     migration_paths = get_migration_specifications(conf)
+    second_app = BuildApp()
 
     if len(migration_paths) == 0:
         return False
     else:
         migrations = ingest_yaml_list(*migration_paths)
 
-        munge_jobs = []
         for page in migrations:
             if 'sources' in page:
                 migrations.extend(convert_multi_source(page))
@@ -148,14 +149,24 @@ def primer_migration_tasks(conf, app):
                 build_truncate_task(page['truncate'], fq_target, fq_source, app)
 
             if 'transform' in page:
+                if not isintance(page['transform'], list):
+                    page['transform'] = [page['transform']]
+
                 prev.job = copy_always
-                munge_jobs.append(build_transform_task(page['transform'], fq_target))
+                process_page(fn=fq_target,
+                             output_fn=fq_target,
+                             regex=[ (re.compile(rs['regex']), rs['replace'])
+                                     for rs in page['transform'] ],
+                             app=second_app,
+                             builder='primer-processing')
 
             if 'append' in page:
                 prev.job = copy_always
                 build_append_task(page, fq_target, migration_paths, app)
 
-        post_process_tasks(app=app, tasks=munge_jobs)
+        if len(second_app.queue) >= 1:
+            app.add(second_app)
+
         msg = 'added {0} migration jobs'.format(len(migrations))
 
         logger.info(msg)
@@ -197,13 +208,6 @@ def build_migration_task(target, source, app):
     task.args = [ source, target, 'primer' ]
 
     return task
-
-def build_transform_task(transform, target):
-    return {
-        'file': target,
-        'type': 'primer-processing',
-        'transform': transform
-    }
 
 def build_append_task(page, target, spec_files, app):
     task = app.add('task')

@@ -35,7 +35,6 @@ from giza.config.corpora import CorporaConfig
 from giza.config.helper import fetch_config
 from giza.config.translate import TranslateConfig
 from giza.core.app import BuildApp
-from giza.tools.serialization import ingest_yaml_doc
 
 logger = logging.getLogger('giza.operations.translate')
 
@@ -48,7 +47,7 @@ def create_corpora(args):
     if args.t_corpora_config is None:
         cconf = conf.system.files.data.corpora
     elif os.path.isfile(args.t_corpora_config):
-        cconf = CorporaConfig(ingest_yaml_doc(args.t_corpora_config))
+        cconf = CorporaConfig(args.t_corpora_config)
     else:
         logger.error(args.t_corpora_config + " doesn't exist")
         return
@@ -69,7 +68,7 @@ def model_results(args):
     if args.t_translate_config is None:
         tconf = conf.system.files.data.translate
     elif os.path.isfile(args.t_translate_config):
-        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config), conf)
+        tconf = TranslateConfig(args.t_translate_config, conf)
     else:
         logger.error(args.t_translate_config + " doesn't exist")
         return
@@ -114,7 +113,7 @@ def translate_po(args):
     if args.t_translate_config is None:
         tconf = conf.system.files.data.translate
     elif os.path.isfile(args.t_translate_config):
-        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config), conf)
+        tconf = TranslateConfig(args.t_translate_config, conf)
     else:
         logger.error(args.t_translate_config + " doesn't exist")
         return
@@ -133,7 +132,7 @@ def translate_text_doc(args):
     if args.t_translate_config is None:
         tconf = conf.system.files.data.translate
     elif os.path.isfile(args.t_translate_config):
-        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config), conf)
+        tconf = TranslateConfig(args.t_translate_config, conf)
     else:
         logger.error(args.t_translate_config + " doesn't exist")
         return
@@ -165,7 +164,7 @@ def build_translation_model(args):
     if args.t_translate_config is None:
         tconf = conf.system.files.data.translate
     elif os.path.isfile(args.t_translate_config):
-        tconf = TranslateConfig(ingest_yaml_doc(args.t_translate_config), conf)
+        tconf = TranslateConfig(args.t_translate_config, conf)
     else:
         logger.error(args.t_translate_config + " doesn't exist")
         return

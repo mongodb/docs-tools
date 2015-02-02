@@ -16,10 +16,10 @@ import os.path
 import logging
 
 import sphinx.builders
+import yaml
 
 from giza.config.base import ConfigurationBase
 from giza.config.base import RecursiveConfigurationBase
-from giza.tools.serialization import ingest_yaml_doc
 
 logger = logging.getLogger('giza.config.sphinx_config')
 
@@ -30,6 +30,13 @@ def is_legacy_sconf(conf):
         return True
     else:
         return False
+
+def get_sconf_base(conf):
+    sconf_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, 'sphinx.yaml')
+    with open(sconf_path, 'r') as f:
+        sconf = yaml.safe_load(f)
+
+    return sconf
 
 def render_sconf(edition, builder, language, conf):
     sconf_base = get_sconf_base(conf)

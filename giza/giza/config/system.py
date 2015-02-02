@@ -17,6 +17,8 @@ import os.path
 
 logger = logging.getLogger('giza.config.system')
 
+import yaml
+
 from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 from giza.config.sphinx_local import SphinxLocalConfig
 from giza.config.manpage import ManpageConfig
@@ -27,7 +29,6 @@ from giza.config.corpora import CorporaConfig
 from giza.config.redirects import HtaccessData
 from giza.config.content import ContentRegistry
 from giza.config.replacements import ReplacementData
-from giza.tools.serialization import ingest_yaml_list
 
 class SystemConfig(RecursiveConfigurationBase):
     @property
@@ -325,8 +326,6 @@ class SystemConfigData(RecursiveConfigurationBase):
         if fn is None:
             return []
         else:
-            data = ingest_yaml_list(fn)
-
             mapping = {
                 'sphinx_local': SphinxLocalConfig,
                 'sphinx-local': SphinxLocalConfig,
@@ -340,18 +339,25 @@ class SystemConfigData(RecursiveConfigurationBase):
                 'translate': TranslateConfig,
             }
 
-            if basename in mapping:
-                data = [ mapping[basename](doc) for doc in data ]
-            elif basename in recur_mapping:
-                data = [ recur_mapping[basename](doc, self.conf) for doc in data ]
-            elif basename == 'htaccess':
-                l = HtaccessData()
-                l.conf = self.conf
-                l.extend(data)
-                data = l
-            elif basename == 'replacement':
-                data = ReplacementData(data, self.conf)
-                return data
+
+            with open(fn, 'r') as f:
+                data = yaml.safe_load_all(f)
+
+                if basename in mapping:
+                    data = [ mapping[basename](doc) for doc in data ]
+                elif basename in recur_mapping:
+                    data = [ recur_mapping[basename](doc, self.conf) for doc in data ]
+                elif basename == 'htaccess':
+                    l = HtaccessData()
+                    l.conf = self.conf
+                    l.extend(data)
+                    data = l
+                elif basename == 'replacement':
+                    data = ReplacementData(data, self.conf)
+                    return data
+
+                if not isinstance(data, list):
+                    data = [item for item in data]
 
             if len(data) == 1 and basename not in self._always_list_configs:
                 return data[0]

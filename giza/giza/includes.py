@@ -14,11 +14,11 @@
 
 import os.path
 import re
+import itertools
+import operator
 
-from itertools import groupby
-from operator import itemgetter
+import yaml
 
-from giza.tools.serialization import ingest_yaml_doc, ingest_yaml_list
 from giza.tools.files import expand_tree
 from giza.tools.command import command
 
@@ -43,7 +43,7 @@ def include_files(conf, files=None):
 
         files = dict()
 
-        for i in groupby(s, itemgetter(1)):
+        for i in itertools.groupby(s, operator.itemgetter(1)):
             files[i[0]] = set()
             for src in i[1]:
                 if not src[0].endswith('~') and not src[0].endswith('overview.rst'):
@@ -117,12 +117,14 @@ def generated_includes(conf):
     path_prefix = conf.paths.includes[len(conf.paths.source):]
 
     for step_def in step_files:
-        data = ingest_yaml_list(step_def)
-
         deps = []
-        for step in data:
-            if 'source' in step:
-                deps.append(step['source']['file'])
+
+        with open(step_def, 'r') as f:
+            data = yaml.safe_load_all(f)
+
+            for step in data:
+                if 'source' in step:
+                    deps.append(step['source']['file'])
 
         if len(deps) != 0:
             deps = [ os.path.join(path_prefix, i ) for i in deps ]

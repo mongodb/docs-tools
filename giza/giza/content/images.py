@@ -63,7 +63,6 @@ from rstcloth.rstcloth import RstCloth
 
 from giza.tools.command import command
 from giza.tools.files import verbose_remove
-from giza.tools.serialization import ingest_yaml_list
 
 ## Internal Supporting Methods
 

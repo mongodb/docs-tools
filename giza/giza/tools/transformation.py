@@ -12,14 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import collections
 import logging
-import re
 
 logger = logging.getLogger('giza.transformation')
 
 from giza.tools.files import copy_always, copy_if_needed, encode_lines_to_file, decode_lines_from_file
-from giza.tools.serialization import ingest_yaml_list
 
 class ProcessingError(Exception):
     pass
@@ -102,52 +99,3 @@ def _process_page(fn, output_fn, regex, copy, builder):
         copy_always(**cp_args)
     else:
         copy_if_needed(**cp_args)
-
-def post_process_tasks(app, tasks=None, source_fn=None):
-    """
-    input documents should be:
-
-    {
-      'transform': {
-                     'regex': str,
-                     'replace': str
-                   }
-      'type': <str>
-      'file': <str|list>
-    }
-
-    ``transform`` can be either a document or a list of documents.
-    """
-
-    if tasks is None:
-        if source_fn is not None:
-            tasks = ingest_yaml_list(source_fn)
-        else:
-            raise ProcessingError('[ERROR]: no input tasks or file')
-    elif not isinstance(tasks, collections.Iterable):
-        raise ProcessingError('[ERROR]: cannot parse post processing specification.')
-
-    def rjob(fn, regex, type):
-        page_app = app.add('app')
-        process_page(fn=fn, output_fn=fn, regex=regex, app=page_app, builder=type)
-
-    for job in tasks:
-        if not isinstance(job, dict):
-            raise ProcessingError('[ERROR]: invalid replacement specification.')
-        elif not 'file' in job and not 'transform' in job:
-            raise ProcessingError('[ERROR]: replacement specification incomplete.')
-
-        if 'type' not in job:
-            job['type'] = 'processor'
-
-        if isinstance(job['transform'], list):
-            regex = [ (re.compile(rs['regex']), rs['replace'])
-                      for rs in job['transform'] ]
-        else:
-            regex = (re.compile(job['transform']['regex']), job['transform']['replace'])
-
-        if not isinstance(job['file'], list):
-            job['file'] = [ job['file'] ]
-
-        for fn in job['file']:
-            rjob(fn, regex, job['type'])

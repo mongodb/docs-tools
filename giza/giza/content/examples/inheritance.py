@@ -29,7 +29,6 @@ from giza.config.base import RecursiveConfigurationBase
 from giza.content.examples.models import ExampleData, ExampleCase
 from giza.content.helper import edition_check
 from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache
-from giza.tools.serialization import ingest_yaml_list
 
 # Example specific inheritance machinery
 
