@@ -62,15 +62,9 @@ def transfer_source(conf, sconf):
 
     source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
     image_dir = os.path.join(conf.paths.images[len(conf.paths.source)+1:])
-    ref_dir = 'reference'
 
     exclusions = [ os.path.join('includes', 'table'),
                    os.path.join('includes', 'generated'),
-                   os.path.join(ref_dir, 'method') + os.path.sep + "*.rst",
-                   os.path.join(ref_dir, 'command') + os.path.sep + "*.rst",
-                   os.path.join(ref_dir, 'operator', 'query') + os.path.sep + "*.rst",
-                   os.path.join(ref_dir, 'operator', 'aggregation') + os.path.sep + "*.rst",
-                   ref_dir + os.path.sep + "*.rst",
                    image_dir + os.path.sep + "*.png",
                    image_dir + os.path.sep + "*.rst",
                    image_dir + os.path.sep + "*.eps" ]

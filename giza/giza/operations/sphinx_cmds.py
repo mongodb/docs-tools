@@ -30,7 +30,6 @@ from giza.content.robots import robots_txt_tasks
 from giza.content.includes import includes_tasks
 from giza.content.images import image_tasks
 from giza.content.intersphinx import intersphinx_tasks
-from giza.content.param import api_tasks
 from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
 from giza.content.source import source_tasks, latex_image_transfer_tasks
@@ -189,7 +188,6 @@ def build_content_generation_tasks(conf, app):
     includes_tasks(conf, app)
     table_tasks(conf, app)
     hash_tasks(conf, app)
-    api_tasks(conf, app)
     redirect_tasks(conf, app)
     image_tasks(conf, app)
 

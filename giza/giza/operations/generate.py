@@ -32,12 +32,12 @@ from giza.tools.files import rm_rf
 from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images import image_tasks, image_clean
 from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
-from giza.content.param import api_tasks, api_clean
 from giza.content.links import create_manual_symlink
 from giza.content.table import table_tasks, table_clean
 from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
 from giza.content.tocs.tasks import toc_tasks
+from giza.content.apiargs.tasks import apiarg_tasks
 from giza.content.examples.tasks import example_tasks
 from giza.content.steps.tasks import step_tasks, step_clean
 from giza.content.options.tasks import option_tasks, option_clean
@@ -50,8 +50,6 @@ from giza.operations.sphinx_cmds import build_content_generation_tasks
 from giza.content.source import source_tasks
 from giza.config.sphinx_config import render_sconf
 from giza.content.dependencies import refresh_dependency_tasks
-
-import giza.content.apiargs.migration
 
 @argh.arg('--edition', '-e')
 @argh.expects_obj
@@ -85,16 +83,13 @@ def options(args):
         with build_app_context(c) as app:
             app.extend_queue(option_tasks(c))
 
-@argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def api(args):
     c = fetch_config(args)
 
     with build_app_context(c) as app:
-        if c.runstate.clean_generated is True:
-            api_clean(c, app)
-        else:
-            api_tasks(c, app)
+        app.extend_queue(apiarg_tasks(c))
+
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
@@ -223,13 +218,3 @@ def source(args):
 
         build_content_generation_tasks(conf, app.add('app'))
         refresh_dependency_tasks(conf, app.add('app'))
-
-@argh.expects_obj
-def migration(args):
-    conf = fetch_config(args)
-
-    with build_app_context(conf) as app:
-        name_changes = giza.content.apiargs.migration.task(task='source', conf=conf)
-
-        for task in giza.content.apiargs.migration.file_munge_tasks(name_changes, 'source', conf):
-            app.add(task)

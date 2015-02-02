@@ -63,9 +63,9 @@ commands = {
         giza.operations.code_review.checkout,
     ],
     'generate': [
-        giza.operations.generate.api,
         giza.operations.generate.assets,
         giza.operations.generate.images,
+        giza.operations.generate.api,
         giza.operations.generate.intersphinx,
         giza.operations.generate.options,
         giza.operations.generate.primer,
@@ -77,7 +77,6 @@ commands = {
         giza.operations.generate.robots,
         giza.operations.generate.source,
         giza.operations.generate.release,
-        giza.operations.generate.migration,
     ],
     'includes': [
         giza.operations.includes.recursive,
