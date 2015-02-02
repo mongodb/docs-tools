@@ -35,7 +35,6 @@ import logging
 
 logger = logging.getLogger('giza.content.robots')
 
-from giza.tools.serialization import ingest_yaml_list
 import giza.content.helper
 
 def robots_txt_builder(fn, conf, override=False):

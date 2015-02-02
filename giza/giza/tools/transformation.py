@@ -19,7 +19,7 @@ import re
 logger = logging.getLogger('giza.transformation')
 
 from giza.tools.files import copy_always, copy_if_needed, encode_lines_to_file, decode_lines_from_file
-from giza.tools.serialization import ingest_yaml
+from giza.tools.serialization import ingest_yaml_list
 
 class ProcessingError(Exception):
     pass
@@ -121,7 +121,7 @@ def post_process_tasks(app, tasks=None, source_fn=None):
 
     if tasks is None:
         if source_fn is not None:
-            tasks = ingest_yaml(source_fn)
+            tasks = ingest_yaml_list(source_fn)
         else:
             raise ProcessingError('[ERROR]: no input tasks or file')
     elif not isinstance(tasks, collections.Iterable):

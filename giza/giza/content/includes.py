@@ -26,7 +26,6 @@ logger = logging.getLogger('giza.content.includes')
 
 from giza.includes import generated_includes, included_recusively, include_files
 from giza.tools.files import expand_tree
-from giza.tools.serialization import ingest_yaml_doc
 from giza.tools.timing import Timer
 
 from rstcloth.rstcloth import RstCloth

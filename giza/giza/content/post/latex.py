@@ -25,7 +25,6 @@ logger = logging.getLogger('giza.content.post.latex')
 
 from giza.content.helper import edition_check
 from giza.tools.command import command
-from giza.tools.serialization import ingest_yaml_list
 from giza.tools.transformation import process_page
 from giza.tools.files import (create_link, copy_if_needed,
                               decode_lines_from_file, encode_lines_to_file)

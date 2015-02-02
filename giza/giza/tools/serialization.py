@@ -83,38 +83,3 @@ def write_yaml(input, filename):
             raise Exception('cannot dump $s objects to yaml.' % str(type(input)))
 
         f.write('...\n')
-
-def write_json(input, filename):
-    with open(filename, 'w') as f:
-        if isinstance(input, (dict, list)):
-            json.dump(input, f, indent=3, sort_keys=True)
-        else:
-            raise Exception('cannot dump $s objects to json.' % str(type(input)))
-
-
-def dict_from_list(key, source):
-    return dict( (item[key], item) for item in source )
-
-def ingest_json(filename):
-    with open(filename, 'r') as f:
-        try:
-            o = json.load(f)
-        except:
-            o = [ json.loads(doc)
-                  for doc in f.readlines() ]
-
-    if isinstance(o, list) and len(o) == 1:
-        o = o[0]
-
-    return o
-
-def ingest_json_doc(filename):
-    return ingest_json(filename)
-
-def ingest_json_list(filename):
-    o = ingest_json(filename)
-
-    if isinstance(o, list):
-        return o
-    else:
-        return [o]

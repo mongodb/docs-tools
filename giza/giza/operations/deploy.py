@@ -25,7 +25,7 @@ from giza.core.app import BuildApp
 from giza.deploy import Deploy, deploy_target
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.tools.command import command
-from giza.tools.serialization import ingest_yaml_list, dict_from_list
+from giza.tools.serialization import dict_from_list
 
 import argh
 import onetimepass as otp

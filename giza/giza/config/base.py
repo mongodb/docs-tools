@@ -14,12 +14,13 @@
 
 import logging
 import os.path
+import json
 
 from contextlib import contextmanager
 
 logger = logging.getLogger('giza.config.base')
 
-from giza.tools.serialization import ingest_yaml_doc, ingest_json_doc, write_json, write_yaml
+from giza.tools.serialization import ingest_yaml_doc, write_yaml
 
 class ConfigurationBase(object):
     _option_registry = []
@@ -46,7 +47,8 @@ class ConfigurationBase(object):
             self._source_fn = input_obj
 
             if input_obj.endswith('json'):
-                input_obj = ingest_json_doc(input_obj)
+                with open(input_obj, 'r') as f:
+                    input_obj = json.load(f)
             elif input_obj.endswith('yaml'):
                 input_obj = ingest_yaml_doc(input_obj)
             else:
@@ -147,7 +149,8 @@ class ConfigurationBase(object):
             self.state['v'] = self._version
 
         if fn.endswith('json'):
-            write_json(self.dict(safe=False), fn)
+            with open(fn, 'w') as f:
+                json.dump(self.dict(safe=False), f, indent=3, sort_keys=True)
         elif fn.endswith('yaml'):
             write_yaml(self.dict(safe=False), fn)
 
