@@ -20,8 +20,22 @@ logger = logging.getLogger('giza.content.extract.models')
 from giza.core.inheritance import InheritableContentBase
 from giza.content.steps.models import HeadingMixin
 
+if sys.version_info >= (3, 0):
+    basestring = str
+
+
 class ExtractData(HeadingMixin, InheritableContentBase):
     _default_level = 2
+
+    @property
+    def only(self):
+        return self.state['only']
+
+    def only(self, value):
+        if isinstance(value, basestring):
+            self.state['only'] = value
+        else:
+            raise TypeError
 
     @property
     def append(self):

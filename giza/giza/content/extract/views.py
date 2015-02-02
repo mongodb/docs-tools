@@ -23,11 +23,17 @@ def render_extracts(extract):
     r = RstCloth()
     extract.render()
 
+    indent = 0
+    if 'only' in extract:
+        r.directive('only', extract.only, indent=indent)
+        r.newline()
+        indent += 3
+
     if 'style' in extract:
-        r.directive('rst-class', extract.style)
+        r.directive('rst-class', extract.style, indent=indent)
         r.newline()
 
-    render_action(extract, indent=0, level=extract.level, r=r)
+    render_action(extract, indent=indent, level=extract.level, r=r)
 
     return r
 
