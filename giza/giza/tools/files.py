@@ -68,12 +68,6 @@ def verbose_remove(path):
         logger.info('clean: removing {0}'.format(path))
         os.remove(path)
 
-def rm_rf(path):
-    if os.path.isdir(path):
-        shutil.rmtree(path)
-    elif os.path.exists(path):
-        os.remove(path)
-
 def tarball(name, path, newp=None, cdir=None):
     tarball_path = os.path.dirname(name)
     safe_create_directory(tarball_path)

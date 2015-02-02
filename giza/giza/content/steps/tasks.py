@@ -14,10 +14,11 @@
 
 import os
 import logging
+import shutil
 
 logger = logging.getLogger('giza.content.steps.tasks')
 
-from giza.tools.files import expand_tree, rm_rf, safe_create_directory
+from giza.tools.files import expand_tree, safe_create_directory
 from giza.content.steps.inheritance import StepDataCache
 from giza.content.steps.views import render_steps
 from giza.config.content import new_content_type
@@ -48,10 +49,9 @@ def step_tasks(conf):
     return tasks
 
 def step_clean(conf, app):
-    for fn in conf.system.content.steps.sources:
-        task = app.add('task')
-        task.target = True
-        task.dependnecy = fn
-        task.job = rm_rf
-        task.args = [conf.system.content.steps.output_dir]
-        task.description = 'removing {0}'.format(conf.system.content.steps.output_dir)
+    task = app.add('task')
+    task.target = True
+    task.dependnecy = fn
+    task.job = shutil.rmtree
+    task.args = [conf.system.content.steps.output_dir]
+    task.description = 'removing {0}'.format(conf.system.content.steps.output_dir)

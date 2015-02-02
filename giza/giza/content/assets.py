@@ -47,12 +47,12 @@ stable over time.
 """
 
 import logging
-import os.path
+import os
+import shutil
 
 logger = logging.getLogger('giza.content.assets')
 
 from giza.core.git import GitRepo
-from giza.tools.files import rm_rf
 from giza.tools.command import command
 
 def assets_setup(path, branch, repo, commit=None):
@@ -133,6 +133,11 @@ def assets_clean(conf, app):
 
             logger.debug('adding asset cleanup {0}'.format(path))
 
+            if os.path.isdir(path):
+                job = shutil.rmtree
+            else:
+                job = os.remove
+
             t = app.add('task')
-            t.job = rm_rf
+            t.job = job
             t.args = [path]

@@ -20,6 +20,7 @@ removing branches that haven't been used in a certain number of days.
 
 import os
 import logging
+import shutil
 
 logger = logging.getLogger('giza.operations.clean')
 
@@ -28,7 +29,6 @@ import argh
 from giza.core.app import BuildApp
 from giza.config.main import Configuration
 from giza.config.helper import fetch_config, get_builder_jobs
-from giza.tools.files import rm_rf
 from giza.config.sphinx_config import resolve_builder_path
 
 @argh.arg('--builder', '-b')
@@ -81,8 +81,13 @@ def main(args):
                 logger.debug('removed stale artifacts: "{0}" and "build/public/{0}"'.format(branch))
 
     for fn in to_remove:
-        t = app.add()
-        t.job = rm_rf
+        if os.path.isdir(fn):
+            job = shutil.rmtree
+        else:
+            job = os.remove
+
+        t = app.add('task')
+        t.job = job
         t.args = fn
         m = 'removing artifact: {0}'.format(fn)
         t.description = m
