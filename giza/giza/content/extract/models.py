@@ -14,6 +14,7 @@
 
 import logging
 import os.path
+import sys
 
 logger = logging.getLogger('giza.content.extract.models')
 
@@ -22,7 +23,6 @@ from giza.content.steps.models import HeadingMixin
 
 if sys.version_info >= (3, 0):
     basestring = str
-
 
 class ExtractData(HeadingMixin, InheritableContentBase):
     _default_level = 2
