@@ -241,22 +241,11 @@ class InheritanceReference(RecursiveConfigurationBase):
 
     @file.setter
     def file(self, value):
-        # if 'file' in self.state and os.path.isfile(self.state['file']):
-        #     return
-
-        fns = set([ # value,  os.path.abspath(value),
-                   os.path.join(self.conf.paths.projectroot, value),
-                   os.path.join(self.conf.paths.projectroot,
-                                self.conf.paths.branch_includes, value),
-                   # os.path.join(self.conf.paths.projectroot,
-                   #              self.conf.paths.includes, value)
-                                ])
-
-        try:
-            fns.add(os.path.join(self.conf.paths.projectroot,
-                                 self.conf.paths.source, value))
-        except KeyError:
-            pass
+        fns = [ os.path.join(self.conf.paths.projectroot, value),
+                os.path.join(self.conf.paths.projectroot,
+                             self.conf.paths.branch_includes, value),
+                os.path.join(self.conf.paths.projectroot,
+                             self.conf.paths.branch_source, value) ]
 
         for fn in fns:
             if os.path.exists(fn):
@@ -281,6 +270,7 @@ class DataContentBase(RecursiveConfigurationBase):
         self._content = self._state['content']
         self._conf = None
         self._ordering = []
+        self._reordered = False
         self.conf = conf
         self.data = data
         self.ingest(src)
@@ -324,6 +314,7 @@ class DataContentBase(RecursiveConfigurationBase):
             try:
                 content = self.add(doc)
                 self._ordering.append(content.ref)
+                self._reordered = False
             except RuntimeError:
                 pass
             except Exception as e:
@@ -334,15 +325,16 @@ class DataContentBase(RecursiveConfigurationBase):
     def add(self, doc):
         if 'ref' in doc:
             ref = doc['ref']
-        elif 'source' in doc:
-            ref = doc['source']['ref']
-        elif 'inherit' in doc:
-            ref = doc['inherit']['ref']
         else:
-            ref = None
+            if 'source' in doc:
+                ref = doc['source']['ref']
+            elif 'inherit' in doc:
+                ref = doc['inherit']['ref']
+            else:
+                ref = None
 
-        if 'ref' not in doc and ref is not None:
-            doc['ref'] = ref
+            if ref is not None:
+                doc['ref'] = ref
 
         if ref not in self.content:
             if isinstance(doc, self.content_class):
@@ -395,6 +387,28 @@ class DataContentBase(RecursiveConfigurationBase):
 
         for exmp in self.content.values():
             exmp.resolve(self.data)
+
+    def ordered_content(self):
+        """
+        Generator of content items in order. If items have a ``number`` member,
+        then we sort in this order. Otherwise, we return in the order that they were specified in the file.
+        """
+        def sorter(ref_a, ref_b):
+            return cmp(self.fetch(ref_a).number, self.fetch(ref_b).number)
+
+        if self._reordered is False:
+            for content in self.content.values():
+                if 'number' not in content:
+                    self._reordered = True
+                    break
+
+        if self._reordered is False:
+            self._ordering.sort(cmp=sorter)
+            self._reordered = True
+
+        for ref in self._ordering:
+            yield self.fetch(ref)
+
 
 class DataCache(RecursiveConfigurationBase):
     """

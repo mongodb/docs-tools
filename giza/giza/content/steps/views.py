@@ -29,7 +29,7 @@ def render_steps(steps, conf):
                    '</div>'
                    '</div>')
 
-    for idx, step in enumerate(steps.steps):
+    for idx, step in enumerate(steps.ordered_content()):
         step.render() # run replacements
 
         if 'number' not in step:

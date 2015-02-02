@@ -46,14 +46,14 @@ def render_apiarg_table(r, apiargs):
 
     if num_columns == 2:
         widths = [ 20, 80 ]
-        for entry in apiargs.ordering:
-            entry = apiargs.fetch(entry)
+        for entry in apiargs.ordered_content():
+            entry = apiargs.fetch(entry.ref)
             table.add_row([RstCloth.pre(entry.name),
                            fill(string=entry.description, first=0, hanging=3, wrap=False)])
     elif num_columns == 3:
         widths = [ 20, 20, 80 ]
-        for entry in apiargs.ordering:
-            entry = apiargs.fetch(entry)
+        for entry in apiargs.ordered_content():
+            entry = apiargs.fetch(entry.ref)
             table.add_row([RstCloth.pre(entry.name),
                            entry.type_for_table_output(),
                            fill(string=entry.description, first=0, hanging=3, wrap=False)])
@@ -61,8 +61,8 @@ def render_apiarg_table(r, apiargs):
     r.content(TableBuilder(ListTable(table, widths=widths)).output, indent=3)
 
 def render_apiarg_fields(r, apiargs):
-    for content in apiargs.ordering:
-        content = apiargs.fetch(content)
+    for content in apiargs.ordered_content():
+        content = apiargs.fetch(content.ref)
 
         field_name = [ content.arg_name ]
 

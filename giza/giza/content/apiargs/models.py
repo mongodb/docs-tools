@@ -178,9 +178,11 @@ class ApiArgData(InheritableContentBase):
 
         if isinstance(value, (int, float, complex)):
             self._position = int(value)
-            self.state['position'] = self._position
+            self.state['number'] = self._position
         else:
             raise TypeError
+
+    number = position
 
     @property
     def optional(self):

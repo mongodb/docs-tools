@@ -23,38 +23,16 @@ from giza.content.steps.models import StepData
 class StepFile(DataContentBase):
     content_class = StepData
 
-    @property
-    def steps(self):
-        if not hasattr(self, '_ordered_content'):
-            self._ordered_content = []
-
-        if len(self._ordered_content) == 0:
-            ret = []
-
-            for step in self.content.values():
-                step.resolve(self.data)
-                ret.append((step.number, step))
-
-            def sorter(x, y):
-                return cmp(x[0], y[0])
-
-            ret.sort(cmp=lambda x,y: cmp(x[0], y[0]))
-            self._ordered_content = [ r for idx, r in ret ]
-
-        return self._ordered_content
-
     def add(self, doc):
         content = super(StepFile, self).add(doc)
-
-        if not hasattr(self, '_step_counter'):
-            self._step_counter = 1
-        else:
-            self._step_counter += 1
 
         obj = self.content[content.ref]
 
         if 'number' not in obj:
-            obj.number = self._step_counter
+            if len(self.content) == 1:
+                obj.number = 1
+            else:
+                obj.number = self.fetch(self.ordering[-1]).number + 1
 
         return obj
 
