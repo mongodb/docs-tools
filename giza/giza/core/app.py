@@ -51,13 +51,15 @@ class BuildApp(object):
     the queue, the queue resets. However, results do not reset.
     """
 
-    def __init__(self, conf=None):
+    def __init__(self, conf=None, force=False):
         """
         :param Configuration conf: A top level
            :class:`~giza.config.main.Configuration` object.
         """
 
         self.conf = new_skeleton_config(conf)
+        self._force = force
+
         self.queue = []
         self.results = []
         self.worker_pool = None
@@ -93,6 +95,19 @@ class BuildApp(object):
     @target.setter
     def target(self, value):
         self._target = value
+
+    @property
+    def force(self):
+        if self.conf is not None:
+            return self.conf.runstate.force
+        elif self._force is not None:
+            return self._force
+        else:
+            return False
+
+    @force.setter
+    def force(self, value):
+        self._force = bool(value)
 
     def define_dependency_node(self, target, dependency):
         self.target = target
@@ -197,22 +212,26 @@ class BuildApp(object):
         if task is None or task in (Task, 'task'):
             t = Task()
             t.conf = self.conf
+            t.force = self.force
             self.queue.append(t)
             return t
         elif task in (MapTask, 'map'):
             t = MapTask()
             t.conf = self.conf
+            t.force = self.force
             self.queue.append(t)
             return t
         elif task in (BuildApp, 'app'):
             self.create_pool()
             t = BuildApp(self.conf)
+            t.force = self.force
             t.pool = self.pool
             t.root_app = False
             self.queue.append(t)
             return t
         else:
             if isinstance(task, Task):
+                task.force = self.force
                 if task.conf is None:
                     task.conf = self.conf
 
@@ -221,6 +240,7 @@ class BuildApp(object):
             elif isinstance(task, BuildApp):
                 self.create_pool()
                 task.root_app = False
+                task.force = self.force
                 task.pool = self.pool
                 self.queue.append(task)
                 return task
@@ -302,9 +322,11 @@ class BuildApp(object):
             app.run()
 
 @contextlib.contextmanager
-def build_app_context(conf=None, app=None):
+def build_app_context(conf=None, app=None, force=False):
     if app is None:
-        app = BuildApp(conf)
+        app = BuildApp(conf=conf, force=force)
+
+    app.force = force
 
     yield app
 

@@ -65,6 +65,7 @@ class Task(object):
         self.spec = {}
         self._conf = None
         self._args = None
+        self._force = None
         if job is not None:
             self.job = job
         self.args_type = None
@@ -152,12 +153,15 @@ class Task(object):
         """
         Used by the execution application to see if a rebuild is needed. Always
         returns ``True`` if there is no target or when running in *force* mode,
-        otherwise checks the ``mtime`` of the files using ``check_dependency()``
+        otherwise checks the ``mtime`` of the files using
+        :func:`giza.core.task.check_dependency()`.
         """
 
         if self.target is None:
             return True
-        elif self.dependency is None or self.conf.runstate.force is True:
+        elif self.dependency is None:
+            return True
+        elif self.force is True:
             return True
         else:
             return check_dependency(self.target, self.dependency)
