@@ -27,7 +27,7 @@ import collections
 
 logger = logging.getLogger('giza.task')
 
-from giza.config.main import ConfigurationBase
+from giza.core.config import ConfigurationBase
 from giza.tools.files import md5_file
 
 if sys.version_info >= (3, 0):
