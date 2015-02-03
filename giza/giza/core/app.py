@@ -24,10 +24,9 @@ import random
 logger = logging.getLogger('giza.app')
 
 from giza.core.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool, EventPool
-from giza.config.main import Configuration
-from giza.config.helper import new_skeleton_config
-
 from giza.core.task import Task, MapTask
+
+from giza.config.helper import new_skeleton_config
 
 class BuildApp(object):
     """
@@ -53,8 +52,8 @@ class BuildApp(object):
 
     def __init__(self, conf=None, force=False):
         """
-        :param Configuration conf: A top level
-           :class:`~giza.config.main.Configuration` object.
+        :param ConfigurationBase conf: A top level
+           ``Configuration`` object.
         """
 
         self.conf = new_skeleton_config(conf)
@@ -72,7 +71,7 @@ class BuildApp(object):
             'event': EventPool,
             'serial': SerialPool
         }
-        self.pool_types = tuple([ self.pool_mapping[p] for p in self.pool_mapping ])
+        self.pool_types = tuple([ self.pool_mapping[p] for p in self.pool_mapping])
 
         self.needs_rebuild = True
         self.root_app = True
