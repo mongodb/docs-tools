@@ -57,7 +57,7 @@ class BuildApp(object):
 
         self._conf = conf
         self._force = force
-        self._default_pool = 'process'
+        self._default_pool = None
 
         self.queue = []
         self.results = []
@@ -78,6 +78,14 @@ class BuildApp(object):
         self.target = None
         self.dependency = None
 
+    @classmethod
+    def new(cls, pool_type='process', force=False):
+        app = cls()
+        app.force = force
+        app.default_pool = pool_type
+
+        return app
+
     @property
     def dependency(self):
         return self._dependency
@@ -96,12 +104,15 @@ class BuildApp(object):
 
     @property
     def force(self):
-        if self.conf is not None:
-            return self.conf.runstate.force
-        elif self._force is not None:
-            return self._force
-        else:
-            return False
+        if self._force is None:
+            if self.conf is None:
+                logger.warning('force flag for app is not set, setting to "false"')
+                self._force = False
+            else:
+                logger.warning('deprecated use of conf object in app setup for force value')
+                self._force = self.conf.runstate.force
+
+        return self._force
 
     @force.setter
     def force(self, value):
@@ -118,10 +129,16 @@ class BuildApp(object):
 
     @property
     def default_pool(self):
-        if self.conf is not None:
-            self._default_pool = self.conf.runstate.runner
-
-        return self._default_pool
+        if self._default_pool is None:
+            if self.conf is None:
+                logger.warning('pool type not specified, choosing at random')
+                return random.choice(self.pool_types)
+            else:
+                logger.warning('deprecated use of conf object in app setup for pool type')
+                self._default_pool = self.conf.runstate.runner
+                return self._default_pool
+        else:
+            return self._default_pool
 
     @default_pool.setter
     def default_pool(self, value):
