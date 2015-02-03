@@ -16,15 +16,13 @@ import os
 import json
 import logging
 import collections
+import subprocess
 
 import argh
 
 from giza.core.git import GitRepo
 from giza.config.code_review import CodeReviewConfiguration
 from giza.config.helper import fetch_config, new_skeleton_config, new_credentials_config
-
-from giza.operations.includes import render_for_console
-from giza.tools.command import command
 
 logger = logging.getLogger('giza.operations.code_review')
 
@@ -56,7 +54,7 @@ def list_reviews(args):
 
     crconf = CodeReviewConfiguration(cr_data_file)
 
-    render_for_console([ k for k in crconf.branches.keys()])
+    print(json.dumps([ k for k in crconf.branches.keys()], indent=3, sort_keys=True))
 
 @argh.expects_obj
 @argh.arg('_branch_name', nargs='*')
@@ -160,12 +158,12 @@ def update_code_review(cr_data, g, use_hash):
         cmd.append('--rev')
 
     cmd.append(use_hash)
-    cr_upload = command(cmd, capture=True)
 
-    issue_url = get_issue_url(cr_upload.out)
-    if issue_url is not None:
+    try:
+        cr_upload = subprocess.check_output(cmd, stderr=subprocess.STDOUT).strip()
+        issue_url = get_issue_url(cr_upload)
         logger.info('updated issue: ' + issue_url)
-    else:
+    except subprocess.CalledProcessError:
         logger.error('failed to update issue')
 
 def create_code_review(data, g, creds):
@@ -180,17 +178,20 @@ def create_code_review(data, g, creds):
                  '-m', '"' + g.commit_messages()[0] + '"',
                  branch_data.commits[-1]])
 
-    cr_upload = command(cmd, capture=True)
-    branch_data.issue = get_issue_number(cr_upload.out)
-    data.set_branch(g.current_branch(), branch_data)
+    try:
+        cr_upload = subprocess.check_output(cmd, stderr=subprocess.STDOUT).strip()
 
-    issue_url = get_issue_url(cr_upload.out)
-    if issue_url is None:
+        branch_data.issue = get_issue_number(cr_upload)
+        issue_url = get_issue_url(cr_upload)
+
+        data.set_branch(g.current_branch(), branch_data)
+
+        if len(issue_url) < 80:
+            logger.info('created issue: ' + issue_url)
+        else:
+            logger.info('created new code review issue')
+    except subprocess.CalledProcessError:
         logger.error('failed to create issue')
-    elif len(issue_url) < 80:
-        logger.info('created issue: ' + issue_url)
-    else:
-        logger.info('created new code review issue')
 
 ##### Output processing
 
