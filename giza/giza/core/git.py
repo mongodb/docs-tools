@@ -20,9 +20,8 @@ Python-layer on top of common git operations.
 import logging
 import os
 import re
-from contextlib import contextmanager
-
-from giza.tools.command import command, CommandError
+import contextlib
+import subprocess
 
 logger = logging.getLogger('giza.core.git')
 
@@ -44,7 +43,7 @@ class GitRepo(object):
         if path is None:
             self.path = os.getcwd()
             try:
-                self.path = self.cmd('rev-parse', '--show-toplevel').out
+                self.path = self.cmd('rev-parse', '--show-toplevel')
             except GitError:
                 logger.error('{0} may not be a git repository'.format(self.path))
         else:
@@ -53,27 +52,34 @@ class GitRepo(object):
         logger.debug("created git repository management object for {0}".format(self.path))
 
     def cmd(self, *args):
-        args = ' '.join(args)
+        cmd_parts = ['git']
+
+        for arg in args:
+            cmd_parts.extend(arg.split())
 
         try:
-            return command(command='cd {0} ; git {1}'.format(self.path, args), capture=True)
-        except CommandError as e:
+            return subprocess.check_output(args=cmd_parts,
+                                           cwd=self.path,
+                                           stderr=subprocess.STDOUT).strip()
+        except Exception as e:
+            logger.error('encountered error with {0} in repository {1}'.format(' '.join(cmd_parts),
+                                                                               self.path))
             raise GitError(e)
 
     def top_level(self):
         return self.path
 
     def remotes(self):
-        return self.cmd('remote').out.split('\n')
+        return self.cmd('remote').split('\n')
 
     def author_email(self, sha=None):
         if sha is None:
             sha = self.sha()
 
-        return self.cmd('log', sha + '~..' + sha, "--pretty='format:%ae'").out
+        return self.cmd('log', sha + '~..' + sha, "--pretty='format:%ae'")
 
     def branch_exists(self, name):
-        r = self.cmd('branch --list ' + name).out.split('\n')
+        r = self.cmd('branch --list ' + name).split('\n')
         if '' in r:
             r.remove('')
 
@@ -83,7 +89,7 @@ class GitRepo(object):
             return False
 
     def branch_file(self, path, branch='master'):
-        return self.cmd('show {branch}:{path}'.format(branch=branch, path=path)).out
+        return self.cmd('show {branch}:{path}'.format(branch=branch, path=path))
 
     def checkout(self, ref):
         self.cmd('checkout', ref)
@@ -147,10 +153,10 @@ class GitRepo(object):
         return self.cmd('pull', remote, branch)
 
     def current_branch(self):
-        return self.cmd('symbolic-ref', 'HEAD').out.split('/')[2]
+        return self.cmd('symbolic-ref', 'HEAD').split('/')[2]
 
     def sha(self, ref='HEAD'):
-        return self.cmd('rev-parse', '--verify', ref).out
+        return self.cmd('rev-parse', '--verify', ref)
 
     def clone(self, remote, repo_path=None, branch=None):
         args = ['clone', remote]
@@ -168,7 +174,7 @@ class GitRepo(object):
         log = self.cmd(*args)
 
         return [ ' '.join(m.split(' ')[1:])
-                 for m in log.out.split('\n') ]
+                 for m in log.split('\n') ]
 
     def cherry_pick(self, *args):
         if len(args) == 1:
@@ -179,32 +185,37 @@ class GitRepo(object):
             logger.info('cherry picked ' + commit )
 
     def am(self, patches, repo=None, sign=False):
-        cmd_base = 'curl {path} | git am --3way'
+        cmd_base = 'curl -s {path} | git am --3way'
 
         if sign is True:
             cmd_base += ' --signoff'
 
         for obj in patches:
             if obj.startswith('http'):
+                path = obj
                 if not obj.endswith('.patch'):
-                    obj += '.patch'
+                    path = obj + '.patch'
 
-                command(cmd_base.format(path=obj))
-                logger.info("applied {0}".format(obj))
+                logger.info("applying {0}".format(path))
             elif re.search('[a-zA-Z]+', obj):
                 path = '/'.join([ repo, 'commit', obj ]) + '.patch'
 
-                command(cmd_base.format(path=path))
-                logger.info('merged commit {0} for {1} into {2}'.format(obj, repo, self.current_branch()))
+                logger.info('merging commit {0} for {1} into {2}'.format(obj, repo, self.current_branch()))
             else:
                 if repo is None:
                     logger.warning('not applying "{0}", because of missing repo'.format(obj))
+                    continue
                 else:
                     path = '/'.join([ repo, 'pull', obj ]) + '.patch'
-                    command(cmd_base.format(path=path))
-                    logger.info("applied {0}".format(obj))
+                    logger.info("applying {0}".format(path))
 
-    @contextmanager
+            logger.info(cmd_base.format(path=path))
+            subprocess.call(cwd=self.path,
+                            args=cmd_base.format(path=path),
+                            stderr=subprocess.STDOUT,
+                            shell=True)
+
+    @contextlib.contextmanager
     def branch(self, name):
         starting_branch = self.current_branch()
 
