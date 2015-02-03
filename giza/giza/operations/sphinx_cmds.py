@@ -107,9 +107,11 @@ def sphinx_publication(c, args, app):
                      for edition, language, builder in get_builder_jobs(c) ]
 
     # Copy all source to the ``build/<branch>/source`` directory.
-    migrate_all_source(builder_jobs, app)
+    with Timer('migrating source to build'):
+        migrate_all_source(builder_jobs, app)
     # load all generated content and create tasks.
-    add_content_generator_tasks(builder_jobs, app)
+    with Timer('loading generated content'):
+        add_content_generator_tasks(builder_jobs, app)
 
     # sphinx-build tasks are separated into their own app.
     sphinx_app = app.sub_app()
