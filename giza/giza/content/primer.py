@@ -111,8 +111,12 @@ def trim_leading_slash_from_pages(page):
 def resolve_page_path(page, conf):
     if page['target'].startswith('/'):
         fq_target = page['target']
-    elif '{root}' in page['target']:
-        fq_target = page['target'].format(root=conf.paths.projectroot)
+    elif '{' in page['target'] and '}' in page['target']:
+        fq_target = page['target']
+        if '{root}' in fq_target:
+            fq_target = fq_target.format(root=conf.paths.projectroot)
+        if '{branch}' in fq_target:
+            fq_target = fq_target.format(branch=conf.git.brancehs.current)
     else:
         fq_target = os.path.join(conf.paths.projectroot, conf.paths.source, page['target'])
 
