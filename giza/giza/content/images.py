@@ -93,7 +93,9 @@ def generate_image_pages(dir, name, alt, output, conf):
         if 'target' in img_output:
             options.append(('target', (img_output['target'])))
 
-        if img_output['type'] in 'print':
+        if img_output['type'] == 'target':
+            continue
+        elif img_output['type'] == 'print':
             r.directive('only', 'latex and not offset', wrap=False)
             r.newline()
 
@@ -115,7 +117,7 @@ def generate_image_pages(dir, name, alt, output, conf):
             r.newline()
             r.directive('raw', 'latex', content=tex_figure, indent=3)
         else:
-            r.directive('only', 'website and html', wrap=False)
+            r.directive('only', 'website and slides', wrap=False)
             r.newline()
             r.directive(name='figure',
                         arg='/images/{0}{1}'.format(name, tag),
@@ -254,19 +256,7 @@ def image_tasks(conf, app):
 
             if build_type == 'png':
                 inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e {target} {source}'
-                if 'target' in output:
-                    inkscape_cmd_fullsize = '{cmd} -z -w 100% -d {dpi} -y 0.0 -e {target} {source}'
-                    
-                    target_img_full = ''.join(['fullsize-', source_base, '.', build_type])
-                    
-                    t_bonus = app.add('task')
-                    t_bonus.conf=conf
-                    t_bonus.job=_generate_images
-                    t_bonus.args=[ inkscape_cmd_fullsize, output['dpi'], '100%', target_img_full, source_file ]
-                    t_bonus.target = target_img_full
-                    t_bonus.dependency = [ source_core ]
-                    t_bonus.description = 'generating fullsize image file {0} from {1}'.format(target_img_full, source_core)
-                    logger.debug('adding image creation job for fullsize {0}'.format(target_img_full))
+ 
             elif build_type == 'eps':
                 inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 1.0 -E {target} {source}'
 
