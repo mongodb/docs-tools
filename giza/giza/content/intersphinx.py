@@ -23,32 +23,36 @@ useful for reducing redundant work in parallel build situations.
 import time
 import os
 import logging
-
+import subprocess
 logger = logging.getLogger('giza.content.intersphinx')
 
-from giza.tools.command import command
-from giza.tools.files import verbose_remove
+from giza.tools.files import verbose_remove, safe_create_directory
 
 ACCEPTABLE = 864000
 
 #### Helper functions
 
 def download_file(file, url):
-    if not os.path.isdir(os.path.dirname(file)):
-        os.makedirs(os.path.dirname(file))
+    safe_create_directory(os.path.dirname(file))
 
     cmd = ['curl', '-s', '--remote-time', url, '-o', file]
-    command(' '.join(cmd))
-    logger.info('downloaded {0}'.format(file))
 
-    return True
+    try:
+        subprocess.check_call(cmd)
+        logger.info('downloaded {0}'.format(file))
+        return True
+    except subprocess.CalledProcessError as e:
+        logger.error('trouble downloading interspinx inventory: ' + f)
+        return False
 
 def file_timestamp(path):
     return os.stat(path)[8]
 
 #### Tasks
 
-def download(f, s):
+def download(f, s, conf):
+    if conf.runstate.force is True:
+        newf = download_file(f, s)
     if os.path.isfile(f):
         newf = False
     else:
@@ -93,7 +97,7 @@ def intersphinx_tasks(conf, app):
 
         t.target = f
         t.job = download
-        t.args = { 'f': f, 's': s }
+        t.args = { 'f': f, 's': s, 'conf': conf }
         t.description = 'download intersphinx inventory from {0}'.format(s)
 
         logger.debug('added job for {0}'.format(s))
