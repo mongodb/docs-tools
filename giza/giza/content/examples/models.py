@@ -22,7 +22,7 @@ import logging
 
 logger = logging.getLogger('giza.content.examples.models')
 
-from giza.config.base import ConfigurationBase
+from giza.core.config import ConfigurationBase
 from giza.core.inheritance import InheritableContentBase, InheritableContentError
 from giza.content.helper import get_all_languages
 

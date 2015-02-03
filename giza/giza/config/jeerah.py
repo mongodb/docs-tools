@@ -18,7 +18,7 @@ import datetime
 
 logger = logging.getLogger('giza.config.jeerah')
 
-from giza.config.base import ConfigurationBase, RecursiveConfigurationBase
+from giza.core.config import ConfigurationBase, RecursiveConfigurationBase
 from giza.config.runtime import RuntimeStateConfigurationBase
 
 def fetch_config(args):

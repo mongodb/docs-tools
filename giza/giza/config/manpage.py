@@ -16,7 +16,7 @@ import logging
 
 logger = logging.getLogger('giza.config.helper')
 
-from giza.config.base import ConfigurationBase
+from giza.core.config import ConfigurationBase
 
 class ManpageConfig(ConfigurationBase):
     _option_registry = ['file', 'name', 'title']

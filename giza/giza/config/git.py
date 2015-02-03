@@ -18,7 +18,7 @@ import os
 logger = logging.getLogger('giza.config.git')
 
 from giza.core.git import GitRepo
-from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
+from giza.core.config import RecursiveConfigurationBase, ConfigurationBase
 
 class GitConfigBase(RecursiveConfigurationBase):
     def __init__(self, obj, conf, repo=None):

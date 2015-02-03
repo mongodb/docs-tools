@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from giza.config.base import ConfigurationBase
+from giza.core.config import ConfigurationBase
 
 class DeployConfig(ConfigurationBase):
     @property

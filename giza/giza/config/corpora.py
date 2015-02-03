@@ -17,7 +17,7 @@ import os
 
 logger = logging.getLogger('giza.config.corpora')
 
-from giza.config.base import ConfigurationBase
+from giza.core.config import ConfigurationBase
 
 class SourceConfig(ConfigurationBase):
     _option_registry = ['name', 'source_file_path', 'target_file_path',

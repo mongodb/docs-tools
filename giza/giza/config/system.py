@@ -19,7 +19,7 @@ logger = logging.getLogger('giza.config.system')
 
 import yaml
 
-from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
+from giza.core.config import RecursiveConfigurationBase, ConfigurationBase
 from giza.config.sphinx_local import SphinxLocalConfig
 from giza.config.manpage import ManpageConfig
 from giza.config.pdfs import PdfConfig

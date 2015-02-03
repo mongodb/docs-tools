@@ -32,7 +32,7 @@ logger = logging.getLogger('giza.core.inheritance')
 import jinja2
 import yaml
 
-from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
+from giza.core.config import RecursiveConfigurationBase, ConfigurationBase
 from giza.tools.files import safe_create_directory
 from giza.content.helper import level_characters, edition_check
 

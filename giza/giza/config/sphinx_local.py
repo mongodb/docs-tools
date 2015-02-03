@@ -15,7 +15,7 @@
 import logging
 logger = logging.getLogger('giza.config.sphinx_local')
 
-from giza.config.base import ConfigurationBase
+from giza.core.config import ConfigurationBase
 
 class SphinxLocalConfig(ConfigurationBase):
     _option_registry = [ 'project', 'master_doc', 'logo' ]

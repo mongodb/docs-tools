@@ -18,7 +18,7 @@ import logging
 
 logger = logging.getLogger('giza.config.github')
 
-from giza.config.base import ConfigurationBase
+from giza.core.config import ConfigurationBase
 from giza.config.runtime import RuntimeStateConfigurationBase
 
 if sys.version_info >= (3, 0):

@@ -25,7 +25,7 @@ import os.path
 
 logger = logging.getLogger('giza.content.examples.inheritance')
 
-from giza.config.base import RecursiveConfigurationBase
+from giza.core.config import RecursiveConfigurationBase
 from giza.content.examples.models import ExampleData, ExampleCase
 from giza.content.helper import edition_check
 from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache

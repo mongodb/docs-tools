@@ -19,7 +19,7 @@ import contextlib
 
 import yaml
 
-logger = logging.getLogger('giza.config.base')
+logger = logging.getLogger('giza.core.config')
 
 class ConfigurationBase(object):
     _option_registry = []

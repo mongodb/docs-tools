@@ -16,7 +16,7 @@ import logging
 
 logger = logging.getLogger('giza.config.redirects')
 
-from giza.config.base import ConfigurationBase
+from giza.core.config import ConfigurationBase
 from giza.content.helper import edition_check
 
 def redirect_path_spec_normalization(value):

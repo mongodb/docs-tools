@@ -17,7 +17,7 @@ import os.path
 
 logger = logging.getLogger('giza.config.paths')
 
-from giza.config.base import RecursiveConfigurationBase
+from giza.core.config import RecursiveConfigurationBase
 
 class PathsConfig(RecursiveConfigurationBase):
     _option_registry = ['output', 'source', 'includes', 'images', 'buildsystem',

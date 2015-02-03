@@ -16,7 +16,7 @@ import logging
 
 logger = logging.getLogger('giza.config.credentials')
 
-from giza.config.base import ConfigurationBase
+from giza.core.config import ConfigurationBase
 
 def get_credentials_skeleton():
     return {

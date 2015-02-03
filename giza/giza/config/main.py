@@ -17,7 +17,7 @@ import logging
 
 logger = logging.getLogger('giza.config.main')
 
-from giza.config.base import ConfigurationBase, RecursiveConfigurationBase
+from giza.core.config import ConfigurationBase, RecursiveConfigurationBase
 from giza.config.assets import AssetsConfig
 from giza.config.project import ProjectConfig
 from giza.config.paths import PathsConfig

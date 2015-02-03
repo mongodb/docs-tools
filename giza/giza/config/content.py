@@ -14,7 +14,7 @@
 
 import os.path
 import itertools
-from giza.config.base import ConfigurationBase
+from giza.core.config import ConfigurationBase
 from giza.tools.files import expand_tree
 
 ###### Data Model ######
