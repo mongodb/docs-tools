@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from giza.core.inheritance import DataContentBase, DataCache
+from giza.inheritance import DataContentBase, DataCache
 from giza.content.extract.models import ExtractData
 
 class ExtractFile(DataContentBase):

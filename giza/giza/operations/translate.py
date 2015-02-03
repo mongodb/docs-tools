@@ -34,7 +34,7 @@ from giza.translate.translation import translate_po_files, translate_file, auto_
 from giza.config.corpora import CorporaConfig
 from giza.config.helper import fetch_config
 from giza.config.translate import TranslateConfig
-from giza.core.app import BuildApp
+from libgiza.app import BuildApp
 
 logger = logging.getLogger('giza.operations.translate')
 

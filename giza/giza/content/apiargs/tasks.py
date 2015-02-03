@@ -22,7 +22,7 @@ from giza.content.apiargs.inheritance import ApiArgDataCache
 from giza.content.apiargs.views import render_apiargs
 from giza.config.content import new_content_type
 from giza.tools.timing import Timer
-from giza.core.task import Task
+from libgiza.task import Task
 
 def register_apiargs(conf):
     conf.system.content.add(name='apiargs', definition=new_content_type(name='apiargs', task_generator=apiarg_tasks, conf=conf))

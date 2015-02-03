@@ -16,7 +16,7 @@ import sys
 import copy
 import logging
 
-from giza.core.inheritance import InheritableContentBase, InheritanceReference
+from giza.inheritance import InheritableContentBase, InheritanceReference
 
 logger = logging.getLogger('giza.content.apiargs.models')
 

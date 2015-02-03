@@ -34,7 +34,7 @@ import copy
 import argh
 import itertools
 
-from giza.core.app import BuildApp
+from libgiza.app import BuildApp
 from giza.config.helper import fetch_config
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.operations.deploy import deploy_tasks

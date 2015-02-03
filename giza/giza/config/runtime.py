@@ -20,8 +20,8 @@ import multiprocessing
 
 logger = logging.getLogger('giza.config.runtime')
 
-from giza.core.git import GitError
-from giza.core.config import ConfigurationBase
+from libgiza.git import GitError
+from libgiza.config import ConfigurationBase
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.config.error import ConfigurationError
 

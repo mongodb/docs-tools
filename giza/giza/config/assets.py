@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from giza.core.config import ConfigurationBase
+from libgiza.config import ConfigurationBase
 
 class AssetsConfig(ConfigurationBase):
     _option_registry = ['path', 'branch', 'repository', 'commit']

@@ -18,7 +18,7 @@ import sys
 
 logger = logging.getLogger('giza.content.extract.models')
 
-from giza.core.inheritance import InheritableContentBase
+from giza.inheritance import InheritableContentBase
 from giza.content.steps.models import HeadingMixin
 
 if sys.version_info >= (3, 0):

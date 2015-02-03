@@ -27,7 +27,7 @@ import argh
 import giza
 
 from giza.config.helper import fetch_config
-from giza.core.app import BuildApp
+from libgiza.app import BuildApp
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.tools.command import command, CommandError
 

@@ -21,7 +21,7 @@ from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
 from giza.content.release.inheritance import ReleaseDataCache
 from giza.content.release.views import render_releases
 from giza.config.content import new_content_type
-from giza.core.task import Task
+from libgiza.task import Task
 
 def register_releases(conf):
     conf.system.content.add(name='releases', definition=new_content_type(name='release', task_generator=release_tasks, conf=conf))

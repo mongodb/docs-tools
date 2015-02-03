@@ -24,7 +24,7 @@ import re
 
 logger = logging.getLogger('giza.content.post.singlehtml')
 
-from giza.core.task import check_dependency
+from libgiza.task import check_dependency
 from giza.tools.files import (expand_tree, copy_if_needed, decode_lines_from_file,
                               encode_lines_to_file, FileNotFoundError, safe_create_directory)
 

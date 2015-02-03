@@ -17,7 +17,7 @@ import sys
 
 logger = logging.getLogger('giza.content.tocs.models')
 
-from giza.core.inheritance import InheritableContentBase
+from giza.inheritance import InheritableContentBase
 
 if sys.version_info >= (3, 0):
     basestring = str

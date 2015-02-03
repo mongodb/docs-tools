@@ -3,6 +3,7 @@ import giza
 from setuptools import setup, find_packages
 
 REQUIRES = [
+    'libgiza>=0.1.2',
     'argh',
     'docutils',
     'hieroglyph',

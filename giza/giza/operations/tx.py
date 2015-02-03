@@ -27,7 +27,7 @@ logger = logging.getLogger('giza.operations.tx')
 
 from giza.config.helper import fetch_config
 from giza.config.sphinx_config import resolve_builder_path
-from giza.core.app import BuildApp
+from libgiza.app import BuildApp
 from giza.tools.command import command
 from giza.tools.files import FileLogger
 

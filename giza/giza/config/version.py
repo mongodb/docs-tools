@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from giza.core.config import RecursiveConfigurationBase
+from libgiza.config import RecursiveConfigurationBase
 
 class VersionConfig(RecursiveConfigurationBase):
     _option_registry = ['release', 'branch']

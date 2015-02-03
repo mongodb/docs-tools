@@ -24,8 +24,8 @@ logger = logging.getLogger('giza.operations.generate')
 
 import argh
 
-from giza.core.app import BuildApp
-from giza.core.task import Task
+from libgiza.app import BuildApp
+from libgiza.task import Task
 from giza.config.helper import fetch_config
 
 from giza.content.assets import assets_tasks, assets_clean

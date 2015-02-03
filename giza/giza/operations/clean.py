@@ -26,7 +26,7 @@ logger = logging.getLogger('giza.operations.clean')
 
 import argh
 
-from giza.core.app import BuildApp
+from libgiza.app import BuildApp
 from giza.config.main import Configuration
 from giza.config.helper import fetch_config, get_builder_jobs
 from giza.config.sphinx_config import resolve_builder_path

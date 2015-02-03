@@ -14,7 +14,7 @@
 
 """
 Contains the output specification for redirects (i.e. ``.htaccess`` files,) as
-well as integration into the :class:`giza.core.app.BuildApp()`
+well as integration into the :class:`libgiza.app.BuildApp()`
 infrastructure. All of the data processing and definition happens in
 :mod:`giza.config.redirects`.
 """

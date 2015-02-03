@@ -19,7 +19,7 @@ import sys
 
 logger = logging.getLogger('giza.content.post.sites')
 
-from giza.core.task import check_dependency
+from libgiza.task import check_dependency
 from giza.tools.command import command
 from giza.tools.transformation import munge_page
 from giza.tools.files import (expand_tree, create_link, copy_if_needed,

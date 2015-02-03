@@ -17,7 +17,7 @@ Defines the ways that example content can inherit content from other
 examples. This module holds two classes: a representation of a single file that
 contains a set of examples and
 
-See :mod:`giza.core.inheritance`
+See :mod:`giza.inheritance`
 """
 
 import logging
@@ -25,14 +25,15 @@ import os.path
 
 logger = logging.getLogger('giza.content.examples.inheritance')
 
-from giza.core.config import RecursiveConfigurationBase
+from libgiza.inheritance import InheritableContentError
+from libgiza.config import RecursiveConfigurationBase
 from giza.content.examples.models import ExampleData, ExampleCase
 from giza.content.helper import edition_check
-from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache
+from giza.inheritance import DataContentBase, DataCache
 
 # Example specific inheritance machinery
 
-class ExampleError(Exception): pass
+class ExampleError(InheritableContentError): pass
 
 class ExampleFile(DataContentBase):
     """

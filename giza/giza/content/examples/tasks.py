@@ -27,7 +27,7 @@ from giza.tools.files import expand_tree, safe_create_directory, verbose_remove
 from giza.config.content import new_content_type
 from giza.content.examples.inheritance import ExampleDataCache
 from giza.content.examples.views import full_example
-from giza.core.task import Task
+from libgiza.task import Task
 
 def register_examples(conf):
     conf.system.content.add(name='examples', definition=new_content_type(name='examples', task_generator=example_tasks, conf=conf))

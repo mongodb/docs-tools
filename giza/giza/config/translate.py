@@ -16,7 +16,7 @@ import logging
 import sys
 import os
 
-from giza.core.config import ConfigurationBase, RecursiveConfigurationBase
+from libgiza.config import ConfigurationBase, RecursiveConfigurationBase
 logger = logging.getLogger('giza.config.translate')
 
 class TranslateConfig(RecursiveConfigurationBase):

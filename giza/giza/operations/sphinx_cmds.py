@@ -21,8 +21,8 @@ import os.path
 import argh
 
 from giza.config.helper import fetch_config, get_builder_jobs, register_content_generators
-from giza.core.app import BuildApp
-from giza.core.task import Task
+from libgiza.app import BuildApp
+from libgiza.task import Task
 
 logger = logging.getLogger('giza.operations.sphinx')
 
@@ -71,7 +71,7 @@ def sphinx_publication(c, args, app):
 
     :arg RuntimeStateConfig args: A :class:`giza.config.runtime.RuntimeState()` object.
 
-    :arg BuildApp app: A :class:`giza.core.app.BuildApp()` object.
+    :arg BuildApp app: A :class:`libgiza.app.BuildApp()` object.
 
     Adds all required tasks to build a Sphinx site. Specifically:
 
@@ -178,7 +178,7 @@ def build_content_generation_tasks(conf, app):
     """
     :param Configuration conf: The current build configuration object.
 
-    :param BuildApp app: A :class:`~giza.core.app.BuildApp()` object.
+    :param BuildApp app: A :class:`~libgiza.app.BuildApp()` object.
 
     Add tasks to the ``app`` for all tasks that modify the content in
     ``build/<branch>/source`` directory.
@@ -198,7 +198,7 @@ def migrate_all_source(builder_jobs, app):
     :param builder_jobs: A list of arguments in the form of ``((edition,
         language, builder), (conf, sconf))`` used to create tasks to for the build.
 
-    :param BuildApp app: A :class:`~giza.core.app.BuildApp()` object.
+    :param BuildApp app: A :class:`~libgiza.app.BuildApp()` object.
 
     Uses the app pool to add all tasks to migrate the source into the
     ``build/<branch>/<source>`` directories, and then run all migrations
@@ -223,7 +223,7 @@ def add_content_generator_tasks(builder_jobs, app):
     :param builder_jobs: A list of arguments in the form of ``((edition,
         language, builder), (conf, sconf))`` used to create tasks to for the build.
 
-    :param BuildApp app: A :class:`~giza.core.app.BuildApp()` object.
+    :param BuildApp app: A :class:`~libgiza.app.BuildApp()` object.
 
     Uses the app pool to read and return all tasks for all content generation
     task available in the ``conf.system.content`` array. Runs each task

@@ -22,7 +22,7 @@ from giza.tools.transformation import append_to_file, prepend_to_file
 from giza.content.extract.inheritance import ExtractDataCache
 from giza.content.extract.views import render_extracts, get_include_statement
 from giza.config.content import new_content_type
-from giza.core.task import Task
+from libgiza.task import Task
 
 def register_extracts(conf):
     conf.system.content.add(name='extracts', definition=new_content_type(name='extracts', task_generator=extract_tasks, conf=conf))

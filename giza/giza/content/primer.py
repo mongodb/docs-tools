@@ -22,7 +22,7 @@ Developed for the Primer/Getting Started section. Configuration files are all
 ``.yaml`` files in the *config* directory that have the substring "migration" in
 them. Uses the functions in :mod:`giza.tools.transformation` and
 :mod:`giza.tools.files` to perform the action, and just adds migration and
-transformation tasks to a :class:`giza.core.app.BuildApp()` instance.
+transformation tasks to a :class:`libgiza.app.BuildApp()` instance.
 """
 
 import os
@@ -35,7 +35,7 @@ logger = logging.getLogger('giza.content.primer')
 
 from giza.tools.files import copy_if_needed, copy_always, expand_tree, verbose_remove
 from giza.tools.transformation import process_page, truncate_file, append_to_file
-from giza.core.app import BuildApp
+from libgiza.app import BuildApp
 
 def get_migration_specifications(conf):
     output = []

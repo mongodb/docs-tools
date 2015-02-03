@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from giza.core.config import RecursiveConfigurationBase, ConfigurationBase
+from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
 
 def get_path_prefix(conf, branch):
     """

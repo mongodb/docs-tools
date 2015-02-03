@@ -39,8 +39,8 @@ import sys
 
 logger = logging.getLogger('giza.content.sphinx')
 
-from giza.core.app import BuildApp
-from giza.core.task import Task
+from libgiza.app import BuildApp
+from libgiza.task import Task
 from giza.tools.command import command
 from giza.tools.files import safe_create_directory
 from giza.tools.timing import Timer

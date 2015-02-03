@@ -16,7 +16,7 @@ import logging
 
 logger = logging.getLogger('giza.config.helper')
 
-from giza.core.config import ConfigurationBase
+from libgiza.config import ConfigurationBase
 
 class PdfConfig(ConfigurationBase):
     _option_registry = ['source', 'title', 'tag', 'author', 'class', 'edition']

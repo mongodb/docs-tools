@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger('giza.operations.deploy')
 
 from giza.config.helper import fetch_config, new_credentials_config
-from giza.core.app import BuildApp
+from libgiza.app import BuildApp
 from giza.deploy import Deploy, deploy_target
 from giza.operations.sphinx_cmds import sphinx_publication
 

@@ -26,7 +26,7 @@ logger = logging.getLogger('giza.scrumpy')
 from giza.config.jeerah import fetch_config, JeerahRuntimeStateConfig
 from giza.config.helper import dump_skel, setup_credentials
 from giza.cmdline import get_base_parser
-from giza.core.app import BuildApp
+from libgiza.app import BuildApp
 from giza.jeerah.client import JeerahClient
 from giza.jeerah.query import strip_name
 

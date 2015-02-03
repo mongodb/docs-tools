@@ -53,7 +53,7 @@ import subprocess
 
 logger = logging.getLogger('giza.content.assets')
 
-from giza.core.git import GitRepo
+from libgiza.git import GitRepo
 
 def assets_setup(path, branch, repo, commit=None):
     """

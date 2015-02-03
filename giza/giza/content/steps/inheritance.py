@@ -17,7 +17,7 @@ import os.path
 
 logger = logging.getLogger('giza.content.steps.inheritance')
 
-from giza.core.inheritance import DataContentBase, DataCache
+from giza.inheritance import DataContentBase, DataCache
 from giza.content.steps.models import StepData
 
 class StepFile(DataContentBase):

@@ -21,7 +21,7 @@ from giza.content.tocs.inheritance import TocDataCache
 from giza.content.tocs.views import render_toctree, render_dfn_list, render_toc_table
 from giza.tools.files import safe_create_directory
 from giza.config.content import new_content_type
-from giza.core.task import Task
+from libgiza.task import Task
 
 def register_toc(conf):
     definition = new_content_type(name='toc',

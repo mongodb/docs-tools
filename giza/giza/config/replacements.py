@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from giza.core.config import RecursiveConfigurationBase
+from libgiza.config import RecursiveConfigurationBase
 
 class ReplacementData(RecursiveConfigurationBase):
     def ingest(self, input_obj):

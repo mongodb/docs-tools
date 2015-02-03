@@ -28,7 +28,7 @@ from giza.config.sphinx_config import avalible_sphinx_builders, resolve_builder_
 from giza.operations.packaging import fetch_package
 from giza.operations.sphinx_cmds import get_sphinx_build_configuration
 from giza.tools.files import cd, safe_create_directory, FileNotFoundError
-from giza.core.app import BuildApp
+from libgiza.app import BuildApp
 
 logger = logging.getLogger('giza.operations.build_env')
 

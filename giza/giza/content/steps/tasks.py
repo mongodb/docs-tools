@@ -22,7 +22,7 @@ from giza.tools.files import expand_tree, safe_create_directory
 from giza.content.steps.inheritance import StepDataCache
 from giza.content.steps.views import render_steps
 from giza.config.content import new_content_type
-from giza.core.task import Task
+from libgiza.task import Task
 
 def register_steps(conf):
     conf.system.content.add(name='steps', definition=new_content_type(name='steps', task_generator=step_tasks, conf=conf))

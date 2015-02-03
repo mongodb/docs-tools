@@ -17,7 +17,7 @@ import os.path
 
 logger = logging.getLogger('giza.content.models')
 
-from giza.core.inheritance import InheritableContentBase
+from giza.inheritance import InheritableContentBase
 from giza.content.steps.models import HeadingMixin
 from giza.content.helper import get_all_languages
 

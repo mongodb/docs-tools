@@ -16,7 +16,7 @@ import logging
 
 logger = logging.getLogger('giza.content.options.inheritance')
 
-from giza.core.inheritance import DataContentBase, DataCache
+from giza.inheritance import DataContentBase, DataCache
 from giza.content.options.models import OptionData
 
 class OptionFile(DataContentBase):

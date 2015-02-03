@@ -21,7 +21,7 @@ from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
 from giza.content.options.inheritance import OptionDataCache
 from giza.content.options.views import render_options
 from giza.config.content import new_content_type
-from giza.core.task import Task
+from libgiza.task import Task
 
 def register_options(conf):
     conf.system.content.add(name='options', definition=new_content_type(name='option', task_generator=option_tasks, conf=conf))
