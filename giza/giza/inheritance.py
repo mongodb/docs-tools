@@ -67,29 +67,3 @@ class DataCache(libgiza.inheritance.DataCache):
 
 class DataContentBase(libgiza.inheritance.DataContentBase):
     edition_check = staticmethod(giza.content.helper.edition_check)
-
-# this should probably go somewhere else
-class TitleData(libgiza.config.ConfigurationBase):
-    _option_registry = ['text']
-
-    @property
-    def character(self):
-        return self.level
-
-    @character.setter
-    def character(self, value):
-        self.level = level_characters[value]
-
-    @property
-    def level(self):
-        if 'level' not in self.state:
-            return 3
-        else:
-            return self.state['level']
-
-    @level.setter
-    def level(self, value):
-        if isinstance(value, int):
-            self.state['level'] = value
-        else:
-            raise TypeError
