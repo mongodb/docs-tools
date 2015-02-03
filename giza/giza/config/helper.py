@@ -75,7 +75,7 @@ def new_skeleton_config(conf=None):
         try:
             register_content_generators(conf)
         except KeyError:
-            logger.warning("cannot register content generators")
+            logger.warning("trouble registering content generators")
 
         return conf
     elif isinstance(conf, RuntimeStateConfig):
