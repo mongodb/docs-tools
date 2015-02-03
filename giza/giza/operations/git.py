@@ -19,13 +19,13 @@ repository with git.
 
 import logging
 import os
+import subprocess
 
 import argh
 
 from giza.core.app import BuildApp
 from giza.core.git import GitRepo
 from giza.config.helper import fetch_config
-from giza.tools.command import command
 from giza.operations.build_env import fix_build_env_tasks, get_existing_builders
 
 logger = logging.getLogger('giza.operations.git')
@@ -166,8 +166,12 @@ def create_branch(args):
 
     cmd = "rsync -r --times --checksum {0}/ {1}".format(base_builddir, branch_builddir)
     logger.info('seeding build directory for "{0}" from "{1}"'.format(branch, base_branch))
-    command(cmd)
-    logger.info('branch creation complete.')
+
+    try:
+        subprocess.check_call(args=cmd.split())
+        logger.info('branch creation complete.')
+    except subprocess.CalledProcessError:
+        logger.error(cmd)
 
     # get a new config here for the new branch
     conf = fetch_config(args)
