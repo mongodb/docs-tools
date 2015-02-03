@@ -17,7 +17,6 @@ import os
 import json
 
 import argh
-import yaml
 
 from github3 import login
 

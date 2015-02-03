@@ -1,6 +1,5 @@
 import logging
 import os.path
-import yaml
 import datetime
 
 logger = logging.getLogger('giza.jeerah.client')

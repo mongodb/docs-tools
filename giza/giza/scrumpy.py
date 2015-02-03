@@ -19,7 +19,6 @@ import logging
 import os
 
 import argh
-import yaml
 
 logger = logging.getLogger('giza.scrumpy')
 
