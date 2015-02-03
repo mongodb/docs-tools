@@ -25,8 +25,7 @@ logger = logging.getLogger('giza.app')
 
 from giza.core.pool import ThreadPool, ProcessPool, SerialPool, WorkerPool, EventPool
 from giza.core.task import Task, MapTask
-
-from giza.config.helper import new_skeleton_config
+from giza.core.config import ConfigurationBase
 
 class BuildApp(object):
     """
@@ -56,13 +55,13 @@ class BuildApp(object):
            ``Configuration`` object.
         """
 
-        self.conf = new_skeleton_config(conf)
+        self._conf = conf
         self._force = force
+        self._default_pool = 'process'
 
         self.queue = []
         self.results = []
         self.worker_pool = None
-        self.default_pool = self.conf.runstate.runner
         self.randomize = False
 
         self.pool_mapping = {
@@ -108,6 +107,29 @@ class BuildApp(object):
     def force(self, value):
         self._force = bool(value)
 
+    @property
+    def conf(self):
+        return self._conf
+
+    @conf.setter
+    def conf(self, value):
+        if isinstance(value, ConfigurationBase):
+            self._conf = value
+
+    @property
+    def default_pool(self):
+        if self.conf is not None:
+            self._default_pool = self.conf.runstate.runner
+
+        return self._default_pool
+
+    @default_pool.setter
+    def default_pool(self, value):
+        if value in self.pool_mapping:
+            self._default_pool = value
+        else:
+            logger.error('{0} is not a valid pool type'.format(value))
+
     def define_dependency_node(self, target, dependency):
         self.target = target
         self.dependency = dependency
@@ -145,11 +167,11 @@ class BuildApp(object):
             if self.is_pool(pool) and self.worker_pool is None:
                 self.worker_pool = pool
             elif pool in self.pool_types:
-                self.worker_pool = pool(self.conf)
+                self.worker_pool = pool(self.conf.runstate.pool_size)
             elif self.is_pool_type(pool) and self.worker_pool is None:
-                self.worker_pool = self.pool_mapping[pool](self.conf)
+                self.worker_pool = self.pool_mapping[pool](self.conf.runstate.pool_size)
             else:
-                self.worker_pool = self.pool_mapping[self.default_pool](self.conf)
+                self.worker_pool = self.pool_mapping[self.default_pool](self.conf.runstate.pool_size)
         else:
             raise TypeError("pool {0} of type {1} is invalid".format(pool, type(pool)))
 

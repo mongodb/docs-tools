@@ -22,6 +22,7 @@ mechanisms.
 import multiprocessing
 import multiprocessing.dummy
 import logging
+import numbers
 
 logger = logging.getLogger('giza.pool')
 
@@ -42,6 +43,21 @@ def run_task(task):
     return result
 
 class WorkerPool(object):
+    @property
+    def pool_size(self):
+        try:
+            return self._pool_size
+        except:
+            return 2
+
+    @pool_size.setter
+    def pool_size(self, value):
+        if isinstance(value, numbers.Number):
+            self._pool_size = value
+        else:
+            self._pool_size = multiprocessing.cpu_count()
+            logger.error('{0} is not a valid pool size, using number of cores'.format(str(value)))
+
     def __enter__(self):
         return self.p
 
@@ -113,9 +129,9 @@ class WorkerPool(object):
         return retval
 
 class SerialPool(object):
-    def __init__(self, conf=None):
+    def __init__(self, pool_size=0):
         self.p = None
-        self.conf = new_skeleton_config(conf)
+        self.pool_size = pool_size
         logger.debug('new phony "serial" pool object')
 
     def get_results(self, results):
@@ -140,20 +156,20 @@ class SerialPool(object):
     async_runner = runner
 
 class ThreadPool(WorkerPool):
-    def __init__(self, conf=None):
-        self.conf = new_skeleton_config(conf)
-        self.p = multiprocessing.dummy.Pool(self.conf.runstate.pool_size)
-        logger.debug('new thread pool object')
+    def __init__(self, pool_size=None):
+        self.pool_size = pool_size
+        self.p = multiprocessing.dummy.Pool(self.pool_size)
+        logger.info('new thread pool object')
 
 class ProcessPool(WorkerPool):
-    def __init__(self, conf=None):
-        self.conf = new_skeleton_config(conf)
-        self.p = multiprocessing.Pool(self.conf.runstate.pool_size)
-        logger.debug('new process pool object')
+    def __init__(self, pool_size=None):
+        self.pool_size = pool_size
+        self.p = multiprocessing.Pool(self.pool_size)
+        logger.info('new process pool object')
 
 class EventPool(WorkerPool):
-    def __init__(self, conf=None):
-        self.conf = new_skeleton_config(conf)
+    def __init__(self, pool_size=None):
+        self.pool_size = pool_size
 
         try:
             import gevent.pool
@@ -161,4 +177,4 @@ class EventPool(WorkerPool):
             raise PoolConfigurationError('gevent is not available')
 
         self.p = gevent.pool.Pool(self.conf.runstate.pool_size)
-        logger.debug('new event pool object')
+        logger.info('new event pool object')
