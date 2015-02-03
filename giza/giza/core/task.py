@@ -100,8 +100,23 @@ class Task(object):
 
     @target.setter
     def target(self, value):
-
         self._target = value
+
+    @property
+    def force(self):
+        if self._force is None:
+            if self.conf is None:
+                logger.warning('force flag for app is not set, setting to "false"')
+                self._force = False
+            else:
+                logger.warning('deprecated use of conf object in app setup for force value')
+                self._force = self.conf.runstate.force
+
+        return self._force
+
+    @force.setter
+    def force(self, value):
+        self._force = bool(value)
 
     def define_dependency_node(self, target, dependency):
         self.target = target

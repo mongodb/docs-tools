@@ -155,7 +155,7 @@ class BuildApp(object):
         if self._default_pool is None:
             if self.conf is None:
                 logger.warning('pool type not specified, choosing at random')
-                return random.choice(self.pool_types)
+                return random.choice(self.pool_mapping.keys())
             else:
                 logger.warning('deprecated use of conf object in app setup for pool type')
                 self._default_pool = self.conf.runstate.runner
@@ -201,17 +201,20 @@ class BuildApp(object):
             logger.debug('not creating a pool because one already exists. ({0}, {1})'.format(pool, type(pool)))
             return
 
-        if isinstance(self.worker_pool, self.pool_mapping[self.default_pool]):
-            return
-        elif self.worker_pool is None:
+        if self.worker_pool is None:
             if self.is_pool(pool) and self.worker_pool is None:
                 self.worker_pool = pool
             elif pool in self.pool_types:
                 self.worker_pool = pool(self.pool_size)
             elif self.is_pool_type(pool) and self.worker_pool is None:
                 self.worker_pool = self.pool_mapping[pool](self.pool_size)
-            else:
+            elif self.default_pool in self.pool_types:
                 self.worker_pool = self.pool_mapping[self.default_pool](self.pool_size)
+        elif self.is_pool(self.worker_pool):
+            return
+        elif self.conf is not None and pool in self.pool_types and isinstance(self.worker_pool, self.pool_mapping[pool]):
+            self.close_pool()
+            self.worker_pool = self.pool_mapping[pool](self.pool_size)
         else:
             raise TypeError("pool {0} of type {1} is invalid".format(pool, type(pool)))
 
@@ -251,6 +254,9 @@ class BuildApp(object):
         app.root_app = False
         app.default_pool = self.default_pool
         app.pool = self.pool
+
+        if self.conf is not None:
+            app.conf = self.conf
 
         return app
 
@@ -322,14 +328,14 @@ class BuildApp(object):
                 j.pool = self.pool
 
             self.results.extend(j.run())
-        else:
+        elif isinstance(j, Task):
             if j.needs_rebuild is True:
                 if isinstance(j, MapTask):
                     self.results.extend(self.pool.runner([j]))
-                elif isinstance(j, Task):
-                    self.results.append(j.run())
                 else:
-                    raise TypeError
+                    self.results.append(j.run())
+        else:
+            raise TypeError
 
     def _run_mixed_queue(self):
         group = [ ]

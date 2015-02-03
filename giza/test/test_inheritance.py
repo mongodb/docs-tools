@@ -20,7 +20,7 @@ from giza.core.inheritance import DataContentBase, DataCache, InheritableContent
 
 from giza.config.main import Configuration
 from giza.config.runtime import RuntimeStateConfig
-from giza.config.base import RecursiveConfigurationBase
+from giza.core.config import RecursiveConfigurationBase
 
 class DummyRecord(InheritableContentBase):
     _option_registry = ['pre', 'post', 'final', 'ref', 'title', 'content', 'edition', 'operation', 'results']

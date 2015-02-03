@@ -175,5 +175,5 @@ class EventPool(WorkerPool):
         except ImportError:
             raise PoolConfigurationError('gevent is not available')
 
-        self.p = gevent.pool.Pool(self.conf.runstate.pool_size)
+        self.p = gevent.pool.Pool(self.pool_size)
         logger.info('new event pool object')

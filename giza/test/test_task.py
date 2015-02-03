@@ -20,7 +20,7 @@ from giza.config.runtime import RuntimeStateConfig
 
 class BaseTaskSuite(object):
     def test_configuration_object_validation_rejection(self):
-        for i in [None, 1, 'config', {'config': 1}]:
+        for i in [1, 'config', {'config': 1}]:
             t = self.Task()
 
             with self.assertRaises(TypeError):
@@ -29,8 +29,9 @@ class BaseTaskSuite(object):
     def test_configuration_object_validation_acceptance(self):
         for i in [self.c, Configuration(), RuntimeStateConfig()]:
             t = self.Task()
-            t.conf = i
 
+            self.assertIsNone(t.conf)
+            t.conf = i
             self.assertIs(i, t.conf)
 
     def test_job_validation_rejection(self):

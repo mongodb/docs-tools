@@ -49,9 +49,11 @@ class CommonAppSuite(object):
 
     def test_pool_setter_default(self):
         self.assertIsNone(self.app.worker_pool)
-        self.app.pool = None
+        pool_type = self.app.default_pool
+        self.app.pool = pool_type
+
         self.assertIsNotNone(self.app.worker_pool)
-        self.assertIsInstance(self.app.pool, ThreadPool)
+        self.assertIsInstance(self.app.pool, self.app.pool_mapping[pool_type])
 
     def test_pool_setter_process(self):
         self.assertIsNone(self.app.worker_pool)
@@ -92,7 +94,8 @@ class CommonAppSuite(object):
     def test_pool_setter_invalid_input(self):
         self.assertIsNone(self.app.worker_pool)
         a = self.app.pool = 1
-        self.assertIsInstance(self.app.pool, ThreadPool)
+
+        self.assertIn(type(self.app.pool), self.app.pool_mapping.values())
 
     def test_pool_closer(self):
         self.assertIsNone(self.app.worker_pool)
@@ -636,19 +639,20 @@ class TestBuildAppStandardConfig(CommonAppSuite, TestCase):
         self.c.runstate = RuntimeStateConfig()
         self.app = BuildApp(self.c)
 
-    def test_conf_objet_consistent_in_task(self):
+    def test_conf_object_consistent_in_task(self):
         self.assertEqual(self.app.queue, [])
         t = self.app.add('task')
         self.assertIs(self.c, t.conf)
         self.assertIs(self.c, self.app.queue[0].conf)
 
-    def test_conf_objet_consistent_in_app(self):
+    def test_conf_object_consistent_in_app(self):
         self.assertEqual(self.app.queue, [])
-        app = self.app.add('app')
-        self.assertIs(self.c, app.conf)
+        self.app.add('app')
+
+        self.assertIs(self.c, self.app.conf)
         self.assertIs(self.c, self.app.queue[0].conf)
 
-    def test_conf_objet_consistent_in_new_task(self):
+    def test_conf_object_consistent_in_new_task(self):
         self.assertEqual(self.app.queue, [])
         t = Task()
         self.assertIsNone(t.conf)
