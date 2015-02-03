@@ -49,11 +49,11 @@ stable over time.
 import logging
 import os
 import shutil
+import subprocess
 
 logger = logging.getLogger('giza.content.assets')
 
 from giza.core.git import GitRepo
-from giza.tools.command import command
 
 def assets_setup(path, branch, repo, commit=None):
     """
@@ -118,10 +118,10 @@ def assets_tasks(conf, app):
             if 'generate' in asset:
                 for content_type in asset.generate:
                     t = gen_app.add('task')
-                    t.job = command
+                    t.job = subprocess.call
                     t.target = path
                     t.depends = None
-                    t.args = 'cd {0}; giza generate {1}'.format(path, content_type)
+                    t.args = { 'cwd': path, 'args': ['giza', 'generate', content_type] }
                     t.description('generating objects in {0}'.format(path))
 
 def assets_clean(conf, app):
