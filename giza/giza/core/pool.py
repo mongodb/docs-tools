@@ -27,7 +27,6 @@ import numbers
 logger = logging.getLogger('giza.pool')
 
 from giza.core.task import MapTask
-from giza.config.helper import new_skeleton_config
 
 class PoolConfigurationError(Exception): pass
 class PoolResultsError(Exception): pass
