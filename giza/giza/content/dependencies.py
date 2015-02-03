@@ -30,7 +30,6 @@ import logging
 import os
 
 from giza.includes import include_files
-from giza.core.task import check_hashed_dependency, normalize_dep_path
 from giza.tools.files import expand_tree, md5_file, safe_create_directory
 from giza.tools.timing import Timer
 
@@ -138,3 +137,55 @@ def dump_file_hash_tasks(conf, app):
     t.target = conf.system.dependency_cache
     t.dependency = os.path.join(conf.paths.projectroot, conf.paths.branch_source)
     t.description = "writing dependency cache to a file for the next build"
+
+
+############### Hashed Dependency Checking ###############
+
+def normalize_dep_path(fn, conf, branch):
+    """
+    Given a filename (typically, absolute with regards to the ``source``
+    directory), the configuration object, the ``branch`` boolean, returns a
+    fully qualified path of a source file.
+
+    When ``branch`` is ``False``, that's in the actual ``source/``
+    directory. When ``branch`` is ``True``, that's the proxy-source directory in
+    ``build/<branch>``.
+    """
+
+    fn = fn.rstrip()
+    if not fn.startswith(conf.paths.projectroot):
+        if fn.startswith(conf.paths.branch_source) or fn.startswith(conf.paths.source):
+            fn = os.path.join(conf.paths.projectroot, fn)
+        elif fn.startswith('/'):
+            if branch is False:
+                fn = os.path.join(conf.paths.projectroot,
+                                  conf.paths.source,
+                                  fn[1:])
+            else:
+                fn = os.path.join(conf.paths.projectroot,
+                                  conf.paths.branch_source,
+                                  fn[1:])
+
+    return fn
+
+def check_hashed_dependency(fn, dep_map, conf):
+    """
+    :return: ``True`` when any of the files that include ``fn`` have changed since
+        the generation of the the ``dep_map``. Always returns ``True`` if
+        ``dep_map`` is ``None`` (i.e. if this is the first build.)
+    """
+    # logger.info('checking dependency for: ' + fan)
+
+    fn = normalize_dep_path(fn, conf, branch=False)
+
+    if dep_map is None:
+        return True
+    elif not os.path.exists(fn):
+        return True
+    elif fn in dep_map:
+        if dep_map[fn] != md5_file(fn):
+            return True
+        else:
+            return False
+    else:
+        return False

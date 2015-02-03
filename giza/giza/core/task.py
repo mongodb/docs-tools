@@ -28,7 +28,6 @@ import collections
 logger = logging.getLogger('giza.task')
 
 from giza.core.config import ConfigurationBase
-from giza.tools.files import md5_file
 
 if sys.version_info >= (3, 0):
     basestring = str
@@ -178,6 +177,32 @@ class Task(object):
         logger.debug('completed running task {0}, {1}'.format(self.task_id, self.description))
         return r
 
+class MapTask(Task):
+    """
+    A variant of :class:`~giza.task.Task()` that defines a task that like the
+    kind of operation that would run in a :func:`map()` function, processing the
+    contents of an operable with a single function.
+    """
+
+    def __init__(self, job=None, description=None, target=None, dependency=None):
+        super(MapTask, self).__init__(job=job, description=description,
+                                   target=target, dependency=dependency)
+        self._iter = []
+
+    @property
+    def iter(self):
+        return self._iter
+
+    @iter.setter
+    def iter(self, value):
+        if isinstance(value, collections.Iterable):
+            self._iter = value
+        else:
+            raise TypeError
+
+    def run(self):
+        return map(self.job, self.iter)
+
 ############### Dependency Checking ###############
 
 def check_dependency(target, dependency):
@@ -232,80 +257,3 @@ def check_dependency(target, dependency):
     else:
         logger.error('{0} is not a valid dependency'.format(dependency))
         return True
-
-class MapTask(Task):
-    """
-    A variant of :class:`~giza.task.Task()` that defines a task that like the
-    kind of operation that would run in a :func:`map()` function, processing the
-    contents of an operable with a single function.
-    """
-
-    def __init__(self, job=None, description=None, target=None, dependency=None):
-        super(MapTask, self).__init__(job=job, description=description,
-                                   target=target, dependency=dependency)
-        self._iter = []
-
-    @property
-    def iter(self):
-        return self._iter
-
-    @iter.setter
-    def iter(self, value):
-        if isinstance(value, collections.Iterable):
-            self._iter = value
-        else:
-            raise TypeError
-
-    def run(self):
-        return map(self.job, self.iter)
-
-############### Hashed Dependency Checking ###############
-
-def normalize_dep_path(fn, conf, branch):
-    """
-    Given a filename (typically, absolute with regards to the ``source``
-    directory), the configuration object, the ``branch`` boolean, returns a
-    fully qualified path of a source file.
-
-    When ``branch`` is ``False``, that's in the actual ``source/``
-    directory. When ``branch`` is ``True``, that's the proxy-source directory in
-    ``build/<branch>``.
-    """
-
-    fn = fn.rstrip()
-    if not fn.startswith(conf.paths.projectroot):
-        if fn.startswith(conf.paths.branch_source) or fn.startswith(conf.paths.source):
-            fn = os.path.join(conf.paths.projectroot, fn)
-        elif fn.startswith('/'):
-            if branch is False:
-                fn = os.path.join(conf.paths.projectroot,
-                                  conf.paths.source,
-                                  fn[1:])
-            else:
-                fn = os.path.join(conf.paths.projectroot,
-                                  conf.paths.branch_source,
-                                  fn[1:])
-
-    return fn
-
-def check_hashed_dependency(fn, dep_map, conf):
-    """
-    :return: ``True`` when any of the files that include ``fn`` have changed since
-        the generation of the the ``dep_map``. Always returns ``True`` if
-        ``dep_map`` is ``None`` (i.e. if this is the first build.)
-    """
-    # logger.info('checking dependency for: ' + fan)
-
-    fn = normalize_dep_path(fn, conf, branch=False)
-
-    if dep_map is None:
-        return True
-    elif not os.path.exists(fn):
-        return True
-    elif fn in dep_map:
-        if dep_map[fn] != md5_file(fn):
-            return True
-        else:
-            return False
-    else:
-        return False
