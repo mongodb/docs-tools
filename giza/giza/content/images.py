@@ -55,13 +55,13 @@ is in :func:`giza.content.images.generate_image_pages()`.
 import sys
 import os.path
 import logging
+import subprocess
 
 logger = logging.getLogger('giza.content.images')
 
 from docutils.core import publish_parts
 from rstcloth.rstcloth import RstCloth
 
-from giza.tools.command import command
 from giza.tools.files import verbose_remove
 
 ## Internal Supporting Methods
@@ -167,11 +167,15 @@ def _generate_images(cmd, dpi, width, target, source):
                           width=width,
                           target=target,
                           source=source)
-    command(full_cmd)
 
-    logger.debug(full_cmd)
+    with open(os.devnull, 'w') as f:
+        r = subprocess.call(full_cmd.split(), stdout=f, stderr=f)
 
-    logger.info('generated image file {0}'.format(target))
+    if r == 0:
+        logger.info('generated image file {0}'.format(target))
+    else:
+        logger.warning('error generating image: ' + target)
+        logger.error(full_cmd)
 
 def get_images_metadata_file(conf):
     base = None
@@ -246,9 +250,9 @@ def image_tasks(conf, app):
             target_img = ''.join([source_base, tag, '.', build_type])
 
             if build_type == 'png':
-                inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e >/dev/null {target} {source}'
+                inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e {target} {source}'
             elif build_type == 'eps':
-                inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 1.0 -E >/dev/null {target} {source}'
+                inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 1.0 -E {target} {source}'
 
             t = app.add('task')
             t.conf = conf
