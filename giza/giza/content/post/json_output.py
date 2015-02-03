@@ -20,13 +20,13 @@ list of paths in the output.
 """
 
 import json
-import re
-import os
 import logging
+import os
+import re
+import subprocess
 
 logger = logging.getLogger('giza.content.post.json_output')
 
-from giza.tools.command import command
 from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
 from giza.tools.transformation import munge_content
 
@@ -47,12 +47,17 @@ def json_output(conf):
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
         builder += '-' + conf.project.edition
 
-    command(cmd.format(src=os.path.join(conf.paths.projectroot,
-                                        conf.paths.branch_output, builder) + '/',
-                       dst=json_dst))
+    cmd_str = cmd.format(src=os.path.join(conf.paths.projectroot,
+                                          conf.paths.branch_output, builder) + '/',
+                         dst=json_dst)
 
-    copy_if_needed(list_file, public_list_file)
-    logger.info('deployed json files to local staging.')
+    try:
+        subprocess.check_call(cmd_str.split())
+        copy_if_needed(list_file, public_list_file)
+        logger.info('deployed json files to local staging.')
+    except subprocess.CalledProcessError as e:
+        logger.error('error migrating json artifacts to local staging')
+
 
 def json_output_tasks(conf, app):
     regexes = [

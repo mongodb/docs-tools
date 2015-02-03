@@ -20,15 +20,16 @@ Operations for managing and producing artifacts using the ``gettext`` builder,
 import logging
 import os.path
 import sys
+import subprocess
 
 import argh
 
 logger = logging.getLogger('giza.operations.tx')
 
+import libgiza.app
+
 from giza.config.helper import fetch_config
 from giza.config.sphinx_config import resolve_builder_path
-from libgiza.app import BuildApp
-from giza.tools.command import command
 from giza.tools.files import FileLogger
 
 from sphinx_intl.commands import update_txconfig_resources
@@ -46,11 +47,11 @@ def tx_resources(conf):
 
     return resources
 
-def logged_command(verb, cmd):
-    r = command(cmd, capture=True)
-    logger.info('{0}ed {1}'.format(verb, cmd.split(' ')[-1]))
+def logged_command(verb, args):
+    output = subprocess.check_output(args)
+    logger.info('{0}ed {1}'.format(verb, args[-1]))
 
-    return r.out
+    return output
 
 def check_for_orphaned_tx_files(conf):
     tx_conf = os.path.join(conf.paths.projectroot,
@@ -139,12 +140,10 @@ def update_translations(args):
 def pull_translations(args):
     conf = fetch_config(args)
 
-    app = BuildApp.new(pool_type=conf.runstate.runner,
-                       pool_size=conf.runstate.pool_size,
-                       force=conf.runstate.force)
-
-    pull_tasks(conf, app)
-    app.run()
+    with libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
+                                  pool_size=conf.runstate.pool_size,
+                                  force=conf.runstate.force).context() as app:
+        pull_tasks(conf, app)
 
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')
@@ -153,11 +152,9 @@ def pull_translations(args):
 def push_translations(args):
     conf = fetch_config(args)
 
-    app = BuildApp.new(pool_type=conf.runstate.runner,
-                       pool_size=conf.runstate.pool_size,
-                       force=conf.runstate.force)
+    with libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
+                                  pool_size=conf.runstate.pool_size,
+                                  force=conf.runstate.force).context() as app:
+        push_tasks(conf, app)
 
-    push_tasks(conf, app)
-
-    update(conf)
-    app.run()
+        update(conf)
