@@ -23,9 +23,7 @@ Given a deploy target, we need to compile the rsync commands to:
 
 import logging
 import os.path
-
-from giza.tools.files import InvalidFile
-from giza.tools.command import command, CommandError
+import subprocess
 
 logger = logging.getLogger('giza.deploy')
 
@@ -106,12 +104,15 @@ class Deploy(object):
         map(deploy_target, self.deploy_commands())
 
 def deploy_target(cmd):
-    r = command(cmd, capture=True, ignore=True, logger=logger)
-
-    if r.succeeded is True:
-        return r
-    elif r.return_code == 23:
-        logger.warning('permissions error on remote end, possibly timestamp related.')
-        return r
-    else:
-        raise CommandError('"{0}" returned code {1}'.format(r.out, r.return_code))
+    try:
+        with open(os.devnull, 'w') as f:
+            subprocess.check_call(cmd.split(), stderr=f)
+        logger.info(cmd)
+        return 0
+    except subprocess.CalledProcessError as e:
+        if e.returncode == 23:
+            logger.warning('permissions error on remote end, possibly timestamp related.')
+            return e.returncode
+        else:
+            logger.error('"{0}" returned code {1}'.format(cmd, e.returncode))
+            raise e
