@@ -176,8 +176,10 @@ def create_branch(args):
     # get a new config here for the new branch
     conf = fetch_config(args)
     builders = get_existing_builders(conf)
-    app = BuildApp(conf)
-    app.pool = 'process'
+
+    app = BuildApp.new(pool_type='process',
+                       pool_size=c.runstate.pool_size,
+                       force=c.runstate.force)
 
     fix_build_env_tasks(builders, conf, app)
 

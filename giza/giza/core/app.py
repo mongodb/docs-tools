@@ -20,6 +20,7 @@ organizing framework for running larger sequences of operations.
 import contextlib
 import logging
 import random
+import numbers
 
 logger = logging.getLogger('giza.app')
 
@@ -58,6 +59,7 @@ class BuildApp(object):
         self._conf = conf
         self._force = force
         self._default_pool = None
+        self._pool_size = None
 
         self.queue = []
         self.results = []
@@ -79,10 +81,11 @@ class BuildApp(object):
         self.dependency = None
 
     @classmethod
-    def new(cls, pool_type='process', force=False):
+    def new(cls, pool_type='process', pool_size=None, force=False):
         app = cls()
         app.force = force
         app.default_pool = pool_type
+        app.pool_size = pool_size
 
         return app
 
@@ -117,6 +120,26 @@ class BuildApp(object):
     @force.setter
     def force(self, value):
         self._force = bool(value)
+
+    @property
+    def pool_size(self):
+        if self._pool_size is None:
+            if self.conf is None:
+                # the pool objects themselves know what to do, and so we don't
+                # need to over-define defaults here.
+                return None
+            else:
+                logger.warning('deprecated use of conf object for setting pool size')
+                self.pool_size = self.conf.runstate.pool_size
+
+        return self._pool_size
+
+    @pool_size.setter
+    def pool_size(self, value):
+        if isinstance(value, numbers.Number):
+            self._pool_size = value
+        else:
+            logger.warning('{0} is an invalid pool size'.format(str(value)))
 
     @property
     def conf(self):
@@ -184,11 +207,11 @@ class BuildApp(object):
             if self.is_pool(pool) and self.worker_pool is None:
                 self.worker_pool = pool
             elif pool in self.pool_types:
-                self.worker_pool = pool(self.conf.runstate.pool_size)
+                self.worker_pool = pool(self.pool_size)
             elif self.is_pool_type(pool) and self.worker_pool is None:
-                self.worker_pool = self.pool_mapping[pool](self.conf.runstate.pool_size)
+                self.worker_pool = self.pool_mapping[pool](self.pool_size)
             else:
-                self.worker_pool = self.pool_mapping[self.default_pool](self.conf.runstate.pool_size)
+                self.worker_pool = self.pool_mapping[self.default_pool](self.pool_size)
         else:
             raise TypeError("pool {0} of type {1} is invalid".format(pool, type(pool)))
 
@@ -221,6 +244,15 @@ class BuildApp(object):
     def extend_queue(self, tasks):
         for task in tasks:
             self.add(task)
+
+    def sub_app(self):
+        app = BuildApp()
+        app.force = self.force
+        app.root_app = False
+        app.default_pool = self.default_pool
+        app.pool = self.pool
+
+        return app
 
     def add(self, task=None, conf=None):
         """
@@ -261,10 +293,8 @@ class BuildApp(object):
             return t
         elif task in (BuildApp, 'app'):
             self.create_pool()
-            t = BuildApp(self.conf)
-            t.force = self.force
-            t.pool = self.pool
-            t.root_app = False
+            t = self.sub_app()
+
             self.queue.append(t)
             return t
         else:
@@ -278,6 +308,7 @@ class BuildApp(object):
             elif isinstance(task, BuildApp):
                 self.create_pool()
                 task.root_app = False
+                task.defualt_pool = self.default_pool
                 task.force = self.force
                 task.pool = self.pool
                 self.queue.append(task)
@@ -358,14 +389,3 @@ class BuildApp(object):
             app = self.add('app')
             yield app
             app.run()
-
-@contextlib.contextmanager
-def build_app_context(conf=None, app=None, force=False):
-    if app is None:
-        app = BuildApp(conf=conf, force=force)
-
-    app.force = force
-
-    yield app
-
-    app.run()

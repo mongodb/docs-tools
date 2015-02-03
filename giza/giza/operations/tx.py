@@ -138,7 +138,10 @@ def update_translations(args):
 @argh.expects_obj
 def pull_translations(args):
     conf = fetch_config(args)
-    app = BuildApp(conf)
+
+    app = BuildApp.new(pool_type=conf.runstate.runner,
+                       pool_size=conf.runstate.pool_size,
+                       force=conf.runstate.force)
 
     pull_tasks(conf, app)
     app.run()
@@ -149,7 +152,10 @@ def pull_translations(args):
 @argh.expects_obj
 def push_translations(args):
     conf = fetch_config(args)
-    app = BuildApp(conf)
+
+    app = BuildApp.new(pool_type=conf.runstate.runner,
+                       pool_size=conf.runstate.pool_size,
+                       force=conf.runstate.force)
 
     push_tasks(conf, app)
 

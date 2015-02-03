@@ -54,7 +54,10 @@ def main(args):
     output types, content editions and translations.
     """
     c = fetch_config(args)
-    app = BuildApp(c)
+
+    app = BuildApp.new(pool_type=c.runstate.runner,
+                       pool_size=c.runstate.pool_size,
+                       force=c.runstate.force)
 
     with Timer("full sphinx build process"):
         return sphinx_publication(c, args, app)
@@ -109,8 +112,7 @@ def sphinx_publication(c, args, app):
     add_content_generator_tasks(builder_jobs, app)
 
     # sphinx-build tasks are separated into their own app.
-    sphinx_app = BuildApp(c)
-    sphinx_app.pool = app.pool
+    sphinx_app = app.sub_app()
 
     build_source_copies = set()
     for ((edition, language, builder), (build_config, sconf)) in builder_jobs:

@@ -113,7 +113,9 @@ class Task(object):
 
     @conf.setter
     def conf(self, value):
-        if isinstance(value, ConfigurationBase):
+        if value is None:
+            pass
+        elif isinstance(value, ConfigurationBase):
             self._conf = value
         else:
             raise TypeError

@@ -44,7 +44,9 @@ def main(args):
     """
 
     c = fetch_config(args)
-    app = BuildApp(c)
+    app = BuildApp.new(pool_type=c.runstate.runner,
+                       pool_size=c.runstate.pool_size,
+                       force=c.runstate.force)
 
     to_remove = set()
 

@@ -196,10 +196,12 @@ def deploy(args):
     new_conf = extract_package(conf)
     logger.info('extracted package')
 
-    app = BuildApp(new_conf)
+    app = BuildApp.new(pool_type=conf.runstate.runner,
+                       pool_size=conf.runstate.pool_size,
+                       force=conf.runstate.force)
 
     logger.info('beginning deploy now.')
-    deploy_tasks(conf, app)
+    deploy_tasks(new_conf, app)
 
     if conf.runstate.dry_run is False:
         app.run()

@@ -183,7 +183,10 @@ def build_translation_model(args):
 
     tconf.conf.runstate.pool_size = tconf.settings.pool_size
     run_args = get_run_args(tconf)
-    app = BuildApp(conf)
+
+    app = BuildApp.new(pool_type=conf.runstate.runner,
+                       pool_size=conf.runstate.pool_size,
+                       force=conf.runstate.force)
     os.environ['IRSTLM'] = tconf.paths.irstlm
 
     setup_train(tconf)

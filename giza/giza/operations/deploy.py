@@ -39,7 +39,9 @@ def main(args):
     """
 
     c = fetch_config(args)
-    app = BuildApp(c)
+    app = BuildApp.new(pool_type=c.runstate.runner,
+                       pool_size=c.runstate.pool_size,
+                       force=c.runstate.force)
 
     deploy_tasks(c, app)
 
@@ -60,7 +62,9 @@ def publish_and_deploy(args):
     """
 
     c = fetch_config(args)
-    app = BuildApp(c)
+    app = BuildApp.new(pool_type=c.runstate.runner,
+                       pool_size=c.runstate.pool_size,
+                       force=c.runstate.force)
 
     sphinx_ret = sphinx_publication(c, args, app)
     if sphinx_ret == 0 or c.runstate.force is True:

@@ -60,7 +60,10 @@ def _weak_bootstrapping(args):
     args.languages_to_build = args.editions_to_build = []
     args.builder = 'html'
     conf = fetch_config(args)
-    app = BuildApp(conf)
+
+    app = BuildApp.new(pool_type=c.runstate.runner,
+                       pool_size=c.runstate.pool_size,
+                       force=c.runstate.force)
 
     mod_path = os.path.dirname(inspect.getfile(giza))
     qstart_path = os.path.join(mod_path, 'quickstart')

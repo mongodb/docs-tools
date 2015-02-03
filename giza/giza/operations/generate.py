@@ -26,7 +26,6 @@ import argh
 
 from giza.core.app import BuildApp
 from giza.core.task import Task
-from giza.core.app import build_app_context
 from giza.config.helper import fetch_config
 
 from giza.content.assets import assets_tasks, assets_clean
@@ -56,7 +55,9 @@ from giza.content.dependencies import refresh_dependency_tasks
 def toc(args):
     c = fetch_config(args)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         for task in toc_tasks(c):
             app.add(task)
 
@@ -66,7 +67,9 @@ def toc(args):
 def steps(args):
     c = fetch_config(args)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
             step_clean(c, app)
         else:
@@ -80,14 +83,18 @@ def options(args):
     if c.runstate.clean_generated is True:
         option_clean(c)
     else:
-        with build_app_context(c) as app:
+        with BuildApp.new(pool_type=c.runstate.runner,
+                          pool_size=c.runstate.pool_size,
+                          force=c.runstate.force).context() as app:
             app.extend_queue(option_tasks(c))
 
 @argh.expects_obj
 def api(args):
     c = fetch_config(args)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         app.extend_queue(apiarg_tasks(c))
 
 
@@ -96,7 +103,9 @@ def api(args):
 def assets(args):
     c = fetch_config(args)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
             assets_clean(c, app)
         else:
@@ -106,9 +115,10 @@ def assets(args):
 @argh.expects_obj
 def images(args):
     c = fetch_config(args)
-    app = BuildApp(c)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
             image_clean(c, app)
         else:
@@ -119,7 +129,9 @@ def images(args):
 def intersphinx(args):
     c = fetch_config(args)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
             intersphinx_clean(c, app)
         else:
@@ -130,7 +142,9 @@ def intersphinx(args):
 def primer(args):
     c = fetch_config(args)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
             primer_clean(c, app)
         else:
@@ -141,7 +155,9 @@ def primer(args):
 def release(args):
     c = fetch_config(args)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
             release_clean(c, app)
         else:
@@ -152,7 +168,9 @@ def release(args):
 def tables(args):
     c = fetch_config(args)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
             table_clean(c, app)
         else:
@@ -162,7 +180,9 @@ def tables(args):
 def examples(args):
     c = fetch_config(args)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         app.extend_queue(example_tasks(c))
 
 @argh.arg('--edition', '-e')
@@ -170,7 +190,9 @@ def examples(args):
 def robots(args):
     c = fetch_config(args)
 
-    with build_app_context(c) as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
         app.pool = 'serial'
         robots_txt_tasks(c, app)
 
@@ -183,7 +205,9 @@ def redirects(args):
     if args.dry_run is True:
         print(''.join(make_redirect(c)))
     else:
-        with build_app_context(c) as app:
+        with BuildApp.new(pool_type=c.runstate.runner,
+                          pool_size=c.runstate.pool_size,
+                          force=c.runstate.force).context() as app:
             redirect_tasks(c, app)
 
 from giza.content.primer import primer_migration_tasks
@@ -197,7 +221,10 @@ def source(args):
     conf = fetch_config(args)
 
     sconf = render_sconf(args.edition, 'html', args.language, conf)
-    with build_app_context(conf) as app:
+    with BuildApp.new(pool_type=conf.runstate.runner,
+                      pool_size=conf.runstate.pool_size,
+                      force=conf.runstate.force).context() as app:
+
         with app.context() as pre_app:
             assets_tasks(conf, pre_app.add('app'))
             primer_migration_tasks(conf, pre_app)

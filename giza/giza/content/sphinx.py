@@ -254,8 +254,9 @@ def run_sphinx(builder, sconf, conf):
     if True: # out.return_code == 0:
         logger.info('successfully completed {0} sphinx build ({1})'.format(builder, out.return_code))
 
-        finalizer_app = BuildApp(conf)
-        finalizer_app.pool = "thread"
+        finalizer_app = BuildApp.new(pool_type='thread',
+                                     pool_size=conf.runstate.pool_size,
+                                     force=conf.runstate.force)
         finalizer_app.root_app = False
         finalize_sphinx_build(sconf, conf, finalizer_app)
 

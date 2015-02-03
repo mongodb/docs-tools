@@ -28,7 +28,6 @@ import argh
 
 logger = logging.getLogger('giza.operations.includes')
 
-from giza.core.app import BuildApp
 from giza.config.helper import fetch_config
 
 from giza.includes import (included_once, included_recusively,
