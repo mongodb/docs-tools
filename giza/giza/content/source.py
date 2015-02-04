@@ -33,7 +33,7 @@ rather than timestampping to compare source and destination files.
 
 import os.path
 import logging
-from shutil import rmtree
+import shutil
 
 logger = logging.getLogger('giza.content.source')
 
@@ -93,7 +93,7 @@ def source_exclusion(conf, sconf):
     for fn in sconf.excluded:
         fqfn = os.path.join(conf.paths.projectroot, conf.paths.branch_source, fn[1:])
         if os.path.isdir(fqfn):
-            rmtree(fqfn)
+            shutil.rmtree(fqfn)
             ct += 1
         elif os.path.isfile(fqfn):
             os.remove(fqfn)
