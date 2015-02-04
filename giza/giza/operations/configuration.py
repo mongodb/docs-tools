@@ -20,17 +20,20 @@ object.
 import json
 import argh
 
+import giza
+import libgiza
+
 from giza.config.main import Configuration
 from giza.config.content import new_content_type
 from giza.config.helper import register_content_generators, fetch_config
-import giza
 
 @argh.named('version')
 @argh.expects_obj
 def report_version(args):
     "Returns current version of giza"
 
-    print(giza.__version__)
+    print("giza: " + giza.__version__)
+    print("libgiza: " + libgiza.__version__)
 
 @argh.arg('--conf_path', '-c')
 @argh.arg('--edition', '-e')
