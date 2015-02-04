@@ -20,6 +20,8 @@ import libgiza.config
 
 import giza.content.helper
 
+import giza.tools.files
+
 class InheritanceReference(libgiza.inheritance.InheritanceReference):
     @property
     def file(self):
@@ -63,7 +65,7 @@ class DataCache(libgiza.inheritance.DataCache):
             len(self) > 0 and
             not os.path.isdir(dirname)):
 
-            safe_create_directory(dirname)
+            giza.tools.files.safe_create_directory(dirname)
 
 class DataContentBase(libgiza.inheritance.DataContentBase):
     edition_check = staticmethod(giza.content.helper.edition_check)
