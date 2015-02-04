@@ -101,16 +101,14 @@ def expand_tree(path, input_extension='yaml'):
 
     return file_list
 
-def copy_always(source_file, target_file, name='build'):
-    if os.path.isfile(source_file) is False:
-        msg = "{0}: Input file '{1}' does not exist.".format(name, source_file)
-        logger.critical(msg)
-        raise FileOperationError(msg)
-    else:
-        safe_create_directory(os.path.dirname(target_file))
-        shutil.copyfile(source_file, target_file)
+def md5_file(file, block_size=2**20):
+    md5 = hashlib.md5()
 
-    logger.debug('{0}: copied {1} to {2}'.format(name, source_file, target_file))
+    with open(file, 'rb') as f:
+        for chunk in iter(lambda: f.read(128*md5.block_size), b''):
+            md5.update(chunk)
+
+    return md5.hexdigest()
 
 def copy_if_needed(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False or os.path.isdir(source_file):
@@ -132,6 +130,17 @@ def copy_if_needed(source_file, target_file, name='build'):
 
             if name is not None:
                 logger.debug('{0}: "{1}" changed. Updated: {2}'.format(name, source_file, target_file))
+
+def copy_always(source_file, target_file, name='build'):
+    if os.path.isfile(source_file) is False:
+        msg = "{0}: Input file '{1}' does not exist.".format(name, source_file)
+        logger.critical(msg)
+        raise FileOperationError(msg)
+    else:
+        safe_create_directory(os.path.dirname(target_file))
+        shutil.copyfile(source_file, target_file)
+
+    logger.debug('{0}: copied {1} to {2}'.format(name, source_file, target_file))
 
 def create_link(input_fn, output_fn):
     out_dirname = os.path.dirname(output_fn)

@@ -31,7 +31,7 @@ import logging
 import os
 
 from giza.includes import include_files
-from giza.tools.files import expand_tree, safe_create_directory
+from giza.tools.files import expand_tree, safe_create_directory, md5_file
 from giza.tools.timing import Timer
 
 logger = logging.getLogger('giza.content.dependencies')
