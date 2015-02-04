@@ -30,11 +30,19 @@ import libgiza.app
 
 from giza.config.helper import fetch_config
 from giza.config.sphinx_config import resolve_builder_path
-from giza.tools.files import FileLogger
 
 from sphinx_intl.commands import update_txconfig_resources
 
 #################### Helpers ####################
+
+class FileLogger(object):
+    def __init__(self, logger, level=logging.INFO):
+        self.logger = logger
+        self.level = level
+
+    def write(self, message):
+        if message != '\n':
+            self.logger.log(self.level, message)
 
 def tx_resources(conf):
     tx_conf = os.path.join(conf.paths.projectroot,

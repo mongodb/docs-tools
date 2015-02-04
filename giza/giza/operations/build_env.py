@@ -34,6 +34,16 @@ logger = logging.getLogger('giza.operations.build_env')
 
 #################### Helpers ####################
 
+@contextlib.contextmanager
+def cd(path):
+    cur_dir = os.getcwd()
+
+    os.chdir(path)
+
+    yield
+
+    os.chdir(cur_dir)
+
 def is_git_dir(path):
     git_dir = ''.join([ os.path.sep, '.git', os.path.sep])
     if git_dir in path:

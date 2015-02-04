@@ -16,10 +16,19 @@ import logging
 
 logger = logging.getLogger('giza.transformation')
 
-from giza.tools.files import copy_always, copy_if_needed, encode_lines_to_file, decode_lines_from_file
+from giza.tools.files import copy_always, copy_if_needed
 
 class ProcessingError(Exception):
     pass
+
+def decode_lines_from_file(fn):
+    with open(fn, 'r') as f:
+        return [ line.decode('utf-8').rstrip() for line in f.readlines() ]
+
+def encode_lines_to_file(fn, lines):
+    with open(fn, 'w') as f:
+        f.write('\n'.join(lines).encode('utf-8'))
+        f.write('\n')
 
 def munge_page(fn, regex, out_fn=None,  tag='build'):
     if out_fn is None:

@@ -138,21 +138,3 @@ def command(command, capture=True, ignore=False, logger=None):
         return out
     else:
         raise CommandError('"{0}" returned code {1}'.format(out.cmd, out.return_code))
-
-def verbose_command(cmd, capture=False, ignore=False):
-    """
-    .. deprecated:: 0.2.7
-    """
-
-    if isinstance(cmd, dict):
-        cmd = cmd['command']
-
-    if isinstance(cmd, list):
-        cmd_str = ' '.join(cmd)
-    else:
-        cmd_str = cmd
-
-    logger.warning('verbose command is deprecated: ({0})'.format(cmd_str))
-
-    logger.info("running command: " + cmd_str)
-    command(cmd_str, capture, ignore)

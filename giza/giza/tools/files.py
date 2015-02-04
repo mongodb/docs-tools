@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import hashlib
 import os
 import shutil
 import tarfile
@@ -29,25 +28,6 @@ class InvalidFile(Exception):
 
 class FileOperationError(Exception):
     pass
-
-@contextlib.contextmanager
-def cd(path):
-    cur_dir = os.getcwd()
-
-    os.chdir(path)
-
-    yield
-
-    os.chdir(cur_dir)
-
-class FileLogger(object):
-    def __init__(self, logger, level=logging.INFO):
-        self.logger = logger
-        self.level = level
-
-    def write(self, message):
-        if message != '\n':
-            self.logger.log(self.level, message)
 
 def safe_create_directory(path):
     try:
@@ -122,15 +102,6 @@ def expand_tree(path, input_extension='yaml'):
 
     return file_list
 
-def md5_file(file, block_size=2**20):
-    md5 = hashlib.md5()
-
-    with open(file, 'rb') as f:
-        for chunk in iter(lambda: f.read(128*md5.block_size), b''):
-            md5.update(chunk)
-
-    return md5.hexdigest()
-
 def copy_always(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False:
         msg = "{0}: Input file '{1}' does not exist.".format(name, source_file)
@@ -188,12 +159,3 @@ def create_link(input_fn, output_fn):
         symlink(out_base, input_fn)
         os.rename(out_base, output_fn)
         logger.debug('{0} created symbolic link pointing to "{1}" named "{2}"'.format('symlink', input_fn, out_base))
-
-def decode_lines_from_file(fn):
-    with open(fn, 'r') as f:
-        return [ line.decode('utf-8').rstrip() for line in f.readlines() ]
-
-def encode_lines_to_file(fn, lines):
-    with open(fn, 'w') as f:
-        f.write('\n'.join(lines).encode('utf-8'))
-        f.write('\n')
