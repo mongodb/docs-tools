@@ -25,8 +25,8 @@ import re
 logger = logging.getLogger('giza.content.post.singlehtml')
 
 from libgiza.task import check_dependency
-from giza.tools.files import (expand_tree, copy_if_needed, decode_lines_from_file,
-                              encode_lines_to_file, FileNotFoundError, safe_create_directory)
+from giza.tools.files import expand_tree, copy_if_needed, FileNotFoundError, safe_create_directory
+from giza.tools.transformation import decode_lines_from_file, encode_lines_to_file
 
 def get_single_html_dir(conf):
     return os.path.join(conf.paths.projectroot, conf.paths.public_site_output, 'single')
