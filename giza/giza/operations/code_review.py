@@ -22,7 +22,7 @@ import argh
 
 from libgiza.git import GitRepo
 from giza.config.code_review import CodeReviewConfiguration
-from giza.config.helper import fetch_config, new_skeleton_config, new_credentials_config
+from giza.config.helper import new_skeleton_config, new_credentials_config
 
 logger = logging.getLogger('giza.operations.code_review')
 
@@ -48,8 +48,8 @@ def get_cr_data_file(arg):
 def list_reviews(args):
     "Lists tracked code reviews."
 
-    conf = fetch_config(args)
-    cr_data_file = get_cr_data_file(conf)
+    g = GitRepo()
+    cr_data_file = get_cr_data_file(g)
     safe_create_code_review_data_file(cr_data_file)
 
     crconf = CodeReviewConfiguration(cr_data_file)
@@ -61,7 +61,6 @@ def list_reviews(args):
 def close(args):
     "Removes a tracked code review."
 
-    conf = new_skeleton_config(args)
     g = GitRepo()
     cr_data_file = get_cr_data_file(g)
 
@@ -88,7 +87,6 @@ def close(args):
 def checkout(args):
     "Checks out a tracked code review branch."
 
-    conf = new_skeleton_config(args)
     g = GitRepo()
     cr_data_file = get_cr_data_file(g)
 
@@ -111,7 +109,6 @@ def create_or_update(args):
     "Creates or updates a code review case."
 
     creds = new_credentials_config()
-    conf = new_skeleton_config(args)
     g = GitRepo()
     cr_data_file = get_cr_data_file(g)
 
