@@ -24,7 +24,6 @@ combination with this cache of file hashes to ensure that Sphinx does not skip
 building files.
 """
 
-import hashlib
 import datetime
 import json
 import logging
@@ -140,15 +139,6 @@ def dump_file_hash_tasks(conf, app):
     t.description = "writing dependency cache to a file for the next build"
 
 ############### Hashed Dependency Checking ###############
-
-def md5_file(file, block_size=2**20):
-    md5 = hashlib.md5()
-
-    with open(file, 'rb') as f:
-        for chunk in iter(lambda: f.read(128*md5.block_size), b''):
-            md5.update(chunk)
-
-    return md5.hexdigest()
 
 def normalize_dep_path(fn, conf, branch):
     """
