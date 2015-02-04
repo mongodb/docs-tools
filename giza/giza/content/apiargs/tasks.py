@@ -17,7 +17,7 @@ import logging
 
 logger = logging.getLogger('giza.content.apiargs.tasks')
 
-from giza.tools.files import expand_tree, safe_create_directory
+from giza.tools.files import expand_tree
 from giza.content.apiargs.inheritance import ApiArgDataCache
 from giza.content.apiargs.views import render_apiargs
 from giza.config.content import new_content_type
