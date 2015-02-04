@@ -19,7 +19,6 @@ logger = logging.getLogger('giza.content.tocs.tasks')
 
 from giza.content.tocs.inheritance import TocDataCache
 from giza.content.tocs.views import render_toctree, render_dfn_list, render_toc_table
-from giza.tools.files import safe_create_directory
 from giza.config.content import new_content_type
 from libgiza.task import Task
 

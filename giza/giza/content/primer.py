@@ -160,7 +160,7 @@ def primer_migration_tasks(conf, app):
             build_truncate_task(page['truncate'], fq_target, fq_source, app)
 
         if 'transform' in page:
-            if not isintance(page['transform'], list):
+            if not isinstance(page['transform'], list):
                 page['transform'] = [page['transform']]
 
             prev.job = copy_always

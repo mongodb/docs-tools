@@ -31,7 +31,6 @@ from giza.config.helper import fetch_config
 from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images import image_tasks, image_clean
 from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
-from giza.content.links import create_manual_symlink
 from giza.content.table import table_tasks, table_clean
 from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
@@ -209,10 +208,6 @@ def redirects(args):
                           pool_size=c.runstate.pool_size,
                           force=c.runstate.force).context() as app:
             redirect_tasks(c, app)
-
-from giza.content.primer import primer_migration_tasks
-from giza.content.assets import assets_tasks
-
 
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')

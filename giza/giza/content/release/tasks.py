@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import logging
 
 logger = logging.getLogger('giza.content.release.tasks')
 
-from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
+from giza.tools.files import verbose_remove
 from giza.content.release.inheritance import ReleaseDataCache
 from giza.content.release.views import render_releases
 from giza.config.content import new_content_type

@@ -19,7 +19,6 @@ Operations for managing and producing artifacts using the ``gettext`` builder,
 
 import logging
 import os.path
-import sys
 import subprocess
 
 import argh
@@ -29,7 +28,6 @@ logger = logging.getLogger('giza.operations.tx')
 import libgiza.app
 
 from giza.config.helper import fetch_config
-from giza.config.sphinx_config import resolve_builder_path
 
 from sphinx_intl.commands import update_txconfig_resources
 

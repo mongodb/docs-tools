@@ -55,7 +55,7 @@ def json_output(conf):
         subprocess.check_call(cmd_str.split())
         copy_if_needed(list_file, public_list_file)
         logger.info('deployed json files to local staging.')
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         logger.error('error migrating json artifacts to local staging')
 
 
@@ -87,16 +87,16 @@ def json_output_tasks(conf, app):
                                 'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
 
         fjson = path + '.fjson'
-        json = path + '.json'
+        jsonf = path + '.json'
 
         task = app.add('task')
-        task.target = json
+        task.target = jsonf
         task.dependency = fjson
         task.job = process_json_file
         task.description = "processing json file".format(json)
-        task.args = [fjson, json, regexes, conf]
+        task.args = [fjson, jsonf, regexes, conf]
 
-        outputs.append(json)
+        outputs.append(jsonf)
 
     list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
 

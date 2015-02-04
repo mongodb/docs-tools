@@ -160,17 +160,6 @@ class PathsConfig(RecursiveConfigurationBase):
         return p
 
     @property
-    def global_config(self):
-        if 'global_config' not in self.state:
-            self.global_config = None
-
-        return self.state['global_config']
-
-    @global_config.setter
-    def global_config(self, value):
-        self.state['global_config'] = os.path.join(self.buildsystem, 'data')
-
-    @property
     def public_site_output(self):
         if 'public_site_output' in self.state:
             return self.state['public_site_output']

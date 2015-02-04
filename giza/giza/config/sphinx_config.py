@@ -18,7 +18,6 @@ import logging
 import sphinx.builders
 import yaml
 
-from libgiza.config import ConfigurationBase
 from libgiza.config import RecursiveConfigurationBase
 
 logger = logging.getLogger('giza.config.sphinx_config')

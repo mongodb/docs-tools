@@ -25,6 +25,7 @@ import argh
 from sphinx.application import Sphinx, ENV_PICKLE_FILENAME
 from sphinx.builders.html import get_stable_hash
 
+from giza.config.helper import fetch_config
 from giza.config.sphinx_config import avalible_sphinx_builders, resolve_builder_path
 from giza.operations.packaging import fetch_package
 from giza.operations.sphinx_cmds import get_sphinx_build_configuration

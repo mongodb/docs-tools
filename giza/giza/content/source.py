@@ -37,9 +37,6 @@ import shutil
 
 logger = logging.getLogger('giza.content.source')
 
-from giza.content.primer import primer_migration_tasks
-from giza.content.assets import assets_tasks
-from giza.content.dependencies import dump_file_hashes
 from giza.tools.command import command
 from giza.tools.files import InvalidFile, safe_create_directory
 

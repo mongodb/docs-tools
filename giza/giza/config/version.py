@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from libgiza.config import RecursiveConfigurationBase
+
+logger = logging.getLogger('giza.config.version')
 
 class VersionConfig(RecursiveConfigurationBase):
     _option_registry = ['release', 'branch']

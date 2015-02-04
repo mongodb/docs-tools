@@ -12,9 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from libgiza.config import ConfigurationBase
+import collections
+import logging
 
-class CodeReviewConfiguration(ConfigurationBase):
+import libgiza.config
+
+logger = logging.getLogger('giza.config.code_review')
+
+class CodeReviewConfiguration(libgiza.config.ConfigurationBase):
     _version = 1
 
     @property
@@ -74,7 +79,7 @@ class CodeReviewConfiguration(ConfigurationBase):
 
         return self.state['branches'][branch]
 
-class CodeReviewBranchConfiguration(ConfigurationBase):
+class CodeReviewBranchConfiguration(libgiza.config.ConfigurationBase):
     _option_registry = ['original_name', 'issue']
 
     @property

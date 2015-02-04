@@ -57,7 +57,8 @@ def package_filename(target, conf):
 
 def dump_config(conf):
     # make sure the object is fully resolved before we put it into storage
-    dynamics = [conf.deploy]
+    conf.deploy
+
     for key in conf.system.files.data.keys():
         getattr(conf.system.files.data, key)
 

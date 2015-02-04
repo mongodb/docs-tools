@@ -41,8 +41,8 @@ def download_file(file, url):
         subprocess.check_call(cmd)
         logger.info('downloaded {0}'.format(file))
         return True
-    except subprocess.CalledProcessError as e:
-        logger.error('trouble downloading interspinx inventory: ' + f)
+    except subprocess.CalledProcessError:
+        logger.error('trouble downloading interspinx inventory: ' + file)
         return False
 
 def file_timestamp(path):

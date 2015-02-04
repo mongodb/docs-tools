@@ -222,7 +222,7 @@ class SystemConfigData(RecursiveConfigurationBase):
     def __getattr__(self, key):
         try:
             return object.__getattribute__(self, key)
-        except AttributeError as e:
+        except AttributeError:
             if key in self._option_registry:
                 if isinstance(key, dict):
                     basename, fn = key.items()[0]

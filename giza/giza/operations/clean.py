@@ -27,7 +27,6 @@ logger = logging.getLogger('giza.operations.clean')
 import argh
 
 from libgiza.app import BuildApp
-from giza.config.main import Configuration
 from giza.config.helper import fetch_config, get_builder_jobs
 from giza.config.sphinx_config import resolve_builder_path
 
@@ -56,7 +55,7 @@ def main(args):
     if c.runstate.builder != []:
         for edition, language, builder in get_builder_jobs(c):
             builder_path = resolve_builder_path(builder, edition, language, c)
-            builder_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder_path)
+            builder_path = os.path.join(c.paths.projectroot, c.paths.branch_output, builder_path)
 
             to_remove.add(builder_path)
             dirpath, base = os.path.split(builder_path)

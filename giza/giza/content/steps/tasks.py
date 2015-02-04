@@ -12,13 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import logging
 import shutil
 
 logger = logging.getLogger('giza.content.steps.tasks')
 
-from giza.tools.files import expand_tree, safe_create_directory
 from giza.content.steps.inheritance import StepDataCache
 from giza.content.steps.views import render_steps
 from giza.config.content import new_content_type

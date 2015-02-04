@@ -17,10 +17,9 @@ Main controlling operations for running Sphinx builds.
 """
 
 import logging
-import os.path
 import argh
 
-from giza.config.helper import fetch_config, get_builder_jobs, register_content_generators
+from giza.config.helper import fetch_config, get_builder_jobs
 from libgiza.app import BuildApp
 from libgiza.task import Task
 
@@ -34,7 +33,7 @@ from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
 from giza.content.source import source_tasks, latex_image_transfer_tasks
 from giza.content.dependencies import refresh_dependency_tasks, dump_file_hash_tasks
-from giza.content.sphinx import sphinx_tasks, output_sphinx_stream, finalize_sphinx_build
+from giza.content.sphinx import sphinx_tasks, output_sphinx_stream
 from giza.content.redirects import redirect_tasks
 from giza.content.primer import primer_migration_tasks
 from giza.content.assets import assets_tasks

@@ -21,8 +21,7 @@ import subprocess
 logger = logging.getLogger('giza.content.post.sites')
 
 from giza.tools.transformation import munge_page
-from giza.tools.files import expand_tree, create_link, copy_if_needed, safe_create_directory
-from giza.tools.transformation import decode_lines_from_file, encode_lines_to_file
+from giza.tools.files import create_link, copy_if_needed
 from giza.content.post.singlehtml import get_single_html_dir
 
 #################### Sphinx Post-Processing ####################

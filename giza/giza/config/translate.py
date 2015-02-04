@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-import sys
 import os
 
 from libgiza.config import ConfigurationBase, RecursiveConfigurationBase

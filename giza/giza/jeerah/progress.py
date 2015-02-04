@@ -14,7 +14,7 @@
 
 import datetime
 
-from giza.jeerah.query import equality, inequality
+from giza.jeerah.query import equality
 
 def query(j, app, conf):
     query_base = "project {0} and fixVersion {1} and status {2}"

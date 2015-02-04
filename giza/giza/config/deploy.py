@@ -35,7 +35,7 @@ class DeployConfig(ConfigurationBase):
     def testing(self):
         return self.state['testing']
 
-    @staging.setter
+    @testing.setter
     def testing(self, value):
         self.state['testing'] = DeployTargetConfig(value)
 

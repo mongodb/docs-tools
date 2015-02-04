@@ -338,7 +338,7 @@ def finalize_sphinx_build(sconf, conf, app):
         gettext_tasks(conf, app)
     elif target == 'linkcheck':
         app.add(Task(job=printer,
-                     args=['{0}: See {1}/{0}/output.txt for output.'.format(builder, conf.paths.branch_output)],
+                     args=['{0}: See {1}/{0}/output.txt for output.'.format(target, conf.paths.branch_output)],
                      target=os.path.join(conf.paths.projectroot,
-                                         conf.paths.branch_output, builder, 'output.txt'),
+                                         conf.paths.branch_output, target, 'output.txt'),
                      dependency=None))

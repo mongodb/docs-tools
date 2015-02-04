@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-import os
 import json
 
 import argh
@@ -28,6 +27,13 @@ from giza.config.credentials import CredentialsConfig
 from giza.cmdline import get_base_parser
 from giza.corp import get_contributor_list
 from libgiza.app import BuildApp
+
+try:
+    # Python 2
+    prompt = raw_input
+except NameError:
+    # Python 3
+    prompt = input
 
 #################### mdbpr helpers #####################
 

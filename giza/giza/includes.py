@@ -95,7 +95,6 @@ def includes_masked(mask, conf, inc_files=None):
     return results
 
 def generated_includes(conf):
-    toc_spec_files = []
     step_files = []
     mapping = {}
 
@@ -160,7 +159,6 @@ def changed_includes(conf):
                 if path.endswith('.txt') or path.endswith('.rst'):
                     changed.append(path[6:])
 
-    source_path = os.path.join(conf.paths.source, conf.paths.output, conf.git.branches.current, 'json')
     changed_report = []
 
     for fn in include_files(conf):

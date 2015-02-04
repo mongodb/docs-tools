@@ -21,7 +21,7 @@ directory so that you can reference the commit in the documentation text.
 
 import logging
 import os
-import datetime
+
 logger = logging.getLogger('giza.hash')
 
 from rstcloth.rstcloth import RstCloth
@@ -46,8 +46,11 @@ def generate_hash_file(fn, conf):
             return True
     except TypeError:
         logger.warning('problem generating {0}, continuing'.format(fn))
-        with file(fn, 'a'):
-            os.utime(fn, times)
+        if os.path.exists(fn):
+            os.utime(fn, None)
+        else:
+            with open(fn, 'a'):
+                os.utime(fn, None)
     else:
         r.write(fn)
         logger.info('regenerated {0} with new commit hash: {1}'.format(fn, commit[:10]))

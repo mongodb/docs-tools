@@ -16,7 +16,6 @@ import os
 import shutil
 import tarfile
 import logging
-import contextlib
 import hashlib
 
 logger = logging.getLogger('giza.files')

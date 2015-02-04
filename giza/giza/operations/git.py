@@ -109,7 +109,7 @@ def merge(args):
 def setup_branches(args):
     conf = fetch_config(args)
 
-    g = GitRepo(c.paths.projectroot)
+    g = GitRepo(conf.paths.projectroot)
 
     if 'upstream' in g.remotes():
         remote = 'upstream'
@@ -178,8 +178,8 @@ def create_branch(args):
     builders = get_existing_builders(conf)
 
     app = BuildApp.new(pool_type='process',
-                       pool_size=c.runstate.pool_size,
-                       force=c.runstate.force)
+                       pool_size=conf.runstate.pool_size,
+                       force=conf.runstate.force)
 
     fix_build_env_tasks(builders, conf, app)
 

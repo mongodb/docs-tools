@@ -19,7 +19,6 @@ import jinja2
 logger = logging.getLogger('giza.content.steps.models')
 
 from giza.inheritance import InheritableContentBase
-from libgiza.config import ConfigurationBase
 from giza.content.helper import get_all_languages, level_characters
 
 if sys.version_info >= (3, 0):

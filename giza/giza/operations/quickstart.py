@@ -39,10 +39,6 @@ def make_project(args):
     Generate a project skeleton. Prefer this operation over
     ``sphinx-quickstart``. Also builds skeleton HTML artifacts.
     """
-
-    curdir = os.getcwd()
-    curdir_list = os.listdir(curdir)
-
     _weak_bootstrapping(args)
 
     if args.quickstart_git is True:
@@ -61,9 +57,9 @@ def _weak_bootstrapping(args):
     args.builder = 'html'
     conf = fetch_config(args)
 
-    app = BuildApp.new(pool_type=c.runstate.runner,
-                       pool_size=c.runstate.pool_size,
-                       force=c.runstate.force)
+    app = BuildApp.new(pool_type=conf.runstate.runner,
+                       pool_size=conf.runstate.pool_size,
+                       force=conf.runstate.force)
 
     mod_path = os.path.dirname(inspect.getfile(giza))
     qstart_path = os.path.join(mod_path, 'quickstart')

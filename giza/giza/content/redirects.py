@@ -60,7 +60,7 @@ def write_redirects(fn, conf):
 
 def redirect_tasks(conf, app):
     if 'htaccess' in conf.system.files.data:
-        fn = path = os.path.join(conf.paths.projectroot, conf.paths.htaccess)
+        fn = os.path.join(conf.paths.projectroot, conf.paths.htaccess)
 
         deps = []
         for configfn in conf.system.files.paths:

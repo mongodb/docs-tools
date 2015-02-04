@@ -31,6 +31,7 @@ class ExtractData(HeadingMixin, InheritableContentBase):
     def only(self):
         return self.state['only']
 
+    @only.setter
     def only(self, value):
         if isinstance(value, basestring):
             self.state['only'] = value

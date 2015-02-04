@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from libgiza.config import RecursiveConfigurationBase
+
+logger = logging.getLogger('giza.config.sphinx_config')
+
 
 class ReplacementData(RecursiveConfigurationBase):
     def ingest(self, input_obj):

@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import datetime
-import itertools
 import json
 import logging
-import os
 
 import argh
 
@@ -44,8 +41,8 @@ def pprint(obj):
 def config(args):
     conf = fetch_config(args)
 
-    dynamics = [ conf.site, conf.runstate, conf.buckets, conf.sprints,
-                 conf.reporting, conf.modification ]
+    [conf.site, conf.runstate, conf.buckets, conf.sprints,
+     conf.reporting, conf.modification]
 
     pprint(json.dumps(conf.dict(), indent=3))
 

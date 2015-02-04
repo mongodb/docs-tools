@@ -23,9 +23,7 @@ import argh
 import giza
 import libgiza
 
-from giza.config.main import Configuration
-from giza.config.content import new_content_type
-from giza.config.helper import register_content_generators, fetch_config
+from giza.config.helper import fetch_config
 
 @argh.named('version')
 @argh.expects_obj
@@ -44,23 +42,21 @@ def render_config(args):
     """Returns configuration object for diagnostic purposes."""
 
     c = fetch_config(args)
-    register_content_generators(c)
 
     # the following values are rendered lazily. we list them here so that the
     # final object will be useful to inspect.
-    dynamics = [ c.git.commit, c.paths.public, c.git.branches.current,
-                 c.git.branches.manual, c.git.branches.published,
-                 c.paths.branch_output, c.paths.buildarchive,
-                 c.paths.branch_source, c.paths.branch_staging,
-                 c.paths.branch_images, c.paths.branch_includes,
-                 c.version.published, c.version.stable, c.version.upcoming,
-                 c.project.edition, c.deploy, c.paths.global_config,
-                 c.project.branched, c.system.dependency_cache,
-                 c.system.dependency_cache_fn, c.paths.public_site_output,
-                 c.system.content, c.runstate.runner, c.runstate.force,
-                 c.system.files, c.system.files.paths, c.system.files.data,
-                 c.paths.htaccess
-               ]
+    [c.git.commit, c.paths.public, c.git.branches.current,
+     c.git.branches.manual, c.git.branches.published,
+     c.paths.branch_output, c.paths.buildarchive,
+     c.paths.branch_source, c.paths.branch_staging,
+     c.paths.branch_images, c.paths.branch_includes,
+     c.version.published, c.version.stable, c.version.upcoming,
+     c.project.edition, c.deploy, c.paths.global_config,
+     c.project.branched, c.system.dependency_cache,
+     c.system.dependency_cache_fn, c.paths.public_site_output,
+     c.system.content, c.runstate.runner, c.runstate.force,
+     c.system.files, c.system.files.paths, c.system.files.data,
+     c.paths.htaccess]
 
     print('--- ' + "str of config object >>>")
     print(json.dumps(c.dict(), indent=3))

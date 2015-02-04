@@ -17,7 +17,7 @@ import logging
 
 logger = logging.getLogger('giza.content.options.tasks')
 
-from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
+from giza.tools.files import verbose_remove
 from giza.content.options.inheritance import OptionDataCache
 from giza.content.options.views import render_options
 from giza.config.content import new_content_type

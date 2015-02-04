@@ -26,7 +26,6 @@ logger = logging.getLogger('giza.content.post.latex')
 from giza.content.helper import edition_check
 from giza.tools.transformation import process_page
 from giza.tools.files import create_link, copy_if_needed
-from giza.tools.transformation import decode_lines_from_file, encode_lines_to_file
 
 #################### PDFs from Latex Produced by Sphinx  ####################
 

@@ -23,7 +23,7 @@ import os
 
 logger = logging.getLogger('giza.content.examples')
 
-from giza.tools.files import expand_tree, safe_create_directory, verbose_remove
+from giza.tools.files import verbose_remove
 from giza.config.content import new_content_type
 from giza.content.examples.inheritance import ExampleDataCache
 from giza.content.examples.views import full_example
