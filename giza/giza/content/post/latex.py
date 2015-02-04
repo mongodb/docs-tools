@@ -24,7 +24,6 @@ import subprocess
 logger = logging.getLogger('giza.content.post.latex')
 
 from giza.content.helper import edition_check
-from giza.tools.command import command
 from giza.tools.transformation import process_page
 from giza.tools.files import (create_link, copy_if_needed,
                               decode_lines_from_file, encode_lines_to_file)
@@ -37,10 +36,12 @@ def _render_tex_into_pdf(fn, deployed_path, path, output_format="pdf"):
     pdflatex multiple times to correctly index and cross reference the PDF.
     """
 
+    os.environ['TEXINPUTS'] = ".:{0}:".format(path)
+
     if output_format == 'dvi':
-        pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --output-format dvi --interaction batchmode --output-directory {0} {1}'.format(path, fn)
+        pdflatex = 'pdflatex --output-format dvi --interaction batchmode --output-directory {0} {1}'.format(path, fn)
     elif output_format == 'pdf':
-        pdflatex = 'TEXINPUTS=".:{0}:" pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
+        pdflatex = 'pdflatex --interaction batchmode --output-directory {0} {1}'.format(path, fn)
     else:
         logger.error('not rendering pdf because {0} is not an output format'.format(output_format))
         return
@@ -54,19 +55,22 @@ def _render_tex_into_pdf(fn, deployed_path, path, output_format="pdf"):
     if output_format == 'dvi':
         cmds.append("cd {0}; dvipdf {1}.dvi".format(path, base_fn[:-4]))
 
-    for idx, cmd in enumerate(cmds):
-        r = command(command=cmd, ignore=True)
-
-        if r.succeeded is True:
-            logger.info('pdf completed rendering stage {0} of {1} successfully ({2}).'.format(idx, len(cmds), base_fn))
-        else:
-            if idx <= 1:
-                logger.warning('pdf build encountered error early on {0}, continuing cautiously.'.format(base_fn))
+    with open(os.devnull, 'w') as devnull:
+        for idx, cmd in enumerate(cmds):
+            ret = subprocess.call(args=cmd.split(),
+                                  stderr=devnull,
+                                  stdout=devnull)
+            if ret == 0:
+                logger.info('pdf completed rendering stage {0} of {1} successfully ({2}, {3}).'.format(idx, len(cmds), base_fn, ret))
                 continue
             else:
-                logger.error('pdf build encountered error running pdflatex, investigate on {0}. terminating'.format(base_fn))
-                logger.error(cmd)
-                return False
+                if idx <= 1:
+                    logger.warning('pdf build encountered error early on {0}, continuing cautiously.'.format(base_fn))
+                    continue
+                else:
+                    logger.error('pdf build encountered error running pdflatex, investigate on {0}. terminating'.format(base_fn))
+                    logger.error(cmd)
+                    return False
 
     pdf_fn = os.path.splitext(fn)[0] + '.pdf'
     copy_if_needed(pdf_fn, deployed_path, 'pdf')

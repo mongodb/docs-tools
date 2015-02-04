@@ -20,8 +20,8 @@ directory. Modeled on the :mod:`giza.content.post.json_output` and
 
 import os
 import logging
+import subprocess
 
-from giza.tools.command import command
 from giza.content.post.archives import slides_tarball, get_tarball_name
 
 logger = logging.getLogger('giza.content.post.slides')
@@ -40,10 +40,17 @@ def slides_output(conf):
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
         builder += '-' + conf.project.edition
 
-    command(cmd.format(src=os.path.join(conf.paths.branch_output, builder) + '/',
-                       dst=dst))
+    cmd_str = cmd.format(src=os.path.join(conf.paths.branch_output, builder) + '/',
+                         dst=dst)
 
-    logger.info('deployed slides local staging.')
+    with open(os.devnull, 'w') as f:
+        try:
+            subprocess.check_call(args=cmd_str.split(),
+                                  stdout=f,
+                                  stderr=f)
+            logger.info('deployed slides local staging.')
+        except subprocess.CalledProcessError:
+            logger.error('issue deploying slides to local staging')
 
 def slide_tasks(sconf, conf, app):
     task = app.add('task')

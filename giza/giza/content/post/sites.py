@@ -16,11 +16,10 @@ import logging
 import os.path
 import re
 import sys
+import subprocess
 
 logger = logging.getLogger('giza.content.post.sites')
 
-from libgiza.task import check_dependency
-from giza.tools.command import command
 from giza.tools.transformation import munge_page
 from giza.tools.files import (expand_tree, create_link, copy_if_needed,
                               decode_lines_from_file, encode_lines_to_file,
@@ -44,7 +43,6 @@ def finalize_epub_build(builder, conf):
                  output_fn=os.path.join(conf.paths.projectroot,
                                         conf.paths.public_site_output,
                                         epub_src_filename))
-
 
 def error_pages(sconf, conf):
     builder = sconf.builder
@@ -73,10 +71,17 @@ def finalize_dirhtml_build(sconf, conf):
                        target_file=os.path.join(single_html_dir, 'search.html'))
 
     dest = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
-    m_cmd = command('rsync -a {source}/ {destination}'.format(source=sconf.fq_build_output,
-                                                              destination=dest))
 
-    logger.info('"{0}" migrated build from {1} to {2}, with result {3}'.format(sconf.name, sconf.fq_build_output, dest, m_cmd.return_code))
+
+    cmd_str = 'rsync -a {source}/ {destination}'.format(source=sconf.fq_build_output,
+                                                        destination=dest)
+
+
+    with open(os.devnull, 'w') as f:
+        return_code = subprocess.call(args=cmd_str.split(),
+                                      stdout=f,
+                                      stderr=f)
+        logger.info('"{0}" migrated build from {1} to {2}, with result {3}'.format(sconf.name, sconf.fq_build_output, dest, return_code))
 
     if 'excluded_files' in sconf:
         fns = [ os.path.join(conf.paths.projectroot,
