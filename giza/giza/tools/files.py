@@ -76,8 +76,7 @@ def symlink(name, target):
             from win32file import CreateSymbolicLink
             CreateSymbolicLink(name, target)
         except ImportError:
-            logger.error("platform does not contain support for symlinks. Windows users need to pywin32.")
-            exit(1)
+            logger.error("platform does not contain support for symlinks. Windows users need pywin32.")
 
 def expand_tree(path, input_extension='yaml'):
     file_list = []
