@@ -353,7 +353,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                     l.extend(data)
                     data = l
                 elif basename == 'replacement':
-                    data = ReplacementData(data, self.conf)
+                    data = ReplacementData([d for d in data], self.conf)
                     return data
 
                 if not isinstance(data, list):

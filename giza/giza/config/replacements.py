@@ -22,7 +22,7 @@ logger = logging.getLogger('giza.config.sphinx_config')
 class ReplacementData(RecursiveConfigurationBase):
     def ingest(self, input_obj):
         if isinstance(input_obj, list):
-            if len(input_obj) == 1 and isinstance(input_obj[0], dict) :
+            if len(input_obj) == 1 and isinstance(input_obj[0], dict):
                 input_obj = input_obj[0]
             else:
                 try:
@@ -40,6 +40,8 @@ class ReplacementData(RecursiveConfigurationBase):
 
         if self.conf.project.edition in input_obj:
             self._update_tokens(input_obj[self.conf.project.edition])
+        else:
+            logger.error('current edition not defined for replacements, adding no replacements')
 
     def _validate_tokens(self, tokens):
         for value in tokens.items():
