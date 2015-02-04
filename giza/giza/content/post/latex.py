@@ -60,7 +60,7 @@ def _render_tex_into_pdf(fn, deployed_path, path, output_format="pdf"):
                                   stderr=devnull,
                                   stdout=devnull)
             if ret == 0:
-                logger.info('pdf completed rendering stage {0} of {1} successfully ({2}, {3}).'.format(idx, len(cmds), base_fn, ret))
+                logger.info('pdf completed rendering stage {0} of {1} successfully ({2}, {3}).'.format(idx + 1, len(cmds), base_fn, ret))
                 continue
             else:
                 if idx <= 1:
