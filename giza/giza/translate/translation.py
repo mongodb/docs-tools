@@ -167,6 +167,7 @@ def translate_po_files(po_path, tconf, protected_file=None):
 
         write_po_files(po_file_list, trans_file)
 
+
 def auto_approve_po_entries(po_path):
     ''' This function automatically approves any untranslated sentence in a
     po file that should be identical in the target language. These sentences

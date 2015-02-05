@@ -142,7 +142,7 @@ def copy_if_needed(source_file, target_file, name='build'):
             if name is not None:
                 m = '{0}: "{1}" changed. Updated: {2}'
                 logger.debug(m.format(name, source_file, target_file))
-                
+
 
 def copy_always(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False:

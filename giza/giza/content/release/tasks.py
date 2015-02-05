@@ -24,8 +24,8 @@ from libgiza.task import Task
 
 
 def register_releases(conf):
-    content_dfn = new_content_type(name='release', 
-                                   task_generator=release_tasks, 
+    content_dfn = new_content_type(name='release',
+                                   task_generator=release_tasks,
                                    conf=conf)
 
     conf.system.content.add(name='releases', definition=content_dfn)

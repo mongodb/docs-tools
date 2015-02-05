@@ -25,9 +25,9 @@ def query(j, app, conf):
 
     queries = [
         ('total', 'project {0} and fixVersion {1}'.format(equality(project), equality(sprint))),
-        ('completed', query_base.format(equality(project), equality(sprint), 
+        ('completed', query_base.format(equality(project), equality(sprint),
                                         equality(['Closed', 'Resolved']))),
-        ('progressing', query_base.format(equality(project), equality(sprint), 
+        ('progressing', query_base.format(equality(project), equality(sprint),
                                           equality(['In Code Review', 'In Progress']))),
         ('remaining', query_base.format(equality(project), equality(sprint),
                                         equality(['Open', 'Reopened'])))

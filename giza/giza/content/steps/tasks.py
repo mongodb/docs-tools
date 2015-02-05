@@ -24,8 +24,8 @@ from libgiza.task import Task
 
 
 def register_steps(conf):
-    content_dfn = new_content_type(name='steps', 
-                                   task_generator=step_tasks, 
+    content_dfn = new_content_type(name='steps',
+                                   task_generator=step_tasks,
                                    conf=conf)
 
     conf.system.content.add(name='steps', definition=content_dfn)

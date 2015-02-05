@@ -103,7 +103,7 @@ def pdf_tasks(sconf, conf, app):
 
     # the path that sphinx writes tex files to are are different for editions.
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
-        latex_dir = os.path.join(conf.paths.projectroot, 
+        latex_dir = os.path.join(conf.paths.projectroot,
                                  conf.paths.branch_output,
                                  '-'.join((target, conf.project.edition)))
     else:

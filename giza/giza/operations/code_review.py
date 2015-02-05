@@ -137,7 +137,7 @@ def create_or_update(args):
             update_code_review(cr_data, g, use_hash)
         else:
             data.set_branch(g.current_branch(), {'original_name': g.commit_messages()[0],
-                                                 'commits': [g.sha('HEAD~'), g.sha()],})
+                                                 'commits': [g.sha('HEAD~'), g.sha()]})
 
             logger.info('creating new code review.')
             create_code_review(data, g, creds)

@@ -32,9 +32,9 @@ def query(j, app, conf):
     }
 
     queries['category'] = queries['category'].format(equality(project), uncategorized_f)
-    queries['timing'] = queries['timing'].format(equality(project), inequality(buckets), 
+    queries['timing'] = queries['timing'].format(equality(project), inequality(buckets),
                                                  timing_query_f, fixversion_f)
-    queries['combined'] = queries['combined'].format(equality(project), timing_query_f, 
+    queries['combined'] = queries['combined'].format(equality(project), timing_query_f,
                                                      fixversion_f, uncategorized_f)
 
     for name, query in queries.items():

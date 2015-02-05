@@ -68,6 +68,6 @@ def start(args):
                                            args.builder[0])
 
     httpd = socket_server.TCPServer(('', conf.runstate.port), RequestHandler)
-    logger.info('Hosting {0} at http://localhost:{1}/'.format(RequestHandler.root, 
+    logger.info('Hosting {0} at http://localhost:{1}/'.format(RequestHandler.root,
                                                               conf.runstate.port))
     httpd.serve_forever()

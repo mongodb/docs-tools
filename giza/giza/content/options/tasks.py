@@ -26,7 +26,7 @@ from libgiza.task import Task
 
 def register_options(conf):
     content_dfn = new_content_type(name='option',
-                                   task_generator=option_tasks, 
+                                   task_generator=option_tasks,
                                    conf=conf)
 
     conf.system.content.add(name='options', definition=content_dfn)

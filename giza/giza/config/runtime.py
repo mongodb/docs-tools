@@ -147,7 +147,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
         elif value in supported_runners:
             self.state['runner'] = value
         else:
-            m = '{0} is not a supported runner type, choose from: {1}'.format(value, 
+            m = '{0} is not a supported runner type, choose from: {1}'.format(value,
                                                                               supported_runners)
             logger.error(m)
             raise TypeError(m)

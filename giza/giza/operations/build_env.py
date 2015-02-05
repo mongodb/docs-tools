@@ -104,7 +104,7 @@ def package_build_env(builders, editions, languages, conf):
 
             files_to_archive.add(rconf.paths.branch_source)
             files_to_archive.add(os.path.join(rconf.paths.branch_output, builder_dirname))
-            files_to_archive.add(os.path.join(rconf.paths.branch_output, 
+            files_to_archive.add(os.path.join(rconf.paths.branch_output,
                                               '-'.join(('doctrees', builder_dirname))))
             files_to_archive.add(rconf.system.dependency_cache_fn)
 
@@ -140,14 +140,14 @@ def fix_build_env(builder, conf):
     if not os.path.isfile(fn):
         return
 
-    doctree_dir = os.path.join(conf.paths.projectroot, 
-                               conf.paths.branch_output, 
+    doctree_dir = os.path.join(conf.paths.projectroot,
+                               conf.paths.branch_output,
                                "doctrees-" + builder)
 
-    sphinx_app = Sphinx(srcdir=os.path.join(conf.paths.projectroot, 
+    sphinx_app = Sphinx(srcdir=os.path.join(conf.paths.projectroot,
                                             conf.paths.branch_output, "source"),
                         confdir=conf.paths.projectroot,
-                        outdir=os.path.join(conf.paths.projectroot, 
+                        outdir=os.path.join(conf.paths.projectroot,
                                             conf.paths.branch_output, builder),
                         doctreedir=doctree_dir,
                         buildername=builder,
@@ -164,7 +164,7 @@ def fix_build_env(builder, conf):
                 tags_hash_ln = ln
                 break
 
-        if tags_hash_ln == None:
+        if tags_hash_ln is None:
             tags_hash_ln = 'tags: ' + get_stable_hash(sorted(sphinx_app.tags))
 
     with open(fn, 'w') as f:

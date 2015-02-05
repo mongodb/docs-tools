@@ -227,8 +227,8 @@ def image_tasks(conf, app):
 
         source_base = os.path.join(conf.paths.projectroot, image['dir'], image['name'])
         source_file = source_base + '.svg'
-        source_core = os.path.join(conf.paths.projectroot, 
-                                   conf.paths.branch_images, 
+        source_core = os.path.join(conf.paths.projectroot,
+                                   conf.paths.branch_images,
                                    image['name'] + '.svg')
         rst_file = source_base + '.rst'
 

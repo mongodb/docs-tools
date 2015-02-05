@@ -31,8 +31,8 @@ from libgiza.task import Task
 
 
 def register_examples(conf):
-    content_dfn = new_content_type(name='examples', 
-                                   task_generator=example_tasks, 
+    content_dfn = new_content_type(name='examples',
+                                   task_generator=example_tasks,
                                    conf=conf)
 
     conf.system.content.add(name='examples', definition=content_dfn)

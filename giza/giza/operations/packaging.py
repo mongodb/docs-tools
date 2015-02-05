@@ -101,9 +101,9 @@ def create_package(target, conf):
     files_to_archive = []
 
     if conf.project.branched is True:
-        artifacts = (os.path.join(conf.paths.output, 
-                                  conf.git.branches.current), 
-                                  conf.git.branches.current)
+        artifacts = (os.path.join(conf.paths.output,
+                                 conf.git.branches.current),
+                     conf.git.branches.current)
     else:
         artifacts = (os.path.join(conf.paths.projectroot, conf.paths.output, pconf['paths']['local']),
                      os.path.split(pconf['paths']['local'])[-1])
@@ -141,8 +141,8 @@ def extract_package(conf):
     with tarfile.open(path, "r:gz") as t:
         t.extractall(os.path.join(conf.paths.projectroot, conf.paths.public))
 
-    conf_extract_path = os.path.join(conf.paths.projectroot, 
-                                     conf.paths.branch_output, 
+    conf_extract_path = os.path.join(conf.paths.projectroot,
+                                     conf.paths.branch_output,
                                      'conf.pickle')
 
     with open(conf_extract_path, 'rb') as f:

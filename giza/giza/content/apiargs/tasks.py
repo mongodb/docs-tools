@@ -24,8 +24,8 @@ from libgiza.task import Task
 
 
 def register_apiargs(conf):
-    content_def = new_content_type(name='apiargs', 
-                                   task_generator=apiarg_tasks, 
+    content_def = new_content_type(name='apiargs',
+                                   task_generator=apiarg_tasks,
                                    conf=conf)
 
     conf.system.content.add(name='apiargs', definition=content_def)

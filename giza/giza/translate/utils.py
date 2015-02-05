@@ -29,6 +29,7 @@ giza that can obviously be used anywhere else
 '''
 logger = logging.getLogger('giza.translate.utils')
 
+
 def get_file_list(path, input_extension):
     ''' This function wraps around expand tree to return a list of only 1 file
     if the user gives a path to a file and not a directory. Otherwise it has

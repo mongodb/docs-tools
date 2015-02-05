@@ -24,8 +24,8 @@ from libgiza.task import Task
 
 
 def register_extracts(conf):
-    content_dfn = new_content_type(name='extracts', 
-                                   task_generator=extract_tasks, 
+    content_dfn = new_content_type(name='extracts',
+                                   task_generator=extract_tasks,
                                    conf=conf)
 
     conf.system.content.add(name='extracts', definition=content_dfn)

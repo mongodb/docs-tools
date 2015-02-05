@@ -35,6 +35,7 @@ long time.
 '''
 logger = logging.getLogger("giza.translate.model")
 
+
 def tokenize_corpus(corpus_dir, corpus_name, tconf):
     '''This function tokenizes a corpus
 
@@ -150,8 +151,9 @@ def build_language_model(lm_path, l_order, l_smoothing, tconf, d):
         for cmd in cmds:
             command(cmd, logger=logger, capture=True)
 
+
 def train_model(working_path, lm_path, l_len, l_order, l_lang, l_direct, l_score,
-          l_align, l_orient, l_model, tconf, d):
+                l_align, l_orient, l_model, tconf, d):
 
     '''This function does the training for the given configuration
 
