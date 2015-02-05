@@ -7,6 +7,7 @@ logger = logging.getLogger('giza.corp')
 
 from giza.config.credentials import CredentialsConfig
 
+
 def corp_api_call(endpoint, conf):
     credentials = CredentialsConfig(conf.site.credentials).corp
 
@@ -18,12 +19,13 @@ def corp_api_call(endpoint, conf):
 
     return response.json()
 
+
 def get_contributor_list(conf):
     contributors = corp_api_call('contributors', conf)['contributors']
 
-    c_github = list({ str(c['github_username']) for c in contributors
+    c_github = list({str(c['github_username']) for c in contributors
                       if ('github_username' in c and
                           c['github_username'] is not None and
-                          c['github_username'] != u'') })
+                          c['github_username'] != u'')})
 
     return c_github

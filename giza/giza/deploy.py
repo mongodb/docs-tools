@@ -28,6 +28,7 @@ import shlex
 
 logger = logging.getLogger('giza.deploy')
 
+
 class Deploy(object):
     def __init__(self, conf):
         self.conf = conf
@@ -69,7 +70,7 @@ class Deploy(object):
             self.static_files.extend(pspec['paths']['static'])
 
     def _base_cmd(self):
-        base_cmd = [ 'rsync', '-cqltz']
+        base_cmd = ['rsync', '-cqltz']
 
         if self.delete is True:
             base_cmd.append('--delete')
@@ -87,22 +88,25 @@ class Deploy(object):
 
         for host in self.hosts:
             if self.branched is True:
-                yield base + [ os.path.join(self.conf.paths.output, self.local_path, self.conf.git.branches.current),
-                               host + ':' + self.remote_path ]
+                yield base + [os.path.join(self.conf.paths.output, 
+                                           self.local_path, 
+                                           self.conf.git.branches.current),
+                              host + ':' + self.remote_path]
             else:
-                yield base + [ os.path.join(self.conf.paths.output, self.local_path) + '/',
-                               host + ':' + self.remote_path ]
+                yield base + [os.path.join(self.conf.paths.output, self.local_path) + '/',
+                              host + ':' + self.remote_path]
 
             for fn in self.static_files:
                 if self.conf.git.branches.current != 'master' and fn == '.htaccess':
                     logger.debug('skipping .htaccess files from non-master branch')
                     continue
                 else:
-                    yield base + [ os.path.join(self.conf.paths.output,  self.local_path,  fn),
-                                   host + ':' + self.remote_path ]
+                    yield base + [os.path.join(self.conf.paths.output,  self.local_path,  fn),
+                                  host + ':' + self.remote_path]
 
     def run(self):
         map(deploy_target, self.deploy_commands())
+
 
 def deploy_target(cmd):
     with open(os.devnull, 'w') as f:

@@ -117,6 +117,7 @@ commands = {
     ]
 }
 
+
 def get_base_parser():
     """
     Adds global arguments/settings giza build process, and creates the top-level
@@ -127,14 +128,18 @@ def get_base_parser():
     parser.add_argument('--level', '-l',
                         choices=['debug', 'warning', 'info', 'critical', 'error'],
                         default='info')
-    parser.add_argument('--serial', '-s', default=None, dest='runner', const='serial', action='store_const')
-    parser.add_argument('--thread', default=None, dest='runner', const='thread', action='store_const')
+    parser.add_argument('--serial', '-s', default=None, dest='runner',
+                        const='serial', action='store_const')
+    parser.add_argument('--thread', default=None, dest='runner', const='thread',
+                        action='store_const')
     parser.add_argument('--event', default=None, dest='runner', const='event', action='store_const')
-    parser.add_argument('--process', default=None, dest='runner', const='process', action='store_const')
+    parser.add_argument('--process', default=None, dest='runner',
+                        const='process', action='store_const')
     parser.add_argument('--force', '-f', default=False, action='store_true')
     parser.add_argument('--fast', action='store_true')
 
     return parser
+
 
 def main():
     """

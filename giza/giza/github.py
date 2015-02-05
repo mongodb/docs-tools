@@ -35,7 +35,8 @@ except NameError:
     # Python 3
     prompt = input
 
-#################### mdbpr helpers #####################
+# mdbpr helpers
+
 
 def collect_two_factor_token():
     code = ''
@@ -44,6 +45,7 @@ def collect_two_factor_token():
         # let's protect them from doing that.
         code = prompt('Enter 2FA code: ')
     return code
+
 
 def get_connection(conf):
     credentials = CredentialsConfig(conf.site.credentials).github
@@ -56,10 +58,12 @@ def get_connection(conf):
 
     return gh
 
+
 def pprint(doc):
     print(json.dumps(doc, indent=3))
 
-#################### mdbpr data handling workers #####################
+# mdbpr data handling workers
+
 
 def get_pull_requests(gh, repo, approved_users):
     r = gh.repository(repo.user, repo.name)
@@ -77,9 +81,11 @@ def get_pull_requests(gh, repo, approved_users):
 
     return results
 
+
 def get_github_org_members(gh, org):
-    return [ user.login
-             for user in gh.organization(org).iter_members() ]
+    return [user.login
+            for user in gh.organization(org).iter_members()]
+
 
 def mine_github_pulls(gh, app, conf):
     results = []
@@ -92,7 +98,6 @@ def mine_github_pulls(gh, app, conf):
     corpt = app.add('task')
     corpt.job = get_contributor_list
     corpt.args = [conf]
-
 
     for org in conf.organizations:
         t = app.add('task')
@@ -120,21 +125,23 @@ def mine_github_pulls(gh, app, conf):
 
     return results
 
-#################### mdbpr commands #####################
+# mdbpr commands
+
 
 @argh.arg('--path', dest='conf_path', default='.github.yaml')
 @argh.expects_obj
 def setup(args):
     skel = {
-        'site': { 'credentials': "~/.giza-credentials.yaml",
-                  'corp': None },
-        'repos': [ {'user': 'mongodb', 'name': 'docs'},
-                   {'user': 'mongodb', 'name': 'docs-ecosystem' } ],
+        'site': {'credentials': "~/.giza-credentials.yaml",
+                 'corp': None},
+        'repos': [{'user': 'mongodb', 'name': 'docs'},
+                  {'user': 'mongodb', 'name': 'docs-ecosystem'}],
         'organizations': ['mongodb', '10gen'],
-        'reporting': {'format': 'json' },
+        'reporting': {'format': 'json'},
     }
 
     dump_skel(skel, args)
+
 
 @argh.expects_obj
 def mine(args):
@@ -143,6 +150,7 @@ def mine(args):
     gh = get_connection(conf)
 
     pprint(mine_github_pulls(gh, app, conf))
+
 
 @argh.expects_obj
 def stats(args):
