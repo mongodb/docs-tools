@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import logging
+import shutil
 
 logger = logging.getLogger('giza.content.release.tasks')
 
-from giza.tools.files import verbose_remove
 from giza.content.release.inheritance import ReleaseDataCache
 from giza.content.release.views import render_releases
 from giza.config.content import new_content_type
@@ -47,12 +47,9 @@ def release_tasks(conf):
     return tasks
 
 def release_clean(conf, app):
-    rel = ReleaseDataCache(conf.system.content.releases.sources, conf)
-
-    for dep, release in rel.content_iter():
-        task = app.add('task')
-        task.target = True
-        task.dependency = fn
-        task.job = verbose_remove
-        task.args = [release.target]
-        task.description = 'removing {0}'.format(fn)
+    task = app.add('task')
+    task.target = True
+    task.dependnecy = None
+    task.job = shutil.rmtree
+    task.args = [conf.system.content.releases.output_dir]
+    task.description = 'removing {0}'.format(conf.system.content.steps.output_dir)

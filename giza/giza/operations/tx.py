@@ -91,7 +91,7 @@ def pull_tasks(conf, app):
     for page in resources:
         t = app.add('task')
         t.job = logged_command
-        t.args = ('pull', ' '.join([ 'tx', 'pull', '-l', lang, '-r', page]))
+        t.args = ('pull', ' '.join([ 'tx', 'pull', '-l', conf.runstate.language, '-r', page]))
         t.description = 'pulling {0} from transifex client'.format(page)
 
 def push_tasks(conf, app):
@@ -100,7 +100,7 @@ def push_tasks(conf, app):
     for page in resources:
         t = app.add('task')
         t.job = logged_command
-        t.args = ('pull', ' '.join([ 'tx', 'pull', '-l', lang, '-r', page]))
+        t.args = ('pull', ' '.join([ 'tx', 'pull', '-l', conf.runstate.language, '-r', page]))
         t.description = 'pulling {0} from transifex client'.format(page)
 
 def update(conf):

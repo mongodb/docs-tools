@@ -79,12 +79,11 @@ def graph(args):
     if c.runstate.include_mask is None:
         render_for_console(include_files(conf=c))
     else:
-        if c.runstate.include_mask.startswith(c.paths.source):
+        mask = c.runstate.include_mask
+        if mask.startswith(c.paths.source):
             mask = mask[6:]
-        elif c.runstate.include_mask.startswith('/' + c.paths.source):
+        elif mask.startswith('/' + c.paths.source):
             mask = mask[7:]
-        else:
-            mask = c.runstate.include_mask
 
         render_for_console(includes_masked(mask=mask, conf=c))
 

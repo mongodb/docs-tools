@@ -49,7 +49,7 @@ def step_tasks(conf):
 def step_clean(conf, app):
     task = app.add('task')
     task.target = True
-    task.dependnecy = fn
+    task.dependnecy = None
     task.job = shutil.rmtree
     task.args = [conf.system.content.steps.output_dir]
     task.description = 'removing {0}'.format(conf.system.content.steps.output_dir)

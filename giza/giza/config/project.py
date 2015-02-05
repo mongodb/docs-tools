@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import libgiza.config
+
+logger = logging.getLogger('giza.config.')
+
 
 def get_path_prefix(conf, branch):
     """

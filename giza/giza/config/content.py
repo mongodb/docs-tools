@@ -14,17 +14,20 @@
 
 import os.path
 import itertools
-from libgiza.config import ConfigurationBase
-from giza.tools.files import expand_tree
+import logging
 
-###### Data Model ######
+import libgiza.config
+import giza.tools.files
 
-class ContentType(ConfigurationBase):
+logger = logging.getLogger('giza.config.')
+
+
+class ContentType(libgiza.config.ConfigurationBase):
     _option_registry = ['dir']
 
     @property
     def sources(self):
-        files = expand_tree(self.dir, 'yaml')
+        files = giza.tools.files.expand_tree(self.dir, 'yaml')
 
         sources = set()
         for prefix, fn in itertools.product(self.prefixes, files):
@@ -128,7 +131,7 @@ def new_content_type(name, conf, task_generator=None, source_dir=None, output_di
 
 ###### Implementation Internals ######
 
-class ContentRegistry(ConfigurationBase):
+class ContentRegistry(libgiza.config.ConfigurationBase):
     def add(self, name, definition):
         if not isinstance(definition, ContentType):
             raise TypeError

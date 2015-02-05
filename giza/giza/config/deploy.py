@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from libgiza.config import ConfigurationBase
+import logging
+import libgiza.config
 
-class DeployConfig(ConfigurationBase):
+logger = logging.getLogger('giza.config.deploy')
+
+class DeployConfig(libgiza.config.ConfigurationBase):
     @property
     def production(self):
         return self.state['production']
@@ -48,7 +51,7 @@ class DeployConfig(ConfigurationBase):
         self.state['docsprod'] = DeployTargetConfig(value)
 
 
-class DeployTargetConfig(ConfigurationBase):
+class DeployTargetConfig(libgiza.config.ConfigurationBase):
     _option_registry = ['input']
 
     @property

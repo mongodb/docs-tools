@@ -39,15 +39,15 @@ from libgiza.app import BuildApp
 
 def get_migration_specifications(conf):
     output = []
+    files = [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
+                                                    conf.paths.builddata))
+                            if  conf.project.name in os.path.basename(fn) and 'migrations' in fn ]
 
-    for migration_spec in [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
-                                                                  conf.paths.builddata))
-                            if  conf.project.name in os.path.basename(fn) and 'migrations' in fn ]:
-
+    for migration_spec in files:
         with open(migration_spec, 'r') as f:
             output.extend(yaml.safe_load_all(f))
 
-    return output
+    return files, output
 
 def directory_expansion(source_path, page, conf):
     new_page = { 'sources': expand_tree(source_path, None)}
@@ -134,7 +134,7 @@ def resolve_page_path(page, conf):
 def primer_migration_tasks(conf, app):
     "Migrates all manual files to primer according to the spec. As needed."
 
-    migrations = get_migration_specifications(conf)
+    files, migrations = get_migration_specifications(conf)
 
     if len(migrations) == 0:
         return False
@@ -173,7 +173,7 @@ def primer_migration_tasks(conf, app):
 
         if 'append' in page:
             prev.job = copy_always
-            build_append_task(page, fq_target, migration_paths, app)
+            build_append_task(page, fq_target, files, app)
 
     if len(second_app.queue) >= 1:
         app.add(second_app)
@@ -190,7 +190,7 @@ def primer_migration_tasks(conf, app):
 def clean(conf, app):
     "Removes all migrated primer files according to the current spec."
 
-    migrations = get_migration_specifications(conf)
+    _, migrations = get_migration_specifications(conf)
 
     targets = []
     for page in migrations:

@@ -17,6 +17,7 @@ import os.path
 import re
 import sys
 import subprocess
+import shutil
 
 logger = logging.getLogger('giza.content.post.sites')
 
@@ -87,8 +88,15 @@ def finalize_dirhtml_build(sconf, conf):
                       fn)
                 for fn in sconf['dirhtml']['excluded_files'] ]
 
-        cleaner(fns)
-        logging.info('removed excluded files from dirhtml output directory')
+        for fn in fns:
+            if os.path.isdir(fn):
+                shutil.rmtree(fn)
+            elif os.path.isfile(fn):
+                os.remove(fn)
+            else:
+                continue
+
+            logger.info('removed file from dirhtml output directory: ' + fn )
 
     if conf.git.branches.current in conf.git.branches.published:
         sitemap_exists = sitemap(config_path=None, conf=conf)

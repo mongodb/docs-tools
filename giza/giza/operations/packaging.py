@@ -21,6 +21,8 @@ import logging
 import datetime
 import os
 import tarfile
+import contextlib
+import urllib2
 
 logger = logging.getLogger('giza.operations.packaging')
 
@@ -30,6 +32,7 @@ except ImportError:
     import pickle
 
 import argh
+import libgiza.app
 
 from giza.config.helper import fetch_config
 from giza.tools.files import safe_create_directory, FileNotFoundError
@@ -117,6 +120,8 @@ def create_package(target, conf):
     logger.info('wrote build package to: {0}'.format(archive_fn))
 
 def extract_package(conf):
+    path = conf.runstate.package_path
+
     if conf.runstate.package_path.startswith('http'):
         path = fetch_package(path, conf)
     elif os.path.isfile(conf.runstate.package_path):
@@ -124,7 +129,7 @@ def extract_package(conf):
     else:
         m = "package {0} does not exist".format(conf.runstate.package_path)
         logger.critical(m)
-        raise GizaPackagingError(m)
+        raise FileNotFoundError(m)
 
     with tarfile.open(path, "r:gz") as t:
         t.extractall(os.path.join(conf.paths.projectroot, conf.paths.public))
@@ -149,7 +154,7 @@ def fetch_package(path, conf):
                                 local_path)
 
         if not os.path.exists(tar_path):
-            with closing(urllib2.urlopen(path)) as u:
+            with contextlib.closing(urllib2.urlopen(path)) as u:
                 with open(tar_path, 'w') as f:
                     f.write(u.read())
             logger.info('downloaded {0}'.format(local_path))
@@ -197,9 +202,9 @@ def deploy(args):
     new_conf = extract_package(conf)
     logger.info('extracted package')
 
-    app = BuildApp.new(pool_type=conf.runstate.runner,
-                       pool_size=conf.runstate.pool_size,
-                       force=conf.runstate.force)
+    app = libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
+                                   pool_size=conf.runstate.pool_size,
+                                   force=conf.runstate.force)
 
     logger.info('beginning deploy now.')
     deploy_tasks(new_conf, app)
