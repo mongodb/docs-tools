@@ -4,8 +4,8 @@
 
 .. automodule:: giza.content.steps
 
-.. toctree:: 
-   
+.. toctree::
+
    /api/content/steps/models
    /api/content/steps/views
    /api/content/steps/inheritance

@@ -28,19 +28,19 @@ Giza environments and using ``virtualenv`` allows you to isolate
 versions more clearly.
 
 If you do not have `virtualenvwrapper <https://pypi.python.org/pypi/virtualenvwrapper>`_
-installed, install it: 
+installed, install it:
 
 .. code-block:: sh
 
    pip install virtualenvwrapper
-   
+
 Issue the following command in your shell, *and* append the following
-line to your ``~/.zshrc`` or ``~/.bashrc`` file: 
+line to your ``~/.zshrc`` or ``~/.bashrc`` file:
 
 .. code-block:: sh
 
    source /usr/bin/virtualenvwrapper.sh
-   
+
 Create a virtual environment for the latest *released* or *stable*
 version of giza:
 
@@ -51,7 +51,7 @@ version of giza:
 ``mkvirtualenv`` will activate the virtual environment after it
 the creation operation finishes. To deactivate a virtual environment
 use the ``deactivate`` operation. To re-activate a virtual
-environment, use the following operation: 
+environment, use the following operation:
 
 .. code-block:: sh
 
@@ -67,20 +67,20 @@ do not have root access.
 Install Giza
 ~~~~~~~~~~~~
 
-To install ``giza`` issue the following command: 
+To install ``giza`` issue the following command:
 
 .. code-block:: sh
 
    pip install giza
-   
+
 To install the optional Jira and Github integration, use the following
-form: 
+form:
 
 .. code-block:: sh
 
    pip install giza \[jira,github\]
 
-To install a specific release of ``giza`` use the following form: 
+To install a specific release of ``giza`` use the following form:
 
 .. code-block:: sh
 
@@ -88,7 +88,7 @@ To install a specific release of ``giza`` use the following form:
 
 ``pip`` installs most dependencies for a ``giza`` build. However,
 there are few optional or experimental dependencies that you may need
-to install depending on your requirements: 
+to install depending on your requirements:
 
 - Inkscape. Used to render SVG for use in output. Only required if you
   are building a site that includes image generation. If you're
@@ -108,7 +108,7 @@ Upgrade Giza
 
 To upgrade an existing Giza install you can either install a specific
 version, or you can use the ``--upgrade`` option to ``pip install`` as
-in the following example: 
+in the following example:
 
 .. code-block:: sh
 
@@ -119,22 +119,22 @@ Install Giza for Development
 
 To simplify the development workflow when adding new Giza features,
 you can use a version of ``giza`` that's linked to a check out of your
-``mongodb/docs-tools`` repository. You will 
+``mongodb/docs-tools`` repository. You will
 use the ``--editable`` option to ``pip install``. Begin by cloning a
-copy of the ``mongodb/docs-tools`` repository: 
+copy of the ``mongodb/docs-tools`` repository:
 
 .. code-block:: sh
 
    cd ~/
    git clone git@github.com:mongodb/docs-tools.git
-   
-Create a new development virtual environment: 
+
+Create a new development virtual environment:
 
 .. code-block:: sh
 
    mkvirutalenv giza-development
 
-Install the ``giza`` package: 
+Install the ``giza`` package:
 
 .. code-block:: sh
 
@@ -146,7 +146,7 @@ documentation, you can create a link to your local ``docs-tools``
 repository within the ``build`` directory, if you want to test changes
 to themes or other aspects of the system. Issue the following sequence
 of commands to get the ``docs`` repository set up. If you have a
-``docs`` repository set up skip the next step: 
+``docs`` repository set up skip the next step:
 
 .. code-block:: sh
 
@@ -154,7 +154,7 @@ of commands to get the ``docs`` repository set up. If you have a
    git clone git@github.com:mongodb/docs.git docs-mongodb
    mkdir ~/docs-mongodb/build/
 
-Now create a symbolic: 
+Now create a symbolic:
 
 .. code-block:: sh
 

@@ -128,12 +128,12 @@ def resolve_page_path(page, conf):
     if page['source'].startswith('/'):
         fq_source = page['source']
     elif 'source_dir' in page:
-        fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, 
-                                                 page['source_dir'], 
+        fq_source = os.path.abspath(os.path.join(conf.paths.projectroot,
+                                                 page['source_dir'],
                                                  page['source']))
     else:
-        fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, 
-                                                 '..', conf.paths.source, 
+        fq_source = os.path.abspath(os.path.join(conf.paths.projectroot,
+                                                 '..', conf.paths.source,
                                                  page['source']))
 
     return fq_target, fq_source
