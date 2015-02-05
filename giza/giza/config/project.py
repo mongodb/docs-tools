@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
+import libgiza.config
 
 def get_path_prefix(conf, branch):
     """
@@ -47,7 +47,7 @@ def get_current_path(conf):
 
     return get_path_prefix(conf, branch)
 
-class ProjectConfig(RecursiveConfigurationBase):
+class ProjectConfig(libgiza.config.RecursiveConfigurationBase):
     _option_registry = ['name', 'title']
 
     @property
@@ -209,7 +209,7 @@ class ProjectConfig(RecursiveConfigurationBase):
     def sitepath(self):
         return get_path_prefix(self.conf, self.conf.git.branches.current)
 
-class EditionListConfig(ConfigurationBase):
+class EditionListConfig(libgiza.config.ConfigurationBase):
     _option_registry = ['name', 'url']
 
     @property
