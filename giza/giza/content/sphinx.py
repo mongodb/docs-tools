@@ -259,7 +259,7 @@ def run_sphinx(builder, sconf, conf):
                             sconf.fq_build_output)
 
     logger.debug(sphinx_cmd)
-    m "running sphinx build for: {0}, {1}, {2}"
+    m = "running sphinx build for: {0}, {1}, {2}"
     with Timer(m.format(builder, sconf.language, sconf.edition)):
         out = command(sphinx_cmd, capture=True, ignore=True)
 
