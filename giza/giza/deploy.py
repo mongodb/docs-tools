@@ -24,6 +24,7 @@ Given a deploy target, we need to compile the rsync commands to:
 import logging
 import os.path
 import subprocess
+import shlex
 
 logger = logging.getLogger('giza.deploy')
 
@@ -104,15 +105,16 @@ class Deploy(object):
         map(deploy_target, self.deploy_commands())
 
 def deploy_target(cmd):
-    try:
-        with open(os.devnull, 'w') as f:
-            subprocess.check_call(cmd.split(), stderr=f)
+    with open(os.devnull, 'w') as f:
         logger.info(cmd)
+        r = subprocess.call(shlex.split(cmd), stderr=f, stdout=f)
+
+    if r == 0:
         return 0
-    except subprocess.CalledProcessError as e:
-        if e.returncode == 23:
-            logger.warning('permissions error on remote end, possibly timestamp related.')
-            return e.returncode
-        else:
-            logger.error('"{0}" returned code {1}'.format(cmd, e.returncode))
-            raise e
+    elif r == 23:
+        logger.warning('permissions error on remote end, possibly timestamp related.')
+        return r
+    else:
+        logger.info(r)
+        logger.error('"rsync" returned code {1}'.format(cmd, r))
+        return r
