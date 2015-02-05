@@ -350,7 +350,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                 elif basename == 'htaccess':
                     l = HtaccessData()
                     l.conf = self.conf
-                    l.extend(data)
+                    l.extend([d for d in data])
                     data = l
                 elif basename == 'replacement':
                     data = ReplacementData([d for d in data], self.conf)

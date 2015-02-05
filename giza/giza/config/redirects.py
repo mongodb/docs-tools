@@ -64,7 +64,10 @@ class RedirectSpecification(ConfigurationBase):
 
     @property
     def code(self):
-        return self.state['code']
+        if 'code' in self.state:
+            return self.state['code']
+        else:
+            return 303
 
     @code.setter
     def code(self, value):
@@ -110,6 +113,7 @@ class RedirectSpecification(ConfigurationBase):
             'output': self.output,
             'external': self.external if 'external' in self.state else ''
         }
+
 
 class HtaccessData(list):
     def append(self, item):

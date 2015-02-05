@@ -29,7 +29,8 @@ def get_path_prefix(conf, branch):
         else:
             o.append(conf.project.tag)
     else:
-        o.append(conf.project.basepath)
+        if conf.project.basepath not in ('', None):
+            o.append(conf.project.basepath)
 
         if conf.project.branched is True:
             if branch == conf.git.branches.current and conf.git.branches.manual == conf.git.branches.current:
@@ -170,6 +171,8 @@ class ProjectConfig(RecursiveConfigurationBase):
 
         if 'basepath' in self.state:
             return self.state['basepath']
+        else:
+            return ''
 
     @basepath.setter
     def basepath(self, value):
@@ -178,7 +181,11 @@ class ProjectConfig(RecursiveConfigurationBase):
         else:
             for edition in self.editions:
                 if self.edition == edition.name:
-                    self.state['basepath'] = edition.tag
+                    if edition.tag is None:
+                        self.state['basepath'] = ''
+                    else:
+                        self.state['basepath'] = edition.tag
+
                     break
 
             if 'basepath' not in self.state and 'tag' in self.state:
