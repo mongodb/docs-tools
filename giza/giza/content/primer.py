@@ -30,12 +30,12 @@ import logging
 import re
 
 import yaml
-
-logger = logging.getLogger('giza.content.primer')
+import libgiza.task
 
 from giza.tools.files import copy_if_needed, copy_always, expand_tree, verbose_remove
 from giza.tools.transformation import process_page, truncate_file, append_to_file
-from libgiza.app import BuildApp
+
+logger = logging.getLogger('giza.content.primer')
 
 def get_migration_specifications(conf):
     output = []
@@ -131,15 +131,16 @@ def resolve_page_path(page, conf):
 
 ########## Main Migration Operations and Task Generator
 
-def primer_migration_tasks(conf, app):
+def primer_migration_tasks(conf):
     "Migrates all manual files to primer according to the spec. As needed."
 
     files, migrations = get_migration_specifications(conf)
 
     if len(migrations) == 0:
-        return False
+        return []
 
-    second_app = BuildApp()
+    tasks = []
+    sub_tasks = []
 
     for page in migrations:
         if 'sources' in page:
@@ -154,35 +155,39 @@ def primer_migration_tasks(conf, app):
             continue
 
         page = trim_leading_slash_from_pages(page)
-        prev = build_migration_task(fq_target, fq_source, app)
+        prev = build_migration_task(fq_target, fq_source)
+        tasks.append(prev)
 
         if 'truncate' in page:
-            build_truncate_task(page['truncate'], fq_target, fq_source, app)
+            t = build_truncate_task(page['truncate'], fq_target, fq_source)
+            tasks.append(t)
 
         if 'transform' in page:
+            prev.job = copy_always
+
             if not isinstance(page['transform'], list):
                 page['transform'] = [page['transform']]
 
-            prev.job = copy_always
-            process_page(fn=fq_target,
-                         output_fn=fq_target,
-                         regex=[ (re.compile(rs['regex']), rs['replace'])
-                                 for rs in page['transform'] ],
-                         app=second_app,
-                         builder='primer-processing')
+            process_task = process_page(fn=fq_target,
+                                        output_fn=fq_target,
+                                        regex=[(re.compile(rs['regex']), rs['replace'])
+                                               for rs in page['transform'] ],
+                                        builder='primer-processing')
+            sub_tasks.append(process_task)
 
         if 'append' in page:
             prev.job = copy_always
-            build_append_task(page, fq_target, files, app)
 
-    if len(second_app.queue) >= 1:
-        app.add(second_app)
+            t = build_append_task(page, fq_target, files)
+            tasks.append(t)
+
+    if len(sub_tasks) > 0:
+        tasks.append(sub_tasks)
 
     msg = 'added {0} migration jobs'.format(len(migrations))
-
     logger.info(msg)
 
-    return True
+    return tasks
 
 
 ########## Task Creators
@@ -209,8 +214,8 @@ def clean(conf, app):
 
     logger.info('clean: removed {0} files'.format(len(targets)))
 
-def build_migration_task(target, source, app):
-    task = app.add('task')
+def build_migration_task(target, source):
+    task = libgiza.task.Task()
     task.target = target
     task.job = copy_if_needed
     task.target = target
@@ -219,15 +224,17 @@ def build_migration_task(target, source, app):
 
     return task
 
-def build_append_task(page, target, spec_files, app):
-    task = app.add('task')
+def build_append_task(page, target, spec_files):
+    task = libgiza.task.Task()
     task.target = page['target']
     task.dependency = spec_files
     task.job = append_to_file
     task.args = [ target, page['append'] ]
 
-def build_truncate_task(truncate_spec, target, deps, app):
-    task = app.add('task')
+    return task
+
+def build_truncate_task(truncate_spec, target, deps):
+    task = libgiza.task.Task()
     task.target = target
     task.dependency = deps
     task.job = truncate_file
@@ -236,3 +243,5 @@ def build_truncate_task(truncate_spec, target, deps, app):
         'start_after': truncate_spec['start-after'] if 'start-after' in truncate_spec else None,
         'end_before': truncate_spec['end-before'] if 'end-before' in truncate_spec else None
     }
+
+    return task

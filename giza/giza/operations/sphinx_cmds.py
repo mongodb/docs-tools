@@ -96,8 +96,11 @@ def sphinx_publication(c, args, app):
     # Download embedded git repositories and then run migrations before doing
     # anything else.
     with app.context() as prep_app:
-        assets_tasks(c, prep_app.add('app'))
-        primer_migration_tasks(c, prep_app)
+        assets = assets_tasks(c)
+        prep_app.extend_queue(assets)
+
+        migrations = primer_migration_tasks(c)
+        prep_app.extend_queue(migrations)
 
     # assemble a for loop of tasks in the form of:
     # ((edition, language, builder), (conf, sconf))
@@ -205,8 +208,6 @@ def migrate_all_source(builder_jobs, app):
     ``build/<branch>/<source>`` directories, and then run all migrations
     together.
     """
-    app.randomize = True
-
     build_source_copies = set()
     for (_, (build_config, sconf)) in builder_jobs:
         if build_config.paths.branch_source not in build_source_copies:
@@ -216,6 +217,7 @@ def migrate_all_source(builder_jobs, app):
             # ``build/<branch>/source`` directory.
             source_tasks(build_config, sconf, app)
 
+    app.randomize = True
     app.run()
     app.reset()
 
@@ -230,9 +232,6 @@ def add_content_generator_tasks(builder_jobs, app):
     task available in the ``conf.system.content`` array. Runs each task
     generator for each ``build/<branch>/<source>`` directory.
     """
-
-    app.randomize = True
-
     build_source_copies = set()
     for (_, (build_config, sconf)) in builder_jobs:
         if build_config.paths.branch_source not in build_source_copies:
@@ -243,6 +242,7 @@ def add_content_generator_tasks(builder_jobs, app):
                              args=[build_config],
                              target=True))
 
+    app.randomize = True
     content_generator_tasks = app.run()
     app.reset()
 
