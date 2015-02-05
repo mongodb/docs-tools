@@ -3,13 +3,13 @@ import logging
 import os.path
 import string
 import random
+import yaml
 
 logger = logging.getLogger(os.path.basename(__file__))
 logging.basicConfig(level=logging.INFO)
 
 from giza.tools.files import expand_tree
-from giza.core.app import BuildApp
-from giza.tools.serialization import ingest_yaml_doc, ingest_yaml_list, write_yaml
+from libgiza.app import BuildApp
 
 if sys.version_info >= (3, 0):
     basestring = str
@@ -48,12 +48,14 @@ def main():
 
     for fn in spec_fns:
         try:
-            specs[fn] = ingest_yaml_doc(fn)
+            with open(fn, 'r') as f:
+                specs[fn] = [ d for d in yaml.safe_load_all(f) if d is not None][0]
         except:
             continue
 
     for fn in toc_fns:
-        tocs[fn] = ingest_yaml_list(fn)
+        with open(fn, 'r') as f:
+            tocs[fn] = [ d for d in yaml.safe_load_all(f) if d is not None]
 
     logger.info('have {0} spec files'.format(len(specs)))
     logger.info('have {0} toc files'.format(len(tocs)))
@@ -87,8 +89,9 @@ def main():
                 new_entry['description'] = entry['text']
                 new_entry['ref'] = "".join( [random.choice(string.letters) for i in xrange(15)] )
 
-        write_yaml(new_spec, fn)
-        logger.info('wrote: ' + fn)
+        with open(fn, 'w') as f:
+            yaml.safe_dump_all(new_spec, f, default_flow_style=False)
+            logger.info('wrote: ' + fn)
 
 if __name__ == '__main__':
     main()
