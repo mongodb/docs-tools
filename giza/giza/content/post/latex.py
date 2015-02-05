@@ -92,8 +92,6 @@ def pdf_tasks(sconf, conf, app):
     process_app = app.add('app')
     # then convert tex to pdf
     render_app = app.add('app')
-    # then migrate to build/public/
-    migrate_app = app.add('app')
     # then create symlinks for alternate named files.
     link_app = app.add('app')
 
@@ -138,7 +136,7 @@ def pdf_tasks(sconf, conf, app):
         # add the processing task
         process_page(i['source'], i['processed'], tex_regexes, process_app, builder='tex-munge', copy='ifNeeded')
 
-        # add task for changing TEX to PDF.
+        # add task for changing TEX to PDF. (this also copies the pdf to the deployed path).
         render_task = render_app.add('task')
         render_task.dependency = None #i['processed']
         render_task.target = i['pdf']
