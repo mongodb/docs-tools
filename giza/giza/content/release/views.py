@@ -19,6 +19,7 @@ logger = logging.getLogger('giza.content.release.views')
 from rstcloth.rstcloth import RstCloth
 from giza.content.steps.views import render_action
 
+
 def render_releases(release, conf):
     r = RstCloth()
 
@@ -28,7 +29,7 @@ def render_releases(release, conf):
         'stable': conf.version.stable,
     }
 
-    release.render() # run replacements
+    release.render()  # run replacements
 
     render_action(release, indent=0, level=2, r=r)
 

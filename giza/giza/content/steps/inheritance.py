@@ -20,6 +20,7 @@ logger = logging.getLogger('giza.content.steps.inheritance')
 from giza.inheritance import DataContentBase, DataCache
 from giza.content.steps.models import StepData
 
+
 class StepFile(DataContentBase):
     content_class = StepData
 
@@ -37,9 +38,10 @@ class StepFile(DataContentBase):
         return obj
 
     def target(self, fn):
-        ## fn is the source file
+        # fn is the source file
         return os.path.join(self.conf.system.content.steps.output_dir,
                             self.conf.system.content.steps.get_basename(fn)) + '.rst'
+
 
 class StepDataCache(DataCache):
     content_class = StepFile

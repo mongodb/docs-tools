@@ -26,6 +26,7 @@ from giza.content.post.archives import slides_tarball, get_tarball_name
 
 logger = logging.getLogger('giza.content.post.slides')
 
+
 def slides_output(conf):
     cmd = 'rsync --recursive --times --delete {src} {dst}'
 
@@ -51,6 +52,7 @@ def slides_output(conf):
             logger.info('deployed slides local staging.')
         except subprocess.CalledProcessError:
             logger.error('issue deploying slides to local staging')
+
 
 def slide_tasks(sconf, conf, app):
     task = app.add('task')

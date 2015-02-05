@@ -20,14 +20,18 @@ import hashlib
 
 logger = logging.getLogger('giza.files')
 
+
 class FileNotFoundError(Exception):
     pass
+
 
 class InvalidFile(Exception):
     pass
 
+
 class FileOperationError(Exception):
     pass
+
 
 def safe_create_directory(path):
     try:
@@ -43,10 +47,12 @@ def safe_create_directory(path):
             logger.error('encountered error creating directory: ' + path)
             raise e
 
+
 def verbose_remove(path):
     if os.path.exists(path):
         logger.info('clean: removing {0}'.format(path))
         os.remove(path)
+
 
 def tarball(name, path, newp=None, cdir=None):
     tarball_path = os.path.dirname(name)
@@ -68,6 +74,7 @@ def tarball(name, path, newp=None, cdir=None):
 
     logger.info('created tarball: {0}'.format(name))
 
+
 def symlink(name, target):
     if not os.path.islink(name):
         try:
@@ -76,7 +83,9 @@ def symlink(name, target):
             from win32file import CreateSymbolicLink
             CreateSymbolicLink(name, target)
         except ImportError:
-            logger.error("platform does not contain support for symlinks. Windows users need pywin32.")
+            logger.error("platform does not contain support for symlinks.")
+            logger.info("Windows users need pywin32.")
+
 
 def expand_tree(path, input_extension='yaml'):
     file_list = []
@@ -101,14 +110,16 @@ def expand_tree(path, input_extension='yaml'):
 
     return file_list
 
-def md5_file(file, block_size=2**20):
+
+def md5_file(file, block_size=2 ** 20):
     md5 = hashlib.md5()
 
     with open(file, 'rb') as f:
-        for chunk in iter(lambda: f.read(128*md5.block_size), b''):
+        for chunk in iter(lambda: f.read(128 * md5.block_size), b''):
             md5.update(chunk)
 
     return md5.hexdigest()
+
 
 def copy_if_needed(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False or os.path.isdir(source_file):
@@ -129,7 +140,9 @@ def copy_if_needed(source_file, target_file, name='build'):
             shutil.copyfile(source_file, target_file)
 
             if name is not None:
-                logger.debug('{0}: "{1}" changed. Updated: {2}'.format(name, source_file, target_file))
+                m = '{0}: "{1}" changed. Updated: {2}'
+                logger.debug(m.format(name, source_file, target_file))
+                
 
 def copy_always(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False:
@@ -141,6 +154,7 @@ def copy_always(source_file, target_file, name='build'):
         shutil.copyfile(source_file, target_file)
 
     logger.debug('{0}: copied {1} to {2}'.format(name, source_file, target_file))
+
 
 def create_link(input_fn, output_fn):
     out_dirname = os.path.dirname(output_fn)
@@ -166,4 +180,5 @@ def create_link(input_fn, output_fn):
     else:
         symlink(out_base, input_fn)
         os.rename(out_base, output_fn)
-        logger.debug('{0} created symbolic link pointing to "{1}" named "{2}"'.format('symlink', input_fn, out_base))
+        m = '{0} created symbolic link pointing to "{1}" named "{2}"'
+        logger.debug(m.format('symlink', input_fn, out_base))

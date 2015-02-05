@@ -30,6 +30,7 @@ from giza.operations.build_env import fix_build_env_tasks, get_existing_builders
 
 logger = logging.getLogger('giza.operations.git')
 
+
 @argh.arg('--patch', '-p', nargs='*', dest='git_objects')
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.arg('--signoff', '-s', default=False, action='store_true', dest='git_sign_patch')
@@ -48,6 +49,7 @@ def apply_patch(args):
              repo='/'.join(['https://github.com', c.git.remote.upstream]),
              sign=c.runstate.git_sign_patch)
 
+
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.named('update')
 @argh.expects_obj
@@ -61,6 +63,7 @@ def pull_rebase(args):
 
     with g.branch(c.runstate.git_branch):
         g.update()
+
 
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.arg('--commits', '-c', nargs='*', dest='git_objects')
@@ -76,6 +79,7 @@ def cherry_pick(args):
 
     with g.branch(c.runstate.git_branch):
         g.cherry_pick(c.runstate.git_objects)
+
 
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
 @argh.expects_obj
@@ -103,6 +107,7 @@ def merge(args):
             g.checkout(from_branch)
 
         g.remove_branch(branch_name, force=False)
+
 
 @argh.expects_obj
 @argh.named("setup-branches")
@@ -155,7 +160,7 @@ def create_branch(args):
                                    conf.paths.output, branch)
 
     base_builddir = os.path.join(conf.paths.projectroot,
-                                   conf.paths.output, base_branch)
+                                 conf.paths.output, base_branch)
 
     if g.branch_exists(branch):
         logger.info('checking out branch "{0}"'.format(branch))

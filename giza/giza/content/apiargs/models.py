@@ -24,18 +24,19 @@ if sys.version_info >= (3, 0):
     basestring = str
 
 field_type = {
-    'param' : 'Parameter',
+    'param': 'Parameter',
     'field': 'Field',
     'arg': 'Argument',
     'option': 'Option',
     'flag': 'Flag',
 }
 
+
 class ApiArgData(InheritableContentBase):
     _option_registry = [
-                         'interface', # TODO validate because limited possibilities
-                         'operation'
-                       ]
+        'interface',  # TODO validate because limited possibilities
+        'operation'
+    ]
 
     @property
     def arg_name(self):

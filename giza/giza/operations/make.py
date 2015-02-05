@@ -43,6 +43,7 @@ from giza.operations.build_env import env_package_worker
 
 logger = logging.getLogger('giza.operations.make')
 
+
 def derive_command(name, conf):
     """
     :param str name: The name of a build operation. Currently supports
@@ -87,6 +88,7 @@ def derive_command(name, conf):
 
         logger.info('running deploy operation, equivalent to: ' + ' '.join(cmd))
 
+
 def add_sphinx_build_options(action_spec, action, options, conf):
     """
     :param dict action_spec: A reference to a dictionary that defines a
@@ -117,6 +119,7 @@ def add_sphinx_build_options(action_spec, action, options, conf):
     if 'editions' in conf.project and len(action_spec['editions']) == 0:
         action_spec['editions'].update(conf.project.edition_list)
 
+
 @argh.arg('make_target', nargs="*")
 @argh.arg('--serial_sphinx', action='store_true')
 @argh.named('make')
@@ -126,10 +129,11 @@ def main(args):
     Provides a way to specify make-like targets to invoke giza
     operations. Targets take a <action>-<option<-option>> form.
     """
-    targets = [ (t[0], t[1:]) for t in [ t.split("-") for t in args.make_target ] ]
+    targets = [(t[0], t[1:]) for t in [t.split("-") for t in args.make_target]]
 
     conf = fetch_config(args)
     run_make_operations(targets, conf)
+
 
 def run_make_operations(targets, conf):
     """
@@ -160,14 +164,14 @@ def run_make_operations(targets, conf):
       package.
     """
 
-    sphinx_opts = { "worker": sphinx_publication,
-                    "languages": set(),
-                    "editions": set(),
-                    "builders": set() }
-    push_opts = { "worker": deploy_tasks,
-                  "targets": set(),
-                  "type": None }
-    packaging_opts = { }
+    sphinx_opts = {"worker": sphinx_publication,
+                   "languages": set(),
+                   "editions": set(),
+                   "builders": set()}
+    push_opts = {"worker": deploy_tasks,
+                 "targets": set(),
+                 "type": None}
+    packaging_opts = {}
 
     sphinx_builders = avalible_sphinx_builders()
     deploy_configs = dict((item['target'], item) for item in conf.system.files.data.push)
@@ -226,7 +230,7 @@ def run_make_operations(targets, conf):
         if push_opts in tasks:
             if len(push_opts['targets']) == 0:
                 for lang, edition in itertools.product(conf.runstate.languages_to_build, conf.runstate.editions_to_build):
-                    push_target_name = [ push_opts['type'] ]
+                    push_target_name = [push_opts['type']]
                     for opt in (edition, lang):
                         if opt is not None:
                             push_target_name.append(opt)

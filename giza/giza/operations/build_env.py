@@ -36,6 +36,7 @@ logger = logging.getLogger('giza.operations.build_env')
 
 #################### Helpers ####################
 
+
 @contextlib.contextmanager
 def cd(path):
     cur_dir = os.getcwd()
@@ -46,28 +47,33 @@ def cd(path):
 
     os.chdir(cur_dir)
 
+
 def is_git_dir(path):
-    git_dir = ''.join([ os.path.sep, '.git', os.path.sep])
+    git_dir = ''.join([os.path.sep, '.git', os.path.sep])
     if git_dir in path:
         return True
     else:
         return False
+
 
 def extract_package_at_root(path, conf):
     with cd(conf.paths.projectroot):
         with tarfile.open(path, "r:gz") as t:
             t.extractall()
 
+
 def get_existing_builders(conf):
-    return [ b
-             for b in avalible_sphinx_builders()
-             if os.path.isdir(os.path.join(conf.paths.projectroot, conf.paths.branch_output, b)) ]
+    return [b
+            for b in avalible_sphinx_builders()
+            if os.path.isdir(os.path.join(conf.paths.projectroot, conf.paths.branch_output, b))]
+
 
 def env_package_worker(args, conf):
     # used by the make interface
     package_build_env(args.builder, args.editions_to_build, args.languages_to_build, conf)
 
 #################### Core Workers ####################
+
 
 def package_build_env(builders, editions, languages, conf):
     arc_fn = '-'.join(['cache',
@@ -82,7 +88,8 @@ def package_build_env(builders, editions, languages, conf):
 
     for arc in existing_archives:
         if conf.git.commit[:8] in arc:
-            logger.warning('archive "{0}" exists for current git hash, not recreating'.format(archive_path))
+            m = 'archive "{0}" exists for current git hash, not recreating'
+            logger.warning(m.format(archive_path))
             return
 
     logger.debug("no archive for commit '{0}' continuing".format(conf.git.commit))
@@ -91,12 +98,14 @@ def package_build_env(builders, editions, languages, conf):
         files_to_archive = set()
 
         for edition, language, builder in itertools.product(editions, languages, builders):
-            rconf, sconf = get_sphinx_build_configuration(edition, language, builder, copy.deepcopy(conf.runstate))
+            rconf, sconf = get_sphinx_build_configuration(edition, language,
+                                                          builder, copy.deepcopy(conf.runstate))
             builder_dirname = resolve_builder_path(builder, edition, language, rconf)
 
             files_to_archive.add(rconf.paths.branch_source)
             files_to_archive.add(os.path.join(rconf.paths.branch_output, builder_dirname))
-            files_to_archive.add(os.path.join(rconf.paths.branch_output, '-'.join(('doctrees', builder_dirname))))
+            files_to_archive.add(os.path.join(rconf.paths.branch_output, 
+                                              '-'.join(('doctrees', builder_dirname))))
             files_to_archive.add(rconf.system.dependency_cache_fn)
 
         files_to_archive = list(files_to_archive)
@@ -116,6 +125,7 @@ def package_build_env(builders, editions, languages, conf):
             logger.critical("failed to create archive: " + archive_path)
             logger.error(e)
 
+
 def fix_build_env(builder, conf):
     """
     Given a builder name and the conf object, this function fixes the build
@@ -130,16 +140,19 @@ def fix_build_env(builder, conf):
     if not os.path.isfile(fn):
         return
 
-    doctree_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, "doctrees-" + builder)
+    doctree_dir = os.path.join(conf.paths.projectroot, 
+                               conf.paths.branch_output, 
+                               "doctrees-" + builder)
 
-    sphinx_app = Sphinx(
-        srcdir=os.path.join(conf.paths.projectroot, conf.paths.branch_output, "source"),
-        confdir=conf.paths.projectroot,
-        outdir=os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder),
-        doctreedir=doctree_dir,
-        buildername=builder,
-        status=tempfile.NamedTemporaryFile(),
-        warning=tempfile.NamedTemporaryFile())
+    sphinx_app = Sphinx(srcdir=os.path.join(conf.paths.projectroot, 
+                                            conf.paths.branch_output, "source"),
+                        confdir=conf.paths.projectroot,
+                        outdir=os.path.join(conf.paths.projectroot, 
+                                            conf.paths.branch_output, builder),
+                        doctreedir=doctree_dir,
+                        buildername=builder,
+                        status=tempfile.NamedTemporaryFile(),
+                        warning=tempfile.NamedTemporaryFile())
 
     sphinx_app.env.topickle(os.path.join(doctree_dir, ENV_PICKLE_FILENAME))
 
@@ -152,11 +165,11 @@ def fix_build_env(builder, conf):
                 break
 
         if tags_hash_ln == None:
-            tags_hash_ln = 'tags: '  + get_stable_hash(sorted(sphinx_app.tags))
+            tags_hash_ln = 'tags: ' + get_stable_hash(sorted(sphinx_app.tags))
 
     with open(fn, 'w') as f:
         f.write('# Sphinx build info version 1')
-        f.write('\n\n') ## current format requires an extra line here.
+        f.write('\n\n')  # current format requires an extra line here.
         f.write('config: ' + get_stable_hash(dict((name, sphinx_app.config[name])
                                                   for (name, desc) in sphinx_app.config.values.items()
                                                   if desc[1] == 'html')))
@@ -165,6 +178,7 @@ def fix_build_env(builder, conf):
         f.write('\n')
 
 #################### Task Creators ####################
+
 
 def fix_build_env_tasks(builders, conf, app):
     for builder in builders:
@@ -176,14 +190,16 @@ def fix_build_env_tasks(builders, conf, app):
 
 #################### Entry Points ####################
 
+
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
-@argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
+@argh.arg('--language', '-l', nargs='*', dest='languages_to_build')
 @argh.arg('--builder', '-b', nargs='*', default='html')
 @argh.expects_obj
 def package(args):
     conf = fetch_config(args)
 
     package_build_env(args.builder, args.editions_to_build, args.languages_to_build, conf)
+
 
 @argh.arg('--path', '-p', default=None, dest='_path')
 @argh.expects_obj

@@ -25,6 +25,7 @@ import libgiza
 
 from giza.config.helper import fetch_config
 
+
 @argh.named('version')
 @argh.expects_obj
 def report_version(args):
@@ -32,6 +33,7 @@ def report_version(args):
 
     print("giza: " + giza.__version__)
     print("libgiza: " + libgiza.__version__)
+
 
 @argh.arg('--conf_path', '-c')
 @argh.arg('--edition', '-e')

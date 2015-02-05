@@ -31,7 +31,9 @@ from giza.content.helper import get_all_languages
 if sys.version_info >= (3, 0):
     basestring = str
 
+
 class ExampleData(InheritableContentBase):
+
     @property
     def collection(self):
         if 'collection' not in self.state:
@@ -73,7 +75,9 @@ class ExampleData(InheritableContentBase):
     def options(self, value):
         self.state['options'] = ExampleOptions(value)
 
+
 class ExampleOptions(ConfigurationBase):
+
     @property
     def show_title(self):
         if 'title' not in self.state:
@@ -144,7 +148,9 @@ class ExampleOperationBlock(ConfigurationBase):
             logger.error(m)
             TypeError(m)
 
+
 class ExampleCase(InheritableContentBase):
+
     @property
     def operation(self):
         if 'operation' in self.state:
@@ -157,16 +163,17 @@ class ExampleCase(InheritableContentBase):
     @operation.setter
     def operation(self, value):
         if isinstance(value, list):
-            self.state['operation'] = [ ExampleOperationBlock(doc)
-                                        for doc in value ]
+            self.state['operation'] = [ExampleOperationBlock(doc)
+                                       for doc in value]
         elif isinstance(value, dict):
-            self.state['operation'] = [ ExampleOperationBlock(value) ]
+            self.state['operation'] = [ExampleOperationBlock(value)]
         else:
             m = 'unable to create operation block from {0}'.format(value)
             logger.error(m)
             TypeError(m)
 
     name = operation
+
     @property
     def results(self):
         return self.state['results']

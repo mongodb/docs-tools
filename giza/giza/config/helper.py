@@ -34,10 +34,11 @@ from giza.content.steps.tasks import register_steps
 from giza.content.tocs.tasks import register_toc
 from giza.content.apiargs.tasks import register_apiargs
 
+
 def new_credentials_config(conf_path=None):
     if conf_path is None:
-        for fn in [ os.path.expanduser("~/.giza-credentials.yaml"),
-                    os.path.expanduser("~/.mongodb-jira.yaml") ]:
+        for fn in [os.path.expanduser("~/.giza-credentials.yaml"),
+                   os.path.expanduser("~/.mongodb-jira.yaml")]:
             if os.path.isfile(fn):
                 conf_path = fn
                 break
@@ -46,6 +47,7 @@ def new_credentials_config(conf_path=None):
         return None
     else:
         return CredentialsConfig(conf_path)
+
 
 def fetch_config(args):
     c = Configuration()
@@ -56,6 +58,7 @@ def fetch_config(args):
 
     return c
 
+
 def register_content_generators(conf):
     logger.debug("registering content generators with config")
     register_options(conf)
@@ -65,6 +68,7 @@ def register_content_generators(conf):
     register_extracts(conf)
     register_toc(conf)
     register_apiargs(conf)
+
 
 def new_skeleton_config(conf=None):
     if conf is None:
@@ -83,10 +87,12 @@ def new_skeleton_config(conf=None):
     else:
         return conf
 
+
 def setup_credentials(args):
     skel = get_credentials_skeleton()
 
     dump_skel(skel, args)
+
 
 def new_config(args=None):
     if args in (None, True, False):
@@ -100,6 +106,7 @@ def new_config(args=None):
     else:
         raise ConfigurationError
 
+
 def dump_skel(skel, args):
     conf_path = os.path.expanduser(os.path.join("~", args.user_conf_path))
     if os.path.exists(conf_path) and args.force is False:
@@ -111,8 +118,10 @@ def dump_skel(skel, args):
         f.write('...\n')
         logger.info('wrote scrumpy configuration skeleton to: {0}')
 
+
 def get_builder_jobs(conf):
     return [a for a in itertools.product(conf.runstate.editions_to_build, conf.runstate.languages_to_build, conf.runstate.builder)]
+
 
 def get_manual_path(conf):
     if conf.system.branched is False:
@@ -120,6 +129,7 @@ def get_manual_path(conf):
     else:
         branch = conf.git.branches.current
         return get_path_prefix(conf, branch)
+
 
 def get_versions(conf):
     o = []
@@ -150,6 +160,7 @@ def get_versions(conf):
 
     return o
 
+
 def get_config_paths(name, conf):
     def path_fixer(path):
         if path.startswith(os.path.sep):
@@ -162,9 +173,9 @@ def get_config_paths(name, conf):
             k, v = i.items()[0]
             if i == k:
                 if isinstance(v, list):
-                    return [ path_fixer(p) for p in v ]
+                    return [path_fixer(p) for p in v]
                 else:
-                    return [ path_fixer(v) ]
+                    return [path_fixer(v)]
         elif i.startswith(name):
             return [path_fixer(i)]
 

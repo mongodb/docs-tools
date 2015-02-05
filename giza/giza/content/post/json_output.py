@@ -32,6 +32,7 @@ from giza.tools.transformation import munge_content
 
 ########## Process Sphinx Json Output ##########
 
+
 def json_output(conf):
     list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
     public_list_file = os.path.join(conf.paths.projectroot,
@@ -111,8 +112,9 @@ def json_output_tasks(conf, app):
     out_task.args = [conf]
     out_task.description = 'transfer json output to public directory'
 
+
 def process_json_file(input_fn, output_fn, regexes, conf=None):
-    if  os.path.isfile(input_fn) is False:
+    if os.path.isfile(input_fn) is False:
         return False
 
     with open(input_fn, 'r') as f:
@@ -141,6 +143,7 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
 
     return True
 
+
 def generate_list_file(outputs, path, conf):
     dirname = os.path.dirname(path)
     safe_create_directory(dirname)
@@ -152,11 +155,12 @@ def generate_list_file(outputs, path, conf):
     with open(path, 'w') as f:
         for fn in outputs:
             if os.path.isfile(fn) is True:
-                line = '/'.join([ url, fn.split('/', 3)[3:][0]])
+                line = '/'.join([url, fn.split('/', 3)[3:][0]])
                 f.write(line)
                 f.write('\n')
 
     logger.info('rebuilt inventory of json output.')
+
 
 def get_site_url(conf):
     url = [conf.project.url]

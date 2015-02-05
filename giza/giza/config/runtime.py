@@ -25,7 +25,9 @@ from libgiza.config import ConfigurationBase
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.config.error import ConfigurationError
 
+
 class RuntimeStateConfigurationBase(ConfigurationBase):
+
     def __init__(self, obj=None):
         super(RuntimeStateConfigurationBase, self).__init__(obj)
         self._conf = None
@@ -145,7 +147,8 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
         elif value in supported_runners:
             self.state['runner'] = value
         else:
-            m = '{0} is not a supported runner type, choose from: {1}'.format(value, supported_runners)
+            m = '{0} is not a supported runner type, choose from: {1}'.format(value, 
+                                                                              supported_runners)
             logger.error(m)
             raise TypeError(m)
 
@@ -182,8 +185,8 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
                 self.state['conf_path'] = fq_conf_file
                 return True
         elif os.path.exists(home_path):
-             self.state['conf_path'] = home_path
-             return True
+            self.state['conf_path'] = home_path
+            return True
 
         # now we'll try crawling up the directory tree to find the file
         cur = cur.split(os.path.sep)
@@ -208,13 +211,14 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
             logger.error(m)
             raise OSError(m)
 
+
 class RuntimeStateConfig(RuntimeStateConfigurationBase):
-    _option_registry = [ 'serial', 'length', 'days_to_save',
-                         'git_branch', 'make_target',
-                         'git_sign_patch', 'package_path',
-                         'clean_generated', 'include_mask', 'push_targets',
-                         'dry_run', 't_corpora_config', 't_translate_config',
-                         't_output_file', 't_source', 't_target', 'port']
+    _option_registry = ['serial', 'length', 'days_to_save',
+                        'git_branch', 'make_target',
+                        'git_sign_patch', 'package_path',
+                        'clean_generated', 'include_mask', 'push_targets',
+                        'dry_run', 't_corpora_config', 't_translate_config',
+                        't_output_file', 't_source', 't_target', 'port']
 
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
@@ -296,16 +300,16 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
     @property
     def builder(self):
         if 'builder' not in self.state:
-            return [ ]
+            return []
         elif 'publish' in self.state['builder']:
             self.fast = False
             self.state['builder'].remove('publish')
 
             if 'integration' in self.conf.system.files.data:
                 targets = self.conf.system.files.data.integration['base']['targets']
-                self.state['builder'].extend(set([ target.split('-')[0] for target in targets
-                                                   if '/' not in target and
-                                                   not target.startswith('htaccess') ]))
+                self.state['builder'].extend(set([target.split('-')[0] for target in targets
+                                                  if '/' not in target and
+                                                  not target.startswith('htaccess')]))
                 return self.state['builder']
             else:
                 m = 'Builder integration not specified for "publish" target'
@@ -342,7 +346,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
         return self.state['git_objects']
 
     @git_objects.setter
-    def git_objects(self,value):
+    def git_objects(self, value):
         if isinstance(value, list):
             self.state['git_objects'] = value
         else:

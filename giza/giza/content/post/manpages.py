@@ -28,6 +28,8 @@ from giza.tools.files import expand_tree
 #################### Manpage Processing ####################
 
 # this is a precursor to giza.tools.transformation and should be re-implemented.
+
+
 def manpage_url(regex_obj, input_file):
     with open(input_file, 'r') as f:
         manpage = f.read()
@@ -43,6 +45,7 @@ def manpage_url(regex_obj, input_file):
 
     logger.info("fixed urls in {0}".format(input_file))
 
+
 def manpage_url_tasks(builder, conf, app):
     project_source = os.path.join(conf.paths.projectroot,
                                   conf.paths.source)
@@ -56,7 +59,7 @@ def manpage_url_tasks(builder, conf, app):
         if fs_obj.endswith('.txt'):
             top_level_items.add(fs_obj[:-4])
 
-    top_level_items = '/'+ r'[^\s]*|/'.join(top_level_items) + r'[^\s]*'
+    top_level_items = '/' + r'[^\s]*|/'.join(top_level_items) + r'[^\s]*'
 
     re_string = r'(\\fB({0})\\fP)'.format(top_level_items).replace(r'-', r'\-')
     subst = conf.project.url + '/' + conf.project.tag + r'\2'

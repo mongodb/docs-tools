@@ -8,7 +8,9 @@ from jira.resources import Version
 
 from giza.config.credentials import CredentialsConfig
 
+
 class JeerahClient(object):
+
     def __init__(self, conf):
         self.conf = conf
         self.credentials = CredentialsConfig(self.conf.site.credentials)
@@ -39,7 +41,7 @@ class JeerahClient(object):
             logger.debug("adding '{0}' to version cache".format(ver.name))
 
             if project not in self.versions_cache:
-                self.versions_cache[project] = { }
+                self.versions_cache[project] = {}
 
             self.versions_cache[project][ver.name] = ver.id
 
@@ -48,10 +50,10 @@ class JeerahClient(object):
                  'issuetype': {'name': 'Task'},
                  'summary': title,
                  'description': text,
-                 'assignee': {'name': assignee }}
+                 'assignee': {'name': assignee}}
 
         if reporter is not None:
-            issue['reporter'] = { 'name': reporter }
+            issue['reporter'] = {'name': reporter}
         if tags is not None:
             issue['labels'] = [tags]
         if version is not None:
@@ -62,15 +64,15 @@ class JeerahClient(object):
             if version not in self.versions_cache[project]:
                 logger.error("version {0} doesn't exist in {1} project".format(version, project))
             else:
-                issue['fixVersions'] = [ { 'id': self.versions_cache[project][version] } ]
+                issue['fixVersions'] = [{'id': self.versions_cache[project][version]}]
                 logger.debug('adding version to issue: {0}'.format(issue['fixVersions']))
 
         new_issue = self.c.create_issue(fields=issue)
 
         logger.debug('created new issue {0}'.format(new_issue.key))
-        self.issues_created.append( { 'key': new_issue.key,
-                                      'uid': uid,
-                                      'title': title})
+        self.issues_created.append({'key': new_issue.key,
+                                    'uid': uid,
+                                    'title': title})
 
     def query(self, query_string):
         logger.info('running query for: {0}'.format(query_string))
@@ -84,15 +86,15 @@ class JeerahClient(object):
                 raise SystemExit(e)
 
         if self.results_format == 'dict':
-            return { issue.key: issue for issue in query_results }
+            return {issue.key: issue for issue in query_results}
         elif self.results_format == 'list':
-            return [ issue for issue in query_results ]
+            return [issue for issue in query_results]
 
     def versions(self, project, released=False, archived=False):
-        return [ v
-                 for v in self.c.project_versions(project)
-                 if v.released is released and v.archived is archived
-               ]
+        return [v
+                for v in self.c.project_versions(project)
+                if v.released is released and v.archived is archived
+                ]
 
     def release_version(self, version):
         if not isinstance(version, Version):

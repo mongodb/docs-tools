@@ -19,11 +19,13 @@ logger = logging.getLogger('giza.config.corpora')
 
 from libgiza.config import ConfigurationBase
 
+
 class SourceConfig(ConfigurationBase):
     _option_registry = ['name', 'source_file_path', 'target_file_path',
                         'percent_train', 'percent_tune', 'percent_test',
                         'percent_of_train', 'percent_of_tune',
                         'percent_of_test', 'length', 'end']
+
 
 class CorporaConfig(ConfigurationBase):
     _option_registry = ['container_path', 'source_language', 'target_language',
@@ -48,7 +50,7 @@ class CorporaConfig(ConfigurationBase):
 
         for t in ('train', 'tune', 'test'):
             tot = 0
-            for file_name,source in self.sources.items():
+            for file_name, source in self.sources.items():
                 tot += source.state['percent_of_' + t]
             if tot != 100:
                 error = "Contribution percentages don't add up to 100 for " + t
@@ -64,7 +66,7 @@ class CorporaConfig(ConfigurationBase):
             with open(source.target_file_path, 'r') as f:
                 length2 = len(f.readlines())
             if length1 != length2:
-                error = "Lengths of files for "+file_name+" are not identical"
+                error = "Lengths of files for " + file_name + " are not identical"
                 logger.error(error)
                 raise TypeError(error)
             source.length = length1
@@ -76,7 +78,7 @@ class CorporaConfig(ConfigurationBase):
         d = {
             'container_path': self.container_path,
             'target_language': self.target_language,
-            'sources': [ s for s in self.sources.values() ]
+            'sources': [s for s in self.sources.values()]
         }
 
         return d
@@ -90,7 +92,7 @@ class CorporaConfig(ConfigurationBase):
         :returns: a processed dictionary of the configuration
         '''
         d = {
-            'container_path' : os.path.expanduser(input_obj['container_path']),
+            'container_path': os.path.expanduser(input_obj['container_path']),
             'source_language': input_obj['source_language'],
             'target_language': input_obj['target_language'],
             'sources': {}
@@ -112,7 +114,7 @@ class CorporaConfig(ConfigurationBase):
             d['sources'][source['name']] = s
 
         # handles source contributions section of config
-        for t in ('train','tune','test'):
+        for t in ('train', 'tune', 'test'):
             for source in input_obj['source_contributions'][t]:
                 if source['percent_of_corpus'] < 0 or source['percent_of_corpus'] > 100:
                     logger.error("Invalid percentage")
@@ -120,4 +122,3 @@ class CorporaConfig(ConfigurationBase):
                 d['sources'][source['name']].state['percent_of_' + t] = source['percent_of_corpus']
 
         return d
-

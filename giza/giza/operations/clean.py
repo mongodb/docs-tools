@@ -30,10 +30,11 @@ from libgiza.app import BuildApp
 from giza.config.helper import fetch_config, get_builder_jobs
 from giza.config.sphinx_config import resolve_builder_path
 
+
 @argh.arg('--builder', '-b')
 @argh.arg('--git_branch', default=None)
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
-@argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
+@argh.arg('--language', '-l', nargs='*', dest='languages_to_build')
 @argh.arg('--length', default=None, type=int, dest='days_to_save')
 @argh.named('clean')
 @argh.expects_obj
@@ -65,7 +66,7 @@ def main(args):
             logger.debug(m.format(builder, c.git.branches.current, edition, language))
 
     if c.runstate.days_to_save is not None:
-        published_branches = [ 'docs-tools', 'archive', 'public', 'primer', c.git.branches.current ]
+        published_branches = ['docs-tools', 'archive', 'public', 'primer', c.git.branches.current]
         published_branches.extend(c.git.branches.published)
 
         for build in os.listdir(os.path.join(c.paths.projectroot, c.paths.output)):

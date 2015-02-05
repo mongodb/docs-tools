@@ -31,21 +31,25 @@ from giza.tools.files import expand_tree, verbose_remove
 
 #################### Table Builder ####################
 
+
 def _get_table_output_name(fn):
     base, leaf = os.path.split(os.path.splitext(fn)[0])
 
     return os.path.join(base, 'table', leaf[6:]) + '.rst'
+
 
 def _get_list_table_output_name(fn):
     base, leaf = os.path.split(os.path.splitext(fn)[0])
 
     return ''.join((os.path.join(base, 'table', leaf[6:]), '-list', '.rst'))
 
+
 def make_parent_dirs(*paths):
     for path in paths:
         dirname = os.path.dirname(path)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
+
 
 def _generate_tables(source, target, list_target):
     table_data = YamlTable(source)
@@ -92,13 +96,14 @@ def table_tasks(conf, app):
         list_target = _get_list_table_output_name(source)
 
         t = app.add('task')
-        t.target = [ target, list_target ]
+        t.target = [target, list_target]
         t.dependency = source
         t.job = _generate_tables
-        t.args = [ source, target, list_target ]
+        t.args = [source, target, list_target]
         t.description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
 
         logger.debug('adding table job to build: {0}'.format(target))
+
 
 def table_clean(conf, app):
     for source in table_sources(conf):

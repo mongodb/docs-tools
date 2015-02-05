@@ -16,6 +16,7 @@ from rstcloth.rstcloth import RstCloth
 from rstcloth.rstcloth import fill
 from rstcloth.table import TableData, TableBuilder, ListTable
 
+
 def render_apiargs(apiargs):
     r = RstCloth()
 
@@ -31,10 +32,11 @@ def render_apiargs(apiargs):
 
     return r
 
+
 def render_apiarg_table(r, apiargs):
     table = TableData()
 
-    header = [ apiargs.field_type() ]
+    header = [apiargs.field_type()]
 
     if apiargs.has_type() is True:
         header.append('Type')
@@ -45,13 +47,13 @@ def render_apiarg_table(r, apiargs):
     table.add_header(header)
 
     if num_columns == 2:
-        widths = [ 20, 80 ]
+        widths = [20, 80]
         for entry in apiargs.ordered_content():
             entry = apiargs.fetch(entry.ref)
             table.add_row([RstCloth.pre(entry.name),
                            fill(string=entry.description, first=0, hanging=3, wrap=False)])
     elif num_columns == 3:
-        widths = [ 20, 20, 80 ]
+        widths = [20, 20, 80]
         for entry in apiargs.ordered_content():
             entry = apiargs.fetch(entry.ref)
             table.add_row([RstCloth.pre(entry.name),
@@ -60,11 +62,12 @@ def render_apiarg_table(r, apiargs):
 
     r.content(TableBuilder(ListTable(table, widths=widths)).output, indent=3)
 
+
 def render_apiarg_fields(r, apiargs):
     for content in apiargs.ordered_content():
         content = apiargs.fetch(content.ref)
 
-        field_name = [ content.arg_name ]
+        field_name = [content.arg_name]
 
         if content.type != '':
             field_name.append(', '.join(content.type))

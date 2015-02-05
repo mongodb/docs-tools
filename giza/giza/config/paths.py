@@ -19,6 +19,7 @@ logger = logging.getLogger('giza.config.paths')
 
 from libgiza.config import RecursiveConfigurationBase
 
+
 class PathsConfig(RecursiveConfigurationBase):
     _option_registry = ['output', 'source', 'includes', 'images', 'buildsystem',
                         'tools', 'builddata']
@@ -115,7 +116,7 @@ class PathsConfig(RecursiveConfigurationBase):
     def branch_source(self, value):
         p = os.path.join(self.branch_output, self.source)
         if (self.conf.project.edition is not None and
-            self.conf.project.edition != self.conf.project.name):
+                self.conf.project.edition != self.conf.project.name):
             p += '-' + self.conf.project.edition
 
         self.state['branch_source'] = p
@@ -135,7 +136,7 @@ class PathsConfig(RecursiveConfigurationBase):
     def branch_includes(self):
         if self.includes.startswith(self.source):
             p = os.path.join(self.branch_source,
-                             self.includes[len(self.source)+1:])
+                             self.includes[len(self.source) + 1:])
         else:
             p = os.path.join(self.branch_source,
                              self.includes)
@@ -149,10 +150,10 @@ class PathsConfig(RecursiveConfigurationBase):
     def branch_images(self):
         if self.images.startswith(self.source):
             p = os.path.join(self.branch_source,
-                                self.images[len(self.source)+1:])
+                             self.images[len(self.source) + 1:])
         else:
             p = os.path.join(self.branch_source,
-                                self.images)
+                             self.images)
 
         if 'branch_images' not in self.state:
             self.state['branch_images'] = p
@@ -164,10 +165,10 @@ class PathsConfig(RecursiveConfigurationBase):
         if 'public_site_output' in self.state:
             return self.state['public_site_output']
         else:
-            p = [ self.conf.paths.public ]
+            p = [self.conf.paths.public]
 
             if (self.conf.project.edition != self.conf.project.name and
-                self.conf.project.edition is not None):
+                    self.conf.project.edition is not None):
                 p.append(self.conf.project.edition)
 
             if self.conf.project.branched is True:
@@ -187,10 +188,10 @@ class PathsConfig(RecursiveConfigurationBase):
         if 'htaccess' in self.state:
             return self.state['htaccess']
         else:
-            p = [ self.conf.paths.public ]
+            p = [self.conf.paths.public]
 
             if (self.conf.project.edition != self.conf.project.name and
-                self.conf.project.edition is not None):
+                    self.conf.project.edition is not None):
                 p.append(self.conf.project.edition)
 
             p.append('.htaccess')

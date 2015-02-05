@@ -58,8 +58,10 @@ from giza.content.post.sites import (finalize_epub_build,
 
 #################### Config Resolution ####################
 
+
 def is_parallel_sphinx(version):
     return version >= '1.2'
+
 
 def get_tags(target, sconf):
     if 'tags' in sconf:
@@ -78,9 +80,10 @@ def get_tags(target, sconf):
     if 'edition' in sconf:
         ret.add(sconf.edition)
 
-    return ' '.join([' '.join(['-t', i ])
+    return ' '.join([' '.join(['-t', i])
                      for i in ret
                      if i is not None])
+
 
 def get_sphinx_args(sconf, conf):
     o = []
@@ -95,14 +98,14 @@ def get_sphinx_args(sconf, conf):
             logger.info('running with serial sphinx processes')
             if conf.runstate.serial_sphinx == "publish":
                 if ((len(conf.runstate.builder) >= 1 or 'publish' in conf.runstate.builder) or
-                    len(conf.runstate.languages_to_build) >= 1 or
-                    len(conf.runstate.editions_to_build) >= 1):
+                        len(conf.runstate.languages_to_build) >= 1 or
+                        len(conf.runstate.editions_to_build) >= 1):
                     pass
                 else:
-                    o.append(' '.join( [ '-j', str(conf.runstate.pool_size) ]))
+                    o.append(' '.join(['-j', str(conf.runstate.pool_size)]))
             elif conf.runstate.serial_sphinx is False:
                 logger.info('running with parallelized sphinx processes')
-                o.append(' '.join( [ '-j', str(conf.runstate.pool_size) ]))
+                o.append(' '.join(['-j', str(conf.runstate.pool_size)]))
             elif (isinstance(conf.runstate.serial_sphinx, (int, long, float)) and
                   conf.runstate.serial_sphinx > 1):
                 logger.info('running with parallelized sphinx processes')
@@ -114,9 +117,9 @@ def get_sphinx_args(sconf, conf):
             pass
         else:
             logger.info('running with parallelized sphinx processes')
-            o.append(' '.join( [ '-j', str(conf.runstate.pool_size) ]))
+            o.append(' '.join(['-j', str(conf.runstate.pool_size)]))
 
-    o.append(' '.join( [ '-c', conf.paths.projectroot ] ))
+    o.append(' '.join(['-c', conf.paths.projectroot]))
 
     if 'language' in sconf and sconf.language is not None:
         o.append("-D language='{0}'".format(sconf.language))
@@ -125,12 +128,14 @@ def get_sphinx_args(sconf, conf):
 
 #################### Output Management ####################
 
+
 def output_sphinx_stream(out, conf):
-    out = [ o for o in out.split('\n') if o != '' ]
+    out = [o for o in out.split('\n') if o != '']
 
     full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
 
-    regx = re.compile(r'(.*):[0-9]+: WARNING: duplicate object description of ".*", other instance in (.*)')
+    regx = r'(.*):[0-9]+: WARNING: duplicate object description of ".*", other instance in (.*)'
+    regx = re.compile(regx)
 
     printable = []
     for idx, l in enumerate(out):
@@ -151,7 +156,7 @@ def output_sphinx_stream(out, conf):
         if l.startswith('InputError: [Errno 2] No such file or directory'):
             try:
                 l = path_normalization(l.split(' ')[-1].strip()[1:-2], full_path, conf)
-                printable[idx-1] += ' ' + l
+                printable[idx - 1] += ' ' + l
                 l = None
             except IndexError:
                 logger.error("error processing log: {0}".format(l))
@@ -165,11 +170,13 @@ def output_sphinx_stream(out, conf):
 
     printable = stable_deduplicate(printable)
 
-    logger.info('sphinx builder has {0} lines of output, processed from {1}'.format(len(printable), len(out)))
+    m = 'sphinx builder has {0} lines of output, processed from {1}'
+    logger.info(m.format(len(printable), len(out)))
     print_build_messages(printable)
 
+
 def stable_deduplicate(lines):
-    ## this should probably just use OrderedSet() in the future
+    # this should probably just use OrderedSet() in the future
 
     mapping = collections.OrderedDict()
 
@@ -177,28 +184,31 @@ def stable_deduplicate(lines):
         mapping[ln] = idx
 
     if sys.version_info >= (3, 0):
-        return [ ln for _, ln in mapping.keys() ]
+        return [ln for _, ln in mapping.keys()]
     else:
         return mapping.keys()
 
+
 def print_build_messages(messages):
-    for l in ( l for l in messages if l is not None ):
+    for l in (l for l in messages if l is not None):
         print(l)
+
 
 def path_normalization(l, full_path, conf):
     if l.startswith('..'):
-        l = os.path.sep.join([ el for el in l.split(os.path.sep)
-                               if el != '..'])
+        l = os.path.sep.join([el for el in l.split(os.path.sep)
+                              if el != '..'])
 
     if l.startswith(conf.paths.branch_output):
-        l = l[len(conf.paths.branch_output)+1:]
+        l = l[len(conf.paths.branch_output) + 1:]
     elif l.startswith(full_path):
-        l = l[len(full_path)+1:]
+        l = l[len(full_path) + 1:]
 
     if l.startswith('source'):
         l = os.path.sep.join(['source', l.split(os.path.sep, 1)[1]])
 
     return l
+
 
 def is_msg_worthy(l):
     if l.startswith('WARNING: unknown mimetype'):
@@ -222,14 +232,17 @@ def is_msg_worthy(l):
     else:
         return True
 
+
 def printer(string):
     logger.info(string)
 
 #################### Builder Operation ####################
 
+
 def run_sphinx(builder, sconf, conf):
     if safe_create_directory(sconf.fq_build_output):
-        logger.info('created directory "{1}" for sphinx builder {0}'.format(builder, sconf.fq_build_output))
+        m = 'created directory "{1}" for sphinx builder {0}'
+        logger.info(m.format(builder, sconf.fq_build_output))
 
     if 'language' in sconf and sconf.language is not None:
         command('sphinx-intl build --language=' + sconf.language)
@@ -237,7 +250,7 @@ def run_sphinx(builder, sconf, conf):
 
     logger.info('starting sphinx build {0}'.format(builder))
 
-    cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {4}' # per-builder-doctree
+    cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {4}'  # per-builder-doctree
 
     sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
                             os.path.join(conf.paths.projectroot, conf.paths.branch_output),
@@ -246,13 +259,15 @@ def run_sphinx(builder, sconf, conf):
                             sconf.fq_build_output)
 
     logger.debug(sphinx_cmd)
-    with Timer("running sphinx build for: {0}, {1}, {2}".format(builder, sconf.language, sconf.edition)):
+    m "running sphinx build for: {0}, {1}, {2}"
+    with Timer(m.format(builder, sconf.language, sconf.edition)):
         out = command(sphinx_cmd, capture=True, ignore=True)
 
     logger.info('completed sphinx build {0}'.format(builder))
 
-    if True: # out.return_code == 0:
-        logger.info('successfully completed {0} sphinx build ({1})'.format(builder, out.return_code))
+    if True:  # out.return_code == 0:
+        logger.info(
+            'successfully completed {0} sphinx build ({1})'.format(builder, out.return_code))
 
         finalizer_app = BuildApp.new(pool_type='thread',
                                      pool_size=conf.runstate.pool_size,
@@ -263,7 +278,8 @@ def run_sphinx(builder, sconf, conf):
         with Timer("finalize sphinx {0} build".format(builder)):
             finalizer_app.run()
     else:
-        logger.warning('the sphinx build {0} was not successful. not running finalize operation'.format(builder))
+        logger.warning(
+            'the sphinx build {0} was not successful. not running finalize operation'.format(builder))
 
     output = '\n'.join([out.err, out.out])
 
@@ -271,8 +287,9 @@ def run_sphinx(builder, sconf, conf):
 
 #################### Application Logic ####################
 
+
 def sphinx_tasks(sconf, conf, app):
-    deps = [None] # always force builds until depchecking is fixed
+    deps = [None]  # always force builds until depchecking is fixed
     deps.extend(get_config_paths('sphinx_local', conf))
     deps.append(os.path.join(conf.paths.projectroot, conf.paths.source))
     deps.extend(os.path.join(conf.paths.projectroot, 'conf.py'))
@@ -284,6 +301,7 @@ def sphinx_tasks(sconf, conf, app):
     task.target = os.path.join(conf.paths.projectroot, conf.paths.branch_output, sconf.builder)
     task.dependency = deps
     task.description = 'building {0} with sphinx'.format(sconf.builder)
+
 
 def finalize_sphinx_build(sconf, conf, app):
     target = sconf.builder
@@ -304,12 +322,12 @@ def finalize_sphinx_build(sconf, conf, app):
                          dependency=None))
 
         if conf.system.branched is True and conf.git.branches.current == 'master':
-            deps = get_config_paths('integration',conf)
+            deps = get_config_paths('integration', conf)
             deps.append(os.path.join(conf.paths.projectroot,
                                      conf.paths.public_site_output))
             app.add(Task(job=create_manual_symlink,
                          args=[conf],
-                         target=[ t[0] for t in get_public_links(conf) ],
+                         target=[t[0] for t in get_public_links(conf)],
                          dependency=deps,
                          description='create symlinks'))
     elif target == 'epub':
@@ -338,7 +356,8 @@ def finalize_sphinx_build(sconf, conf, app):
         gettext_tasks(conf, app)
     elif target == 'linkcheck':
         app.add(Task(job=printer,
-                     args=['{0}: See {1}/{0}/output.txt for output.'.format(target, conf.paths.branch_output)],
+                     args=[
+                         '{0}: See {1}/{0}/output.txt for output.'.format(target, conf.paths.branch_output)],
                      target=os.path.join(conf.paths.projectroot,
                                          conf.paths.branch_output, target, 'output.txt'),
                      dependency=None))

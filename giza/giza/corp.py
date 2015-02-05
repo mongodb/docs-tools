@@ -24,8 +24,8 @@ def get_contributor_list(conf):
     contributors = corp_api_call('contributors', conf)['contributors']
 
     c_github = list({str(c['github_username']) for c in contributors
-                      if ('github_username' in c and
-                          c['github_username'] is not None and
-                          c['github_username'] != u'')})
+                     if ('github_username' in c and
+                         c['github_username'] is not None and
+                         c['github_username'] != u'')})
 
     return c_github

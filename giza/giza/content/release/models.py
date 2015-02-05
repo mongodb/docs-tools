@@ -21,8 +21,9 @@ from giza.inheritance import InheritableContentBase
 from giza.content.steps.models import HeadingMixin
 from giza.content.helper import get_all_languages
 
+
 class ReleaseData(HeadingMixin, InheritableContentBase):
-    _option_registry = [ 'ref', 'description', 'pre', 'post', 'content']
+    _option_registry = ['ref', 'description', 'pre', 'post', 'content']
 
     @property
     def target(self):

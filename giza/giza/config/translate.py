@@ -18,13 +18,15 @@ import os
 from libgiza.config import ConfigurationBase, RecursiveConfigurationBase
 logger = logging.getLogger('giza.config.translate')
 
+
 class TranslateConfig(RecursiveConfigurationBase):
+
     def __init__(self, input_obj, conf):
         if isinstance(input_obj, list):
             logger.error("Config doesn't exist")
             raise TypeError
         else:
-            super(TranslateConfig,self).__init__(input_obj, conf)
+            super(TranslateConfig, self).__init__(input_obj, conf)
 
     @property
     def settings(self):
@@ -79,6 +81,7 @@ class SettingsConfig(ConfigurationBase):
     _option_registry = ['foreign', 'threads', 'pool_size', 'email',
                         'phrase_table_name', 'reordering_name', 'best_run']
 
+
 class PathsConfig(ConfigurationBase):
 
     @property
@@ -121,8 +124,10 @@ class PathsConfig(ConfigurationBase):
         if os.path.exists(self.state['project']) is False:
             raise TypeError(value + ' project')
 
+
 class CorpusTypeConfig(ConfigurationBase):
     _option_registry = ['name']
+
     @property
     def dir(self):
         return self.state['dir']
@@ -132,6 +137,7 @@ class CorpusTypeConfig(ConfigurationBase):
         self.state['dir'] = os.path.expanduser(value)
         if os.path.exists(self.state['dir']) is False:
             raise TypeError(value + ' does not exist')
+
 
 class TrainingParametersConfig(ConfigurationBase):
     _option_registry = ['alignment', 'max_phrase_length', 'order',

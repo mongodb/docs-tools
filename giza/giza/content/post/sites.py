@@ -27,6 +27,7 @@ from giza.content.post.singlehtml import get_single_html_dir
 
 #################### Sphinx Post-Processing ####################
 
+
 def finalize_epub_build(builder, conf):
     epub_name = '-'.join(conf.project.title.lower().split())
     epub_branched_filename = epub_name + '-' + conf.git.branches.current + '.epub'
@@ -39,9 +40,10 @@ def finalize_epub_build(builder, conf):
                                             conf.paths.public_site_output,
                                             epub_branched_filename))
     create_link(input_fn=epub_branched_filename,
-                 output_fn=os.path.join(conf.paths.projectroot,
-                                        conf.paths.public_site_output,
-                                        epub_src_filename))
+                output_fn=os.path.join(conf.paths.projectroot,
+                                       conf.paths.public_site_output,
+                                       epub_src_filename))
+
 
 def error_pages(sconf, conf):
     builder = sconf.builder
@@ -59,6 +61,7 @@ def error_pages(sconf, conf):
 
         logger.info('error-pages: rendered {0} error pages'.format(idx))
 
+
 def finalize_dirhtml_build(sconf, conf):
     builder = sconf.builder
 
@@ -71,22 +74,21 @@ def finalize_dirhtml_build(sconf, conf):
 
     dest = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
 
-
     cmd_str = 'rsync -a {source}/ {destination}'.format(source=sconf.fq_build_output,
                                                         destination=dest)
-
 
     with open(os.devnull, 'w') as f:
         return_code = subprocess.call(args=cmd_str.split(),
                                       stdout=f,
                                       stderr=f)
-        logger.info('"{0}" migrated build from {1} to {2}, with result {3}'.format(sconf.name, sconf.fq_build_output, dest, return_code))
+        m = '"{0}" migrated build from {1} to {2}, with result {3}'
+        logger.info(m.format(sconf.name, sconf.fq_build_output, dest, return_code))
 
     if 'excluded_files' in sconf:
-        fns = [ os.path.join(conf.paths.projectroot,
-                      conf.paths.public_site_output,
-                      fn)
-                for fn in sconf['dirhtml']['excluded_files'] ]
+        fns = [os.path.join(conf.paths.projectroot,
+                            conf.paths.public_site_output,
+                            fn)
+               for fn in sconf['dirhtml']['excluded_files']]
 
         for fn in fns:
             if os.path.isdir(fn):
@@ -96,7 +98,7 @@ def finalize_dirhtml_build(sconf, conf):
             else:
                 continue
 
-            logger.info('removed file from dirhtml output directory: ' + fn )
+            logger.info('removed file from dirhtml output directory: ' + fn)
 
     if conf.git.branches.current in conf.git.branches.published:
         sitemap_exists = sitemap(config_path=None, conf=conf)
@@ -122,7 +124,8 @@ def sitemap(config_path, conf):
         config_path = os.path.join(paths.projectroot, 'conf-sitemap.xml')
 
     if not os.path.exists(config_path):
-        logger.error('sitemap: configuration file {0} does not exist. Returning early'.format(config_path))
+        m = 'sitemap: configuration file {0} does not exist. Returning early'
+        logger.error(m.format(config_path))
         return False
 
     sitemap = sitemap_gen.CreateSitemapFromFile(configpath=config_path,

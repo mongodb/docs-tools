@@ -21,12 +21,14 @@ logger = logging.getLogger('giza.config.jeerah')
 from libgiza.config import ConfigurationBase, RecursiveConfigurationBase
 from giza.config.runtime import RuntimeStateConfigurationBase
 
+
 def fetch_config(args):
     c = JeerahConfig()
     c.ingest(args.conf_path)
     c.runstate = args
 
     return c
+
 
 class JeerahRuntimeStateConfig(RuntimeStateConfigurationBase):
     _option_registry = ['project', 'user_conf_path']
@@ -64,6 +66,7 @@ class JeerahRuntimeStateConfig(RuntimeStateConfigurationBase):
 
 
 class JeerahConfig(ConfigurationBase):
+
     @property
     def runstate(self):
         return self.state['runstate']
@@ -139,7 +142,9 @@ class JeerahConfig(ConfigurationBase):
         else:
             self.state['modification'] = ModificationConfig(value, self)
 
+
 class SprintCollectionConfig(ConfigurationBase):
+
     def ingest(self, obj):
         if isinstance(obj, dict):
             for k, v in obj.items():
@@ -178,15 +183,16 @@ class SprintCollectionConfig(ConfigurationBase):
         else:
             logger.error("sprint '{0}' does not exist".format(name))
 
+
 class SprintConfig(ConfigurationBase):
-    _option_registry = [ 'fix_versions', 'name', 'staffing' ]
+    _option_registry = ['fix_versions', 'name', 'staffing']
 
     @property
     def quota(self):
         if 'quota' in self.state:
             return self.state['quota']
         elif 'staffing' in self:
-            self.quota = sum([ v for v in self.staffing.values() ])
+            self.quota = sum([v for v in self.staffing.values()])
             return self.state['quota']
         else:
             return None
@@ -256,7 +262,9 @@ class JeerahSiteConfig(ConfigurationBase):
         else:
             self.state['project'] = [value]
 
+
 class ReportingConfig(ConfigurationBase):
+
     @property
     def units(self):
         if 'units' not in self.state:
@@ -284,7 +292,9 @@ class ReportingConfig(ConfigurationBase):
         if value in ('json', 'yaml'):
             self.state['format'] = value
 
+
 class ModificationConfig(RecursiveConfigurationBase):
+
     @property
     def mirroring(self):
         return self.state['mirroring']
@@ -296,7 +306,9 @@ class ModificationConfig(RecursiveConfigurationBase):
         else:
             self.state['mirroring'] = ProjectMirroringConfig(value, self.conf)
 
+
 class ProjectMirroringConfig(RecursiveConfigurationBase):
+
     @property
     def source(self):
         # can't validate this during injestion/setting because self.conf may not
@@ -322,7 +334,8 @@ class ProjectMirroringConfig(RecursiveConfigurationBase):
 
         for project in value:
             if project not in self.conf.site.projects:
-                logger.warning('{0} is not in the list of projects ({1})'.format(project, self.conf.site.projects))
+                logger.warning(
+                    '{0} is not in the list of projects ({1})'.format(project, self.conf.site.projects))
 
         return value
 

@@ -24,8 +24,9 @@ import logging
 
 logger = logging.getLogger('giza.content.post.redirects')
 
+
 def make_redirect(conf):
-    o = [ ]
+    o = []
 
     logger.info('generating {0} redirects'.format(len(conf.system.files.data.htaccess)))
     for redir in conf.system.files.data.htaccess:
@@ -44,9 +45,10 @@ def make_redirect(conf):
               '<FilesMatch "\.(ttf|otf|eot|woff)$">', '\n',
               '   Header set Access-Control-Allow-Origin "*"', '\n',
               '</FilesMatch>',
-    ])
+              ])
 
     return o
+
 
 def write_redirects(fn, conf):
     if not os.path.exists(os.path.dirname(fn)):
@@ -58,6 +60,7 @@ def write_redirects(fn, conf):
 
     logger.info('wrote redirects to: ' + fn)
 
+
 def redirect_tasks(conf, app):
     if 'htaccess' in conf.system.files.data:
         fn = os.path.join(conf.paths.projectroot, conf.paths.htaccess)
@@ -67,10 +70,9 @@ def redirect_tasks(conf, app):
             if isinstance(configfn, dict):
                 if 'htaccess' in configfn:
                     deps.extend([os.path.join(conf.paths.projectroot, conf.paths.builddata, rfn)
-                              for rfn in configfn['htaccess']])
+                                 for rfn in configfn['htaccess']])
             elif configfn.startswith('htaccess'):
                 deps.append(os.path.join(conf.paths.projectroot, conf.paths.builddata, configfn))
-
 
         t = app.add('task')
         t.job = write_redirects

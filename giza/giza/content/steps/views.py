@@ -19,6 +19,7 @@ logger = logging.getLogger('giza.content.steps.views')
 from giza.content.helper import character_levels
 from rstcloth.rstcloth import RstCloth
 
+
 def render_steps(steps, conf):
     r = RstCloth()
 
@@ -30,7 +31,7 @@ def render_steps(steps, conf):
                    '</div>')
 
     for idx, step in enumerate(steps.ordered_content()):
-        step.render() # run replacements
+        step.render()  # run replacements
 
         if 'number' not in step:
             step.number = idx
@@ -61,7 +62,6 @@ def render_steps(steps, conf):
         r.directive('only', 'latex or epub')
         r.newline()
 
-
         if 'heading' in step:
             r.heading(text="Step {0}: {1}".format(step.number, step.heading),
                       char=character_levels[step.level],
@@ -76,6 +76,7 @@ def render_steps(steps, conf):
         render_step_content(step, 3, r)
 
     return r
+
 
 def render_step_content(step, indent, r):
     if 'pre' in step:
@@ -101,6 +102,7 @@ def render_step_content(step, indent, r):
                   indent=indent,
                   wrap=False)
         r.newline()
+
 
 def render_action(action, indent, level, r):
     if 'heading' in action:

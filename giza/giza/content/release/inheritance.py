@@ -15,8 +15,10 @@
 from giza.inheritance import DataContentBase, DataCache
 from giza.content.release.models import ReleaseData
 
+
 class ReleaseFile(DataContentBase):
     content_class = ReleaseData
+
 
 class ReleaseDataCache(DataCache):
     content_class = ReleaseFile

@@ -28,6 +28,7 @@ from rstcloth.rstcloth import RstCloth
 
 #################### Rendering ####################
 
+
 def generate_hash_file(fn, conf):
     r = RstCloth()
 
@@ -55,6 +56,7 @@ def generate_hash_file(fn, conf):
         r.write(fn)
         logger.info('regenerated {0} with new commit hash: {1}'.format(fn, commit[:10]))
 
+
 def generate_release_file(release_fn, conf):
     release_root = os.path.dirname(release_fn)
     if not os.path.exists(release_root):
@@ -66,6 +68,7 @@ def generate_release_file(release_fn, conf):
     logger.info('generated "{0}" with current release hash.'.format(release_fn))
 
 #################### Worker ####################
+
 
 def hash_tasks(conf, app):
     hash_fn = os.path.join(conf.paths.projectroot,

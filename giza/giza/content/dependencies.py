@@ -37,12 +37,12 @@ logger = logging.getLogger('giza.content.dependencies')
 
 ########## Update File Hashes ##########
 
+
 def dump_file_hashes(conf):
     output = conf.system.dependency_cache
 
-    o = { 'time': datetime.datetime.utcnow().strftime("%s"),
-          'files': { }
-        }
+    o = {'time': datetime.datetime.utcnow().strftime("%s"),
+         'files': {}}
 
     files = expand_tree(os.path.join(conf.paths.projectroot, conf.paths.branch_source), None)
 
@@ -61,6 +61,7 @@ def dump_file_hashes(conf):
 
 ########## Update Dependencies ##########
 
+
 def _refresh_deps(graph, dep_map, conf):
     warned = set()
     count = 0
@@ -77,7 +78,7 @@ def _refresh_deps(graph, dep_map, conf):
                 # these are generated files in the build/<branch>/source. No
                 # need to touch these files.
                 continue
-            for dep in [ normalize_dep_path(dep, conf, branch=True) for dep in dependents]:
+            for dep in [normalize_dep_path(dep, conf, branch=True) for dep in dependents]:
                 if not os.path.exists(core_file):
                     # this file doesn't exist in the source. Sphinx will
                     # warn about this file later (though the output silently
@@ -94,6 +95,7 @@ def _refresh_deps(graph, dep_map, conf):
                     count += 1
 
     logger.info('bumped timestamps for {0} files'.format(count))
+
 
 def refresh_deps(conf):
     with Timer('resolve dependency graph'):
@@ -112,7 +114,8 @@ def refresh_deps(conf):
                     dep_map = dep_cache['files']
                 except ValueError:
                     dep_map = None
-                    logger.warning('no stored dependency information, will rebuild more things than necessary.')
+                    m = 'no stored dependency information, will rebuild more things than necessary.'
+                    logger.warning(m)
 
     with Timer('dependency updates'):
         _refresh_deps(graph, dep_map, conf)
@@ -122,6 +125,7 @@ def refresh_deps(conf):
 # on a large resource, and doing the entire operation serially in a thread takes
 # ~1 second.
 
+
 def refresh_dependency_tasks(conf, app):
     t = app.add('task')
     t.job = refresh_deps
@@ -129,6 +133,7 @@ def refresh_dependency_tasks(conf, app):
     t.target = None
     t.dependency = conf.system.dependency_cache
     t.description = "check and touch files affected by dependency changes"
+
 
 def dump_file_hash_tasks(conf, app):
     t = app.add('task')
@@ -139,6 +144,7 @@ def dump_file_hash_tasks(conf, app):
     t.description = "writing dependency cache to a file for the next build"
 
 ############### Hashed Dependency Checking ###############
+
 
 def normalize_dep_path(fn, conf, branch):
     """
@@ -166,6 +172,7 @@ def normalize_dep_path(fn, conf, branch):
                                   fn[1:])
 
     return fn
+
 
 def check_hashed_dependency(fn, dep_map, conf):
     """

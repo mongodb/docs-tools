@@ -28,7 +28,9 @@ from giza.config.runtime import RuntimeStateConfig
 from giza.config.version import VersionConfig
 from giza.config.deploy import DeployConfig
 
+
 class Configuration(ConfigurationBase):
+
     @property
     def project(self):
         return self.state['project']

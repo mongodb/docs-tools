@@ -23,13 +23,20 @@ from giza.content.options.views import render_options
 from giza.config.content import new_content_type
 from libgiza.task import Task
 
+
 def register_options(conf):
-    conf.system.content.add(name='options', definition=new_content_type(name='option', task_generator=option_tasks, conf=conf))
+    content_dfn = new_content_type(name='option',
+                                   task_generator=option_tasks, 
+                                   conf=conf)
+
+    conf.system.content.add(name='options', definition=content_dfn)
+
 
 def write_options(option, fn, conf):
     content = render_options(option, conf)
     content.write(fn)
     logger.info('wrote options file: ' + fn)
+
 
 def option_tasks(conf):
     o = OptionDataCache(conf.system.content.options.sources, conf)
@@ -49,6 +56,7 @@ def option_tasks(conf):
 
     logger.info("added tasks for {0} option generation tasks".format(len(tasks)))
     return tasks
+
 
 def option_clean(conf, app):
     register_options(conf)

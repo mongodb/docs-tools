@@ -28,8 +28,10 @@ from libgiza.task import check_dependency
 from giza.tools.files import expand_tree, copy_if_needed, FileNotFoundError, safe_create_directory
 from giza.tools.transformation import decode_lines_from_file, encode_lines_to_file
 
+
 def get_single_html_dir(conf):
     return os.path.join(conf.paths.projectroot, conf.paths.public_site_output, 'single')
+
 
 def manual_single_html(input_file, output_file):
     # don't rebuild this if its not needed.
@@ -46,13 +48,15 @@ def manual_single_html(input_file, output_file):
         ]
 
         for regex, subst in regexes:
-            text_lines = [ regex.sub(subst, text) for text in text_lines ]
+            text_lines = [regex.sub(subst, text) for text in text_lines]
 
         encode_lines_to_file(output_file, text_lines)
 
         logging.info('processed singlehtml file.')
 
 # TODO: convert this to use common infrastructure in giza.tools.transformations.
+
+
 def finalize_single_html_tasks(builder, conf, app):
     single_html_dir = get_single_html_dir(conf)
 
@@ -63,7 +67,7 @@ def finalize_single_html_tasks(builder, conf, app):
         if found_src is True:
             break
 
-        for fn in [ os.path.join(base_path, f) for f in ('contents.html', 'index.html') ]:
+        for fn in [os.path.join(base_path, f) for f in ('contents.html', 'index.html')]:
             src_fn = os.path.join(conf.paths.projectroot, conf.paths.branch_output, fn)
 
             if os.path.exists(src_fn):
@@ -71,8 +75,8 @@ def finalize_single_html_tasks(builder, conf, app):
                                    output_file=os.path.join(single_html_dir, 'index.html'))
 
                 copy_if_needed(source_file=os.path.join(conf.paths.projectroot,
-                                                 conf.paths.branch_output,
-                                                 base_path, 'objects.inv'),
+                                                        conf.paths.branch_output,
+                                                        base_path, 'objects.inv'),
                                target_file=os.path.join(single_html_dir, 'objects.inv'))
 
                 found_src = True

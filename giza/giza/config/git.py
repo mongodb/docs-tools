@@ -20,7 +20,9 @@ logger = logging.getLogger('giza.config.git')
 from libgiza.git import GitRepo
 from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
 
+
 class GitConfigBase(RecursiveConfigurationBase):
+
     def __init__(self, obj, conf, repo=None):
         super(GitConfigBase, self).__init__(obj, conf)
         self.repo = repo
@@ -42,6 +44,7 @@ class GitConfigBase(RecursiveConfigurationBase):
 
 
 class GitConfig(GitConfigBase):
+
     @property
     def commit(self):
         c = self.repo.sha('HEAD')
@@ -68,7 +71,9 @@ class GitConfig(GitConfigBase):
     def remote(self, value):
         self.state['remote'] = GitRemoteConfig(value)
 
+
 class GitBranchConfig(GitConfigBase):
+
     @property
     def current(self):
         if 'current' not in self.state:
@@ -125,6 +130,7 @@ class GitBranchConfig(GitConfigBase):
                 self.state['published'] = []
         else:
             self.state['published'] = ['master']
+
 
 class GitRemoteConfig(ConfigurationBase):
     _option_registry = ['upstream', 'tools']

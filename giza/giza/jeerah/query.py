@@ -14,32 +14,38 @@
 
 from urllib import quote
 
+
 def equality(user_input):
     return lazy_list(user_input, '=', 'in')
 
+
 def inequality(user_input):
     return lazy_list(user_input, '!=', 'not in')
+
 
 def escape_string(string):
     if ' ' in string or '.' in string:
         string = ''.join(['"', string, '"'])
     return string
 
+
 def lazy_list(user_input, single, multi):
     if not isinstance(user_input, list):
-        user_input = [ escape_string(a) for a in user_input.split(',') ]
+        user_input = [escape_string(a) for a in user_input.split(',')]
     else:
-        user_input = [ escape_string(s) for s in user_input ]
+        user_input = [escape_string(s) for s in user_input]
 
     if len(user_input) <= 1:
-        return ' '.join( [ single, user_input[0] ] )
+        return ' '.join([single, user_input[0]])
     else:
-        return ' '.join( [ multi, '(', ", ".join(user_input), ')' ])
+        return ' '.join([multi, '(', ", ".join(user_input), ')'])
+
 
 def query_link(url, query_string):
     if url.endswith('/'):
         url = url[:-1]
-    return '/'.join([url, 'issues', '?jql=' + quote(query_string) ])
+    return '/'.join([url, 'issues', '?jql=' + quote(query_string)])
+
 
 def strip_name(version):
     if version.startswith('"') and version.endswith('"'):

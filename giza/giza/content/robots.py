@@ -37,6 +37,7 @@ logger = logging.getLogger('giza.content.robots')
 
 import giza.content.helper
 
+
 def robots_txt_builder(fn, conf, override=False):
     if override is False:
         if conf.git.branches.current != 'master':
@@ -73,9 +74,8 @@ def robots_txt_builder(fn, conf, override=False):
                             f.write('Disallow: /{0}{1}'.format(pbranch, page))
                             f.write('\n')
                     else:
-                        f.write('Disallow: /{0}{1}'.format(branch,page))
+                        f.write('Disallow: /{0}{1}'.format(branch, page))
                         f.write('\n')
-
 
     if counter > 0 and counter == len(conf.system.files.data.robots):
         try:
@@ -86,6 +86,7 @@ def robots_txt_builder(fn, conf, override=False):
     else:
         logger.info('regenerated {0} file.'.format(fn))
 
+
 def robots_txt_tasks(conf, app):
     if 'robots' in conf.system.files.data and len(conf.system.files.data.robots) > 0:
         dep_path = None
@@ -95,10 +96,10 @@ def robots_txt_tasks(conf, app):
                 break
 
         robots_fn = os.path.join(conf.paths.projectroot, conf.paths.public_site_output,
-                                'robots.txt')
+                                 'robots.txt')
         t = app.add('task')
         t.job = robots_txt_builder
         t.target = robots_fn
         t.dependency = dep_path
-        t.args = [  robots_fn, conf ]
+        t.args = [robots_fn, conf]
         t.description = "building robots.txt file"

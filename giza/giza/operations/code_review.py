@@ -25,6 +25,7 @@ from giza.config.helper import new_credentials_config
 
 logger = logging.getLogger('giza.operations.code_review')
 
+
 def safe_create_code_review_data_file(fn):
     if os.path.isfile(fn):
         return
@@ -42,6 +43,7 @@ def get_cr_data_file(arg):
 
     return os.path.join(path, '.git', 'code_review_mapping.json')
 
+
 @argh.expects_obj
 @argh.named('list')
 def list_reviews(args):
@@ -53,7 +55,8 @@ def list_reviews(args):
 
     crconf = CodeReviewConfiguration(cr_data_file)
 
-    print(json.dumps([ k for k in crconf.branches.keys()], indent=3, sort_keys=True))
+    print(json.dumps([k for k in crconf.branches.keys()], indent=3, sort_keys=True))
+
 
 @argh.expects_obj
 @argh.arg('_branch_name', nargs='*')
@@ -81,6 +84,7 @@ def close(args):
             except:
                 logger.error('could not remove branch: ' + to_delete)
 
+
 @argh.expects_obj
 @argh.arg('_branch_name')
 def checkout(args):
@@ -101,6 +105,7 @@ def checkout(args):
     else:
         m = "no branch named {0} tracked. Please use another method to checkout this branch"
         logger.warning(m.format(args._branch_name))
+
 
 @argh.named('send')
 @argh.expects_obj
@@ -131,14 +136,14 @@ def create_or_update(args):
             logger.info('updating an existing code review.')
             update_code_review(cr_data, g, use_hash)
         else:
-            data.set_branch(g.current_branch(), { 'original_name': g.commit_messages()[0],
-                                                  'commits': [ g.sha('HEAD~'), g.sha() ],
-                                    })
+            data.set_branch(g.current_branch(), {'original_name': g.commit_messages()[0],
+                                                 'commits': [g.sha('HEAD~'), g.sha()],})
 
             logger.info('creating new code review.')
             create_code_review(data, g, creds)
 
-##### Worker functions to create or update code reviews
+# Worker functions to create or update code reviews
+
 
 def update_code_review(cr_data, g, use_hash):
     cmd = [
@@ -146,7 +151,7 @@ def update_code_review(cr_data, g, use_hash):
         '-y',
         '--nojira',
         '--email', g.author_email(),
-        '-m', '"'+ cr_data.original_name + '"',
+        '-m', '"' + cr_data.original_name + '"',
         '-i', cr_data.issue
     ]
 
@@ -162,6 +167,7 @@ def update_code_review(cr_data, g, use_hash):
     except subprocess.CalledProcessError:
         logger.error('failed to update issue')
 
+
 def create_code_review(data, g, creds):
     branch_data = data.get_branch(g.current_branch())
 
@@ -170,9 +176,9 @@ def create_code_review(data, g, creds):
     if creds is not None:
         cmd.extend(['--jira_user', creds.jira.username])
 
-    cmd.extend([ '--email', g.author_email(),
-                 '-m', '"' + g.commit_messages()[0] + '"',
-                 branch_data.commits[-1]])
+    cmd.extend(['--email', g.author_email(),
+                '-m', '"' + g.commit_messages()[0] + '"',
+                branch_data.commits[-1]])
 
     try:
         cr_upload = subprocess.check_output(cmd, stderr=subprocess.STDOUT).strip()
@@ -189,18 +195,20 @@ def create_code_review(data, g, creds):
     except subprocess.CalledProcessError:
         logger.error('failed to create issue')
 
-##### Output processing
+# Output processing
+
 
 def get_issue_url(output):
-    if not isinstance(output,list):
+    if not isinstance(output, list):
         output = output.split('\n')
 
     for ln in output:
         if 'http' in ln:
             return ln.split(' ')[-1]
 
+
 def get_issue_number(output):
-    if not isinstance(output,list):
+    if not isinstance(output, list):
         output = output.split('\n')
 
     for ln in output:

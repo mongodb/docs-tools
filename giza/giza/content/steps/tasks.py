@@ -22,13 +22,20 @@ from giza.content.steps.views import render_steps
 from giza.config.content import new_content_type
 from libgiza.task import Task
 
+
 def register_steps(conf):
-    conf.system.content.add(name='steps', definition=new_content_type(name='steps', task_generator=step_tasks, conf=conf))
+    content_dfn = new_content_type(name='steps', 
+                                   task_generator=step_tasks, 
+                                   conf=conf)
+
+    conf.system.content.add(name='steps', definition=content_dfn)
+
 
 def write_steps(steps, fn, conf):
     content = render_steps(steps, conf)
     content.write(fn)
-    logger.info('wrote steps to: '  + fn)
+    logger.info('wrote steps to: ' + fn)
+
 
 def step_tasks(conf):
     s = StepDataCache(conf.system.content.steps.sources, conf)
@@ -45,6 +52,7 @@ def step_tasks(conf):
 
     logger.info("added tasks for {0} step generation tasks".format(len(tasks)))
     return tasks
+
 
 def step_clean(conf, app):
     task = app.add('task')

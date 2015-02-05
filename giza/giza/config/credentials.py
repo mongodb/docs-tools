@@ -18,6 +18,7 @@ logger = logging.getLogger('giza.config.credentials')
 
 from libgiza.config import ConfigurationBase
 
+
 def get_credentials_skeleton():
     return {
         'jira': {
@@ -36,7 +37,9 @@ def get_credentials_skeleton():
         },
     }
 
+
 class CredentialsConfig(ConfigurationBase):
+
     @property
     def jira(self):
         return self.state['jira']
@@ -61,11 +64,14 @@ class CredentialsConfig(ConfigurationBase):
     def github(self, value):
         self.state['github'] = GithubCredentialsConfig(value)
 
+
 class JiraCredentialsConfig(ConfigurationBase):
-    _option_registry = [ 'username', 'password' ]
+    _option_registry = ['username', 'password']
+
 
 class CorpCredentialsConfig(ConfigurationBase):
-    _option_registry = [ 'username', 'password', 'seed']
+    _option_registry = ['username', 'password', 'seed']
+
 
 class GithubCredentialsConfig(ConfigurationBase):
-    _option_registry = [ 'username', 'password', 'token' ]
+    _option_registry = ['username', 'password', 'token']

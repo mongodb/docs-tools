@@ -40,23 +40,25 @@ from giza.operations.deploy import deploy_tasks
 
 ############### Helper ###############
 
+
 def package_filename(target, conf):
     archive_path = os.path.join(conf.paths.projectroot, conf.paths.buildarchive)
 
-    fn = [ conf.project.name ]
+    fn = [conf.project.name]
 
     if target is not None:
-        tag = ''.join([ i if i not in ['push', 'stage'] else '' for i in target.split('-') ])
+        tag = ''.join([i if i not in ['push', 'stage'] else '' for i in target.split('-')])
         if tag != '':
             fn.append(tag)
 
-    fn.extend([ conf.git.branches.current,
-                datetime.datetime.utcnow().strftime('%s'),
-                conf.git.commit[:8] ])
+    fn.extend([conf.git.branches.current,
+               datetime.datetime.utcnow().strftime('%s'),
+               conf.git.commit[:8]])
 
     fn = os.path.join(archive_path, '-'.join(fn) + '.tar.gz')
 
     return fn
+
 
 def dump_config(conf):
     # make sure the object is fully resolved before we put it into storage
@@ -74,6 +76,7 @@ def dump_config(conf):
 
     return conf_dump_path
 
+
 def create_archive(files_to_archive, tarball_name):
     # ready to write the tarball
 
@@ -84,6 +87,7 @@ def create_archive(files_to_archive, tarball_name):
             t.add(name=fn, arcname=arc_fn)
 
 #################### Worker Functions ####################
+
 
 def create_package(target, conf):
     logger.info('creating package for target "{0}"'.format(target))
@@ -97,7 +101,9 @@ def create_package(target, conf):
     files_to_archive = []
 
     if conf.project.branched is True:
-        artifacts = (os.path.join(conf.paths.output, conf.git.branches.current), conf.git.branches.current)
+        artifacts = (os.path.join(conf.paths.output, 
+                                  conf.git.branches.current), 
+                                  conf.git.branches.current)
     else:
         artifacts = (os.path.join(conf.paths.projectroot, conf.paths.output, pconf['paths']['local']),
                      os.path.split(pconf['paths']['local'])[-1])
@@ -119,6 +125,7 @@ def create_package(target, conf):
 
     logger.info('wrote build package to: {0}'.format(archive_fn))
 
+
 def extract_package(conf):
     path = conf.runstate.package_path
 
@@ -134,7 +141,9 @@ def extract_package(conf):
     with tarfile.open(path, "r:gz") as t:
         t.extractall(os.path.join(conf.paths.projectroot, conf.paths.public))
 
-    conf_extract_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output, 'conf.pickle')
+    conf_extract_path = os.path.join(conf.paths.projectroot, 
+                                     conf.paths.branch_output, 
+                                     'conf.pickle')
 
     with open(conf_extract_path, 'rb') as f:
         new_conf = pickle.load(f)
@@ -143,6 +152,7 @@ def extract_package(conf):
         os.remove(conf_extract_path)
 
     return new_conf
+
 
 def fetch_package(path, conf):
     if path.startswith('http'):
@@ -171,6 +181,7 @@ def fetch_package(path, conf):
 
 #################### Command Entry Points ####################
 
+
 @argh.arg('--target', '-t', nargs=1, dest='push_targets')
 @argh.expects_obj
 def create(args):
@@ -178,6 +189,7 @@ def create(args):
     target = conf.runstate.push_targets[0]
 
     create_package(target, conf)
+
 
 @argh.arg('--path', dest='package_path')
 @argh.expects_obj
@@ -188,6 +200,7 @@ def unwind(args):
     logger.info('extracting package: ' + conf.runstate.package_path)
     extract_package(conf)
     logger.info('extracted package')
+
 
 @argh.arg('--path', dest='package_path')
 @argh.arg('--target', '-t', nargs=1, dest='push_targets')
@@ -211,6 +224,7 @@ def deploy(args):
 
     if conf.runstate.dry_run is False:
         app.run()
+
 
 @argh.arg('--path', dest='package_path')
 @argh.expects_obj

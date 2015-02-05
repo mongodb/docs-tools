@@ -28,6 +28,7 @@ from giza.config.sphinx_config import resolve_builder_path
 
 #################### Gettext Processing ####################
 
+
 def gettext_tasks(conf, app):
     locale_dirs = os.path.join(conf.paths.projectroot,
                                conf.paths.locale, 'pot')
@@ -48,5 +49,5 @@ def gettext_tasks(conf, app):
         task.target = target
         task.dependency = source
         task.job = copy_if_needed
-        task.args = [ source, target, None]
+        task.args = [source, target, None]
         task.description = "migrating po file {0} if needed".format(fn)

@@ -22,6 +22,7 @@ from giza.inheritance import InheritableContentBase, InheritanceReference
 if sys.version_info >= (3, 0):
     basestring = str
 
+
 class OptionData(InheritableContentBase):
     _option_registry = ['pre', 'post', 'final', 'ref', 'content', 'edition',
                         'description', 'name', 'args', 'aliases', 'default', 'type']
@@ -80,7 +81,7 @@ class OptionData(InheritableContentBase):
     def directive(self, value):
         if (value in ('option', 'data', 'setting',
                       'method', 'function', 'class') or
-           value.endswith('setting')):
+                value.endswith('setting')):
             self.state['directive'] = value
         else:
             raise TypeError

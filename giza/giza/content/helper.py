@@ -34,6 +34,7 @@ level_characters = {
 character_levels = dict(zip(level_characters.values(),
                             level_characters.keys()))
 
+
 def edition_check(data, conf):
     """
     Tests a content structure against the current configuration object to ensure
@@ -83,8 +84,10 @@ def edition_check(data, conf):
         return True
 
 # get a list of all supported pygment lexers.
+
+
 def get_all_languages():
-    all_languages = [ 'none' ]
+    all_languages = ['none']
 
     for lexers in get_all_lexers():
         all_languages.extend(lexers[1])

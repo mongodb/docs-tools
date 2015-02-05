@@ -28,7 +28,7 @@ def get_path_prefix(conf, branch):
 
     if conf.project.siteroot is True:
         if (conf.project.branched is True and
-            conf.git.branches.manual != branch):
+                conf.git.branches.manual != branch):
             o.append(branch)
         else:
             o.append(conf.project.tag)
@@ -44,12 +44,14 @@ def get_path_prefix(conf, branch):
 
     return '/'.join(o)
 
+
 def get_current_path(conf):
     branch = conf.git.branches.current
     if branch not in conf.git.branches.published:
         branch = conf.git.branches.published[0]
 
     return get_path_prefix(conf, branch)
+
 
 class ProjectConfig(libgiza.config.RecursiveConfigurationBase):
     _option_registry = ['name', 'title']
@@ -212,6 +214,7 @@ class ProjectConfig(libgiza.config.RecursiveConfigurationBase):
     @property
     def sitepath(self):
         return get_path_prefix(self.conf, self.conf.git.branches.current)
+
 
 class EditionListConfig(libgiza.config.ConfigurationBase):
     _option_registry = ['name', 'url']

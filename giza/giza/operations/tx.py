@@ -33,7 +33,9 @@ from sphinx_intl.commands import update_txconfig_resources
 
 #################### Helpers ####################
 
+
 class FileLogger(object):
+
     def __init__(self, logger, level=logging.INFO):
         self.logger = logger
         self.level = level
@@ -42,16 +44,18 @@ class FileLogger(object):
         if message != '\n':
             self.logger.log(self.level, message)
 
+
 def tx_resources(conf):
     tx_conf = os.path.join(conf.paths.projectroot,
                            ".tx", 'config')
 
     with open(tx_conf, 'r') as f:
-        resources = [ l.strip()[1:-1]
-                      for l in f.readlines()
-                      if l.startswith('[')][1:]
+        resources = [l.strip()[1:-1]
+                     for l in f.readlines()
+                     if l.startswith('[')][1:]
 
     return resources
+
 
 def logged_command(verb, args):
     output = subprocess.check_output(args)
@@ -59,14 +63,15 @@ def logged_command(verb, args):
 
     return output
 
+
 def check_for_orphaned_tx_files(conf):
     tx_conf = os.path.join(conf.paths.projectroot,
                            ".tx", 'config')
 
     with open(tx_conf, 'r') as f:
-        files = [ l.rsplit(' ', 1)[1].strip()
-                  for l in f.readlines()
-                  if l.startswith('source_file')]
+        files = [l.rsplit(' ', 1)[1].strip()
+                 for l in f.readlines()
+                 if l.startswith('source_file')]
 
     errs = 0
     for fn in files:
@@ -85,14 +90,16 @@ def check_for_orphaned_tx_files(conf):
 
 #################### Task Generators ####################
 
+
 def pull_tasks(conf, app):
     resources = tx_resources(conf)
 
     for page in resources:
         t = app.add('task')
         t.job = logged_command
-        t.args = ('pull', ' '.join([ 'tx', 'pull', '-l', conf.runstate.language, '-r', page]))
+        t.args = ('pull', ' '.join(['tx', 'pull', '-l', conf.runstate.language, '-r', page]))
         t.description = 'pulling {0} from transifex client'.format(page)
+
 
 def push_tasks(conf, app):
     resources = tx_resources(conf)
@@ -100,8 +107,9 @@ def push_tasks(conf, app):
     for page in resources:
         t = app.add('task')
         t.job = logged_command
-        t.args = ('pull', ' '.join([ 'tx', 'pull', '-l', conf.runstate.language, '-r', page]))
+        t.args = ('pull', ' '.join(['tx', 'pull', '-l', conf.runstate.language, '-r', page]))
         t.description = 'pulling {0} from transifex client'.format(page)
+
 
 def update(conf):
     logger.info('updating translation artifacts. Long running.')
@@ -124,12 +132,14 @@ def update(conf):
 
 #################### Commands ####################
 
+
 @argh.named('check')
 @argh.expects_obj
 def check_orphaned(args):
     conf = fetch_config(args)
 
     check_for_orphaned_tx_files(conf)
+
 
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')
@@ -141,6 +151,7 @@ def update_translations(args):
     update(conf)
     check_for_orphaned_tx_files(conf)
 
+
 @argh.named('pull')
 @argh.expects_obj
 def pull_translations(args):
@@ -150,6 +161,7 @@ def pull_translations(args):
                                   pool_size=conf.runstate.pool_size,
                                   force=conf.runstate.force).context() as app:
         pull_tasks(conf, app)
+
 
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')

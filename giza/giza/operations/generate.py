@@ -49,6 +49,7 @@ from giza.content.source import source_tasks
 from giza.config.sphinx_config import render_sconf
 from giza.content.dependencies import refresh_dependency_tasks
 
+
 @argh.arg('--edition', '-e')
 @argh.expects_obj
 def toc(args):
@@ -59,6 +60,7 @@ def toc(args):
                       force=c.runstate.force).context() as app:
         for task in toc_tasks(c):
             app.add(task)
+
 
 @argh.arg('--edition', '-e')
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
@@ -74,6 +76,7 @@ def steps(args):
         else:
             app.extend_queue(step_tasks(c))
 
+
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def options(args):
@@ -86,6 +89,7 @@ def options(args):
                           pool_size=c.runstate.pool_size,
                           force=c.runstate.force).context() as app:
             app.extend_queue(option_tasks(c))
+
 
 @argh.expects_obj
 def api(args):
@@ -110,6 +114,7 @@ def assets(args):
         else:
             assets_tasks(c, app)
 
+
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def images(args):
@@ -122,6 +127,7 @@ def images(args):
             image_clean(c, app)
         else:
             image_tasks(c, app)
+
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
@@ -136,6 +142,7 @@ def intersphinx(args):
         else:
             intersphinx_tasks(c, app)
 
+
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def primer(args):
@@ -148,6 +155,7 @@ def primer(args):
             primer_clean(c, app)
         else:
             primer_migration_tasks(c, app)
+
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
@@ -162,6 +170,7 @@ def release(args):
         else:
             app.extend_queue(release_tasks(c))
 
+
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
 @argh.expects_obj
 def tables(args):
@@ -175,6 +184,7 @@ def tables(args):
         else:
             table_tasks(c, app)
 
+
 @argh.expects_obj
 def examples(args):
     c = fetch_config(args)
@@ -183,6 +193,7 @@ def examples(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         app.extend_queue(example_tasks(c))
+
 
 @argh.arg('--edition', '-e')
 @argh.expects_obj
@@ -194,6 +205,7 @@ def robots(args):
                       force=c.runstate.force).context() as app:
         app.pool = 'serial'
         robots_txt_tasks(c, app)
+
 
 @argh.arg('--edition', '-e')
 @argh.arg('--print', '-p', default=False, action='store_true', dest='dry_run')
@@ -208,6 +220,7 @@ def redirects(args):
                           pool_size=c.runstate.pool_size,
                           force=c.runstate.force).context() as app:
             redirect_tasks(c, app)
+
 
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')

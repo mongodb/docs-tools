@@ -47,6 +47,7 @@ suppressed_page_prefixes = [
     '/includes/toc',
 ]
 
+
 def write_include_index(overview_fn, conf):
     with Timer('include index generator'):
 
@@ -56,6 +57,7 @@ def write_include_index(overview_fn, conf):
         if r is not None:
             r.write(overview_fn)
             logger.info('includes: generated /meta/includes source page.')
+
 
 def include_file_data(conf):
     inc_path = os.path.join(conf.paths.includes)
@@ -102,7 +104,7 @@ def include_file_data(conf):
                     if ext == 'yaml':
                         continue
                     if (cl.startswith('/includes/generated/overview') or
-                        cl.startswith('/includes/manpage-')):
+                            cl.startswith('/includes/manpage-')):
                         continue
 
                     omni[incf]['clients'].append(cl)
@@ -116,9 +118,10 @@ def include_file_data(conf):
                 omni[incf]['num_clients'] = 0
 
             with open(fn, 'r') as f:
-                omni[incf]['content'] = [ ln.rstrip() for ln in f.readlines() ]
+                omni[incf]['content'] = [ln.rstrip() for ln in f.readlines()]
 
     return omni
+
 
 def build_page(data, conf):
     if 'includes' not in conf.system.files.data:
@@ -140,11 +143,11 @@ def build_page(data, conf):
         logger.debug('include meta file lacks an introduction.')
 
     r.directive(name='contents', arg='Included Files',
-                fields=[ ('backlinks', 'none'),
-                         ('class', 'long-toc'),
-                         ('depth', 1),
-                         ('local', ''),
-                       ])
+                fields=[('backlinks', 'none'),
+                        ('class', 'long-toc'),
+                        ('depth', 1),
+                        ('local', ''),
+                        ])
     r.newline()
 
     data = data.items()
@@ -183,10 +186,10 @@ def build_page(data, conf):
             add_meta(r, page_name, record)
 
             if record['yaml_only'] is False:
-                clients = [ p for p in
-                            record['clients']
-                            if not p.startswith('/includes')
-                            ]
+                clients = [p for p in
+                           record['clients']
+                           if not p.startswith('/includes')
+                           ]
 
                 if len(clients) == 1:
                     client_link = r.role('doc', clients[0])
@@ -210,6 +213,7 @@ def build_page(data, conf):
 
     return r
 
+
 def add_include_example(r, name, path):
     r.heading('Example Use', char='~', indent=0)
 
@@ -219,6 +223,7 @@ def add_include_example(r, name, path):
     r.codeblock(content='.. include:: {0}'.format(path),
                 language='rst')
     r.newline()
+
 
 def add_content(r, record):
     r.heading('Content', char='~', indent=0)
@@ -233,11 +238,13 @@ meta_strs = {
     'generated': '{0} is a generated file.'
 }
 
+
 def add_meta(r, page_name, record):
     for i in meta_strs.keys():
         if record[i] is True:
             r.content(meta_strs[i].format(page_name))
             r.newline()
+
 
 def includes_tasks(conf, app):
     if conf.runstate.fast:

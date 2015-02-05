@@ -22,6 +22,7 @@ from giza.content.tocs.views import render_toctree, render_dfn_list, render_toc_
 from giza.config.content import new_content_type
 from libgiza.task import Task
 
+
 def register_toc(conf):
     definition = new_content_type(name='toc',
                                   task_generator=toc_tasks,
@@ -30,20 +31,24 @@ def register_toc(conf):
 
     conf.system.content.add(name='toc', definition=definition)
 
+
 def write_toc_tree_output(fn, toc_items, is_ref):
     content = render_toctree(toc_items, is_ref)
     content.write(fn)
     logger.info("wrote toctree to: " + fn)
+
 
 def write_dfn_list_output(fn, toc_items):
     content = render_dfn_list(toc_items)
     content.write(fn)
     logger.info("wrote toc dfnlist to: " + fn)
 
+
 def write_toc_table(fn, toc_items):
     content = render_toc_table(toc_items)
     content.write(fn)
     logger.info("wrote toc table to: " + fn)
+
 
 def toc_tasks(conf):
     tocs = TocDataCache(conf.system.content.toc.sources, conf)

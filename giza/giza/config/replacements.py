@@ -20,13 +20,14 @@ logger = logging.getLogger('giza.config.sphinx_config')
 
 
 class ReplacementData(RecursiveConfigurationBase):
+
     def ingest(self, input_obj):
         if isinstance(input_obj, list):
             if len(input_obj) == 1 and isinstance(input_obj[0], dict):
                 input_obj = input_obj[0]
             else:
                 try:
-                    input_obj = dict( (item['edition'], item) for item in input_obj )
+                    input_obj = dict((item['edition'], item) for item in input_obj)
                 except KeyError:
                     logger.error("replacement specification is malformed. documents need editions")
                     return

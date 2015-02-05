@@ -15,8 +15,10 @@
 from giza.inheritance import DataContentBase, DataCache
 from giza.content.extract.models import ExtractData
 
+
 class ExtractFile(DataContentBase):
     content_class = ExtractData
+
 
 class ExtractDataCache(DataCache):
     content_class = ExtractFile

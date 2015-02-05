@@ -18,6 +18,7 @@ logger = logging.getLogger('giza.content.options.views')
 
 from rstcloth.rstcloth import RstCloth
 
+
 def render_options(option, conf):
     r = RstCloth()
 
@@ -52,7 +53,7 @@ def render_options(option, conf):
     if 'role' not in option.replacement:
         option.replacement['role'] = ':{0}:`{1}{2}`'.format(option.directive, prefix, option.name)
 
-    option.render() # jinja template render
+    option.render()  # jinja template render
     r.directive(option.directive, directive_str)
     r.newline()
 

@@ -18,6 +18,7 @@ from libgiza.config import RecursiveConfigurationBase
 
 logger = logging.getLogger('giza.config.version')
 
+
 class VersionConfig(RecursiveConfigurationBase):
     _option_registry = ['release', 'branch']
 

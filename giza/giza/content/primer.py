@@ -37,11 +37,12 @@ from giza.tools.transformation import process_page, truncate_file, append_to_fil
 
 logger = logging.getLogger('giza.content.primer')
 
+
 def get_migration_specifications(conf):
     output = []
-    files = [ fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
-                                                    conf.paths.builddata))
-                            if  conf.project.name in os.path.basename(fn) and 'migrations' in fn ]
+    files = [fn for fn in expand_tree(os.path.join(conf.paths.projectroot,
+                                                   conf.paths.builddata))
+             if conf.project.name in os.path.basename(fn) and 'migrations' in fn]
 
     for migration_spec in files:
         with open(migration_spec, 'r') as f:
@@ -49,8 +50,9 @@ def get_migration_specifications(conf):
 
     return files, output
 
+
 def directory_expansion(source_path, page, conf):
-    new_page = { 'sources': expand_tree(source_path, None)}
+    new_page = {'sources': expand_tree(source_path, None)}
     del page['source']
 
     if 'source_dir' in page:
@@ -63,15 +65,16 @@ def directory_expansion(source_path, page, conf):
         p['target'] = os.path.join(conf.paths.projectroot,
                                    conf.paths.source,
                                    p['target'],
-                                   p['source'][len(source_path)+1:])
+                                   p['source'][len(source_path) + 1:])
 
         pages.append(p)
 
     return pages
 
+
 def convert_multi_source(page):
-    pages = [ { 'source': source }
-              for source in page['sources'] ]
+    pages = [{'source': source}
+             for source in page['sources']]
 
     for k in ('source', 'sources'):
         if k in page:
@@ -85,7 +88,7 @@ def convert_multi_source(page):
     return r
 
 
-########## Path Normalization Helper Functions
+# Path Normalization Helper Functions
 
 def fix_migration_paths(page):
     if 'target' not in page:
@@ -101,12 +104,14 @@ def fix_migration_paths(page):
 
     return page
 
+
 def trim_leading_slash_from_pages(page):
-    for field  in ['source', 'target']:
+    for field in ['source', 'target']:
         if page[field].startswith('/'):
             page[field] = page[field][1:]
 
     return page
+
 
 def resolve_page_path(page, conf):
     if page['target'].startswith('/'):
@@ -123,13 +128,18 @@ def resolve_page_path(page, conf):
     if page['source'].startswith('/'):
         fq_source = page['source']
     elif 'source_dir' in page:
-        fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, page['source_dir'], page['source']))
+        fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, 
+                                                 page['source_dir'], 
+                                                 page['source']))
     else:
-        fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, '..', 'source', page['source']))
+        fq_source = os.path.abspath(os.path.join(conf.paths.projectroot, 
+                                                 '..', conf.paths.source, 
+                                                 page['source']))
 
     return fq_target, fq_source
 
-########## Main Migration Operations and Task Generator
+# Main Migration Operations and Task Generator
+
 
 def primer_migration_tasks(conf):
     "Migrates all manual files to primer according to the spec. As needed."
@@ -171,7 +181,7 @@ def primer_migration_tasks(conf):
             process_task = process_page(fn=fq_target,
                                         output_fn=fq_target,
                                         regex=[(re.compile(rs['regex']), rs['replace'])
-                                               for rs in page['transform'] ],
+                                               for rs in page['transform']],
                                         builder='primer-processing')
             sub_tasks.append(process_task)
 
@@ -190,7 +200,7 @@ def primer_migration_tasks(conf):
     return tasks
 
 
-########## Task Creators
+# Task Creators
 
 def clean(conf, app):
     "Removes all migrated primer files according to the current spec."
@@ -214,24 +224,27 @@ def clean(conf, app):
 
     logger.info('clean: removed {0} files'.format(len(targets)))
 
+
 def build_migration_task(target, source):
     task = libgiza.task.Task()
     task.target = target
     task.job = copy_if_needed
     task.target = target
     task.dependency = source
-    task.args = [ source, target, 'primer' ]
+    task.args = [source, target, 'primer']
 
     return task
+
 
 def build_append_task(page, target, spec_files):
     task = libgiza.task.Task()
     task.target = page['target']
     task.dependency = spec_files
     task.job = append_to_file
-    task.args = [ target, page['append'] ]
+    task.args = [target, page['append']]
 
     return task
+
 
 def build_truncate_task(truncate_spec, target, deps):
     task = libgiza.task.Task()

@@ -31,9 +31,12 @@ else:
 import argh
 from giza.config.helper import fetch_config
 
+
 class RequestHandler(http_server.SimpleHTTPRequestHandler):
+
     """Request handler wrapper that hosts files rooted at a particular
        directory."""
+
     def translate_path(self, path):
         """Map a request into the build/ directory."""
         path = os.path.relpath(path, '/')
@@ -65,5 +68,6 @@ def start(args):
                                            args.builder[0])
 
     httpd = socket_server.TCPServer(('', conf.runstate.port), RequestHandler)
-    logger.info('Hosting {0} at http://localhost:{1}/'.format(RequestHandler.root, conf.runstate.port))
+    logger.info('Hosting {0} at http://localhost:{1}/'.format(RequestHandler.root, 
+                                                              conf.runstate.port))
     httpd.serve_forever()

@@ -159,7 +159,7 @@ def stats(args):
     gh = get_connection(conf)
 
     users = set()
-    result = {'merge_safe': 0, 'total': 0 }
+    result = {'merge_safe': 0, 'total': 0}
     for pull in mine_github_pulls(gh, app, conf):
         result['total'] += 1
         if pull['merge_safe'] is True:
@@ -171,6 +171,7 @@ def stats(args):
     result['users'] = list(users)
 
     pprint(result)
+
 
 @argh.expects_obj
 def actions(args):
@@ -187,6 +188,7 @@ def actions(args):
     pprint(results)
 
 #################### mdbpr entry point #####################
+
 
 def main():
     parser = get_base_parser()

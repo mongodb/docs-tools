@@ -17,8 +17,9 @@ logger = logging.getLogger('giza.config.sphinx_local')
 
 from libgiza.config import ConfigurationBase
 
+
 class SphinxLocalConfig(ConfigurationBase):
-    _option_registry = [ 'project', 'master_doc', 'logo' ]
+    _option_registry = ['project', 'master_doc', 'logo']
 
     @property
     def paths(self):
@@ -53,12 +54,14 @@ class SphinxLocalConfig(ConfigurationBase):
         else:
             raise TypeError
 
+
 class SphinxLocalPaths(ConfigurationBase):
-    _option_registry = ['static', 'locale' ]
+    _option_registry = ['static', 'locale']
+
 
 class SphinxLocalTheme(ConfigurationBase):
     _option_registry = ['name', 'project', 'google_analytics', 'book_path_base',
-                        'repo', 'jira','sitename']
+                        'repo', 'jira', 'sitename']
 
     @property
     def nav_excluded(self):

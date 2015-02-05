@@ -19,6 +19,7 @@ logger = logging.getLogger('giza.content.tocs.inheritance')
 from giza.inheritance import DataContentBase, DataCache
 from giza.content.tocs.models import TocData
 
+
 class TocFile(DataContentBase):
     content_class = TocData
 
@@ -46,6 +47,7 @@ class TocFile(DataContentBase):
                 deps.append(content_item.source.file)
 
         return deps
+
 
 class TocDataCache(DataCache):
     content_class = TocFile

@@ -19,17 +19,19 @@ logger = logging.getLogger('giza.config.redirects')
 from libgiza.config import ConfigurationBase
 from giza.content.helper import edition_check
 
+
 def redirect_path_spec_normalization(value):
-        o = []
-        if not value.startswith('/'):
-            o.append('/')
+    o = []
+    if not value.startswith('/'):
+        o.append('/')
 
-        if value.endswith('/'):
-            value = value[:-1]
+    if value.endswith('/'):
+        value = value[:-1]
 
-        o.append(value)
+    o.append(value)
 
-        return ''.join(o)
+    return ''.join(o)
+
 
 class RedirectSpecification(ConfigurationBase):
     _option_registry = ['type', 'external', 'edition']
@@ -116,6 +118,7 @@ class RedirectSpecification(ConfigurationBase):
 
 
 class HtaccessData(list):
+
     def append(self, item):
         self.insert(-1, item)
 
@@ -134,6 +137,7 @@ class HtaccessData(list):
         for doc in process_redirect_inputs(outputs, item):
             super(HtaccessData, self).insert(index, RedirectSpecification(doc))
 
+
 def is_computed_output(key):
     if isinstance(key, (tuple, list)):
         key = key[0]
@@ -148,6 +152,7 @@ def is_computed_output(key):
 # the following three private functions are refactored components of
 # ``resolve_output_for_redirect()``
 
+
 def _add_outputs_to_computed(computed, keyword, base, conf):
     if keyword == 'all':
         computed.extend(conf.git.branches.published)
@@ -155,6 +160,7 @@ def _add_outputs_to_computed(computed, keyword, base, conf):
         computed.extend(conf.git.branches.published[conf.git.branches.published.index(base):])
     elif keyword == 'after':
         computed.extend(conf.git.branches.published[:conf.git.branches.published.index(base)])
+
 
 def _render_key(sub_key, left_base, right_base):
     if sub_key == left_base:
@@ -168,6 +174,7 @@ def _render_key(sub_key, left_base, right_base):
         right = '/'.join([right_base, sub_key])
 
     return left, right
+
 
 def _get_redirect_base_paths(computed, out, conf):
     if out == 'all':
@@ -201,6 +208,7 @@ def _get_redirect_base_paths(computed, out, conf):
 # The following functions describe the process for inserting documents into the
 # HtaccessData list and are called in HtaccessData.list()
 
+
 def resolve_outputs_for_redirect(outputs, conf):
     if 'integration' in conf.system.files.data:
         shadows = conf.system.files.data.integration['base']['links']
@@ -218,10 +226,11 @@ def resolve_outputs_for_redirect(outputs, conf):
             if value == out_value:
                 expanded_outputs.extend((value, key))
 
-        expanded_outputs.extend([ _render_key(o, out_key, out_value) for o in computed ])
+        expanded_outputs.extend([_render_key(o, out_key, out_value) for o in computed])
 
     outputs.extend(expanded_outputs)
     return outputs
+
 
 def process_redirect_inputs(outputs, item):
     docs = []
@@ -244,7 +253,7 @@ def process_redirect_inputs(outputs, item):
             if is_computed_output(output[0]):
                 continue
 
-            redir = { 'output': output }
+            redir = {'output': output}
             redir.update(item)
             del redir['outputs']
             docs.append(redir)

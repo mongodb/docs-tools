@@ -29,12 +29,19 @@ from giza.content.examples.inheritance import ExampleDataCache
 from giza.content.examples.views import full_example
 from libgiza.task import Task
 
+
 def register_examples(conf):
-    conf.system.content.add(name='examples', definition=new_content_type(name='examples', task_generator=example_tasks, conf=conf))
+    content_dfn = new_content_type(name='examples', 
+                                   task_generator=example_tasks, 
+                                   conf=conf)
+
+    conf.system.content.add(name='examples', definition=content_dfn)
+
 
 def write_full_example(collection, examples, fn):
     content = full_example(collection, examples)
     content.write(fn)
+
 
 def example_tasks(conf):
     d = ExampleDataCache(conf.system.content.examples.sources, conf)
@@ -54,6 +61,7 @@ def example_tasks(conf):
 
     logger.info("added tasks for {0} example generation tasks".format(len(tasks)))
     return tasks
+
 
 def example_clean(conf, app):
     register_examples(conf)

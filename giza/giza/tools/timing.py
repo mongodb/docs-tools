@@ -17,7 +17,9 @@ import time
 
 logger = logging.getLogger('giza.tools.timing')
 
+
 class Timer():
+
     def __init__(self, name=None):
         if name is None:
             self.name = 'task'
@@ -28,4 +30,5 @@ class Timer():
         self.start = time.time()
 
     def __exit__(self, *args):
-        logger.info('time elapsed for "{0}" was: {1}'.format(self.name, str(time.time() - self.start)))
+        logger.info('time elapsed for "{0}" was: {1}'.format(
+            self.name, str(time.time() - self.start)))

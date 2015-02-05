@@ -15,12 +15,13 @@
 import datetime
 import giza.jeerah.progress
 
+
 def report(data, conf):
     sprint = conf.sprints.get_sprint(conf.runstate.sprint)
 
     result = {
-        'burndown': { },
-        'capacity': { },
+        'burndown': {},
+        'capacity': {},
         'meta': {
             'projects': conf.site.projects,
             'units': conf.reporting.units,
@@ -38,7 +39,8 @@ def report(data, conf):
 
         for person in sprint.staffing:
             if person in query_data['completed']:
-                result['burndown'][person] = sprint.staffing[person] - query_data['completed'][person]
+                result['burndown'][person] = sprint.staffing[
+                    person] - query_data['completed'][person]
             else:
                 result['burndown'][person] = sprint.staffing[person]
 

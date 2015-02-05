@@ -19,12 +19,17 @@ from tempfile import NamedTemporaryFile
 
 logger = logging.getLogger('giza.command')
 
-class CommandError(Exception): pass
+
+class CommandError(Exception):
+    pass
+
 
 class DevNull(object):
     name = os.devnull
 
+
 class CommandResult(object):
+
     def __init__(self, cmd=None, err=None, out=None, return_code=None):
         self._cmd = cmd
         self._err = err

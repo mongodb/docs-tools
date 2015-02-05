@@ -30,6 +30,7 @@ logger = logging.getLogger('giza.deploy')
 
 
 class Deploy(object):
+
     def __init__(self, conf):
         self.conf = conf
         self.name = None
@@ -88,8 +89,8 @@ class Deploy(object):
 
         for host in self.hosts:
             if self.branched is True:
-                yield base + [os.path.join(self.conf.paths.output, 
-                                           self.local_path, 
+                yield base + [os.path.join(self.conf.paths.output,
+                                           self.local_path,
                                            self.conf.git.branches.current),
                               host + ':' + self.remote_path]
             else:

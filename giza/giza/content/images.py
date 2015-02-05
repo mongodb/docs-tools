@@ -64,7 +64,8 @@ from rstcloth.rstcloth import RstCloth
 
 from giza.tools.files import verbose_remove
 
-## Internal Supporting Methods
+# Internal Supporting Methods
+
 
 def generate_image_pages(dir, name, alt, output, conf):
     r = RstCloth()
@@ -82,7 +83,7 @@ def generate_image_pages(dir, name, alt, output, conf):
         r.newline()
 
         if 'tag' in img_output:
-            tag = ''.join(['-', img_output['tag'], '.', build_type ])
+            tag = ''.join(['-', img_output['tag'], '.', build_type])
         else:
             tag = '.' + build_type
 
@@ -107,9 +108,9 @@ def generate_image_pages(dir, name, alt, output, conf):
         elif img_output['type'] == 'offset':
             tex_figure = [
                 r'\begin{figure}[h!]',
-                   r'\centering',
-                   ''.join([r'\includegraphics[width=', img_output['width'],
-                            ']{', name, tag, '}' ]),
+                r'\centering',
+                ''.join([r'\includegraphics[width=', img_output['width'],
+                         ']{', name, tag, '}']),
                 r'\end{figure}'
             ]
 
@@ -142,7 +143,7 @@ def generate_image_pages(dir, name, alt, output, conf):
             r.newline()
             img_str = ''.join(['<div class="figure align-center" style="max-width:{5};">',
                                '<img src="{0}/{1}/_images/{2}{3}" alt="{4}">', '</img>',
-                               '{6}</div>' ])
+                               '{6}</div>'])
             alt_html = publish_parts(alt, writer_name='html')['body'].strip()
             r.directive(name='raw', arg='html',
                         content=img_str.format(conf.project.url,
@@ -156,6 +157,7 @@ def generate_image_pages(dir, name, alt, output, conf):
     r.write(image_rst_file_path)
     logger.debug('generated include file {0}.rst'.format(image))
 
+
 def _get_inkscape_cmd():
     if sys.platform in ['linux', 'linux2']:
         return '/usr/bin/inkscape'
@@ -165,6 +167,7 @@ def _get_inkscape_cmd():
             return inkscape
 
     return 'inkscape'
+
 
 def _generate_images(cmd, dpi, width, target, source):
     full_cmd = cmd.format(cmd=_get_inkscape_cmd(),
@@ -181,6 +184,7 @@ def _generate_images(cmd, dpi, width, target, source):
     else:
         logger.warning('error generating image: ' + target)
         logger.error(full_cmd)
+
 
 def get_images_metadata_file(conf):
     base = None
@@ -202,6 +206,7 @@ def get_images_metadata_file(conf):
     else:
         return os.path.join(conf.paths.projectroot, conf.paths.builddata, base)
 
+
 def image_tasks(conf, app):
     meta_file = get_images_metadata_file(conf)
 
@@ -212,7 +217,7 @@ def image_tasks(conf, app):
     if isinstance(conf.system.files.data.images, list):
         images = conf.system.files.data.images
     else:
-        images = [ conf.system.files.data.images ]
+        images = [conf.system.files.data.images]
 
     image_dir = conf.paths.branch_images
 
@@ -222,7 +227,9 @@ def image_tasks(conf, app):
 
         source_base = os.path.join(conf.paths.projectroot, image['dir'], image['name'])
         source_file = source_base + '.svg'
-        source_core = os.path.join(conf.paths.projectroot, conf.paths.branch_images, image['name'] + '.svg')
+        source_core = os.path.join(conf.paths.projectroot, 
+                                   conf.paths.branch_images, 
+                                   image['name'] + '.svg')
         rst_file = source_base + '.rst'
 
         if not os.path.isfile(source_core):
@@ -232,10 +239,10 @@ def image_tasks(conf, app):
         t = app.add('task')
         t.conf = conf
         t.job = generate_image_pages
-        t.args = image # as kwargs
+        t.args = image  # as kwargs
         t.description = "generating rst include file {0} for {1}".format(rst_file, source_core)
         t.target = rst_file
-        t.dependency = [meta_file, os.path.abspath(__file__) ]
+        t.dependency = [meta_file, os.path.abspath(__file__)]
         logger.debug('adding task for image rst file: {0}'.format(rst_file))
 
         if conf.runstate.fast is True:
@@ -256,18 +263,19 @@ def image_tasks(conf, app):
 
             if build_type == 'png':
                 inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e {target} {source}'
- 
+
             elif build_type == 'eps':
                 inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 1.0 -E {target} {source}'
 
             t = app.add('task')
             t.conf = conf
             t.job = _generate_images
-            t.args = [ inkscape_cmd, output['dpi'], output['width'], target_img, source_file ]
+            t.args = [inkscape_cmd, output['dpi'], output['width'], target_img, source_file]
             t.target = target_img
-            t.dependency = [ source_core ]
+            t.dependency = [source_core]
             t.description = 'generating image file {0} from {1}'.format(target_img, source_core)
             logger.debug('adding image creation job for {0}'.format(target_img))
+
 
 def image_clean(conf, app):
     if 'images' not in conf.system.files.data:

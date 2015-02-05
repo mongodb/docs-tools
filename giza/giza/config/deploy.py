@@ -17,7 +17,9 @@ import libgiza.config
 
 logger = logging.getLogger('giza.config.deploy')
 
+
 class DeployConfig(libgiza.config.ConfigurationBase):
+
     @property
     def production(self):
         return self.state['production']

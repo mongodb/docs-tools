@@ -28,6 +28,7 @@ from giza.operations.sphinx_cmds import sphinx_publication
 import argh
 import onetimepass as otp
 
+
 @argh.arg('--target', '-t', nargs='*', dest='push_targets')
 @argh.arg('--dry-run', '-d', action='store_true', dest='dry_run')
 @argh.named('deploy')
@@ -48,9 +49,10 @@ def main(args):
     if c.runstate.dry_run is False:
         app.run()
 
+
 @argh.arg('--deploy', '-d', nargs='*', dest='push_targets')
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
-@argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
+@argh.arg('--language', '-l', nargs='*', dest='languages_to_build')
 @argh.arg('--builder', '-b', nargs='*', default='html')
 @argh.arg('--serial_sphinx', action='store_true')
 @argh.named('push')
@@ -75,6 +77,7 @@ def publish_and_deploy(args):
     else:
         logger.warning(sphinx_ret + ' sphinx build(s) failed, and build not forced. not deploying.')
 
+
 def deploy_tasks(c, app):
     """
     Deploys the build. The logic for generating the rsync commands is
@@ -84,7 +87,7 @@ def deploy_tasks(c, app):
     This function glues the config with the rsync command creation and then
     runs the commands.
     """
-    pconf = dict( (item['target'], item) for item in c.system.files.data.push )
+    pconf = dict((item['target'], item) for item in c.system.files.data.push)
 
     for target in c.runstate.push_targets:
         d = Deploy(c)
@@ -107,6 +110,7 @@ def deploy_tasks(c, app):
                 logger.info('dry run: {0}'.format(' '.join(cmd)))
 
     logger.info('completed deploy for: {0}'.format(' '.join(c.runstate.push_targets)))
+
 
 @argh.named('code')
 @argh.expects_obj

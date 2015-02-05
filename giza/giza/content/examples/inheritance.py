@@ -30,9 +30,13 @@ from giza.inheritance import DataContentBase, DataCache
 
 # Example specific inheritance machinery
 
-class ExampleError(InheritableContentError): pass
+
+class ExampleError(InheritableContentError):
+    pass
+
 
 class ExampleFile(DataContentBase):
+
     """
     There is a one to one mapping of example files and output examples. Each
     example file has some "starting data," or a "collection" and then a sequence
@@ -118,6 +122,7 @@ class ExampleFile(DataContentBase):
             m = 'content with ref "{0}" not found'.format(ref)
             logger.error(m)
             raise ExampleError(m)
+
 
 class ExampleDataCache(DataCache):
     content_class = ExampleFile

@@ -22,13 +22,20 @@ from giza.content.extract.views import render_extracts, get_include_statement
 from giza.config.content import new_content_type
 from libgiza.task import Task
 
+
 def register_extracts(conf):
-    conf.system.content.add(name='extracts', definition=new_content_type(name='extracts', task_generator=extract_tasks, conf=conf))
+    content_dfn = new_content_type(name='extracts', 
+                                   task_generator=extract_tasks, 
+                                   conf=conf)
+
+    conf.system.content.add(name='extracts', definition=content_dfn)
+
 
 def write_extract_file(extract, fn):
     content = render_extracts(extract)
     content.write(fn)
     logger.info('wrote extract file: ' + fn)
+
 
 def extract_tasks(conf):
     extracts = ExtractDataCache(conf.system.content.extracts.sources, conf)
@@ -45,8 +52,8 @@ def extract_tasks(conf):
 
         include_statement = get_include_statement(extract.target_project_path)
 
-        for verb, adjc, files in [ (prepend_to_file, 'prepend', extract.prepend),
-                                  (append_to_file, 'append', extract.append) ]:
+        for verb, adjc, files in [(prepend_to_file, 'prepend', extract.prepend),
+                                  (append_to_file, 'append', extract.append)]:
             for fn in files:
                 t = Task(job=verb,
                          args=(fn, include_statement),

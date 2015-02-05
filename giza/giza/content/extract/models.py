@@ -24,6 +24,7 @@ from giza.content.steps.models import HeadingMixin
 if sys.version_info >= (3, 0):
     basestring = str
 
+
 class ExtractData(HeadingMixin, InheritableContentBase):
     _default_level = 2
 
@@ -72,7 +73,7 @@ class ExtractData(HeadingMixin, InheritableContentBase):
 
         return self.target[offset:]
 
-    ## The actual implementation for prepend/append
+    # The actual implementation for prepend/append
     def _get_file(self, kind):
         if kind in self.state:
             return self.state[kind]
@@ -87,12 +88,12 @@ class ExtractData(HeadingMixin, InheritableContentBase):
         for fn in value:
             if fn.startswith(os.path.sep):
                 fn = fn[1:]
-            for path in [ os.path.join(self.conf.paths.projectroot,
-                                       self.conf.paths.branch_source, fn),
-                          os.path.join(self.conf.paths.projectroot,
-                                       self.conf.paths.branch_includes, fn),
-                          os.path.join(self.conf.paths.projectroot, fn),
-                          os.path.abspath(fn) ]:
+            for path in [os.path.join(self.conf.paths.projectroot,
+                                      self.conf.paths.branch_source, fn),
+                         os.path.join(self.conf.paths.projectroot,
+                                      self.conf.paths.branch_includes, fn),
+                         os.path.join(self.conf.paths.projectroot, fn),
+                         os.path.abspath(fn)]:
                 if os.path.isfile(path):
                     paths.append(path)
                     break

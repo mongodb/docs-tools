@@ -22,6 +22,7 @@ from giza.inheritance import InheritableContentBase
 if sys.version_info >= (3, 0):
     basestring = str
 
+
 class TocData(InheritableContentBase):
     _option_registry = ['edition', 'name', 'description']
 

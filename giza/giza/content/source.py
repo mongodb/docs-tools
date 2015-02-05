@@ -40,7 +40,8 @@ logger = logging.getLogger('giza.content.source')
 from giza.tools.command import command
 from giza.tools.files import InvalidFile, safe_create_directory
 
-##### Transfer Source Files
+# Transfer Source Files
+
 
 def transfer_source(conf, sconf):
     target = os.path.join(conf.paths.projectroot, conf.paths.branch_source)
@@ -57,23 +58,23 @@ def transfer_source(conf, sconf):
         raise InvalidFile(msg)
 
     source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
-    image_dir = os.path.join(conf.paths.images[len(conf.paths.source)+1:])
+    image_dir = os.path.join(conf.paths.images[len(conf.paths.source) + 1:])
 
-    exclusions = [ os.path.join('includes', 'table'),
-                   os.path.join('includes', 'generated'),
-                   image_dir + os.path.sep + "*.png",
-                   image_dir + os.path.sep + "*.rst",
-                   image_dir + os.path.sep + "*.eps" ]
+    exclusions = [os.path.join('includes', 'table'),
+                  os.path.join('includes', 'generated'),
+                  image_dir + os.path.sep + "*.png",
+                  image_dir + os.path.sep + "*.rst",
+                  image_dir + os.path.sep + "*.eps"]
 
     prefix_len = len(os.path.join(conf.paths.projectroot, conf.paths.branch_source)) + 1
-    exclusions.extend([ o for o in conf.system.content.output_directories(prefix_len) ])
+    exclusions.extend([o for o in conf.system.content.output_directories(prefix_len)])
 
     # we don't want rsync to delete directories that hold generated content in
     # the target so we can have more incremental builds.
     exclusions = "--exclude=" + ' --exclude='.join(exclusions)
 
-    cmd = 'rsync --checksum --recursive {2} --delete {0}/ {1}'.format(source_dir, target, exclusions)
-    command(cmd)
+    cmd = 'rsync --checksum --recursive {2} --delete {0}/ {1}'
+    command(cmd.format(source_dir, target, exclusions))
 
     # remove files from the source tree specified in the sphinx config for this
     # build.
@@ -81,6 +82,7 @@ def transfer_source(conf, sconf):
     os.utime(target, None)
 
     logger.info('prepared and migrated source for sphinx build in {0}'.format(target))
+
 
 def source_exclusion(conf, sconf):
     ct = 0
@@ -101,10 +103,12 @@ def source_exclusion(conf, sconf):
 
     logger.info('redacted {0} files'.format(ct))
 
-##### Transfer Images
+# Transfer Images
 
 # transfer all ``.eps`` images to the latex build directory because to generate
 # "offset" resources, we declare the image in raw latex and Sphinx cannot migrate these images.
+
+
 def transfer_images(conf, sconf):
     image_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_images)
     if not os.path.isdir(image_dir):
@@ -119,14 +123,16 @@ def transfer_images(conf, sconf):
         builder_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder_dir)
 
         safe_create_directory(builder_dir)
-        cmd = 'rsync -am --include="*.png" --include="*.jpg" --include="*.eps" --exclude="*" {0}/ {1} '.format(image_dir, builder_dir)
+        cmd = 'rsync -am --include="*.png" --include="*.jpg" --include="*.eps" --exclude="*" {0}/ {1}'
+        cmd = cmd.format(image_dir, builder_dir)
 
         command(cmd)
         command(cmd.replace('images', 'figures'), ignore=True)
 
         logger.info('migrated images for latex build')
 
-##### Task Creators
+# Task Creators
+
 
 def latex_image_transfer_tasks(conf, sconf, app):
     t = app.add('task')
@@ -134,6 +140,7 @@ def latex_image_transfer_tasks(conf, sconf, app):
     t.args = [conf, sconf]
     t.target = True
     t.description = 'transferring images to build directory to {0}'.format(conf.paths.branch_source)
+
 
 def source_tasks(conf, sconf, app):
     t = app.add('task')

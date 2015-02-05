@@ -38,6 +38,7 @@ from libgiza.app import BuildApp
 
 logger = logging.getLogger('giza.operations.translate')
 
+
 @argh.arg('--config', '-c', default=None, dest="t_corpora_config")
 @argh.named('create-corpora')
 @argh.expects_obj
@@ -53,7 +54,7 @@ def create_corpora(args):
         return
 
     if os.path.exists(cconf.container_path):
-        logger.error(cconf.container_path + " already exists. Please delete it or change the container and try again")
+        logger.error(cconf.container_path + " already exists. Please remove and try again")
         return
 
     create_hybrid_corpora(cconf)
@@ -209,7 +210,7 @@ def build_translation_model(args):
     from_addr = "build_model@mongodb.com"
     to_addr = [tconf.settings.email]
 
-    with open(tconf.paths.project+"/data.csv") as data:
+    with open(tconf.paths.project + "/data.csv") as data:
         msg = MIMEText(data.read())
 
     msg['Subject'] = "Model Complete"

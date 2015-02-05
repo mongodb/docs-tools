@@ -19,6 +19,7 @@ logger = logging.getLogger('giza.content.tocs.views')
 from rstcloth.rstcloth import RstCloth
 from rstcloth.table import TableBuilder, RstTable, TableData
 
+
 def render_toctree(toc_items, is_ref=False):
     r = RstCloth()
 
@@ -34,6 +35,7 @@ def render_toctree(toc_items, is_ref=False):
             r.content(entry.file, indent=6, wrap=False)
 
     return r
+
 
 def render_dfn_list(toc_items):
     r = RstCloth()
@@ -66,6 +68,7 @@ def render_dfn_list(toc_items):
             r.newline()
 
     return r
+
 
 def render_toc_table(toc_items):
     table = TableData()

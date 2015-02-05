@@ -22,13 +22,20 @@ from giza.content.release.views import render_releases
 from giza.config.content import new_content_type
 from libgiza.task import Task
 
+
 def register_releases(conf):
-    conf.system.content.add(name='releases', definition=new_content_type(name='release', task_generator=release_tasks, conf=conf))
+    content_dfn = new_content_type(name='release', 
+                                   task_generator=release_tasks, 
+                                   conf=conf)
+
+    conf.system.content.add(name='releases', definition=content_dfn)
+
 
 def write_release_file(release, fn, conf):
     content = render_releases(release, conf)
     content.write(fn)
     logger.info('wrote release content: ' + fn)
+
 
 def release_tasks(conf):
     rel = ReleaseDataCache(conf.system.content.releases.sources, conf)
@@ -45,6 +52,7 @@ def release_tasks(conf):
 
     logger.info("added tasks for {0} release generation tasks".format(len(tasks)))
     return tasks
+
 
 def release_clean(conf, app):
     task = app.add('task')

@@ -14,6 +14,7 @@
 
 from giza.jeerah.query import equality, inequality, query_link
 
+
 def query(j, app, conf):
     ops = []
     query_strings = []
@@ -24,13 +25,19 @@ def query(j, app, conf):
     project = conf.site.projects
     buckets = conf.buckets.values()
 
-    queries = [
-        ('category', "project {0} and resolution = Unresolved and ({1})".format(equality(project), uncategorized_f)),
-        ('timing', 'project {0} and fixVersion {1} and resolution = Unresolved and {2} and {3}'.format(equality(project), inequality(buckets), timing_query_f, fixversion_f)),
-        ('combined', 'project {0} and resolution = Unresolved and (( {1} and {2} ) or ({3}))'.format(equality(project), timing_query_f, fixversion_f, uncategorized_f)),
-    ]
+    queries = {
+        "combined": "project {0} and resolution = Unresolved and (( {1} and {2} ) or ({3}))",
+        "category": "project {0} and resolution = Unresolved and ({1})",
+        "timing": "project {0} and fixVersion {1} and resolution = Unresolved and {2} and {3}"
+    }
 
-    for name, query in queries:
+    queries['category'] = queries['category'].format(equality(project), uncategorized_f)
+    queries['timing'] = queries['timing'].format(equality(project), inequality(buckets), 
+                                                 timing_query_f, fixversion_f)
+    queries['combined'] = queries['combined'].format(equality(project), timing_query_f, 
+                                                     fixversion_f, uncategorized_f)
+
+    for name, query in queries.items():
         ops.append(name)
         query_strings.append(query)
 
@@ -43,6 +50,7 @@ def query(j, app, conf):
 
     return zip(ops, query_strings, app.results)
 
+
 def report(data, conf):
     results = {
         'totals': {},
@@ -53,8 +61,8 @@ def report(data, conf):
         results['totals'][name] = len(issues)
         results['queries'][name] = query_link(conf.site.url, query)
         if len(issues) < 50:
-            results[name] = [ '/'.join([conf.site.url, 'browse', i.key]) for i in issues ]
+            results[name] = ['/'.join([conf.site.url, 'browse', i.key]) for i in issues]
         else:
-            results[name] = [ 'too many']
+            results[name] = ['too many']
 
     return results

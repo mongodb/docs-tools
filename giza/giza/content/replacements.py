@@ -14,6 +14,7 @@
 
 from rstcloth.rstcloth import RstCloth
 
+
 def get_replacements(conf):
     if "replacement" in conf.system.files.data:
         mapping = conf.system.files.data.replacement

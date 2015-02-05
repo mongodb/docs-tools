@@ -24,10 +24,12 @@ logger = logging.getLogger('giza.content.links')
 
 from giza.tools.files import create_link
 
+
 def _link_path(path, conf):
     return os.path.join(conf.paths.projectroot,
                         conf.paths.public,
                         path)
+
 
 def get_top_level_links(links, conf):
     ret = []
@@ -37,7 +39,7 @@ def get_top_level_links(links, conf):
             if target == '{{current_branch}}':
                 target = conf.git.branches.current
 
-            yield ( _link_path(name, conf), target )
+            yield (_link_path(name, conf), target)
 
     if isinstance(links, list):
         for link in links:
@@ -47,6 +49,7 @@ def get_top_level_links(links, conf):
 
     return ret
 
+
 def get_public_links(conf):
     iconf = conf.system.files.data.integration
 
@@ -54,6 +57,7 @@ def get_public_links(conf):
         return get_top_level_links(iconf['base']['links'], conf)
     except KeyError:
         return []
+
 
 def create_manual_symlink(conf):
     public_links = get_public_links(conf)

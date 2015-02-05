@@ -23,6 +23,7 @@ logger = logging.getLogger('giza.content.examples.views')
 
 from rstcloth.rstcloth import RstCloth
 
+
 def full_example(collection, examples):
     """
     :pram collection: An object with collection information and description.
@@ -72,7 +73,7 @@ def full_example(collection, examples):
 
     for idx, example in enumerate(examples):
         example.render()
-        if idx != 0 :
+        if idx != 0:
             r.newline(2)
 
         if len(examples) > 1 and 'title' in example:

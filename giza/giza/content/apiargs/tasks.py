@@ -22,13 +22,20 @@ from giza.content.apiargs.views import render_apiargs
 from giza.config.content import new_content_type
 from libgiza.task import Task
 
+
 def register_apiargs(conf):
-    conf.system.content.add(name='apiargs', definition=new_content_type(name='apiargs', task_generator=apiarg_tasks, conf=conf))
+    content_def = new_content_type(name='apiargs', 
+                                   task_generator=apiarg_tasks, 
+                                   conf=conf)
+
+    conf.system.content.add(name='apiargs', definition=content_def)
+
 
 def write_apiargs(apiargs, fn):
     content = render_apiargs(apiargs)
     content.write(fn)
     logger.info('wrote apiarg table to: ' + fn)
+
 
 def apiarg_tasks(conf):
     a = ApiArgDataCache(conf.system.content.apiargs.sources, conf)

@@ -30,7 +30,9 @@ from giza.config.redirects import HtaccessData
 from giza.config.content import ContentRegistry
 from giza.config.replacements import ReplacementData
 
+
 class SystemConfig(RecursiveConfigurationBase):
+
     @property
     def make(self):
         return self.state['make']
@@ -104,7 +106,7 @@ class SystemConfig(RecursiveConfigurationBase):
     @dependency_cache_fn.setter
     def dependency_cache_fn(self, value):
         if value is None:
-            p = [ self.conf.paths.branch_output ]
+            p = [self.conf.paths.branch_output]
             if self.conf.project.edition is None:
                 p.append('dependencies.json')
             else:
@@ -129,7 +131,9 @@ class SystemConfig(RecursiveConfigurationBase):
 
         return self.state['content']
 
+
 class SystemToolsConfig(ConfigurationBase):
+
     @property
     def pinned(self):
         return self.state['pinned']
@@ -152,7 +156,9 @@ class SystemToolsConfig(ConfigurationBase):
         else:
             raise TypeError
 
+
 class SystemMakeConfig(ConfigurationBase):
+
     @property
     def generated(self):
         return self.state['generated']
@@ -175,7 +181,9 @@ class SystemMakeConfig(ConfigurationBase):
         else:
             raise TypeError
 
+
 class SystemConfigFiles(RecursiveConfigurationBase):
+
     def __init__(self, conf):
         super(SystemConfigFiles, self).__init__(None, conf)
 
@@ -202,9 +210,10 @@ class SystemConfigFiles(RecursiveConfigurationBase):
         if 'data' not in self.state:
             self.state['data'] = SystemConfigData(value, self.conf)
 
+
 class SystemConfigData(RecursiveConfigurationBase):
-    ## There shouldn't be any setters in this class. All items in this class
-    ## must exist in SystemConfigPaths() objects.
+    # There shouldn't be any setters in this class. All items in this class
+    # must exist in SystemConfigPaths() objects.
 
     _always_list_configs = ('manpages', 'pdfs', 'htaccess', 'push', 'images', 'robots')
 
@@ -246,7 +255,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                 if len(self.state[key]) == 1 and key not in self._always_list_configs:
                     return self.state[key][0]
                 else:
-                     return self.state[key]
+                    return self.state[key]
             else:
                 m = 'key "{0}" in system.data object does not exist'.format(key)
                 if not key.startswith('__'):
@@ -276,7 +285,7 @@ class SystemConfigData(RecursiveConfigurationBase):
             if os.path.isfile(full_path):
                 d = self._resolve_config_data(full_path, basename)
             else:  # if os.path.isfile(self.state[basename]):
-                full_path = self.state[basename]# .items()[0][1]
+                full_path = self.state[basename]  # .items()[0][1]
                 d = self._resolve_config_data(self._resolve_config_path(full_path), basename)
             self._set_config_data(basename, fn, d)
 
@@ -339,14 +348,13 @@ class SystemConfigData(RecursiveConfigurationBase):
                 'translate': TranslateConfig,
             }
 
-
             with open(fn, 'r') as f:
                 data = yaml.safe_load_all(f)
 
                 if basename in mapping:
-                    data = [ mapping[basename](doc) for doc in data ]
+                    data = [mapping[basename](doc) for doc in data]
                 elif basename in recur_mapping:
-                    data = [ recur_mapping[basename](doc, self.conf) for doc in data ]
+                    data = [recur_mapping[basename](doc, self.conf) for doc in data]
                 elif basename == 'htaccess':
                     l = HtaccessData()
                     l.conf = self.conf

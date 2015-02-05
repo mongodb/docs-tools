@@ -41,8 +41,9 @@ from giza.content.assets import assets_tasks
 from giza.config.sphinx_config import render_sconf
 from giza.tools.timing import Timer
 
+
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
-@argh.arg('--language', '-l', nargs='*',dest='languages_to_build')
+@argh.arg('--language', '-l', nargs='*', dest='languages_to_build')
 @argh.arg('--builder', '-b', nargs='*', default='html')
 @argh.arg('--serial_sphinx', action='store_true')
 @argh.named('sphinx')
@@ -61,8 +62,9 @@ def main(args):
     with Timer("full sphinx build process"):
         return sphinx_publication(c, args, app)
 
-## sphinx_publication is its own function because it's called as part of some
-## giza.operations.deploy tasks (i.e. ``push``).
+# sphinx_publication is its own function because it's called as part of some
+# giza.operations.deploy tasks (i.e. ``push``).
+
 
 def sphinx_publication(c, args, app):
     """
@@ -105,8 +107,8 @@ def sphinx_publication(c, args, app):
     # assemble a for loop of tasks in the form of:
     # ((edition, language, builder), (conf, sconf))
     # For use in task creation
-    builder_jobs = [ ((edition, language, builder), get_sphinx_build_configuration(edition, language, builder, args))
-                     for edition, language, builder in get_builder_jobs(c) ]
+    builder_jobs = [((edition, language, builder), get_sphinx_build_configuration(edition, language, builder, args))
+                    for edition, language, builder in get_builder_jobs(c)]
 
     # Copy all source to the ``build/<branch>/source`` directory.
     with Timer('migrating source to build'):
@@ -154,13 +156,14 @@ def sphinx_publication(c, args, app):
 
     # process the sphinx build. These oeprations allow us to de-duplicate
     # messages between builds.
-    sphinx_output = '\n'.join([ o[1] for o in sphinx_app.results ])
+    sphinx_output = '\n'.join([o[1] for o in sphinx_app.results])
     output_sphinx_stream(sphinx_output, c)
 
     # if entry points return this value, giza will inherit the sum of the Sphinx
     # build return codes.
-    ret_code = sum([ o[0] for o in sphinx_app.results ])
+    ret_code = sum([o[0] for o in sphinx_app.results])
     return ret_code
+
 
 def get_sphinx_build_configuration(edition, language, builder, args):
     """
@@ -177,6 +180,7 @@ def get_sphinx_build_configuration(edition, language, builder, args):
     sconf = render_sconf(edition, builder, language, conf)
 
     return conf, sconf
+
 
 def build_content_generation_tasks(conf, app):
     """
@@ -196,6 +200,7 @@ def build_content_generation_tasks(conf, app):
     hash_tasks(conf, app)
     redirect_tasks(conf, app)
     image_tasks(conf, app)
+
 
 def migrate_all_source(builder_jobs, app):
     """
@@ -220,6 +225,7 @@ def migrate_all_source(builder_jobs, app):
     app.randomize = True
     app.run()
     app.reset()
+
 
 def add_content_generator_tasks(builder_jobs, app):
     """

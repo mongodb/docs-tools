@@ -16,6 +16,7 @@ import datetime
 
 from giza.jeerah.query import equality
 
+
 def query(j, app, conf):
     query_base = "project {0} and fixVersion {1} and status {2}"
 
@@ -24,9 +25,12 @@ def query(j, app, conf):
 
     queries = [
         ('total', 'project {0} and fixVersion {1}'.format(equality(project), equality(sprint))),
-        ('completed', query_base.format(equality(project), equality(sprint), equality(['Closed', 'Resolved']))),
-        ('progressing', query_base.format(equality(project), equality(sprint), equality(['In Code Review', 'In Progress']))),
-        ('remaining', query_base.format(equality(project), equality(sprint), equality(['Open', 'Reopened'])))
+        ('completed', query_base.format(equality(project), equality(sprint), 
+                                        equality(['Closed', 'Resolved']))),
+        ('progressing', query_base.format(equality(project), equality(sprint), 
+                                          equality(['In Code Review', 'In Progress']))),
+        ('remaining', query_base.format(equality(project), equality(sprint),
+                                        equality(['Open', 'Reopened'])))
     ]
 
     ops = []
@@ -43,10 +47,11 @@ def query(j, app, conf):
 
     return dict(zip(ops, app.results))
 
+
 def process_query(data, conf):
-    query_data = { }
+    query_data = {}
     for query, issues in data.items():
-        query_data[query] = { }
+        query_data[query] = {}
         for issue in issues:
             hours = issue.fields.customfield_10855
             if hours is None:
@@ -67,12 +72,13 @@ def process_query(data, conf):
 
     return query_data
 
+
 def report(data, conf):
     sprint = conf.sprints.get_sprint(conf.runstate.sprint)
 
     result = {
-        'breakdown': { },
-        'counts': { },
+        'breakdown': {},
+        'counts': {},
         'meta': {
             'projects': conf.site.projects,
             'units': conf.reporting.units,

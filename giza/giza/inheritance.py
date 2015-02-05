@@ -22,18 +22,20 @@ import giza.content.helper
 
 import giza.tools.files
 
+
 class InheritanceReference(libgiza.inheritance.InheritanceReference):
+
     @property
     def file(self):
         return self.state['file']
 
     @file.setter
     def file(self, value):
-        fns = [ os.path.join(self.conf.paths.projectroot,
-                             self.conf.paths.branch_includes, value),
-                os.path.join(self.conf.paths.projectroot,
-                             self.conf.paths.branch_source, value),
-                os.path.join(self.conf.paths.projectroot, value) ]
+        fns = [os.path.join(self.conf.paths.projectroot,
+                            self.conf.paths.branch_includes, value),
+               os.path.join(self.conf.paths.projectroot,
+                            self.conf.paths.branch_source, value),
+               os.path.join(self.conf.paths.projectroot, value)]
 
         for fn in fns:
             if os.path.exists(fn):
@@ -42,6 +44,7 @@ class InheritanceReference(libgiza.inheritance.InheritanceReference):
 
         if 'file' not in self.state:
             raise TypeError('file named {0} does not exist'.format(value))
+
 
 class InheritableContentBase(libgiza.inheritance.InheritableContentBase):
     _reference_type = InheritanceReference
@@ -58,14 +61,17 @@ class InheritableContentBase(libgiza.inheritance.InheritableContentBase):
 
         return base
 
+
 class DataCache(libgiza.inheritance.DataCache):
+
     def create_output_dir(self):
         dirname = self.conf.system.content.get(self.content_type).output_dir
         if (self.content_type is not None and
-            len(self) > 0 and
-            not os.path.isdir(dirname)):
+                len(self) > 0 and
+                not os.path.isdir(dirname)):
 
             giza.tools.files.safe_create_directory(dirname)
+
 
 class DataContentBase(libgiza.inheritance.DataContentBase):
     edition_check = staticmethod(giza.content.helper.edition_check)

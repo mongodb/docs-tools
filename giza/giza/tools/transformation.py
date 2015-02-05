@@ -18,29 +18,34 @@ logger = logging.getLogger('giza.transformation')
 
 from giza.tools.files import copy_always, copy_if_needed
 
+
 class ProcessingError(Exception):
     pass
 
+
 def decode_lines_from_file(fn):
     with open(fn, 'r') as f:
-        return [ line.decode('utf-8').rstrip() for line in f.readlines() ]
+        return [line.decode('utf-8').rstrip() for line in f.readlines()]
+
 
 def encode_lines_to_file(fn, lines):
     with open(fn, 'w') as f:
         f.write('\n'.join(lines).encode('utf-8'))
         f.write('\n')
 
+
 def munge_page(fn, regex, out_fn=None,  tag='build'):
     if out_fn is None:
         out_fn = fn
 
-    page_lines = [ munge_content(ln, regex) for ln in decode_lines_from_file(fn)
-                   if ln is not None ]
+    page_lines = [munge_content(ln, regex) for ln in decode_lines_from_file(fn)
+                  if ln is not None]
 
     if len(page_lines) > 0:
         encode_lines_to_file(out_fn, page_lines)
     else:
         logger.warning('{0}: did not write {1}'.format(tag, out_fn))
+
 
 def munge_content(content, regex):
     if isinstance(regex, list):
@@ -72,10 +77,12 @@ def truncate_file(fn, start_after=None, end_before=None):
     with open(fn, 'w') as f:
         f.writelines(source_lines[start_idx:end_idx])
 
+
 def append_to_file(fn, text):
     with open(fn, 'a') as f:
         f.write('\n')
         f.write(text)
+
 
 def prepend_to_file(fn, text):
     with open(fn, 'r') as f:
@@ -85,15 +92,17 @@ def prepend_to_file(fn, text):
         f.write(text)
         f.writelines(body)
 
+
 def process_page(fn, output_fn, regex, app, builder='processor', copy='always'):
     t = app.add('task')
     t.job = _process_page
-    t.args = [fn, output_fn, regex, copy, builder ]
+    t.args = [fn, output_fn, regex, copy, builder]
     t.target = output_fn
     t.depenency = None
     t.description = "modify page"
 
     logger.debug('added tasks to process file: {0}'.format(fn))
+
 
 def _process_page(fn, output_fn, regex, copy, builder):
     tmp_fn = fn + '~'

@@ -75,7 +75,7 @@ class ContentType(libgiza.config.ConfigurationBase):
         return os.path.join(self.dir, self.name)
 
     def get_basename(self, fn):
-        return fn[len(self.fn_prefix)+1:-5]
+        return fn[len(self.fn_prefix) + 1:-5]
 
     @property
     def output_dir(self):
@@ -96,7 +96,9 @@ class ContentType(libgiza.config.ConfigurationBase):
             return self.state['_task_generator']
         else:
             logger.warning('returning no-op content generator for: ' + self.name)
-            def nop(*args, **kwargs): pass
+
+            def nop(*args, **kwargs):
+                pass
             return nop
 
     @task_generator.setter
@@ -107,6 +109,7 @@ class ContentType(libgiza.config.ConfigurationBase):
             raise TypeError
 
 ###### Factories ######
+
 
 def new_content_type(name, conf, task_generator=None, source_dir=None, output_dir=None, prefixes=None):
     if source_dir is None:
@@ -131,7 +134,9 @@ def new_content_type(name, conf, task_generator=None, source_dir=None, output_di
 
 ###### Implementation Internals ######
 
+
 class ContentRegistry(libgiza.config.ConfigurationBase):
+
     def add(self, name, definition):
         if not isinstance(definition, ContentType):
             raise TypeError

@@ -30,7 +30,8 @@ from giza.tools.files import verbose_remove, safe_create_directory
 
 ACCEPTABLE = 864000
 
-#### Helper functions
+# Helper functions
+
 
 def download_file(file, url):
     safe_create_directory(os.path.dirname(file))
@@ -45,10 +46,12 @@ def download_file(file, url):
         logger.error('trouble downloading interspinx inventory: ' + file)
         return False
 
+
 def file_timestamp(path):
     return os.stat(path)[8]
 
-#### Tasks
+# Tasks
+
 
 def download(f, s, conf):
     if conf.runstate.force is True:
@@ -77,6 +80,7 @@ def download(f, s, conf):
                 # download it for a few days.
                 os.utime(f, (newtime, newtime))
 
+
 def intersphinx_tasks(conf, app):
     if 'intersphinx' not in conf.system.files.data:
         return
@@ -97,10 +101,11 @@ def intersphinx_tasks(conf, app):
 
         t.target = f
         t.job = download
-        t.args = { 'f': f, 's': s, 'conf': conf }
+        t.args = {'f': f, 's': s, 'conf': conf}
         t.description = 'download intersphinx inventory from {0}'.format(s)
 
         logger.debug('added job for {0}'.format(s))
+
 
 def intersphinx_clean(conf, app):
     for inv in conf.system.files.data.intersphinx:
@@ -110,7 +115,6 @@ def intersphinx_clean(conf, app):
         except AttributeError:
             fn = os.path.join(conf.paths.projectroot,
                               conf.paths.output, inv['path'])
-
 
         if os.path.exists(fn):
             t = app.add('task')

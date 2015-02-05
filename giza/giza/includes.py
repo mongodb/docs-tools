@@ -22,20 +22,22 @@ import yaml
 from giza.tools.files import expand_tree
 from giza.tools.command import command
 
+
 def include_files(conf, files=None):
     if files is not None:
         return files
     else:
         source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
-        grep = command('grep -R ".. include:: /" {0} || exit 0'.format(source_dir), capture=True).out
+        grep = command('grep -R ".. include:: /" {0} || exit 0'.format(source_dir), capture=True)
+        grep = grep.out
 
         rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
 
-        s = [ m.groups()
-              for m in [ rx.match(d)
-                         for d in grep.split('\n') ]
-              if m is not None
-            ]
+        s = [m.groups()
+             for m in [rx.match(d)
+                       for d in grep.split('\n')]
+             if m is not None
+             ]
 
         def tuple_sort(k):
             return k[1]
@@ -51,7 +53,7 @@ def include_files(conf, files=None):
             files[i[0]] = list(files[i[0]])
             files[i[0]].sort()
 
-        for k,v in generated_includes(conf).items():
+        for k, v in generated_includes(conf).items():
             if k in files:
                 files[k].extend(v)
             else:
@@ -59,12 +61,14 @@ def include_files(conf, files=None):
 
         return files
 
+
 def included_once(conf, inc_files=None):
     results = []
     for file, includes in include_files(conf=conf, files=inc_files).items():
         if len(includes) == 1:
             results.append(file)
     return results
+
 
 def included_recusively(conf, inc_files=None):
     files = include_files(conf=conf, files=inc_files)
@@ -80,6 +84,7 @@ def included_recusively(conf, inc_files=None):
 
     return results
 
+
 def includes_masked(mask, conf, inc_files=None):
     files = include_files(conf=conf, files=inc_files)
 
@@ -93,6 +98,7 @@ def includes_masked(mask, conf, inc_files=None):
                 results[pair[0]] = pair[1]
 
     return results
+
 
 def generated_includes(conf):
     step_files = []
@@ -126,14 +132,15 @@ def generated_includes(conf):
                     deps.append(step['source']['file'])
 
         if len(deps) != 0:
-            deps = [ os.path.join(path_prefix, i ) for i in deps ]
+            deps = [os.path.join(path_prefix, i) for i in deps]
 
             mapping[step_def[maskl:]] = deps
 
     return mapping
 
+
 def include_files_unused(conf, inc_files=None):
-    inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.paths.includes), None) ]
+    inc_files = [fn[6:] for fn in expand_tree(os.path.join(conf.paths.includes), None)]
     mapping = include_files(conf=conf)
 
     results = []
@@ -145,6 +152,7 @@ def include_files_unused(conf, inc_files=None):
 
     return results
 
+
 def changed_includes(conf):
     from pygit2 import Repository, GIT_STATUS_CURRENT, GIT_STATUS_IGNORED
 
@@ -154,7 +162,7 @@ def changed_includes(conf):
 
     changed = []
     for path, flag in r.status().items():
-        if flag not in [ GIT_STATUS_CURRENT, GIT_STATUS_IGNORED ]:
+        if flag not in [GIT_STATUS_CURRENT, GIT_STATUS_IGNORED]:
             if path.startswith('source/'):
                 if path.endswith('.txt') or path.endswith('.rst'):
                     changed.append(path[6:])

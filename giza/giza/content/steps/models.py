@@ -24,6 +24,7 @@ from giza.content.helper import get_all_languages, level_characters
 if sys.version_info >= (3, 0):
     basestring = str
 
+
 class HeadingMixin(object):
     _default_level = 3
 
@@ -88,6 +89,7 @@ class HeadingMixin(object):
         else:
             self.state['optional'] = False
 
+
 class StepData(HeadingMixin, InheritableContentBase):
     _defalut_level = 3
 
@@ -124,9 +126,9 @@ class StepData(HeadingMixin, InheritableContentBase):
     @action.setter
     def action(self, value):
         if isinstance(value, ActionContent):
-            self.state['action'] = [ value ]
+            self.state['action'] = [value]
         elif isinstance(value, dict):
-            self.state['action'] = [ ActionContent(value, self.conf) ]
+            self.state['action'] = [ActionContent(value, self.conf)]
         elif isinstance(value, list):
             actions = []
             for item in value:
@@ -136,8 +138,9 @@ class StepData(HeadingMixin, InheritableContentBase):
                     actions.append(ActionContent(item, self.conf))
             self.state['action'] = actions
 
+
 class ActionContent(HeadingMixin, InheritableContentBase):
-    _option_registry = [ 'pre', 'post', 'content']
+    _option_registry = ['pre', 'post', 'content']
 
     @property
     def code(self):
@@ -162,7 +165,6 @@ class ActionContent(HeadingMixin, InheritableContentBase):
             m = '{0} is not a supported language'.format(value)
             logger.error(m)
             TypeError(m)
-
 
     def render(self):
         if self.replacement and 'code' in self:

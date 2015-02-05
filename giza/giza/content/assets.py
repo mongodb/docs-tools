@@ -56,6 +56,7 @@ logger = logging.getLogger('giza.content.assets')
 import libgiza.task
 import libgiza.git
 
+
 def assets_setup(path, branch, repo, commit=None):
     """
     Worker function that clones a repository if one doesn't exist and pulls
@@ -88,6 +89,7 @@ def assets_setup(path, branch, repo, commit=None):
             g.checkout(commit)
             logger.info('repository {0} is currently at ({1})'.format(path, commit))
 
+
 def assets_tasks(conf):
     """Add tasks to an app to create/update the assets."""
 
@@ -99,9 +101,9 @@ def assets_tasks(conf):
 
             logger.debug('adding asset resolution job for {0}'.format(path))
 
-            args = { 'path': path,
-                     'branch': asset.branch,
-                     'repo': asset.repository }
+            args = {'path': path,
+                    'branch': asset.branch,
+                    'repo': asset.repository}
 
             if 'commit' in asset:
                 args['commit'] = asset.commit
@@ -130,6 +132,7 @@ def assets_tasks(conf):
         tasks.append(generate_tasks)
 
     return tasks
+
 
 def assets_clean(conf, app):
     """Adds tasks to remove all asset repositories."""

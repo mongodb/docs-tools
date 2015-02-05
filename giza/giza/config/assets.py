@@ -14,6 +14,7 @@
 
 from libgiza.config import ConfigurationBase
 
+
 class AssetsConfig(ConfigurationBase):
     _option_registry = ['path', 'branch', 'repository', 'commit']
 

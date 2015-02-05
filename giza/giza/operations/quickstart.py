@@ -31,6 +31,7 @@ from libgiza.app import BuildApp
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.tools.command import command, CommandError
 
+
 @argh.arg('--with-git', action='store_true', dest='quickstart_git')
 @argh.named('quickstart')
 @argh.expects_obj
@@ -51,6 +52,7 @@ def make_project(args):
                 command('git commit -m "initial commit"')
             except CommandError:
                 pass
+
 
 def _weak_bootstrapping(args):
     args.languages_to_build = args.editions_to_build = []

@@ -19,6 +19,7 @@ import libgiza.config
 
 logger = logging.getLogger('giza.config.code_review')
 
+
 class CodeReviewConfiguration(libgiza.config.ConfigurationBase):
     _version = 1
 
@@ -56,7 +57,7 @@ class CodeReviewConfiguration(libgiza.config.ConfigurationBase):
         elif isinstance(value, dict):
             branches = value.items()
 
-        for k,v in branches:
+        for k, v in branches:
             self.set_branch(k, v)
 
     def set_branch(self, name, branch):
@@ -71,13 +72,15 @@ class CodeReviewConfiguration(libgiza.config.ConfigurationBase):
             try:
                 self.state['branches'][name] = CodeReviewBranchConfiguration(dict(branch))
             except:
-                logger.error("{0} is not a valid configuration branch object: {1}".format(name, branch))
+                m = "{0} is not a valid configuration branch object: {1}".format(name, branch)
+                logger.error(m)
 
     def get_branch(self, branch):
         if 'branches' not in self.state or branch not in self.state['branches']:
             self.state['branches'][branch] = CodeReviewBranchConfiguration()
 
         return self.state['branches'][branch]
+
 
 class CodeReviewBranchConfiguration(libgiza.config.ConfigurationBase):
     _option_registry = ['original_name', 'issue']
