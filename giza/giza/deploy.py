@@ -113,8 +113,9 @@ def deploy_target(cmd):
         return 0
     elif r == 23:
         logger.warning('permissions error on remote end, possibly timestamp related.')
-        return r
+    elif r == 12:
+        logger.warning('connection closed by remote host. rsync operation failed.')
     else:
-        logger.info(r)
         logger.error('"rsync" returned code {1}'.format(cmd, r))
-        return r
+
+    return r
