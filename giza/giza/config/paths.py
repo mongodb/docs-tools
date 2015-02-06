@@ -26,7 +26,9 @@ class PathsConfig(RecursiveConfigurationBase):
 
     @property
     def locale(self):
-        if self.conf.project.edition is not None and self.conf.project.edition != self.conf.project.name:
+        if (self.conf.project.edition is not None and
+                self.conf.project.edition != self.conf.project.name):
+
             return '-'.join((self.state['locale'], self.conf.project.edition))
         else:
             return self.state['locale']

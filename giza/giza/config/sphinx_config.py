@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 import os.path
 import logging
 
+import libgiza.config
 import sphinx.builders
 import yaml
 
-from libgiza.config import RecursiveConfigurationBase
-
 logger = logging.getLogger('giza.config.sphinx_config')
 
-#################### Ingestion and Rendering ####################
+# Ingestion and Rendering
 
 
 def is_legacy_sconf(conf):
@@ -48,7 +48,7 @@ def render_sconf(edition, builder, language, conf):
 
     return sconf
 
-############### Helpers ###############
+# Helpers
 
 
 def resolve_builder_path(builder, edition, language, conf):
@@ -70,10 +70,10 @@ def avalible_sphinx_builders():
 
     return builders
 
-#################### New-Style Config Object ####################
+# New-Style Config Object
 
 
-class SphinxConfig(RecursiveConfigurationBase):
+class SphinxConfig(libgiza.config.RecursiveConfigurationBase):
     _option_registry = ['languages']
 
     def __init__(self, conf, input_obj=None):
@@ -170,7 +170,9 @@ class SphinxConfig(RecursiveConfigurationBase):
         if 'edition' in self.state:
             return self.state['edition']
         else:
-            if 'edition' in self.conf.project and self.conf.project.edition != self.conf.project.name:
+            if ('edition' in self.conf.project and
+                    self.conf.project.edition != self.conf.project.name):
+
                 return self.conf.project.edition
             else:
                 return ''
@@ -236,9 +238,7 @@ class SphinxConfig(RecursiveConfigurationBase):
             self.state['languages'] = value
 
 
-#################### Rendering for Legacy Config ####################
-
-from copy import deepcopy
+# Rendering for Legacy Config
 
 
 def resolve_legacy_sphinx_config(sconf_base, edition, builder, language):
@@ -265,9 +265,9 @@ def render_sphinx_config(conf):
     def resolver(v, conf, computed):
         while 'inherit' in v:
             if v['inherit'] in computed:
-                base = deepcopy(computed[v['inherit']])
+                base = copy.deepcopy(computed[v['inherit']])
             else:
-                base = deepcopy(conf[v['inherit']])
+                base = copy.deepcopy(conf[v['inherit']])
 
             if 'excluded' in v and 'excluded' in base:
                 if isinstance(v['excluded'], list):

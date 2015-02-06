@@ -334,8 +334,8 @@ class ProjectMirroringConfig(RecursiveConfigurationBase):
 
         for project in value:
             if project not in self.conf.site.projects:
-                logger.warning(
-                    '{0} is not in the list of projects ({1})'.format(project, self.conf.site.projects))
+                m = '{0} is not in the list of projects ({1})'
+                logger.warning(m.format(project, self.conf.site.projects))
 
         return value
 

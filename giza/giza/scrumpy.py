@@ -30,13 +30,13 @@ import giza.jeerah.progress
 import giza.jeerah.planning
 import giza.jeerah.triage
 
-#################### helpers #####################
+# helpers
 
 
 def pprint(obj):
     print(json.dumps(obj, indent=3))
 
-#################### scrumpy commands #####################
+# scrumpy commands
 
 
 @argh.expects_obj
@@ -92,7 +92,7 @@ def triage(args):
 
     pprint(giza.jeerah.triage.report(query_data, conf))
 
-#################### Jira Modification Tasks ####################
+# Jira Modification Tasks
 
 
 @argh.arg('--sprint')
@@ -220,7 +220,7 @@ def setup(args):
 def setup_credential_file(args):
     setup_credentials(args)
 
-#################### scrumpy entry point #####################
+# scrumpy entry point
 
 
 def main():

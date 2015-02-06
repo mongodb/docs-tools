@@ -69,11 +69,15 @@ def derive_command(name, conf):
             cmd.append('--builder')
             cmd.append(' '.join(conf.runstate.builder))
 
-        if len(conf.runstate.editions_to_build) > 0 and conf.runstate.editions_to_build[0] is not None:
+        if (len(conf.runstate.editions_to_build) > 0 and
+                conf.runstate.editions_to_build[0] is not None):
+
             cmd.append('--edition')
             cmd.append(' '.join(conf.runstate.editions_to_build))
 
-        if len(conf.runstate.languages_to_build) > 0 and conf.runstate.languages_to_build[0] is not None:
+        if (len(conf.runstate.languages_to_build) > 0 and
+                conf.runstate.languages_to_build[0] is not None):
+
             cmd.append('--language')
             cmd.append(' '.join(conf.runstate.languages_to_build))
 
@@ -229,7 +233,8 @@ def run_make_operations(targets, conf):
 
         if push_opts in tasks:
             if len(push_opts['targets']) == 0:
-                for lang, edition in itertools.product(conf.runstate.languages_to_build, conf.runstate.editions_to_build):
+                for lang, edition in itertools.product(conf.runstate.languages_to_build,
+                                                       conf.runstate.editions_to_build):
                     push_target_name = [push_opts['type']]
                     for opt in (edition, lang):
                         if opt is not None:

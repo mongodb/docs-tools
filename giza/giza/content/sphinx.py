@@ -56,7 +56,7 @@ from giza.content.post.latex import pdf_tasks
 from giza.content.post.sites import (finalize_epub_build,
                                      finalize_dirhtml_build, error_pages)
 
-#################### Config Resolution ####################
+# Config Resolution
 
 
 def is_parallel_sphinx(version):
@@ -126,7 +126,7 @@ def get_sphinx_args(sconf, conf):
 
     return ' '.join(o)
 
-#################### Output Management ####################
+# Output Management
 
 
 def output_sphinx_stream(out, conf):
@@ -221,11 +221,9 @@ def is_msg_worthy(l):
         return False
     elif l.endswith('Duplicate ID: "cmdoption-h".'):
         return False
-    elif l.endswith('should look like "opt", "-opt args", "--opt args" or "/opt args" or "+opt args"'):
+    elif l.endswith('"/opt args" or "+opt args"'):
         return False
-    elif l.endswith('should look like "-opt args", "--opt args" or "/opt args" or "+opt args"'):
-        return False
-    elif l.endswith('should look like "opt", "-opt args", "--opt args" or "/opt args"'):
+    elif l.endswith('"--opt args" or "/opt args"'):
         return False
     elif 'nonlocal image URI found' in l:
         return False
@@ -236,7 +234,7 @@ def is_msg_worthy(l):
 def printer(string):
     logger.info(string)
 
-#################### Builder Operation ####################
+# Builder Operation
 
 
 def run_sphinx(builder, sconf, conf):
@@ -278,14 +276,14 @@ def run_sphinx(builder, sconf, conf):
         with Timer("finalize sphinx {0} build".format(builder)):
             finalizer_app.run()
     else:
-        logger.warning(
-            'the sphinx build {0} was not successful. not running finalize operation'.format(builder))
+        m = 'the sphinx build {0} was not successful. not running finalize operation'
+        logger.warning(m.format(builder))
 
     output = '\n'.join([out.err, out.out])
 
     return out.return_code, output
 
-#################### Application Logic ####################
+# Application Logic
 
 
 def sphinx_tasks(sconf, conf, app):
@@ -355,9 +353,9 @@ def finalize_sphinx_build(sconf, conf, app):
     elif target == 'gettext':
         gettext_tasks(conf, app)
     elif target == 'linkcheck':
+        msg_str = '{0}: See {1}/{0}/output.txt for output.'
         app.add(Task(job=printer,
-                     args=[
-                         '{0}: See {1}/{0}/output.txt for output.'.format(target, conf.paths.branch_output)],
+                     args=[msg_str.format(target, conf.paths.branch_output)],
                      target=os.path.join(conf.paths.projectroot,
                                          conf.paths.branch_output, target, 'output.txt'),
                      dependency=None))

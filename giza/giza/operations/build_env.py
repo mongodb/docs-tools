@@ -34,7 +34,7 @@ from libgiza.app import BuildApp
 
 logger = logging.getLogger('giza.operations.build_env')
 
-#################### Helpers ####################
+# Helpers
 
 
 @contextlib.contextmanager
@@ -72,7 +72,7 @@ def env_package_worker(args, conf):
     # used by the make interface
     package_build_env(args.builder, args.editions_to_build, args.languages_to_build, conf)
 
-#################### Core Workers ####################
+# Core Workers
 
 
 def package_build_env(builders, editions, languages, conf):
@@ -168,16 +168,18 @@ def fix_build_env(builder, conf):
             tags_hash_ln = 'tags: ' + get_stable_hash(sorted(sphinx_app.tags))
 
     with open(fn, 'w') as f:
+        config_dict = dict((name, sphinx_app.config[name])
+                           for (name, desc) in sphinx_app.config.values.items()
+                           if desc[1] == 'html')
+
         f.write('# Sphinx build info version 1')
         f.write('\n\n')  # current format requires an extra line here.
-        f.write('config: ' + get_stable_hash(dict((name, sphinx_app.config[name])
-                                                  for (name, desc) in sphinx_app.config.values.items()
-                                                  if desc[1] == 'html')))
+        f.write('config: ' + get_stable_hash(config_dict))
         f.write('\n')
         f.write(tags_hash_ln)
         f.write('\n')
 
-#################### Task Creators ####################
+# Task Creators
 
 
 def fix_build_env_tasks(builders, conf, app):
@@ -188,7 +190,7 @@ def fix_build_env_tasks(builders, conf, app):
         t.target = True
         t.description = "fix up sphinx environment for builder '{0}'".format(builder)
 
-#################### Entry Points ####################
+# Entry Points
 
 
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')

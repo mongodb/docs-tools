@@ -123,7 +123,9 @@ def transfer_images(conf, sconf):
         builder_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder_dir)
 
         safe_create_directory(builder_dir)
-        cmd = 'rsync -am --include="*.png" --include="*.jpg" --include="*.eps" --exclude="*" {0}/ {1}'
+        cmd = ('rsync -am '
+               '--include="*.png" --include="*.jpg" --include="*.eps" '
+               '--exclude="*" {0}/ {1}')
         cmd = cmd.format(image_dir, builder_dir)
 
         command(cmd)

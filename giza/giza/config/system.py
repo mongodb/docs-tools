@@ -299,7 +299,9 @@ class SystemConfigData(RecursiveConfigurationBase):
             else:
                 self.state[basename].append(d)
         else:
-            if isinstance(self.state[basename], (ConfigurationBase, dict)) and len(self.state[basename]) == 1:
+            if (isinstance(self.state[basename], (ConfigurationBase, dict)) and
+                    len(self.state[basename]) == 1):
+
                 self.state[basename] = []
             elif self.state[basename] != fn:
                 self.state[basename] = [self.state[basename]]

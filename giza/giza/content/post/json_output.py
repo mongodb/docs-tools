@@ -30,7 +30,7 @@ logger = logging.getLogger('giza.content.post.json_output')
 from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
 from giza.tools.transformation import munge_content
 
-########## Process Sphinx Json Output ##########
+# Process Sphinx Json Output
 
 
 def json_output(conf):
@@ -39,7 +39,9 @@ def json_output(conf):
                                     conf.paths.public_site_output,
                                     'json', '.file_list')
 
-    cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {src} {dst}'
+    cmd = ('rsync --recursive --times --delete '
+           '--exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" '
+           '{src} {dst}')
 
     json_dst = os.path.join(conf.paths.projectroot, conf.paths.public_site_output, 'json')
     safe_create_directory(json_dst)

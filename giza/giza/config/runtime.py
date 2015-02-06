@@ -284,8 +284,9 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
     @branch_conf.setter
     def branch_conf(self, value):
         fn = os.path.join(self.conf.paths.builddata, 'published_branches.yaml')
+        fq_fn = os.path.join(self.conf.paths.projectroot, fn)
 
-        if self.conf.git.branches.current == 'master' and not os.path.isfile(os.path.join(self.conf.paths.projectroot, fn)):
+        if self.conf.git.branches.current == 'master' and not os.path.isfile(fq_fn):
             self._branch_conf = {}
         else:
             try:

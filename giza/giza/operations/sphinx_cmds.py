@@ -107,7 +107,8 @@ def sphinx_publication(c, args, app):
     # assemble a for loop of tasks in the form of:
     # ((edition, language, builder), (conf, sconf))
     # For use in task creation
-    builder_jobs = [((edition, language, builder), get_sphinx_build_configuration(edition, language, builder, args))
+    builder_jobs = [((edition, language, builder),
+                    get_sphinx_build_configuration(edition, language, builder, args))
                     for edition, language, builder in get_builder_jobs(c)]
 
     # Copy all source to the ``build/<branch>/source`` directory.

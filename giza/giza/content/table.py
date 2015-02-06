@@ -29,7 +29,7 @@ from rstcloth.table import TableBuilder, YamlTable, ListTable
 
 from giza.tools.files import expand_tree, verbose_remove
 
-#################### Table Builder ####################
+# Table Builder
 
 
 def _get_table_output_name(fn):
@@ -80,14 +80,16 @@ def _generate_tables(source, target, list_target):
     logger.info('rebuilt rendered table output for {0}'.format(source))
 
 
-#################### Table Source Iterators ####################
+# Table Source Iterators
 
 def table_sources(conf):
-    for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.branch_includes), 'yaml'):
+    path = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
+
+    for source in expand_tree(path, 'yaml'):
         if os.path.basename(source).startswith('table'):
             yield source
 
-#################### Table Tasks ####################
+# Table Tasks
 
 
 def table_tasks(conf, app):

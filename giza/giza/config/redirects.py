@@ -147,7 +147,7 @@ def is_computed_output(key):
     else:
         return False
 
-########## Redirect Resolution ##########
+# Redirect Resolution
 
 # the following three private functions are refactored components of
 # ``resolve_output_for_redirect()``

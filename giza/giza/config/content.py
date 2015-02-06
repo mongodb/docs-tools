@@ -108,32 +108,6 @@ class ContentType(libgiza.config.ConfigurationBase):
         else:
             raise TypeError
 
-###### Factories ######
-
-
-def new_content_type(name, conf, task_generator=None, source_dir=None, output_dir=None, prefixes=None):
-    if source_dir is None:
-        source_dir = os.path.join(conf.paths.projectroot,
-                                  conf.paths.branch_includes)
-
-    if output_dir is None:
-        output_dir = os.path.join(source_dir, name)
-
-    c = ContentType()
-    c.name = name
-    c.dir = source_dir
-    c.output_dir = output_dir
-
-    if prefixes is not None:
-        c.prefixes = prefixes
-
-    if task_generator is not None:
-        c.task_generator = task_generator
-
-    return c
-
-###### Implementation Internals ######
-
 
 class ContentRegistry(libgiza.config.ConfigurationBase):
 
@@ -167,3 +141,28 @@ class ContentRegistry(libgiza.config.ConfigurationBase):
     def content_prefixes(self):
         for name, content in self.state.items():
             yield name, content.prefixes
+
+# Factories
+
+
+def new_content_type(name, conf, task_generator=None, source_dir=None,
+                     output_dir=None, prefixes=None):
+    if source_dir is None:
+        source_dir = os.path.join(conf.paths.projectroot,
+                                  conf.paths.branch_includes)
+
+    if output_dir is None:
+        output_dir = os.path.join(source_dir, name)
+
+    c = ContentType()
+    c.name = name
+    c.dir = source_dir
+    c.output_dir = output_dir
+
+    if prefixes is not None:
+        c.prefixes = prefixes
+
+    if task_generator is not None:
+        c.task_generator = task_generator
+
+    return c

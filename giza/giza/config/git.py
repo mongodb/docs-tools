@@ -94,7 +94,7 @@ class GitBranchConfig(GitConfigBase):
 
     @manual.setter
     def manual(self, value):
-        if 'git' in self.conf.runstate.branch_conf and 'branches' in self.conf.runstate.branch_conf['git']:
+        if self.has_branches() is True:
             if 'manual' in self.conf.runstate.branch_conf['git']['branches']:
                 self.state['manual'] = self.conf.runstate.branch_conf['git']['branches']['manual']
             else:
@@ -109,9 +109,13 @@ class GitBranchConfig(GitConfigBase):
 
         return self.state['published']
 
+    def has_branches(self):
+        return ('git' in self.conf.runstate.branch_conf and
+                'branches' in self.conf.runstate.branch_conf['git'])
+
     @published.setter
     def published(self, value):
-        if 'git' in self.conf.runstate.branch_conf and 'branches' in self.conf.runstate.branch_conf['git']:
+        if self.has_branches() is True:
             if 'published' in self.conf.runstate.branch_conf['git']['branches']:
                 p = self.conf.runstate.branch_conf['git']['branches']['published']
 

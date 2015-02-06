@@ -26,7 +26,7 @@ logger = logging.getLogger('giza.hash')
 
 from rstcloth.rstcloth import RstCloth
 
-#################### Rendering ####################
+# Rendering
 
 
 def generate_hash_file(fn, conf):
@@ -67,7 +67,7 @@ def generate_release_file(release_fn, conf):
 
     logger.info('generated "{0}" with current release hash.'.format(release_fn))
 
-#################### Worker ####################
+# Worker
 
 
 def hash_tasks(conf, app):

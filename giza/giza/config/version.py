@@ -22,6 +22,10 @@ logger = logging.getLogger('giza.config.version')
 class VersionConfig(RecursiveConfigurationBase):
     _option_registry = ['release', 'branch']
 
+    def has_version(self, value):
+        return ('version' in self.conf.runstate.branch_conf and
+                value in self.conf.runstate.branch_conf['version'])
+
     @property
     def published(self):
         if 'published' not in self.state:
@@ -31,7 +35,7 @@ class VersionConfig(RecursiveConfigurationBase):
 
     @published.setter
     def published(self, value):
-        if 'version' in self.conf.runstate.branch_conf and 'published' in self.conf.runstate.branch_conf['version']:
+        if self.has_version('published'):
             p = self.conf.runstate.branch_conf['version']['published']
 
             if not isinstance(p, list):
@@ -52,7 +56,7 @@ class VersionConfig(RecursiveConfigurationBase):
 
     @upcoming.setter
     def upcoming(self, value):
-        if 'version' in self.conf.runstate.branch_conf and 'upcoming' in self.conf.runstate.branch_conf['version']:
+        if self.has_version('upcoming'):
             self.state['upcoming'] = self.conf.runstate.branch_conf['version']['upcoming']
         else:
             self.state['upcoming'] = None
@@ -66,7 +70,7 @@ class VersionConfig(RecursiveConfigurationBase):
 
     @stable.setter
     def stable(self, value):
-        if 'version' in self.conf.runstate.branch_conf and 'stable' in self.conf.runstate.branch_conf['version']:
+        if self.has_version('stable'):
             self.state['stable'] = self.conf.runstate.branch_conf['version']['stable']
         else:
             self.state['stable'] = None

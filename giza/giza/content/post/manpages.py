@@ -25,7 +25,7 @@ logger = logging.getLogger('giza.content.manpages')
 
 from giza.tools.files import expand_tree
 
-#################### Manpage Processing ####################
+# Manpage Processing
 
 # this is a precursor to giza.tools.transformation and should be re-implemented.
 

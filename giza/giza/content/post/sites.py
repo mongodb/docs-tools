@@ -25,7 +25,7 @@ from giza.tools.transformation import munge_page
 from giza.tools.files import create_link, copy_if_needed
 from giza.content.post.singlehtml import get_single_html_dir
 
-#################### Sphinx Post-Processing ####################
+# Sphinx Post-Processing
 
 
 def finalize_epub_build(builder, conf):

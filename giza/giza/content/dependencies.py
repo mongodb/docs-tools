@@ -35,7 +35,7 @@ from giza.tools.timing import Timer
 
 logger = logging.getLogger('giza.content.dependencies')
 
-########## Update File Hashes ##########
+# Update File Hashes
 
 
 def dump_file_hashes(conf):
@@ -59,7 +59,7 @@ def dump_file_hashes(conf):
 
     logger.info('wrote dependency cache to: {0}'.format(output))
 
-########## Update Dependencies ##########
+# Update Dependencies
 
 
 def _refresh_deps(graph, dep_map, conf):
@@ -143,7 +143,7 @@ def dump_file_hash_tasks(conf, app):
     t.dependency = os.path.join(conf.paths.projectroot, conf.paths.branch_source)
     t.description = "writing dependency cache to a file for the next build"
 
-############### Hashed Dependency Checking ###############
+# Hashed Dependency Checking
 
 
 def normalize_dep_path(fn, conf, branch):

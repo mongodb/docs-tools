@@ -26,7 +26,7 @@ logger = logging.getLogger('giza.content.post.gettext')
 from giza.tools.files import expand_tree, copy_if_needed
 from giza.config.sphinx_config import resolve_builder_path
 
-#################### Gettext Processing ####################
+# Gettext Processing
 
 
 def gettext_tasks(conf, app):

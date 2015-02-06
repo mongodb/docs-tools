@@ -55,11 +55,12 @@ def extract_tasks(conf):
         for verb, adjc, files in [(prepend_to_file, 'prepend', extract.prepend),
                                   (append_to_file, 'append', extract.append)]:
             for fn in files:
+                msg = "{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn)
                 t = Task(job=verb,
                          args=(fn, include_statement),
                          target=fn,
                          dependency=None,
-                         description="{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn))
+                         description=msg)
                 tasks.append(t)
 
     logger.info("added tasks for {0} extract generation tasks".format(len(tasks)))

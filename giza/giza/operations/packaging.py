@@ -38,7 +38,7 @@ from giza.config.helper import fetch_config
 from giza.tools.files import safe_create_directory, FileNotFoundError
 from giza.operations.deploy import deploy_tasks
 
-############### Helper ###############
+# Helper
 
 
 def package_filename(target, conf):
@@ -86,7 +86,7 @@ def create_archive(files_to_archive, tarball_name):
         for fn, arc_fn in files_to_archive:
             t.add(name=fn, arcname=arc_fn)
 
-#################### Worker Functions ####################
+# Worker Functions
 
 
 def create_package(target, conf):
@@ -102,10 +102,12 @@ def create_package(target, conf):
 
     if conf.project.branched is True:
         artifacts = (os.path.join(conf.paths.output,
-                                 conf.git.branches.current),
+                                  conf.git.branches.current),
                      conf.git.branches.current)
     else:
-        artifacts = (os.path.join(conf.paths.projectroot, conf.paths.output, pconf['paths']['local']),
+        artifacts = (os.path.join(conf.paths.projectroot,
+                                  conf.paths.output,
+                                  pconf['paths']['local']),
                      os.path.split(pconf['paths']['local'])[-1])
 
     files_to_archive.append(artifacts)
@@ -179,7 +181,7 @@ def fetch_package(path, conf):
         logger.error(msg)
         raise FileNotFoundError(msg)
 
-#################### Command Entry Points ####################
+# Command Entry Points
 
 
 @argh.arg('--target', '-t', nargs=1, dest='push_targets')

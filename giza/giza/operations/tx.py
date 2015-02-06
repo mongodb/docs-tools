@@ -31,7 +31,7 @@ from giza.config.helper import fetch_config
 
 from sphinx_intl.commands import update_txconfig_resources
 
-#################### Helpers ####################
+# Helpers
 
 
 class FileLogger(object):
@@ -88,7 +88,7 @@ def check_for_orphaned_tx_files(conf):
 
     return errs
 
-#################### Task Generators ####################
+# Task Generators
 
 
 def pull_tasks(conf, app):
@@ -130,7 +130,7 @@ def update(conf):
 
     logger.info('sphinx-intl: updated pot directory')
 
-#################### Commands ####################
+# Commands
 
 
 @argh.named('check')

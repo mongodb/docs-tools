@@ -23,7 +23,8 @@ class JeerahClient(object):
     def connect(self):
         if self.c is None:
             self.c = JIRA(options={'server': self.conf.site.url},
-                          basic_auth=(self.credentials.jira.username, self.credentials.jira.password))
+                          basic_auth=(self.credentials.jira.username,
+                                      self.credentials.jira.password))
             logger.debug('created jira connection')
         else:
             logger.debug('jira connection exists')
@@ -45,7 +46,8 @@ class JeerahClient(object):
 
             self.versions_cache[project][ver.name] = ver.id
 
-    def create_issue(self, title, text, assignee, project, reporter=None, tags=None, version=None, uid=None):
+    def create_issue(self, title, text, assignee, project, reporter=None,
+                     tags=None, version=None, uid=None):
         issue = {'project': {'key': project},
                  'issuetype': {'name': 'Task'},
                  'summary': title,

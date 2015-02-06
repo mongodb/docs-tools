@@ -120,7 +120,10 @@ def dump_skel(skel, args):
 
 
 def get_builder_jobs(conf):
-    return [a for a in itertools.product(conf.runstate.editions_to_build, conf.runstate.languages_to_build, conf.runstate.builder)]
+    return [a
+            for a in itertools.product(conf.runstate.editions_to_build,
+                                       conf.runstate.languages_to_build,
+                                       conf.runstate.builder)]
 
 
 def get_manual_path(conf):

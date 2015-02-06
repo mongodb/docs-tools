@@ -187,7 +187,7 @@ def actions(args):
 
     pprint(results)
 
-#################### mdbpr entry point #####################
+# mdbpr entry point
 
 
 def main():
