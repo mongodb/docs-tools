@@ -39,7 +39,6 @@ import sys
 
 logger = logging.getLogger('giza.content.sphinx')
 
-from libgiza.app import BuildApp
 from libgiza.task import Task
 from giza.tools.command import command
 from giza.tools.files import safe_create_directory
@@ -341,9 +340,7 @@ def finalize_sphinx_build(sconf, conf):
     elif target == 'singlehtml':
         tasks.extend(finalize_single_html_tasks(target, conf))
     elif target == 'latex':
-        app = BuildApp.lazy()
-        app.extend_queue(pdf_tasks(sconf, conf))
-        tasks.append(app)
+        tasks.extend(pdf_tasks(sconf, conf))
     elif target == 'gettext':
         tasks.extend(gettext_tasks(conf))
     elif target == 'linkcheck':
