@@ -44,17 +44,11 @@ def get_tarball_name(builder, conf):
                         fn)
 
 
-def html_tarball(builder, conf):
-    copy_if_needed(os.path.join(conf.paths.projectroot,
-                                conf.paths.branch_includes, 'hash.rst'),
-                   os.path.join(conf.paths.projectroot,
-                                conf.paths.branch_output,
-                                builder, 'release.txt'))
-
+def html_tarball(builder, artifact_loc, conf):
     tarball_name = get_tarball_name('html', conf)
 
     tarball(name=tarball_name,
-            path=builder,
+            path=artifact_loc,
             cdir=os.path.join(conf.paths.projectroot,
                               conf.paths.branch_output),
             newp=os.path.splitext(os.path.basename(tarball_name))[0])
@@ -68,17 +62,11 @@ def html_tarball(builder, conf):
                 output_fn=link_name)
 
 
-def slides_tarball(builder, conf):
-    copy_if_needed(os.path.join(conf.paths.projectroot,
-                                conf.paths.branch_includes, 'hash.rst'),
-                   os.path.join(conf.paths.projectroot,
-                                conf.paths.branch_output,
-                                builder, 'release.txt'))
-
+def slides_tarball(builder, artifact_loc, conf):
     tarball_name = get_tarball_name('slides', conf)
 
     tarball(name=tarball_name,
-            path=builder,
+            path=artifact_loc,
             cdir=os.path.join(conf.paths.projectroot,
                               conf.paths.branch_output),
             newp=os.path.splitext(os.path.basename(tarball_name))[0])
@@ -92,11 +80,11 @@ def slides_tarball(builder, conf):
                 output_fn=link_name)
 
 
-def man_tarball(builder, conf):
+def man_tarball(builder, artifact_loc, conf):
     tarball_name = get_tarball_name('man', conf)
 
     tarball(name=tarball_name,
-            path=builder,
+            path=artifact_loc,
             cdir=os.path.join(conf.paths.projectroot, conf.paths.branch_output),
             newp=conf.project.name + '-manpages')
 
