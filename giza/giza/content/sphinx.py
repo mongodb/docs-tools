@@ -292,7 +292,7 @@ def finalize_sphinx_build(sconf, conf):
     tasks = []
     if target == 'html' and not conf.runstate.fast:
         t = Task(job=html_tarball,
-                 args=(sconf.name, conf),
+                 args=(sconf.name, sconf.build_output, conf),
                  target=[get_tarball_name('html', conf),
                          get_tarball_name('link-html', conf)],
                  dependency=None,
@@ -326,7 +326,7 @@ def finalize_sphinx_build(sconf, conf):
         tasks.append(t)
     elif target == 'man':
         t = Task(job=man_tarball,
-                 args=(target, conf),
+                 args=(sconf.name, sconf.build_output, conf),
                  target=[get_tarball_name('man', conf),
                          get_tarball_name('link-man', conf)],
                  dependency=None,
