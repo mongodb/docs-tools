@@ -21,12 +21,14 @@ as a basis for translation.
 import os.path
 import logging
 
-logger = logging.getLogger('giza.content.post.gettext')
+import libgiza.task
 
 import libgiza.task
 
 from giza.tools.files import expand_tree, copy_if_needed
 from giza.config.sphinx_config import resolve_builder_path
+
+logger = logging.getLogger('giza.content.post.gettext')
 
 # Gettext Processing
 

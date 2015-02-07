@@ -23,8 +23,6 @@ from giza.config.helper import fetch_config, get_builder_jobs
 from libgiza.app import BuildApp
 from libgiza.task import Task
 
-logger = logging.getLogger('giza.operations.sphinx')
-
 from giza.content.robots import robots_txt_tasks
 from giza.content.includes import includes_tasks
 from giza.content.images import image_tasks
@@ -40,6 +38,8 @@ from giza.content.assets import assets_tasks
 
 from giza.config.sphinx_config import render_sconf
 from giza.tools.timing import Timer
+
+logger = logging.getLogger('giza.operations.sphinx')
 
 
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
@@ -179,7 +179,8 @@ def sphinx_publication(c, args, app):
 
     # process the sphinx build. These oeprations allow us to de-duplicate
     # messages between builds.
-    sphinx_results = [o for o in sphinx_app.results if not isinstance(o, (list, bool)) and o is not None ]
+    sphinx_results = [o for o in sphinx_app.results
+                      if not isinstance(o, (list, bool)) and o is not None]
     sphinx_output = '\n'.join([o[1] for o in sphinx_results])
     output_sphinx_stream(sphinx_output, c)
 

@@ -15,8 +15,6 @@
 import logging
 import os.path
 
-logger = logging.getLogger('giza.config.system')
-
 import yaml
 
 from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
@@ -29,6 +27,8 @@ from giza.config.corpora import CorporaConfig
 from giza.config.redirects import HtaccessData
 from giza.config.content import ContentRegistry
 from giza.config.replacements import ReplacementData
+
+logger = logging.getLogger('giza.config.system')
 
 
 class SystemConfig(RecursiveConfigurationBase):

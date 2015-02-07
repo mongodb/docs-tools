@@ -22,13 +22,13 @@ import os
 import logging
 import shutil
 
-logger = logging.getLogger('giza.operations.clean')
-
 import argh
 
 from libgiza.app import BuildApp
 from giza.config.helper import fetch_config, get_builder_jobs
 from giza.config.sphinx_config import resolve_builder_path
+
+logger = logging.getLogger('giza.operations.clean')
 
 
 @argh.arg('--builder', '-b')

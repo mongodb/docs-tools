@@ -14,10 +14,10 @@
 
 import logging
 
-logger = logging.getLogger('giza.content.steps.views')
-
 from giza.content.helper import character_levels
 from rstcloth.rstcloth import RstCloth
+
+logger = logging.getLogger('giza.content.steps.views')
 
 
 def render_steps(steps, conf):

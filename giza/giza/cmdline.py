@@ -14,8 +14,6 @@
 
 import logging
 
-logger = logging.getLogger('giza.main')
-
 import argh
 
 from giza.config.runtime import RuntimeStateConfig
@@ -35,6 +33,8 @@ import giza.operations.sphinx_cmds
 import giza.operations.translate
 import giza.operations.tx
 import giza.operations.code_review
+
+logger = logging.getLogger('giza.main')
 
 commands = {
     'main': [

@@ -14,10 +14,10 @@
 
 import logging
 
-logger = logging.getLogger('giza.content.options.inheritance')
-
 from giza.inheritance import DataContentBase, DataCache
 from giza.content.options.models import OptionData
+
+logger = logging.getLogger('giza.content.options.inheritance')
 
 
 class OptionFile(DataContentBase):

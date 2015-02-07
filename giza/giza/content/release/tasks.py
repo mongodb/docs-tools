@@ -15,12 +15,12 @@
 import logging
 import shutil
 
-logger = logging.getLogger('giza.content.release.tasks')
-
 from giza.content.release.inheritance import ReleaseDataCache
 from giza.content.release.views import render_releases
 from giza.config.content import new_content_type
 from libgiza.task import Task
+
+logger = logging.getLogger('giza.content.release.tasks')
 
 
 def register_releases(conf):

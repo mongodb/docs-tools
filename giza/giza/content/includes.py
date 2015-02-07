@@ -22,7 +22,7 @@ include files and their use. For use in documentation development only.
 import logging
 import os.path
 
-logger = logging.getLogger('giza.content.includes')
+import libgiza.task
 
 import libgiza.task
 
@@ -31,6 +31,8 @@ from giza.tools.files import expand_tree
 from giza.tools.timing import Timer
 
 from rstcloth.rstcloth import RstCloth
+
+logger = logging.getLogger('giza.content.includes')
 
 suppressed_page_prefixes = [
     '/includes/apiargs'

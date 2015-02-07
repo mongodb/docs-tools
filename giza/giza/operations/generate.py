@@ -20,8 +20,6 @@ not run in common practice.
 
 import logging
 
-logger = logging.getLogger('giza.operations.generate')
-
 import argh
 
 from libgiza.app import BuildApp
@@ -47,6 +45,8 @@ from giza.content.primer import clean as primer_clean
 from giza.content.source import source_tasks
 from giza.config.sphinx_config import render_sconf
 from giza.content.dependencies import refresh_dependency_tasks
+
+logger = logging.getLogger('giza.operations.generate')
 
 
 @argh.arg('--edition', '-e')

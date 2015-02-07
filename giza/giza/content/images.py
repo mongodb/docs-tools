@@ -57,7 +57,7 @@ import os.path
 import logging
 import subprocess
 
-logger = logging.getLogger('giza.content.images')
+import libgiza.task
 
 import libgiza.task
 
@@ -65,6 +65,8 @@ from docutils.core import publish_parts
 from rstcloth.rstcloth import RstCloth
 
 from giza.tools.files import verbose_remove
+
+logger = logging.getLogger('giza.content.images')
 
 # Internal Supporting Methods
 
@@ -242,7 +244,7 @@ def image_tasks(conf):
 
         description = "generating rst include file {0} for {1}".format(rst_file, source_core)
         t = libgiza.task.Task(job=generate_image_pages,
-                              args=image, # as kwargs
+                              args=image,  # as kwargs
                               target=rst_file,
                               dependency=[meta_file, os.path.abspath(__file__)],
                               description=description)
@@ -283,6 +285,7 @@ def image_tasks(conf):
             logger.debug('adding image creation job for {0}'.format(target_img))
 
     return tasks
+
 
 def image_clean(conf, app):
     if 'images' not in conf.system.files.data:

@@ -19,6 +19,10 @@ Development server in giza for more realistic local previews of rendered pages.
 import sys
 import os.path
 import logging
+import argh
+
+from giza.config.helper import fetch_config
+
 logger = logging.getLogger('giza.operations.http')
 
 if sys.version_info[0] == 2:
@@ -27,9 +31,6 @@ if sys.version_info[0] == 2:
 else:
     import socketserver as socket_server
     import http.server as http_server
-
-import argh
-from giza.config.helper import fetch_config
 
 
 class RequestHandler(http_server.SimpleHTTPRequestHandler):

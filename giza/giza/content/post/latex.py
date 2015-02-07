@@ -21,13 +21,15 @@ import os
 import re
 import subprocess
 
-logger = logging.getLogger('giza.content.post.latex')
+import libgiza.task
 
 import libgiza.task
 
 from giza.content.helper import edition_check
 from giza.tools.transformation import process_page_task
 from giza.tools.files import create_link, copy_if_needed
+
+logger = logging.getLogger('giza.content.post.latex')
 
 # PDFs from Latex Produced by Sphinx
 
@@ -152,7 +154,7 @@ def pdf_tasks(sconf, conf):
                                         args=(i['processed'], i['deployed'],
                                               i['path'], output_format),
                                         target=i['pdf'],
-                                        dependency=None) # i['processed']
+                                        dependency=None)  # i['processed']
         t.finalizers.append(render_task)
 
         # if needed create links.
@@ -162,6 +164,5 @@ def pdf_tasks(sconf, conf):
                                           target=i['link'],
                                           dependency=i['deployed'])
             render_task.finalizers.append(link_task)
-
 
     return tasks

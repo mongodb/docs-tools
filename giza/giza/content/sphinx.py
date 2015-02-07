@@ -36,8 +36,7 @@ import os.path
 import pkg_resources
 import re
 import sys
-
-logger = logging.getLogger('giza.content.sphinx')
+import numbers
 
 from libgiza.task import Task
 from giza.tools.command import command
@@ -54,6 +53,8 @@ from giza.content.post.slides import slide_tasks
 from giza.content.post.latex import pdf_tasks
 from giza.content.post.sites import (finalize_epub_build,
                                      finalize_dirhtml_build, error_pages)
+
+logger = logging.getLogger('giza.content.sphinx')
 
 # Config Resolution
 
@@ -105,7 +106,7 @@ def get_sphinx_args(sconf, conf):
             elif conf.runstate.serial_sphinx is False:
                 logger.info('running with parallelized sphinx processes')
                 o.append(' '.join(['-j', str(conf.runstate.pool_size)]))
-            elif (isinstance(conf.runstate.serial_sphinx, (int, long, float)) and
+            elif (isinstance(conf.runstate.serial_sphinx, numbers.Number) and
                   conf.runstate.serial_sphinx > 1):
                 logger.info('running with parallelized sphinx processes')
                 o.append(' '.join(['-j', str(conf.runstate.serial_sphinx)]))
@@ -283,6 +284,7 @@ def sphinx_tasks(sconf, conf):
                 dependency=deps,
                 description='building {0} with sphinx'.format(sconf.builder))
 
+
 def finalize_sphinx_build(sconf, conf):
     target = sconf.builder
 
@@ -310,7 +312,7 @@ def finalize_sphinx_build(sconf, conf):
 
             t = Task(job=create_manual_symlink,
                      args=[conf],
-                     target=[t[0] for t in get_public_links(conf)],
+                     target=[link[0] for link in get_public_links(conf)],
                      dependency=deps,
                      description='create symlinks')
             tasks.append(t)
@@ -336,7 +338,7 @@ def finalize_sphinx_build(sconf, conf):
     elif target == 'json':
         json_tasks, transfer_op = json_output_tasks(conf)
         tasks.extend(json_tasks)
-        tasks.append(('final', transfer_op)) # this is less than ideal
+        tasks.append(('final', transfer_op))  # this is less than ideal
     elif target == 'singlehtml':
         tasks.extend(finalize_single_html_tasks(target, conf))
     elif target == 'latex':

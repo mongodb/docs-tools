@@ -14,9 +14,9 @@
 
 import logging
 
-logger = logging.getLogger('giza.config.credentials')
-
 from libgiza.config import ConfigurationBase
+
+logger = logging.getLogger('giza.config.credentials')
 
 
 def get_credentials_skeleton():

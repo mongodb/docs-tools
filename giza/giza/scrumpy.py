@@ -17,8 +17,6 @@ import logging
 
 import argh
 
-logger = logging.getLogger('giza.scrumpy')
-
 from giza.config.jeerah import fetch_config, JeerahRuntimeStateConfig
 from giza.config.helper import dump_skel, setup_credentials
 from giza.cmdline import get_base_parser
@@ -29,6 +27,8 @@ from giza.jeerah.query import strip_name
 import giza.jeerah.progress
 import giza.jeerah.planning
 import giza.jeerah.triage
+
+logger = logging.getLogger('giza.scrumpy')
 
 # helpers
 

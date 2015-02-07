@@ -14,10 +14,11 @@
 
 import logging
 
-logger = logging.getLogger('giza.content.release.views')
-
 from rstcloth.rstcloth import RstCloth
+
 from giza.content.steps.views import render_action
+
+logger = logging.getLogger('giza.content.release.views')
 
 
 def render_releases(release, conf):

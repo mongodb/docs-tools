@@ -14,10 +14,10 @@
 
 import logging
 
-logger = logging.getLogger('giza.content.inheritance.apiargs')
-
 from giza.inheritance import DataContentBase, DataCache
 from giza.content.apiargs.models import ApiArgData
+
+logger = logging.getLogger('giza.content.inheritance.apiargs')
 
 
 class ApiArgFile(DataContentBase):

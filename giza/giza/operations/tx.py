@@ -23,13 +23,13 @@ import subprocess
 
 import argh
 
-logger = logging.getLogger('giza.operations.tx')
-
 import libgiza.app
 
 from giza.config.helper import fetch_config
 
 from sphinx_intl.commands import update_txconfig_resources
+
+logger = logging.getLogger('giza.operations.tx')
 
 # Helpers
 

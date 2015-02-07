@@ -15,10 +15,10 @@
 import logging
 import os
 
-logger = logging.getLogger('giza.config.git')
-
 from libgiza.git import GitRepo
 from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
+
+logger = logging.getLogger('giza.config.git')
 
 
 class GitConfigBase(RecursiveConfigurationBase):

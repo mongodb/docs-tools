@@ -14,10 +14,10 @@
 
 import logging
 
-logger = logging.getLogger('giza.content.tocs.views')
-
 from rstcloth.rstcloth import RstCloth
 from rstcloth.table import TableBuilder, RstTable, TableData
+
+logger = logging.getLogger('giza.content.tocs.views')
 
 
 def render_toctree(toc_items, is_ref=False):

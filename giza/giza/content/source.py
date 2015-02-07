@@ -35,12 +35,12 @@ import os.path
 import logging
 import shutil
 
-logger = logging.getLogger('giza.content.source')
-
 import libgiza.task
 
 from giza.tools.command import command
 from giza.tools.files import InvalidFile, safe_create_directory
+
+logger = logging.getLogger('giza.content.source')
 
 # Transfer Source Files
 

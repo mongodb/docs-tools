@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import logging
-logger = logging.getLogger('giza.config.sphinx_local')
 
 from libgiza.config import ConfigurationBase
+
+logger = logging.getLogger('giza.config.sphinx_local')
 
 
 class SphinxLocalConfig(ConfigurationBase):

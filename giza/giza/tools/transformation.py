@@ -14,10 +14,12 @@
 
 import logging
 
-logger = logging.getLogger('giza.transformation')
+import libgiza.task
 
 import libgiza.task
 from giza.tools.files import copy_always, copy_if_needed
+
+logger = logging.getLogger('giza.transformation')
 
 
 class ProcessingError(Exception):
@@ -99,6 +101,14 @@ def process_page_task(fn, output_fn, regex, builder='processor', copy='always'):
                              target=output_fn,
                              dependency=None,
                              description="modify page: ({0}, {1})".format(fn, output_fn))
+
+def process_page_task(fn, output_fn, regex, builder='processor', copy='always'):
+    return libgiza.task.Task(job=_process_page,
+                             args=(fn, output_fn, regex, copy, builder),
+                             target=output_fn,
+                             dependency=None,
+                             description="modify page: ({0}, {1})".format(fn, output_fn))
+
 
 def process_page(fn, output_fn, regex, app, builder='processor', copy='always'):
     t = app.add('task')
