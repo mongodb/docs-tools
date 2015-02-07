@@ -258,26 +258,11 @@ def run_sphinx(builder, sconf, conf):
 
     logger.debug(sphinx_cmd)
     m = "running sphinx build for: {0}, {1}, {2}"
+
     with Timer(m.format(builder, sconf.language, sconf.edition)):
         out = command(sphinx_cmd, capture=True, ignore=True)
 
-    logger.info('completed sphinx build {0}'.format(builder))
-
-    if True:  # out.return_code == 0:
-        logger.info(
-            'successfully completed {0} sphinx build ({1})'.format(builder, out.return_code))
-
-        finalizer_app = BuildApp.new(pool_type='thread',
-                                     pool_size=conf.runstate.pool_size,
-                                     force=conf.runstate.force)
-        finalizer_app.root_app = False
-        finalize_sphinx_build(sconf, conf, finalizer_app)
-
-        with Timer("finalize sphinx {0} build".format(builder)):
-            finalizer_app.run()
-    else:
-        m = 'the sphinx build {0} was not successful. not running finalize operation'
-        logger.warning(m.format(builder))
+    logger.info('completed {0} sphinx build ({1})'.format(builder, out.return_code))
 
     output = '\n'.join([out.err, out.out])
 
@@ -285,77 +270,90 @@ def run_sphinx(builder, sconf, conf):
 
 # Application Logic
 
-
-def sphinx_tasks(sconf, conf, app):
+def sphinx_tasks(sconf, conf):
     deps = [None]  # always force builds until depchecking is fixed
     deps.extend(get_config_paths('sphinx_local', conf))
     deps.append(os.path.join(conf.paths.projectroot, conf.paths.source))
     deps.extend(os.path.join(conf.paths.projectroot, 'conf.py'))
 
-    task = app.add('task')
-    task.job = run_sphinx
-    task.conf = conf
-    task.args = [sconf.builder, sconf, conf]
-    task.target = os.path.join(conf.paths.projectroot, conf.paths.branch_output, sconf.builder)
-    task.dependency = deps
-    task.description = 'building {0} with sphinx'.format(sconf.builder)
+    return Task(job=run_sphinx,
+                args=(sconf.builder, sconf, conf),
+                target=os.path.join(conf.paths.projectroot,
+                                    conf.paths.branch_output,
+                                    sconf.builder),
+                dependency=deps,
+                description='building {0} with sphinx'.format(sconf.builder))
 
-
-def finalize_sphinx_build(sconf, conf, app):
+def finalize_sphinx_build(sconf, conf):
     target = sconf.builder
-    logger.info('starting to finalize the Sphinx build {0}'.format(target))
 
+    tasks = []
     if target == 'html' and not conf.runstate.fast:
-        app.add(Task(job=html_tarball,
-                     args=(sconf.name, conf),
-                     target=[get_tarball_name('html', conf),
-                             get_tarball_name('link-html', conf)],
-                     dependency=None,
-                     description="creating tarball for html archive"))
+        t = Task(job=html_tarball,
+                 args=(sconf.name, conf),
+                 target=[get_tarball_name('html', conf),
+                         get_tarball_name('link-html', conf)],
+                 dependency=None,
+                 description="creating tarball for html archive")
+        tasks.append(t)
     elif target == 'dirhtml' and not conf.runstate.fast:
         for job in (finalize_dirhtml_build, error_pages):
-            app.add(Task(job=job,
-                         args=(sconf, conf),
-                         target=os.path.join(conf.paths.projectroot, conf.paths.public_site_output),
-                         dependency=None))
+            t = Task(job=job,
+                     args=(sconf, conf),
+                     target=os.path.join(conf.paths.projectroot, conf.paths.public_site_output),
+                     dependency=None)
+            tasks.append(t)
 
         if conf.system.branched is True and conf.git.branches.current == 'master':
             deps = get_config_paths('integration', conf)
             deps.append(os.path.join(conf.paths.projectroot,
                                      conf.paths.public_site_output))
-            app.add(Task(job=create_manual_symlink,
-                         args=[conf],
-                         target=[t[0] for t in get_public_links(conf)],
-                         dependency=deps,
-                         description='create symlinks'))
+
+            t = Task(job=create_manual_symlink,
+                     args=[conf],
+                     target=[t[0] for t in get_public_links(conf)],
+                     dependency=deps,
+                     description='create symlinks')
+            tasks.append(t)
     elif target == 'epub':
-        app.add(Task(job=finalize_epub_build,
-                     args=(target, conf),
-                     description='finalizing epub build',
-                     dependency=None,
-                     target=True))
+        t = Task(job=finalize_epub_build,
+                 args=(target, conf),
+                 description='finalizing epub build',
+                 dependency=None,
+                 target=True)
+        tasks.append(t)
     elif target == 'man':
-        manpage_url_tasks(target, conf, app)
-        app.add(Task(job=man_tarball,
-                     args=(target, conf),
-                     target=[get_tarball_name('man', conf),
-                             get_tarball_name('link-man', conf)],
-                     dependency=None,
-                     description="creating tarball for manpages"))
+        t = Task(job=man_tarball,
+                 args=(target, conf),
+                 target=[get_tarball_name('man', conf),
+                         get_tarball_name('link-man', conf)],
+                 dependency=None,
+                 description="creating tarball for manpages")
+
+        tasks.extend(manpage_url_tasks(target, conf))
+        tasks.append(('final', t))
     elif target == 'slides' and not conf.runstate.fast:
-        slide_tasks(sconf, conf, app)
+        tasks.extend(slide_tasks(sconf, conf))
     elif target == 'json':
-        json_output_tasks(conf, app)
+        json_tasks, transfer_op = json_output_tasks(conf)
+        tasks.extend(json_tasks)
+        tasks.append(('final', transfer_op)) # this is less than ideal
     elif target == 'singlehtml':
-        finalize_single_html_tasks(target, conf, app)
+        tasks.extend(finalize_single_html_tasks(target, conf))
     elif target == 'latex':
-        pdf_tasks(sconf, conf, app)
+        app = BuildApp.lazy()
+        app.extend_queue(pdf_tasks(sconf, conf))
+        tasks.append(app)
     elif target == 'gettext':
-        gettext_tasks(conf, app)
+        tasks.extend(gettext_tasks(conf))
     elif target == 'linkcheck':
         msg_str = '{0}: See {1}/{0}/output.txt for output.'
-        app.add(Task(job=printer,
-                     args=[msg_str.format(target, conf.paths.branch_output)],
-                     target=os.path.join(conf.paths.projectroot,
-                                         conf.paths.branch_output, target, 'output.txt'),
-                     dependency=None))
+        t = Task(job=printer,
+                 args=[msg_str.format(target, conf.paths.branch_output)],
+                 target=os.path.join(conf.paths.projectroot,
+                                     conf.paths.branch_output, target, 'output.txt'),
+                 dependency=None)
+        tasks.append(t)
+
+    logger.info('adding {0} finalizing tasks for {1} build'.format(len(tasks), target))
+    return tasks

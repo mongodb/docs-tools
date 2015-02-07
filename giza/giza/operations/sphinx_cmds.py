@@ -33,7 +33,7 @@ from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
 from giza.content.source import source_tasks, latex_image_transfer_tasks
 from giza.content.dependencies import refresh_dependency_tasks, dump_file_hash_tasks
-from giza.content.sphinx import sphinx_tasks, output_sphinx_stream
+from giza.content.sphinx import sphinx_tasks, output_sphinx_stream, finalize_sphinx_build
 from giza.content.redirects import redirect_tasks
 from giza.content.primer import primer_migration_tasks
 from giza.content.assets import assets_tasks
@@ -109,41 +109,63 @@ def sphinx_publication(c, args, app):
     # For use in task creation
     builder_jobs = [((edition, language, builder),
                     get_sphinx_build_configuration(edition, language, builder, args))
-                    for edition, language, builder in get_builder_jobs(c)]
+                     for edition, language, builder in get_builder_jobs(c)]
 
     # Copy all source to the ``build/<branch>/source`` directory.
     with Timer('migrating source to build'):
-        migrate_all_source(builder_jobs, app)
+        with app.context(randomize=True) as source_app:
+            source_app.randomize
+
+            build_source_copies = set()
+            for (_, (build_config, sconf)) in builder_jobs:
+                if build_config.paths.branch_source not in build_source_copies:
+                    build_source_copies.add(build_config.paths.branch_source)
+
+                    source_app.extend_queue(source_tasks(build_config, sconf))
+
     # load all generated content and create tasks.
     with Timer('loading generated content'):
-        add_content_generator_tasks(builder_jobs, app)
+        app.extend_queue(content_generator_tasks(builder_jobs))
 
-    # sphinx-build tasks are separated into their own app.
+        app.randomize = True
+        task_groups = app.run()
+        app.reset()
+
+        for group in task_groups:
+            app.extend_queue(group)
+
     sphinx_app = app.sub_app()
-
     build_source_copies = set()
     for ((edition, language, builder), (build_config, sconf)) in builder_jobs:
         if build_config.paths.branch_source not in build_source_copies:
             # only do these tasks once per-language+edition combination
             build_source_copies.add(build_config.paths.branch_source)
 
-            build_content_generation_tasks(build_config, app)
-            refresh_dependency_tasks(build_config, app.add('app'))
+            for content_generator in (robots_txt_tasks, intersphinx_tasks, includes_tasks,
+                                      table_tasks, hash_tasks, redirect_tasks, image_tasks):
+                app.extend_queue(content_generator(build_config))
+
+            dependency_refresh_app = app.add('app')
+            dependency_refresh_app.extend_queue(refresh_dependency_tasks(build_config))
 
             # once the source is prepared, we dump a dict with md5 hashes of all
             # files, so we can do better dependency resolution the next time.
-            dump_file_hash_tasks(build_config, app)
+            app.extend_queue(dump_file_hash_tasks(build_config))
 
             # we transfer images to the latex directory directly because offset
             # images are included using raw latex, and Sphinx doesn't know how
             # to copy images in this case.
-            latex_image_transfer_tasks(build_config, sconf, app)
+            app.extend_queue(latex_image_transfer_tasks(build_config, sconf))
 
             msg = 'added source tasks for ({0}, {1}, {2}) in {3}'
             logger.info(msg.format(builder, language, edition, build_config.paths.branch_source))
 
-        # Add sphinx tasks for this builder/language/edition combination
-        sphinx_tasks(sconf, build_config, sphinx_app)
+        # sphinx-build tasks are separated into their own app.
+        sphinx_job = sphinx_tasks(sconf, build_config)
+        sphinx_job.finalizers = finalize_sphinx_build(sconf, build_config)
+        sphinx_app.extend_queue(sphinx_job)
+
+        # sphinx_finalize_app.extend_queue()
         logger.info("adding builder job for {0} ({1}, {2})".format(builder, language, edition))
 
     # Connect the special sphinx app to the main app.
@@ -157,12 +179,13 @@ def sphinx_publication(c, args, app):
 
     # process the sphinx build. These oeprations allow us to de-duplicate
     # messages between builds.
-    sphinx_output = '\n'.join([o[1] for o in sphinx_app.results])
+    sphinx_results = [o for o in sphinx_app.results if not isinstance(o, (list, bool)) and o is not None ]
+    sphinx_output = '\n'.join([o[1] for o in sphinx_results])
     output_sphinx_stream(sphinx_output, c)
 
     # if entry points return this value, giza will inherit the sum of the Sphinx
     # build return codes.
-    ret_code = sum([o[0] for o in sphinx_app.results])
+    ret_code = sum([o[0] for o in sphinx_results])
     return ret_code
 
 
@@ -183,75 +206,25 @@ def get_sphinx_build_configuration(edition, language, builder, args):
     return conf, sconf
 
 
-def build_content_generation_tasks(conf, app):
-    """
-    :param Configuration conf: The current build configuration object.
-
-    :param BuildApp app: A :class:`~libgiza.app.BuildApp()` object.
-
-    Add tasks to the ``app`` for all tasks that modify the content in
-    ``build/<branch>/source`` directory.
-    """
-    app.randomize = True
-
-    robots_txt_tasks(conf, app)
-    intersphinx_tasks(conf, app)
-    includes_tasks(conf, app)
-    table_tasks(conf, app)
-    hash_tasks(conf, app)
-    redirect_tasks(conf, app)
-    image_tasks(conf, app)
-
-
-def migrate_all_source(builder_jobs, app):
+def content_generator_tasks(builder_jobs):
     """
     :param builder_jobs: A list of arguments in the form of ``((edition,
         language, builder), (conf, sconf))`` used to create tasks to for the build.
-
-    :param BuildApp app: A :class:`~libgiza.app.BuildApp()` object.
-
-    Uses the app pool to add all tasks to migrate the source into the
-    ``build/<branch>/<source>`` directories, and then run all migrations
-    together.
-    """
-    build_source_copies = set()
-    for (_, (build_config, sconf)) in builder_jobs:
-        if build_config.paths.branch_source not in build_source_copies:
-            build_source_copies.add(build_config.paths.branch_source)
-
-            # this is where we add tasks to transfer the source into the
-            # ``build/<branch>/source`` directory.
-            source_tasks(build_config, sconf, app)
-
-    app.randomize = True
-    app.run()
-    app.reset()
-
-
-def add_content_generator_tasks(builder_jobs, app):
-    """
-    :param builder_jobs: A list of arguments in the form of ``((edition,
-        language, builder), (conf, sconf))`` used to create tasks to for the build.
-
-    :param BuildApp app: A :class:`~libgiza.app.BuildApp()` object.
 
     Uses the app pool to read and return all tasks for all content generation
     task available in the ``conf.system.content`` array. Runs each task
     generator for each ``build/<branch>/<source>`` directory.
     """
+    tasks = []
+
     build_source_copies = set()
     for (_, (build_config, sconf)) in builder_jobs:
         if build_config.paths.branch_source not in build_source_copies:
             build_source_copies.add(build_config.paths.branch_source)
 
             for content, func in build_config.system.content.task_generators:
-                app.add(Task(job=func,
-                             args=[build_config],
-                             target=True))
+                tasks.append(Task(job=func,
+                                  args=[build_config],
+                                  target=True))
 
-    app.randomize = True
-    content_generator_tasks = app.run()
-    app.reset()
-
-    for group in content_generator_tasks:
-        app.extend_queue(group)
+    return tasks

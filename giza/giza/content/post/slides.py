@@ -22,6 +22,7 @@ import os
 import logging
 import subprocess
 
+import libgiza.task
 from giza.content.post.archives import slides_tarball, get_tarball_name
 
 logger = logging.getLogger('giza.content.post.slides')
@@ -54,15 +55,12 @@ def slides_output(conf):
             logger.error('issue deploying slides to local staging')
 
 
-def slide_tasks(sconf, conf, app):
-    task = app.add('task')
-    task.job = slides_tarball
-    task.target = [get_tarball_name('slides', conf),
-                   get_tarball_name('link-slides', conf)]
-    task.args = [sconf.name, conf]
-    task.description = "creating tarball for slides"
-
-    task = app.add('task')
-    task.job = slides_output
-    task.args = [conf]
-    task.description = 'migrating slide output to production'
+def slide_tasks(sconf, conf):
+    return [libgiza.task.Task(job=slides_tarball,
+                              target=[get_tarball_name('slides', conf),
+                                      get_tarball_name('link-slides', conf)],
+                              args=(sconf.name, conf),
+                              description="creating tarball for slides"),
+            libgiza.task.Task(job=slides_output,
+                              args=[conf],
+                              description='migrating slide output to production')]

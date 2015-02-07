@@ -24,7 +24,7 @@ import re
 
 logger = logging.getLogger('giza.content.post.singlehtml')
 
-from libgiza.task import check_dependency
+import libgiza.task
 from giza.tools.files import expand_tree, copy_if_needed, FileNotFoundError, safe_create_directory
 from giza.tools.transformation import decode_lines_from_file, encode_lines_to_file
 
@@ -35,7 +35,7 @@ def get_single_html_dir(conf):
 
 def manual_single_html(input_file, output_file):
     # don't rebuild this if its not needed.
-    if check_dependency(output_file, input_file) is False:
+    if libgiza.task.check_dependency(output_file, input_file) is False:
         logging.info('singlehtml not changed, not reprocessing.')
         return False
     else:
@@ -54,46 +54,46 @@ def manual_single_html(input_file, output_file):
 
         logging.info('processed singlehtml file.')
 
-# TODO: convert this to use common infrastructure in giza.tools.transformations.
+
+def finalize_single_html(single_html_dir, artifact_dir, conf):
+    for fn in [os.path.join(artifact_dir, f) for f in ('contents.html', 'index.html')]:
+        src_fn = os.path.join(conf.paths.projectroot, conf.paths.branch_output, fn)
+
+        if os.path.exists(src_fn):
+            manual_single_html(input_file=src_fn,
+                               output_file=os.path.join(single_html_dir, 'index.html'))
+
+            copy_if_needed(source_file=os.path.join(artifact_dir, 'objects.inv'),
+                           target_file=os.path.join(single_html_dir, 'objects.inv'))
 
 
-def finalize_single_html_tasks(builder, conf, app):
+def finalize_single_html_tasks(builder, conf):
     single_html_dir = get_single_html_dir(conf)
 
+    # create directory when registering tasks.
     safe_create_directory(single_html_dir)
+    safe_create_directory(os.path.join(single_html_dir, '_static'))
 
-    found_src = False
-    for base_path in (builder, '-'.join((builder, conf.project.edition))):
-        if found_src is True:
-            break
+    if 'edition' in conf.project and conf.project.edition != conf.project.name:
+        artifact_dir = os.path.join(conf.paths.projectroot,
+                                 conf.paths.branch_output,
+                                 '-'.join((builder, conf.project.edition)))
+    else:
+        artifact_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder)
 
-        for fn in [os.path.join(base_path, f) for f in ('contents.html', 'index.html')]:
-            src_fn = os.path.join(conf.paths.projectroot, conf.paths.branch_output, fn)
+    tasks = [libgiza.task.Task(job=finalize_single_html,
+                               args=(single_html_dir, artifact_dir, conf),
+                               target=True,
+                               dependency=None,
+                               description="migrating singlehtml")]
 
-            if os.path.exists(src_fn):
-                manual_single_html(input_file=src_fn,
-                                   output_file=os.path.join(single_html_dir, 'index.html'))
+    for fn in expand_tree(os.path.join(artifact_dir, '_static'), None):
+        target_fn = os.path.join(single_html_dir, '_static', os.path.basename(fn))
 
-                copy_if_needed(source_file=os.path.join(conf.paths.projectroot,
-                                                        conf.paths.branch_output,
-                                                        base_path, 'objects.inv'),
-                               target_file=os.path.join(single_html_dir, 'objects.inv'))
+        tasks.append(libgiza.task.Task(job=copy_if_needed,
+                                       args=(fn, target_fn),
+                                       target=target_fn,
+                                       dependency=fn,
+                                       description="moving static files to the singlehtml build"))
 
-                found_src = True
-
-                break
-
-    if found_src is not True:
-        raise FileNotFoundError('singlehtml source file')
-
-    single_path = os.path.join(single_html_dir, '_static')
-
-    for fn in expand_tree(os.path.join(os.path.dirname(src_fn), '_static'), None):
-        target_fn = os.path.join(single_path, os.path.basename(fn))
-
-        task = app.add('task')
-        task.job = copy_if_needed
-        task.target = target_fn
-        task.dependency = fn
-        task.args = [fn, target_fn]
-        task.description = "migrating static files to the HTML build"
+    return tasks

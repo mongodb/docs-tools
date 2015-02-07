@@ -37,6 +37,8 @@ import shutil
 
 logger = logging.getLogger('giza.content.source')
 
+import libgiza.task
+
 from giza.tools.command import command
 from giza.tools.files import InvalidFile, safe_create_directory
 
@@ -135,18 +137,18 @@ def transfer_images(conf, sconf):
 
 # Task Creators
 
+def latex_image_transfer_tasks(conf, sconf):
+    description = 'transferring images to build directory to {0}'.format(conf.paths.branch_source)
 
-def latex_image_transfer_tasks(conf, sconf, app):
-    t = app.add('task')
-    t.job = transfer_images
-    t.args = [conf, sconf]
-    t.target = True
-    t.description = 'transferring images to build directory to {0}'.format(conf.paths.branch_source)
+    return [libgiza.task.Task(job=transfer_images,
+                              args=(conf, sconf),
+                              target=True,
+                              description=description)]
 
+def source_tasks(conf, sconf):
+    description = 'migrating source to {0}'.format(conf.paths.branch_source)
 
-def source_tasks(conf, sconf, app):
-    t = app.add('task')
-    t.job = transfer_source
-    t.args = [conf, sconf]
-    t.target = os.path.join(conf.paths.branch_source)
-    t.description = 'transferring source to {0}'.format(conf.paths.branch_source)
+    return [libgiza.task.Task(job=transfer_source,
+                              args=(conf, sconf),
+                              target=os.path.join(conf.paths.branch_source),
+                              description=description)]

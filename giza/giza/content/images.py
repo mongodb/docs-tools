@@ -59,6 +59,8 @@ import subprocess
 
 logger = logging.getLogger('giza.content.images')
 
+import libgiza.task
+
 from docutils.core import publish_parts
 from rstcloth.rstcloth import RstCloth
 
@@ -207,7 +209,9 @@ def get_images_metadata_file(conf):
         return os.path.join(conf.paths.projectroot, conf.paths.builddata, base)
 
 
-def image_tasks(conf, app):
+def image_tasks(conf):
+    tasks = []
+
     meta_file = get_images_metadata_file(conf)
 
     if 'images' not in conf.system.files.data:
@@ -236,13 +240,13 @@ def image_tasks(conf, app):
             logger.error('"{0}" does not exist'.format(source_core))
             continue
 
-        t = app.add('task')
-        t.conf = conf
-        t.job = generate_image_pages
-        t.args = image  # as kwargs
-        t.description = "generating rst include file {0} for {1}".format(rst_file, source_core)
-        t.target = rst_file
-        t.dependency = [meta_file, os.path.abspath(__file__)]
+        description = "generating rst include file {0} for {1}".format(rst_file, source_core)
+        t = libgiza.task.Task(job=generate_image_pages,
+                              args=image, # as kwargs
+                              target=rst_file,
+                              dependency=[meta_file, os.path.abspath(__file__)],
+                              description=description)
+        tasks.append(t)
         logger.debug('adding task for image rst file: {0}'.format(rst_file))
 
         if conf.runstate.fast is True:
@@ -267,15 +271,18 @@ def image_tasks(conf, app):
             elif build_type == 'eps':
                 inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 1.0 -E {target} {source}'
 
-            t = app.add('task')
-            t.conf = conf
-            t.job = _generate_images
-            t.args = [inkscape_cmd, output['dpi'], output['width'], target_img, source_file]
-            t.target = target_img
-            t.dependency = [source_core]
-            t.description = 'generating image file {0} from {1}'.format(target_img, source_core)
+            description = 'generating image file {0} from {1}'.format(target_img, source_core)
+            t = libgiza.task.Task(job=_generate_images,
+                                  args=(inkscape_cmd, output['dpi'],
+                                        output['width'], target_img,
+                                        source_file),
+                                  target=target_img,
+                                  dependency=source_core,
+                                  description=description)
+            tasks.append(t)
             logger.debug('adding image creation job for {0}'.format(target_img))
 
+    return tasks
 
 def image_clean(conf, app):
     if 'images' not in conf.system.files.data:

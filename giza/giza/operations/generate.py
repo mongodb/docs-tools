@@ -44,7 +44,6 @@ from giza.content.release.tasks import release_tasks, release_clean
 from giza.content.primer import primer_migration_tasks
 from giza.content.primer import clean as primer_clean
 
-from giza.operations.sphinx_cmds import build_content_generation_tasks
 from giza.content.source import source_tasks
 from giza.config.sphinx_config import render_sconf
 from giza.content.dependencies import refresh_dependency_tasks

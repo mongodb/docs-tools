@@ -25,8 +25,9 @@ import logging
 
 logger = logging.getLogger('giza.content.table')
 
-from rstcloth.table import TableBuilder, YamlTable, ListTable
+import libgiza.task
 
+from rstcloth.table import TableBuilder, YamlTable, ListTable
 from giza.tools.files import expand_tree, verbose_remove
 
 # Table Builder
@@ -92,20 +93,22 @@ def table_sources(conf):
 # Table Tasks
 
 
-def table_tasks(conf, app):
+def table_tasks(conf):
+    tasks = []
     for source in table_sources(conf):
         target = _get_table_output_name(source)
         list_target = _get_list_table_output_name(source)
 
-        t = app.add('task')
-        t.target = [target, list_target]
-        t.dependency = source
-        t.job = _generate_tables
-        t.args = [source, target, list_target]
-        t.description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
+        description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
+        tasks.append(libgiza.task.Task(job=_generate_tables,
+                                       args=(source, target, list_target),
+                                       target=[target, list_target],
+                                       dependency=source,
+                                       description=description))
 
         logger.debug('adding table job to build: {0}'.format(target))
 
+    return tasks
 
 def table_clean(conf, app):
     for source in table_sources(conf):
