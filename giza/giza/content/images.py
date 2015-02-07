@@ -285,7 +285,7 @@ def image_tasks(conf):
     return tasks
 
 
-def image(conf):
+def image_clean(conf):
     if 'images' not in conf.system.files.data:
         logger.info('no images to clean')
         return []
@@ -297,7 +297,7 @@ def image(conf):
         t = libgiza.task.Task(job=verbose_remove,
                               args=[source_base + '.rst'],
                               target=True,
-                              dependency=None
+                              dependency=None,
                               description="removing img rst file")
         tasks.append(t)
 
@@ -310,7 +310,7 @@ def image(conf):
             t = libgiza.task.Task(job=verbose_remove,
                                   args=rm_args,
                                   target=True,
-                                  dependency=None
+                                  dependency=None,
                                   description="removing img file")
             tasks.append(t)
 
