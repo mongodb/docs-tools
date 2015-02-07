@@ -111,12 +111,12 @@ def table_tasks(conf):
     return tasks
 
 
-def table_clean(conf, app):
+def table_clean(conf):
+    tasks = []
     for source in table_sources(conf):
-        t = app.add('task')
-        t.job = verbose_remove
-        t.arg = _get_table_output_name(source)
+        tasks.extend([libgiza.task.Task(job=verbose_remove,
+                                        args=[_get_table_output_name(source)]),
+                      libgiza.task.Task(job=verbose_remove,
+                                        args=[_get_list_table_output_name(source)])])
 
-        lt = app.add('task')
-        lt.job = verbose_remove
-        lt.arg = _get_list_table_output_name(source)
+    return tasks

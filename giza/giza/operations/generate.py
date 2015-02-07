@@ -72,7 +72,7 @@ def steps(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            step_clean(c, app)
+            app.extend_queue(step_clean(c))
         else:
             app.extend_queue(step_tasks(c))
 
@@ -82,12 +82,13 @@ def steps(args):
 def options(args):
     c = fetch_config(args)
 
-    if c.runstate.clean_generated is True:
-        option_clean(c)
-    else:
-        with BuildApp.new(pool_type=c.runstate.runner,
-                          pool_size=c.runstate.pool_size,
-                          force=c.runstate.force).context() as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
+
+        if c.runstate.clean_generated is True:
+            app.extend_queue(option_clean(c))
+        else:
             app.extend_queue(option_tasks(c))
 
 
@@ -110,7 +111,7 @@ def assets(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            assets_clean(c, app)
+            app.extend_queue(assets_clean(c))
         else:
             app.extend_queue(assets_tasks(c))
 
@@ -124,7 +125,7 @@ def images(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            image_clean(c, app)
+            app.extend_queue(image_clean(c))
         else:
             app.extend_queue(image_tasks(c))
 
@@ -138,7 +139,7 @@ def intersphinx(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            intersphinx_clean(c, app)
+            app.extend_queue(intersphinx_clean(c))
         else:
             app.extend_queue(intersphinx_tasks(c))
 
@@ -152,7 +153,7 @@ def primer(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            primer_clean(c, app)
+            app.extend_queue(primer_clean(c))
         else:
             app.extend_queue(primer_migration_tasks(c))
 
@@ -166,7 +167,7 @@ def release(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            release_clean(c, app)
+            app.extend_queue(release_clean(c))
         else:
             app.extend_queue(release_tasks(c))
 
@@ -180,7 +181,7 @@ def tables(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            table_clean(c, app)
+            app.extend_queue(table_clean(c))
         else:
             app.extend_queue(table_tasks(c))
 

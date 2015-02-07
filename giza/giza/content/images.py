@@ -285,23 +285,33 @@ def image_tasks(conf):
     return tasks
 
 
-def image_clean(conf, app):
+def image(conf):
     if 'images' not in conf.system.files.data:
         logger.info('no images to clean')
-        return
+        return []
 
+    tasks = []
     for image in conf.system.files.data.images:
         source_base = os.path.join(conf.paths.projectroot, conf.paths.images, image['name'])
 
-        rm_rst = app.add('task')
-        rm_rst.job = verbose_remove
-        rm_rst.args = source_base + '.rst'
+        t = libgiza.task.Task(job=verbose_remove,
+                              args=[source_base + '.rst'],
+                              target=True,
+                              dependency=None
+                              description="removing img rst file")
+        tasks.append(t)
 
         for output in image['output']:
-            rm_tag_image = app.add('task')
-            rm_tag_image.job = verbose_remove
-
             if 'tag' in output:
-                rm_tag_image.args = ''.join((source_base, '-', output['tag'], '-', '.png'))
+                rm_args = ''.join((source_base, '-', output['tag'], '-', '.png'))
             else:
-                rm_tag_image.args = source_base, '.png'
+                rm_args = source_base, '.png'
+
+            t = libgiza.task.Task(job=verbose_remove,
+                                  args=rm_args,
+                                  target=True,
+                                  dependency=None
+                                  description="removing img file")
+            tasks.append(t)
+
+    return tasks
