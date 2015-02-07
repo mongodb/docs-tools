@@ -54,10 +54,9 @@ def release_tasks(conf):
     return tasks
 
 
-def release_clean(conf, app):
-    task = app.add('task')
-    task.target = True
-    task.dependnecy = None
-    task.job = shutil.rmtree
-    task.args = [conf.system.content.releases.output_dir]
-    task.description = 'removing {0}'.format(conf.system.content.steps.output_dir)
+def release_clean(conf):
+    return [Task(job=shutil.rmtree,
+                 args=[conf.system.content.releases.output_dir],
+                 target=True,
+                 dependency=[conf.system.content.releases.output_dir],
+                 description='removing {0}'.format(conf.system.content.releases.output_dir))]

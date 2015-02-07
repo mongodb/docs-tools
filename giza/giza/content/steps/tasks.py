@@ -55,10 +55,9 @@ def step_tasks(conf):
     return tasks
 
 
-def step_clean(conf, app):
-    task = app.add('task')
-    task.target = True
-    task.dependnecy = None
-    task.job = shutil.rmtree
-    task.args = [conf.system.content.steps.output_dir]
-    task.description = 'removing {0}'.format(conf.system.content.steps.output_dir)
+def step_clean(conf):
+    return [Task(job=shutil.rmtree,
+                 args=[conf.system.content.steps.output_dir],
+                 target=True,
+                 depdency=[conf.system.content.steps.output_dir],
+                 descrption='removing {0}'.format(conf.system.content.steps.output_dir))]

@@ -63,15 +63,9 @@ def example_tasks(conf):
     return tasks
 
 
-def example_clean(conf, app):
-    register_examples(conf)
-
-    for fn in conf.system.content.examples.sources:
-        out_fn = os.path.join(conf.system.content.examples.output_dir,
-                              conf.system.content.examples.get_basename(fn)) + '.rst'
-
-        t = app.add('task')
-        t.target = True
-        t.dependency = out_fn
-        t.job = verbose_remove
-        t.args = [out_fn]
+def example_clean(conf):
+    return [Task(job=shutil.rmtree,
+                 args=[conf.system.content.examples.output_dir],
+                 target=True,
+                 dependency=[conf.system.content.examples.output_dir],
+                 description='removing {0}'.format(conf.system.content.examples.output_dir))]

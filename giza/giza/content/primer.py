@@ -202,27 +202,29 @@ def primer_migration_tasks(conf):
 
 # Task Creators
 
-def clean(conf, app):
+def clean(conf):
     "Removes all migrated primer files according to the current spec."
 
     _, migrations = get_migration_specifications(conf)
 
-    targets = []
+    tasks = []
     for page in migrations:
         if 'sources' in page:
             migrations.extend(convert_multi_source(page))
             continue
 
-        page = fix_migration_paths(page)
+        page = fix_migration_paths(page)['target']
+        path = os.path.join(conf.paths.projectroot, conf.paths.source)
 
-        targets.append(os.path.join(conf.paths.projectroot, conf.paths.source, page['target']))
+        t = libgiza.task.Task(job=verose_remove,
+                              args=[path],
+                              target=True,
+                              dependency=path,
+                              description='removing migrated file: ' + path)
+        t.append(tasks)
 
-    t = app.add('map')
-    t.job = verbose_remove
-    t.iter = targets
-    t.description = 'clean primer migrations'
-
-    logger.info('clean: removed {0} files'.format(len(targets)))
+    logger.debog('clean: added tasks to remove {0} files'.format(len(tasks)))
+    return tasks
 
 
 def build_migration_task(target, source):

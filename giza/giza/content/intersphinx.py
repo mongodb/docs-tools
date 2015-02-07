@@ -112,7 +112,9 @@ def intersphinx_tasks(conf):
     return tasks
 
 
-def intersphinx_clean(conf, app):
+def intersphinx_clean(conf):
+    tasks = []
+
     for inv in conf.system.files.data.intersphinx:
         try:
             fn = os.path.join(conf.paths.projectroot,
@@ -122,6 +124,8 @@ def intersphinx_clean(conf, app):
                               conf.paths.output, inv['path'])
 
         if os.path.exists(fn):
-            t = app.add('task')
-            t.job = verbose_remove
-            t.args = [fn]
+            t = libgiza.task.Task(job=verbose_remove,
+                                  args=[fn])
+            tasks.append(t)
+
+    return tasks
