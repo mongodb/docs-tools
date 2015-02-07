@@ -53,20 +53,20 @@ def main(args):
     Use Sphinx to generate build artifacts. Can generate artifacts for multiple
     output types, content editions and translations.
     """
-    c = fetch_config(args)
+    conf = fetch_config(args)
 
-    app = BuildApp.new(pool_type=c.runstate.runner,
-                       pool_size=c.runstate.pool_size,
-                       force=c.runstate.force)
+    app = BuildApp.new(pool_type=conf.runstate.runner,
+                       pool_size=conf.runstate.pool_size,
+                       force=conf.runstate.force)
 
     with Timer("full sphinx build process"):
-        return sphinx_publication(c, args, app)
+        return sphinx_publication(conf, args, app)
 
 # sphinx_publication is its own function because it's called as part of some
 # giza.operations.deploy tasks (i.e. ``push``).
 
 
-def sphinx_publication(c, args, app):
+def sphinx_publication(conf, args, app):
     """
     :arg Configuration c: A :class:`giza.config.main.Configuration()` object.
 
@@ -95,21 +95,57 @@ def sphinx_publication(c, args, app):
     :rtype: int
     """
 
+    # assemble a list to generate tasks in the form of:
+    # ((edition, language, builder), (conf, sconf))
+    builder_jobs = [((edition, language, builder),
+                    get_sphinx_build_configuration(edition, language, builder, args))
+                    for edition, language, builder in get_builder_jobs(conf)]
+
+    # call function to prepare the source/content. Seperate so that we can do
+    # giza.operations.generate.source()
+    sphinx_content_preperation(builder_jobs, app, conf)
+
+    # sphinx-build tasks are separated into their own app.
+    sphinx_app = app.sub_app()
+    for ((edition, language, builder), (build_config, sconf)) in builder_jobs:
+        sphinx_job = sphinx_tasks(sconf, build_config)
+
+        sphinx_job.finalizers = finalize_sphinx_build(sconf, build_config)
+        sphinx_app.extend_queue(sphinx_job)
+
+        logger.info("adding builder job for {0} ({1}, {2})".format(builder, language, edition))
+
+    # Connect the special sphinx app to the main app.
+    app.add(sphinx_app)
+
+    logger.info("sphinx build configured, running the build now.")
+    app.run()
+    logger.info("sphinx build complete.")
+
+    logger.info('builds finalized. sphinx output and errors to follow')
+
+    # process the sphinx build. These oeprations allow us to de-duplicate
+    # messages between builds.
+    sphinx_results = [o for o in sphinx_app.results
+                      if not isinstance(o, (list, bool)) and o is not None]
+    sphinx_output = '\n'.join([o[1] for o in sphinx_results])
+    output_sphinx_stream(sphinx_output, conf)
+
+    # if entry points return this value, giza will inherit the sum of the Sphinx
+    # build return codes.
+    ret_code = sum([o[0] for o in sphinx_results])
+    return ret_code
+
+
+def sphinx_content_preperation(builder_jobs, app, conf):
     # Download embedded git repositories and then run migrations before doing
     # anything else.
     with app.context() as prep_app:
-        assets = assets_tasks(c)
+        assets = assets_tasks(conf)
         prep_app.extend_queue(assets)
 
-        migrations = primer_migration_tasks(c)
+        migrations = primer_migration_tasks(conf)
         prep_app.extend_queue(migrations)
-
-    # assemble a for loop of tasks in the form of:
-    # ((edition, language, builder), (conf, sconf))
-    # For use in task creation
-    builder_jobs = [((edition, language, builder),
-                    get_sphinx_build_configuration(edition, language, builder, args))
-                    for edition, language, builder in get_builder_jobs(c)]
 
     # Copy all source to the ``build/<branch>/source`` directory.
     with Timer('migrating source to build'):
@@ -134,7 +170,6 @@ def sphinx_publication(c, args, app):
         for group in task_groups:
             app.extend_queue(group)
 
-    sphinx_app = app.sub_app()
     build_source_copies = set()
     for ((edition, language, builder), (build_config, sconf)) in builder_jobs:
         if build_config.paths.branch_source not in build_source_copies:
@@ -159,35 +194,6 @@ def sphinx_publication(c, args, app):
 
             msg = 'added source tasks for ({0}, {1}, {2}) in {3}'
             logger.info(msg.format(builder, language, edition, build_config.paths.branch_source))
-
-        # sphinx-build tasks are separated into their own app.
-        sphinx_job = sphinx_tasks(sconf, build_config)
-        sphinx_job.finalizers = finalize_sphinx_build(sconf, build_config)
-        sphinx_app.extend_queue(sphinx_job)
-
-        # sphinx_finalize_app.extend_queue()
-        logger.info("adding builder job for {0} ({1}, {2})".format(builder, language, edition))
-
-    # Connect the special sphinx app to the main app.
-    app.add(sphinx_app)
-
-    logger.info("sphinx build configured, running the build now.")
-    app.run()
-    logger.info("sphinx build complete.")
-
-    logger.info('builds finalized. sphinx output and errors to follow')
-
-    # process the sphinx build. These oeprations allow us to de-duplicate
-    # messages between builds.
-    sphinx_results = [o for o in sphinx_app.results
-                      if not isinstance(o, (list, bool)) and o is not None]
-    sphinx_output = '\n'.join([o[1] for o in sphinx_results])
-    output_sphinx_stream(sphinx_output, c)
-
-    # if entry points return this value, giza will inherit the sum of the Sphinx
-    # build return codes.
-    ret_code = sum([o[0] for o in sphinx_results])
-    return ret_code
 
 
 def get_sphinx_build_configuration(edition, language, builder, args):
