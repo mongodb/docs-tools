@@ -59,8 +59,6 @@ import subprocess
 
 import libgiza.task
 
-import libgiza.task
-
 from docutils.core import publish_parts
 from rstcloth.rstcloth import RstCloth
 

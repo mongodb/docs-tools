@@ -26,7 +26,6 @@ import libgiza.task
 
 logger = logging.getLogger('giza.content.post.redirects')
 
-import libgiza.task
 
 def make_redirect(conf):
     o = []

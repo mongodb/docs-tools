@@ -270,6 +270,7 @@ def run_sphinx(builder, sconf, conf):
 
 # Application Logic
 
+
 def sphinx_tasks(sconf, conf):
     deps = [None]  # always force builds until depchecking is fixed
     deps.extend(get_config_paths('sphinx_local', conf))
