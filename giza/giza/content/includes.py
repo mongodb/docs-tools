@@ -24,6 +24,8 @@ import os.path
 
 logger = logging.getLogger('giza.content.includes')
 
+import libgiza.task
+
 from giza.includes import generated_includes, included_recusively, include_files
 from giza.tools.files import expand_tree
 from giza.tools.timing import Timer
@@ -246,21 +248,23 @@ def add_meta(r, page_name, record):
             r.newline()
 
 
-def includes_tasks(conf, app):
+def includes_tasks(conf):
     if conf.runstate.fast:
         return
 
     includes_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
     meta_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_source, 'meta')
 
+    tasks = []
     if os.path.exists(includes_dir) and os.path.exists(meta_dir):
         overview_fn = os.path.join(conf.paths.projectroot,
                                    conf.paths.branch_includes,
                                    'generated',
                                    'overview.rst')
 
-        t = app.add('task')
-        t.job = write_include_index
-        t.target = overview_fn
-        t.dependency = [os.path.join(includes_dir, fn) for fn in os.listdir(includes_dir)]
-        t.args = [overview_fn, conf]
+        tasks.append(libgiza.task.Task(job=write_include_index,
+                                       args=(overview_fn, conf),
+                                       target=overview_fn,
+                                       dependency=[os.path.join(includes_dir, fn)
+                                                   for fn in os.listdir(includes_dir)],
+                                       description="write include index"))

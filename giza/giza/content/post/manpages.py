@@ -23,6 +23,7 @@ import logging
 
 logger = logging.getLogger('giza.content.manpages')
 
+import libgiza.task
 from giza.tools.files import expand_tree
 
 # Manpage Processing
@@ -46,7 +47,7 @@ def manpage_url(regex_obj, input_file):
     logger.info("fixed urls in {0}".format(input_file))
 
 
-def manpage_url_tasks(builder, conf, app):
+def manpage_url_tasks(builder, conf):
     project_source = os.path.join(conf.paths.projectroot,
                                   conf.paths.source)
 
@@ -66,12 +67,17 @@ def manpage_url_tasks(builder, conf, app):
 
     regex_obj = (re.compile(re_string), subst)
 
+    tasks = []
     for manpage in expand_tree(os.path.join(conf.paths.projectroot,
                                             conf.paths.output,
                                             conf.git.branches.current,
                                             builder), ['1', '5']):
-        task = app.add('task')
-        task.target = manpage
-        task.job = manpage_url
-        task.args = [regex_obj, manpage]
-        task.description = 'processing urls in manpage file: {0}'.format(manpage)
+
+        description = 'processing urls in manpage file: {0}'.format(manpage)
+        tasks.append(libgiza.task.Task(job=manpage_url,
+                                       args=(regex_obj, manpage),
+                                       target=manpage,
+                                       dependency=None,
+                                       description=description ))
+
+    return tasks
