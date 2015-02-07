@@ -208,6 +208,7 @@ def clean(conf):
     _, migrations = get_migration_specifications(conf)
 
     tasks = []
+
     for page in migrations:
         if 'sources' in page:
             migrations.extend(convert_multi_source(page))
@@ -216,7 +217,7 @@ def clean(conf):
         page = fix_migration_paths(page)['target']
         path = os.path.join(conf.paths.projectroot, conf.paths.source)
 
-        t = libgiza.task.Task(job=verose_remove,
+        t = libgiza.task.Task(job=verbose_remove,
                               args=[path],
                               target=True,
                               dependency=path,

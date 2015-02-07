@@ -23,7 +23,6 @@ import logging
 import argh
 
 from libgiza.app import BuildApp
-from libgiza.task import Task
 
 from giza.config.helper import fetch_config, get_builder_jobs
 
@@ -43,9 +42,6 @@ from giza.content.steps.tasks import step_tasks, step_clean
 from giza.content.options.tasks import option_tasks, option_clean
 from giza.content.release.tasks import release_tasks, release_clean
 
-from giza.content.source import source_tasks
-from giza.config.sphinx_config import render_sconf
-from giza.content.dependencies import refresh_dependency_tasks
 from giza.operations.sphinx_cmds import sphinx_content_preperation, get_sphinx_build_configuration
 
 logger = logging.getLogger('giza.operations.generate')
@@ -220,7 +216,7 @@ def redirects(args):
         with BuildApp.new(pool_type=c.runstate.runner,
                           pool_size=c.runstate.pool_size,
                           force=c.runstate.force).context() as app:
-            appe.extend_queue(redirect_tasks(c))
+            app.extend_queue(redirect_tasks(c))
 
 
 @argh.arg('--edition', '-e')

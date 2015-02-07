@@ -94,6 +94,7 @@ def prepend_to_file(fn, text):
         f.write(text)
         f.writelines(body)
 
+
 def process_page_task(fn, output_fn, regex, builder='processor', copy='always'):
     return libgiza.task.Task(job=_process_page,
                              args=(fn, output_fn, regex, copy, builder),
@@ -111,6 +112,7 @@ def process_page(fn, output_fn, regex, app, builder='processor', copy='always'):
     t.description = "modify page"
 
     logger.debug('added tasks to process file: {0}'.format(fn))
+
 
 def _process_page(fn, output_fn, regex, copy, builder):
     tmp_fn = fn + '~'
