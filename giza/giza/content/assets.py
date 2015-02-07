@@ -51,10 +51,10 @@ import os
 import shutil
 import subprocess
 
-logger = logging.getLogger('giza.content.assets')
-
 import libgiza.task
 import libgiza.git
+
+logger = logging.getLogger('giza.content.assets')
 
 
 def assets_setup(path, branch, repo, commit=None):

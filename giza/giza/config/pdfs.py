@@ -14,9 +14,9 @@
 
 import logging
 
-logger = logging.getLogger('giza.config.helper')
-
 from libgiza.config import ConfigurationBase
+
+logger = logging.getLogger('giza.config.helper')
 
 
 class PdfConfig(ConfigurationBase):

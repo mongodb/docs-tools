@@ -23,12 +23,14 @@ Legacy implementation.
 import os.path
 import logging
 
-logger = logging.getLogger('giza.content.table')
+import libgiza.task
 
 import libgiza.task
 
 from rstcloth.table import TableBuilder, YamlTable, ListTable
 from giza.tools.files import expand_tree, verbose_remove
+
+logger = logging.getLogger('giza.content.table')
 
 # Table Builder
 
@@ -109,6 +111,7 @@ def table_tasks(conf):
         logger.debug('adding table job to build: {0}'.format(target))
 
     return tasks
+
 
 def table_clean(conf, app):
     for source in table_sources(conf):

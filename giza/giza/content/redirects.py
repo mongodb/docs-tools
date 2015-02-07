@@ -22,6 +22,8 @@ infrastructure. All of the data processing and definition happens in
 import os.path
 import logging
 
+import libgiza.task
+
 logger = logging.getLogger('giza.content.post.redirects')
 
 import libgiza.task

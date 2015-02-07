@@ -15,12 +15,13 @@
 import logging
 import shutil
 
-logger = logging.getLogger('giza.content.steps.tasks')
+from libgiza.task import Task
 
 from giza.content.steps.inheritance import StepDataCache
 from giza.content.steps.views import render_steps
 from giza.config.content import new_content_type
-from libgiza.task import Task
+
+logger = logging.getLogger('giza.content.steps.tasks')
 
 
 def register_steps(conf):

@@ -21,8 +21,6 @@ import logging
 import os
 import shutil
 
-logger = logging.getLogger('giza.operations.quickstart')
-
 import argh
 import giza
 
@@ -30,6 +28,8 @@ from giza.config.helper import fetch_config
 from libgiza.app import BuildApp
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.tools.command import command, CommandError
+
+logger = logging.getLogger('giza.operations.quickstart')
 
 
 @argh.arg('--with-git', action='store_true', dest='quickstart_git')

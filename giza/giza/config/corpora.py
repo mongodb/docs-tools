@@ -15,9 +15,9 @@
 import logging
 import os
 
-logger = logging.getLogger('giza.config.corpora')
-
 from libgiza.config import ConfigurationBase
+
+logger = logging.getLogger('giza.config.corpora')
 
 
 class SourceConfig(ConfigurationBase):

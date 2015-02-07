@@ -15,13 +15,13 @@
 import os
 import logging
 
-logger = logging.getLogger('giza.content.options.tasks')
-
 from giza.tools.files import verbose_remove
 from giza.content.options.inheritance import OptionDataCache
 from giza.content.options.views import render_options
 from giza.config.content import new_content_type
 from libgiza.task import Task
+
+logger = logging.getLogger('giza.content.options.tasks')
 
 
 def register_options(conf):

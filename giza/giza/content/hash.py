@@ -22,11 +22,13 @@ directory so that you can reference the commit in the documentation text.
 import logging
 import os
 
-logger = logging.getLogger('giza.hash')
+import libgiza.task
 
 import libgiza.task
 
 from rstcloth.rstcloth import RstCloth
+
+logger = logging.getLogger('giza.hash')
 
 # Rendering
 

@@ -22,11 +22,12 @@ import os.path
 import logging
 import re
 
-logger = logging.getLogger('giza.content.post.singlehtml')
-
 import libgiza.task
-from giza.tools.files import expand_tree, copy_if_needed, FileNotFoundError, safe_create_directory
+
+from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
 from giza.tools.transformation import decode_lines_from_file, encode_lines_to_file
+
+logger = logging.getLogger('giza.content.post.singlehtml')
 
 
 def get_single_html_dir(conf):
@@ -76,8 +77,8 @@ def finalize_single_html_tasks(builder, conf):
 
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
         artifact_dir = os.path.join(conf.paths.projectroot,
-                                 conf.paths.branch_output,
-                                 '-'.join((builder, conf.project.edition)))
+                                    conf.paths.branch_output,
+                                    '-'.join((builder, conf.project.edition)))
     else:
         artifact_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder)
 

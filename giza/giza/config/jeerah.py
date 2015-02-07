@@ -16,10 +16,10 @@ import os.path
 import logging
 import datetime
 
-logger = logging.getLogger('giza.config.jeerah')
-
 from libgiza.config import ConfigurationBase, RecursiveConfigurationBase
 from giza.config.runtime import RuntimeStateConfigurationBase
+
+logger = logging.getLogger('giza.config.jeerah')
 
 
 def fetch_config(args):

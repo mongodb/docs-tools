@@ -18,12 +18,12 @@ import yaml
 
 import multiprocessing
 
-logger = logging.getLogger('giza.config.runtime')
-
 from libgiza.git import GitError
 from libgiza.config import ConfigurationBase
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.config.error import ConfigurationError
+
+logger = logging.getLogger('giza.config.runtime')
 
 
 class RuntimeStateConfigurationBase(ConfigurationBase):

@@ -33,10 +33,10 @@ exclude a path from all published branches, current and future.
 import os
 import logging
 
-logger = logging.getLogger('giza.content.robots')
-
 import libgiza.task
 import giza.content.helper
+
+logger = logging.getLogger('giza.content.robots')
 
 
 def robots_txt_builder(fn, conf, override=False):

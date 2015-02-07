@@ -25,11 +25,13 @@ import os
 import re
 import subprocess
 
-logger = logging.getLogger('giza.content.post.json_output')
+import libgiza.task
 
 import libgiza.task
 from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
 from giza.tools.transformation import munge_content
+
+logger = logging.getLogger('giza.content.post.json_output')
 
 # Process Sphinx Json Output
 
@@ -118,6 +120,7 @@ def json_output_tasks(conf):
                                  description='transfer json output to public directory')
 
     return tasks, transfer
+
 
 def process_json_file(input_fn, output_fn, regexes, conf=None):
     if os.path.isfile(input_fn) is False:

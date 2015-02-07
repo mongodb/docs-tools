@@ -16,10 +16,10 @@ import logging
 import sys
 import jinja2
 
-logger = logging.getLogger('giza.content.steps.models')
-
 from giza.inheritance import InheritableContentBase
 from giza.content.helper import get_all_languages, level_characters
+
+logger = logging.getLogger('giza.content.steps.models')
 
 if sys.version_info >= (3, 0):
     basestring = str

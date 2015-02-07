@@ -127,12 +127,14 @@ def refresh_deps(conf):
 # on a large resource, and doing the entire operation serially in a thread takes
 # ~1 second.
 
+
 def refresh_dependency_tasks(conf):
     return [libgiza.task.Task(job=refresh_deps,
                               args=[conf],
                               target=None,
                               dependency=conf.system.dependency_cache,
                               description="check and touch files affected by dependency changes")]
+
 
 def dump_file_hash_tasks(conf):
     return [libgiza.task.Task(job=dump_file_hashes,

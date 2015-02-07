@@ -18,8 +18,6 @@ import itertools
 
 import yaml
 
-logger = logging.getLogger('giza.config.helper')
-
 from giza.config.main import Configuration
 from giza.config.error import ConfigurationError
 from giza.config.runtime import RuntimeStateConfig
@@ -33,6 +31,8 @@ from giza.content.examples.tasks import register_examples
 from giza.content.steps.tasks import register_steps
 from giza.content.tocs.tasks import register_toc
 from giza.content.apiargs.tasks import register_apiargs
+
+logger = logging.getLogger('giza.config.helper')
 
 
 def new_credentials_config(conf_path=None):

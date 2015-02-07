@@ -21,13 +21,13 @@ output format (:mod:`giza.content.examples.views`).
 import logging
 import os
 
-logger = logging.getLogger('giza.content.examples')
-
 from giza.tools.files import verbose_remove
 from giza.config.content import new_content_type
 from giza.content.examples.inheritance import ExampleDataCache
 from giza.content.examples.views import full_example
 from libgiza.task import Task
+
+logger = logging.getLogger('giza.content.examples')
 
 
 def register_examples(conf):

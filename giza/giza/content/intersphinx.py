@@ -25,11 +25,11 @@ import os
 import logging
 import subprocess
 
-logger = logging.getLogger('giza.content.intersphinx')
-
 import libgiza.task
 
 from giza.tools.files import verbose_remove, safe_create_directory
+
+logger = logging.getLogger('giza.content.intersphinx')
 
 ACCEPTABLE = 864000
 
@@ -110,6 +110,7 @@ def intersphinx_tasks(conf):
         logger.debug('added job for {0}'.format(s))
 
     return tasks
+
 
 def intersphinx_clean(conf, app):
     for inv in conf.system.files.data.intersphinx:
