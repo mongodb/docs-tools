@@ -23,8 +23,6 @@ import subprocess
 
 import libgiza.task
 
-import libgiza.task
-
 from giza.content.helper import edition_check
 from giza.tools.transformation import process_page_task
 from giza.tools.files import create_link, copy_if_needed
@@ -83,6 +81,7 @@ def _render_tex_into_pdf(fn, deployed_path, path, output_format="pdf"):
     pdf_fn = os.path.splitext(fn)[0] + '.pdf'
     copy_if_needed(pdf_fn, deployed_path, 'pdf')
 
+
 def pdf_tasks(sconf, conf):
     """Returns a list of Tasks() to generate all PDFs."""
 
@@ -122,7 +121,6 @@ def pdf_tasks(sconf, conf):
         tasks.append(t)
     else:
         output_format = "pdf"
-
 
     for i in conf.system.files.data.pdfs:
         if edition_check(i, conf) is False:

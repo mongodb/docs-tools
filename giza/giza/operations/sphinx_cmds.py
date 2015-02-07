@@ -109,7 +109,7 @@ def sphinx_publication(c, args, app):
     # For use in task creation
     builder_jobs = [((edition, language, builder),
                     get_sphinx_build_configuration(edition, language, builder, args))
-                     for edition, language, builder in get_builder_jobs(c)]
+                    for edition, language, builder in get_builder_jobs(c)]
 
     # Copy all source to the ``build/<branch>/source`` directory.
     with Timer('migrating source to build'):

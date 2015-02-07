@@ -24,8 +24,6 @@ import os.path
 
 import libgiza.task
 
-import libgiza.task
-
 from giza.includes import generated_includes, included_recusively, include_files
 from giza.tools.files import expand_tree
 from giza.tools.timing import Timer

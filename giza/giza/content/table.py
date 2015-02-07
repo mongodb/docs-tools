@@ -25,8 +25,6 @@ import logging
 
 import libgiza.task
 
-import libgiza.task
-
 from rstcloth.table import TableBuilder, YamlTable, ListTable
 from giza.tools.files import expand_tree, verbose_remove
 

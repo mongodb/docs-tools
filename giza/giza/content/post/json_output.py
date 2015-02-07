@@ -27,7 +27,6 @@ import subprocess
 
 import libgiza.task
 
-import libgiza.task
 from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
 from giza.tools.transformation import munge_content
 

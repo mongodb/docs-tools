@@ -137,6 +137,7 @@ def transfer_images(conf, sconf):
 
 # Task Creators
 
+
 def latex_image_transfer_tasks(conf, sconf):
     description = 'transferring images to build directory to {0}'.format(conf.paths.branch_source)
 
@@ -144,6 +145,7 @@ def latex_image_transfer_tasks(conf, sconf):
                               args=(conf, sconf),
                               target=True,
                               description=description)]
+
 
 def source_tasks(conf, sconf):
     description = 'migrating source to {0}'.format(conf.paths.branch_source)

@@ -23,7 +23,6 @@ import logging
 
 import libgiza.task
 
-import libgiza.task
 from giza.tools.files import expand_tree
 
 logger = logging.getLogger('giza.content.manpages')

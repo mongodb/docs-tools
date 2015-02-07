@@ -23,9 +23,6 @@ import logging
 import os
 
 import libgiza.task
-
-import libgiza.task
-
 from rstcloth.rstcloth import RstCloth
 
 logger = logging.getLogger('giza.hash')
