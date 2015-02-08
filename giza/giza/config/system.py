@@ -22,8 +22,6 @@ from giza.config.sphinx_local import SphinxLocalConfig
 from giza.config.manpage import ManpageConfig
 from giza.config.pdfs import PdfConfig
 from giza.config.intersphinx import IntersphinxConfig
-from giza.config.translate import TranslateConfig
-from giza.config.corpora import CorporaConfig
 from giza.config.redirects import HtaccessData
 from giza.config.content import ContentRegistry
 from giza.config.replacements import ReplacementData
@@ -343,11 +341,9 @@ class SystemConfigData(RecursiveConfigurationBase):
                 'manpages': ManpageConfig,
                 'pdfs': PdfConfig,
                 'intersphinx': IntersphinxConfig,
-                'corpora': CorporaConfig,
             }
             # recur_mapping for config objects that subclass RecursiveConfigurationBase
             recur_mapping = {
-                'translate': TranslateConfig,
             }
 
             with open(fn, 'r') as f:
