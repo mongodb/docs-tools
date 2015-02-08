@@ -30,7 +30,7 @@ from libgiza.git import GitRepo, GitError
 
 from giza.config.helper import fetch_config
 from giza.operations.sphinx_cmds import sphinx_publication
-from giza.tools.command import command, CommandError
+from giza.tools.files import safe_create_directory
 
 logger = logging.getLogger('giza.operations.quickstart')
 
@@ -43,46 +43,55 @@ def make_project(args):
     Generate a project skeleton. Prefer this operation over
     ``sphinx-quickstart``. Also builds skeleton HTML artifacts.
     """
-    _weak_bootstrapping(args)
-
     if args.quickstart_git is True:
         logger.info('creating a new git repository')
         g = GitRepo(os.getcwd())
         g.create_repo()
-
-        if not r.out.startswith('Reinitialized'):
-            g.cmd('add', '-A')
-
-            try:
-                g.cmd('commit', 'm', '"initial commit"')
-            except GitError:
-                pass
-
-
-def _weak_bootstrapping(args):
-    args.languages_to_build = args.editions_to_build = []
-    args.builder = 'html'
-    conf = fetch_config(args)
-
-    app = BuildApp.new(pool_type=conf.runstate.runner,
-                       pool_size=conf.runstate.pool_size,
-                       force=conf.runstate.force)
+        build_sphinx = True
+    else:
+        try:
+            GitRepo().sha()
+            build_sphinx = True
+        except GitError:
+            build_sphinx = False
 
     mod_path = os.path.dirname(inspect.getfile(giza))
     qstart_path = os.path.join(mod_path, 'quickstart')
 
     cmd = 'rsync --ignore-existing --recursive {0}/. {1}'.format(qstart_path, os.getcwd())
-    subprocess.call(cmd.split())
-
+    r = subprocess.check_output(cmd.split(), stderr=subprocess.STDOUT)
     logger.info('migrated new site files')
 
-    try:
-        sphinx_publication(conf, args, app)
-    except:
-        sphinx_publication(conf, args, app)
-        shutil.rmtree('docs-tools')
+    if args.quickstart_git is True:
+        if not r.startswith('Reinitialized'):
+            g.cmd('add', '-A')
 
-    command('python build/docs-tools/makecloth/meta.py build/makefile.meta')
+            try:
+                g.cmd('commit', '-m', '"initial commit"')
+            except GitError:
+                build_sphinx = False
+                pass
+
+    if build_sphinx is True:
+        test_build_site(args)
+
+def test_build_site(args):
+    args.languages_to_build = args.editions_to_build = []
+    args.builder = 'html'
+
+    conf = fetch_config(args)
+
+    safe_create_directory('build')
+    with BuildApp.new(pool_type=conf.runstate.runner,
+                       pool_size=conf.runstate.pool_size,
+                       force=conf.runstate.force).context() as app:
+        try:
+            sphinx_publication(conf, args, app)
+        except:
+            sphinx_publication(conf, args, app)
+            if os.path.exists('doc-tools'):
+                shutil.rmtree('docs-tools')
+
     logger.info('bootstrapped makefile system')
 
     logger.info('updated project skeleton in current directory.')
