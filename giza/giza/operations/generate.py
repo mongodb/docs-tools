@@ -113,6 +113,7 @@ def assets(args):
 
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.arg('--edition', '-e')
 @argh.expects_obj
 def images(args):
     c = fetch_config(args)
