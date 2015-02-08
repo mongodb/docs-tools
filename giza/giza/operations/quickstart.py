@@ -20,12 +20,15 @@ import inspect
 import logging
 import os
 import shutil
+import subprocess
 
 import argh
 import giza
 
-from giza.config.helper import fetch_config
 from libgiza.app import BuildApp
+from libgiza.git import GitRepo, GitError
+
+from giza.config.helper import fetch_config
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.tools.command import command, CommandError
 
@@ -44,13 +47,15 @@ def make_project(args):
 
     if args.quickstart_git is True:
         logger.info('creating a new git repository')
-        r = command('git init', capture=True)
+        g = GitRepo(os.getcwd())
+        g.create_repo()
 
         if not r.out.startswith('Reinitialized'):
-            command('git add .')
+            g.cmd('add', '-A')
+
             try:
-                command('git commit -m "initial commit"')
-            except CommandError:
+                g.cmd('commit', 'm', '"initial commit"')
+            except GitError:
                 pass
 
 
@@ -66,7 +71,9 @@ def _weak_bootstrapping(args):
     mod_path = os.path.dirname(inspect.getfile(giza))
     qstart_path = os.path.join(mod_path, 'quickstart')
 
-    command('rsync --ignore-existing --recursive {0}/. {1}'.format(qstart_path, os.getcwd()))
+    cmd = 'rsync --ignore-existing --recursive {0}/. {1}'.format(qstart_path, os.getcwd())
+    subprocess.call(cmd.split())
+
     logger.info('migrated new site files')
 
     try:

@@ -16,11 +16,12 @@ import os.path
 import re
 import itertools
 import operator
+import subprocess
+import shlex
 
 import yaml
 
 from giza.tools.files import expand_tree
-from giza.tools.command import command
 
 
 def include_files(conf, files=None):
@@ -28,8 +29,12 @@ def include_files(conf, files=None):
         return files
     else:
         source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
-        grep = command('grep -R ".. include:: /" {0} || exit 0'.format(source_dir), capture=True)
-        grep = grep.out
+        cmd = shlex.split('grep -R ".. include:: /" {0}'.format(source_dir))
+
+        try:
+            grep = subprocess.check_output(args=cmd)
+        except subprocess.CalledProcessError as e:
+            grep = e.output
 
         rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
 
