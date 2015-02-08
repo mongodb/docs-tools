@@ -98,13 +98,15 @@ def pull_tasks(conf):
 
     for page in resources:
         t = libgiza.task.Task(job=logged_command,
-                              args=('pull', ' '.join(['tx', 'pull', '-l', conf.runstate.language, '-r', page])),
+                              args=('pull', ' '.join(['tx', 'pull', '-l',
+                                                      conf.runstate.language, '-r', page])),
                               target=True,
                               dependency=None,
                               description='pulling {0} from transifex client'.format(page))
         tasks.append(t)
 
     return tasks
+
 
 def push_tasks(conf):
     resources = tx_resources(conf)
@@ -116,7 +118,7 @@ def push_tasks(conf):
                                                       conf.runstate.language, '-r', page])),
                               target=True,
                               dependency=None,
-                              description = 'pulling {0} from transifex client'.format(page))
+                              description='pulling {0} from transifex client'.format(page))
         tasks.append(t)
 
     return tasks

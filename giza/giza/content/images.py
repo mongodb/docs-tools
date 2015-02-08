@@ -292,7 +292,7 @@ def image_clean(conf):
 
     tasks = []
     for image in conf.system.files.data.images:
-        source_base = os.path.join(conf.paths.projectroot, conf.paths.images, image['name'])
+        source_base = os.path.join(conf.paths.projectroot, conf.paths.branch_images, image['name'])
 
         t = libgiza.task.Task(job=verbose_remove,
                               args=[source_base + '.rst'],

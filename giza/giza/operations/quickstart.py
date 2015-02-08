@@ -75,6 +75,7 @@ def make_project(args):
     if build_sphinx is True:
         test_build_site(args)
 
+
 def test_build_site(args):
     args.languages_to_build = args.editions_to_build = []
     args.builder = 'html'
@@ -83,8 +84,8 @@ def test_build_site(args):
 
     safe_create_directory('build')
     with BuildApp.new(pool_type=conf.runstate.runner,
-                       pool_size=conf.runstate.pool_size,
-                       force=conf.runstate.force).context() as app:
+                      pool_size=conf.runstate.pool_size,
+                      force=conf.runstate.force).context() as app:
         try:
             sphinx_publication(conf, args, app)
         except:
