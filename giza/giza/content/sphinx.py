@@ -37,9 +37,10 @@ import pkg_resources
 import re
 import sys
 import numbers
+import subprocess
+import shlex
 
 from libgiza.task import Task
-from giza.tools.command import command
 from giza.tools.files import safe_create_directory
 from giza.tools.timing import Timer
 from giza.config.helper import get_config_paths
@@ -243,8 +244,13 @@ def run_sphinx(builder, sconf, conf):
         logger.info(m.format(builder, sconf.fq_build_output))
 
     if 'language' in sconf and sconf.language is not None:
-        command('sphinx-intl build --language=' + sconf.language)
-        logger.info('compiled all PO files for translated build.')
+        cmd_str = 'sphinx-intl build --language=' + sconf.language
+        try:
+            subprocess.check_call(shlex.split(cmd_str))
+            logger.info('compiled all PO files for translated build.')
+        except subprocess.CalledProcessError as e:
+            logger.error('sphinx-intl encountered error: ' + str(e.returncode))
+            logger.info(cmd_str)
 
     logger.info('starting sphinx build {0}'.format(builder))
 
@@ -260,13 +266,16 @@ def run_sphinx(builder, sconf, conf):
     m = "running sphinx build for: {0}, {1}, {2}"
 
     with Timer(m.format(builder, sconf.language, sconf.edition)):
-        out = command(sphinx_cmd, capture=True, ignore=True)
+        try:
+            output = subprocess.check_output(shlex.split(sphinx_cmd), stderr=subprocess.STDOUT)
+            return_code = 0
+        except subprocess.CalledProcessError as e:
+            output = e.output
+            return_code = e.returncode
 
-    logger.info('completed {0} sphinx build ({1})'.format(builder, out.return_code))
+    logger.info('completed {0} sphinx build ({1})'.format(builder, return_code))
 
-    output = '\n'.join([out.err, out.out])
-
-    return out.return_code, output
+    return return_code, output
 
 # Application Logic
 

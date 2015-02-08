@@ -34,10 +34,11 @@ rather than timestampping to compare source and destination files.
 import os.path
 import logging
 import shutil
+import shlex
+import subprocess
 
 import libgiza.task
 
-from giza.tools.command import command
 from giza.tools.files import InvalidFile, safe_create_directory
 
 logger = logging.getLogger('giza.content.source')
@@ -76,7 +77,13 @@ def transfer_source(conf, sconf):
     exclusions = "--exclude=" + ' --exclude='.join(exclusions)
 
     cmd = 'rsync --checksum --recursive {2} --delete {0}/ {1}'
-    command(cmd.format(source_dir, target, exclusions))
+    cmd = cmd.format(source_dir, target, exclusions)
+
+    try:
+        subprocess.check_call(shlex.split(cmd))
+    except subprocess.CalledProcessError as e:
+        logger.error('source transfer rsync had error: ' + str(e.returncode))
+        logger.info(cmd)
 
     # remove files from the source tree specified in the sphinx config for this
     # build.
@@ -123,15 +130,18 @@ def transfer_images(conf, sconf):
             builder_dir = sconf.builder
 
         builder_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder_dir)
-
         safe_create_directory(builder_dir)
+
         cmd = ('rsync -am '
                '--include="*.png" --include="*.jpg" --include="*.eps" '
                '--exclude="*" {0}/ {1}')
         cmd = cmd.format(image_dir, builder_dir)
 
-        command(cmd)
-        command(cmd.replace('images', 'figures'), ignore=True)
+        with open(os.devnull, 'w') as null:
+            for img_cmd in (shlex.split(cmd.replace('images', 'figures')),
+                            shlex.split(cmd)):
+
+                subprocess.call(img_cmd, stdout=null, stderr=null)
 
         logger.info('migrated images for latex build')
 
