@@ -182,10 +182,7 @@ def create_branch(args):
     conf = fetch_config(args)
     builders = get_existing_builders(conf)
 
-    app = BuildApp.new(pool_type='process',
-                       pool_size=conf.runstate.pool_size,
-                       force=conf.runstate.force)
-
-    fix_build_env_tasks(builders, conf, app)
-
-    app.run()
+    with BuildApp.new(pool_type='process',
+                      pool_size=conf.runstate.pool_size,
+                      force=conf.runstate.force).context() as app:
+        app.exted_queue(fix_build_env_tasks(builders, conf))
