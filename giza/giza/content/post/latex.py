@@ -38,7 +38,8 @@ def _render_tex_into_pdf(fn, deployed_path, path, output_format="pdf"):
     pdflatex multiple times to correctly index and cross reference the PDF.
     """
 
-    os.environ['TEXINPUTS'] = ".:{0}:".format(path)
+    inputs_path = ".:{0}:".format(path)
+    os.environ['TEXINPUTS'] = inputs_path
 
     if output_format == 'dvi':
         cmd = 'pdflatex --output-format dvi --interaction batchmode --output-directory {0} {1}'
@@ -75,7 +76,8 @@ def _render_tex_into_pdf(fn, deployed_path, path, output_format="pdf"):
                 else:
                     m = 'pdf build encountered error running pdflatex, investigate {0}. terminating'
                     logger.error(m.format(base_fn))
-                    logger.error(cmd)
+                    logger.error(' '.join(['TEXINPUTS={0} '.format(inputs_path),
+                                           cmd.replace('--interaction batchmode', '')]))
                     return False
 
     pdf_fn = os.path.splitext(fn)[0] + '.pdf'
