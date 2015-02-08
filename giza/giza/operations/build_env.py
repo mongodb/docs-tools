@@ -191,7 +191,7 @@ def fix_build_env_tasks(builders, conf):
     for builder in builders:
         t = libgiza.task.Task(job=fix_build_env,
                               args=(builder, conf),
-                              target=True
+                              target=True,
                               dependency=None,
                               description=message.format(builder))
         tasks.append(t)

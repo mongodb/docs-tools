@@ -20,7 +20,7 @@ distributed as tarballs (i.e. html sites, manpages, and slides) for offline use.
 import os
 import logging
 
-from giza.tools.files import copy_if_needed, create_link, tarball
+from giza.tools.files import create_link, tarball
 
 logger = logging.getLogger('giza.content.post.archives')
 
