@@ -188,7 +188,7 @@ class ApiArgData(InheritableContentBase):
     @property
     def optional(self):
         if 'optional' in self.state:
-            return True
+            return self.state['optional']
         else:
             return False
 
