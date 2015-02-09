@@ -15,13 +15,13 @@
 import os
 import logging
 
-logger = logging.getLogger('giza.content.options.tasks')
-
 from giza.tools.files import verbose_remove
 from giza.content.options.inheritance import OptionDataCache
 from giza.content.options.views import render_options
 from giza.config.content import new_content_type
 from libgiza.task import Task
+
+logger = logging.getLogger('giza.content.options.tasks')
 
 
 def register_options(conf):
@@ -59,11 +59,17 @@ def option_tasks(conf):
     return tasks
 
 
-def option_clean(conf, app):
+def option_clean(conf):
     register_options(conf)
 
+    tasks = []
     for fn in conf.system.options.sources:
-        task = app.add('task')
-        task.job = verbose_remove
-        task.args = [fn]
-        task.description = 'removing {0}'.format(fn)
+        t = Task(job=verbose_remove,
+                 args=[fn],
+                 target=fn,
+                 dependency=None,
+                 description='removing {0}'.format(fn))
+
+        tasks.append(t)
+
+    return tasks

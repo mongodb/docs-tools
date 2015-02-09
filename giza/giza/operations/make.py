@@ -35,6 +35,7 @@ import argh
 import itertools
 
 from libgiza.app import BuildApp
+from libgiza.task import Task
 from giza.config.helper import fetch_config
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.operations.deploy import deploy_tasks
@@ -168,12 +169,10 @@ def run_make_operations(targets, conf):
       package.
     """
 
-    sphinx_opts = {"worker": sphinx_publication,
-                   "languages": set(),
+    sphinx_opts = {"languages": set(),
                    "editions": set(),
                    "builders": set()}
-    push_opts = {"worker": deploy_tasks,
-                 "targets": set(),
+    push_opts = {"targets": set(),
                  "type": None}
     packaging_opts = {}
 
@@ -209,48 +208,50 @@ def run_make_operations(targets, conf):
         elif action.startswith('env'):
             if len(packaging_opts) > 0:
                 packaging_opts = copy.copy(sphinx_opts)
-                packaging_opts['worker'] = env_package_worker
 
             tasks.append(packaging_opts)
             add_sphinx_build_options(packaging_opts, False, options, conf)
         else:
             logger.error('target: {0} not defined in the make interface'.format(action))
 
-    with BuildApp.new(pool_type=conf.runstate.runner,
-                      force=conf.runstate.force,
-                      pool_size=conf.runstate.pool_size).context() as app:
-        if sphinx_opts in tasks:
-            conf.runstate.languages_to_build = list(sphinx_opts['languages'])
-            conf.runstate.editions_to_build = list(sphinx_opts['editions'])
-            conf.runstate.builder = list(sphinx_opts['builders'])
+    app = BuildApp.new(pool_type=conf.runstate.runner,
+                       force=conf.runstate.force,
+                       pool_size=conf.runstate.pool_size)
 
-            if 'publish' in conf.runstate.builder:
-                conf.runstate.fast = False
+    if sphinx_opts in tasks:
+        conf.runstate.languages_to_build = list(sphinx_opts['languages'])
+        conf.runstate.editions_to_build = list(sphinx_opts['editions'])
+        conf.runstate.builder = list(sphinx_opts['builders'])
 
-            derive_command('sphinx', conf)
+        if 'publish' in conf.runstate.builder:
+            conf.runstate.fast = False
 
-            sphinx_opts['worker'](conf, conf.runstate, app)
+        derive_command('sphinx', conf)
 
-        if push_opts in tasks:
-            if len(push_opts['targets']) == 0:
-                for lang, edition in itertools.product(conf.runstate.languages_to_build,
-                                                       conf.runstate.editions_to_build):
-                    push_target_name = [push_opts['type']]
-                    for opt in (edition, lang):
-                        if opt is not None:
-                            push_target_name.append(opt)
-                    push_target_name = '-'.join(push_target_name)
-                    push_opts['targets'].add(push_target_name)
+        sphinx_publication(conf, app)
 
-            conf.runstate.push_targets = list(push_opts['targets'])
-            push_opts['worker'](conf, app)
-            derive_command('deploy', conf)
+    if push_opts in tasks:
+        if len(push_opts['targets']) == 0:
+            for lang, edition in itertools.product(conf.runstate.languages_to_build,
+                                                   conf.runstate.editions_to_build):
+                push_target_name = [push_opts['type']]
+                for opt in (edition, lang):
+                    if opt is not None:
+                        push_target_name.append(opt)
+                push_target_name = '-'.join(push_target_name)
+                push_opts['targets'].add(push_target_name)
 
-        if packaging_opts in tasks:
-            derive_command('env', conf)
+        conf.runstate.push_targets = list(push_opts['targets'])
+        deploy_tasks(conf, app)
+        derive_command('deploy', conf)
 
-            task = app.add('task')
-            task.job = env_package_worker
-            task.args = (conf.runstate, conf)
-            task.target = False
-            task.dependency = False
+    if packaging_opts in tasks:
+        derive_command('env', conf)
+
+        app.add(Task(job=env_package_worker,
+                     args=(conf.runstate, conf),
+                     target=True,
+                     dependency=None))
+
+    if len(app.queue) >= 1:
+        app.run()

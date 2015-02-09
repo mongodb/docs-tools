@@ -24,19 +24,19 @@ import tarfile
 import contextlib
 import urllib2
 
-logger = logging.getLogger('giza.operations.packaging')
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-
 import argh
 import libgiza.app
 
 from giza.config.helper import fetch_config
 from giza.tools.files import safe_create_directory, FileNotFoundError
 from giza.operations.deploy import deploy_tasks
+
+logger = logging.getLogger('giza.operations.packaging')
+
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 # Helper
 

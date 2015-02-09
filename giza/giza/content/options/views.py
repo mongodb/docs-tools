@@ -14,9 +14,9 @@
 
 import logging
 
-logger = logging.getLogger('giza.content.options.views')
-
 from rstcloth.rstcloth import RstCloth
+
+logger = logging.getLogger('giza.content.options.views')
 
 
 def render_options(option, conf):

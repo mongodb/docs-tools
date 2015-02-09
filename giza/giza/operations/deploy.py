@@ -18,15 +18,16 @@ Entry points that send locally built content to web servers.
 
 import os.path
 import logging
-logger = logging.getLogger('giza.operations.deploy')
+
+import argh
+import onetimepass as otp
 
 from giza.config.helper import fetch_config, new_credentials_config
 from libgiza.app import BuildApp
 from giza.deploy import Deploy, deploy_target
 from giza.operations.sphinx_cmds import sphinx_publication
 
-import argh
-import onetimepass as otp
+logger = logging.getLogger('giza.operations.deploy')
 
 
 @argh.arg('--target', '-t', nargs='*', dest='push_targets')

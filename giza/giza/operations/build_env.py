@@ -22,15 +22,16 @@ import tempfile
 import contextlib
 
 import argh
+import libgiza.task
+
+from libgiza.app import BuildApp
 from sphinx.application import Sphinx, ENV_PICKLE_FILENAME
 from sphinx.builders.html import get_stable_hash
 
-from giza.config.helper import fetch_config
+from giza.config.helper import fetch_config, get_sphinx_build_configuration
 from giza.config.sphinx_config import avalible_sphinx_builders, resolve_builder_path
 from giza.operations.packaging import fetch_package
-from giza.operations.sphinx_cmds import get_sphinx_build_configuration
 from giza.tools.files import safe_create_directory, FileNotFoundError
-from libgiza.app import BuildApp
 
 logger = logging.getLogger('giza.operations.build_env')
 
@@ -182,13 +183,19 @@ def fix_build_env(builder, conf):
 # Task Creators
 
 
-def fix_build_env_tasks(builders, conf, app):
+def fix_build_env_tasks(builders, conf):
+    tasks = []
+
+    message = "fix up sphinx environment for builder '{0}'"
     for builder in builders:
-        t = app.add('task')
-        t.job = fix_build_env
-        t.args = (builder, conf)
-        t.target = True
-        t.description = "fix up sphinx environment for builder '{0}'".format(builder)
+        t = libgiza.task.Task(job=fix_build_env,
+                              args=(builder, conf),
+                              target=True,
+                              dependency=None,
+                              description=message.format(builder))
+        tasks.append(t)
+
+    return tasks
 
 # Entry Points
 
@@ -215,4 +222,4 @@ def extract(args):
         extract_package_at_root(path, conf)
 
         builders = get_existing_builders(conf)
-        fix_build_env_tasks(builders, conf, app)
+        app.extend_queue(fix_build_env_tasks(builders, conf))

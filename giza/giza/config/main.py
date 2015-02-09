@@ -15,8 +15,6 @@
 import os.path
 import logging
 
-logger = logging.getLogger('giza.config.main')
-
 from libgiza.config import ConfigurationBase
 
 from giza.config.assets import AssetsConfig
@@ -27,6 +25,8 @@ from giza.config.system import SystemConfig
 from giza.config.runtime import RuntimeStateConfig
 from giza.config.version import VersionConfig
 from giza.config.deploy import DeployConfig
+
+logger = logging.getLogger('giza.config.main')
 
 
 class Configuration(ConfigurationBase):

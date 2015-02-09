@@ -22,9 +22,10 @@ directory so that you can reference the commit in the documentation text.
 import logging
 import os
 
-logger = logging.getLogger('giza.hash')
-
+import libgiza.task
 from rstcloth.rstcloth import RstCloth
+
+logger = logging.getLogger('giza.hash')
 
 # Rendering
 
@@ -70,23 +71,22 @@ def generate_release_file(release_fn, conf):
 # Worker
 
 
-def hash_tasks(conf, app):
+def hash_tasks(conf):
     hash_fn = os.path.join(conf.paths.projectroot,
                            conf.paths.branch_includes,
                            'hash.rst')
-
-    hash_task = app.add('task')
-    hash_task.job = generate_hash_file
-    hash_task.args = [hash_fn, conf]
-    hash_task.target = hash_fn
-    hash_task.description = 'creating hash file: {0}'.format(hash_fn)
 
     release_fn = os.path.join(conf.paths.projectroot,
                               conf.paths.public_site_output,
                               'release.txt')
 
-    release_task = app.add('task')
-    release_task.job = generate_release_file
-    release_task.args = [release_fn, conf]
-    release_task.target = release_fn
-    release_task.description = "creating release filename: {0}".format(release_fn)
+    return [libgiza.task.Task(job=generate_hash_file,
+                              args=(hash_fn, conf),
+                              target=hash_fn,
+                              dependency=None,
+                              description='creating hash file: {0}'.format(hash_fn)),
+            libgiza.task.Task(job=generate_release_file,
+                              args=(release_fn, conf),
+                              target=hash_fn,
+                              dependency=None,
+                              description="creating release filename: {0}".format(release_fn))]

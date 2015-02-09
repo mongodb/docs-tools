@@ -16,10 +16,10 @@ import logging
 import os.path
 import sys
 
-logger = logging.getLogger('giza.content.extract.models')
-
 from giza.inheritance import InheritableContentBase
 from giza.content.steps.models import HeadingMixin
+
+logger = logging.getLogger('giza.content.extract.models')
 
 if sys.version_info >= (3, 0):
     basestring = str

@@ -22,6 +22,8 @@ infrastructure. All of the data processing and definition happens in
 import os.path
 import logging
 
+import libgiza.task
+
 logger = logging.getLogger('giza.content.post.redirects')
 
 
@@ -61,7 +63,8 @@ def write_redirects(fn, conf):
     logger.info('wrote redirects to: ' + fn)
 
 
-def redirect_tasks(conf, app):
+def redirect_tasks(conf):
+    tasks = []
     if 'htaccess' in conf.system.files.data:
         fn = os.path.join(conf.paths.projectroot, conf.paths.htaccess)
 
@@ -74,9 +77,9 @@ def redirect_tasks(conf, app):
             elif configfn.startswith('htaccess'):
                 deps.append(os.path.join(conf.paths.projectroot, conf.paths.builddata, configfn))
 
-        t = app.add('task')
-        t.job = write_redirects
-        t.target = fn
-        t.dependency = deps
-        t.args = [fn, conf]
-        t.description = 'generate and write redirects into: ' + conf.paths.htaccess
+        tasks.append(libgiza.task.Task(job=write_redirects,
+                                       args=(fn, conf),
+                                       target=fn,
+                                       dependency=deps,
+                                       description=' '.join(('generate and write redirects into:',
+                                                             conf.paths.htaccess))))

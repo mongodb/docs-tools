@@ -24,9 +24,12 @@ import time
 import os
 import logging
 import subprocess
-logger = logging.getLogger('giza.content.intersphinx')
+
+import libgiza.task
 
 from giza.tools.files import verbose_remove, safe_create_directory
+
+logger = logging.getLogger('giza.content.intersphinx')
 
 ACCEPTABLE = 864000
 
@@ -81,10 +84,11 @@ def download(f, s, conf):
                 os.utime(f, (newtime, newtime))
 
 
-def intersphinx_tasks(conf, app):
+def intersphinx_tasks(conf):
     if 'intersphinx' not in conf.system.files.data:
         return
 
+    tasks = []
     for i in conf.system.files.data.intersphinx:
         try:
             f = os.path.join(conf.paths.projectroot,
@@ -97,17 +101,20 @@ def intersphinx_tasks(conf, app):
 
             s = i['url'] + 'objects.inv'
 
-        t = app.add('task')
-
-        t.target = f
-        t.job = download
-        t.args = {'f': f, 's': s, 'conf': conf}
-        t.description = 'download intersphinx inventory from {0}'.format(s)
-
+        description = 'download intersphinx inventory from {0}'.format(s)
+        tasks.append(libgiza.task.Task(job=download,
+                                       args=(f, s, conf),
+                                       target=f,
+                                       dependency=None,
+                                       description=description))
         logger.debug('added job for {0}'.format(s))
 
+    return tasks
 
-def intersphinx_clean(conf, app):
+
+def intersphinx_clean(conf):
+    tasks = []
+
     for inv in conf.system.files.data.intersphinx:
         try:
             fn = os.path.join(conf.paths.projectroot,
@@ -117,6 +124,8 @@ def intersphinx_clean(conf, app):
                               conf.paths.output, inv['path'])
 
         if os.path.exists(fn):
-            t = app.add('task')
-            t.job = verbose_remove
-            t.args = [fn]
+            t = libgiza.task.Task(job=verbose_remove,
+                                  args=[fn])
+            tasks.append(t)
+
+    return tasks

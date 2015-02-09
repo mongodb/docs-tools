@@ -3,9 +3,9 @@ import logging
 
 from requests.auth import HTTPDigestAuth
 
-logger = logging.getLogger('giza.corp')
-
 from giza.config.credentials import CredentialsConfig
+
+logger = logging.getLogger('giza.corp')
 
 
 def corp_api_call(endpoint, conf):

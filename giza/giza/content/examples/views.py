@@ -19,9 +19,9 @@ into reStructuredText using rstcloth.
 
 import logging
 
-logger = logging.getLogger('giza.content.examples.views')
-
 from rstcloth.rstcloth import RstCloth
+
+logger = logging.getLogger('giza.content.examples.views')
 
 
 def full_example(collection, examples):

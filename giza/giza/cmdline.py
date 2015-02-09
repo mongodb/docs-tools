@@ -14,8 +14,6 @@
 
 import logging
 
-logger = logging.getLogger('giza.main')
-
 import argh
 
 from giza.config.runtime import RuntimeStateConfig
@@ -32,9 +30,10 @@ import giza.operations.packaging
 import giza.operations.build_env
 import giza.operations.quickstart
 import giza.operations.sphinx_cmds
-import giza.operations.translate
 import giza.operations.tx
 import giza.operations.code_review
+
+logger = logging.getLogger('giza.main')
 
 commands = {
     'main': [
@@ -96,18 +95,6 @@ commands = {
     'env': [
         giza.operations.build_env.package,
         giza.operations.build_env.extract,
-    ],
-    'translate': [
-        giza.operations.translate.create_corpora,
-        giza.operations.translate.build_translation_model,
-        giza.operations.translate.model_results,
-        giza.operations.translate.merge_translations,
-        giza.operations.translate.po_to_corpus,
-        giza.operations.translate.dict_to_corpus,
-        giza.operations.translate.translate_po,
-        giza.operations.translate.translate_text_doc,
-        giza.operations.translate.flip_text,
-        giza.operations.translate.auto_approve_obvious_po,
     ],
     'tx': [
         giza.operations.tx.check_orphaned,

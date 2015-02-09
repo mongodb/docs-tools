@@ -14,10 +14,10 @@
 
 import logging
 
-logger = logging.getLogger('giza.content.tocs.inheritance')
-
 from giza.inheritance import DataContentBase, DataCache
 from giza.content.tocs.models import TocData
+
+logger = logging.getLogger('giza.content.tocs.inheritance')
 
 
 class TocFile(DataContentBase):

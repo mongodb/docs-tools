@@ -26,13 +26,13 @@ import json
 
 import argh
 
-logger = logging.getLogger('giza.operations.includes')
-
 from giza.config.helper import fetch_config
 
 from giza.includes import (included_once, included_recusively,
                            includes_masked, include_files,
                            include_files_unused, changed_includes)
+
+logger = logging.getLogger('giza.operations.includes')
 
 # Helper
 

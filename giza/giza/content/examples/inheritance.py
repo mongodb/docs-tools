@@ -22,11 +22,11 @@ See :mod:`giza.inheritance`
 
 import logging
 
-logger = logging.getLogger('giza.content.examples.inheritance')
-
 from libgiza.inheritance import InheritableContentError
 from giza.content.examples.models import ExampleData, ExampleCase
 from giza.inheritance import DataContentBase, DataCache
+
+logger = logging.getLogger('giza.content.examples.inheritance')
 
 # Example specific inheritance machinery
 

@@ -25,10 +25,12 @@ import os
 import re
 import subprocess
 
-logger = logging.getLogger('giza.content.post.json_output')
+import libgiza.task
 
 from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
 from giza.tools.transformation import munge_content
+
+logger = logging.getLogger('giza.content.post.json_output')
 
 # Process Sphinx Json Output
 
@@ -62,7 +64,7 @@ def json_output(conf):
         logger.error('error migrating json artifacts to local staging')
 
 
-def json_output_tasks(conf, app):
+def json_output_tasks(conf):
     regexes = [
         (re.compile(r'<a class=\"headerlink\"'), '<a'),
         (re.compile(r'<[^>]*>'), ''),
@@ -77,6 +79,9 @@ def json_output_tasks(conf, app):
     ]
 
     outputs = []
+
+    tasks = []
+
     for fn in expand_tree('source', 'txt'):
         # path = build/<branch>/json/<filename>
 
@@ -92,27 +97,28 @@ def json_output_tasks(conf, app):
         fjson = path + '.fjson'
         jsonf = path + '.json'
 
-        task = app.add('task')
-        task.target = jsonf
-        task.dependency = fjson
-        task.job = process_json_file
-        task.description = "processing json file".format(json)
-        task.args = [fjson, jsonf, regexes, conf]
-
+        task = libgiza.task.Task(job=process_json_file,
+                                 args=(fjson, jsonf, regexes, conf),
+                                 target=jsonf,
+                                 dependency=fjson,
+                                 description="processing json file".format(json))
+        tasks.append(task)
         outputs.append(jsonf)
 
     list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
+    tasks.append(libgiza.task.Task(job=generate_list_file,
+                                   args=(outputs, list_file, conf),
+                                   target=list_file,
+                                   dependency=None,
+                                   description="generating list of json files"))
 
-    list_task = app.add('task')
-    list_task.target = list_file
-    list_task.job = generate_list_file
-    list_task.args = [outputs, list_file, conf]
+    transfer = libgiza.task.Task(job=json_output,
+                                 args=[conf],
+                                 target=True,
+                                 dependency=None,
+                                 description='transfer json output to public directory')
 
-    output = app.add('app')
-    out_task = output.add('task')
-    out_task.job = json_output
-    out_task.args = [conf]
-    out_task.description = 'transfer json output to public directory'
+    return tasks, transfer
 
 
 def process_json_file(input_fn, output_fn, regexes, conf=None):

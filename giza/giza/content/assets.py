@@ -51,10 +51,10 @@ import os
 import shutil
 import subprocess
 
-logger = logging.getLogger('giza.content.assets')
-
 import libgiza.task
 import libgiza.git
+
+logger = logging.getLogger('giza.content.assets')
 
 
 def assets_setup(path, branch, repo, commit=None):
@@ -134,20 +134,22 @@ def assets_tasks(conf):
     return tasks
 
 
-def assets_clean(conf, app):
+def assets_clean(conf):
     """Adds tasks to remove all asset repositories."""
+
+    tasks = []
 
     if conf.assets is not None:
         for asset in conf.assets:
             path = os.path.join(conf.paths.projectroot, asset.path)
-
             logger.debug('adding asset cleanup {0}'.format(path))
 
-            if os.path.isdir(path):
-                job = shutil.rmtree
-            else:
-                job = os.remove
+            t = libgiza.task.Task(job=shutil.rmtree,
+                                  args=[path],
+                                  target=path,
+                                  dependency=None,
+                                  description='cleaning up asset: ' + path)
 
-            t = app.add('task')
-            t.job = job
-            t.args = [path]
+            tasks.append(t)
+
+    return tasks

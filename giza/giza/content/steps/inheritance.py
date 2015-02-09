@@ -15,10 +15,10 @@
 import logging
 import os.path
 
-logger = logging.getLogger('giza.content.steps.inheritance')
-
 from giza.inheritance import DataContentBase, DataCache
 from giza.content.steps.models import StepData
+
+logger = logging.getLogger('giza.content.steps.inheritance')
 
 
 class StepFile(DataContentBase):

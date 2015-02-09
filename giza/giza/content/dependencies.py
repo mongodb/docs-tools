@@ -29,6 +29,8 @@ import json
 import logging
 import os
 
+import libgiza.task
+
 from giza.includes import include_files
 from giza.tools.files import expand_tree, safe_create_directory, md5_file
 from giza.tools.timing import Timer
@@ -126,22 +128,21 @@ def refresh_deps(conf):
 # ~1 second.
 
 
-def refresh_dependency_tasks(conf, app):
-    t = app.add('task')
-    t.job = refresh_deps
-    t.args = [conf]
-    t.target = None
-    t.dependency = conf.system.dependency_cache
-    t.description = "check and touch files affected by dependency changes"
+def refresh_dependency_tasks(conf):
+    return [libgiza.task.Task(job=refresh_deps,
+                              args=[conf],
+                              target=None,
+                              dependency=conf.system.dependency_cache,
+                              description="check and touch files affected by dependency changes")]
 
 
-def dump_file_hash_tasks(conf, app):
-    t = app.add('task')
-    t.job = dump_file_hashes
-    t.args = [conf]
-    t.target = conf.system.dependency_cache
-    t.dependency = os.path.join(conf.paths.projectroot, conf.paths.branch_source)
-    t.description = "writing dependency cache to a file for the next build"
+def dump_file_hash_tasks(conf):
+    return [libgiza.task.Task(job=dump_file_hashes,
+                              args=[conf],
+                              target=conf.system.dependency_cache,
+                              dependency=os.path.join(conf.paths.projectroot,
+                                                      conf.paths.branch_source),
+                              description="writing dependency cache to a file for the next build")]
 
 # Hashed Dependency Checking
 

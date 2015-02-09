@@ -20,13 +20,11 @@ not run in common practice.
 
 import logging
 
-logger = logging.getLogger('giza.operations.generate')
-
 import argh
 
 from libgiza.app import BuildApp
-from libgiza.task import Task
-from giza.config.helper import fetch_config
+
+from giza.config.helper import fetch_config, get_builder_jobs, get_sphinx_build_configuration
 
 from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images import image_tasks, image_clean
@@ -34,6 +32,9 @@ from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
 from giza.content.table import table_tasks, table_clean
 from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
+from giza.content.primer import primer_migration_tasks
+from giza.content.primer import clean as primer_clean
+
 from giza.content.tocs.tasks import toc_tasks
 from giza.content.apiargs.tasks import apiarg_tasks
 from giza.content.examples.tasks import example_tasks
@@ -41,13 +42,9 @@ from giza.content.steps.tasks import step_tasks, step_clean
 from giza.content.options.tasks import option_tasks, option_clean
 from giza.content.release.tasks import release_tasks, release_clean
 
-from giza.content.primer import primer_migration_tasks
-from giza.content.primer import clean as primer_clean
+from giza.operations.sphinx_cmds import sphinx_content_preperation
 
-from giza.operations.sphinx_cmds import build_content_generation_tasks
-from giza.content.source import source_tasks
-from giza.config.sphinx_config import render_sconf
-from giza.content.dependencies import refresh_dependency_tasks
+logger = logging.getLogger('giza.operations.generate')
 
 
 @argh.arg('--edition', '-e')
@@ -58,8 +55,7 @@ def toc(args):
     with BuildApp.new(pool_type=c.runstate.runner,
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
-        for task in toc_tasks(c):
-            app.add(task)
+        app.extend_queue(toc_tasks(c))
 
 
 @argh.arg('--edition', '-e')
@@ -72,7 +68,7 @@ def steps(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            step_clean(c, app)
+            app.extend_queue(step_clean(c))
         else:
             app.extend_queue(step_tasks(c))
 
@@ -82,12 +78,13 @@ def steps(args):
 def options(args):
     c = fetch_config(args)
 
-    if c.runstate.clean_generated is True:
-        option_clean(c)
-    else:
-        with BuildApp.new(pool_type=c.runstate.runner,
-                          pool_size=c.runstate.pool_size,
-                          force=c.runstate.force).context() as app:
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
+
+        if c.runstate.clean_generated is True:
+            app.extend_queue(option_clean(c))
+        else:
             app.extend_queue(option_tasks(c))
 
 
@@ -110,12 +107,13 @@ def assets(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            assets_clean(c, app)
+            app.extend_queue(assets_clean(c))
         else:
-            assets_tasks(c, app)
+            app.extend_queue(assets_tasks(c))
 
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.arg('--edition', '-e')
 @argh.expects_obj
 def images(args):
     c = fetch_config(args)
@@ -124,9 +122,9 @@ def images(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            image_clean(c, app)
+            app.extend_queue(image_clean(c))
         else:
-            image_tasks(c, app)
+            app.extend_queue(image_tasks(c))
 
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
@@ -138,9 +136,9 @@ def intersphinx(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            intersphinx_clean(c, app)
+            app.extend_queue(intersphinx_clean(c))
         else:
-            intersphinx_tasks(c, app)
+            app.extend_queue(intersphinx_tasks(c))
 
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
@@ -152,9 +150,9 @@ def primer(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            primer_clean(c, app)
+            app.extend_queue(primer_clean(c))
         else:
-            primer_migration_tasks(c, app)
+            app.extend_queue(primer_migration_tasks(c))
 
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
@@ -166,7 +164,7 @@ def release(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            release_clean(c, app)
+            app.extend_queue(release_clean(c))
         else:
             app.extend_queue(release_tasks(c))
 
@@ -180,9 +178,9 @@ def tables(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            table_clean(c, app)
+            app.extend_queue(table_clean(c))
         else:
-            table_tasks(c, app)
+            app.extend_queue(table_tasks(c))
 
 
 @argh.expects_obj
@@ -204,7 +202,7 @@ def robots(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         app.pool = 'serial'
-        robots_txt_tasks(c, app)
+        app.extend_queue(robots_txt_tasks(c))
 
 
 @argh.arg('--edition', '-e')
@@ -219,7 +217,7 @@ def redirects(args):
         with BuildApp.new(pool_type=c.runstate.runner,
                           pool_size=c.runstate.pool_size,
                           force=c.runstate.force).context() as app:
-            redirect_tasks(c, app)
+            app.extend_queue(redirect_tasks(c))
 
 
 @argh.arg('--edition', '-e')
@@ -227,32 +225,16 @@ def redirects(args):
 @argh.expects_obj
 def source(args):
     conf = fetch_config(args)
+    args.builder = 'html'
+    args.editions_to_build = conf.project.edition_list
+    args.languages_to_build = ['en']
 
-    sconf = render_sconf(args.edition, 'html', args.language, conf)
+    builder_jobs = [((edition, language, builder),
+                    get_sphinx_build_configuration(edition, language, builder, args))
+                    for edition, language, builder in get_builder_jobs(conf)]
+
     with BuildApp.new(pool_type=conf.runstate.runner,
                       pool_size=conf.runstate.pool_size,
                       force=conf.runstate.force).context() as app:
 
-        with app.context() as pre_app:
-            assets_tasks(conf, pre_app.add('app'))
-            primer_migration_tasks(conf, pre_app)
-
-        with app.context() as source_app:
-            source_tasks(conf, sconf, source_app)
-
-        for content, func in conf.system.content.task_generators:
-            app.add(Task(job=func,
-                         args=[conf],
-                         target=True))
-
-        content_generator_tasks = app.run()
-        app.reset()
-
-        for group in content_generator_tasks:
-            if group is None:
-                continue
-
-            app.extend_queue(group)
-
-        build_content_generation_tasks(conf, app.add('app'))
-        refresh_dependency_tasks(conf, app.add('app'))
+        sphinx_content_preperation(builder_jobs, app, conf)

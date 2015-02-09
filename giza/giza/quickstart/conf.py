@@ -47,10 +47,10 @@ copyright = u'2011-{0}'.format(datetime.date.today().year)
 version = conf.version.branch
 release = conf.version.release
 
-rst_epilog = '\n'.join([
+rst_epilog = [
     '.. include:: {0}/hash.rst'.format(conf.paths.includes[len(conf.paths.source):]),
     '.. |copy| unicode:: U+000A9',
-])
+]
 
 rst_epilog.extend(get_replacements(conf))
 rst_epilog = '\n'.join(rst_epilog)

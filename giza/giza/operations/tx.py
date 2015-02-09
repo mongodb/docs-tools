@@ -23,13 +23,14 @@ import subprocess
 
 import argh
 
-logger = logging.getLogger('giza.operations.tx')
-
 import libgiza.app
+import libgiza.task
 
 from giza.config.helper import fetch_config
 
 from sphinx_intl.commands import update_txconfig_resources
+
+logger = logging.getLogger('giza.operations.tx')
 
 # Helpers
 
@@ -91,24 +92,36 @@ def check_for_orphaned_tx_files(conf):
 # Task Generators
 
 
-def pull_tasks(conf, app):
+def pull_tasks(conf):
     resources = tx_resources(conf)
+    tasks = []
 
     for page in resources:
-        t = app.add('task')
-        t.job = logged_command
-        t.args = ('pull', ' '.join(['tx', 'pull', '-l', conf.runstate.language, '-r', page]))
-        t.description = 'pulling {0} from transifex client'.format(page)
+        t = libgiza.task.Task(job=logged_command,
+                              args=('pull', ' '.join(['tx', 'pull', '-l',
+                                                      conf.runstate.language, '-r', page])),
+                              target=True,
+                              dependency=None,
+                              description='pulling {0} from transifex client'.format(page))
+        tasks.append(t)
+
+    return tasks
 
 
-def push_tasks(conf, app):
+def push_tasks(conf):
     resources = tx_resources(conf)
+    tasks = []
 
     for page in resources:
-        t = app.add('task')
-        t.job = logged_command
-        t.args = ('pull', ' '.join(['tx', 'pull', '-l', conf.runstate.language, '-r', page]))
-        t.description = 'pulling {0} from transifex client'.format(page)
+        t = libgiza.task.Task(job=logged_command,
+                              args=('pull', ' '.join(['tx', 'pull', '-l',
+                                                      conf.runstate.language, '-r', page])),
+                              target=True,
+                              dependency=None,
+                              description='pulling {0} from transifex client'.format(page))
+        tasks.append(t)
+
+    return tasks
 
 
 def update(conf):
@@ -160,7 +173,7 @@ def pull_translations(args):
     with libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
                                   pool_size=conf.runstate.pool_size,
                                   force=conf.runstate.force).context() as app:
-        pull_tasks(conf, app)
+        app.extend_queue(pull_tasks(conf))
 
 
 @argh.arg('--edition', '-e')
@@ -173,6 +186,5 @@ def push_translations(args):
     with libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
                                   pool_size=conf.runstate.pool_size,
                                   force=conf.runstate.force).context() as app:
-        push_tasks(conf, app)
-
+        app.extend_queue(push_tasks(conf))
         update(conf)

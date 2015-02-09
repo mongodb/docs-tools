@@ -20,9 +20,9 @@ Creates symbolic links in the build output based on definitions in the
 import os.path
 import logging
 
-logger = logging.getLogger('giza.content.links')
-
 from giza.tools.files import create_link
+
+logger = logging.getLogger('giza.content.links')
 
 
 def _link_path(path, conf):

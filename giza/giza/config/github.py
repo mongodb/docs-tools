@@ -16,10 +16,10 @@ import os
 import sys
 import logging
 
-logger = logging.getLogger('giza.config.github')
-
 from libgiza.config import ConfigurationBase
 from giza.config.runtime import RuntimeStateConfigurationBase
+
+logger = logging.getLogger('giza.config.github')
 
 if sys.version_info >= (3, 0):
     basestring = str

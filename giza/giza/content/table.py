@@ -23,11 +23,12 @@ Legacy implementation.
 import os.path
 import logging
 
-logger = logging.getLogger('giza.content.table')
+import libgiza.task
 
 from rstcloth.table import TableBuilder, YamlTable, ListTable
-
 from giza.tools.files import expand_tree, verbose_remove
+
+logger = logging.getLogger('giza.content.table')
 
 # Table Builder
 
@@ -92,27 +93,30 @@ def table_sources(conf):
 # Table Tasks
 
 
-def table_tasks(conf, app):
+def table_tasks(conf):
+    tasks = []
     for source in table_sources(conf):
         target = _get_table_output_name(source)
         list_target = _get_list_table_output_name(source)
 
-        t = app.add('task')
-        t.target = [target, list_target]
-        t.dependency = source
-        t.job = _generate_tables
-        t.args = [source, target, list_target]
-        t.description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
+        description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
+        tasks.append(libgiza.task.Task(job=_generate_tables,
+                                       args=(source, target, list_target),
+                                       target=[target, list_target],
+                                       dependency=source,
+                                       description=description))
 
         logger.debug('adding table job to build: {0}'.format(target))
 
+    return tasks
 
-def table_clean(conf, app):
+
+def table_clean(conf):
+    tasks = []
     for source in table_sources(conf):
-        t = app.add('task')
-        t.job = verbose_remove
-        t.arg = _get_table_output_name(source)
+        tasks.extend([libgiza.task.Task(job=verbose_remove,
+                                        args=[_get_table_output_name(source)]),
+                      libgiza.task.Task(job=verbose_remove,
+                                        args=[_get_list_table_output_name(source)])])
 
-        lt = app.add('task')
-        lt.job = verbose_remove
-        lt.arg = _get_list_table_output_name(source)
+    return tasks

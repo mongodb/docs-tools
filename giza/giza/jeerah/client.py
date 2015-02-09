@@ -1,12 +1,12 @@
 import logging
 import datetime
 
-logger = logging.getLogger('giza.jeerah.client')
-
 from jira.client import JIRA
 from jira.resources import Version
 
 from giza.config.credentials import CredentialsConfig
+
+logger = logging.getLogger('giza.jeerah.client')
 
 
 class JeerahClient(object):

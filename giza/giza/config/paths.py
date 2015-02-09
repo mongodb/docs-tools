@@ -15,9 +15,9 @@
 import logging
 import os.path
 
-logger = logging.getLogger('giza.config.paths')
-
 from libgiza.config import RecursiveConfigurationBase
+
+logger = logging.getLogger('giza.config.paths')
 
 
 class PathsConfig(RecursiveConfigurationBase):

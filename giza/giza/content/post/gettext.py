@@ -21,15 +21,17 @@ as a basis for translation.
 import os.path
 import logging
 
-logger = logging.getLogger('giza.content.post.gettext')
+import libgiza.task
 
 from giza.tools.files import expand_tree, copy_if_needed
 from giza.config.sphinx_config import resolve_builder_path
 
+logger = logging.getLogger('giza.content.post.gettext')
+
 # Gettext Processing
 
 
-def gettext_tasks(conf, app):
+def gettext_tasks(conf):
     locale_dirs = os.path.join(conf.paths.projectroot,
                                conf.paths.locale, 'pot')
 
@@ -41,13 +43,14 @@ def gettext_tasks(conf, app):
 
     path_offset = len(branch_output) + 1
 
+    tasks = []
     for fn in expand_tree(branch_output, None):
         target = os.path.join(locale_dirs, fn[path_offset:])
         source = fn
 
-        task = app.add('task')
-        task.target = target
-        task.dependency = source
-        task.job = copy_if_needed
-        task.args = [source, target, None]
-        task.description = "migrating po file {0} if needed".format(fn)
+        t = libgiza.task.Task(job=copy_if_needed,
+                              args=(source, target, None),
+                              target=target,
+                              dependency=source,
+                              description="migrating po file {0} if needed".format(fn))
+        tasks.append(t)
