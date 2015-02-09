@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os.path
+import os
 import re
 import itertools
 import operator
@@ -31,10 +31,11 @@ def include_files(conf, files=None):
         source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
         cmd = shlex.split('grep -R ".. include:: /" {0}'.format(source_dir))
 
-        try:
-            grep = subprocess.check_output(args=cmd)
-        except subprocess.CalledProcessError as e:
-            grep = e.output
+        with open(os.devnull, 'w') as null:
+            try:
+                grep = subprocess.check_output(args=cmd, stderr=null)
+            except subprocess.CalledProcessError as e:
+                grep = e.output
 
         rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
 

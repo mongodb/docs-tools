@@ -24,7 +24,7 @@ import argh
 
 from libgiza.app import BuildApp
 
-from giza.config.helper import fetch_config, get_builder_jobs
+from giza.config.helper import fetch_config, get_builder_jobs, get_sphinx_build_configuration
 
 from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images import image_tasks, image_clean
@@ -42,7 +42,7 @@ from giza.content.steps.tasks import step_tasks, step_clean
 from giza.content.options.tasks import option_tasks, option_clean
 from giza.content.release.tasks import release_tasks, release_clean
 
-from giza.operations.sphinx_cmds import sphinx_content_preperation, get_sphinx_build_configuration
+from giza.operations.sphinx_cmds import sphinx_content_preperation
 
 logger = logging.getLogger('giza.operations.generate')
 

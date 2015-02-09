@@ -23,6 +23,7 @@ from giza.config.error import ConfigurationError
 from giza.config.runtime import RuntimeStateConfig
 from giza.config.project import get_path_prefix
 from giza.config.credentials import CredentialsConfig, get_credentials_skeleton
+from giza.config.sphinx_config import render_sconf
 
 from giza.content.release.tasks import register_releases
 from giza.content.extract.tasks import register_extracts
@@ -124,6 +125,23 @@ def get_builder_jobs(conf):
             for a in itertools.product(conf.runstate.editions_to_build,
                                        conf.runstate.languages_to_build,
                                        conf.runstate.builder)]
+
+
+def get_sphinx_build_configuration(edition, language, builder, args):
+    """
+    Given an ``edition``, ``language`` and ``builder`` strings and the runtime
+    arguments, return copies of the configuration (``conf``) and sphinx
+    configuration (``sconf``) objects.
+    """
+
+    args.language = language
+    args.edition = edition
+    args.builder = builder
+
+    conf = fetch_config(args)
+    sconf = render_sconf(edition, builder, language, conf)
+
+    return conf, sconf
 
 
 def get_manual_path(conf):

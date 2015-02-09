@@ -35,6 +35,7 @@ import argh
 import itertools
 
 from libgiza.app import BuildApp
+from libgiza.task import Task
 from giza.config.helper import fetch_config
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.operations.deploy import deploy_tasks
@@ -168,12 +169,10 @@ def run_make_operations(targets, conf):
       package.
     """
 
-    sphinx_opts = {"worker": sphinx_publication,
-                   "languages": set(),
+    sphinx_opts = {"languages": set(),
                    "editions": set(),
                    "builders": set()}
-    push_opts = {"worker": deploy_tasks,
-                 "targets": set(),
+    push_opts = {"targets": set(),
                  "type": None}
     packaging_opts = {}
 
@@ -209,7 +208,6 @@ def run_make_operations(targets, conf):
         elif action.startswith('env'):
             if len(packaging_opts) > 0:
                 packaging_opts = copy.copy(sphinx_opts)
-                packaging_opts['worker'] = env_package_worker
 
             tasks.append(packaging_opts)
             add_sphinx_build_options(packaging_opts, False, options, conf)
@@ -229,7 +227,7 @@ def run_make_operations(targets, conf):
 
             derive_command('sphinx', conf)
 
-            sphinx_opts['worker'](conf, conf.runstate, app)
+            sphinx_publication(conf, app)
 
         if push_opts in tasks:
             if len(push_opts['targets']) == 0:
@@ -243,14 +241,13 @@ def run_make_operations(targets, conf):
                     push_opts['targets'].add(push_target_name)
 
             conf.runstate.push_targets = list(push_opts['targets'])
-            push_opts['worker'](conf, app)
+            deploy_tasks(conf, app)
             derive_command('deploy', conf)
 
         if packaging_opts in tasks:
             derive_command('env', conf)
 
-            task = app.add('task')
-            task.job = env_package_worker
-            task.args = (conf.runstate, conf)
-            task.target = False
-            task.dependency = False
+            app.add(Task(job=env_package_worker,
+                         args=(conf.runstate, conf),
+                         target=True,
+                         dependency=None))
