@@ -65,7 +65,7 @@ def main(args):
         # and makes it possible to run portions of this process in separate
         # targets.
 
-        return sphinx_publication(conf, app)
+        sphinx_publication(conf, app)
 
 # sphinx_publication is its own function because it's called as part of some
 # giza.operations.deploy tasks (i.e. ``push``).
