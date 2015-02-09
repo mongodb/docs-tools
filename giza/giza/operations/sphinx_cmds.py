@@ -19,7 +19,7 @@ Main controlling operations for running Sphinx builds.
 import logging
 import argh
 
-from giza.config.helper import fetch_config, get_builder_jobs
+from giza.config.helper import fetch_config, get_builder_jobs, get_sphinx_build_configuration
 from libgiza.app import BuildApp
 from libgiza.task import Task
 
@@ -36,7 +36,6 @@ from giza.content.redirects import redirect_tasks
 from giza.content.primer import primer_migration_tasks
 from giza.content.assets import assets_tasks
 
-from giza.config.sphinx_config import render_sconf
 from giza.tools.timing import Timer
 
 logger = logging.getLogger('giza.operations.sphinx')
@@ -60,17 +59,19 @@ def main(args):
                        force=conf.runstate.force)
 
     with Timer("full sphinx build process"):
-        return sphinx_publication(conf, args, app)
+        # In general we try to avoid passing the "app" object between functions
+        # and mutating it at too many places in the stack (although in earlier
+        # versions this was the primary idiom). This call is a noted exception,
+        # and makes it possible to run portions of this process in separate
+        # targets.
+
+        return sphinx_publication(conf, app)
 
 # sphinx_publication is its own function because it's called as part of some
 # giza.operations.deploy tasks (i.e. ``push``).
-
-
-def sphinx_publication(conf, args, app):
+def sphinx_publication(conf, app):
     """
     :arg Configuration c: A :class:`giza.config.main.Configuration()` object.
-
-    :arg RuntimeStateConfig args: A :class:`giza.config.runtime.RuntimeState()` object.
 
     :arg BuildApp app: A :class:`libgiza.app.BuildApp()` object.
 
@@ -98,11 +99,11 @@ def sphinx_publication(conf, args, app):
     # assemble a list to generate tasks in the form of:
     # ((edition, language, builder), (conf, sconf))
     builder_jobs = [((edition, language, builder),
-                    get_sphinx_build_configuration(edition, language, builder, args))
+                    get_sphinx_build_configuration(edition, language, builder, conf.runstate))
                     for edition, language, builder in get_builder_jobs(conf)]
 
-    # call function to prepare the source/content. Seperate so that we can do
-    # giza.operations.generate.source()
+    # call function to prepare the source/content. Seperate so that we can also
+    # call this from/as the giza.operations.generate.source() entry point.
     sphinx_content_preperation(builder_jobs, app, conf)
 
     # sphinx-build tasks are separated into their own app.
@@ -127,7 +128,7 @@ def sphinx_publication(conf, args, app):
     # process the sphinx build. These oeprations allow us to de-duplicate
     # messages between builds.
     sphinx_results = [o for o in sphinx_app.results
-                      if not isinstance(o, (list, bool)) and o is not None]
+                      if not isinstance(o, (list, bool, type(None)))]
     sphinx_output = '\n'.join([o[1] for o in sphinx_results])
     output_sphinx_stream(sphinx_output, conf)
 
@@ -161,14 +162,22 @@ def sphinx_content_preperation(builder_jobs, app, conf):
 
     # load all generated content and create tasks.
     with Timer('loading generated content'):
-        app.extend_queue(content_generator_tasks(builder_jobs))
+        build_source_copies = set()
+        for (_, (build_config, sconf)) in builder_jobs:
+            if build_config.paths.branch_source not in build_source_copies:
+                build_source_copies.add(build_config.paths.branch_source)
+
+                for content, func in build_config.system.content.task_generators:
+                    app.add(Task(job=func,
+                                 args=[build_config],
+                                 target=True))
 
         app.randomize = True
-        task_groups = app.run()
+        results = app.run()
         app.reset()
 
-        for group in task_groups:
-            app.extend_queue(group)
+        for task_group in results:
+            app.extend_queue(task_group)
 
     build_source_copies = set()
     for ((edition, language, builder), (build_config, sconf)) in builder_jobs:
@@ -194,44 +203,3 @@ def sphinx_content_preperation(builder_jobs, app, conf):
 
             msg = 'added source tasks for ({0}, {1}, {2}) in {3}'
             logger.info(msg.format(builder, language, edition, build_config.paths.branch_source))
-
-
-def get_sphinx_build_configuration(edition, language, builder, args):
-    """
-    Given an ``edition``, ``language`` and ``builder`` strings and the runtime
-    arguments, return copies of the configuration (``conf``) and sphinx
-    configuration (``sconf``) objects.
-    """
-
-    args.language = language
-    args.edition = edition
-    args.builder = builder
-
-    conf = fetch_config(args)
-    sconf = render_sconf(edition, builder, language, conf)
-
-    return conf, sconf
-
-
-def content_generator_tasks(builder_jobs):
-    """
-    :param builder_jobs: A list of arguments in the form of ``((edition,
-        language, builder), (conf, sconf))`` used to create tasks to for the build.
-
-    Uses the app pool to read and return all tasks for all content generation
-    task available in the ``conf.system.content`` array. Runs each task
-    generator for each ``build/<branch>/<source>`` directory.
-    """
-    tasks = []
-
-    build_source_copies = set()
-    for (_, (build_config, sconf)) in builder_jobs:
-        if build_config.paths.branch_source not in build_source_copies:
-            build_source_copies.add(build_config.paths.branch_source)
-
-            for content, func in build_config.system.content.task_generators:
-                tasks.append(Task(job=func,
-                                  args=[build_config],
-                                  target=True))
-
-    return tasks

@@ -28,10 +28,9 @@ from libgiza.app import BuildApp
 from sphinx.application import Sphinx, ENV_PICKLE_FILENAME
 from sphinx.builders.html import get_stable_hash
 
-from giza.config.helper import fetch_config
+from giza.config.helper import fetch_config, get_sphinx_build_configuration
 from giza.config.sphinx_config import avalible_sphinx_builders, resolve_builder_path
 from giza.operations.packaging import fetch_package
-from giza.operations.sphinx_cmds import get_sphinx_build_configuration
 from giza.tools.files import safe_create_directory, FileNotFoundError
 
 logger = logging.getLogger('giza.operations.build_env')
