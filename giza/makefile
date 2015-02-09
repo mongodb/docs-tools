@@ -8,3 +8,10 @@ pep8:
 
 test:pyflakes pep8
 	@echo "[testing]: completed all tests"
+
+release:
+ifeq ($(shell test -f /etc/arch-release && echo arch || echo Linux),arch)
+	python2 setup.py sdist upload
+else
+	python setup.py sdist upload
+endif
