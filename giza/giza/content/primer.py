@@ -229,35 +229,26 @@ def clean(conf):
 
 
 def build_migration_task(target, source):
-    task = libgiza.task.Task()
-    task.target = target
-    task.job = copy_if_needed
-    task.target = target
-    task.dependency = source
-    task.args = [source, target, 'primer']
-
-    return task
-
+    return libgiza.task.Task(job=copy_if_needed,
+                             args=(source, target, 'primer'),
+                             target=target,
+                             dependency=source)
 
 def build_append_task(page, target, spec_files):
-    task = libgiza.task.Task()
-    task.target = page['target']
-    task.dependency = spec_files
-    task.job = append_to_file
-    task.args = [target, page['append']]
-
-    return task
+    return libgiza.task.Task(job=append_to_file,
+                             args=(target, page['append']),
+                             target=page['target'],
+                             dependency=spec_files)
 
 
 def build_truncate_task(truncate_spec, target, deps):
-    task = libgiza.task.Task()
-    task.target = target
-    task.dependency = deps
-    task.job = truncate_file
-    task.args = {
+    job_args = {
         'fn': target,
         'start_after': truncate_spec['start-after'] if 'start-after' in truncate_spec else None,
         'end_before': truncate_spec['end-before'] if 'end-before' in truncate_spec else None
     }
 
-    return task
+    return libgiza.task.Task(job=truncate_file,
+                             args=job_args,
+                             target=target,
+                             dependency=deps)
