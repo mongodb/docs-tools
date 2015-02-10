@@ -234,6 +234,7 @@ def build_migration_task(target, source):
                              target=target,
                              dependency=source)
 
+
 def build_append_task(page, target, spec_files):
     return libgiza.task.Task(job=append_to_file,
                              args=(target, page['append']),

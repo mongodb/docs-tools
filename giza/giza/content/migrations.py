@@ -47,12 +47,12 @@ def migration_tasks(conf):
             copy_job.dependency = None
             copy_job.job = giza.tools.file.copy_always
 
+            regexes = [(t.regex, t.replacement) for t in migration.transform]
             transforms = giza.tools.transformation.process_page_task(fn=migration.target,
-                                                               output_fn=migration.target,
-                                                               regex=[(t.regex, t.replacement)
-                                                                      for t in migration.transform],
-                                                               builder='migration',
-                                                               copy='ifNeeded')
+                                                                     output_fn=migration.target,
+                                                                     regex=regexes,
+                                                                     builder='migration',
+                                                                     copy='ifNeeded')
             copy_job.finalizers = transforms
 
         if migration.append is not None:
@@ -61,7 +61,7 @@ def migration_tasks(conf):
             copy_job.job = giza.tools.file.copy_always
             copy_job.finalizers = libgiza.task.Task(job=giza.tools.transformation.append_to_file,
                                                     args=(migration.target, migration.append),
-                                                    target=migrations.target,
+                                                    target=migration.target,
                                                     dependency=migration_spec_files)
 
         tasks.append(copy_job)
