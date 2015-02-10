@@ -34,7 +34,6 @@ def report_version(args):
     print("giza: " + giza.__version__)
     print("libgiza: " + libgiza.__version__)
 
-
 @argh.arg('--conf_path', '-c')
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')

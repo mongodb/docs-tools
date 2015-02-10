@@ -15,12 +15,13 @@
 import logging
 import os
 import sys
+import re
 
 import libgiza.config
 
 import giza.content.helper
 
-logger = logging.getLogger('giza.config.redirects')
+logger = logging.getLogger('giza.config.migrations')
 
 if sys.version_info >= (3, 0):
     basestring = str
@@ -41,19 +42,50 @@ class MigrationData(list):
             return
 
         if 'sources' in item:
+            spec = {}
+            if 'source_dir' in item:
+                spec['source_dir'] = item['source_dir']
             for source in item['sources']:
-                m = MigrationSpecification({'source': source, 'target': 'auto'}, self.conf)
+                spec['source'] = source
+                m = MigrationSpecification( spec, self.conf)
                 super(MigrationData, self).insert(-1, m)
         else:
-            super(MigrationData, self).insert(index, item)
-
+            m = MigrationSpecification(item, self.conf)
+            super(MigrationData, self).insert(index, m)
 
 class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
+
+    @property
+    def source_dir(self):
+        if 'source_dir' not in self.state:
+            self.source_dir = None
+
+        return self.state['source_dir']
+
+    @source_dir.setter
+    def source_dir(self, value):
+        paths = []
+        if value is not None:
+            if value.startswith('/'):
+                value  = value[1:]
+            paths.extend([
+                value,
+                os.path.join(self.conf.paths.projectroot, value),
+                os.path.join(self.conf.paths.projectroot, self.conf.paths.output, value) ])
+
+        paths.extend([self.conf.paths.projectroot,
+            os.path.abspath(os.path.join(self.conf.paths.projectroot, '..')),
+            os.path.abspath(os.path.join(self.conf.paths.projectroot, '..', 'source')),
+            os.path.join(self.conf.paths.projectroot, self.conf.paths.output)
+        ])
+
+        self.state['source_dir'] = paths
+
     @property
     def source(self):
         return self.state['source']
 
-    @property
+    @source.setter
     def source(self, value):
         if value.startswith('/'):
             value  = value[1:]
@@ -61,8 +93,7 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
         self.state['_raw_source'] = value
 
         fns = [os.path.join(path, value)
-               for path in (self.conf.paths.projectroot,
-                            os.path.join(self.conf.paths.projectroot, self.conf.paths.output))]
+               for path in self.source_dir]
 
         for fn in fns:
             if os.path.isfile(fn):
@@ -70,6 +101,7 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
                 break
 
         if 'source' not in self.state:
+            return
             raise TypeError('{0} does not exist'.format(value))
 
     @property
@@ -81,9 +113,10 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
 
     @target.setter
     def target(self, value):
+
         if value == 'auto':
             self.state['target'] = os.path.join(self.conf.paths.projectroot, self.conf.paths.source,
-                                                self._raw_source)
+                                                self.state['_raw_source'])
             return
         elif value.startswith('/'):
             value = value[1:]
@@ -109,7 +142,11 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
             else:
                 self.state['transform'].append(TransformSpecification(value))
         else:
-            self.state['transform'] = [TransformSpecification(value)]
+            if isinstance(value, list):
+                self.state['transform'] = [TransformSpecification(v)
+                                                for v in value]
+            else:
+                self.state['transform']= [TransformSpecification(value)]
 
     @property
     def truncate(self):
@@ -148,7 +185,8 @@ class TransformSpecification(libgiza.config.ConfigurationBase):
         if isinstance(value, basestring):
             try:
                 self.state['regex'] = re.compile(value)
-            except:
+            except Exception as e:
+                print e
                 pass
 
         if 'regex' not in self.state:
@@ -156,6 +194,10 @@ class TransformSpecification(libgiza.config.ConfigurationBase):
 
     @property
     def replace(self):
+        return self.state['replace']
+
+    @replace.setter
+    def replace(self, value):
         if isinstance(value, basestring):
             self.state['replace'] = value
         else:

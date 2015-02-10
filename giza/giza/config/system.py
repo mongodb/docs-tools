@@ -25,7 +25,7 @@ from giza.config.intersphinx import IntersphinxConfig
 from giza.config.redirects import HtaccessData
 from giza.config.content import ContentRegistry
 from giza.config.replacements import ReplacementData
-from giza.config.migrations import MigrationSpecification
+from giza.config.migrations import MigrationData
 
 logger = logging.getLogger('giza.config.system')
 
@@ -230,8 +230,8 @@ class SystemConfigFiles(RecursiveConfigurationBase):
             for new_file in [os.path.join(conf.paths.projectroot, fn[1:]),
                 os.path.join(conf.paths.projectroot, conf.paths.source, fn[1:]),
                 os.path.join(conf.paths.projectroot, conf.paths.builddata, fn[1:])]:
-            if os.path.isfile(new_file):
-                results.append(new_file)
+                if os.path.isfile(new_file):
+                    results.append(new_file)
 
         return results
 
@@ -374,7 +374,7 @@ class SystemConfigData(RecursiveConfigurationBase):
             }
             special_lists = {
                 'htaccess': HtaccessData,
-                'migrations': MigrationSpecification
+                'migrations': MigrationData
             }
 
             with open(fn, 'r') as f:
