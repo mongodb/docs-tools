@@ -1,0 +1,44 @@
+collection: "inventory"
+options:
+  base_file: true
+---
+title:
+  text: Group Documents by a Field and Calculate Count
+  level: 2
+ref: _group-documents-by-a-field-and-calculate-count
+pre: |
+  Use the :pipeline:`$group` stage to group by a specified key. In the
+  :pipeline:`$group` stage, specify the group by key in the ``_id``
+  field. :pipeline:`$group` accesses fields by the field path, which is
+  the field name prefixed by a dollar sign ``$``. The
+  :pipeline:`$group` stage can use :manual:`accumulators
+  </meta/aggregation-quick-reference/#group-operators>` to perform
+  calculations for each group.
+
+  The following example groups the documents in the ``restaurants``
+  collection by the ``borough`` field and uses the :group:`$sum`
+  accumulator to count the documents for each group.
+post: |
+  The result set consists of the following documents:
+---
+title:
+  text: Filter and Group Documents
+  level: 2
+ref: _filter-and-group-documents
+pre: |
+  Use the :pipeline:`$match` stage to filter documents.
+  :pipeline:`$match` uses the MongoDB :doc:`query syntax
+  </query>`.
+
+  The following pipeline uses :pipeline:`$match` to query the
+  ``restaurants`` collection for documents with ``borough`` equal to
+  ``"Queens"`` and ``cuisine`` equal to ``Brazilian``.
+
+  Then the :pipeline:`$group` stage groups the matching documents
+  by the ``address.zipcode`` field and uses the :group:`$sum`
+  accumulator to calculate the count. :pipeline:`$group` accesses
+  fields by the field path, which is the field name prefixed by a
+  dollar sign ``$``.
+post: |
+  The result set consists of the following documents:
+...

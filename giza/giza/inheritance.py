@@ -62,7 +62,13 @@ class InheritableContentBase(libgiza.inheritance.InheritableContentBase):
         return base
 
 
+class DataContentBase(libgiza.inheritance.DataContentBase):
+    edition_check = staticmethod(giza.content.helper.edition_check)
+    content_class = InheritableContentBase
+
+
 class DataCache(libgiza.inheritance.DataCache):
+    content_class = DataContentBase
 
     def create_output_dir(self):
         dirname = self.conf.system.content.get(self.content_type).output_dir
@@ -71,7 +77,3 @@ class DataCache(libgiza.inheritance.DataCache):
                 not os.path.isdir(dirname)):
 
             giza.tools.files.safe_create_directory(dirname)
-
-
-class DataContentBase(libgiza.inheritance.DataContentBase):
-    edition_check = staticmethod(giza.content.helper.edition_check)
