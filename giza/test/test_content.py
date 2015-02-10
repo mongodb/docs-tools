@@ -1,6 +1,6 @@
 from nose.tools import nottest, istest
 
-import os.path
+import os
 
 # this runs tests of the inheritance.py baseclasses, as is.
 from libgiza.test.test_inheritance import (TestDataCache, TestDataContentBase,
@@ -12,7 +12,11 @@ from libgiza.test.test_inheritance import (TestDataCache, TestDataContentBase,
 from giza.config.main import Configuration
 from giza.config.runtime import RuntimeStateConfig
 
+import libgiza.test
+import libgiza.git
+
 import giza.inheritance
+import giza.config.git
 
 import giza.content.steps.inheritance
 import giza.content.steps.models
@@ -35,6 +39,7 @@ class TestGizaDataCache(TestDataCache):
         self.c = Configuration()
         self.c.project = {'name': 'test'}
         self.c.runstate = RuntimeStateConfig()
+        self.c.state['git'] = giza.config.git.GitConfig({}, self.c, os.getcwd())
 
         self.setUpClasses()
         self.create_data()
@@ -54,16 +59,17 @@ class TestGizaDataContentBase(TestDataContentBase):
         self.c = Configuration()
         self.c.project = {'name': 'test'}
         self.c.runstate = RuntimeStateConfig()
-        path = get_test_file_path()
-        self.c.paths = {'includes': path,
-                        'projectroot': path}
-
-        self.content_fn = get_inheritance_data_files()[0]
+        self.c.state['git'] = giza.config.git.GitConfig({}, self.c, os.getcwd())
 
         self.setUpClasses()
         self.create_data()
 
     def setUpClasses(self):
+        path = get_test_file_path()
+        self.c.paths = {'includes': path,
+                        'projectroot': path}
+
+        self.content_fn = get_inheritance_data_files()[0]
         self.DataContentBase = giza.inheritance.DataContentBase
         self.DataCache = giza.inheritance.DataCache
         self.InheritableContentBase = giza.inheritance.InheritableContentBase
@@ -73,6 +79,7 @@ class TestGizaInheritedContentResolution(TestInheritedContentResolution):
         self.c = Configuration()
         self.c.project = {'name': 'test'}
         self.c.runstate = RuntimeStateConfig()
+        self.c.state['git'] = giza.config.git.GitConfig({}, self.c, os.getcwd())
 
         self.setUpClasses()
         self.create_data()
@@ -90,6 +97,7 @@ class TestGizaBaseTemplateRendering(TestBaseTemplateRendering):
     def setUp(self):
         self.c = Configuration()
         self.c.runstate = RuntimeStateConfig()
+        self.c.state['git'] = giza.config.git.GitConfig({}, self.c, os.getcwd())
         self.setUpClasses()
         self.create_data()
 
@@ -108,7 +116,7 @@ class GizaDataCacheBase(TestGizaDataCache):
                         'output': path}
 
         self.files = [os.path.join(get_local_data_path(), fn)
-                      for fn in (self.short_name + '-one.yaml', 
+                      for fn in (self.short_name + '-one.yaml',
                                  self.short_name + '-two.yaml')]
 
         self.data = self.DataCache([], self.c)
@@ -116,7 +124,7 @@ class GizaDataCacheBase(TestGizaDataCache):
 @nottest
 class GizaDataContentBase(TestGizaDataContentBase):
     def create_data(self):
-        self.content_fn = os.path.join(get_local_data_path(), 
+        self.content_fn = os.path.join(get_local_data_path(),
                                        self.short_name + '-one.yaml')
 
         self.data = self.DataCache([self.content_fn], self.c)
@@ -131,8 +139,9 @@ class GizaInheritedContentResolutionBase(TestGizaInheritedContentResolution):
                         'projectroot': path,
                         'output': path}
 
+
         self.files = [os.path.join(self.c.paths.source, fn)
-                      for fn in (self.short_name + '-one.yaml', 
+                      for fn in (self.short_name + '-one.yaml',
                                  self.short_name + '-two.yaml')]
 
         self.data = self.DataCache(self.files, self.c)
@@ -300,5 +309,3 @@ class TestExamplesInheritedContentResolution(GizaInheritedContentResolutionBase)
         self.short_name = 'examples'
         self.len_source_docs = 9
         self.num_docs = 2
-
-
