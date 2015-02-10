@@ -102,7 +102,14 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
 
     @transform.setter
     def transform(self, value):
-        self.state['transform'] = TransformSpecification(value.conf)
+        if 'transform' in self.state:
+            if isinstance(value, list)
+                self.state['transform'].extend([TransformSpecification(v)
+                                                for v in value])
+            else:
+                self.state['transform'].append(TransformSpecification(value))
+        else:
+            self.state['transform'] = [TransformSpecification(value)]
 
     @property
     def truncate(self):
@@ -114,6 +121,21 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
     @truncate.setter
     def truncate(self, value):
         self.state['truncate'] = TruncateSpecification(value)
+
+    @property
+    def append(self):
+        if 'append' in self.state:
+            return self.state['append']
+        else:
+            return None
+
+    @append.setter
+    def append(self, value):
+        if isinstance(value, basestring):
+            self.state['append'] = value
+        else:
+            raise TypeError('{0}: {1}'.format(type(value), str(value)))
+
 
 
 class TransformSpecification(libgiza.config.ConfigurationBase):
