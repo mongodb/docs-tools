@@ -103,7 +103,7 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
     @transform.setter
     def transform(self, value):
         if 'transform' in self.state:
-            if isinstance(value, list)
+            if isinstance(value, list):
                 self.state['transform'].extend([TransformSpecification(v)
                                                 for v in value])
             else:
@@ -139,7 +139,7 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
 
 
 class TransformSpecification(libgiza.config.ConfigurationBase):
-    @proerty
+    @property
     def regex(self):
         return self.state['regex']
 
@@ -154,7 +154,7 @@ class TransformSpecification(libgiza.config.ConfigurationBase):
         if 'regex' not in self.state:
             raise TypeError('{0}: {1}'.format(type(value), str(value)))
 
-    @proerty
+    @property
     def replace(self):
         if isinstance(value, basestring):
             self.state['replace'] = value

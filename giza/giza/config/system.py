@@ -209,6 +209,32 @@ class SystemConfigFiles(RecursiveConfigurationBase):
         if 'data' not in self.state:
             self.state['data'] = SystemConfigData(value, self.conf)
 
+    def get_confgs(self, key):
+        fns = []
+        for value in self.conf.system.files.paths:
+            if isinstance(value, dict):
+                if 'migration' in value:
+                    if isinstance(value[key], list):
+                        fns.exnted(value[key])
+                    else:
+                        fns.append(value[key])
+            elif value.startswith(key):
+                fns.append(value)
+
+        results = []
+
+        for fn in fns:
+            if fn.startswith('/'):
+                fn = fn[1:]
+
+            for new_file in [os.path.join(conf.paths.projectroot, fn[1:]),
+                os.path.join(conf.paths.projectroot, conf.paths.source, fn[1:]),
+                os.path.join(conf.paths.projectroot, conf.paths.builddata, fn[1:])]:
+            if os.path.isfile(new_file):
+                results.append(new_file)
+
+        return results
+
 
 class SystemConfigData(RecursiveConfigurationBase):
     # There shouldn't be any setters in this class. All items in this class
@@ -346,10 +372,10 @@ class SystemConfigData(RecursiveConfigurationBase):
             # recur_mapping for config objects that subclass RecursiveConfigurationBase
             recur_mapping = {
             }
-            special_lists = [
+            special_lists = {
                 'htaccess': HtaccessData,
                 'migrations': MigrationSpecification
-            ]
+            }
 
             with open(fn, 'r') as f:
                 data = yaml.safe_load_all(f)
