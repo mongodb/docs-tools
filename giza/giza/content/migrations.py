@@ -17,11 +17,9 @@ import logging
 import libgiza.task
 
 import giza.tools.files
-
+import giza.tools.transformation
 logger = logging.getLogger('giza.content.system')
 
-from giza.tools.transformation import truncate_file, append_to_file, process_page
-from giza.tools.files import copy_if_needed, copy_always
 
 
 def migration_tasks(conf):
@@ -37,7 +35,7 @@ def migration_tasks(conf):
 
         if migration.truncate is not None:
             # this only needs to run if the parent task runs
-            copy_job.finalizers = libgiza.task.Task(job=truncate_file,
+            copy_job.finalizers = libgiza.task.Task(job=giza.tools.transformation.truncate_file,
                                                     args=(migration.target,
                                                           migration.truncate.start_after,
                                                           migration.truncate.end_before),
@@ -48,20 +46,22 @@ def migration_tasks(conf):
             # causes needs_rebuild() to be always true, this must always run
             copy_job.dependency = None
             copy_job.job = giza.tools.file.copy_always
-            copy_job.finalizers = process_page_task(fn=migration.target,
-                                                    output_fn=migration.target,
-                                                    regex=[(t.regex, t.replacement)
-                                                           for t in migration.transform],
-                                                    builder='migration',
-                                                    copy='ifNeeded')
+
+            transforms = giza.tools.transformation.process_page_task(fn=migration.target,
+                                                               output_fn=migration.target,
+                                                               regex=[(t.regex, t.replacement)
+                                                                      for t in migration.transform],
+                                                               builder='migration',
+                                                               copy='ifNeeded')
+            copy_job.finalizers = transforms
 
         if migration.append is not None:
             # causes needs_rebuild() to be always true, this must always run
             copy_job.dependency = None
             copy_job.job = giza.tools.file.copy_always
-            copy_job.finalizers = libgiza.task.Task(job=append_to_file,
+            copy_job.finalizers = libgiza.task.Task(job=giza.tools.transformation.append_to_file,
                                                     args=(migration.target, migration.append),
-                                                    target=page['target'],
+                                                    target=migrations.target,
                                                     dependency=migration_spec_files)
 
         tasks.append(copy_job)
