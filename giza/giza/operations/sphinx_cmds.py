@@ -67,8 +67,11 @@ def main(args):
 
         sphinx_publication(conf, app)
 
+
 # sphinx_publication is its own function because it's called as part of some
 # giza.operations.deploy tasks (i.e. ``push``).
+
+
 def sphinx_publication(conf, app):
     """
     :arg Configuration c: A :class:`giza.config.main.Configuration()` object.
