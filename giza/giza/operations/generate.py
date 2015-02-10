@@ -32,8 +32,7 @@ from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
 from giza.content.table import table_tasks, table_clean
 from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
-from giza.content.primer import primer_migration_tasks
-from giza.content.primer import clean as primer_clean
+from giza.content.migration import migration_tasks, migration_clean
 
 from giza.content.tocs.tasks import toc_tasks
 from giza.content.apiargs.tasks import apiarg_tasks
@@ -150,9 +149,9 @@ def primer(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            app.extend_queue(primer_clean(c))
+            app.extend_queue(migration_clean(c))
         else:
-            app.extend_queue(primer_migration_tasks(c))
+            app.extend_queue(migration_tasks(c))
 
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")

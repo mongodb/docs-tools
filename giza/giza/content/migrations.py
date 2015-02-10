@@ -68,3 +68,15 @@ def migration_tasks(conf):
 
     logger.info('created {0} file migration tasks'.format(len(tasks)))
     return tasks
+
+def migration_clean(conf):
+    return [libgiza.task.Task(job=verbose_remove,
+                              args=[migration.target]
+                              target=migration.target,
+                              dependency=None)
+            for migration in conf.system.files.data.migrations]
+
+    for migration in  :
+        tasks.append())
+
+    return tasks
