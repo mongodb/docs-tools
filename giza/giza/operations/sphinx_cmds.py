@@ -33,7 +33,7 @@ from giza.content.source import source_tasks, latex_image_transfer_tasks
 from giza.content.dependencies import refresh_dependency_tasks, dump_file_hash_tasks
 from giza.content.sphinx import sphinx_tasks, output_sphinx_stream, finalize_sphinx_build
 from giza.content.redirects import redirect_tasks
-from giza.content.primer import primer_migration_tasks
+from giza.content.migrations import migration_tasks
 from giza.content.assets import assets_tasks
 
 from giza.tools.timing import Timer
@@ -144,12 +144,11 @@ def sphinx_publication(conf, app):
 def sphinx_content_preperation(builder_jobs, app, conf):
     # Download embedded git repositories and then run migrations before doing
     # anything else.
-    with app.context() as prep_app:
-        assets = assets_tasks(conf)
-        prep_app.extend_queue(assets)
+    with app.context() as asset_app:
+        asset_app.extend_queue(assets_tasks(conf))
 
-        migrations = primer_migration_tasks(conf)
-        prep_app.extend_queue(migrations)
+    with app.context() as migration_app:
+        migration_app.extend_queue(migration_tasks(conf))
 
     # Copy all source to the ``build/<branch>/source`` directory.
     with Timer('migrating source to build'):

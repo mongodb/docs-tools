@@ -227,9 +227,9 @@ class SystemConfigFiles(RecursiveConfigurationBase):
             if fn.startswith('/'):
                 fn = fn[1:]
 
-            for new_file in [os.path.join(conf.paths.projectroot, fn[1:]),
-                os.path.join(conf.paths.projectroot, conf.paths.source, fn[1:]),
-                os.path.join(conf.paths.projectroot, conf.paths.builddata, fn[1:])]:
+            for new_file in [os.path.join(self.conf.paths.projectroot, fn[1:]),
+                             os.path.join(self.conf.paths.projectroot, self.conf.paths.source, fn[1:]),
+                             os.path.join(self.conf.paths.projectroot, self.conf.paths.builddata, fn[1:])]:
                 if os.path.isfile(new_file):
                     results.append(new_file)
 

@@ -18,8 +18,8 @@ import libgiza.task
 
 import giza.tools.files
 import giza.tools.transformation
-logger = logging.getLogger('giza.content.system')
 
+logger = logging.getLogger('giza.content.system')
 
 
 def migration_tasks(conf):
