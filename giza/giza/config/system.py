@@ -25,6 +25,7 @@ from giza.config.intersphinx import IntersphinxConfig
 from giza.config.redirects import HtaccessData
 from giza.config.content import ContentRegistry
 from giza.config.replacements import ReplacementData
+from giza.config.migrations import MigrationSpecification
 
 logger = logging.getLogger('giza.config.system')
 
@@ -213,7 +214,7 @@ class SystemConfigData(RecursiveConfigurationBase):
     # There shouldn't be any setters in this class. All items in this class
     # must exist in SystemConfigPaths() objects.
 
-    _always_list_configs = ('manpages', 'pdfs', 'htaccess', 'push', 'images', 'robots')
+    _always_list_configs = ('manpages', 'pdfs', 'push', 'images', 'robots')
 
     def __init__(self, obj, conf):
         super(SystemConfigData, self).__init__(None, conf)
@@ -345,6 +346,10 @@ class SystemConfigData(RecursiveConfigurationBase):
             # recur_mapping for config objects that subclass RecursiveConfigurationBase
             recur_mapping = {
             }
+            special_lists = [
+                'htaccess': HtaccessData,
+                'migrations': MigrationSpecification
+            ]
 
             with open(fn, 'r') as f:
                 data = yaml.safe_load_all(f)
@@ -353,8 +358,8 @@ class SystemConfigData(RecursiveConfigurationBase):
                     data = [mapping[basename](doc) for doc in data]
                 elif basename in recur_mapping:
                     data = [recur_mapping[basename](doc, self.conf) for doc in data]
-                elif basename == 'htaccess':
-                    l = HtaccessData()
+                elif basename in special_lists:
+                    l = special_lists[basename]()
                     l.conf = self.conf
                     l.extend([d for d in data])
                     data = l
@@ -365,7 +370,8 @@ class SystemConfigData(RecursiveConfigurationBase):
                 if not isinstance(data, list):
                     data = [item for item in data]
 
-            if len(data) == 1 and basename not in self._always_list_configs:
+            if len(data) == 1 and (basename not in self._always_list_configs or
+                                   basename not in special_lists):
                 return data[0]
             else:
                 return data
