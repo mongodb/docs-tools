@@ -242,7 +242,7 @@ class SystemConfigData(RecursiveConfigurationBase):
     # There shouldn't be any setters in this class. All items in this class
     # must exist in SystemConfigPaths() objects.
 
-    _always_list_configs = ('manpages', 'pdfs', 'push', 'images', 'robots')
+    _always_list_configs = ['manpages', 'pdfs', 'push', 'images', 'robots']
 
     def __init__(self, obj, conf):
         super(SystemConfigData, self).__init__(None, conf)
@@ -378,6 +378,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                 'htaccess': HtaccessData,
                 'migrations': MigrationData
             }
+            self._always_list_configs.extend(special_lists.keys())
 
             with open(fn, 'r') as f:
                 data = yaml.safe_load_all(f)
@@ -398,8 +399,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                 if not isinstance(data, list):
                     data = [item for item in data]
 
-            if len(data) == 1 and (basename not in self._always_list_configs or
-                                   basename not in special_lists):
+            if len(data) == 1 and (basename not in self._always_list_configs):
                 return data[0]
             else:
                 return data
