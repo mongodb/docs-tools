@@ -52,6 +52,7 @@ is in :func:`giza.content.images.generate_image_pages()`.
    The current implementation does not strictly enforce the metadata schema.
 """
 
+import copy
 import os.path
 import logging
 import random
@@ -163,7 +164,7 @@ def generate_image_pages(dir, name, alt, output, conf):
     logger.debug('generated include file {0}.rst'.format(image))
 
 
-def _generate_image(build_type, dpi, width, target, source):
+def generate_image(build_type, dpi, width, target, source):
     with wand.image.Image(filename=source, resolution=dpi) as image:
         if image.width != width:
             image.transform(resize=str(width))
@@ -186,44 +187,19 @@ def _generate_image(build_type, dpi, width, target, source):
     logger.info('wrote: ' + target)
 
 
-def get_images_metadata_file(conf):
-    base = None
-    for fn in conf.system.files.paths:
-        if isinstance(fn, dict):
-            if 'images' in fn:
-                base = fn['images']
-                break
-        else:
-            if fn.startswith('images'):
-                base = fn
-                break
-
-    if base is None:
-        return None
-    elif base.startswith('/'):
-        base = base[1:]
-        return os.path.join(conf.paths.projectroot, conf.paths.branch_output, base)
-    else:
-        return os.path.join(conf.paths.projectroot, conf.paths.builddata, base)
-
-
 def image_tasks(conf):
     tasks = []
 
-    meta_file = get_images_metadata_file(conf)
+    deps = conf.system.files.get_configs('imaages')
+    deps.append(os.path.abspath(__file__))
 
     if 'images' not in conf.system.files.data:
         logger.info('no images to generate')
         return
 
-    if isinstance(conf.system.files.data.images, list):
-        images = conf.system.files.data.images
-    else:
-        images = [conf.system.files.data.images]
-
     image_dir = conf.paths.branch_images
 
-    for image in images:
+    for image in conf.system.files.data.images:
         image['dir'] = image_dir
         image['conf'] = conf
 
@@ -242,7 +218,7 @@ def image_tasks(conf):
         t = libgiza.task.Task(job=generate_image_pages,
                               args=image,  # as kwargs
                               target=rst_file,
-                              dependency=[meta_file, os.path.abspath(__file__)],
+                              dependency=deps,
                               description=description)
         tasks.append(t)
         logger.debug('adding task for image rst file: {0}'.format(rst_file))
@@ -265,7 +241,7 @@ def image_tasks(conf):
 
             description = 'generating image file {0} from {1}'.format(target_img, source_core)
 
-            t = libgiza.task.Task(job=_generate_image,
+            t = libgiza.task.Task(job=generate_image,
                                   args=(build_type, output['dpi'], output['width'],
                                         target_img, source_file),
                                   target=target_img,
