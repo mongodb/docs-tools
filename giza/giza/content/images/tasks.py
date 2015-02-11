@@ -20,7 +20,7 @@ import wand.api
 import wand.color
 import libgiza.task
 
-import giza.content.images.viwes
+import giza.content.images.views
 import giza.tools.files
 
 logger = logging.getLogger('giza.content.images')
@@ -62,7 +62,7 @@ def image_tasks(conf):
 
         description = "generating rst include file {0} for {1}".format(image.rst_file,
                                                                        image.source_core)
-        t = libgiza.task.Task(job=giza.content.images.viwes.generate_image_pages,
+        t = libgiza.task.Task(job=giza.content.images.views.generate_image_pages,
                               args=(image, conf),  # as kwargs
                               target=image.rst_file,
                               dependency=deps,

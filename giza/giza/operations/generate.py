@@ -27,7 +27,7 @@ from libgiza.app import BuildApp
 from giza.config.helper import fetch_config, get_builder_jobs, get_sphinx_build_configuration
 
 from giza.content.assets import assets_tasks, assets_clean
-from giza.content.images import image_tasks, image_clean
+from giza.content.images.tasks import image_tasks, image_clean
 from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
 from giza.content.table import table_tasks, table_clean
 from giza.content.robots import robots_txt_tasks

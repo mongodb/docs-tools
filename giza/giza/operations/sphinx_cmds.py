@@ -25,7 +25,7 @@ from libgiza.task import Task
 
 from giza.content.robots import robots_txt_tasks
 from giza.content.includes import includes_tasks
-from giza.content.images import image_tasks
+from giza.content.images.tasks import image_tasks
 from giza.content.intersphinx import intersphinx_tasks
 from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks

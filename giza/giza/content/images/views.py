@@ -107,4 +107,4 @@ def generate_image_pages(image, conf):
 
     image_rst_file_path = os.path.join(conf.paths.projectroot, image + '.rst')
     r.write(image_rst_file_path)
-    logger.debug('generated include file {0}.rst'.format(image))
+    logger.info('generated include file {0}.rst'.format(image))
