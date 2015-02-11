@@ -141,8 +141,9 @@ def intersphinx(args):
 
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.aliases('primer', 'migrations')
 @argh.expects_obj
-def primer(args):
+def migration(args):
     c = fetch_config(args)
 
     with BuildApp.new(pool_type=c.runstate.runner,
