@@ -35,6 +35,9 @@ def migration_tasks(conf):
                                      target=migration.target,
                                      dependency=migration.source)
 
+        copy_job.finalizers = libgiza.task.Task(job=log_migration,
+                                                args=(migration.source, migration.target))
+
         if migration.truncate is not None:
             # this only needs to run if the parent task runs
             copy_job.finalizers = libgiza.task.Task(job=giza.tools.transformation.truncate_file,
@@ -65,9 +68,6 @@ def migration_tasks(conf):
                                                     args=(migration.target, migration.append),
                                                     target=migration.target,
                                                     dependency=migration_spec_files)
-
-        copy_job.finalizers = libgiza.task.Task(job=log_migration,
-                                                args=(migration.source, migration.target))
 
         tasks.append(copy_job)
 

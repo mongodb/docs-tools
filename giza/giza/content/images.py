@@ -52,14 +52,17 @@ is in :func:`giza.content.images.generate_image_pages()`.
    The current implementation does not strictly enforce the metadata schema.
 """
 
-import sys
 import os.path
 import logging
-import subprocess
+import random
+
+import wand.image
+import wand.api
+import wand.color
+import docutils.core
 
 import libgiza.task
 
-from docutils.core import publish_parts
 from rstcloth.rstcloth import RstCloth
 
 from giza.tools.files import verbose_remove
@@ -146,7 +149,7 @@ def generate_image_pages(dir, name, alt, output, conf):
             img_str = ''.join(['<div class="figure align-center" style="max-width:{5};">',
                                '<img src="{0}/{1}/_images/{2}{3}" alt="{4}">', '</img>',
                                '{6}</div>'])
-            alt_html = publish_parts(alt, writer_name='html')['body'].strip()
+            alt_html = docutils.core.publish_parts(alt, writer_name='html')['body'].strip()
             r.directive(name='raw', arg='html',
                         content=img_str.format(conf.project.url,
                                                conf.git.branches.current, name, tag, alt,
@@ -160,32 +163,27 @@ def generate_image_pages(dir, name, alt, output, conf):
     logger.debug('generated include file {0}.rst'.format(image))
 
 
-def _get_inkscape_cmd():
-    if sys.platform in ['linux', 'linux2']:
-        return '/usr/bin/inkscape'
-    elif sys.platform == 'darwin':
-        inkscape = '/Applications/Inkscape.app/Contents/Resources/bin/inkscape'
-        if os.path.exists(inkscape):
-            return inkscape
+def _generate_image(build_type, dpi, width, target, source):
+    with wand.image.Image(filename=source, resolution=dpi) as image:
+        if image.width != width:
+            image.transform(resize=str(width))
 
-    return 'inkscape'
+        if build_type == 'png':
+            alpha = 0.0
+        elif build_type == 'eps':
+            alpha = 1.0
+        else:
+            raise TypeError(build_type + " is not supported")
 
+        try:
+            image.transparent_color(color=wand.color.Color('white'), alpha=alpha)
+        except:
+            pass
 
-def _generate_images(cmd, dpi, width, target, source):
-    full_cmd = cmd.format(cmd=_get_inkscape_cmd(),
-                          dpi=dpi,
-                          width=width,
-                          target=target,
-                          source=source)
+        with open(target, 'wb') as out:
+            out.write(image.make_blob(build_type))
 
-    with open(os.devnull, 'w') as f:
-        r = subprocess.call(full_cmd.split(), stdout=f, stderr=f)
-
-    if r == 0:
-        logger.info('generated image file {0}'.format(target))
-    else:
-        logger.warning('error generating image: ' + target)
-        logger.error(full_cmd)
+    logger.info('wrote: ' + target)
 
 
 def get_images_metadata_file(conf):
@@ -265,23 +263,19 @@ def image_tasks(conf):
 
             target_img = ''.join([source_base, tag, '.', build_type])
 
-            if build_type == 'png':
-                inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e {target} {source}'
-
-            elif build_type == 'eps':
-                inkscape_cmd = '{cmd} -z -d {dpi} -w {width} -y 1.0 -E {target} {source}'
-
             description = 'generating image file {0} from {1}'.format(target_img, source_core)
-            t = libgiza.task.Task(job=_generate_images,
-                                  args=(inkscape_cmd, output['dpi'],
-                                        output['width'], target_img,
-                                        source_file),
+
+            t = libgiza.task.Task(job=_generate_image,
+                                  args=(build_type, output['dpi'], output['width'],
+                                        target_img, source_file),
                                   target=target_img,
                                   dependency=source_core,
                                   description=description)
+
             tasks.append(t)
             logger.debug('adding image creation job for {0}'.format(target_img))
 
+    random.shuffle(tasks)
     return tasks
 
 

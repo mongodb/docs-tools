@@ -119,10 +119,10 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
             value = value[1:]
 
         if '{root}' in value:
-            value = fq_target.format(root=self.conf.paths.projectroot)
+            value = value.format(root=self.conf.paths.projectroot)
 
         if '{branch}' in value:
-            value = fq_target.format(branch=self.conf.git.brancehs.current)
+            value = value.format(branch=self.conf.git.brancehs.current)
 
         self.state['target'] = os.path.join(self.conf.paths.projectroot,
                                             self.conf.paths.source, value)
