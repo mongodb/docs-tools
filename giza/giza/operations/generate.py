@@ -32,7 +32,7 @@ from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
 from giza.content.table import table_tasks, table_clean
 from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
-from giza.content.migration import migration_tasks, migration_clean
+from giza.content.migrations import migration_tasks, migration_clean
 
 from giza.content.tocs.tasks import toc_tasks
 from giza.content.apiargs.tasks import apiarg_tasks

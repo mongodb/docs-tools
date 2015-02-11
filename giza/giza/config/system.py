@@ -209,7 +209,7 @@ class SystemConfigFiles(RecursiveConfigurationBase):
         if 'data' not in self.state:
             self.state['data'] = SystemConfigData(value, self.conf)
 
-    def get_confgs(self, key):
+    def get_configs(self, key):
         fns = []
         for value in self.conf.system.files.paths:
             if isinstance(value, dict):

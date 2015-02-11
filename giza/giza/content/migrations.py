@@ -21,6 +21,8 @@ import giza.tools.transformation
 
 logger = logging.getLogger('giza.content.system')
 
+def log_migration(source, target):
+    logger.info('migration: {0} --> {1}'.format(source, target))
 
 def migration_tasks(conf):
     tasks = []
@@ -28,7 +30,7 @@ def migration_tasks(conf):
     migration_spec_files = conf.system.files.get_configs('migration')
 
     for migration in conf.system.files.data.migrations:
-        copy_job = libgiza.task.Task(job=giza.tools.file.copy_if_needed,
+        copy_job = libgiza.task.Task(job=giza.tools.files.copy_if_needed,
                                      args=(migration.source, migration.target),
                                      target=migration.target,
                                      dependency=migration.source)
@@ -45,9 +47,9 @@ def migration_tasks(conf):
         if migration.transform is not None:
             # causes needs_rebuild() to be always true, this must always run
             copy_job.dependency = None
-            copy_job.job = giza.tools.file.copy_always
+            copy_job.job = giza.tools.files.copy_always
 
-            regexes = [(t.regex, t.replacement) for t in migration.transform]
+            regexes = [(t.regex, t.replace) for t in migration.transform]
             transforms = giza.tools.transformation.process_page_task(fn=migration.target,
                                                                      output_fn=migration.target,
                                                                      regex=regexes,
@@ -58,25 +60,24 @@ def migration_tasks(conf):
         if migration.append is not None:
             # causes needs_rebuild() to be always true, this must always run
             copy_job.dependency = None
-            copy_job.job = giza.tools.file.copy_always
+            copy_job.job = giza.tools.files.copy_always
             copy_job.finalizers = libgiza.task.Task(job=giza.tools.transformation.append_to_file,
                                                     args=(migration.target, migration.append),
                                                     target=migration.target,
                                                     dependency=migration_spec_files)
 
+        copy_job.finalizers = libgiza.task.Task(job=log_migration,
+                                                args=(migration.source, migration.target))
+
         tasks.append(copy_job)
 
     logger.info('created {0} file migration tasks'.format(len(tasks)))
+
     return tasks
 
 def migration_clean(conf):
-    return [libgiza.task.Task(job=verbose_remove,
-                              args=[migration.target]
+    return [libgiza.task.Task(job=giza.tools.files.verbose_remove,
+                              args=[migration.target],
                               target=migration.target,
                               dependency=None)
             for migration in conf.system.files.data.migrations]
-
-    for migration in  :
-        tasks.append())
-
-    return tasks

@@ -100,7 +100,6 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
                 break
 
         if 'source' not in self.state:
-            return
             raise TypeError('{0} does not exist'.format(value))
 
     @property
@@ -112,7 +111,6 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
 
     @target.setter
     def target(self, value):
-
         if value == 'auto':
             self.state['target'] = os.path.join(self.conf.paths.projectroot, self.conf.paths.source,
                                                 self.state['_raw_source'])
