@@ -225,14 +225,14 @@ class SystemConfigFiles(RecursiveConfigurationBase):
         results = []
 
         for fn in fns:
-            if fn.startswith('/'):
-                fn = fn[1:]
+            if fn.startswith(os.path.sep):
+                fn = fn[len(os.path.sep):]
 
-            for new_file in [os.path.join(self.conf.paths.projectroot, fn[1:]),
+            for new_file in [os.path.join(self.conf.paths.projectroot, fn),
                              os.path.join(self.conf.paths.projectroot,
-                                          self.conf.paths.source, fn[1:]),
+                                          self.conf.paths.source, fn),
                              os.path.join(self.conf.paths.projectroot,
-                                          self.conf.paths.builddata, fn[1:])]:
+                                          self.conf.paths.builddata, fn)]:
                 if os.path.isfile(new_file):
                     results.append(new_file)
 

@@ -43,17 +43,6 @@ import shlex
 from libgiza.task import Task
 from giza.tools.files import safe_create_directory
 from giza.tools.timing import Timer
-from giza.config.helper import get_config_paths
-from giza.content.links import create_manual_symlink, get_public_links
-from giza.content.post.json_output import json_output_tasks
-from giza.content.post.singlehtml import finalize_single_html_tasks
-from giza.content.post.archives import man_tarball, html_tarball, get_tarball_name
-from giza.content.post.manpages import manpage_url_tasks
-from giza.content.post.gettext import gettext_tasks
-from giza.content.post.slides import slide_tasks
-from giza.content.post.latex import pdf_tasks
-from giza.content.post.sites import (finalize_epub_build,
-                                     finalize_dirhtml_build, error_pages)
 
 logger = logging.getLogger('giza.content.sphinx')
 
@@ -232,9 +221,6 @@ def is_msg_worthy(l):
         return True
 
 
-def printer(string):
-    logger.info(string)
-
 # Builder Operation
 
 
@@ -282,7 +268,7 @@ def run_sphinx(builder, sconf, conf):
 
 def sphinx_tasks(sconf, conf):
     deps = [None]  # always force builds until depchecking is fixed
-    deps.extend(get_config_paths('sphinx_local', conf))
+    deps.extend(conf.system.files.get_configs('sphinx_local'))
     deps.append(os.path.join(conf.paths.projectroot, conf.paths.source))
     deps.extend(os.path.join(conf.paths.projectroot, 'conf.py'))
 
@@ -293,76 +279,3 @@ def sphinx_tasks(sconf, conf):
                                     sconf.builder),
                 dependency=deps,
                 description='building {0} with sphinx'.format(sconf.builder))
-
-
-def finalize_sphinx_build(sconf, conf):
-    target = sconf.builder
-
-    tasks = []
-    if target == 'html' and not conf.runstate.fast:
-        t = Task(job=html_tarball,
-                 args=(sconf.name, sconf.build_output, conf),
-                 target=[get_tarball_name('html', conf),
-                         get_tarball_name('link-html', conf)],
-                 dependency=None,
-                 description="creating tarball for html archive")
-        tasks.append(t)
-    elif target == 'dirhtml' and not conf.runstate.fast:
-        for job in (finalize_dirhtml_build, error_pages):
-            t = Task(job=job,
-                     args=(sconf, conf),
-                     target=os.path.join(conf.paths.projectroot, conf.paths.public_site_output),
-                     dependency=None)
-            tasks.append(t)
-
-        if conf.system.branched is True and conf.git.branches.current == 'master':
-            deps = get_config_paths('integration', conf)
-            deps.append(os.path.join(conf.paths.projectroot,
-                                     conf.paths.public_site_output))
-
-            t = Task(job=create_manual_symlink,
-                     args=[conf],
-                     target=[link[0] for link in get_public_links(conf)],
-                     dependency=deps,
-                     description='create symlinks')
-            tasks.append(t)
-    elif target == 'epub':
-        t = Task(job=finalize_epub_build,
-                 args=(target, conf),
-                 description='finalizing epub build',
-                 dependency=None,
-                 target=True)
-        tasks.append(t)
-    elif target == 'man':
-        t = Task(job=man_tarball,
-                 args=(sconf.name, sconf.build_output, conf),
-                 target=[get_tarball_name('man', conf),
-                         get_tarball_name('link-man', conf)],
-                 dependency=None,
-                 description="creating tarball for manpages")
-
-        tasks.extend(manpage_url_tasks(target, conf))
-        tasks.append(('final', t))
-    elif target == 'slides' and not conf.runstate.fast:
-        tasks.extend(slide_tasks(sconf, conf))
-    elif target == 'json':
-        json_tasks, transfer_op = json_output_tasks(conf)
-        tasks.extend(json_tasks)
-        tasks.append(('final', transfer_op))  # this is less than ideal
-    elif target == 'singlehtml':
-        tasks.extend(finalize_single_html_tasks(target, conf))
-    elif target == 'latex':
-        tasks.extend(pdf_tasks(sconf, conf))
-    elif target == 'gettext':
-        tasks.extend(gettext_tasks(conf))
-    elif target == 'linkcheck':
-        msg_str = '{0}: See {1}/{0}/output.txt for output.'
-        t = Task(job=printer,
-                 args=[msg_str.format(target, conf.paths.branch_output)],
-                 target=os.path.join(conf.paths.projectroot,
-                                     conf.paths.branch_output, target, 'output.txt'),
-                 dependency=None)
-        tasks.append(t)
-
-    logger.info('adding {0} finalizing tasks for {1} build'.format(len(tasks), target))
-    return tasks
