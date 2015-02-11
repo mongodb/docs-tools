@@ -16,9 +16,7 @@ import logging
 import os
 import sys
 import re
-
 import libgiza.config
-
 import giza.content.helper
 
 logger = logging.getLogger('giza.config.migrations')

@@ -26,6 +26,7 @@ from giza.config.redirects import HtaccessData
 from giza.config.content import ContentRegistry
 from giza.config.replacements import ReplacementData
 from giza.config.migrations import MigrationData
+from giza.config.images import ImageData
 
 logger = logging.getLogger('giza.config.system')
 
@@ -376,7 +377,8 @@ class SystemConfigData(RecursiveConfigurationBase):
             }
             special_lists = {
                 'htaccess': HtaccessData,
-                'migrations': MigrationData
+                'migrations': MigrationData,
+                'images': ImageData,
             }
             self._always_list_configs.extend(special_lists.keys())
 

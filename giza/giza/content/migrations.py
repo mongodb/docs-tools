@@ -13,16 +13,16 @@
 # limitations under the License.
 
 import logging
-
 import libgiza.task
-
 import giza.tools.files
 import giza.tools.transformation
 
 logger = logging.getLogger('giza.content.system')
 
+
 def log_migration(source, target):
     logger.info('migration: {0} --> {1}'.format(source, target))
+
 
 def migration_tasks(conf):
     tasks = []
