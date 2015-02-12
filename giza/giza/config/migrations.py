@@ -72,11 +72,10 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
                 os.path.join(self.conf.paths.projectroot, self.conf.paths.output, value)])
 
         paths.extend([self.conf.paths.projectroot,
-                      os.path.join(self.conf.paths.projectroot, self.conf.paths.source),
                       os.path.abspath(os.path.join(self.conf.paths.projectroot, '..')),
                       os.path.abspath(os.path.join(self.conf.paths.projectroot, '..', 'source')),
+                      os.path.join(self.conf.paths.projectroot, self.conf.paths.source),
                       os.path.join(self.conf.paths.projectroot, self.conf.paths.output)])
-
         self.state['source_dir'] = paths
 
     @property
