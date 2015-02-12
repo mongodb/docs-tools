@@ -115,15 +115,34 @@ def finalize_dirhtml_build(sconf, conf):
 
 
 def sitemap(config_path, conf):
-    paths = conf.paths
-
-    sys.path.append(os.path.join(paths.projectroot, paths.buildsystem, 'bin'))
+    sys.path.append(os.path.join(conf.paths.projectroot, conf.paths.buildsystem, 'bin'))
     import sitemap_gen
 
-    if config_path is None:
-        config_path = os.path.join(paths.projectroot, 'conf-sitemap.xml')
+    config_paths = []
+    if config_path is not None:
+        config_paths.append(config_path)
+        config_paths.append(os.path.join(conf.paths.projectroot, conf.paths.builddata, config_path))
+        config_path = None
 
-    if not os.path.exists(config_path):
+    default_name = 'conf-sitemap.xml'
+    config_paths.extend([default_name,
+                         os.path.join(conf.paths.projectroot, default_name),
+                         os.path.join(conf.paths.projectroot,
+                                      conf.paths.builddata, default_name)])
+
+    if 'edition' in conf.project and conf.project.edition != conf.project.name:
+        edition_name = '-'.join(['conf', conf.project.edition, 'sitemap.xml'])
+        config_paths.extend([edition_name,
+                            os.path.join(conf.paths.projectroot, edition_name),
+                            os.path.join(conf.paths.projectroot,
+                                         conf.paths.builddata, edition_name)])
+
+    for path in config_paths:
+        if os.path.isfile(path):
+            config_path = path
+            break
+
+    if config_path is None:
         m = 'sitemap: configuration file {0} does not exist. Returning early'
         logger.error(m.format(config_path))
         return False
@@ -136,5 +155,5 @@ def sitemap(config_path, conf):
 
     sitemap.Generate()
 
-    logger.error('sitemap: generated sitemap according to the config file {0}'.format(config_path))
+    logger.info('sitemap: generated sitemap according to the config file {0}'.format(config_path))
     return True
