@@ -68,6 +68,8 @@ class TestGizaDataContentBase(TestDataContentBase):
         path = get_test_file_path()
         self.c.paths = {'includes': path,
                         'projectroot': path}
+        self.dummy_doc = {'ref': 'dummy-doc',
+                          'pre': 'pre text'}
 
         self.content_fn = get_inheritance_data_files()[0]
         self.DataContentBase = giza.inheritance.DataContentBase
@@ -139,7 +141,6 @@ class GizaInheritedContentResolutionBase(TestGizaInheritedContentResolution):
                         'projectroot': path,
                         'output': path}
 
-
         self.files = [os.path.join(self.c.paths.source, fn)
                       for fn in (self.short_name + '-one.yaml',
                                  self.short_name + '-two.yaml')]
@@ -164,6 +165,9 @@ class TestStepsDataContentBase(GizaDataContentBase):
         self.DataCache = giza.content.steps.inheritance.StepDataCache
         self.InheritableContentBase = giza.content.steps.models.StepData
         self.short_name = 'steps'
+
+        self.dummy_doc = {'ref': 'dummy-doc',
+                          'pre': 'pre text'}
 
 
 @istest
@@ -192,6 +196,9 @@ class TestOptionsDataContentBase(GizaDataContentBase):
         self.InheritableContentBase = giza.content.options.models.OptionData
         self.short_name = 'options'
 
+        self.dummy_doc = {'name': 'dummydoc',
+                          'program': 'test',
+                          'pre': 'pre text'}
 
 @istest
 class TestOptionsInheritedContentResolution(GizaInheritedContentResolutionBase):
@@ -218,6 +225,9 @@ class TestTocsDataContentBase(GizaDataContentBase):
         self.InheritableContentBase = giza.content.tocs.models.TocData
         self.short_name = 'toc'
 
+        self.dummy_doc = {'name': 'dummydoc',
+                          'file': '/path/to/doc',
+                          'description': 'text'}
 
 @istest
 class TestTocsInheritedContentResolution(GizaInheritedContentResolutionBase):
@@ -238,6 +248,7 @@ class TestExtractsDataCache(GizaDataCacheBase):
         self.short_name = 'extracts'
 
 
+
 @istest
 class TestExtractsDataContentBase(GizaDataContentBase):
     def setUpClasses(self):
@@ -245,6 +256,10 @@ class TestExtractsDataContentBase(GizaDataContentBase):
         self.DataCache = giza.content.extract.inheritance.ExtractDataCache
         self.InheritableContentBase = giza.content.extract.models.ExtractData
         self.short_name = 'extracts'
+
+        self.dummy_doc = {'ref': 'dummy-doc',
+                          'pre': 'pre text'}
+
 
 @istest
 class TestExtractsInheritedContentResolution(GizaInheritedContentResolutionBase):
@@ -273,6 +288,9 @@ class TestReleasesDataContentBase(GizaDataContentBase):
         self.InheritableContentBase = giza.content.release.models.ReleaseData
         self.short_name = 'release'
 
+        self.dummy_doc = {'ref': 'dummy-doc',
+                          'pre': 'pre text'}
+
 
 @istest
 class TestReleasesInheritedContentResolution(GizaInheritedContentResolutionBase):
@@ -300,6 +318,11 @@ class TestExamplesDataContentBase(GizaDataContentBase):
         self.DataCache = giza.content.examples.inheritance.ExampleDataCache
         self.InheritableContentBase = giza.content.examples.models.ExampleData
         self.short_name = 'examples'
+
+        self.dummy_doc = {'ref': 'dummy-doc',
+                          'pre': 'pre text',
+                          'operation': { 'language': 'javascript',
+                                         'code': ['use db']}}
 
 
 @istest
