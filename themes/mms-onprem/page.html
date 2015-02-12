@@ -12,11 +12,10 @@
 
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-    {%- if 1 == 0 and theme_manual_branch == theme_branch %}
+    {%- if theme_manual_branch == theme_branch %}
       <script type="text/javascript">
         (function() {
-           // change the following code to match the 2.5
-           var cx = '017213726194841070573:sntjladnaos';
+           var cx = '017938353964985089139:s4tijscdeac';
            var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
            gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
            gcse.onload = gcse.onreadystatechange = function() {
@@ -31,7 +30,7 @@
                   $input.on('blur', function(e) {
                     if (!$input.val().length) { $div.addClass('narrow').removeClass('wide'); }
                   });
-                  $input.attr('placeholder', "Search MMS Help");
+                  $input.attr('placeholder', "Search Ops Manager Help");
                   window.clearInterval(pollInput);
                 }
               }, 10);

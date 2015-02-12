@@ -22,7 +22,6 @@ logger = logging.getLogger('giza.config.git')
 
 
 class GitConfigBase(RecursiveConfigurationBase):
-
     def __init__(self, obj, conf, repo=None):
         super(GitConfigBase, self).__init__(obj, conf)
         self.repo = repo
@@ -44,7 +43,6 @@ class GitConfigBase(RecursiveConfigurationBase):
 
 
 class GitConfig(GitConfigBase):
-
     @property
     def commit(self):
         c = self.repo.sha('HEAD')
