@@ -29,6 +29,9 @@ def migration_tasks(conf):
 
     migration_spec_files = conf.system.files.get_configs('migration')
 
+    if 'migrations' not in conf.system.files.data:
+        return []
+
     for migration in conf.system.files.data.migrations:
         copy_job = libgiza.task.Task(job=giza.tools.files.copy_if_needed,
                                      args=(migration.source, migration.target),

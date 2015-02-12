@@ -55,6 +55,9 @@ def image_tasks(conf):
     deps = conf.system.files.get_configs('images')
     deps.append(os.path.abspath(__file__))
 
+    if 'images' not in conf.system.files.data:
+        return []
+
     for image in conf.system.files.data.images:
         if not os.path.isfile(image.source_core):
             logger.error('"{0}" does not exist'.format(image.source_core))
