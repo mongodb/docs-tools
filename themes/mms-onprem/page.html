@@ -12,7 +12,7 @@
 
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-    {%- if theme_manual_branch == theme_branch %}
+    {%- if theme_branch in (theme_manual_branch, 'master') %}
       <script type="text/javascript">
         (function() {
            var cx = '017938353964985089139:s4tijscdeac';
@@ -45,6 +45,10 @@
     {%- endif %}
   {%- endif %}
 {%- endblock -%}
+
+{%- block searchbox %}
+<div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.opsmanager.mongodb.com/current/search/" queryParameterName="query"></gcse:searchbox-only></div>
+{% endblock %}
 
 {% block version_selector %}
   <li>
