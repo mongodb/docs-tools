@@ -59,22 +59,36 @@ def munge_content(content, regex):
 
 
 def truncate_file(fn, start_after=None, end_before=None):
+    if type(start_after) != type(end_before): 
+        raise TypeError('start-after and end-before types must match')
+
     with open(fn, 'r') as f:
         source_lines = f.readlines()
 
-    start_idx = 0
-    end_idx = len(source_lines) - 1
+    should_find_line_num = False
 
-    for idx, ln in enumerate(source_lines):
+    # From above type check, should be all int or all string
+
+    if isinstance(start_after, int):
+        start_idx = start_after
+        end_idx = end_before - 1
+    else:
+        start_idx = 0
         if start_after is not None:
-            if start_idx == 0 and ln.startswith(start_after):
-                start_idx = idx - 1
-                start_after = None
+            should_find_line_num = True
 
-        if end_before is not None:
-            if ln.startswith(end_before):
-                end_idx = idx
-                break
+        end_idx = len(source_lines) - 1
+        if end_before is not None: 
+            should_find_line_num = True
+
+    if should_find_line_num is True:
+        for idx, ln in enumerate(source_lines):
+            if start_after in ln:
+               start_idx = idx + 1 
+
+            if end_before in ln:
+               end_idx = idx
+               break
 
     with open(fn, 'w') as f:
         f.writelines(source_lines[start_idx:end_idx])

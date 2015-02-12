@@ -228,7 +228,7 @@ class TruncateSpecification(libgiza.config.ConfigurationBase):
 
     @start_after.setter
     def start_after(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, basestring) or isinstance(value, int):
             self.state['start_after'] = value
         else:
             raise TypeError('{0}: {1}'.format(type(value), str(value)))
@@ -242,7 +242,7 @@ class TruncateSpecification(libgiza.config.ConfigurationBase):
 
     @end_before.setter
     def end_before(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, basestring) or isinstance(value, int):
             self.state['end_before'] = value
         else:
             raise TypeError('{0}: {1}'.format(type(value), str(value)))
