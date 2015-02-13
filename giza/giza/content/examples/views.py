@@ -90,10 +90,25 @@ def full_example(collection, examples):
                 r.content(op.pre)
                 r.newline()
 
-            lang.add(op.language)
-            r.codeblock(content=op.code,
-                        language=op.language)
-            r.newline()
+            # if content in op (e.g. for literalincludes) then
+            # no need for code or language
+            if 'content' in op:
+                r.content(op.content)
+                r.newline()
+            #
+            # Temporary and klugey
+            #
+            elif 'literalinclude' in op:
+                include_options = []
+                if 'language' in op:
+                   include_options.append( ('language', op.language) )
+                r.directive('literalinclude', op.literalinclude, include_options )
+                r.newline()
+            elif 'code' in op:
+                lang.add(op.language)
+                r.codeblock(content=op.code,
+                            language=op.language)
+                r.newline()
 
             if 'post' in op:
                 r.content(op.post)

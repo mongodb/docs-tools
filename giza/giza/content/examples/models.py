@@ -136,6 +136,22 @@ class ExampleOperationBlock(ConfigurationBase):
             self.state['code'] = value.split('\n')
 
     @property
+    def content(self):
+        return self.state['content']
+
+    @content.setter
+    def content(self, value):
+        self.state['content'] =  value.split('\n')
+
+    @property
+    def literalinclude(self):
+        return self.state['literalinclude']
+
+    @literalinclude.setter
+    def literalinclude(self, value):
+        self.state['literalinclude'] = value
+
+    @property
     def language(self):
         return self.state['language']
 
