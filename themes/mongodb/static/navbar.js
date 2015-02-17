@@ -102,7 +102,7 @@ $(function() {
 
     $('body').on('click', '#header-db, .sidebar, .content', function(e) {
         $('.option-popup').addClass('closed')
-            .find('.fa-angle-down, .fa-angle-up').toggleClass('fa-angle-down fa-angle-up');
+            .find('.fa-angle-down, .fa-angle-up').removeClass('fa-angle-down').addClass('fa-angle-up');
     });
 
     /* Open options panel when clicking the version */
