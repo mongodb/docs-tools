@@ -54,6 +54,8 @@ import subprocess
 import libgiza.task
 import libgiza.git
 
+import giza.tools.files
+
 logger = logging.getLogger('giza.content.assets')
 
 
@@ -96,6 +98,7 @@ def assets_tasks(conf):
     tasks = []
     generate_tasks = []
     if conf.assets is not None:
+        giza.tools.files.safe_create_directory(conf.paths.projectroot)
         for asset in conf.assets:
             path = os.path.join(conf.paths.projectroot, asset.path)
 
