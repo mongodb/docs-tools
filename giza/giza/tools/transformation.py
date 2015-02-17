@@ -59,34 +59,45 @@ def munge_content(content, regex):
 
 
 def truncate_file(fn, start_after=None, end_before=None):
-    if type(start_after) != type(end_before): 
-        raise TypeError('start-after and end-before types must match')
+
+    if start_after is not None and end_before is not None:
+       if type(start_after) != type(end_before): 
+          raise TypeError('start-after and end-before types must match')
 
     with open(fn, 'r') as f:
         source_lines = f.readlines()
 
     should_find_line_num = False
 
-    # From above type check, should be all int or all string
-
     if isinstance(start_after, int):
         start_idx = start_after
-        end_idx = end_before - 1
-    else:
+    else: 
+        #start_after is none or some string -- if string, find line num
         start_idx = 0
         if start_after is not None:
             should_find_line_num = True
 
+    if isinstance(end_before, int):
+        end_idx = end_before - 1
+    else:
+        # end_before is none or some string -- if string, find line num
         end_idx = len(source_lines) - 1
         if end_before is not None: 
             should_find_line_num = True
 
+    # should_find_line_num is True if:
+    #  - start_after = string and end_before = string
+    #  - start_after = string and end_before is None
+    #  - start_after is None and end_before is string
+    
     if should_find_line_num is True:
         for idx, ln in enumerate(source_lines):
-            if start_after in ln:
-               start_idx = idx + 1 
+            if start_after is not None and start_after in ln:
+               start_idx = idx + 1
+               if end_before is None:
+                  break;
 
-            if end_before in ln:
+            if end_before is not None and end_before in ln:
                end_idx = idx
                break
 
