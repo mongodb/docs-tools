@@ -39,6 +39,9 @@ def get_tarball_name(builder, conf):
     else:
         fn = ''.join((conf.project.name, '-', conf.git.branches.current, builder, '.tar.gz'))
 
+    if conf.project.edition != conf.project.name:
+        fn = fn.replace(conf.project.name, '-'.join((conf.project.name, conf.project.edition)))
+
     return os.path.join(conf.paths.projectroot,
                         conf.paths.public_site_output,
                         fn)
