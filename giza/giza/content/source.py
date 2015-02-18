@@ -76,7 +76,7 @@ def transfer_source(conf, sconf):
     # the target so we can have more incremental builds.
     exclusions = "--exclude=" + ' --exclude='.join(exclusions)
 
-    cmd = 'rsync --checksum --recursive {2} --delete {0}/ {1}'
+    cmd = 'rsync --links --checksum --recursive {2} --delete {0}/ {1}'
     cmd = cmd.format(source_dir, target, exclusions)
 
     try:

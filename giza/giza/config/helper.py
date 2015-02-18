@@ -148,6 +148,7 @@ def get_sphinx_build_configuration(edition, language, builder, args):
     arguments, return copies of the configuration (``conf``) and sphinx
     configuration (``sconf``) objects.
     """
+    args._conf = None
     args = copy.deepcopy(args)
 
     args.language = language
@@ -155,6 +156,7 @@ def get_sphinx_build_configuration(edition, language, builder, args):
     args.builder = builder
 
     conf = fetch_config(args)
+    args.conf = conf
     sconf = render_sconf(edition, builder, language, conf)
 
     return conf, sconf
