@@ -44,7 +44,6 @@ def report(data, conf):
             else:
                 result['burndown'][person] = sprint.staffing[person]
 
-
             if person in query_data['total']:
                 result['capacity'][person] = (sprint.staffing[person] -
                                               query_data['total'][person])

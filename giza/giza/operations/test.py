@@ -24,10 +24,6 @@ import giza.tools.files
 
 logger = logging.getLogger('giza.operations.test')
 
-def pprint(doc):
-    import json
-
-    print(json.dumps(doc, indent=3, sort_keys=True))
 
 @argh.expects_obj
 @argh.named('test')
@@ -61,7 +57,6 @@ def integration_main(args):
             g = libgiza.git.GitRepo()
             # g.clone(remote=project.uri, repo_path=path)
             g.path = path
-
 
         for branch in project.branches:
             print(branch)

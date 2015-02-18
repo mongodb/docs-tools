@@ -141,7 +141,7 @@ class ExampleOperationBlock(ConfigurationBase):
 
     @content.setter
     def content(self, value):
-        self.state['content'] =  value.split('\n')
+        self.state['content'] = value.split('\n')
 
     @property
     def literalinclude(self):

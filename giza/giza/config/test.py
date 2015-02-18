@@ -68,6 +68,7 @@ class TestConfig(libgiza.config.ConfigurationBase):
         for project in self.projects:
             if project.private is True:
                 yield project
+
     @property
     def public_projects(self):
         for project in self.projects:
@@ -134,7 +135,6 @@ class TestProject(libgiza.config.ConfigurationBase):
             self.state['private'] = value
         else:
             self.state['private'] = bool(value)
-
 
     @property
     def root(self):

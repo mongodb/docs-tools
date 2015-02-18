@@ -78,6 +78,7 @@ def migration_tasks(conf):
 
     return tasks
 
+
 def migration_clean(conf):
     return [libgiza.task.Task(job=giza.tools.files.verbose_remove,
                               args=[migration.target],

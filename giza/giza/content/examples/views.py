@@ -95,14 +95,11 @@ def full_example(collection, examples):
             if 'content' in op:
                 r.content(op.content)
                 r.newline()
-            #
-            # Temporary and klugey
-            #
-            elif 'literalinclude' in op:
+            elif 'literalinclude' in op:  # Temporary and klugey
                 include_options = []
                 if 'language' in op:
-                   include_options.append( ('language', op.language) )
-                r.directive('literalinclude', op.literalinclude, include_options )
+                    include_options.append(('language', op.language))
+                r.directive('literalinclude', op.literalinclude, include_options)
                 r.newline()
             elif 'code' in op:
                 lang.add(op.language)
