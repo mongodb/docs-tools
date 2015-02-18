@@ -104,6 +104,7 @@ def integration_main(args):
                                    force=conf.runstate.force)
 
     build_path = os.path.join(conf.paths.projectroot, conf.paths.output)
+
     giza.tools.files.safe_create_directory(build_path)
 
     for project in conf.test.projects:
@@ -118,9 +119,16 @@ def integration_main(args):
         if args._override_branch is not None:
             project.branches = args._override_branch
 
-        path = os.path.join(build_path, project.project)
+        if project.root is None:
+            path = os.path.join(build_path, project.project)
+            git_path = path
+        else:
+            path = os.path.join(build_path, project.project, project.root)
+            git_path = os.path.join(build_path, project.project)
+
+
         task = app.add(libgiza.task.Task(job=setup_test_repo,
-                                         args=(path, project)))
+                                         args=(git_path, project)))
         for branch in project.branches:
             task = task.add_finalizer(libgiza.task.Task(job=change_branch,
                                                         args=(path, branch)))
