@@ -32,6 +32,7 @@ import giza.operations.quickstart
 import giza.operations.sphinx_cmds
 import giza.operations.tx
 import giza.operations.code_review
+import giza.operations.test
 
 logger = logging.getLogger('giza.main')
 
@@ -46,7 +47,8 @@ commands = {
         giza.operations.deploy.twofa_code,
         giza.operations.http_serve.start,
         giza.operations.configuration.report_version,
-        giza.operations.make.main
+        giza.operations.make.main,
+        giza.operations.test.integration_main
     ],
     'git': [
         giza.operations.git.apply_patch,

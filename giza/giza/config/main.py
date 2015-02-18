@@ -25,6 +25,7 @@ from giza.config.system import SystemConfig
 from giza.config.runtime import RuntimeStateConfig
 from giza.config.version import VersionConfig
 from giza.config.deploy import DeployConfig
+from giza.config.test import TestConfig
 
 logger = logging.getLogger('giza.config.main')
 
@@ -136,3 +137,17 @@ class Configuration(ConfigurationBase):
             self.state['deploy'] = DeployConfig(fn)
         else:
             self.state['deploy'] = {}
+
+    @property
+    def test(self):
+        if 'test' not in self.state:
+            self.test = None
+        return self.state['test']
+
+    @test.setter
+    def test(self, value):
+        fn = os.path.join(self.paths.global_config, 'test-matrix.yaml')
+        if os.path.exists(fn):
+            self.state['test'] = TestConfig(fn)
+        else:
+            self.state['test'] = {}
