@@ -33,11 +33,6 @@ from giza.operations.deploy import deploy_tasks
 
 logger = logging.getLogger('giza.operations.packaging')
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-
 # Helper
 
 

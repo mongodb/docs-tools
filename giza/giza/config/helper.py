@@ -131,6 +131,7 @@ def get_builder_jobs(conf):
         yield ((edition, language, builder),
                get_sphinx_build_configuration(edition, language, builder, conf.runstate))
 
+
 def get_restricted_builder_jobs(conf):
     build_source_copies = set()
     for ((edition, langauge, builder), (bconf, sconf)) in get_builder_jobs(conf):
