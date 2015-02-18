@@ -134,6 +134,7 @@ def get_builder_jobs(conf):
 
 def get_restricted_builder_jobs(conf):
     build_source_copies = set()
+
     for ((edition, langauge, builder), (bconf, sconf)) in get_builder_jobs(conf):
         if bconf.paths.branch_source not in build_source_copies:
             build_source_copies.add(bconf.paths.branch_source)

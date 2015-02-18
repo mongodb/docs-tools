@@ -224,8 +224,8 @@ def redirects(args):
 @argh.arg('--language', '-l', nargs='*', dest='languages_to_build')
 @argh.expects_obj
 def source(args):
-    conf = fetch_config(args)
     args.builder = 'html'
+    conf = fetch_config(args)
 
     with BuildApp.new(pool_type=conf.runstate.runner,
                       pool_size=conf.runstate.pool_size,

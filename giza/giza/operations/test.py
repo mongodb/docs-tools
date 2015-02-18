@@ -67,7 +67,12 @@ def get_test_config(args):
 def change_branch(path, branch):
     g = libgiza.git.GitRepo(path)
     tracking = '/'.join(('origin', branch))
-    g.checkout_branch(branch, tracking=tracking)
+
+    if g.branch_exists(branch) is True:
+        g.checkout(branch)
+    else:
+        g.checkout_branch(branch, tracking=tracking)
+
     logger.info('checked out {0} ({1}) in {2}'.format(branch, tracking, g.path))
 
 

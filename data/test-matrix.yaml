@@ -71,8 +71,8 @@ branches:
 private: true
 operations:
   minimal:
-    - "giza generate source"
-    - "giza --serial generate sphinx --builder html"
+    - "giza generate source --edition instructor student"
+    - "giza --serial generate sphinx --builder html --edition instructor student"
   complete:
     - "giza make publish --serial_sphinx"
     - "giza env package --builder publish"
