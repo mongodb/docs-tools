@@ -53,7 +53,7 @@ def manual_single_html(input_file, output_file):
 
         encode_lines_to_file(output_file, text_lines)
 
-        logging.info('processed singlehtml file.')
+        logger.info('processed singlehtml file.')
 
 
 def finalize_single_html(single_html_dir, artifact_dir, conf):
