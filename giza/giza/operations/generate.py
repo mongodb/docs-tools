@@ -232,11 +232,15 @@ def source(args):
                       force=conf.runstate.force).context() as app:
         sphinx_content_preperation(app, conf)
 
+
 @argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
 @argh.arg('--language', '-l', nargs='*', dest='languages_to_build')
 @argh.arg('--builder', '-b', nargs='*', default='html')
 @argh.expects_obj
 def sphinx(args):
+    if args.runner == 'serial':
+        args.serial_sphinx = True
+
     conf = fetch_config(args)
     logger.warning('not for production use: this expects that content generation is complete.')
 
