@@ -155,9 +155,9 @@ def sphinx_builder_tasks(app, conf):
             raise SystemExit(1)
 
         if ret_code != 0:
-            raise SystemExit(1)
+            raise SystemExit(ret_code)
 
-    return 0
+    return ret_code
 
 
 def sphinx_content_preperation(app, conf):

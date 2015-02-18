@@ -248,4 +248,6 @@ def sphinx(args):
                        pool_size=conf.runstate.pool_size,
                        force=conf.runstate.force)
 
-    return sphinx_builder_tasks(app, conf)
+    r = sphinx_builder_tasks(app, conf)
+
+    raise SystemExit(r)
