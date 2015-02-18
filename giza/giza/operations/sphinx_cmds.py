@@ -134,19 +134,28 @@ def sphinx_builder_tasks(app, conf):
     results = [o for o in app.results
                if isinstance(o, tuple) and len(o) == 2]
 
-    sphinx_output = list(reduce(itertools.chain, [o[1].split('\n') for o in results if o != '']))
-    try:
-        output_sphinx_stream(sphinx_output, conf)
-    except:
-        logger.error('problem parsing sphinx output, exiting')
-        raise SystemExit(1)
+    if len(results) == 0:
+        # this happens (rarely) if the deps on the sphinx task do *not* trigger
+        # sphinx-build to run.
 
-    # add all builders response codes. If they're all then we can return 0,
-    # otherwise, exit.
-    ret_code = sum([o[0] for o in results])
+        output = []
+        ret_code = 0
+    else:
+        # add all builders response codes. If they're all then we can return 0,
+        # otherwise, exit.
+        ret_code = sum([o[0] for o in results])
 
-    if ret_code != 0:
-        raise SystemExit(1)
+        output = [o[1].split('\n') for o in results if o != '']
+
+        sphinx_output = list(reduce(itertools.chain, output))
+        try:
+            output_sphinx_stream(sphinx_output, conf)
+        except:
+            logger.error('problem parsing sphinx output, exiting')
+            raise SystemExit(1)
+
+        if ret_code != 0:
+            raise SystemExit(1)
 
     return 0
 
