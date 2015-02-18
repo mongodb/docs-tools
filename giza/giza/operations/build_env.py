@@ -103,9 +103,13 @@ def package_build_env(builders, editions, languages, conf):
                                                           builder, copy.deepcopy(conf.runstate))
             builder_dirname = resolve_builder_path(builder, edition, language, rconf)
 
-            files_to_archive.add(rconf.paths.branch_source)
-            files_to_archive.add(os.path.join(rconf.paths.branch_output, builder_dirname))
-            files_to_archive.add(os.path.join(rconf.paths.branch_output,
+            files_to_archive.add(os.path.join(rconf.paths.projectroot,
+                                              rconf.paths.branch_source))
+            files_to_archive.add(os.path.join(rconf.paths.projectroot,
+                                              rconf.paths.branch_output,
+                                              builder_dirname))
+            files_to_archive.add(os.path.join(rconf.paths.projectroot,
+                                              rconf.paths.branch_output,
                                               '-'.join(('doctrees', builder_dirname))))
             files_to_archive.add(rconf.system.dependency_cache_fn)
 
