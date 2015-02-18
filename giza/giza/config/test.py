@@ -149,3 +149,26 @@ class TestProject(libgiza.config.ConfigurationBase):
             self.state['root'] = value
         else:
             raise TypeError(type(value), value)
+
+    @property
+    def operations(self):
+        if 'operations' in self.state:
+            return self.state['operations']
+        else:
+            return {}
+
+    @operations.setter
+    def operations(self, value):
+        if not isinstance(value, dict):
+            raise TypeError(type(value), value)
+
+        ops = {}
+        for key, op in value.items():
+            ops[key] = []
+            for cmd in op:
+                if isinstance(cmd, basestring):
+                    ops[key].append(cmd)
+                elif isinstance(cmd, list):
+                    ops[key].extend(cmd)
+
+        self.state['operations'] = ops
