@@ -121,7 +121,7 @@ class ImageOutputSpecification(libgiza.config.RecursiveConfigurationBase):
 
     @type.setter
     def type(self, value):
-        possible_types = ('print', 'target', 'web')
+        possible_types = ('print', 'target', 'web', 'offset')
 
         if value in possible_types:
             self.state['type'] = value
