@@ -20,6 +20,7 @@ import logging
 import os
 import re
 import subprocess
+import shlex
 
 import libgiza.task
 
@@ -57,13 +58,14 @@ def _render_tex_into_pdf(fn, deployed_path, path, output_format="pdf"):
             pdflatex]
 
     if output_format == 'dvi':
-        cmds.append("cd {0}; dvipdf {1}.dvi".format(path, base_fn[:-4]))
+        cmds.append("dvipdf {0}.dvi".format(base_fn[:-4]))
 
-    with open(os.devnull, 'w') as devnull:
+    with open(os.devnull, 'w') as null:
         for idx, cmd in enumerate(cmds):
-            ret = subprocess.call(args=cmd.split(),
-                                  stderr=devnull,
-                                  stdout=devnull)
+            ret = subprocess.call(args=shlex.split(cmd),
+                                  cwd=path,
+                                  stdout=null,
+                                  stderr=null)
             if ret == 0:
                 m = 'pdf completed rendering stage {0} of {1} successfully ({2}, {3}).'
                 logger.info(m.format(idx + 1, len(cmds), base_fn, ret))
@@ -158,7 +160,7 @@ def pdf_tasks(sconf, conf):
         t.finalizers.append(render_task)
 
         # if needed create links.
-        if i['link'] != i['deployed']:
+        if i['link'] != i['deployed'] and not os.path.exists(i['link']):
             link_task = libgiza.task.Task(job=create_link,
                                           args=(deploy_fn, i['link']),
                                           target=i['link'],
