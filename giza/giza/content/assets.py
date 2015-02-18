@@ -81,13 +81,13 @@ def assets_setup(path, branch, repo, commit=None):
             logger.info('update  {0} repository to ({1})'.format(path, commit))
     else:
         base, name = os.path.split(path)
+        giza.tools.files.safe_create_directory(base)
 
         g = libgiza.git.GitRepo(base)
-
         g.clone(repo, repo_path=name, branch=branch)
         logger.info('cloned {0} branch from repo {1}'.format(branch, repo))
 
-        if commit is not None and g.sha() == commit or g.sha().startswith(commit):
+        if commit is not None and (g.sha() == commit or g.sha().startswith(commit)):
             g.checkout(commit)
             logger.info('repository {0} is currently at ({1})'.format(path, commit))
 
