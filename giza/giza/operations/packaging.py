@@ -60,23 +60,6 @@ def package_filename(target, conf):
     return fn
 
 
-def dump_config(conf):
-    # make sure the object is fully resolved before we put it into storage
-    conf.deploy
-
-    for key in conf.system.files.data.keys():
-        getattr(conf.system.files.data, key)
-
-    conf_dump_path = os.path.join(conf.paths.projectroot,
-                                  conf.paths.branch_output,
-                                  'conf.pickle')
-
-    with open(conf_dump_path, 'w') as f:
-        pickle.dump(conf, f)
-
-    return conf_dump_path
-
-
 def create_archive(files_to_archive, tarball_name):
     # ready to write the tarball
 
@@ -119,9 +102,7 @@ def create_package(target, conf):
             if os.path.exists(os.path.join(conf.paths.projectroot, conf.paths.public, path))
         ])
 
-    conf_dump_path = dump_config(conf)
     archive_fn = package_filename(target, conf)
-    files_to_archive.append((conf_dump_path, os.path.basename(conf_dump_path)))
 
     create_archive(files_to_archive, archive_fn)
 
@@ -142,18 +123,6 @@ def extract_package(conf):
 
     with tarfile.open(path, "r:gz") as t:
         t.extractall(os.path.join(conf.paths.projectroot, conf.paths.public))
-
-    conf_extract_path = os.path.join(conf.paths.projectroot,
-                                     conf.paths.branch_output,
-                                     'conf.pickle')
-
-    with open(conf_extract_path, 'rb') as f:
-        new_conf = pickle.load(f)
-
-    if os.path.exists(conf_extract_path):
-        os.remove(conf_extract_path)
-
-    return new_conf
 
 
 def fetch_package(path, conf):
@@ -214,7 +183,7 @@ def deploy(args):
     conf.runstate.package_path = fetch_package(conf.runstate.package_path, conf)
 
     logger.info('extracting package: ' + conf.runstate.package_path)
-    new_conf = extract_package(conf)
+    extract_package(conf)
     logger.info('extracted package')
 
     app = libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
@@ -222,7 +191,7 @@ def deploy(args):
                                    force=conf.runstate.force)
 
     logger.info('beginning deploy now.')
-    deploy_tasks(new_conf, app)
+    deploy_tasks(conf, app)
 
     if conf.runstate.dry_run is False:
         app.run()
