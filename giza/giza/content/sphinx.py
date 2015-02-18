@@ -263,13 +263,15 @@ def run_sphinx(builder, sconf, conf):
         pass
 
     logger.info('completed {0} sphinx build ({1})'.format(builder, return_code))
-
     return return_code, output
 
 # Application Logic
 
 
 def sphinx_tasks(sconf, conf):
+    # Projects that use the append functionality in extracts or similar content
+    # generators will rebuild this task every time.
+
     deps = [os.path.join(conf.paths.projectroot, 'conf.py')]
     deps.extend(conf.system.files.get_configs('sphinx_local'))
     deps.extend(expand_tree(os.path.join(conf.paths.projectroot, conf.paths.branch_source), 'txt'))

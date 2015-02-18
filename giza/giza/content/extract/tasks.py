@@ -54,12 +54,15 @@ def extract_tasks(conf):
 
         for verb, adjc, files in [(prepend_to_file, 'prepend', extract.prepend),
                                   (append_to_file, 'append', extract.append)]:
+            # have to run appends and prepends always, because the rsync that
+            # populates build/<branch>/source should and does overwrite these
+            # files on every source generation step. None in the dep list does this.
             for fn in files:
                 msg = "{0} extract include for '{0}' to '{1}'".format(adjc, extract.target, fn)
                 t = Task(job=verb,
                          args=(fn, include_statement),
                          target=fn,
-                         dependency=None,
+                         dependency=[None, dep_fn],
                          description=msg)
                 tasks.append(t)
 
