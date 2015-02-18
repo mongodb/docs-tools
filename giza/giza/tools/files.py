@@ -143,6 +143,11 @@ def copy_if_needed(source_file, target_file, name='build'):
                 m = '{0}: "{1}" changed. Updated: {2}'
                 logger.debug(m.format(name, source_file, target_file))
 
+    try:
+        os.utime(target_file, None)
+    except:
+        pass
+
 
 def copy_always(source_file, target_file, name='build'):
     if os.path.isfile(source_file) is False:
