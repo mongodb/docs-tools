@@ -1,8 +1,8 @@
 nosetests:
 	@echo "[testing] running nosetests"
-	nosetests
+	nosetests -w ./test
 ifeq ($(shell test -f /etc/arch-release && echo arch || echo Linux),arch)
-	nosetests2
+	nosetests2  -w ./test
 endif
 
 pyflakes:
