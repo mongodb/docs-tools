@@ -120,8 +120,6 @@ def get_sphinx_args(sconf, conf):
 
 
 def output_sphinx_stream(out, conf):
-    out = [o for o in out.split('\n') if o != '']
-
     full_path = os.path.join(conf.paths.projectroot, conf.paths.branch_output)
 
     regx = r'(.*):[0-9]+: WARNING: duplicate object description of ".*", other instance in (.*)'

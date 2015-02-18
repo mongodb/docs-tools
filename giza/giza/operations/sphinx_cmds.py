@@ -16,6 +16,7 @@
 Main controlling operations for running Sphinx builds.
 """
 
+import itertools
 import logging
 import argh
 
@@ -110,20 +111,25 @@ def sphinx_publication(conf, app):
     # call this from/as the giza.operations.generate.source() entry point.
     sphinx_content_preperation(builder_jobs, app, conf)
 
-    # sphinx-build tasks are separated into their own app.
-    sphinx_app = app.sub_app()
+    app.run()
+    app.reset()
+
+    # task that just runs the sphinx build process and returns the summed error
+    # code. in a separate function to make it easier to *just* call these tasks
+    # from the CI environment via giza.operations.generate.sphinx target
+    return sphinx_builder_tasks(builder_jobs, app, conf)
+
+
+def sphinx_builder_tasks(builder_jobs, app, conf):
     for ((edition, language, builder), (build_config, sconf)) in builder_jobs:
         sphinx_job = sphinx_tasks(sconf, build_config)
-
         sphinx_job.finalizers = finalize_sphinx_build(sconf, build_config)
-        sphinx_app.extend_queue(sphinx_job)
 
+        app.extend_queue(sphinx_job)
         logger.info("adding builder job for {0} ({1}, {2})".format(builder, language, edition))
 
-    # Connect the special sphinx app to the main app.
-    app.add(sphinx_app)
-
     logger.info("sphinx build configured, running the build now.")
+
     app.run()
     logger.info("sphinx build complete.")
 
@@ -131,15 +137,24 @@ def sphinx_publication(conf, app):
 
     # process the sphinx build. These oeprations allow us to de-duplicate
     # messages between builds.
-    sphinx_results = [o for o in sphinx_app.results
-                      if not isinstance(o, (list, bool, type(None)))]
-    sphinx_output = '\n'.join([o[1] for o in sphinx_results])
-    output_sphinx_stream(sphinx_output, conf)
+    results = [o for o in app.results
+               if isinstance(o, tuple) and len(o) == 2]
 
-    # if entry points return this value, giza will inherit the sum of the Sphinx
-    # build return codes.
-    ret_code = sum([o[0] for o in sphinx_results])
-    return ret_code
+    sphinx_output = list(reduce(itertools.chain, [o[1].split('\n') for o in results if o != '']))
+    try:
+        output_sphinx_stream(sphinx_output, conf)
+    except:
+        logger.error('problem parsing sphinx output, exiting')
+        raise SystemExit(1)
+
+    # add all builders response codes. If they're all then we can return 0,
+    # otherwise, exit.
+    ret_code = sum([o[0] for o in results])
+
+    if ret_code != 0:
+        raise SystemExit(1)
+
+    return 0
 
 
 def sphinx_content_preperation(builder_jobs, app, conf):
@@ -190,7 +205,7 @@ def sphinx_content_preperation(builder_jobs, app, conf):
 
             for content_generator in (robots_txt_tasks, intersphinx_tasks, includes_tasks,
                                       table_tasks, hash_tasks, redirect_tasks, image_tasks):
-                app.extend_queue(content_generator(build_config))
+                app.extend_queue(content_generator(build_config))e
 
             dependency_refresh_app = app.add('app')
             dependency_refresh_app.extend_queue(refresh_dependency_tasks(build_config))
