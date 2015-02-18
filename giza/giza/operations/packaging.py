@@ -148,13 +148,13 @@ def fetch_package(path, conf):
 # Command Entry Points
 
 
-@argh.arg('--target', '-t', nargs=1, dest='push_targets')
+@argh.arg('--target', '-t', nargs="*", dest='push_targets')
 @argh.expects_obj
 def create(args):
     conf = fetch_config(args)
-    target = conf.runstate.push_targets[0]
 
-    create_package(target, conf)
+    for target in conf.runstate.push_targets:
+        create_package(target, conf)
 
 
 @argh.arg('--path', dest='package_path')
