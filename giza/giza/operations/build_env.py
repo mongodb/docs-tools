@@ -28,7 +28,7 @@ from libgiza.app import BuildApp
 from sphinx.application import Sphinx, ENV_PICKLE_FILENAME
 from sphinx.builders.html import get_stable_hash
 
-from giza.config.helper import fetch_config, get_sphinx_build_configuration
+from giza.config.helper import fetch_config, get_builder_jobs
 from giza.config.sphinx_config import avalible_sphinx_builders, resolve_builder_path
 from giza.operations.packaging import fetch_package
 from giza.tools.files import safe_create_directory, FileNotFoundError
@@ -98,19 +98,12 @@ def package_build_env(builders, editions, languages, conf):
     with cd(conf.paths.projectroot):
         files_to_archive = set()
 
-        for edition, language, builder in itertools.product(editions, languages, builders):
-            rconf, sconf = get_sphinx_build_configuration(edition, language,
-                                                          builder, copy.deepcopy(conf.runstate))
-            builder_dirname = resolve_builder_path(builder, edition, language, rconf)
-
-            files_to_archive.add(os.path.join(rconf.paths.projectroot,
-                                              rconf.paths.branch_source))
-            files_to_archive.add(os.path.join(rconf.paths.projectroot,
-                                              rconf.paths.branch_output,
-                                              builder_dirname))
-            files_to_archive.add(os.path.join(rconf.paths.projectroot,
-                                              rconf.paths.branch_output,
-                                              '-'.join(('doctrees', builder_dirname))))
+        for ((edition, language, builder), (rconf, sconf)) in get_builder_jobs(conf):
+            files_to_archive.add(rconf.paths.branch_source)
+            files_to_archive.add(os.path.join(rconf.paths.branch_output,
+                                              sconf.build_output))
+            files_to_archive.add(os.path.join(rconf.paths.branch_output,
+                                              '-'.join(('doctrees', sconf.build_output))))
             files_to_archive.add(rconf.system.dependency_cache_fn)
 
         files_to_archive = list(files_to_archive)
@@ -211,7 +204,10 @@ def fix_build_env_tasks(builders, conf):
 def package(args):
     conf = fetch_config(args)
 
-    package_build_env(args.builder, args.editions_to_build, args.languages_to_build, conf)
+    package_build_env(builders=conf.runstate.builder,
+                      editions=conf.runstate.editions_to_build,
+                      languages=conf.runstate.languages_to_build,
+                      conf=conf)
 
 
 @argh.arg('--path', '-p', default=None, dest='_path')
@@ -222,7 +218,7 @@ def extract(args):
     with BuildApp.new(pool_type=conf.runstate.runner,
                       pool_size=conf.runstate.pool_size,
                       force=conf.runstate.force).context() as app:
-        path = fetch_package(args._path, conf)
+        path = fetch_package(conf.runstate._path, conf)
         extract_package_at_root(path, conf)
 
         builders = get_existing_builders(conf)
