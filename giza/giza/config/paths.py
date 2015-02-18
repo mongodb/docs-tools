@@ -68,9 +68,10 @@ class PathsConfig(RecursiveConfigurationBase):
                 for idx, _ in enumerate(cwd_parts):
                     if idx == 0:
                         continue
+
                     path = os.path.sep.join(cwd_parts[0:-idx])
 
-                    if 'config' in os.listdir(path):
+                    if os.path.isdir(path) and 'config' in os.listdir(path):
                         return path
 
                 return None

@@ -207,9 +207,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
         # If we couldn't find a config file, throw an error.
         if self.state['conf_path'] is None:
-            m = 'cannot locate config file'
-            logger.error(m)
-            raise OSError(m)
+            raise RuntimeError('cannot locate config file')
 
 
 class RuntimeStateConfig(RuntimeStateConfigurationBase):
@@ -247,7 +245,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @conf_path.setter
     def conf_path(self, value):
-        if value is not None and os.path.exists(value):
+        if value is not None and os.path.isfile(value):
             self.state['conf_path'] = value
         else:
             self._discover_conf_file('build_conf.yaml')
