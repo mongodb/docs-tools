@@ -28,7 +28,7 @@ operations:
   complete:
     - "giza make publish --serial_sphinx"
     - "giza env package --builder publish --edition shell python cpp node"
-    - "giza packaging create --target push-shell-python-cpp-node"
+    - "giza packaging create --target push-shell push-python push-cpp push-node"
 ---
 project: mms-docs
 uri: git@github.com:10gen/mms-docs.git
@@ -48,7 +48,7 @@ operations:
   complete:
     - "giza make publish --serial_sphinx"
     - "giza env package --builder publish --edition cloud classic onprem"
-    - "giza packaging create --target push-cloud-classic-onprem"
+    - "giza packaging create --target push-cloud push-classic push-onprem"
 ---
 project: docs-ecosystem
 uri: https://github.com/mongodb/docs-ecosystem.git
@@ -76,7 +76,7 @@ operations:
   complete:
     - "giza make publish --serial_sphinx"
     - "giza env package --builder publish"
-    - "giza packaging create --target push-student-instructor"
+    - "giza packaging create --target push-student push-instructor"
 ---
 project: www-about
 uri: git@github.com:10gen/mongodb-www-about.git
