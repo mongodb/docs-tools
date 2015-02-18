@@ -27,15 +27,17 @@ def query(j, app, conf):
 
     queries = {
         "combined": "project {0} and resolution = Unresolved and (( {1} and {2} ) or ({3}))",
-        "category": "project {0} and resolution = Unresolved and ({1})",
-        "timing": "project {0} and fixVersion {1} and resolution = Unresolved and {2} and {3}"
+        "component": "project {0} and resolution = Unresolved and ({1})",
+        "timing": "project {0} and fixVersion {1} and resolution = Unresolved and {2} and {3}",
+        "schedule": "project {0} and fixVersion is EMPTY and resolution = Unresolved"
     }
 
-    queries['category'] = queries['category'].format(equality(project), uncategorized_f)
+    queries['component'] = queries['component'].format(equality(project), uncategorized_f)
     queries['timing'] = queries['timing'].format(equality(project), inequality(buckets),
                                                  timing_query_f, fixversion_f)
     queries['combined'] = queries['combined'].format(equality(project), timing_query_f,
                                                      fixversion_f, uncategorized_f)
+    queries['schedule'] = queries['schedule'].format(equality(project))
 
     for name, query in queries.items():
         ops.append(name)
@@ -60,9 +62,9 @@ def report(data, conf):
     for name, query, issues in data:
         results['totals'][name] = len(issues)
         results['queries'][name] = query_link(conf.site.url, query)
-        if len(issues) < 50:
+        if len(issues) < 50 or conf.runstate.force is True:
             results[name] = ['/'.join([conf.site.url, 'browse', i.key]) for i in issues]
         else:
-            results[name] = ['too many']
+            results[name] = ['too many', len(issues)]
 
     return results

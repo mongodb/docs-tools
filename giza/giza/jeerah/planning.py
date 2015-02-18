@@ -39,13 +39,18 @@ def report(data, conf):
 
         for person in sprint.staffing:
             if person in query_data['completed']:
-                result['burndown'][person] = sprint.staffing[
-                    person] - query_data['completed'][person]
+                result['burndown'][person] = (sprint.staffing[person] -
+                                              query_data['completed'][person])
             else:
                 result['burndown'][person] = sprint.staffing[person]
 
+
             if person in query_data['total']:
-                result['capacity'][person] = sprint.staffing[person] - query_data['total'][person]
+                result['capacity'][person] = (sprint.staffing[person] -
+                                              query_data['total'][person])
+
+        if 'Unassigned' in query_data['total']:
+            result['unassigned'] = query_data['total']['Unassigned']
 
     for overage in result['capacity'].values():
         if overage < 0:

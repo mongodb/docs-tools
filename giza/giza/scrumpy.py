@@ -34,7 +34,7 @@ logger = logging.getLogger('giza.scrumpy')
 
 
 def pprint(obj):
-    print(json.dumps(obj, indent=3))
+    print(json.dumps(obj, indent=3, sort_keys=True))
 
 # scrumpy commands
 
@@ -46,15 +46,25 @@ def config(args):
     [conf.site, conf.runstate, conf.buckets, conf.sprints,
      conf.reporting, conf.modification]
 
-    pprint(json.dumps(conf.dict(), indent=3))
+    conf = conf.dict()
+
+    if args.force is False:
+        sprints = []
+        for sprint, value in conf['sprints'].items():
+            sprints.append({"name": sprint,
+                            "versions": "'" + "', ".join(value['fix_versions']) + "'"})
+
+        conf['sprints'] = sprints
+    pprint(conf)
 
 
-@argh.arg('--sprint')
+@argh.arg('--sprint', default='current')
 @argh.expects_obj
 def progress(args):
     conf = fetch_config(args)
     app = BuildApp(conf)
     app.pool = 'thread'
+    app.pool_size = 2
 
     j = JeerahClient(conf)
     j.connect()
@@ -64,7 +74,7 @@ def progress(args):
     pprint(giza.jeerah.progress.report(query_data, conf))
 
 
-@argh.arg('--sprint')
+@argh.arg('--sprint', default='next')
 @argh.expects_obj
 def planning(args):
     conf = fetch_config(args)
@@ -96,7 +106,7 @@ def triage(args):
 
 
 @argh.arg('--sprint')
-@argh.arg('--project')
+@argh.arg('--project', default=None)
 @argh.named('create-versions')
 @argh.expects_obj
 def make_versions(args):
@@ -104,6 +114,9 @@ def make_versions(args):
 
     j = JeerahClient(conf)
     j.connect()
+
+    if conf.runstate.project is None:
+        conf.runstate.project = conf.modification.mirroring.source
 
     current_versions = [strip_name(v.name) for v in j.versions(conf.runstate.project)]
 
