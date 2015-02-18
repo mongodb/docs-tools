@@ -20,7 +20,7 @@ import itertools
 import logging
 import argh
 
-from giza.config.helper import fetch_config, get_builder_jobs, get_sphinx_build_configuration
+from giza.config.helper import fetch_config, get_builder_jobs, get_restricted_builder_jobs
 from libgiza.app import BuildApp
 from libgiza.task import Task
 
@@ -100,16 +100,9 @@ def sphinx_publication(conf, app):
 
     :rtype: int
     """
-
-    # assemble a list to generate tasks in the form of:
-    # ((edition, language, builder), (conf, sconf))
-    builder_jobs = [((edition, language, builder),
-                    get_sphinx_build_configuration(edition, language, builder, conf.runstate))
-                    for edition, language, builder in get_builder_jobs(conf)]
-
     # call function to prepare the source/content. Seperate so that we can also
     # call this from/as the giza.operations.generate.source() entry point.
-    sphinx_content_preperation(builder_jobs, app, conf)
+    sphinx_content_preperation(app, conf)
 
     app.run()
     app.reset()
@@ -117,11 +110,11 @@ def sphinx_publication(conf, app):
     # task that just runs the sphinx build process and returns the summed error
     # code. in a separate function to make it easier to *just* call these tasks
     # from the CI environment via giza.operations.generate.sphinx target
-    return sphinx_builder_tasks(builder_jobs, app, conf)
+    return sphinx_builder_tasks(app, conf)
 
 
-def sphinx_builder_tasks(builder_jobs, app, conf):
-    for ((edition, language, builder), (build_config, sconf)) in builder_jobs:
+def sphinx_builder_tasks(app, conf):
+    for ((edition, language, builder), (build_config, sconf)) in get_builder_jobs(conf):
         sphinx_job = sphinx_tasks(sconf, build_config)
         sphinx_job.finalizers = finalize_sphinx_build(sconf, build_config)
 
@@ -157,7 +150,7 @@ def sphinx_builder_tasks(builder_jobs, app, conf):
     return 0
 
 
-def sphinx_content_preperation(builder_jobs, app, conf):
+def sphinx_content_preperation(app, conf):
     # Download embedded git repositories and then run migrations before doing
     # anything else.
     with app.context() as asset_app:
@@ -169,26 +162,16 @@ def sphinx_content_preperation(builder_jobs, app, conf):
     # Copy all source to the ``build/<branch>/source`` directory.
     with Timer('migrating source to build'):
         with app.context(randomize=True) as source_app:
-            source_app.randomize
-
-            build_source_copies = set()
-            for (_, (build_config, sconf)) in builder_jobs:
-                if build_config.paths.branch_source not in build_source_copies:
-                    build_source_copies.add(build_config.paths.branch_source)
-
-                    source_app.extend_queue(source_tasks(build_config, sconf))
+            for (_, (build_config, sconf)) in get_restricted_builder_jobs(conf):
+                source_app.extend_queue(source_tasks(build_config, sconf))
 
     # load all generated content and create tasks.
     with Timer('loading generated content'):
-        build_source_copies = set()
-        for (_, (build_config, sconf)) in builder_jobs:
-            if build_config.paths.branch_source not in build_source_copies:
-                build_source_copies.add(build_config.paths.branch_source)
-
-                for content, func in build_config.system.content.task_generators:
-                    app.add(Task(job=func,
-                                 args=[build_config],
-                                 target=True))
+        for (_, (build_config, sconf)) in get_restricted_builder_jobs(conf):
+            for content, func in build_config.system.content.task_generators:
+                app.add(Task(job=func,
+                             args=[build_config],
+                             target=True))
 
         app.randomize = True
         results = app.run()
@@ -197,27 +180,22 @@ def sphinx_content_preperation(builder_jobs, app, conf):
         for task_group in results:
             app.extend_queue(task_group)
 
-    build_source_copies = set()
-    for ((edition, language, builder), (build_config, sconf)) in builder_jobs:
-        if build_config.paths.branch_source not in build_source_copies:
-            # only do these tasks once per-language+edition combination
-            build_source_copies.add(build_config.paths.branch_source)
+    for ((edition, language, builder), (build_config, sconf)) in get_restricted_builder_jobs(conf):
+        for content_generator in (robots_txt_tasks, intersphinx_tasks, includes_tasks,
+                                  table_tasks, hash_tasks, redirect_tasks, image_tasks):
+            app.extend_queue(content_generator(build_config))
 
-            for content_generator in (robots_txt_tasks, intersphinx_tasks, includes_tasks,
-                                      table_tasks, hash_tasks, redirect_tasks, image_tasks):
-                app.extend_queue(content_generator(build_config))
+        dependency_refresh_app = app.add('app')
+        dependency_refresh_app.extend_queue(refresh_dependency_tasks(build_config))
 
-            dependency_refresh_app = app.add('app')
-            dependency_refresh_app.extend_queue(refresh_dependency_tasks(build_config))
+        # once the source is prepared, we dump a dict with md5 hashes of all
+        # files, so we can do better dependency resolution the next time.
+        app.extend_queue(dump_file_hash_tasks(build_config))
 
-            # once the source is prepared, we dump a dict with md5 hashes of all
-            # files, so we can do better dependency resolution the next time.
-            app.extend_queue(dump_file_hash_tasks(build_config))
+        # we transfer images to the latex directory directly because offset
+        # images are included using raw latex, and Sphinx doesn't know how
+        # to copy images in this case.
+        app.extend_queue(latex_image_transfer_tasks(build_config, sconf))
 
-            # we transfer images to the latex directory directly because offset
-            # images are included using raw latex, and Sphinx doesn't know how
-            # to copy images in this case.
-            app.extend_queue(latex_image_transfer_tasks(build_config, sconf))
-
-            msg = 'added source tasks for ({0}, {1}, {2}) in {3}'
-            logger.info(msg.format(builder, language, edition, build_config.paths.branch_source))
+        msg = 'added source tasks for ({0}, {1}, {2}) in {3}'
+        logger.info(msg.format(builder, language, edition, build_config.paths.branch_source))

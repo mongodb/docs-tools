@@ -15,6 +15,7 @@
 import os.path
 import logging
 import itertools
+import copy
 
 import yaml
 
@@ -121,10 +122,22 @@ def dump_skel(skel, args):
 
 
 def get_builder_jobs(conf):
-    return [a
-            for a in itertools.product(conf.runstate.editions_to_build,
-                                       conf.runstate.languages_to_build,
-                                       conf.runstate.builder)]
+    # assemble a list to generate tasks in the form of:
+    # ((edition, language, builder), (conf, sconf))
+
+    for edition, language, builder in itertools.product(conf.runstate.editions_to_build,
+                                                        conf.runstate.languages_to_build,
+                                                        conf.runstate.builder):
+        yield ((edition, language, builder),
+               get_sphinx_build_configuration(edition, language, builder, conf.runstate))
+
+def get_restricted_builder_jobs(conf):
+    build_source_copies = set()
+    for ((edition, langauge, builder), (bconf, sconf)) in get_builder_jobs(conf):
+        if bconf.paths.branch_source not in build_source_copies:
+            build_source_copies.add(bconf.paths.branch_source)
+
+            yield ((edition, langauge, builder), (bconf, sconf))
 
 
 def get_sphinx_build_configuration(edition, language, builder, args):
@@ -133,6 +146,7 @@ def get_sphinx_build_configuration(edition, language, builder, args):
     arguments, return copies of the configuration (``conf``) and sphinx
     configuration (``sconf``) objects.
     """
+    args = copy.deepcopy(args)
 
     args.language = language
     args.edition = edition
