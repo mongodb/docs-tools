@@ -205,7 +205,7 @@ def sphinx_content_preperation(builder_jobs, app, conf):
 
             for content_generator in (robots_txt_tasks, intersphinx_tasks, includes_tasks,
                                       table_tasks, hash_tasks, redirect_tasks, image_tasks):
-                app.extend_queue(content_generator(build_config))e
+                app.extend_queue(content_generator(build_config))
 
             dependency_refresh_app = app.add('app')
             dependency_refresh_app.extend_queue(refresh_dependency_tasks(build_config))
