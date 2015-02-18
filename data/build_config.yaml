@@ -1,0 +1,21 @@
+git:
+  remote:
+    upstream: 'mongodb/docs-tools'
+    tools: 'mongodb/docs-tools'
+project:
+  name: 'tools'
+  tag: 'tools'
+  url: 'http://docs.mongodb.org/giza/'
+  title: 'MongoDB Docs Tools'
+  siteroot: true
+version:
+  release: '0.4.9'
+  branch: 'master'
+system:
+  files: []
+assets: []
+paths:
+  output: 'build'
+  builddata: 'data'
+  buildsystem: './'
+...

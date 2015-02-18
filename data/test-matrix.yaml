@@ -1,0 +1,46 @@
+project: mongodb-manual
+uri: https://github.com/mongodb/docs.git
+branches:
+  - master
+  - v2.2
+  - v2.4
+  - v2.6
+private: false
+---
+project: mongodb-primer
+uri: https://github.com/mongodb/docs.git
+branches:
+  - master
+root: 'primer'
+private: false
+---
+project: mms-docs
+uri: git@github.com:10gen/mms-docs.git
+branches:
+  - master
+  - v1.1
+  - v1.2
+  - v1.3
+  - v1.4
+  - v1.5
+  - v1.6
+private: true
+---
+project: docs-ecosystem
+uri: https://github.com/mongodb/docs-ecosystem.git
+branches:
+  - master
+private: false
+---
+project: docs-training
+uri: git@github.com:mongodb/docs-training.git
+branches:
+  - master
+private: true
+---
+project: www-about
+uri: git@github.com:10gen/mongodb-www-about.git
+branches:
+  - master
+private: true
+...
