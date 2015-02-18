@@ -104,6 +104,7 @@ def sphinx_publication(conf, app):
     # call this from/as the giza.operations.generate.source() entry point.
     sphinx_content_preperation(app, conf)
 
+    app.randomize = True
     app.run()
     app.reset()
 
@@ -181,6 +182,7 @@ def sphinx_content_preperation(app, conf):
             app.extend_queue(task_group)
 
     for ((edition, language, builder), (build_config, sconf)) in get_restricted_builder_jobs(conf):
+        # these functions all return tasks
         for content_generator in (robots_txt_tasks, intersphinx_tasks, includes_tasks,
                                   table_tasks, hash_tasks, redirect_tasks, image_tasks):
             app.extend_queue(content_generator(build_config))

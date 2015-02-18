@@ -41,7 +41,7 @@ import subprocess
 import shlex
 
 from libgiza.task import Task
-from giza.tools.files import safe_create_directory
+from giza.tools.files import safe_create_directory, expand_tree
 from giza.tools.timing import Timer
 
 logger = logging.getLogger('giza.content.sphinx')
@@ -257,6 +257,11 @@ def run_sphinx(builder, sconf, conf):
             output = e.output
             return_code = e.returncode
 
+    try:
+        os.utime(sconf.fq_build_output, None)
+    except:
+        pass
+
     logger.info('completed {0} sphinx build ({1})'.format(builder, return_code))
 
     return return_code, output
@@ -265,10 +270,9 @@ def run_sphinx(builder, sconf, conf):
 
 
 def sphinx_tasks(sconf, conf):
-    deps = [None]  # always force builds until depchecking is fixed
+    deps = [os.path.join(conf.paths.projectroot, 'conf.py')]
     deps.extend(conf.system.files.get_configs('sphinx_local'))
-    deps.append(os.path.join(conf.paths.projectroot, conf.paths.source))
-    deps.extend(os.path.join(conf.paths.projectroot, 'conf.py'))
+    deps.extend(expand_tree(os.path.join(conf.paths.projectroot, conf.paths.branch_source), 'txt'))
 
     return Task(job=run_sphinx,
                 args=(sconf.builder, sconf, conf),

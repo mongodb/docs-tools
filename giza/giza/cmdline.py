@@ -77,6 +77,7 @@ commands = {
         giza.operations.generate.redirects,
         giza.operations.generate.robots,
         giza.operations.generate.source,
+        giza.operations.generate.sphinx,
         giza.operations.generate.release,
     ],
     'includes': [

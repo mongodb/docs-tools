@@ -24,7 +24,7 @@ import argh
 
 from libgiza.app import BuildApp
 
-from giza.config.helper import fetch_config, get_builder_jobs, get_sphinx_build_configuration
+from giza.config.helper import fetch_config
 
 from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images.tasks import image_tasks, image_clean
@@ -41,7 +41,7 @@ from giza.content.steps.tasks import step_tasks, step_clean
 from giza.content.options.tasks import option_tasks, option_clean
 from giza.content.release.tasks import release_tasks, release_clean
 
-from giza.operations.sphinx_cmds import sphinx_content_preperation
+from giza.operations.sphinx_cmds import sphinx_content_preperation, sphinx_builder_tasks
 
 logger = logging.getLogger('giza.operations.generate')
 
@@ -220,21 +220,28 @@ def redirects(args):
             app.extend_queue(redirect_tasks(c))
 
 
-@argh.arg('--edition', '-e')
-@argh.arg('--language', '-l')
+@argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
+@argh.arg('--language', '-l', nargs='*', dest='languages_to_build')
 @argh.expects_obj
 def source(args):
     conf = fetch_config(args)
     args.builder = 'html'
-    args.editions_to_build = conf.project.edition_list
-    args.languages_to_build = ['en']
-
-    builder_jobs = [((edition, language, builder),
-                    get_sphinx_build_configuration(edition, language, builder, args))
-                    for edition, language, builder in get_builder_jobs(conf)]
 
     with BuildApp.new(pool_type=conf.runstate.runner,
                       pool_size=conf.runstate.pool_size,
                       force=conf.runstate.force).context() as app:
+        sphinx_content_preperation(app, conf)
 
-        sphinx_content_preperation(builder_jobs, app, conf)
+@argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
+@argh.arg('--language', '-l', nargs='*', dest='languages_to_build')
+@argh.arg('--builder', '-b', nargs='*', default='html')
+@argh.expects_obj
+def sphinx(args):
+    conf = fetch_config(args)
+    logger.warning('not for production use: this expects that content generation is complete.')
+
+    app = BuildApp.new(pool_type=conf.runstate.runner,
+                       pool_size=conf.runstate.pool_size,
+                       force=conf.runstate.force)
+
+    return sphinx_builder_tasks(app, conf)
