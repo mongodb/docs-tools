@@ -177,6 +177,7 @@ def create_link(input_fn, output_fn):
         msg = 'could not create a symlink at {1}.'.format('link', output_fn)
         logger.critical(msg)
         raise FileOperationError(msg)
+
     out_base = os.path.basename(output_fn)
     if out_base == "":
         msg = 'could not create a symlink at {1}.'.format('link', output_fn)
