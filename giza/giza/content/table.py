@@ -26,7 +26,7 @@ import logging
 import libgiza.task
 
 from rstcloth.table import TableBuilder, YamlTable, ListTable
-from giza.tools.files import expand_tree, verbose_remove
+from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
 
 logger = logging.getLogger('giza.content.table')
 
@@ -47,9 +47,8 @@ def _get_list_table_output_name(fn):
 
 def make_parent_dirs(*paths):
     for path in paths:
-        dirname = os.path.dirname(path)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
+        safe_create_directory(os.path.dirname(path))
+
 
 
 def _generate_tables(source, target, list_target):
