@@ -62,13 +62,16 @@ class ApiArgData(InheritableContentBase):
 
     @property
     def description(self):
-        if self.optional is True:
-            if 'description' not in self.state:
+        if 'description' not in self.state:
+            if self.optional is True:
                 return 'Optional.'
             else:
-                return 'Optional. ' + self.state['description']
+                return ''
         else:
-            return self.state['description']
+            if self.optional is True:
+                return 'Optional. ' + self.state['description']
+            else:
+                return self.state['description']
 
     @description.setter
     def description(self, value):
@@ -78,8 +81,8 @@ class ApiArgData(InheritableContentBase):
         if not isinstance(value, basestring):
             raise TypeError
 
-        if value.startswith('Optional. '):
-            value = value[11:]
+        if value.startswith('Optional.'):
+            value = value[8:]
             self.optional = True
 
         self.state['description'] = value.strip()
