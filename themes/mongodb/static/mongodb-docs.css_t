@@ -1655,3 +1655,28 @@ table.compatibility-large th:nth-child(1){
     background-color: rgb(238,238, 238);
     color: rgb(127, 127, 127);
 }
+
+#rating-panel {
+    font-size: 80%;
+    line-height: 1em;
+    height: 75px;
+}
+
+#feedback-question a {
+    display: inline-block;
+    background-color: rgb(59,41,31);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    width: 50px;
+}
+
+#feedback-question a:hover {
+    cursor: pointer;
+    text-decoration: none;
+    background-color: #6f503f;
+}
+
+#feedback-response-down, #feedback-response, #feedback-question {
+    display: none;
+}
