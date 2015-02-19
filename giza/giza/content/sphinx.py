@@ -85,7 +85,9 @@ def get_sphinx_args(sconf, conf):
 
     if is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version):
         if 'serial_sphinx' in conf.runstate:
-            logger.info('running with serial sphinx processes')
+            m = 'running with serial sphinx processes ({0}.{1}.{2}.{3})'
+            logger.info(m.format(sconf.builder, conf.project.name,
+                                 conf.project.edition, conf.git.branches.current))
             if conf.runstate.serial_sphinx == "publish":
                 if ((len(conf.runstate.builder) >= 1 or 'publish' in conf.runstate.builder) or
                         len(conf.runstate.languages_to_build) >= 1 or
@@ -262,7 +264,11 @@ def run_sphinx(builder, sconf, conf):
     except:
         pass
 
-    logger.info('completed {0} sphinx build ({1})'.format(builder, return_code))
+    m = 'completed {0} sphinx build for {1}.{2}.{3} ({4})'
+
+    logger.info(m.format(builder, conf.project.name, conf.project.edition,
+                         conf.git.branches.current, return_code))
+
     return return_code, output
 
 # Application Logic
