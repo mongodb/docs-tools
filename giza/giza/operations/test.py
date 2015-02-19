@@ -17,6 +17,7 @@ import os
 import logging
 import subprocess
 import shlex
+import shutil
 
 import libgiza.git
 import libgiza.app
@@ -91,6 +92,15 @@ def run_test_op(cmd, dir):
         return 0
 
 
+def cleaner(path):
+    rm_path = os.path.join(path, "build")
+    if not os.path.exists(rm_path):
+        logger.info('directory is clean: ' + rm_path)
+    else:
+        shutil.rmtree(os.path.join(path, "build"))
+        logger.info("removed path: " + rm_path)
+
+
 integration_targets = ('complete', 'minimal', 'cleanComplete', 'cleanMinimal')
 
 
@@ -110,8 +120,10 @@ def integration_main(args):
     giza.tools.files.safe_create_directory(build_path)
 
     for project in conf.test.projects:
-        if args._test_op not in project.operations:
-            logger.error('operation {0} not defined for project {1}'.format(args._test_op, project))
+        if (args._test_op not in project.operations and
+                args._test_op.lower()[5:] not in project.operations):
+            m = 'operation {0} not defined for project {1}'
+            logger.error(m.format(args._test_op, project))
             continue
 
         if (args._override_projects is not None and
@@ -132,18 +144,23 @@ def integration_main(args):
         task = app.add(libgiza.task.Task(job=setup_test_repo,
                                          args=(git_path, project),
                                          ignore=False))
+
+        if args._test_op.startswith('clean'):
+            task = task.add_finalizer(libgiza.task.Task(job=cleaner,
+                                                        args=[path],
+                                                        ignore=False))
+
         for branch in project.branches:
             task = task.add_finalizer(libgiza.task.Task(job=change_branch,
                                                         args=(path, branch),
                                                         ignore=False))
 
             if args._test_op.startswith('clean'):
-                task = task.add_finalizer(libgiza.task.Task(job=run_test_op,
-                                                            args=('rm -rf build/', path),
-                                                            ignore=False))
-                args._test_op = args._test_op.lower()[5:]
+                op_name = args._test_op.lower()[5:]
+            else:
+                op_name = args._test_op
 
-            for op in project.operations[args._test_op]:
+            for op in project.operations[op_name]:
                 task = task.add_finalizer(libgiza.task.Task(job=run_test_op,
                                                             args=(op, path),
                                                             ignore=False))
