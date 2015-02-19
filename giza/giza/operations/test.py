@@ -70,10 +70,12 @@ def change_branch(path, branch):
 
     if g.branch_exists(branch) is True:
         g.checkout(branch)
+        g.pull(remote='origin', branch=branch)
+        logger.info('checked out and updated {0} ({1}) in {2}'.format(branch, tracking, g.path))
     else:
         g.checkout_branch(branch, tracking=tracking)
 
-    logger.info('checked out {0} ({1}) in {2}'.format(branch, tracking, g.path))
+        logger.info('checked out {0} ({1}) in {2}'.format(branch, tracking, g.path))
 
 
 def run_test_op(cmd, dir):
