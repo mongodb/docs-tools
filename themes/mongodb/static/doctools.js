@@ -221,4 +221,39 @@ _ = Documentation.gettext;
 
 $(document).ready(function() {
   Documentation.init();
+
+  // Set up rating buttons
+  (function() {
+      'use strict';
+
+      // We require DOM storage. Don't show anything if support is not present.
+      if(window.localStorage === undefined) { return; }
+
+      var key = 'feedback-' + window.location.pathname;
+      var val = localStorage[key];
+      var ratedDate = -Infinity;
+
+      if(val !== undefined) {
+        ratedDate = Date.parse(val).valueOf();
+      }
+
+      // Expire the last rating after 30 days
+      if((new Date()).valueOf() >= (ratedDate + (1000 * 60 * 60 * 24 * 30))) {
+        var rateFunc = function(ev) {
+          localStorage.setItem(key, (new Date()).toJSON());
+          document.getElementById('feedback-question').style.display = 'none';
+          if(ev.data === 'up') {
+            document.getElementById('feedback-response').style.display = 'block';
+          } else {
+            document.getElementById('feedback-response-down').style.display = 'block';
+          }
+        };
+
+        $('#rate-up').on('click', null, 'up', rateFunc);
+        $('#rate-down').on('click', null, 'down', rateFunc);
+        document.getElementById('feedback-question').style.display = 'block';
+      } else {
+        document.getElementById('feedback-response').style.display = 'block';
+      }
+    })();
 });

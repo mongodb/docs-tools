@@ -306,6 +306,19 @@
                   {{ body }}
                 {% endblock %}
                 {{- render_nextprev() -}}
+                <div id="rating-panel">
+                  <div id="feedback-question">
+                    <p>Was this page helpful?</p>
+                    <a id="rate-up">Yes</a>
+                    <a id="rate-down">No</a>
+                  </div>
+                  <div id="feedback-response">
+                    <p>Thank you for your feedback!</p>
+                  </div>
+                  <div id="feedback-response-down">
+                    <p>We're sorry! You can {{ jiralink() }} to help us improve this page.</p>
+                  </div>
+                </div>
                 {%- block footer %}
                   <div class="footer">
                     <div class="copyright">
@@ -359,6 +372,7 @@
   {%- endblock %}
 
   {%- block versionnav %}
+
   <script type="text/javascript">
   var pagename = '{{pagename}}';
   if (pagename == 'index') {
