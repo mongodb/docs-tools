@@ -50,7 +50,6 @@ def make_parent_dirs(*paths):
         safe_create_directory(os.path.dirname(path))
 
 
-
 def _generate_tables(source, target, list_target):
     table_data = YamlTable(source)
 

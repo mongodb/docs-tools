@@ -140,7 +140,6 @@ def integration_main(args):
             path = os.path.join(build_path, project.project, project.root)
             git_path = os.path.join(build_path, project.project)
 
-
         task = app.add(libgiza.task.Task(job=setup_test_repo,
                                          args=(git_path, project),
                                          ignore=False))
