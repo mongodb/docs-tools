@@ -1,0 +1,62 @@
+tasks:
+  - name: "install"
+    commands: shell.exec
+    params:
+      working_dir: "giza"
+      script: |
+        # sudo apt-get -y install fonts-inconsolata ttf-adf-gillius imagemagick inkscape
+        # sudo apt-get -y install texlive-latex-base texlive-bin texlive-core
+
+        python setup.py install
+  - name: "unit-tests"
+    commands: shell.exec
+    params:
+      working_dir: "giza"
+      script: |
+        make -k test
+  - name: "mms-docs-minimal-test"
+    commands: shell.exec
+    params:
+      script: |
+        giza test --project mms-docs --operation minimal
+  - name: "manual-minimal-test"
+    commands: shell.exec
+    params:
+      script: |
+        giza test --project mongodb-manual --operation minimal
+  - name: "primer-minimal-test"
+    commands: shell.exec
+    params:
+      script: |
+        giza test --project mongodb-primer --operation minimal
+  - name: "ecosystem-minimal-test"
+    commands: shell.exec
+    params:
+      script: |
+        giza test --project docs-ecosystem --operation minimal
+  - name: "training-minimal-test"
+    commands: shell.exec
+    params:
+      script: |
+        giza test --project docs-training --operation minimal
+  - name: "mongodb-www-about-minimal-test"
+    commands: shell.exec
+    params:
+      script: |
+        giza test --project www-about --operation minimal
+
+
+buildvariants:
+  - name: ubuntu1404-release
+    display_name: "Ubuntu 14.04"
+    run_on:
+      - ubuntu1404-test
+    tasks:
+      - name: "install"
+      - name: "unit-tests"
+      - name: "mms-docs-minimal-test"
+      - name: "manual-minimal-test"
+      - name: "primer-minimal-test"
+      - name: "ecosystem-minimal-test"
+      - name: "training-minimal-test"
+      - name: "mongodb-www-about-minimal-test"
