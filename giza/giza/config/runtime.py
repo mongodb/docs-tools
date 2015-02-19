@@ -27,7 +27,6 @@ logger = logging.getLogger('giza.config.runtime')
 
 
 class RuntimeStateConfigurationBase(ConfigurationBase):
-
     def __init__(self, obj=None):
         super(RuntimeStateConfigurationBase, self).__init__(obj)
         self._conf = None
@@ -74,7 +73,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
         if isinstance(value, bool):
             self.state['force'] = value
         else:
-            raise TypeError
+            raise TypeError(type(value), value)
 
     @property
     def serial(self):
