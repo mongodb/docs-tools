@@ -192,8 +192,9 @@ def sphinx_content_preperation(app, conf):
 
     for ((edition, language, builder), (build_config, sconf)) in get_restricted_builder_jobs(conf):
         # these functions all return tasks
+        app.extend_queue(image_tasks(build_config, sconf))
         for content_generator in (robots_txt_tasks, intersphinx_tasks, includes_tasks,
-                                  table_tasks, hash_tasks, redirect_tasks, image_tasks):
+                                  table_tasks, hash_tasks, redirect_tasks):
             app.extend_queue(content_generator(build_config))
 
         dependency_refresh_app = app.add('app')

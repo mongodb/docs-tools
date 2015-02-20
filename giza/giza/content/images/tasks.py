@@ -49,7 +49,7 @@ def generate_image(build_type, dpi, width, target, source):
     logger.info('wrote: ' + target)
 
 
-def image_tasks(conf):
+def image_tasks(conf, sconf):
     tasks = []
 
     deps = conf.system.files.get_configs('images')
