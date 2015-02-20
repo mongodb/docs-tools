@@ -22,6 +22,7 @@ import libgiza.task
 
 import giza.content.images.views
 import giza.tools.files
+import giza.config.sphinx_config
 
 logger = logging.getLogger('giza.content.images')
 
@@ -59,6 +60,7 @@ def image_tasks(conf, sconf):
         return []
 
     for image in conf.system.files.data.images:
+
         if not os.path.isfile(image.source_core):
             logger.error('"{0}" does not exist'.format(image.source_core))
             continue
@@ -85,6 +87,20 @@ def image_tasks(conf, sconf):
                                   dependency=image.source_core,
                                   description=description)
             tasks.append(t)
+            
+            if output.type == 'target':
+
+              builder_name = giza.config.sphinx_config.resolve_builder_path('html', conf.project.edition, None, conf)
+              build_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder_name, '_images')
+
+              image_output = os.path.join(build_dir, ''.join([image.name, '-', output.tag, '.', output.build_type]))
+
+              description = 'copying fullsize image file {0} from {1}'.format(image_output, 
+                                                                      output.output)
+              t = libgiza.task.Task(job=giza.tools.files.copy_if_needed,
+                                    args=(output.output, image_output),
+                                    description=description)
+              tasks.append(t)
 
     logger.info('registered {0} image generation tasks'.format(len(tasks)))
 
