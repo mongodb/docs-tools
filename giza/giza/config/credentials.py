@@ -35,6 +35,10 @@ def get_credentials_skeleton():
             'password': None,
             'token': None,
         },
+        'aws': {
+            'key': None,
+            'secret': None
+        }
     }
 
 
@@ -64,6 +68,14 @@ class CredentialsConfig(ConfigurationBase):
     def github(self, value):
         self.state['github'] = GithubCredentialsConfig(value)
 
+    @property
+    def aws(self):
+        return self.state['aws']
+
+    @aws.setter
+    def aws(self, value):
+        self.state['aws'] = AwsCredentialsConfig(value)
+
 
 class JiraCredentialsConfig(ConfigurationBase):
     _option_registry = ['username', 'password']
@@ -75,3 +87,7 @@ class CorpCredentialsConfig(ConfigurationBase):
 
 class GithubCredentialsConfig(ConfigurationBase):
     _option_registry = ['username', 'password', 'token']
+
+
+class AwsCredentialsConfig(ConfigurationBase):
+    _option_registry = ['key', 'secret']
