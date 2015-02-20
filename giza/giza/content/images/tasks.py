@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os.path
 import logging
+import os
+import shlex
+import subprocess
 
 import wand.image
 import wand.api
@@ -49,6 +51,34 @@ def generate_image(build_type, dpi, width, target, source):
     logger.info('wrote: ' + target)
 
 
+def generate_image_inkscape(build_type, dpi, width, target, source):
+    inkscape = None
+
+    for path in ('/usr/bin/inkscape', '/usr/local/bin', '/Applications/Inkscape.app/Contents/Resources/bin/inkscape', ):
+        if os.path.exists(path):
+            inkscape = path
+            break
+
+    if inkscape is None:
+        logger.error("dependency INKSCAPE not installed. not building images.")
+        return
+
+    if build_type == 'png':
+        cmd = '{cmd} -z -d {dpi} -w {width} -y 0.0 -e {target} {source}'
+    elif build_type == 'eps':
+        cmd = '{cmd} -z -d {dpi} -w {width} -y 1.0 -E {target} {source}'
+
+    cmd = cmd.format(cmd=inkscape, dpi=dpi, width=width, target=target, source=source)
+    with open(os.devnull, 'w') as null:
+        r = subprocess.call(shlex.split(cmd), stdout=null, stderr=null)
+
+    if r == 0:
+        logger.info('wrote: ' + target)
+    else:
+        logger.warning('error generating image: ' + target)
+        logger.error(cmd)
+
+
 def image_tasks(conf, sconf):
     tasks = []
 
@@ -78,7 +108,7 @@ def image_tasks(conf, sconf):
         for output in image.outputs:
             description = 'generating image file {0} from {1}'.format(output.target,
                                                                       image.source_core)
-            t = libgiza.task.Task(job=generate_image,
+            t = libgiza.task.Task(job=generate_image_inkscape,
                                   args=(output.build_type, output.dpi, output.width,
                                         output.output, image.source_file),
                                   target=output.output,
