@@ -32,7 +32,7 @@ logger = logging.getLogger('giza.operations.git')
 
 
 @argh.arg('--patch', '-p', nargs='*', dest='git_objects')
-@argh.arg('--branch', '-b', default=None, dest='git_branch')
+@argh.arg('--branch', '-b', nargs='*', dest='git_branch')
 @argh.arg('--signoff', '-s', default=False, action='store_true', dest='git_sign_patch')
 @argh.named('am')
 @argh.expects_obj
@@ -42,15 +42,16 @@ def apply_patch(args):
     g = GitRepo(c.paths.projectroot)
 
     if c.runstate.git_branch is None:
-        c.runstate.git_branch = g.current_branch()
+        c.runstate.git_branch = [g.current_branch()]
 
-    with g.branch(c.runstate.git_branch):
-        g.am(patches=c.runstate.git_objects,
-             repo='/'.join(['https://github.com', c.git.remote.upstream]),
-             sign=c.runstate.git_sign_patch)
+    for branch in c.runstate.git_branch:
+        with g.branch(branch):
+            g.am(patches=c.runstate.git_objects,
+                 repo='/'.join(['https://github.com', c.git.remote.upstream]),
+                 sign=c.runstate.git_sign_patch)
 
 
-@argh.arg('--branch', '-b', default=None, dest='git_branch')
+@argh.arg('--branch', '-b', nargs="*", dest='git_branch')
 @argh.named('update')
 @argh.expects_obj
 def pull_rebase(args):
@@ -59,13 +60,14 @@ def pull_rebase(args):
     g = GitRepo(c.paths.projectroot)
 
     if c.runstate.git_branch is None:
-        c.runstate.git_branch = g.current_branch()
+        c.runstate.git_branch = [g.current_branch()]
 
-    with g.branch(c.runstate.git_branch):
-        g.update()
+    for branch in c.runstate.git_branch:
+        with g.branch(branch):
+            g.update()
+            logger.info('updated: ' + branch)
 
-
-@argh.arg('--branch', '-b', default=None, dest='git_branch')
+@argh.arg('--branch', '-b', nargs="*", dest='git_branch')
 @argh.arg('--commits', '-c', nargs='*', dest='git_objects')
 @argh.named('cp')
 @argh.expects_obj
@@ -75,10 +77,11 @@ def cherry_pick(args):
     g = GitRepo(c.paths.projectroot)
 
     if c.runstate.git_branch is None:
-        c.runstate.git_branch = g.current_branch()
+        c.runstate.git_branch = [g.current_branch()]
 
-    with g.branch(c.runstate.git_branch):
-        g.cherry_pick(c.runstate.git_objects)
+    for branch in c.runstate.git_branch:
+        with g.branch(branch):
+            g.cherry_pick(c.runstate.git_objects)
 
 
 @argh.arg('--branch', '-b', default=None, dest='git_branch')
