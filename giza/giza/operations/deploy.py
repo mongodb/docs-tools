@@ -69,7 +69,7 @@ def publish_and_deploy(args):
                        pool_size=c.runstate.pool_size,
                        force=c.runstate.force)
 
-    sphinx_ret = sphinx_publication(c, args, app)
+    sphinx_ret = sphinx_publication(c, app)
     if sphinx_ret == 0 or c.runstate.force is True:
         deploy_tasks(c, app)
 
