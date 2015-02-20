@@ -7,42 +7,52 @@ tasks:
         # sudo apt-get -y install fonts-inconsolata ttf-adf-gillius imagemagick inkscape
         # sudo apt-get -y install texlive-latex-base texlive-latex-extra texlive-fonts-recommended
 
-        python setup.py install
+        virutalenv ~/venv-giza
+        source ~/venv-giza/bin/activate
+
+        pip install .
   - name: "unit-tests"
     commands: shell.exec
     params:
       working_dir: "giza"
       script: |
+        source ~/venv-giza/bin/activate
         make -k test
   - name: "mms-docs-minimal-test"
     commands: shell.exec
     params:
       script: |
+        source ~/venv-giza/bin/activate
         giza test --project mms-docs --operation minimal
   - name: "manual-minimal-test"
     commands: shell.exec
     params:
       script: |
+        source ~/venv-giza/bin/activate
         giza test --project mongodb-manual --operation minimal
   - name: "primer-minimal-test"
     commands: shell.exec
     params:
       script: |
+        source ~/venv-giza/bin/activate
         giza test --project mongodb-primer --operation minimal
   - name: "ecosystem-minimal-test"
     commands: shell.exec
     params:
       script: |
+        source ~/venv-giza/bin/activate
         giza test --project docs-ecosystem --operation minimal
   - name: "training-minimal-test"
     commands: shell.exec
     params:
       script: |
+        source ~/venv-giza/bin/activate
         giza test --project docs-training --operation minimal
   - name: "mongodb-www-about-minimal-test"
     commands: shell.exec
     params:
       script: |
+        source ~/venv-giza/bin/activate
         giza test --project www-about --operation minimal
 
 
