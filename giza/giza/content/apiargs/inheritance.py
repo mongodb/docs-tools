@@ -19,7 +19,6 @@ from giza.content.apiargs.models import ApiArgData
 
 logger = logging.getLogger('giza.content.inheritance.apiargs')
 
-
 class ApiArgFile(DataContentBase):
     content_class = ApiArgData
 
@@ -27,7 +26,7 @@ class ApiArgFile(DataContentBase):
         name = set()
 
         for content in self.content.values():
-            name.add(content.arg_name)
+            name.add(content.arg_name_rendered)
 
         if len(name) > 1:
             logger.warning('too many field types returning one at random.')

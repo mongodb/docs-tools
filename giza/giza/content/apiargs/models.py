@@ -31,7 +31,6 @@ field_type = {
     'flag': 'Flag',
 }
 
-
 class ApiArgData(InheritableContentBase):
     _option_registry = [
         'interface',  # TODO validate because limited possibilities
@@ -42,6 +41,7 @@ class ApiArgData(InheritableContentBase):
     def arg_name(self):
         return self.state['arg_name']
 
+    @property
     def arg_name_rendered(self):
         if 'arg_name' not in self.state:
             return field_type['arg']
