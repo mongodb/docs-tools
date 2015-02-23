@@ -122,20 +122,22 @@ def image_tasks(conf, sconf):
                                   dependency=image.source_core,
                                   description=description)
             tasks.append(t)
-            
+
             if output.type == 'target':
+              image_output = os.path.join(conf.paths.projectroot,
+                                          conf.paths.branch_output,
+                                          giza.config.sphinx_config.resolve_builder_path(sconf.builder, conf.project.edition, None, conf),
+                                          '_images',
+                                          ''.join([image.name, '-', output.tag, '.', output.build_type]))
 
-              builder_name = giza.config.sphinx_config.resolve_builder_path('html', conf.project.edition, None, conf)
-              build_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder_name, '_images')
+              description = 'copying fullsize image file {0} from {1}'.format(image_output,
+                                                                              output.output)
 
-              image_output = os.path.join(build_dir, ''.join([image.name, '-', output.tag, '.', output.build_type]))
-
-              description = 'copying fullsize image file {0} from {1}'.format(image_output, 
-                                                                      output.output)
-              t = libgiza.task.Task(job=giza.tools.files.copy_if_needed,
-                                    args=(output.output, image_output),
-                                    description=description)
-              tasks.append(t)
+              t.add_finalizer(libgiza.task.Task(job=giza.tools.files.copy_if_needed,
+                                                args=(output.output, image_output),
+                                                description=description,
+                                                target=image_output,
+                                                dependency=None))
 
     logger.info('registered {0} image generation tasks'.format(len(tasks)))
 
