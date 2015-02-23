@@ -55,7 +55,8 @@ def generate_image(build_type, dpi, width, target, source):
 def generate_image_inkscape(build_type, dpi, width, target, source):
     inkscape = None
 
-    for path in ('/usr/bin/inkscape', '/usr/local/bin', '/Applications/Inkscape.app/Contents/Resources/bin/inkscape', ):
+    for path in ('/usr/bin/inkscape', '/usr/local/bin/inkscape',
+                 '/Applications/Inkscape.app/Contents/Resources/bin/inkscape'):
         if os.path.exists(path):
             inkscape = path
             break
@@ -70,6 +71,7 @@ def generate_image_inkscape(build_type, dpi, width, target, source):
         cmd = '{cmd} -z -d {dpi} -w {width} -y 1.0 -E {target} {source}'
 
     cmd = cmd.format(cmd=inkscape, dpi=dpi, width=width, target=target, source=source)
+    logger.debug(cmd)
     with open(os.devnull, 'w') as null:
         r = subprocess.call(shlex.split(cmd), stdout=null, stderr=null)
 
@@ -89,6 +91,8 @@ def image_tasks(conf, sconf):
     if 'images' not in conf.system.files.data:
         return []
 
+    giza.tools.files.safe_create_directory(os.path.join(conf.paths.projectroot,
+                                                        conf.paths.branch_images))
     for image in conf.system.files.data.images:
         if not os.path.isfile(image.source_core):
             logger.error('"{0}" does not exist'.format(image.source_core))
