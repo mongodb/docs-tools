@@ -104,8 +104,6 @@ def deploy_tasks(c, app):
             task = app.add('task')
             task.args = ' '.join(cmd)
             task.job = deploy_target
-            task.target = ""
-            task.depends = os.path.join(c.paths.projectroot, c.paths.public_site_output)
 
             if c.runstate.dry_run is True:
                 logger.info('dry run: {0}'.format(' '.join(cmd)))
