@@ -1,16 +1,14 @@
-tasks:
-  - name: "install"
-    commands: shell.exec
+pre:
+  - command: shell.exec
     params:
       working_dir: "giza"
       script: |
-        # sudo apt-get -y install fonts-inconsolata ttf-adf-gillius imagemagick inkscape
-        # sudo apt-get -y install texlive-latex-base texlive-latex-extra texlive-fonts-recommended
-
         virutalenv ~/venv-giza
         source ~/venv-giza/bin/activate
 
         pip install .
+
+tasks:
   - name: "unit-tests"
     commands: shell.exec
     params:
@@ -62,7 +60,6 @@ buildvariants:
     run_on:
       - ubuntu1404-test
     tasks:
-      - name: "install"
       - name: "unit-tests"
       - name: "mms-docs-minimal-test"
       - name: "manual-minimal-test"
