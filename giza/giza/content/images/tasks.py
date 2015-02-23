@@ -107,7 +107,7 @@ def image_tasks(conf, sconf):
             continue
 
         for output in image.outputs:
-            description = 'generating image file {0} from {1}'.format(output.target,
+            description = 'generating image file {0} from {1}'.format(output.output,
                                                                       image.source_core)
             t = libgiza.task.Task(job=generate_image_inkscape,
                                   args=(output.build_type, output.dpi, output.width,
