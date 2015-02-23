@@ -24,7 +24,7 @@ import argh
 
 from libgiza.app import BuildApp
 
-from giza.config.helper import fetch_config
+from giza.config.helper import fetch_config, get_restricted_builder_jobs
 
 from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images.tasks import image_tasks, image_clean
@@ -111,8 +111,10 @@ def assets(args):
             app.extend_queue(assets_tasks(c))
 
 
+@argh.arg('--edition', '-e', nargs='*', dest='editions_to_build')
+@argh.arg('--language', '-l', nargs='*', dest='languages_to_build')
+@argh.arg('--builder', '-b', nargs='*', default='html')
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
-@argh.arg('--edition', '-e')
 @argh.expects_obj
 def images(args):
     c = fetch_config(args)
@@ -120,10 +122,12 @@ def images(args):
     with BuildApp.new(pool_type=c.runstate.runner,
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
+
         if c.runstate.clean_generated is True:
             app.extend_queue(image_clean(c))
         else:
-            app.extend_queue(image_tasks(c))
+            for (_, (bconf, sconf)) in get_restricted_builder_jobs(c):
+                app.extend_queue(image_tasks(bconf, sconf))
 
 
 @argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")

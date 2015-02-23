@@ -17,9 +17,6 @@ import os
 import shlex
 import subprocess
 
-import wand.image
-import wand.api
-import wand.color
 import libgiza.task
 
 import giza.content.images.views
@@ -29,6 +26,10 @@ logger = logging.getLogger('giza.content.images')
 
 
 def generate_image(build_type, dpi, width, target, source):
+    import wand.image
+    import wand.api
+    import wand.color
+
     with wand.image.Image(filename=source, resolution=dpi) as image:
         if image.width != width:
             image.transform(resize=str(width))
