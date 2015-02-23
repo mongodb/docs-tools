@@ -23,24 +23,28 @@ tasks:
   - name: "mms-docs-minimal-test"
     commands: shell.exec
     params:
+      working_dir: "giza"
       script: |
         source ~/venv-giza/bin/activate
         giza test --project mms-docs --operation minimal
   - name: "manual-minimal-test"
     commands: shell.exec
     params:
+      working_dir: "giza"
       script: |
         source ~/venv-giza/bin/activate
         giza test --project mongodb-manual --operation minimal
   - name: "primer-minimal-test"
     commands: shell.exec
     params:
+      working_dir: "giza"
       script: |
         source ~/venv-giza/bin/activate
         giza test --project mongodb-primer --operation minimal
   - name: "training-minimal-test"
     commands: shell.exec
     params:
+      working_dir: "giza"
       script: |
         source ~/venv-giza/bin/activate
         giza test --project docs-training --operation minimal
@@ -52,10 +56,8 @@ buildvariants:
     run_on:
       - ubuntu1404-test
     tasks:
-      - name: "unit-tests"
+      - name: "small-tests"
       - name: "mms-docs-minimal-test"
       - name: "manual-minimal-test"
       - name: "primer-minimal-test"
-      - name: "ecosystem-minimal-test"
       - name: "training-minimal-test"
-      - name: "mongodb-www-about-minimal-test"
