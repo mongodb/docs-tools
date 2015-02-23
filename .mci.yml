@@ -3,7 +3,7 @@ pre:
     params:
       working_dir: "giza"
       script: |
-        virutalenv ~/venv-giza
+        virtualenv ~/venv-giza
         source ~/venv-giza/bin/activate
 
         pip install .
