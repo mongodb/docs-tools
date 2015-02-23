@@ -9,13 +9,17 @@ pre:
         pip install .
 
 tasks:
-  - name: "unit-tests"
+  - name: "small-tests"
     commands: shell.exec
     params:
       working_dir: "giza"
       script: |
         source ~/venv-giza/bin/activate
         make -k test
+
+        giza test --project www-about --operation minimal
+
+        giza test --project docs-ecosystem --operation minimal
   - name: "mms-docs-minimal-test"
     commands: shell.exec
     params:
@@ -34,24 +38,12 @@ tasks:
       script: |
         source ~/venv-giza/bin/activate
         giza test --project mongodb-primer --operation minimal
-  - name: "ecosystem-minimal-test"
-    commands: shell.exec
-    params:
-      script: |
-        source ~/venv-giza/bin/activate
-        giza test --project docs-ecosystem --operation minimal
   - name: "training-minimal-test"
     commands: shell.exec
     params:
       script: |
         source ~/venv-giza/bin/activate
         giza test --project docs-training --operation minimal
-  - name: "mongodb-www-about-minimal-test"
-    commands: shell.exec
-    params:
-      script: |
-        source ~/venv-giza/bin/activate
-        giza test --project www-about --operation minimal
 
 
 buildvariants:
