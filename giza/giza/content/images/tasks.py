@@ -21,7 +21,7 @@ import libgiza.task
 
 import giza.content.images.views
 import giza.tools.files
-import giza.config.sphinx_config
+from giza.config.sphinx_config import resolve_builder_path
 
 logger = logging.getLogger('giza.content.images')
 
@@ -124,20 +124,23 @@ def image_tasks(conf, sconf):
             tasks.append(t)
 
             if output.type == 'target':
-              image_output = os.path.join(conf.paths.projectroot,
-                                          conf.paths.branch_output,
-                                          giza.config.sphinx_config.resolve_builder_path(sconf.builder, conf.project.edition, None, conf),
-                                          '_images',
-                                          ''.join([image.name, '-', output.tag, '.', output.build_type]))
+                image_output = os.path.join(conf.paths.projectroot,
+                                            conf.paths.branch_output,
+                                            resolve_builder_path(sconf.builder,
+                                                                 conf.project.edition,
+                                                                 None, conf),
+                                            '_images',
+                                            ''.join([image.name, '-', output.tag,
+                                                     '.', output.build_type]))
 
-              description = 'copying fullsize image file {0} from {1}'.format(image_output,
-                                                                              output.output)
+                description = 'copying fullsize image file {0} from {1}'.format(image_output,
+                                                                                output.output)
 
-              t.add_finalizer(libgiza.task.Task(job=giza.tools.files.copy_if_needed,
-                                                args=(output.output, image_output),
-                                                description=description,
-                                                target=image_output,
-                                                dependency=None))
+                t.add_finalizer(libgiza.task.Task(job=giza.tools.files.copy_if_needed,
+                                                  args=(output.output, image_output),
+                                                  description=description,
+                                                  target=image_output,
+                                                  dependency=None))
 
     logger.info('registered {0} image generation tasks'.format(len(tasks)))
 

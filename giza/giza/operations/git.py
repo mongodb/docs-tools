@@ -67,6 +67,7 @@ def pull_rebase(args):
             g.update()
             logger.info('updated: ' + branch)
 
+
 @argh.arg('--branch', '-b', nargs="*", dest='git_branch')
 @argh.arg('--commits', '-c', nargs='*', dest='git_objects')
 @argh.named('cp')

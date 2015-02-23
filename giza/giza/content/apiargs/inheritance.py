@@ -19,6 +19,7 @@ from giza.content.apiargs.models import ApiArgData
 
 logger = logging.getLogger('giza.content.inheritance.apiargs')
 
+
 class ApiArgFile(DataContentBase):
     content_class = ApiArgData
 

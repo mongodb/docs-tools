@@ -31,6 +31,7 @@ field_type = {
     'flag': 'Flag',
 }
 
+
 class ApiArgData(InheritableContentBase):
     _option_registry = [
         'interface',  # TODO validate because limited possibilities
