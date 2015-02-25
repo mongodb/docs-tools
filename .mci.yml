@@ -30,8 +30,8 @@ tasks:
           script: |
             . ${venv}/activate
 
-            ${venv}/giza test --project www-about --operation minimal --giza_path ${venv}/giza
-            ${venv}/giza test --project docs-ecosystem --operation minimal --giza_path ${venv}/giza
+            ${venv}/giza test --project www-about --operation minimal
+            ${venv}/giza test --project docs-ecosystem --operation minimal
   - name: "mms-docs-minimal-test"
     commands:
       - command: shell.exec
@@ -40,7 +40,7 @@ tasks:
           script: |
             . ${venv}/activate
 
-            ${venv}/giza test --project mms-docs --operation minimal --giza_path ${venv}/giza
+            ${venv}/giza test --project mms-docs --operation minimal
   - name: "manual-minimal-test"
     commands:
       - command: shell.exec
@@ -49,7 +49,7 @@ tasks:
           script: |
             . ${venv}/activate
 
-            ${venv}/giza test --project mongodb-manual --operation minimal --giza_path ${venv}/giza
+            ${venv}/giza test --project mongodb-manual --operation minimal
   - name: "primer-minimal-test"
     commands:
       - command: shell.exec
@@ -58,7 +58,7 @@ tasks:
           script: |
             . ${venv}/activate
 
-            ${venv}/giza test --project mongodb-primer --operation minimal --giza_path ${venv}/giza
+            ${venv}/giza test --project mongodb-primer --operation minimal
     commands:
       - command: shell.exec
         params:
@@ -66,7 +66,7 @@ tasks:
           script: |
             . ${venv}/activate
 
-            ${venv}/giza test --project docs-training --operation minimal --giza_path ${venv}/giza
+            ${venv}/giza test --project docs-training --operation minimal
 
 
 buildvariants:
