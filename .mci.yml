@@ -1,6 +1,6 @@
 pre:
   - command: git.get_project
-    params: 
+    params:
       directory: "docs-tools"
   - command: git.apply_patch
     params:
@@ -11,7 +11,7 @@ pre:
       script: |
         virtualenv ~/venv
         ${venv}/pip install .
-        ${venv}/pip install pep8 pyflakes nosetests
+        ${venv}/pip install pep8 pyflakes nose
 
 
 tasks:
