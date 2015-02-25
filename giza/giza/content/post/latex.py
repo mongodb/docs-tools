@@ -20,6 +20,7 @@ import logging
 import os
 import re
 import subprocess
+import shlex
 
 import libgiza.task
 
