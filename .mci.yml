@@ -16,7 +16,7 @@ pre:
 
 tasks:
   - name: "small-tests"
-    commands: shell.exec
+    command: shell.exec
     params:
       working_dir: "docs-tools"
       script: |
@@ -25,25 +25,25 @@ tasks:
         ${venv}/giza test --project www-about --operation minimal
         ${venv}/giza test --project docs-ecosystem --operation minimal
   - name: "mms-docs-minimal-test"
-    commands: shell.exec
+    command: shell.exec
     params:
       working_dir: "docs-tools"
       script: |
         ${venv}/giza test --project mms-docs --operation minimal
   - name: "manual-minimal-test"
-    commands: shell.exec
+    command: shell.exec
     params:
       working_dir: "docs-tools"
       script: |
         ${venv}/giza test --project mongodb-manual --operation minimal
   - name: "primer-minimal-test"
-    commands: shell.exec
+    command: shell.exec
     params:
       working_dir: "docs-tools"
       script: |
         ${venv}/giza test --project mongodb-primer --operation minimal
   - name: "training-minimal-test"
-    commands: shell.exec
+    command: shell.exec
     params:
       working_dir: "docs-tools"
       script: |
