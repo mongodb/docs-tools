@@ -8,14 +8,14 @@ branches:
   - v2.6
 operations:
   minimal:
-    - "generate source"
-    - "--serial generate sphinx --builder html"
-    - "env package --builder publish"
-    - "packaging create --target push"
+    - "giza generate source"
+    - "giza --serial generate sphinx --builder html"
+    - "giza env package --builder publish"
+    - "giza packaging create --target push"
   complete:
-    - "make publish --serial_sphinx"
-    - "env package --builder publish"
-    - "packaging create --target push"
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish"
+    - "giza packaging create --target push"
 ---
 project: mongodb-primer
 uri: https://github.com/mongodb/docs.git
@@ -25,14 +25,14 @@ branches:
   - master
 operations:
   minimal:
-    - "generate source --edition shell python cpp node"
-    - "--serial generate sphinx --builder html --edition shell python cpp node"
-    - "env package --builder publish --edition shell python cpp node"
-    - "packaging create --target push-shell push-python push-cpp push-node"
+    - "giza generate source --edition shell python cpp node"
+    - "giza --serial generate sphinx --builder html --edition shell python cpp node"
+    - "giza env package --builder publish --edition shell python cpp node"
+    - "giza packaging create --target push-shell push-python push-cpp push-node"
   complete:
-    - "make publish --serial_sphinx"
-    - "env package --builder publish --edition shell python cpp node"
-    - "packaging create --target push-shell push-python push-cpp push-node"
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish --edition shell python cpp node"
+    - "giza packaging create --target push-shell push-python push-cpp push-node"
 ---
 project: mms-docs
 uri: git@github.com:10gen/mms-docs.git
@@ -47,14 +47,14 @@ branches:
   - v1.6
 operations:
   minimal:
-    - "generate source --edition cloud classic onprem"
-    - "--serial generate sphinx --builder html --edition cloud classic onprem"
-    - "env package --builder publish --edition cloud classic onprem"
-    - "packaging create --target push-cloud push-classic push-onprem"
+    - "giza generate source --edition cloud classic onprem"
+    - "giza --serial generate sphinx --builder html --edition cloud classic onprem"
+    - "giza env package --builder publish --edition cloud classic onprem"
+    - "giza packaging create --target push-cloud push-classic push-onprem"
   complete:
-    - "make publish --serial_sphinx"
-    - "env package --builder publish --edition cloud classic onprem"
-    - "packaging create --target push-cloud push-classic push-onprem"
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish --edition cloud classic onprem"
+    - "giza packaging create --target push-cloud push-classic push-onprem"
 ---
 project: docs-ecosystem
 uri: https://github.com/mongodb/docs-ecosystem.git
@@ -63,12 +63,12 @@ branches:
 private: false
 operations:
   minimal:
-    - "generate source"
-    - "--serial generate sphinx --builder html"
+    - "giza generate source"
+    - "giza --serial generate sphinx --builder html"
   complete:
-    - "make publish --serial_sphinx"
-    - "env package --builder publish"
-    - "packaging create --target push"
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish"
+    - "giza packaging create --target push"
 ---
 project: docs-training
 uri: git@github.com:mongodb/docs-training.git
@@ -77,14 +77,14 @@ branches:
 private: true
 operations:
   minimal:
-    - "generate source --edition instructor student"
-    - "--serial generate sphinx --builder html --edition instructor student"
-    - "env package --builder publish"
-    - "packaging create --target push-student push-instructor"
+    - "giza generate source --edition instructor student"
+    - "giza --serial generate sphinx --builder html --edition instructor student"
+    - "giza env package --builder publish"
+    - "giza packaging create --target push-student push-instructor"
   complete:
-    - "make publish --serial_sphinx"
-    - "env package --builder publish"
-    - "packaging create --target push-student push-instructor"
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish"
+    - "giza packaging create --target push-student push-instructor"
 ---
 project: www-about
 uri: git@github.com:10gen/mongodb-www-about.git
@@ -93,10 +93,10 @@ branches:
 private: true
 operations:
   minimal:
-    - "generate source"
-    - "--serial generate sphinx --builder html"
+    - "giza generate source"
+    - "giza --serial generate sphinx --builder html"
   complete:
-    - "make publish --serial_sphinx"
-    - "env package --builder publish"
-    - "packaging create --target push"
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish"
+    - "giza packaging create --target push"
 ...
