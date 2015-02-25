@@ -135,7 +135,7 @@ def pdf_tasks(sconf, conf):
         if len(i['tag']) == 0:
             tagged_name = i['output'][:-4]
         else:
-            tagged_name = i['output'][:-4] +  '-' + i['tag']
+            tagged_name = i['output'][:-4] + '-' + i['tag']
 
         deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
         link_name = deploy_fn.replace('-' + conf.git.branches.current, '')

@@ -11,7 +11,7 @@ pre:
       script: |
         virtualenv ~/venv
         ${venv}/pip install .
-        ${venv}/pip install pep8 pyflakes nose
+        ${venv}/pip install pep8 pyflakes  # nose
 
 
 tasks:
@@ -21,7 +21,7 @@ tasks:
         params:
           working_dir: "docs-tools/giza"
           script: |
-            ${venv}/nosetests ./test
+            # ${venv}/nosetests ./test
             ${venv}/pyflakes giza
             ${venv}/pep8 --max-line-length=100 giza
       - command: shell.exec
@@ -59,7 +59,7 @@ tasks:
             export PATH=${venv}:$PATH
 
             ${venv}/giza test --project mongodb-primer --operation minimal
-  - name: "training-minimal-test"
+  - name: "training-minimal-test"  # disabled because of access
     commands:
       - command: shell.exec
         params:
@@ -82,4 +82,4 @@ buildvariants:
       - name: "mms-docs-minimal-test"
       - name: "manual-minimal-test"
       - name: "primer-minimal-test"
-      - name: "training-minimal-test"
+      # - name: "training-minimal-test"

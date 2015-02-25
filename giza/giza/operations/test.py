@@ -84,14 +84,15 @@ def run_giza_test_op(cmd, dir, giza_path):
 
     giza_cmd = [giza_path]
     giza_cmd.extend(shlex.split(cmd))
+    cmd = ' '.join(giza_cmd)
 
     r = subprocess.call(args=giza_cmd, cwd=dir)
     if r != 0:
-        m = 'failure with {0}, in "{1}", ({2})'.format(' '.join(giza_cmd), dir, g.current_branch())
+        m = 'failure with {0}, in "{1}", ({2})'.format(cmd, dir, g.current_branch())
         logger.error(m)
         raise RuntimeError(m)
     else:
-        logger.info('completed {0}, in "{1}", ({2})'.format(' '.join(giza_cmd), dir, g.current_branch()))
+        logger.info('completed {0}, in "{1}", ({2})'.format(cmd, dir, g.current_branch()))
         return 0
 
 
