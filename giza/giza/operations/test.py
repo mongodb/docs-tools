@@ -82,7 +82,10 @@ def change_branch(path, branch):
 def run_giza_test_op(cmd, dir, giza_path):
     g = libgiza.git.GitRepo(dir)
 
-    giza_cmd = [giza_path]
+    giza_cmd = []
+    if giza_path is not None:
+        giza_cmd.append(giza_path)
+
     giza_cmd.extend(shlex.split(cmd))
     cmd = ' '.join(giza_cmd)
 
@@ -111,7 +114,7 @@ integration_targets = ('complete', 'minimal', 'cleanComplete', 'cleanMinimal')
 @argh.arg('--branch', '-b', dest='_override_branch', nargs="*", default=None)
 @argh.arg('--project', '-p', dest='_override_projects', nargs="*", default=None)
 @argh.arg('--operation', '-o', dest='_test_op', default='complete', choices=integration_targets)
-@argh.arg('--giza_path', dest='_giza_path', default='giza')
+@argh.arg('--giza_path', dest='_giza_path', default=None)
 @argh.expects_obj
 @argh.named('test')
 def integration_main(args):
