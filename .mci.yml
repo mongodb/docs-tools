@@ -28,7 +28,7 @@ tasks:
         params:
           working_dir: "docs-tools"
           script: |
-            export PATH=${venv}:$PATH
+            . ${venv}/activate
 
             ${venv}/giza test --project www-about --operation minimal --giza_path ${venv}/giza
             ${venv}/giza test --project docs-ecosystem --operation minimal --giza_path ${venv}/giza
@@ -38,7 +38,7 @@ tasks:
         params:
           working_dir: "docs-tools"
           script: |
-            export PATH=${venv}:$PATH
+            . ${venv}/activate
 
             ${venv}/giza test --project mms-docs --operation minimal --giza_path ${venv}/giza
   - name: "manual-minimal-test"
@@ -47,7 +47,7 @@ tasks:
         params:
           working_dir: "docs-tools"
           script: |
-            export PATH=${venv}:$PATH
+            . ${venv}/activate
 
             ${venv}/giza test --project mongodb-manual --operation minimal --giza_path ${venv}/giza
   - name: "primer-minimal-test"
@@ -56,7 +56,7 @@ tasks:
         params:
           working_dir: "docs-tools"
           script: |
-            export PATH=${venv}:$PATH
+            . ${venv}/activate
 
             ${venv}/giza test --project mongodb-primer --operation minimal --giza_path ${venv}/giza
     commands:
@@ -64,7 +64,7 @@ tasks:
         params:
           working_dir: "docs-tools"
           script: |
-            export PATH=${venv}:$PATH
+            . ${venv}/activate
 
             ${venv}/giza test --project docs-training --operation minimal --giza_path ${venv}/giza
 
