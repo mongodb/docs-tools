@@ -3,51 +3,40 @@ pre:
     params:
       working_dir: "giza"
       script: |
-        virtualenv ~/venv-giza
-        source ~/venv-giza/bin/activate
+        virtualenv ~/venv
+        ${venv}/pip install .
+        ${venv}/pip install pep8 pyflakes nosetests
 
-        pip install .
 
 tasks:
   - name: "small-tests"
     commands: shell.exec
     params:
-      working_dir: "giza"
       script: |
-        source ~/venv-giza/bin/activate
-        make -k test
+        make -C giza/ -k test
 
-        giza test --project www-about --operation minimal
-
-        giza test --project docs-ecosystem --operation minimal
+        ${venv}/giza test --project www-about --operation minimal
+        ${venv}/giza test --project docs-ecosystem --operation minimal
   - name: "mms-docs-minimal-test"
     commands: shell.exec
     params:
-      working_dir: "giza"
       script: |
-        source ~/venv-giza/bin/activate
-        giza test --project mms-docs --operation minimal
+        ${venv}/giza test --project mms-docs --operation minimal
   - name: "manual-minimal-test"
     commands: shell.exec
     params:
-      working_dir: "giza"
       script: |
-        source ~/venv-giza/bin/activate
-        giza test --project mongodb-manual --operation minimal
+        ${venv}/giza test --project mongodb-manual --operation minimal
   - name: "primer-minimal-test"
     commands: shell.exec
     params:
-      working_dir: "giza"
       script: |
-        source ~/venv-giza/bin/activate
-        giza test --project mongodb-primer --operation minimal
+        ${venv}/giza test --project mongodb-primer --operation minimal
   - name: "training-minimal-test"
     commands: shell.exec
     params:
-      working_dir: "giza"
       script: |
-        source ~/venv-giza/bin/activate
-        giza test --project docs-training --operation minimal
+        ${venv}/giza test --project docs-training --operation minimal
 
 
 buildvariants:
@@ -55,6 +44,8 @@ buildvariants:
     display_name: "Ubuntu 14.04"
     run_on:
       - ubuntu1404-test
+    expansions:
+      venv: "~/venv/bin"
     tasks:
       - name: "small-tests"
       - name: "mms-docs-minimal-test"
