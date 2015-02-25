@@ -20,7 +20,6 @@ import logging
 import os
 import re
 import subprocess
-import shlex
 
 import libgiza.task
 
@@ -132,7 +131,12 @@ def pdf_tasks(sconf, conf):
 
         # compatibility shim for new/old images
         i = i.dict()
-        tagged_name = i['output'][:-4] + '-' + i['tag']
+
+        if len(i['tag']) == 0:
+            tagged_name = i['output'][:-4]
+        else:
+            tagged_name = i['output'][:-4] +  '-' + i['tag']
+
         deploy_fn = tagged_name + '-' + conf.git.branches.current + '.pdf'
         link_name = deploy_fn.replace('-' + conf.git.branches.current, '')
 
@@ -160,7 +164,7 @@ def pdf_tasks(sconf, conf):
         t.finalizers.append(render_task)
 
         # if needed create links.
-        if i['link'] != i['deployed'] and not os.path.exists(i['link']):
+        if i['link'] != i['deployed']:
             link_task = libgiza.task.Task(job=create_link,
                                           args=(deploy_fn, i['link']),
                                           target=i['link'],

@@ -258,7 +258,7 @@ def run_sphinx(builder, sconf, conf):
         except subprocess.CalledProcessError as e:
             output = e.output
             return_code = e.returncode
-
+            logger.info(sphinx_cmd)
     try:
         os.utime(sconf.fq_build_output, None)
     except:
