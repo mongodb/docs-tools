@@ -22,12 +22,14 @@ tasks:
           working_dir: "docs-tools/giza"
           script: |
             ${venv}/nosetests ./test
-            ${venv}/pyflakes/giza
+            ${venv}/pyflakes giza
             ${venv}/pep8 --max-line-length=100 giza
       - command: shell.exec
         params:
           working_dir: "docs-tools"
           script: |
+            export PATH=${venv}:$PATH
+
             ${venv}/giza test --project www-about --operation minimal
             ${venv}/giza test --project docs-ecosystem --operation minimal
   - name: "mms-docs-minimal-test"
@@ -36,6 +38,8 @@ tasks:
         params:
           working_dir: "docs-tools"
           script: |
+            export PATH=${venv}:$PATH
+
             ${venv}/giza test --project mms-docs --operation minimal
   - name: "manual-minimal-test"
     commands:
@@ -43,6 +47,8 @@ tasks:
         params:
           working_dir: "docs-tools"
           script: |
+            export PATH=${venv}:$PATH
+
             ${venv}/giza test --project mongodb-manual --operation minimal
   - name: "primer-minimal-test"
     commands:
@@ -50,6 +56,8 @@ tasks:
         params:
           working_dir: "docs-tools"
           script: |
+            export PATH=${venv}:$PATH
+
             ${venv}/giza test --project mongodb-primer --operation minimal
   - name: "training-minimal-test"
     commands:
@@ -57,6 +65,8 @@ tasks:
         params:
           working_dir: "docs-tools"
           script: |
+            export PATH=${venv}:$PATH
+
             ${venv}/giza test --project docs-training --operation minimal
 
 
