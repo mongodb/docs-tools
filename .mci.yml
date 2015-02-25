@@ -21,9 +21,11 @@ tasks:
         params:
           working_dir: "docs-tools/giza"
           script: |
+            . ${venv}/activate
+
             # ${venv}/nosetests ./test
-            pyflakes giza
-            pep8 --max-line-length=100 giza
+            ${venv}/pyflakes giza
+            ${venv}/pep8 --max-line-length=100 giza
       - command: shell.exec
         params:
           working_dir: "docs-tools"
