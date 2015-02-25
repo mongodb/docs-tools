@@ -19,10 +19,15 @@ tasks:
     commands:
       - command: shell.exec
         params:
+          working_dir: "docs-tools/giza"
+          script: |
+            ${venv}/nosetests ./test
+            ${venv}/pyflakes/giza
+            ${venv}/pep8 --max-line-length=100 giza
+      - command: shell.exec
+        params:
           working_dir: "docs-tools"
           script: |
-            make -C giza/ -k test
-
             ${venv}/giza test --project www-about --operation minimal
             ${venv}/giza test --project docs-ecosystem --operation minimal
   - name: "mms-docs-minimal-test"

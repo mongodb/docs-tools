@@ -79,16 +79,19 @@ def change_branch(path, branch):
         logger.info('checked out {0} ({1}) in {2}'.format(branch, tracking, g.path))
 
 
-def run_test_op(cmd, dir):
+def run_giza_test_op(cmd, dir, giza_path):
     g = libgiza.git.GitRepo(dir)
 
-    r = subprocess.call(args=shlex.split(cmd), cwd=dir)
+    giza_cmd = [giza_path]
+    giza_cmd.extend(shlex.split(cmd))
+
+    r = subprocess.call(args=giza_cmd, cwd=dir)
     if r != 0:
-        m = 'failure with {0}, in "{1}", ({2})'.format(cmd, dir, g.current_branch())
+        m = 'failure with {0}, in "{1}", ({2})'.format(' '.join(giza_cmd), dir, g.current_branch())
         logger.error(m)
         raise RuntimeError(m)
     else:
-        logger.info('completed {0}, in "{1}", ({2})'.format(cmd, dir, g.current_branch()))
+        logger.info('completed {0}, in "{1}", ({2})'.format(' '.join(giza_cmd), dir, g.current_branch()))
         return 0
 
 
@@ -107,6 +110,7 @@ integration_targets = ('complete', 'minimal', 'cleanComplete', 'cleanMinimal')
 @argh.arg('--branch', '-b', dest='_override_branch', nargs="*", default=None)
 @argh.arg('--project', '-p', dest='_override_projects', nargs="*", default=None)
 @argh.arg('--operation', '-o', dest='_test_op', default='complete', choices=integration_targets)
+@argh.arg('--giza_path', dest='_giza_path', default='giza')
 @argh.expects_obj
 @argh.named('test')
 def integration_main(args):
@@ -160,8 +164,8 @@ def integration_main(args):
                 op_name = args._test_op
 
             for op in project.operations[op_name]:
-                task = task.add_finalizer(libgiza.task.Task(job=run_test_op,
-                                                            args=(op, path),
+                task = task.add_finalizer(libgiza.task.Task(job=run_giza_test_op,
+                                                            args=(op, path, args._giza_path),
                                                             ignore=False))
 
     app.run()
