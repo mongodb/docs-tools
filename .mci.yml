@@ -1,7 +1,13 @@
 pre:
+  - command: git.get_project
+    params: 
+      directory: "docs-tools"
+  - command: git.apply_patch
+    params:
+      directory: "docs-tools"
   - command: shell.exec
     params:
-      working_dir: "giza"
+      working_dir: "docs-tools/giza"
       script: |
         virtualenv ~/venv
         ${venv}/pip install .
@@ -12,6 +18,7 @@ tasks:
   - name: "small-tests"
     commands: shell.exec
     params:
+      working_dir: "docs-tools"
       script: |
         make -C giza/ -k test
 
@@ -20,21 +27,25 @@ tasks:
   - name: "mms-docs-minimal-test"
     commands: shell.exec
     params:
+      working_dir: "docs-tools"
       script: |
         ${venv}/giza test --project mms-docs --operation minimal
   - name: "manual-minimal-test"
     commands: shell.exec
     params:
+      working_dir: "docs-tools"
       script: |
         ${venv}/giza test --project mongodb-manual --operation minimal
   - name: "primer-minimal-test"
     commands: shell.exec
     params:
+      working_dir: "docs-tools"
       script: |
         ${venv}/giza test --project mongodb-primer --operation minimal
   - name: "training-minimal-test"
     commands: shell.exec
     params:
+      working_dir: "docs-tools"
       script: |
         ${venv}/giza test --project docs-training --operation minimal
 
