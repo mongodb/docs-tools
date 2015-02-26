@@ -26,7 +26,7 @@ operations:
   minimal:
     - "giza generate source --edition shell python cpp node"
     - "giza --serial generate sphinx --builder html --edition shell python cpp node"
-    - "giza packaging create --target push-shell push-python push-cpp push-node"
+    # - "giza packaging create --target push-shell push-python push-cpp push-node"
   complete:
     - "giza make publish --serial_sphinx"
     - "giza env package --builder publish --edition shell python cpp node"
@@ -62,6 +62,7 @@ operations:
   minimal:
     - "giza generate source"
     - "giza --serial generate sphinx --builder html"
+    - "giza packaging create --target push"
   complete:
     - "giza make publish --serial_sphinx"
     - "giza env package --builder publish"
@@ -76,7 +77,6 @@ operations:
   minimal:
     - "giza generate source --edition instructor student"
     - "giza --serial generate sphinx --builder html --edition instructor student"
-    - "giza packaging create --target push-student push-instructor"
   complete:
     - "giza make publish --serial_sphinx"
     - "giza env package --builder publish"
@@ -91,6 +91,7 @@ operations:
   minimal:
     - "giza generate source"
     - "giza --serial generate sphinx --builder html"
+    - "giza packaging create --target push"
   complete:
     - "giza make publish --serial_sphinx"
     - "giza env package --builder publish"

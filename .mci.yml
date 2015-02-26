@@ -12,8 +12,6 @@ pre:
         rm -rf ~/venv
         virtualenv ~/venv
         ${venv}/pip install -e .
-        ${venv}/pip install pep8 pyflakes  # nose
-
 
 tasks:
   - name: "small-tests"
@@ -23,6 +21,7 @@ tasks:
           working_dir: "docs-tools/giza"
           script: |
             . ${venv}/activate
+            ${venv}/pip install pep8 pyflakes  # nose
 
             # ${venv}/nosetests ./test
             pyflakes giza
