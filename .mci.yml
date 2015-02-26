@@ -9,8 +9,9 @@ pre:
     params:
       working_dir: "docs-tools/giza"
       script: |
+        rm -rf ~/venv
         virtualenv ~/venv
-        ${venv}/pip install .
+        ${venv}/pip install -e .
         ${venv}/pip install pep8 pyflakes  # nose
 
 

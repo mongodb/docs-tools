@@ -47,7 +47,7 @@ operations:
   minimal:
     - "giza generate source --edition cloud classic onprem"
     - "giza --serial generate sphinx --builder html --edition cloud classic onprem"
-    - "giza packaging create --target push-cloud push-classic push-onprem"
+    - "giza packaging create --target push-onprem"
   complete:
     - "giza make publish --serial_sphinx"
     - "giza env package --builder publish --edition cloud classic onprem"
