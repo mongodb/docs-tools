@@ -34,6 +34,7 @@ tasks:
 
             giza test --project www-about --operation minimal
             giza test --project docs-ecosystem --operation minimal
+            giza test --project mongodb-primer --operation minimal
   - name: "mms-docs-minimal-test"
     commands:
       - command: shell.exec
@@ -79,15 +80,6 @@ tasks:
             . ${venv}/activate
 
             giza test --project mongodb-manual --operation minimal --branch v2.2
-  - name: "primer-minimal-test"
-    commands:
-      - command: shell.exec
-        params:
-          working_dir: "docs-tools"
-          script: |
-            . ${venv}/activate
-
-            giza test --project mongodb-primer --operation minimal
   - name: "training-minimal-test"  # disabled because of access limitations
     commands:
       - command: shell.exec
@@ -113,5 +105,4 @@ buildvariants:
       - name: "manual-minimal-test-v2.6"
       - name: "manual-minimal-test-v2.4"
       - name: "manual-minimal-test-v2.2"
-      - name: "primer-minimal-test"
       # - name: "training-minimal-test"
