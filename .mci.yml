@@ -109,6 +109,9 @@ buildvariants:
     tasks:
       - name: "small-tests"
       - name: "mms-docs-minimal-test"
-      - name: "manual-minimal-test"
+      - name: "manual-minimal-test-master"
+      - name: "manual-minimal-test-v2.6"
+      - name: "manual-minimal-test-v2.4"
+      - name: "manual-minimal-test-v2.2"
       - name: "primer-minimal-test"
       # - name: "training-minimal-test"
