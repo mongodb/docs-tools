@@ -61,6 +61,7 @@ tasks:
             . ${venv}/activate
 
             giza test --project mongodb-primer --operation minimal
+  - name: "training-minimal-test"  # disabled because of access limitations
     commands:
       - command: shell.exec
         params:
