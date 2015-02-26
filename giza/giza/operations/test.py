@@ -82,10 +82,7 @@ def change_branch(path, branch):
 def run_test_op(cmd, dir):
     g = libgiza.git.GitRepo(dir)
 
-    giza_cmd = [shlex.split(cmd)]
-    cmd = ' '.join(giza_cmd)
-
-    r = subprocess.call(args=giza_cmd, cwd=dir)
+    r = subprocess.call(args=shlex.split(cmd), cwd=dir)
     if r != 0:
         m = 'failure with {0}, in "{1}", ({2})'.format(cmd, dir, g.current_branch())
         logger.error(m)
