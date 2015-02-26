@@ -39,7 +39,7 @@ ACCEPTABLE = 864000
 def download_file(file, url):
     cmd = ['curl', '-s', '--remote-time', url, '-o', file]
 
-    safe_create_directory(os.path.dirname(f))
+    safe_create_directory(os.path.dirname(file))
 
     try:
         subprocess.check_call(cmd)
