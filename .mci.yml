@@ -43,7 +43,7 @@ tasks:
             . ${venv}/activate
 
             giza test --project mms-docs --operation minimal
-  - name: "manual-minimal-test"
+  - name: "manual-minimal-test-master"
     commands:
       - command: shell.exec
         params:
@@ -51,7 +51,34 @@ tasks:
           script: |
             . ${venv}/activate
 
-            giza test --project mongodb-manual --operation minimal
+            giza test --project mongodb-manual --operation minimal --branch master
+  - name: "manual-minimal-test-v2.6"
+    commands:
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools"
+          script: |
+            . ${venv}/activate
+
+            giza test --project mongodb-manual --operation minimal --branch v2.6
+  - name: "manual-minimal-test-v2.4"
+    commands:
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools"
+          script: |
+            . ${venv}/activate
+
+            giza test --project mongodb-manual --operation minimal --branch v2.4
+  - name: "manual-minimal-test-v2.2"
+    commands:
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools"
+          script: |
+            . ${venv}/activate
+
+            giza test --project mongodb-manual --operation minimal --branch v2.2
   - name: "primer-minimal-test"
     commands:
       - command: shell.exec
