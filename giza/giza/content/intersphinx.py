@@ -37,9 +37,9 @@ ACCEPTABLE = 864000
 
 
 def download_file(file, url):
-    safe_create_directory(os.path.dirname(file))
-
     cmd = ['curl', '-s', '--remote-time', url, '-o', file]
+
+    safe_create_directory(os.path.dirname(f))
 
     try:
         subprocess.check_call(cmd)
@@ -59,11 +59,17 @@ def file_timestamp(path):
 def download(f, s, conf):
     if conf.runstate.force is True:
         newf = download_file(f, s)
+
     if os.path.isfile(f):
         newf = False
     else:
         logger.info('{0} file does not exist, downloading now'.format(f))
         newf = download_file(f, s)
+
+        if newf is False:
+            m = "intersphinx inventory ({0}) download failed. skipping"
+            logger.warning(m.format(f))
+            return
 
     mtime = file_timestamp(f)
 
