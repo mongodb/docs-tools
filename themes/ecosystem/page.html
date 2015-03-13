@@ -14,9 +14,8 @@
 
 {%- block endjs -%}
 	<script>
-		$( ".compatibility td:contains('Incompatible')").addClass('driver-incompatible');
-		$( ".compatibility td:contains('Untested')").addClass('driver-untested');
-		$( ".compatibility td:contains('Compatible')").addClass('driver-compatible')
-		$( ".compatibility td:contains('Unknown')").addClass('driver-unknown')
+		$( ".compatibility td:contains('Unsupported')").addClass('driver-incompatible');
+		$( ".compatibility td:contains('Minor incompatibility')").addClass('driver-untested');
+		$( ".compatibility td:contains('Supported')").addClass('driver-compatible')
 	</script>
 {%- endblock -%}
