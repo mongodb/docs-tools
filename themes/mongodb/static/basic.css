@@ -340,7 +340,7 @@ table.citation td {
     border-bottom: none;
 }
 
-/* awesometable tables are for driver compatibility matrices */
+/*  tables for compatibility matrices */
 
 table.compatibility{
     border-collapse: collapse;
@@ -429,6 +429,11 @@ table.compatibility tr td:first-child{
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+/* -- list styles ----------------------------------------------------------- */
+
+ul.checklist{
+    list-style: symbols(cyclic "\25a1");
 }
 
 /* -- other body styles ----------------------------------------------------- */
