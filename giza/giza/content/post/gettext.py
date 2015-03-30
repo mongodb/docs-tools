@@ -54,3 +54,5 @@ def gettext_tasks(conf):
                               dependency=source,
                               description="migrating po file {0} if needed".format(fn))
         tasks.append(t)
+
+    return tasks
