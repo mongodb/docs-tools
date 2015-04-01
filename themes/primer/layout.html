@@ -1,0 +1,382 @@
+{%- block doctype -%}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{%- endblock %}
+
+{%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
+{%- set url_root = pathto('', 1) %}
+{%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.tipsy.js", "_static/lib/jquery.cookie.js", "_static/navbar.js"] %}
+{%  set css_files = css_files + ["_static/bootstrap-custom.css", "_static/lib/icomoon.css", "_static/lib/font-awesome.css", "_static/lib/tipsy.css"] %}
+{%- set github_organization = "mongodb" %}
+
+{%- macro translationslink() -%}
+  {%- block translationslink %}
+    <a class="translation-link" href="{{ pathto('meta/translation', 1) }}" title="View in another language"><span class="icon-translation"></span></a>
+  {%- endblock -%}
+{%- endmacro -%}
+
+{%- macro editlink(type) -%}
+  <a class="edit-link" href="https://github.com/{{ github_organization }}/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub">
+    {% if type == 'icon' %}
+      <span class="icon-edit"></span>
+    {% else %}
+      <span>Edit on Github</span>
+    {% endif %}
+  </a>
+{%- endmacro -%}
+
+{%- macro jiralink() -%}
+  <a class="jira-link jirafeedback" href="https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira">Report a Problem</a>
+{%- endmacro -%}
+
+{%- macro relbar() %}
+   <div class="bc">
+     {% if parents %}
+       <ul>
+        {%- block rootrellink %}{%- endblock %}
+        {%- for parent in parents %}
+          <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
+          {% if loop.last %}<li>{{title}}</li>{% endif %}
+        {%- endfor %}
+        {%- block relbaritems %} {% endblock %}
+      </ul>
+    {% else %}
+      {# <i class="fa fa-home"></i> #}
+    {% endif %}
+  </div>
+{%- endmacro %}
+
+{%- macro sidebar() %}
+  <div class="sphinxsidebar">
+    <div class="sphinxsidebarwrapper" style="display: none;">
+      {%- if sidebars != None %}
+        {%- for sidebartemplate in sidebars %}
+          {%- include sidebartemplate %}
+        {%- endfor %}
+      {%- endif %}
+    </div>
+  </div>
+{%- endmacro -%}
+
+{%- macro script() %}
+  <script type="text/javascript">
+    var DOCUMENTATION_OPTIONS = {
+     URL_ROOT:    '{{ url_root }}',
+     VERSION:     '{{ version|e }}',
+     COLLAPSE_INDEX: false,
+     FILE_SUFFIX: '{{ '' if no_search_suffix else file_suffix }}',
+     HAS_SOURCE:  {{ has_source|lower }},
+    };
+  </script>
+  {%- for scriptfile in script_files %}
+    <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
+  {%- endfor %}
+{%- endmacro -%}
+
+{%- macro css() %}
+   {%- for cssfile in css_files %}
+       <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css" />
+   {%- endfor %}
+   <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
+   <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css" />
+{%- endmacro -%}
+
+{%- macro render_nextprev() %}
+    <div id="btnv">
+      {%- if prev %}
+      <span class="btn-arrow-left">&larr; &nbsp;</span>
+      <a class="btn-prev-text" href="{{ prev.link|e }}" title="Previous Section: {{ prev.title|striptags|e }}"><span>{{ prev.title|striptags|e }}</span></a>
+      {%- endif %}
+      {%- if next %}
+      <a class="btn-next-text" href="{{ next.link|e }}" title="Next Section: {{ next.title|striptags|e }}"><span>{{ next.title|striptags|e }}</span></a>
+      <span class="btn-arrow-right">&nbsp;&rarr;</span>
+      {%- endif %}
+    </div>
+{%- endmacro -%}
+
+{% if theme_language == '' %}
+   <html xmlns="http://www.w3.org/1999/xhtml">
+{%- else -%}
+   <html xmlns="http://www.w3.org/1999/xhtml" lang="{{theme_language}}">
+{%- endif %}
+
+<head>
+  <link href='//fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+  {%- block htmltitle %}
+    <title>{{ title|striptags|e }}</title>
+  {%- endblock -%}
+
+  <link rel="shortcut icon" href="//media.mongodb.org/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
+  <meta name="robots" content="index" />
+  <meta name="release" content="{{release}}"/>
+  <meta name="DC.Source" content="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt"/>
+
+  {%- block canonicalref %}{%- endblock -%}
+
+  {{ metatags }}
+  {{ css() }}
+
+  {%- if not embedded %}
+    {{ script() }}
+
+    {%- block googlecse_opensearch %}
+      <link rel="search" type="application/opensearchdescription+xml" href="http://docs.mongodb.org/osd.xml" title="MongoDB Help"/>
+    {%- endblock -%}
+
+    {%- if favicon %}
+      <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}"/>
+    {%- endif %}
+  {%- endif %}
+
+  {%- block linktags %}
+    {%- include "linktags.html" %}
+  {%- endblock -%}
+
+  {%- block extrahead %}{% endblock -%}
+
+  {%- block sitesearch %}
+    {%- if builder != 'singlehtml' %}
+      <script type="text/javascript">
+        (function() {
+           var cx = '017213726194841070573:WMX6838984';
+           var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
+           gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
+           gcse.onload = gcse.onreadystatechange = function() {
+            $(function() {
+              // hack to set a placeholder in google's custom search input
+              var pollInput = window.setInterval(function() {
+                var $input = $('.gsc-input input.gsc-input'),
+                    $div = $('.search-db');
+
+                if ($input.length) {
+                  $input.on('focus', function(e) { $div.addClass('wide').removeClass('narrow'); });
+                  $input.on('blur', function(e) {
+                    if (!$input.val().length) { $div.addClass('narrow').removeClass('wide'); }
+                  });
+                  $input.attr('placeholder', "Search mongodb.org");
+                  window.clearInterval(pollInput);
+                }
+              }, 10);
+            });
+           };
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
+           })();
+      </script>
+    {%- endif %}
+  {%- endblock -%}
+  {%- block adblockheader %}{%- endblock -%}
+</head>
+<body>
+  {%- block googletagmanager %}
+  <!-- Google Tag Manager -->
+  <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-JQHP"
+                    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push(
+     {'gtm.start': new Date().getTime(),event:'gtm.js'}
+   );var f=d.getElementsByTagName(s)[0],
+   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+   '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+   })(window,document,'script','dataLayer','GTM-JQHP');</script>
+  <!-- End Google Tag Manager -->
+  {%- endblock -%}
+
+  {%- block header %}
+    <header id="header-db" class="row" role="navigation">
+      <div class="header-content">
+        <a class="fa fa-bars expand-toc-icon pull-left" href="#"></a>
+        {%- block header_logo %}
+           <div class="logo pull-left">
+             <a href="http://www.mongodb.org/">
+               <img src="//media.mongodb.org/logo-mongodb-header.png", alt="MongoDB.org" />
+             </a>
+           </div>
+        {% endblock %}
+        <div>
+          {%- block searchbox %}
+          <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
+          {% endblock %}
+          <div class="nav-items pull-right">
+            {%- block subnav %}
+            {% endblock %}
+          </div>
+        </div>
+      </div>
+    </header>
+  {%- endblock %}
+
+  <aside class="sidebar">
+    {%- block sidebar2 %}
+       {{ sidebar() }}
+    {% endblock %}
+  </aside>
+  <div class="option-popup closed">
+    <div class="option-header">
+      <i class="fa fa-gear"></i>
+      <span>OPTIONS</span>
+      <i class="fa fa-angle-up pull-right"></i>
+    </div>
+    <div class="option-body">
+      <ul>
+        {% block version_selector %}
+          <!-- version selector -->
+          <li>
+            <label>{{ _('Version') }}</label>
+            <div class="btn-group btn-group-xs pull-right">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Select Version <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                {% for v in theme_version_selector %}
+                  {% if v.current %}
+                  <li class="active">
+                  {% else %}
+                  <li>
+                  {% endif %}
+                    <a {% if not v.current %}class="version-selector" {% endif %}href="#" data-path="{{ v.path }}">{{ v.text }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </li>
+        {% endblock %}
+        {%- block language_selector %}
+           {#
+              <!-- language selector -->
+              <li>
+                <label>{{ _('Langauges') }}</label>
+                <select class="language-selector pull-right">
+                  {%- for lc,lang in theme_translations -%}
+                      <option data-path="http://{{lc}}.docs.mongodb.org/{{ page_url }}">
+                        {{lang}}
+                      </option>
+                  {% endfor -%}
+                 </select>
+              </li>
+           #}
+        {% endblock %}
+        <!-- contribute -->
+        <li>
+          <label>{{ _('Contribute' ) }}</label>
+          <ul class="contribute-list">
+            <li>{{ jiralink() }}</li>
+            {%- block editlink %}
+               <li>{{ editlink() }}</li>
+            {%- endblock %}
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="content">
+    <div class="main-column pull-left">
+
+      {% block alertbar %}{% endblock %}
+
+      {%- block content %}
+        <div class="document">
+          {%- block document %}
+            <div class="documentwrapper">
+              {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
+              <div class="body">
+                {%- block editlink_icon %}
+                   {{ editlink('icon') }}
+                {% endblock %}
+                {{ relbar() }}
+                {% block body %}
+                  {{ body }}
+                {% endblock %}
+                {{- render_nextprev() -}}
+                {%- block footer %}
+                  <div class="footer">
+                    <div class="copyright">
+                      <p>Copyright &copy; {{copyright}} <a class="smalltext" href="http://www.mongodb.com">MongoDB, Inc</a>. Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/ ">Creative Commons</a>. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
+                    </div>
+                  </div>
+                {%- endblock %}
+              </div>
+              {%- if render_sidebar %}</div>{%- endif %}
+            </div>
+          {%- endblock %}
+        </div>
+      {%- endblock %}
+    </div>
+    <div class="right-column">
+      <div class="wrapper">
+        {%- if builder != 'singlehtml' %}
+           {%- if pagename != 'index' %}
+             <div class="toc">
+               <span class="toc-header">ON THIS PAGE</span>
+               {{ toc }}
+             </div>
+           {%- endif %}
+        {%- endif %}
+        {%- block adblock %}{% endblock %}
+        {%- block reportlink %}
+          <div class="report-link">
+            {{ jiralink() }}
+          </div>
+        {% endblock %}
+        {%- block social %}
+           <div class="social">
+             <a class="twitter-icon" href="https://twitter.com/mongodbinc"><i class="fa fa-twitter-square"></i></a>
+             <a class="youtube-icon" href="http://www.youtube.com/user/MongoDB"><i class="fa fa-youtube-square"></i></a>
+             <a class="facebook-icon" href="https://www.facebook.com/mongodb"><i class="fa fa-facebook-square"></i></a>
+             <a class="gplus-icon" href="https://plus.google.com/u/1/101024085748034940765/posts?cfem=1"><i class="fa fa-google-plus-square"></i></a>
+           </div>
+        {% endblock %}
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  {% block onboarding_modal %}{% endblock %}
+
+  {%- block analytics %}
+    {%- include "analytics.html" %}
+  {%- endblock %}
+
+  {%- block jiracollector %}
+    {%- include "jiracollector.html" %}
+  {%- endblock %}
+
+  {%- block versionnav %}
+  <script type="text/javascript">
+  var pagename = '{{pagename}}';
+  if (pagename == 'index') {
+    pagename = '';
+  }
+  window.basePath = '{{theme_basepath}}';
+
+  window.fullDocsPath = function(base) {
+    var path = pagename;
+
+    // skip if pagename is undefined (index.html)
+    if (path) {
+      path = pagename + '/';
+    }
+    return '/' + base + '/' + path;
+  }
+  // Bootstrap array of links that should trigger a full page reload
+  window.docsExcludedNav = {{ theme_nav_excluded }};
+
+  $(document).ready(function(){
+    $(".version-selector").on('click', function(e) {
+      e.preventDefault();
+      var base = $(e.currentTarget).data('path');
+      window.location.href = fullDocsPath(base);
+    });
+
+    $("select.language-selector").on('change', function(e) {
+      var path = $(e.currentTarget).find('option:selected').data('path');
+      window.location.href = path;
+    });
+  });
+
+  </script>
+  {%- endblock -%}
+
+</body>
+
+{%- block endjs %} {%- endblock %}
+</html>
