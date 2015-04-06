@@ -12,6 +12,20 @@
 
 @import url(//fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700);
 
+/* OS X hides scroll bars, which makes some of our code boxes confusing. */
+
+.highlight ::-webkit-scrollbar {
+   -webkit-appearance: none;
+   width: 7px;
+   height: 5px;
+}
+
+.highlight ::-webkit-scrollbar-thumb {
+   border-radius: 0px;
+   background-color: rgba(0,0,0,.5);
+   height: 0px;
+}
+
 /* -- page layout ----------------------------------------------------------- */
 
 #baselineOverlay {
