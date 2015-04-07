@@ -755,6 +755,13 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     -webkit-transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
 }
 
+@media print {
+    .content .main-column {
+        margin-left: 0px;
+        margin-top: 0px;
+    }
+}
+
 #see-also > p {
     margin-top: 12.5px;
 }
