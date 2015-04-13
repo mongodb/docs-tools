@@ -10,7 +10,7 @@
  */
 @import url("basic.css");
 
-@import url(//fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700);
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700);
 
 /* OS X hides scroll bars, which makes some of our code boxes confusing. */
 
@@ -39,7 +39,7 @@
     height: 100%;
     z-index: 2000;
     opacity: 0.5;
-    background: url(//media.mongodb.org/24px-baseline-overlay.png) 0 0 repeat;
+    background: url(https://media.mongodb.org/24px-baseline-overlay.png) 0 0 repeat;
 }
 
 body {
@@ -314,7 +314,7 @@ div.related li.right {
 #main-db {
     padding-top: 2.5em;
     padding-bottom: 2em;
-    background-image: url(http://media.mongodb.org/back-body.png);
+    background-image: url(https://media.mongodb.org/back-body.png);
     background-repeat: repeat-x;
 }
 
@@ -329,7 +329,7 @@ div#top-right ul#header-menu-bar {
     margin-top: 0;
     padding-left: 20px;
     height: 38px;
-    background-image: url(http://media.mongodb.org/trans-user-left.png);
+    background-image: url(https://media.mongodb.org/trans-user-left.png);
     background-repeat: no-repeat;
 }
 
@@ -340,7 +340,7 @@ div#top-right div.user-right  {
     margin: 0;
     padding: 0 20px 0 0;
     font-size: 10pt;
-    background-image: url(http://media.mongodb.org/trans-user-right.png);
+    background-image: url(https://media.mongodb.org/trans-user-right.png);
     background-position: top right;
     background-repeat: no-repeat;
 }
@@ -349,7 +349,7 @@ div#top-right div.user-right li.normal {
     float: left;
     padding: 8px 1em 0 0;
     height: 38px;
-    background-image: url(http://media.mongodb.org/trans-user-back.png);
+    background-image: url(https://media.mongodb.org/trans-user-back.png);
     background-repeat: repeat-x;
     list-style-type: none;
     font-size: 10pt;
@@ -438,14 +438,14 @@ ul.home-nav li.docs { width: 276px; }
 
 ul.home-nav li.docs a, ul.home-nav li.docs a:visited {
     float: left;
-    background: url(http://www.mongodb.org/static/images/home_nav.png) -11px -63px;
+    background: url(https://www.mongodb.org/static/images/home_nav.png) -11px -63px;
     width: 209px;
     height: 54px;
 }
 
 ul.home-nav li.docs a:hover {
     float: left;
-    background: url(http://www.mongodb.org/static/images/home_nav.png) -11px 0;
+    background: url(https://www.mongodb.org/static/images/home_nav.png) -11px 0;
     width: 209px;
     height: 54px;
 }
@@ -454,14 +454,14 @@ ul.home-nav li.try { width: 238px; }
 
 ul.home-nav li.try a, ul.home-nav li.try a:visited {
     float: left;
-    background: url(http://www.mongodb.org/static/images/home_nav.png) -274px -63px;
+    background: url(https://www.mongodb.org/static/images/home_nav.png) -274px -63px;
     width: 176px;
     height: 54px;
 }
 
 ul.home-nav li.try a:hover {
     float: left;
-    background: url(http://www.mongodb.org/static/images/home_nav.png) -274px 0;
+    background: url(https://www.mongodb.org/static/images/home_nav.png) -274px 0;
     width: 176px;
     height: 54px;
 }
@@ -470,14 +470,14 @@ ul.home-nav li.downloads { width: 245px; }
 
 ul.home-nav li.downloads a, ul.home-nav li.downloads a:visited {
     float: left;
-    background: url(http://www.mongodb.org/static/images/home_nav.png) -497px -63px;
+    background: url(https://www.mongodb.org/static/images/home_nav.png) -497px -63px;
     width: 185px;
     height: 54px;
 }
 
 ul.home-nav li.downloads a:hover {
     float: left;
-    background: url(http://www.mongodb.org/static/images/home_nav.png) -497px 0;
+    background: url(https://www.mongodb.org/static/images/home_nav.png) -497px 0;
     width: 185px;
     height: 54px;
 }
@@ -488,14 +488,14 @@ ul.home-nav li.drivers {
 
 ul.home-nav li.drivers a, ul.home-nav li.drivers a:visited {
     float: left;
-    background: url(http://www.mongodb.org/static/images/home_nav.png) right -63px no-repeat;
+    background: url(https://www.mongodb.org/static/images/home_nav.png) right -63px no-repeat;
     width: 194px;
     height: 54px;
 }
 
 ul.home-nav li.drivers a:hover {
     float: left;
-    background: url(http://www.mongodb.org/static/images/home_nav.png) right 0 no-repeat;
+    background: url(https://www.mongodb.org/static/images/home_nav.png) right 0 no-repeat;
     width: 194px;
     height: 54px;
 }
@@ -551,7 +551,7 @@ div.section > h1 + dl.projection > dt {display: none;}
 }
 
 div.highlight pre {
-    background: #f5f6f7 url(http://media.mongodb.org.s3.amazonaws.com/code-block-bg.png) 0 0 repeat;
+    background: #f5f6f7 url(https://media.mongodb.org/code-block-bg.png) 0 0 repeat;
     border-radius: 0;
     border: none;
     border-left: 5px solid #494747;
@@ -566,7 +566,7 @@ div.highlight pre {
 @media (-webkit-min-device-pixel-ratio: 2),
 (min-resolution: 192dpi) {
     div.highlight pre {
-        background: #f5f6f7 url(http://media.mongodb.org.s3.amazonaws.com/code-block-bg@2x.png) 0 0 repeat;
+        background: #f5f6f7 url(https://media.mongodb.org/code-block-bg@2x.png) 0 0 repeat;
         background-size: 12px 12px;
     }
 }

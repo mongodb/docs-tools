@@ -56,12 +56,12 @@ rst_epilog = '\n'.join([
 pygments_style = 'sphinx'
 
 extlinks = {
-    'hardlink' : ( 'http://docs.mongodb.org/{0}/%s'.format(conf.git.branches.current), ''),
+    'hardlink' : ( 'https://docs.mongodb.org/{0}/%s'.format(conf.git.branches.current), ''),
     'issue': ('https://jira.mongodb.org/browse/%s', '' ),
     'api': ('http://api.mongodb.org/%s', ''),
-    'manual': ('http://docs.mongodb.org/manual%s', ''),
-    'ecosystem': ('http://docs.mongodb.org/ecosystem%s', ''),
-    'meta-driver': ('http://docs.mongodb.org/meta-driver/latest%s', ''),
+    'manual': ('https://docs.mongodb.org/manual%s', ''),
+    'ecosystem': ('https://docs.mongodb.org/ecosystem%s', ''),
+    'meta-driver': ('https://docs.mongodb.org/meta-driver/latest%s', ''),
     'mms': ('https://mms.mongodb.com/help%s', ''),
     'mms-hosted': ('https://mms.mongodb.org/help-hosted%s', ''),
     'about': ('http://www.mongodb.org/about%s', '')
