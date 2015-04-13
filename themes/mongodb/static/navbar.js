@@ -119,21 +119,6 @@ $(function() {
         $('.right-column .toc').hide();
     }
 
-    /* Collapse/expand sections */
-    $('.section > h2, .section > h3, .section > h4').on('click', function(e) {
-        // ignore links inside headers
-        if ($(e.target).is('a')) {
-            return;
-        }
-        var $currentTarget = $(e.currentTarget);
-        if (!$currentTarget.hasClass('collapsed')) {
-            $currentTarget.nextAll().slideUp();
-        } else {
-            $currentTarget.nextAll().slideDown();
-        }
-        $currentTarget.toggleClass('collapsed');
-    });
-
     /* Expand/collapse navbar on narrower viewports */
     $('.expand-toc-icon').on('click', function(e) {
         e.preventDefault();

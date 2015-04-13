@@ -103,52 +103,6 @@ div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
     padding: 0;
 }
 
-div.body h2, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
-    cursor: pointer;
-}
-
-/* Hack to keep the header aligned when the icon appears */
-div.body h2:hover, div.body h3:hover, div.body h4:hover {
-    margin-left: -13px;
-}
-
-div.body h2:hover:before {
-    top: -2px;
-}
-
-div.body h2:hover:before,
-div.body h3:hover:before,
-div.body h4:hover:before {
-    font-size: 15px;
-    color: #666;
-    position: relative;
-    left: -6px;
-
-    transform: rotate(-45deg);
-    -webkit-transform: rotate(-45deg);
-
-    content: "\f066";
-    display: inline-block;
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-div.body .sequence-block h2:hover:before,
-div.body .sequence-block h3:hover:before,
-div.body .sequence-block h4:hover:before {
-    left: -46px;
-}
-
-div.body h2.collapsed:hover:before,
-div.body h3.collapsed:hover:before,
-div.body h4.collapsed:hover:before {
-    content: "\f065";
-}
-
 div.body h1 {
     border-top: none;
     font-size: 36px;
