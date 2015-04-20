@@ -262,25 +262,12 @@ table.index-table td {
     padding-right: 0px;
     padding-bottom: 0px;
     padding-top: 5px;
+    line-height: 15px;
+    margin-bottom: 0px;
 }
 
 table.index-table td:last-child {
     border-right: 0;
-}
-
-table.index-table tr.row-even td p {
-    line-height: 24px;
-    margin-bottom: 10px;
-}
-
-table.index-table tr.row-odd td {
-    text-align: center;
-    border-bottom: none;
-    border-right: none;
-    padding-left: 15px;
-    padding-right: 15px;
-    max-height:5px;
-    padding-top: 0px;
 }
 
 table.index-table  {
