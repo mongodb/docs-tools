@@ -125,11 +125,11 @@ div.body h4 {
     margin-bottom: 0;
 }
 div.body h5 {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
 }
 div.body h6 {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 300;
  }
 
