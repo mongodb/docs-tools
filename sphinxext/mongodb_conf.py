@@ -207,7 +207,7 @@ conf['directives'] = [
     },
     {
         'name': 'asetting',
-        'tag': 'bsetting',
+        'tag': 'asetting',
         'description': 'Automation Agent Setting',
         'prepend': True,
         'callable': False,
