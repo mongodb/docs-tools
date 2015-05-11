@@ -35,7 +35,7 @@ class ApiArgFile(DataContentBase):
         return name.pop()
 
     def has_type(self):
-        for content in self.content.items():
+        for content in self.content.values():
             if 'type' in content:
                 return True
 
