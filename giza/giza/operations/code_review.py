@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#
+
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -148,6 +148,7 @@ def create_or_update(args):
 def update_code_review(cr_data, g, use_hash):
     cmd = [
         'upload.py',
+        '--oauth2',
         '-y',
         '--nojira',
         '--email', g.author_email(),
@@ -171,7 +172,7 @@ def update_code_review(cr_data, g, use_hash):
 def create_code_review(data, g, creds):
     branch_data = data.get_branch(g.current_branch())
 
-    cmd = ['upload.py', '-y']
+    cmd = ['upload.py', '--oauth2', '-y']
 
     if creds is not None:
         cmd.extend(['--jira_user', creds.jira.username])
@@ -192,8 +193,9 @@ def create_code_review(data, g, creds):
             logger.info('created issue: ' + issue_url)
         else:
             logger.info('created new code review issue')
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
         logger.error('failed to create issue')
+        print(e)
 
 # Output processing
 
