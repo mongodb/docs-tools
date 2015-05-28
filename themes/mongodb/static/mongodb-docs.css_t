@@ -1594,3 +1594,64 @@ li.current > a > .fa.expand-icon:before {
 .slides-link {
     float: right;
 }
+
+/*  tables for compatibility matrices */
+
+table.compatibility, table.compatibility-large{
+    border-collapse: collapse;
+    color: rgb(73,71,71);
+    display: table-cell;
+    font-family: 'PT Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    width: 100%;
+    vertical-align: middle;
+}
+
+table.docutils.compatibility, table.docutils.compatibility-large{
+    line-height: 12px;
+    vertical-align: middle;
+}
+
+table.docutils.compatibility > thead th.head,
+table.docutils.compatibility-large > thead th.head{
+    padding: 12px 12px;
+    text-align: center;
+    background-color: rgb(127, 127, 127);
+    color: rgb(255, 255, 255);
+}
+
+table.docutils.compatibility > thead th:nth-child(1),
+table.docutils.compatibility-large > thead th:nth-child(1){
+    text-align: left;
+    padding: 10px 12px;
+    background-color: rgb(238,238, 238);
+    color: rgb(127, 127, 127);
+}
+
+table.docutils.compatibility td{
+    padding: 11px 55px 12px;
+}
+
+table.docutils.compatibility-large td{
+    padding: 11px 35px 12px;
+}
+table.compatibility th,
+table.compatibility td,
+table.compatibility-large th,
+table.compatibility-large td{
+    border: rgb(245,246,247);
+    border-style: solid;
+    border-width: 1px;
+    vertical-align: middle;
+}
+
+table.compatibility td, table.compatibility-large td{
+    text-align: center;
+}
+table.compatibility th:nth-child(1),
+table.compatibility-large th:nth-child(1){
+    text-align: left;
+    padding: 10px 12px;
+    background-color: rgb(238,238, 238);
+    color: rgb(127, 127, 127);
+}
