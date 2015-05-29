@@ -1660,6 +1660,7 @@ table.compatibility-large th:nth-child(1){
     font-size: 80%;
     line-height: 1em;
     height: 75px;
+    overflow: hidden;
 }
 
 #feedback-question a {
@@ -1669,6 +1670,11 @@ table.compatibility-large th:nth-child(1){
     padding: 10px;
     text-align: center;
     width: 50px;
+}
+
+#feedback-question p {
+    display: inline-block;
+    padding-right: 20px;
 }
 
 #feedback-question a:hover {
