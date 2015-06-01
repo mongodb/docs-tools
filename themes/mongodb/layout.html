@@ -306,6 +306,8 @@
                   {{ body }}
                 {% endblock %}
                 {{- render_nextprev() -}}
+                
+                <!-- if anything changes in the rating block, update the doctools.js in themes/mongodb/static -->
                 {% block rating %}
                 <div id="rating-panel">
                   <div id="feedback-question">

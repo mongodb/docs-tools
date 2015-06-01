@@ -229,6 +229,10 @@ $(document).ready(function() {
       // We require DOM storage. Don't show anything if support is not present.
       if(window.localStorage === undefined) { return; }
 
+      // We probably could/should try...catch block, but ...
+
+      if (document.getElementById('rating-panel') === undefined) { return; }
+
       var key = 'feedback-' + window.location.pathname;
       var val = localStorage[key];
       var ratedDate = -Infinity;
