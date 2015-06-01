@@ -231,7 +231,7 @@ $(document).ready(function() {
 
       // We probably could/should try...catch block, but ...
 
-      if (document.getElementById('rating-panel') === undefined) { return; }
+      if (document.getElementById('rating-panel') === null) { return; }
 
       var key = 'feedback-' + window.location.pathname;
       var val = localStorage[key];
