@@ -54,7 +54,13 @@ def render_options(option, conf):
         option.replacement['role'] = ':{0}:`{1}{2}`'.format(option.directive, prefix, option.name)
 
     option.render()  # jinja template render
-    r.directive(option.directive, directive_str)
+
+    # the useProgramOptionDirectives check can be removed after some bakein period during transition
+    # useProgramOptionDirectives determine whether to prefix the option directive with the program
+    if ('useProgramOptionDirectives' in conf.project and conf.project['useProgramOptionDirectives'] and option.directive == 'option'):
+        r.directive('-'.join([option.program, option.directive]), directive_str)
+    else:
+        r.directive(option.directive, directive_str)
     r.newline()
 
     indent = 3
