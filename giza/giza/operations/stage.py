@@ -219,10 +219,12 @@ class FileCollector:
         self.conn.commit()
         self.removed_files = []
 
-    def purge(self):
-        """Purge the index for this branch."""
+    def purge_now(self):
+        """Purge the index for this branch immediately. Does not wait for
+           commit()."""
         cur = self.conn.cursor()
         cur.execute('DELETE FROM files WHERE branch=?', (self.branch,))
+        self.conn.commit()
 
     @staticmethod
     def hash(path):
@@ -266,7 +268,7 @@ class Staging:
         """Remove all files associated with this branch."""
         # Remove files from the index first; if the system dies in an
         # inconsistent state, we want to err on the side of reuploading too much
-        self.collector.purge()
+        self.collector.purge_now()
 
         keys = [k.key for k in self.bucket.list(prefix=self.branch + '/')]
         result = self.bucket.delete_keys(keys)
