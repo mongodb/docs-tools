@@ -216,19 +216,6 @@ class ProjectConfig(libgiza.config.RecursiveConfigurationBase):
     def sitepath(self):
         return get_path_prefix(self.conf, self.conf.git.branches.current)
 
-    @property
-    def useProgramOptionDirectives(self):
-        if 'useProgramOptionDirectives' in self.state:
-            return self.state['useProgramOptionDirectives']
-        else:
-            return False
-
-    @useProgramOptionDirectives.setter
-    def useProgramOptionDirectives(self, value):
-        if isinstance(value, bool):
-            self.state['useProgramOptionDirectives'] = value
-        else:
-            self.state['useProgramOptionDirectives'] = bool(value)
 
 class EditionListConfig(libgiza.config.ConfigurationBase):
     _option_registry = ['name', 'url']
