@@ -55,10 +55,18 @@ class StagingException(Exception):
     pass
 
 
-class DeleteException(StagingException):
+class SyncFileException(StagingException):
     """An exception indicating an S3 deletion error."""
+    def __init__(self, path, reason):
+        StagingException.__init__(self, 'Error syncing path: {0}'.format(path))
+        self.reason = reason
+        self.path = path
+
+
+class SyncException(StagingException):
+    """An exception indicating an error uploading files."""
     def __init__(self, errors):
-        StagingException.__init__(self, 'Error deleting keys')
+        StagingException.__init__(self, 'Errors syncing data')
         self.errors = errors
 
 
@@ -69,6 +77,7 @@ class PoolWorker(threading.Thread):
 
         # Avoid needing to mutex-protect this queue by only ever appending to it
         self.tasks = []
+        self.results = []
         self.i = 0
 
         self.semaphore = threading.Semaphore(0)
@@ -81,7 +90,13 @@ class PoolWorker(threading.Thread):
             if next_task is None:
                 return
 
-            next_task()
+            try:
+                result = next_task()
+                if result is not None:
+                    self.results.append((next_task, result))
+            except Exception as err:
+                self.results.append((next_task, err))
+
             self.i += 1
 
     def add_task(self, task):
@@ -92,7 +107,8 @@ class PoolWorker(threading.Thread):
 
 
 def run_pool(tasks, n_workers=100):
-    """Run a list of tasks using a pool of threads."""
+    """Run a list of tasks using a pool of threads. Return non-None results or
+       exceptions as a list of (task, result) pairs in an arbitrary order."""
     workers = []
     for _ in range(n_workers):
         worker = PoolWorker()
@@ -108,6 +124,12 @@ def run_pool(tasks, n_workers=100):
 
     for worker in workers:
         worker.join()
+
+    results = []
+    for worker in workers:
+        results.extend(worker.results)
+
+    return results
 
 
 class FileCollector:
@@ -273,7 +295,7 @@ class Staging:
         keys = [k.key for k in self.bucket.list(prefix=self.branch + '/')]
         result = self.bucket.delete_keys(keys)
         if result.errors:
-            raise DeleteException(result.errors)
+            raise SyncException(result.errors)
 
     def stage(self, root, incremental=True):
         """Synchronize the build directory with the staging bucket."""
@@ -298,7 +320,12 @@ class Staging:
                     file_hash),
                 path, entry.file_hash))
 
-        run_pool(tasks)
+        # Run our sync tasks, and retry any errors
+        errors = run_pool(tasks)
+        errors = run_pool([result[0] for result in errors])
+
+        if errors:
+            raise SyncException([result[1] for result in errors])
 
         # Remove from staging any files that our FileCollector thinks have been
         # deleted locally.
@@ -308,7 +335,7 @@ class Staging:
             LOGGER.info('Removing %s', remove_keys)
             remove_result = self.bucket.delete_keys(remove_keys)
             if remove_result.errors:
-                raise DeleteException(remove_result.errors)
+                raise SyncException(remove_result.errors)
 
         self.collector.commit()
 
@@ -316,20 +343,23 @@ class Staging:
         LOGGER.info('Uploading %s', local_path)
         full_name = os.path.join(self.branch, local_path)
 
-        if local_path in self.SHARED_CACHE_BLACKLIST:
-            k = boto.s3.key.Key(self.bucket)
-            k.key = full_name
-            k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
-            return None
+        try:
+            if local_path in self.SHARED_CACHE_BLACKLIST:
+                k = boto.s3.key.Key(self.bucket)
+                k.key = full_name
+                k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
+                return None
 
-        file_hash = binascii.b2a_hex(file_hash)
-        k = self.bucket.get_key(file_hash)
-        if k is None:
-            k = boto.s3.key.Key(self.bucket)
-            k.key = file_hash
-            k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
+            file_hash = 'cache/' + binascii.b2a_hex(file_hash)
+            k = self.bucket.get_key(file_hash)
+            if k is None:
+                k = boto.s3.key.Key(self.bucket)
+                k.key = file_hash
+                k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
 
-        k.copy(self.bucket.name, full_name, **self.S3_OPTIONS)
+            k.copy(self.bucket.name, full_name, **self.S3_OPTIONS)
+        except boto.exception.S3ResponseError as err:
+            raise SyncFileException(local_path, err.message)
 
 
 @argh.arg('--edition', '-e')
@@ -378,4 +408,12 @@ def start(args):
         staging.purge()
         return
 
-    staging.stage(root, incremental=conf.runstate.incremental)
+    try:
+        staging.stage(root, incremental=conf.runstate.incremental)
+    except SyncException as err:
+        LOGGER.error('Failed to upload some files:')
+        for sub_err in err.errors:
+            try:
+                raise sub_err
+            except SyncFileException:
+                LOGGER.error('%s: %s', sub_err.path, sub_err.reason)
