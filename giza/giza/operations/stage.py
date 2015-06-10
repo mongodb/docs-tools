@@ -50,6 +50,18 @@ secretkey=<AWS secret key>
 '''
 
 
+class StagingException(Exception):
+    """Base class for all giza stage exceptions."""
+    pass
+
+
+class DeleteException(StagingException):
+    """An exception indicating an S3 deletion error."""
+    def __init__(self, errors):
+        StagingException.__init__(self, 'Error deleting keys')
+        self.errors = errors
+
+
 class PoolWorker(threading.Thread):
     """A threaded worker that works on a queue of functions."""
     def __init__(self, **kwargs):
@@ -88,7 +100,7 @@ def run_pool(tasks, n_workers=100):
         workers.append(worker)
 
     # Schedule tasks round-robin
-    for i in range(len(tasks) - 1):
+    for i in range(len(tasks)):
         workers[i % n_workers].add_task(tasks[i])
 
     for worker in workers:
@@ -259,7 +271,7 @@ class Staging:
         keys = [k.key for k in self.bucket.list(prefix=self.branch + '/')]
         result = self.bucket.delete_keys(keys)
         if result.errors:
-            raise Exception(result.errors)
+            raise DeleteException(result.errors)
 
     def stage(self, root, incremental=True):
         """Synchronize the build directory with the staging bucket."""
@@ -294,7 +306,7 @@ class Staging:
             LOGGER.info('Removing %s', remove_keys)
             remove_result = self.bucket.delete_keys(remove_keys)
             if remove_result.errors:
-                raise Exception('')
+                raise DeleteException(remove_result.errors)
 
         self.collector.commit()
 
@@ -341,7 +353,7 @@ def start(args):
         secret_key = cfg.get('authentication', 'secretkey')
     except configparser.NoSectionError:
         print('No staging authentication found. Create a file at {0} with '
-               'contents like the following:\n'.format(CONFIG_PATH))
+              'contents like the following:\n'.format(CONFIG_PATH))
         print(SAMPLE_CONFIG)
         return
 
