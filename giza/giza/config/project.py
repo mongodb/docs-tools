@@ -216,6 +216,17 @@ class ProjectConfig(libgiza.config.RecursiveConfigurationBase):
     def sitepath(self):
         return get_path_prefix(self.conf, self.conf.git.branches.current)
 
+    @property
+    def stagingbucket(self):
+        if 'stagingbucket' in self.state:
+            return self.state['stagingbucket']
+        else:
+            return 'mongodb-org-staging'
+
+    @stagingbucket.setter
+    def stagingbucket(self, value):
+        self.state['stagingbucket'] = str(value)
+
 
 class EditionListConfig(libgiza.config.ConfigurationBase):
     _option_registry = ['name', 'url']

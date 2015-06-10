@@ -15,7 +15,8 @@ REQUIRES = [
     'sphinx-intl',
     'sphinx==1.2.3',
     'sphinxcontrib-httpdomain',
-    'wand'
+    'wand',
+    'boto'
 ]
 
 setup(
