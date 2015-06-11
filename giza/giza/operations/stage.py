@@ -378,6 +378,8 @@ class Staging:
 
 
 def do_stage(root, staging, incremental=True):
+    """Drive the main staging process for a single edition, and print nicer
+       error messages for exceptions."""
     try:
         staging.stage(root, incremental=incremental)
     except SyncException as err:
@@ -397,7 +399,7 @@ def do_stage(root, staging, incremental=True):
           dest='destage', help='Delete the contents of the current staged render')
 @argh.arg('--incremental', default=True,
           dest='incremental', help='Intelligently update the stage')
-@argh.arg('--builder', '-b', nargs='*', default='html')
+@argh.arg('--builder', '-b', default='html')
 @argh.named('stage')
 @argh.expects_obj
 def start(args):
