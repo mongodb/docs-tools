@@ -55,6 +55,11 @@ class StagingException(Exception):
     pass
 
 
+class NoSuchEdition(StagingException):
+    """An exception indicating that the requested edition does not exist."""
+    pass
+
+
 class SyncFileException(StagingException):
     """An exception indicating an S3 deletion error."""
     def __init__(self, path, reason):
@@ -134,9 +139,9 @@ def run_pool(tasks, n_workers=100):
 
 class FileCollector:
     """Database for detecting changed files."""
-    def __init__(self, branch):
-        self.branch = branch
-        self.conn = sqlite3.connect('.stage-cache.db')
+    def __init__(self, namespace, db_path='build/.stage-cache.db'):
+        self.namespace = namespace
+        self.conn = sqlite3.connect(db_path)
         self.conn.row_factory = sqlite3.Row
         self.__init()
 
@@ -146,17 +151,17 @@ class FileCollector:
     def __init(self):
         cur = self.conn.cursor()
         cur.execute('''CREATE TABLE IF NOT EXISTS files(
-            branch text NOT NULL,
+            namespace text NOT NULL,
             path text NOT NULL,
             mtime int NOT NULL,
             hash blob NOT NULL,
-            PRIMARY KEY(branch, path))''')
-        cur.execute('''CREATE INDEX IF NOT EXISTS branch ON files(branch)''')
+            PRIMARY KEY(namespace, path))''')
+        cur.execute('''CREATE INDEX IF NOT EXISTS namespace ON files(namespace)''')
 
         cur.execute('''CREATE TEMPORARY TABLE disk(
-            branch text NOT NULL,
+            namespace text NOT NULL,
             path text NOT NULL,
-            PRIMARY KEY(branch, path))''')
+            PRIMARY KEY(namespace, path))''')
 
     def collect(self, root):
         """Yield each path underneath root. If incremental is True, then only
@@ -169,7 +174,7 @@ class FileCollector:
                 path = os.path.join(basedir, filename)
 
                 # Update our temporary list of on-disk files
-                cur.execute('INSERT INTO disk VALUES (?, ?)', (self.branch, path))
+                cur.execute('INSERT INTO disk VALUES (?, ?)', (self.namespace, path))
 
                 update = self.has_changed(path)
                 if update is False:
@@ -180,10 +185,10 @@ class FileCollector:
 
         # Find files that have disappeared from the filesystem
         cur.execute('''
-            SELECT path from files WHERE branch=?
+            SELECT path from files WHERE namespace=?
                 EXCEPT
-            SELECT path from disk WHERE branch=?
-            ''', (self.branch, self.branch))
+            SELECT path from disk WHERE namespace=?
+            ''', (self.namespace, self.namespace))
 
         removed_files = [entry[0] for entry in cur.fetchall()]
         self.removed_files.extend(removed_files)
@@ -197,8 +202,8 @@ class FileCollector:
         mtime = int(stat.st_mtime * 1000)
 
         cur = self.conn.cursor()
-        cur.execute('SELECT * FROM files WHERE branch=? AND path=?',
-                    (self.branch, path,))
+        cur.execute('SELECT * FROM files WHERE namespace=? AND path=?',
+                    (self.namespace, path,))
         row = cur.fetchone()
 
         if row is None:
@@ -225,27 +230,27 @@ class FileCollector:
 
             if entry.is_new:
                 cur.execute('INSERT INTO files VALUES(?, ?, ?, ?)', (
-                    self.branch, entry.path, entry.mtime, hash_binary_view))
+                    self.namespace, entry.path, entry.mtime, hash_binary_view))
             else:
                 cur.execute('''UPDATE files SET mtime=?, hash=?
-                            WHERE branch=? AND path=?''',
+                            WHERE namespace=? AND path=?''',
                             (entry.mtime, hash_binary_view,
-                             self.branch, entry.path))
+                             self.namespace, entry.path))
 
         for path in self.removed_files:
-            cur.execute('DELETE FROM disk WHERE branch=? AND path=?',
-                        (self.branch, path))
-            cur.execute('DELETE FROM files WHERE branch=? AND path=?',
-                        (self.branch, path))
+            cur.execute('DELETE FROM disk WHERE namespace=? AND path=?',
+                        (self.namespace, path))
+            cur.execute('DELETE FROM files WHERE namespace=? AND path=?',
+                        (self.namespace, path))
 
         self.conn.commit()
         self.removed_files = []
 
     def purge_now(self):
-        """Purge the index for this branch immediately. Does not wait for
+        """Purge the index for this namespace immediately. Does not wait for
            commit()."""
         cur = self.conn.cursor()
-        cur.execute('DELETE FROM files WHERE branch=?', (self.branch,))
+        cur.execute('DELETE FROM files WHERE namespace=?', (self.namespace,))
         self.conn.commit()
 
     @staticmethod
@@ -269,11 +274,16 @@ class Staging:
     SHARED_CACHE_BLACKLIST = {'genindex.html', 'objects.inv', 'searchindex.js'}
 
     S3_OPTIONS = {'reduced_redundancy': True}
+    RESERVED_BRANCHES = {'cache'}
 
-    def __init__(self, branch, bucket):
+    def __init__(self, branch, edition, bucket):
+        if branch in self.RESERVED_BRANCHES:
+            raise ValueError(branch)
+
         self.branch = branch
+        self.edition = edition
         self.bucket = bucket
-        self.collector = FileCollector(branch)
+        self.collector = FileCollector('/'.join((branch, edition)))
 
         # Check this bucket's expiration policy
         try:
@@ -287,7 +297,8 @@ class Staging:
             bucket.configure_lifecycle(lifecycle)
 
     def purge(self):
-        """Remove all files associated with this branch."""
+        """Remove all files associated with this branch and edition."""
+
         # Remove files from the index first; if the system dies in an
         # inconsistent state, we want to err on the side of reuploading too much
         self.collector.purge_now()
@@ -298,13 +309,17 @@ class Staging:
             raise SyncException(result.errors)
 
     def stage(self, root, incremental=True):
-        """Synchronize the build directory with the staging bucket."""
+        """Synchronize the build directory with the staging bucket under
+           [branch]/[edition]/"""
         tasks = []
 
         # Ensure that the root ends with a trailing slash to make future
         # manipulations more predictable.
         if not root.endswith(os.path.sep):
             root += os.path.sep
+
+        if not os.path.isdir(root):
+            raise NoSuchEdition(root)
 
         if not incremental:
             self.purge()
@@ -339,9 +354,9 @@ class Staging:
 
         self.collector.commit()
 
-    def __upload(self, local_path, src_path, file_hash):
+    def __upload(self, local_path, src_path, file_hash,):
         LOGGER.info('Uploading %s', local_path)
-        full_name = os.path.join(self.branch, local_path)
+        full_name = '/'.join((self.branch, self.edition, local_path))
 
         try:
             if local_path in self.SHARED_CACHE_BLACKLIST:
@@ -362,7 +377,22 @@ class Staging:
             raise SyncFileException(local_path, err.message)
 
 
-@argh.arg('--edition', '-e')
+def do_stage(root, staging, incremental=True):
+    try:
+        staging.stage(root, incremental=incremental)
+    except SyncException as err:
+        LOGGER.error('Failed to upload some files:')
+        for sub_err in err.errors:
+            try:
+                raise sub_err
+            except SyncFileException:
+                LOGGER.error('%s: %s', sub_err.path, sub_err.reason)
+    except NoSuchEdition as err:
+        LOGGER.error('No edition found at %s', err.message)
+        LOGGER.info('Try specifying the -e [edition] option')
+
+
+@argh.arg('--edition', '-e', nargs='*')
 @argh.arg('--destage', default=False,
           dest='destage', help='Delete the contents of the current staged render')
 @argh.arg('--incremental', default=True,
@@ -374,8 +404,7 @@ def start(args):
     """Start an HTTP server rooted in the build directory."""
     conf = fetch_config(args)
 
-    git = GitRepo()
-    branch = git.current_branch()
+    branch = GitRepo().current_branch()
 
     cfg = configparser.ConfigParser()
     cfg.read(os.path.expanduser(CONFIG_PATH))
@@ -389,31 +418,22 @@ def start(args):
         print(SAMPLE_CONFIG)
         return
 
-    root = conf.paths.public_site_output
+    editions = args.edition or ('',)
+    edition_suffixes = [args.builder[0] + ('-' if edition else '') + edition
+                        for edition in editions]
 
-    if conf.runstate.edition is not None:
-        root = os.path.join(conf.paths.projectroot,
-                            conf.paths.branch_output,
-                            '-'.join((args.builder[0], args.edition)))
-    else:
-        root = os.path.join(conf.paths.projectroot,
-                            conf.paths.branch_output,
-                            args.builder[0])
+    roots = [os.path.join(conf.paths.projectroot,
+                          conf.paths.branch_output,
+                          edition_suffix) for edition_suffix in edition_suffixes]
 
     conn = boto.s3.connection.S3Connection(access_key, secret_key)
     bucket = conn.get_bucket(conf.project.stagingbucket)
-    staging = Staging(branch, bucket)
 
-    if conf.runstate.destage:
-        staging.purge()
-        return
+    for root, edition in zip(roots, editions):
+        staging = Staging(branch, edition, bucket)
 
-    try:
-        staging.stage(root, incremental=conf.runstate.incremental)
-    except SyncException as err:
-        LOGGER.error('Failed to upload some files:')
-        for sub_err in err.errors:
-            try:
-                raise sub_err
-            except SyncFileException:
-                LOGGER.error('%s: %s', sub_err.path, sub_err.reason)
+        if conf.runstate.destage:
+            staging.purge()
+            continue
+
+        do_stage(root, staging, incremental=conf.runstate.incremental)
