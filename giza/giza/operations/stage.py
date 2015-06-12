@@ -357,7 +357,7 @@ class Staging:
 
         return
 
-    def __upload(self, local_path, src_path, file_hash,):
+    def __upload(self, local_path, src_path, file_hash):
         LOGGER.info('Uploading %s', local_path)
         full_name = '/'.join((self.branch, self.edition, local_path))
 
@@ -443,6 +443,7 @@ def start(args):
     cfg = configparser.ConfigParser()
     cfg.read(cfg_path)
 
+    # Warn the user if file permissions are too lax
     try:
         if os.name == 'posix' and stat.S_IMODE(os.stat(cfg_path).st_mode) != 0o600:
             LOGGER.warn('Your AWS authentication file is poorly protected! You should run')
@@ -473,15 +474,22 @@ def start(args):
                           edition_suffix) for edition_suffix in edition_suffixes]
 
     conn = boto.s3.connection.S3Connection(access_key, secret_key)
-    bucket = conn.get_bucket(conf.project.stagingbucket)
 
-    for root, edition in zip(roots, editions):
-        staging = Staging(branch, edition, bucket)
+    try:
+        bucket = conn.get_bucket(conf.project.stagingbucket)
+        for root, edition in zip(roots, editions):
+            staging = Staging(branch, edition, bucket)
 
-        if conf.runstate.destage:
-            staging.purge()
-            continue
+            if conf.runstate.destage:
+                staging.purge()
+                continue
 
-        do_stage(root, staging, incremental=conf.runstate.incremental)
+            do_stage(root, staging, incremental=conf.runstate.incremental)
+    except boto.exception.S3ResponseError as err:
+        if err.status == 403:
+            LOGGER.error('Failed to upload to S3: Permission denied.')
+            LOGGER.info('Check your authentication configuration at %s, '
+                        'and/or talk to IT.', cfg_path)
+            return
 
     print_stage_report(branch, editions)
