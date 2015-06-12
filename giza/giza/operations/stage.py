@@ -22,6 +22,7 @@ import logging
 import os
 import os.path
 import sqlite3
+import stat
 import threading
 
 import argh
@@ -196,10 +197,10 @@ class FileCollector:
     def has_changed(self, path):
         """Returns a FileUpdate instance if the given path has changed since it
            was last checked, or else False."""
-        stat = os.stat(path)
+        path_stat = os.stat(path)
 
         # Provide ms-level precision
-        mtime = int(stat.st_mtime * 1000)
+        mtime = int(path_stat.st_mtime * 1000)
 
         cur = self.conn.cursor()
         cur.execute('SELECT * FROM files WHERE namespace=? AND path=?',
@@ -354,6 +355,8 @@ class Staging:
 
         self.collector.commit()
 
+        return
+
     def __upload(self, local_path, src_path, file_hash,):
         LOGGER.info('Uploading %s', local_path)
         full_name = '/'.join((self.branch, self.edition, local_path))
@@ -381,7 +384,7 @@ def do_stage(root, staging, incremental=True):
     """Drive the main staging process for a single edition, and print nicer
        error messages for exceptions."""
     try:
-        staging.stage(root, incremental=incremental)
+        return staging.stage(root, incremental=incremental)
     except SyncException as err:
         LOGGER.error('Failed to upload some files:')
         for sub_err in err.errors:
@@ -392,6 +395,34 @@ def do_stage(root, staging, incremental=True):
     except NoSuchEdition as err:
         LOGGER.error('No edition found at %s', err.message)
         LOGGER.info('Try specifying the -e [edition] option')
+
+
+def create_config_framework(path):
+    """Create a skeleton configuration file with appropriately locked-down
+       permissions."""
+    try:
+        os.mkdir(os.path.dirname(path), 0o751)
+    except OSError:
+        pass
+
+    # Make sure we don't write the framework if it already exists.
+    try:
+        with os.fdopen(os.open(path,
+                               os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                               0o600), 'wx') as conf_file:
+            conf_file.write('[authentication]\n')
+    except IOError:
+        pass
+
+
+def print_stage_report(branch, editions):
+    """Print a list of staging URLs corresponding to the given editions."""
+    print('Staged at:')
+    for edition in editions:
+        suffix = branch
+        if edition:
+            suffix = '{0}/{1}'.format(branch, edition)
+        print('    https://mongodborg.corp.mongodb.com/' + suffix)
 
 
 @argh.arg('--edition', '-e', nargs='*')
@@ -408,16 +439,29 @@ def start(args):
 
     branch = GitRepo().current_branch()
 
+    cfg_path = os.path.expanduser(CONFIG_PATH)
     cfg = configparser.ConfigParser()
-    cfg.read(os.path.expanduser(CONFIG_PATH))
+    cfg.read(cfg_path)
+
+    try:
+        if os.name == 'posix' and stat.S_IMODE(os.stat(cfg_path).st_mode) != 0o600:
+            LOGGER.warn('Your AWS authentication file is poorly protected! You should run')
+            LOGGER.warn('    chmod 600 %s', cfg_path)
+    except OSError:
+        pass
 
     try:
         access_key = cfg.get('authentication', 'accesskey')
         secret_key = cfg.get('authentication', 'secretkey')
     except configparser.NoSectionError:
         print('No staging authentication found. Create a file at {0} with '
-              'contents like the following:\n'.format(CONFIG_PATH))
+              'contents like the following:\n'.format(cfg_path))
         print(SAMPLE_CONFIG)
+        create_config_framework(cfg_path)
+        return
+
+    if not args.builder:
+        print('No builder specified. Try specifying "-b html".')
         return
 
     editions = args.edition or ('',)
@@ -439,3 +483,5 @@ def start(args):
             continue
 
         do_stage(root, staging, incremental=conf.runstate.incremental)
+
+    print_stage_report(branch, editions)
