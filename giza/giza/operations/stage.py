@@ -165,8 +165,8 @@ class FileCollector:
             PRIMARY KEY(namespace, path))''')
 
     def collect(self, root):
-        """Yield each path underneath root. If incremental is True, then only
-           yield files that have changed since the last run."""
+        """Yield each path underneath root. Only yield files that have changed
+           since the last run."""
         cur = self.conn.cursor()
         cur.execute('DELETE FROM disk')
 
@@ -309,7 +309,7 @@ class Staging:
         if result.errors:
             raise SyncException(result.errors)
 
-    def stage(self, root, incremental=True):
+    def stage(self, root):
         """Synchronize the build directory with the staging bucket under
            [branch]/[edition]/"""
         tasks = []
@@ -321,9 +321,6 @@ class Staging:
 
         if not os.path.isdir(root):
             raise NoSuchEdition(root)
-
-        if not incremental:
-            self.purge()
 
         for entry in self.collector.collect(root):
             # Run our actual staging operations in a thread pool. This would be
@@ -380,11 +377,11 @@ class Staging:
             raise SyncFileException(local_path, err.message)
 
 
-def do_stage(root, staging, incremental=True):
+def do_stage(root, staging):
     """Drive the main staging process for a single edition, and print nicer
        error messages for exceptions."""
     try:
-        return staging.stage(root, incremental=incremental)
+        return staging.stage(root)
     except SyncException as err:
         LOGGER.error('Failed to upload some files:')
         for sub_err in err.errors:
@@ -428,8 +425,6 @@ def print_stage_report(branch, editions):
 @argh.arg('--edition', '-e', nargs='*')
 @argh.arg('--destage', default=False,
           dest='destage', help='Delete the contents of the current staged render')
-@argh.arg('--incremental', default=True,
-          dest='incremental', help='Intelligently update the stage')
 @argh.arg('--builder', '-b', default='html')
 @argh.named('stage')
 @argh.expects_obj
@@ -484,7 +479,7 @@ def start(args):
                 staging.purge()
                 continue
 
-            do_stage(root, staging, incremental=conf.runstate.incremental)
+            do_stage(root, staging)
     except boto.exception.S3ResponseError as err:
         if err.status == 403:
             LOGGER.error('Failed to upload to S3: Permission denied.')
