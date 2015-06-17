@@ -112,7 +112,7 @@ class PoolWorker(threading.Thread):
         self.semaphore.release()
 
 
-def run_pool(tasks, n_workers=100):
+def run_pool(tasks, n_workers=50):
     """Run a list of tasks using a pool of threads. Return non-None results or
        exceptions as a list of (task, result) pairs in an arbitrary order."""
     workers = []
@@ -355,24 +355,32 @@ class Staging:
         return
 
     def __upload(self, local_path, src_path, file_hash):
-        LOGGER.info('Uploading %s', local_path)
         full_name = '/'.join((self.branch, self.edition, local_path))
+        k = boto.s3.key.Key(self.bucket)
 
         try:
             if local_path in self.SHARED_CACHE_BLACKLIST:
-                k = boto.s3.key.Key(self.bucket)
+                LOGGER.info('Uploading %s', local_path)
                 k.key = full_name
                 k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
                 return None
 
+            # Try to copy the file from the cache to its destination
             file_hash = 'cache/' + binascii.b2a_hex(file_hash)
-            k = self.bucket.get_key(file_hash)
-            if k is None:
-                k = boto.s3.key.Key(self.bucket)
-                k.key = file_hash
-                k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
+            k.key = file_hash
 
-            k.copy(self.bucket.name, full_name, **self.S3_OPTIONS)
+            try:
+                k.copy(self.bucket.name, full_name, **self.S3_OPTIONS)
+            except boto.exception.S3ResponseError as err:
+                if err.status == 404:
+                    # Not found in cache. Upload it to the cache
+                    LOGGER.info('Uploading %s', local_path)
+                    k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
+
+                    # And then copy it to its final destination
+                    k.copy(self.bucket.name, full_name, **self.S3_OPTIONS)
+                else:
+                    raise err
         except boto.exception.S3ResponseError as err:
             raise SyncFileException(local_path, err.message)
 
