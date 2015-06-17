@@ -277,14 +277,19 @@ class Staging:
     S3_OPTIONS = {'reduced_redundancy': True}
     RESERVED_BRANCHES = {'cache'}
 
-    def __init__(self, branch, edition, bucket):
+    def __init__(self, branch, edition, bucket, username):
         if branch in self.RESERVED_BRANCHES:
             raise ValueError(branch)
 
         self.branch = branch
         self.edition = edition
+        self.username = username
+
+        # The S3 prefix for this staging site
+        self.full_prefix = '/'.join([x for x in (username, branch, edition) if x])
+
         self.bucket = bucket
-        self.collector = FileCollector('/'.join((branch, edition)))
+        self.collector = FileCollector(self.full_prefix)
 
         # Check this bucket's expiration policy
         try:
@@ -299,19 +304,18 @@ class Staging:
 
     def purge(self):
         """Remove all files associated with this branch and edition."""
-
         # Remove files from the index first; if the system dies in an
         # inconsistent state, we want to err on the side of reuploading too much
         self.collector.purge_now()
 
-        keys = [k.key for k in self.bucket.list(prefix=self.branch + '/')]
+        keys = [k.key for k in self.bucket.list(prefix='/'.join((self.full_prefix, '')))]
         result = self.bucket.delete_keys(keys)
         if result.errors:
             raise SyncException(result.errors)
 
     def stage(self, root):
         """Synchronize the build directory with the staging bucket under
-           [branch]/[edition]/"""
+           [username]/[branch]/[edition]/"""
         tasks = []
 
         # Ensure that the root ends with a trailing slash to make future
@@ -342,7 +346,7 @@ class Staging:
 
         # Remove from staging any files that our FileCollector thinks have been
         # deleted locally.
-        remove_keys = [os.path.join(self.branch, path.replace(root, '', 1))
+        remove_keys = ['/'.join((self.full_prefix, path.replace(root, '', 1)))
                        for path in self.collector.removed_files]
         if remove_keys:
             LOGGER.info('Removing %s', remove_keys)
@@ -355,7 +359,7 @@ class Staging:
         return
 
     def __upload(self, local_path, src_path, file_hash):
-        full_name = '/'.join((self.branch, self.edition, local_path))
+        full_name = '/'.join((self.full_prefix, local_path))
         k = boto.s3.key.Key(self.bucket)
 
         try:
@@ -420,13 +424,13 @@ def create_config_framework(path):
         pass
 
 
-def print_stage_report(branch, editions):
+def print_stage_report(username, branch, editions):
     """Print a list of staging URLs corresponding to the given editions."""
     print('Staged at:')
     for edition in editions:
-        suffix = branch
+        suffix = '/'.join((username, branch))
         if edition:
-            suffix = '{0}/{1}'.format(branch, edition)
+            suffix = '{0}/{1}/{2}'.format(username, branch, edition)
         print('    https://mongodborg.corp.mongodb.com/' + suffix)
 
 
@@ -464,6 +468,11 @@ def start(args):
         create_config_framework(cfg_path)
         return
 
+    try:
+        username = cfg.get('personal', 'username')
+    except configparser.NoSectionError:
+        username = os.getlogin()
+
     if not args.builder:
         print('No builder specified. Try specifying "-b html".')
         return
@@ -481,7 +490,7 @@ def start(args):
     try:
         bucket = conn.get_bucket(conf.project.stagingbucket)
         for root, edition in zip(roots, editions):
-            staging = Staging(branch, edition, bucket)
+            staging = Staging(branch, edition, bucket, username=username)
 
             if conf.runstate.destage:
                 staging.purge()
@@ -495,4 +504,5 @@ def start(args):
                         'and/or talk to IT.', cfg_path)
             return
 
-    print_stage_report(branch, editions)
+    if not conf.runstate.destage:
+        print_stage_report(username, branch, editions)
