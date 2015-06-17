@@ -413,14 +413,14 @@ def create_config_framework(path):
         pass
 
 
-def print_stage_report(username, branch, editions):
+def print_stage_report(url, username, branch, editions):
     """Print a list of staging URLs corresponding to the given editions."""
     print('Staged at:')
     for edition in editions:
         suffix = '/'.join((username, branch))
         if edition:
             suffix = '{0}/{1}/{2}'.format(username, branch, edition)
-        print('    https://mongodborg.corp.mongodb.com/' + suffix)
+        print('    ' + url + suffix)
 
 
 @argh.arg('--edition', '-e', nargs='*')
@@ -494,4 +494,9 @@ def start(args):
             return
 
     if not conf.runstate.destage:
-        print_stage_report(username, branch, editions)
+        # Hideous hack. Works so long as we keep this naming scheme, though
+        url = 'https://{0}.corp.mongodb.com/'.format(
+            conf.project.stagingbucket
+            .replace('-staging', '')
+            .replace('-', ''))
+        print_stage_report(url, username, branch, editions)
