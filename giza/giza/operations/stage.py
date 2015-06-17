@@ -291,17 +291,6 @@ class Staging:
         self.bucket = bucket
         self.collector = FileCollector(self.full_prefix)
 
-        # Check this bucket's expiration policy
-        try:
-            bucket.get_lifecycle_config()
-        except boto.exception.S3ResponseError:
-            lifecycle = boto.s3.lifecycle.Lifecycle()
-            lifecycle.add_rule(
-                'staging-expiration',
-                status='Enabled',
-                expiration=boto.s3.lifecycle.Expiration(30))
-            bucket.configure_lifecycle(lifecycle)
-
     def purge(self):
         """Remove all files associated with this branch and edition."""
         # Remove files from the index first; if the system dies in an
