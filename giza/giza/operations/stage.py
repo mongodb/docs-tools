@@ -450,7 +450,7 @@ def start(args):
     try:
         access_key = cfg.get('authentication', 'accesskey')
         secret_key = cfg.get('authentication', 'secretkey')
-    except configparser.NoSectionError:
+    except (configparser.NoSectionError, configparser.NoOptionError):
         print('No staging authentication found. Create a file at {0} with '
               'contents like the following:\n'.format(cfg_path))
         print(SAMPLE_CONFIG)
@@ -459,7 +459,7 @@ def start(args):
 
     try:
         username = cfg.get('personal', 'username')
-    except configparser.NoSectionError:
+    except (configparser.NoSectionError, configparser.NoOptionError):
         username = os.getlogin()
 
     if not args.builder:
