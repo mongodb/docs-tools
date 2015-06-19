@@ -178,10 +178,11 @@ def create_code_review(data, g, creds):
         cmd.extend(['--jira_user', creds.jira.username])
 
     cmd.extend(['--email', g.author_email(),
-                '-m', '"' + g.commit_messages()[0] + '"',
-                branch_data.commits[-1]])
+                '-m', g.commit_messages()[0],
+                '..'.join(branch_data.commits)])
 
     try:
+        logger.info(' '.join(cmd))
         cr_upload = subprocess.check_output(cmd, stderr=subprocess.STDOUT).strip()
 
         branch_data.issue = get_issue_number(cr_upload)
@@ -195,6 +196,7 @@ def create_code_review(data, g, creds):
             logger.info('created new code review issue')
     except subprocess.CalledProcessError as e:
         logger.error('failed to create issue')
+        logger.error(' '.join(cmd))
         print(e)
 
 # Output processing
