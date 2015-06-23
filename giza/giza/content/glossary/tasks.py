@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import logging
-import shutil.rmtree
+import shutil
 
 from libgiza.task import Task
 
