@@ -43,6 +43,7 @@ branches:
   - v1.4
   - v1.5
   - v1.6
+  - v1.8
 operations:
   minimal:
     - "giza generate source --edition cloud classic onprem"
