@@ -28,14 +28,6 @@ class DeployConfig(libgiza.config.ConfigurationBase):
         self.state['production'] = DeployTargetConfig(value)
 
     @property
-    def staging(self):
-        return self.state['staging']
-
-    @staging.setter
-    def staging(self, value):
-        self.state['staging'] = DeployTargetConfig(value)
-
-    @property
     def testing(self):
         return self.state['testing']
 
@@ -50,6 +42,29 @@ class DeployConfig(libgiza.config.ConfigurationBase):
     @docsprod.setter
     def docsprod(self, value):
         self.state['docsprod'] = DeployTargetConfig(value)
+
+    def get_staging(self, project):
+        """Returns the appropriate StagingTargetConfig staging configuration for
+           the current project."""
+        if project in self.state['staging']:
+            return self.state['staging'][project]
+
+        try:
+            return self.state['staging']['default']
+        except KeyError as err:
+            logger.critical('No staging information specified for project %s',
+                            project)
+            raise err
+
+    @property
+    def staging(self):
+        return self.state['staging']
+
+    @staging.setter
+    def staging(self, value):
+        self.state['staging'] = {}
+        for project, config in value.items():
+            self.state['staging'][project] = StagingTargetConfig(config)
 
 
 class DeployTargetConfig(libgiza.config.ConfigurationBase):
@@ -78,3 +93,32 @@ class DeployTargetConfig(libgiza.config.ConfigurationBase):
         else:
             logger.critical('deployment targets must be a list')
             raise TypeError
+
+
+class StagingTargetConfig(libgiza.config.ConfigurationBase):
+    """Configuration for a project's staging environment, specifying both an S3
+       bucket and an HTTP/S URL pointing to that bucket, appropriate for user
+       consumption."""
+    @property
+    def url(self):
+        try:
+            return self.state['url']
+        except KeyError as err:
+            LOGGER.critical('No staging URL specified')
+            raise err
+
+    @url.setter
+    def url(self, value):
+        self.state['url'] = str(value)
+
+    @property
+    def bucket(self):
+        try:
+            return self.state['bucket']
+        except KeyError as err:
+            LOGGER.critical('No staging bucket specified')
+            raise err
+
+    @bucket.setter
+    def bucket(self, value):
+        self.state['bucket'] = str(value)

@@ -19,4 +19,11 @@ docsprod:
     - '--omit-dir-times'
     # - '--rsync-path="sudo -u docsmms-prod rsync"'
   input: code
+staging:
+  default:
+    url: 'https://mongodborg-staging.corp.mongodb.com'
+    bucket: 'mongodb-org-staging'
+  mms:
+    url: 'https://mmsdocs-staging.corp.mongodb.com'
+    bucket: 'mms-docs-staging'
 ...

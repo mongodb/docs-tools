@@ -138,7 +138,7 @@ def run_pool(tasks, n_workers=50):
     return results
 
 
-class FileCollector:
+class FileCollector(object):
     """Database for detecting changed files."""
     def __init__(self, namespace, db_path='build/.stage-cache.db'):
         self.namespace = namespace
@@ -270,7 +270,7 @@ class FileCollector:
         return hasher.digest()
 
 
-class Staging:
+class Staging(object):
     # These files are always unique, and so there is no benefit in sharing them
     SHARED_CACHE_BLACKLIST = {'genindex.html', 'objects.inv', 'searchindex.js'}
 
@@ -425,13 +425,14 @@ def print_stage_report(url, username, branch, editions):
 
 @argh.arg('--edition', '-e', nargs='*')
 @argh.arg('--destage', default=False,
-          dest='destage', help='Delete the contents of the current staged render')
+          dest='_destage', help='Delete the contents of the current staged render')
 @argh.arg('--builder', '-b', default='html')
 @argh.named('stage')
 @argh.expects_obj
 def start(args):
     """Start an HTTP server rooted in the build directory."""
     conf = fetch_config(args)
+    staging_config = conf.deploy.get_staging(conf.project.name)
 
     branch = GitRepo().current_branch()
 
@@ -477,11 +478,11 @@ def start(args):
     conn = boto.s3.connection.S3Connection(access_key, secret_key)
 
     try:
-        bucket = conn.get_bucket(conf.project.stagingbucket)
+        bucket = conn.get_bucket(staging_config.bucket)
         for root, edition in zip(roots, editions):
             staging = Staging(branch, edition, bucket, username=username)
 
-            if conf.runstate.destage:
+            if args._destage:
                 staging.purge()
                 continue
 
@@ -493,5 +494,5 @@ def start(args):
                         'and/or talk to IT.', cfg_path)
             return
 
-    if not conf.runstate.destage:
-        print_stage_report(conf.project.stagingurl, username, branch, editions)
+    if not args._destage:
+        print_stage_report(staging_config.url, username, branch, editions)

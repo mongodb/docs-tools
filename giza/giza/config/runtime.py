@@ -215,8 +215,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
                         'git_sign_patch', 'package_path',
                         'clean_generated', 'include_mask', 'push_targets',
                         'dry_run', 't_corpora_config', 't_translate_config',
-                        't_output_file', 't_source', 't_target', 'port',
-                        'destage']
+                        't_output_file', 't_source', 't_target', 'port']
 
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
@@ -281,11 +280,11 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @branch_conf.setter
     def branch_conf(self, value):
-        fn = os.path.join(self.conf.paths.global_config, '-'.join([self.conf.project.name, 
+        fn = os.path.join(self.conf.paths.global_config, '-'.join([self.conf.project.name,
                                                                    'published', 'branches.yaml']))
 
 
-        if os.path.isfile(fn): 
+        if os.path.isfile(fn):
             with open(fn, 'r') as f:
                 self._branch_conf = yaml.load(f)
         else:
@@ -300,7 +299,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
                 try:
                     data = self.conf.git.repo.branch_file(path=fn, branch='master')
                 except GitError:
-                    logger.critical('giza does not support "detached head" state, ' 
+                    logger.critical('giza does not support "detached head" state, '
                                     'and local repositories without a master branch.')
                     self._branch_conf = {}
                     return
