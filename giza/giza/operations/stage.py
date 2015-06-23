@@ -420,7 +420,7 @@ def print_stage_report(url, username, branch, editions):
         suffix = '/'.join((username, branch))
         if edition:
             suffix = '{0}/{1}/{2}'.format(username, branch, edition)
-        print('    ' + url + suffix)
+        print('    {0}/{1}'.format(url, suffix))
 
 
 @argh.arg('--edition', '-e', nargs='*')
@@ -494,8 +494,4 @@ def start(args):
             return
 
     if not conf.runstate.destage:
-        # Hideous hack. Works so long as we keep this naming scheme, though
-        url = 'https://{0}.corp.mongodb.com/'.format(
-            conf.project.stagingbucket
-            .replace('-', '', 1))
-        print_stage_report(url, username, branch, editions)
+        print_stage_report(conf.project.stagingurl, username, branch, editions)

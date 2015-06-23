@@ -227,6 +227,16 @@ class ProjectConfig(libgiza.config.RecursiveConfigurationBase):
     def stagingbucket(self, value):
         self.state['stagingbucket'] = str(value)
 
+    @property
+    def stagingurl(self):
+        if 'stagingurl' in self.state:
+            return self.state['stagingurl']
+        else:
+            return 'https://mongodborg-staging.corp.mongodb.com'
+
+    @stagingurl.setter
+    def stagingurl(self, value):
+        self.state['stagingurl'] = str(value)
 
 class EditionListConfig(libgiza.config.ConfigurationBase):
     _option_registry = ['name', 'url']
