@@ -31,6 +31,7 @@ from giza.content.extract.tasks import register_extracts
 from giza.content.options.tasks import register_options
 from giza.content.examples.tasks import register_examples
 from giza.content.steps.tasks import register_steps
+from giza.content.glossary.tasks import register_glossary
 from giza.content.tocs.tasks import register_toc
 from giza.content.apiargs.tasks import register_apiargs
 
@@ -65,6 +66,7 @@ def register_content_generators(conf):
     logger.debug("registering content generators with config")
     register_options(conf)
     register_steps(conf)
+    register_glossary(conf)
     register_releases(conf)
     register_examples(conf)
     register_extracts(conf)
