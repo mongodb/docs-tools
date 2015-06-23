@@ -31,7 +31,7 @@ class GlossaryData(InheritableContentBase):
     @term.setter
     def term(self, value):
         if isinstance(value, basestring):
-            self.state['term']
+            self.state['term'] = value
         else:
             raise TypeError
 
@@ -42,6 +42,6 @@ class GlossaryData(InheritableContentBase):
     @definition.setter
     def definition(self, value):
         if isinstance(value, basestring):
-            self.state['definition']
+            self.state['definition'] = value
         else:
             raise TypeError

@@ -22,10 +22,10 @@ logger = logging.getLogger('giza.content.glossary.views')
 def render_glossary(terms):
     r = RstCloth()
 
-    r.directive(name="glossary", fields={"sorted", ""})
+    r.directive(name="glossary", fields=[("sorted", "")])
     r.newline()
 
-    for term in terms:
+    for term in terms.ordered_content():
         r.definition(term.term, term.definition, wrap=False, indent=3)
 
     return r

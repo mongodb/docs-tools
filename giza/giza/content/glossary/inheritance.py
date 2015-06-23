@@ -12,12 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os.path
+
 from giza.inheritance import DataContentBase, DataCache
 from giza.content.glossary.models import GlossaryData
 
 
 class GlossaryFile(DataContentBase):
     content_class = GlossaryData
+
+    def target(self, fn):
+        # fn is the source file
+        return os.path.join(self.conf.system.content.glossary.output_dir,
+                            self.conf.system.content.glossary.get_basename(fn)) + '.rst'
 
 
 class GlossaryDataCache(DataCache):
