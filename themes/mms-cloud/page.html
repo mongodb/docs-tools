@@ -2,14 +2,14 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://docs.mms.mongodb.com/" />
+    <link rel="canonical" href="http://docs.cloud.mongodb.com/" />
   {%- else %}
-    <link rel="canonical" href="http://docs.mms.mongodb.com/{{pagename}}" />
+    <link rel="canonical" href="http://docs.cloud.mongodb.com/{{pagename}}" />
   {%- endif -%}
 {%- endblock -%}
 
 {% block searchbox %}
-<li class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mms.mongodb.com/search/" queryParameterName="query"></gcse:searchbox-only></li>
+<li class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.cloud.mongodb.com/search/" queryParameterName="query"></gcse:searchbox-only></li>
 {% endblock %}
 
 {%- block sitesearch %}
@@ -31,7 +31,7 @@
                 $input.on('blur', function(e) {
                   if (!$input.val().length) { $div.addClass('narrow').removeClass('wide'); }
                 });
-                $input.attr('placeholder', "Search MMS Help");
+                $input.attr('placeholder', "Search Cloud Manager Help");
                 window.clearInterval(pollInput);
               }
             }, 10);
