@@ -22,6 +22,7 @@ from libgiza.git import GitError
 from libgiza.config import ConfigurationBase
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.config.error import ConfigurationError
+from giza.tools.colorformatter import ColorFormatter
 
 logger = logging.getLogger('giza.config.runtime')
 
@@ -112,8 +113,6 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
         root_logger = logging.getLogger()
         root_logger.setLevel(logging.DEBUG)
 
-        formatter = logging.Formatter(logging.BASIC_FORMAT)
-
         # We only want the log file to represent the most recent run.
         try:
             os.unlink('giza.log')
@@ -122,11 +121,11 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
         file_logger = logging.FileHandler('giza.log', mode='wx')
         file_logger.setLevel(logging.DEBUG)
-        file_logger.setFormatter(formatter)
+        file_logger.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 
         console_logger = logging.StreamHandler()
         console_logger.setLevel(levels[value])
-        console_logger.setFormatter(formatter)
+        console_logger.setFormatter(ColorFormatter())
 
         root_logger.addHandler(file_logger)
         root_logger.addHandler(console_logger)

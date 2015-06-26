@@ -43,6 +43,7 @@ import shlex
 from libgiza.task import Task
 from giza.tools.files import safe_create_directory, expand_tree
 from giza.tools.timing import Timer
+from giza.tools.colorformatter import ColorFormatter
 
 logger = logging.getLogger('giza.content.sphinx')
 
@@ -181,7 +182,11 @@ def stable_deduplicate(lines):
 
 def print_build_messages(messages):
     for l in (l for l in messages if l is not None):
-        print(l)
+        if('WARNING: ' in l):
+            l = l.replace('WARNING: ', '', 1)
+            logger.warn(l, extra={'lean': True})
+        else:
+            logger.info(l, extra={'lean': True})
 
 
 def path_normalization(l, full_path, conf):
