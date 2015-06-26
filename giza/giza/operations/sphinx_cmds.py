@@ -25,7 +25,6 @@ from libgiza.app import BuildApp
 from libgiza.task import Task
 
 from giza.content.robots import robots_txt_tasks
-from giza.content.includes import includes_tasks
 from giza.content.images.tasks import image_tasks
 from giza.content.intersphinx import intersphinx_tasks
 from giza.content.table import table_tasks
@@ -193,7 +192,7 @@ def sphinx_content_preperation(app, conf):
     for ((edition, language, builder), (build_config, sconf)) in get_restricted_builder_jobs(conf):
         # these functions all return tasks
         app.extend_queue(image_tasks(build_config, sconf))
-        for content_generator in (robots_txt_tasks, intersphinx_tasks, includes_tasks,
+        for content_generator in (robots_txt_tasks, intersphinx_tasks,
                                   table_tasks, hash_tasks, redirect_tasks):
             app.extend_queue(content_generator(build_config))
 
