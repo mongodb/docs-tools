@@ -182,9 +182,10 @@ def stable_deduplicate(lines):
 
 def print_build_messages(messages):
     for l in (l for l in messages if l is not None):
-        if('WARNING: ' in l):
-            l = l.replace('WARNING: ', '', 1)
+        if 'WARNING: ' in l:
             logger.warn(l, extra={'lean': True})
+        elif 'ERROR: ' in l or 'SEVERE: ' in l:
+            logger.error(l, extra={'lean': True})
         else:
             logger.info(l, extra={'lean': True})
 
