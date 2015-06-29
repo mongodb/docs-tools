@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import logging
+import os
 import os.path
+import sys
 import yaml
 
 import multiprocessing
@@ -125,7 +127,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
         console_logger = logging.StreamHandler()
         console_logger.setLevel(levels[value])
-        console_logger.setFormatter(ColorFormatter())
+        console_logger.setFormatter(ColorFormatter(color=os.isatty(sys.stdout.fileno())))
 
         root_logger.addHandler(file_logger)
         root_logger.addHandler(console_logger)

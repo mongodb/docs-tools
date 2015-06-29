@@ -28,16 +28,23 @@ class ColorFormatter(logging.Formatter):
         logging.CRITICAL: ('red', 'bright'),
     }
 
-    def __init__(self, fmt='%(levelname)s:%(name)s:%(message)s'):
+    def __init__(self, fmt='%(levelname)s:%(name)s:%(message)s', color=True):
+        """Create a pretty-printing logging formatter. If color is True, use
+           VT100 color codes to colorify output."""
         logging.Formatter.__init__(self, fmt=fmt)
+        self.color = color
 
     def format(self, record):
-        composite = []
-        for option in self.COLORS.get(record.levelno, ()):
-            composite.append('{0}'.format(self.VT100[option]))
-
+        # If the "lean" option is given, don't include any additional information
         msg = logging.Formatter.format(self, record)
         if getattr(record, 'lean', False):
             msg = record.msg
+
+        if not self.color:
+            return msg
+
+        composite = []
+        for option in self.COLORS.get(record.levelno, ()):
+            composite.append('{0}'.format(self.VT100[option]))
 
         return '\x1b[{0}m{1}\x1b[0m'.format(';'.join(composite), msg)
