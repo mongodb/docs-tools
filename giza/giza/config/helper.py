@@ -34,6 +34,7 @@ from giza.content.steps.tasks import register_steps
 from giza.content.glossary.tasks import register_glossary
 from giza.content.tocs.tasks import register_toc
 from giza.content.apiargs.tasks import register_apiargs
+from giza.content.newTables.tasks import register_tables
 
 logger = logging.getLogger('giza.config.helper')
 
@@ -67,6 +68,7 @@ def register_content_generators(conf):
     register_options(conf)
     register_steps(conf)
     register_glossary(conf)
+    register_tables(conf)
     register_releases(conf)
     register_examples(conf)
     register_extracts(conf)
