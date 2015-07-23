@@ -22,29 +22,28 @@ logger = logging.getLogger('giza.content.newTables.views')
 def render_table(rows):
     r = RstCloth()
 
-    r.directive(name="list-table", fields=[("header-rows", "1") ])
+    r.directive(name="list-table", fields=[("header-rows", "1")])
     r.newline()
 
     firstRow = True
 
     for row in rows.ordered_content():
-    	firstField = True
-	   	
-    	if firstRow:
-    		columnCount = len(row.fields)
-    	else:
-    		checkColumns = len(row.fields)
-    		if checkColumns != columnCount:
-    			raise SyntaxError('each row in a table must have the same number of columns')
-    			break
+        firstField = True
 
-    	for field in row.fields:
-    		if firstField:
-    			r.content("* - "+field, wrap=False, indent=3)
-    			r.newline()
-    			firstField = False
-    		else:
-	    		r.content("- "+field, wrap=False, indent=5)
-	    		r.newline()
-	    	firstRow = False
+        if firstRow:
+            columnCount = len(row.fields)
+        else:
+            checkColumns = len(row.fields)
+        if checkColumns != columnCount:
+            break
+
+        for field in row.fields:
+            if firstField:
+                r.content("* - "+field, wrap=False, indent=3)
+                r.newline()
+                firstField = False
+            else:
+                r.content("- "+field, wrap=False, indent=5)
+                r.newline()
+            firstRow = False
     return r

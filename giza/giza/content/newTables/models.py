@@ -33,4 +33,7 @@ class TableData(InheritableContentBase):
         if isinstance(value, list):
             self.state['fields'] = value
         else:
-            raise TypeError
+            raise TypeError('the fields must be a list')
+
+    def num_fields(self):
+        return len(self.state['fields'])
