@@ -12,6 +12,84 @@
 
 @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700);
 
+/* AG Regular */
+@font-face {
+    font-family: 'Akzidenz Grotesk';
+    src: url('fonts/akzidgrostdreg-webfont.eot');
+    src: url('fonts/akzidgrostdreg-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/akzidgrostdreg-webfont.woff2') format('woff2'),
+         url('fonts/akzidgrostdreg-webfont.woff') format('woff'),
+         url('fonts/akzidgrostdreg-webfont.ttf') format('truetype'),
+         url('fonts/akzidgrostdreg-webfont.svg#akzidenz-grotesk_std_regulaRg') format('svg');
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* AG Regular Italic */
+@font-face {
+    font-family: 'Akzidenz Grotesk';
+    src: url('fonts/akzidgrostdita-webfont.eot');
+    src: url('fonts/akzidgrostdita-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/akzidgrostdita-webfont.woff2') format('woff2'),
+         url('fonts/akzidgrostdita-webfont.woff') format('woff'),
+         url('fonts/akzidgrostdita-webfont.ttf') format('truetype'),
+         url('fonts/akzidgrostdita-webfont.svg#akzidenz-grotesk_std_regulaIt') format('svg');
+    font-weight: 400;
+    font-style: italic;
+}
+
+/* AG Light */
+@font-face {
+    font-family: 'Akzidenz Grotesk';
+    src: url('fonts/azidgrostdlig-webfont.eot');
+    src: url('fonts/akzidgrostdlig-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/akzidgrostdlig-webfont.woff2') format('woff2'),
+         url('fonts/akzidgrostdlig-webfont.woff') format('woff'),
+         url('fonts/akzidgrostdlig-webfont.ttf') format('truetype'),
+         url('fonts/akzidgrostdlig-webfont.svg#akzidenz-grotesk_stdlight') format('svg');
+    font-weight: 200;
+    font-style: normal;
+}
+
+/* AG Light Italic */
+@font-face {
+    font-family: 'Akzidenz Grotesk';
+    src: url('fonts/akzidgrostdligita-webfont.eot');
+    src: url('fonts/akzidgrostdligita-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/akzidgrostdligita-webfont.woff2') format('woff2'),
+         url('fonts/akzidgrostdligita-webfont.woff') format('woff'),
+         url('fonts/akzidgrostdligita-webfont.ttf') format('truetype'),
+         url('fonts/akzidgrostdligita-webfont.svg#akzidenz-grotesk_stdLtIt') format('svg');
+    font-weight: 200;
+    font-style: italic;
+}
+
+/* AG Bold */
+@font-face {
+    font-family: 'Akzidenz Grotesk';
+    src: url('fonts/akzidgrostdbol-webfont.eot');
+    src: url('fonts/akzidgrostdbol-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/akzidgrostdbol-webfont.woff2') format('woff2'),
+         url('fonts/akzidgrostdbol-webfont.woff') format('woff'),
+         url('fonts/akzidgrostdbol-webfont.ttf') format('truetype'),
+         url('fonts/akzidgrostdbol-webfont.svg#akzidenz-grotesk_stdbold') format('svg');
+    font-weight: 600;
+    font-style: normal;
+}
+
+/* AG Bold Italic */
+@font-face {
+    font-family: 'Akzidenz Grotesk';
+    src: url('fonts/akzidgrostdbolita-webfont.eot');
+    src: url('fonts/akzidgrostdbolita-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/akzidgrostdbolita-webfont.woff2') format('woff2'),
+         url('fonts/akzidgrostdbolita-webfont.woff') format('woff'),
+         url('fonts/akzidgrostdbolita-webfont.ttf') format('truetype'),
+         url('fonts/akzidgrostdbolita-webfont.svg#akzidenz-grotesk_stdBdIt') format('svg');
+    font-weight: 600;
+    font-style: italic;
+}
+
 /* OS X hides scroll bars, which makes some of our code boxes confusing. */
 
 .highlight ::-webkit-scrollbar {
@@ -42,10 +120,8 @@
     background: url(https://media.mongodb.org/24px-baseline-overlay.png) 0 0 repeat;
 }
 
-/*test*/
-
 body {
-    font-family: "PT Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Akzidenz Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
     color: #494747;
@@ -97,7 +173,7 @@ a:hover {
 }
 
 div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
-    font-family: "PT Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Akzidenz Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: normal;
     line-height: 24px;
     color: #313030;
@@ -1603,7 +1679,7 @@ table.compatibility, table.compatibility-large{
     border-collapse: collapse;
     color: rgb(73,71,71);
     display: table-cell;
-    font-family: 'PT Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: "Akzidenz Grotesk", 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 14px;
     width: 100%;
     vertical-align: middle;
