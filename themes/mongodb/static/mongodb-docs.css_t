@@ -12,82 +12,66 @@
 
 @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700);
 
-/* AG Regular */
+/* Fonts! */
+/*Reg*/
 @font-face {
-    font-family: 'Akzidenz Grotesk';
-    src: url('fonts/akzidgrostdreg-webfont.eot');
-    src: url('fonts/akzidgrostdreg-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/akzidgrostdreg-webfont.woff2') format('woff2'),
-         url('fonts/akzidgrostdreg-webfont.woff') format('woff'),
-         url('fonts/akzidgrostdreg-webfont.ttf') format('truetype'),
-         url('fonts/akzidgrostdreg-webfont.svg#akzidenz-grotesk_std_regulaRg') format('svg');
-    font-weight: 400;
+    font-family: 'Akzidenz';
+    src: url('fonts/akzidgrostdreg.eot');
+    src: url('fonts/akzidgrostdreg.eot#iefix') format('embedded-opentype'),
+    url('fonts/akzidgrostdreg.woff') format('woff'),
+    url('fonts/akzidgrostdreg.ttf')  format('truetype');
     font-style: normal;
+    font-weight: normal;
 }
-
-/* AG Regular Italic */
+/*Reg Italic*/
 @font-face {
-    font-family: 'Akzidenz Grotesk';
-    src: url('fonts/akzidgrostdita-webfont.eot');
-    src: url('fonts/akzidgrostdita-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/akzidgrostdita-webfont.woff2') format('woff2'),
-         url('fonts/akzidgrostdita-webfont.woff') format('woff'),
-         url('fonts/akzidgrostdita-webfont.ttf') format('truetype'),
-         url('fonts/akzidgrostdita-webfont.svg#akzidenz-grotesk_std_regulaIt') format('svg');
-    font-weight: 400;
+    font-family: 'Akzidenz';
+    src: url('fonts/akzidgrostdita.eot');
+    src: url('fonts/akzidgrostdita.eot#iefix') format('embedded-opentype'),
+    url('fonts/akzidgrostdita.woff') format('woff'),
+    url('fonts/akzidgrostdita.ttf')  format('truetype');
     font-style: italic;
+    font-weight: normal;
 }
-
-/* AG Light */
+/*Bold*/
 @font-face {
-    font-family: 'Akzidenz Grotesk';
-    src: url('fonts/azidgrostdlig-webfont.eot');
-    src: url('fonts/akzidgrostdlig-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/akzidgrostdlig-webfont.woff2') format('woff2'),
-         url('fonts/akzidgrostdlig-webfont.woff') format('woff'),
-         url('fonts/akzidgrostdlig-webfont.ttf') format('truetype'),
-         url('fonts/akzidgrostdlig-webfont.svg#akzidenz-grotesk_stdlight') format('svg');
+    font-family: 'Akzidenz';
+    src: url('fonts/akzidgrostdmed.eot');
+    src: url('fonts/akzidgrostdmed.eot#iefix') format('embedded-opentype'),
+    url('fonts/akzidgrostdmed.woff') format('woff'),
+    url('fonts/akzidgrostdmed.ttf')  format('truetype');
+    font-style: normal;
+    font-weight: bold;
+}
+/*Bold Italic*/
+@font-face {
+    font-family: 'Akzidenz';
+    src: url('fonts/akzidgrostdmedita.eot');
+    src: url('fonts/akzidgrostdmedita.eot#iefix') format('embedded-opentype'),
+    url('fonts/akzidgrostdmedita.woff') format('woff'),
+    url('fonts/akzidgrostdmedita.ttf')  format('truetype');
+    font-style: italic;
+    font-weight: bold;
+}
+/*Light*/
+@font-face {
+    font-family: 'Akzidenz';
+    src: url('fonts/akzidgrostdlig.eot');
+    src: url('fonts/akzidgrostdlig.eot#iefix') format('embedded-opentype'),
+    url('fonts/akzidgrostdlig.woff') format('woff'),
+    url('fonts/akzidgrostdlig.ttf')  format('truetype');
+    font-style: normal;
     font-weight: 200;
-    font-style: normal;
 }
-
-/* AG Light Italic */
+/*Light Italic*/
 @font-face {
-    font-family: 'Akzidenz Grotesk';
-    src: url('fonts/akzidgrostdligita-webfont.eot');
-    src: url('fonts/akzidgrostdligita-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/akzidgrostdligita-webfont.woff2') format('woff2'),
-         url('fonts/akzidgrostdligita-webfont.woff') format('woff'),
-         url('fonts/akzidgrostdligita-webfont.ttf') format('truetype'),
-         url('fonts/akzidgrostdligita-webfont.svg#akzidenz-grotesk_stdLtIt') format('svg');
+    font-family: 'Akzidenz';
+    src: url('fonts/akzidgrostdligita.eot');
+    src: url('fonts/akzidgrostdligita.eot#iefix') format('embedded-opentype'),
+    url('fonts/akzidgrostdligita.woff') format('woff'),
+    url('fonts/akzidgrostdligita.ttf')  format('truetype');
+    font-style: italic;
     font-weight: 200;
-    font-style: italic;
-}
-
-/* AG Bold */
-@font-face {
-    font-family: 'Akzidenz Grotesk';
-    src: url('fonts/akzidgrostdbol-webfont.eot');
-    src: url('fonts/akzidgrostdbol-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/akzidgrostdbol-webfont.woff2') format('woff2'),
-         url('fonts/akzidgrostdbol-webfont.woff') format('woff'),
-         url('fonts/akzidgrostdbol-webfont.ttf') format('truetype'),
-         url('fonts/akzidgrostdbol-webfont.svg#akzidenz-grotesk_stdbold') format('svg');
-    font-weight: 600;
-    font-style: normal;
-}
-
-/* AG Bold Italic */
-@font-face {
-    font-family: 'Akzidenz Grotesk';
-    src: url('fonts/akzidgrostdbolita-webfont.eot');
-    src: url('fonts/akzidgrostdbolita-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/akzidgrostdbolita-webfont.woff2') format('woff2'),
-         url('fonts/akzidgrostdbolita-webfont.woff') format('woff'),
-         url('fonts/akzidgrostdbolita-webfont.ttf') format('truetype'),
-         url('fonts/akzidgrostdbolita-webfont.svg#akzidenz-grotesk_stdBdIt') format('svg');
-    font-weight: 600;
-    font-style: italic;
 }
 
 /* OS X hides scroll bars, which makes some of our code boxes confusing. */
@@ -121,7 +105,7 @@
 }
 
 body {
-    font-family: "Akzidenz Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Akzidenz", "Helvetica Neue", Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
     color: #494747;
@@ -173,8 +157,8 @@ a:hover {
 }
 
 div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
-    font-family: "Akzidenz Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-weight: normal;
+    font-family: "Akzidenz", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 200;
     line-height: 24px;
     color: #313030;
     margin: 0;
@@ -1129,7 +1113,7 @@ div.sphinxsidebar h3 a.showlink {
 }
 
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item {
-     background-color: rgb( 110, 124, 159 );
+     background-color: #615f5f;
 }
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a,
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > tt {
@@ -1679,7 +1663,7 @@ table.compatibility, table.compatibility-large{
     border-collapse: collapse;
     color: rgb(73,71,71);
     display: table-cell;
-    font-family: "Akzidenz Grotesk", 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: "Akzidenz", 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 14px;
     width: 100%;
     vertical-align: middle;
