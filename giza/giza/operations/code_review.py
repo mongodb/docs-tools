@@ -151,6 +151,7 @@ def update_code_review(cr_data, g, use_hash):
         '--oauth2',
         '-y',
         '--nojira',
+        '--no_oauth2_webbrowser',
         '--email', g.author_email(),
         '-m', '"' + cr_data.original_name + '"',
         '-i', cr_data.issue
@@ -165,20 +166,27 @@ def update_code_review(cr_data, g, use_hash):
         cr_upload = subprocess.check_output(cmd, stderr=subprocess.STDOUT).strip()
         issue_url = get_issue_url(cr_upload)
         logger.info('updated issue: ' + issue_url)
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
+        print(e.returncode)
+        print(e.output)
+        print(' '.join(cmd))
         logger.error('failed to update issue')
 
 
 def create_code_review(data, g, creds):
     branch_data = data.get_branch(g.current_branch())
 
-    cmd = ['upload.py', '--oauth2', '-y']
+    cmd = ['upload.py',
+           '--oauth2',
+           '-y'
+    ]
 
     if creds is not None:
         cmd.extend(['--jira_user', creds.jira.username])
 
     cmd.extend(['--email', g.author_email(),
-                '-m', g.commit_messages()[0],
+                "--no_oauth2_webbrowser",
+                '-m', "'" + g.commit_messages()[0] + "'",
                 '..'.join(branch_data.commits)])
 
     try:
@@ -195,9 +203,10 @@ def create_code_review(data, g, creds):
         else:
             logger.info('created new code review issue')
     except subprocess.CalledProcessError as e:
+        del data.branches[g.current_branch()]
         logger.error('failed to create issue')
         logger.error(' '.join(cmd))
-        print(e)
+        print(e.returncode, e.output)
 
 # Output processing
 
