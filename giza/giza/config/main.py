@@ -132,7 +132,7 @@ class Configuration(ConfigurationBase):
 
     @deploy.setter
     def deploy(self, value):
-        fn = os.path.join(self.paths.global_config, 'deploy.yaml')
+        fn = os.path.join(self.paths.projectroot, self.paths.global_config, 'deploy.yaml')
         if os.path.exists(fn):
             self.state['deploy'] = DeployConfig(fn)
         else:
@@ -146,7 +146,7 @@ class Configuration(ConfigurationBase):
 
     @test.setter
     def test(self, value):
-        fn = os.path.join(self.paths.global_config, 'test-matrix.yaml')
+        fn = os.path.join(self.paths.projectroot, self.paths.global_config, 'test-matrix.yaml')
         if os.path.exists(fn):
             self.state['test'] = TestConfig(fn)
         else:
