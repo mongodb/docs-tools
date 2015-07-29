@@ -24,6 +24,7 @@ def get_credentials_skeleton():
         'jira': {
             'username': None,
             'password': None,
+            'url': None,
         },
         'corp': {
             'username': None,
@@ -76,9 +77,37 @@ class CredentialsConfig(ConfigurationBase):
     def aws(self, value):
         self.state['aws'] = AwsCredentialsConfig(value)
 
+    @property
+    def rhn(self):
+        return self.state['rhn']
+
+    @rhn.setter
+    def rhn(self, value):
+        self.state['rhn'] = RhnCredentialsConfig(value)
+
 
 class JiraCredentialsConfig(ConfigurationBase):
     _option_registry = ['username', 'password']
+
+    @property
+    def url(self):
+        if 'url' in self.state:
+            return self.state['url']
+        else:
+            logger.error("jira url is not specified.")
+            return ""
+
+    @url.setter
+    def url(self, value):
+        value = value.strip()
+
+        if value.startswith('http'):
+            self.state['url'] = value
+            if value[4] != 's':
+                logger.warning("jira url is not https.")
+        else:
+            logger.error("invalid jira url")
+            raise TypeError
 
 
 class CorpCredentialsConfig(ConfigurationBase):
@@ -88,6 +117,8 @@ class CorpCredentialsConfig(ConfigurationBase):
 class GithubCredentialsConfig(ConfigurationBase):
     _option_registry = ['username', 'password', 'token']
 
-
 class AwsCredentialsConfig(ConfigurationBase):
     _option_registry = ['key', 'secret']
+
+class RhnCredentialsConfig(ConfigurationBase):
+    _option_registry = ['username', 'password']
