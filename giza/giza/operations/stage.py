@@ -140,7 +140,7 @@ def run_pool(tasks, n_workers=50):
 
 class FileCollector(object):
     """Database for detecting changed files."""
-    def __init__(self, namespace, db_path='build/.stage-cache.db'):
+    def __init__(self, namespace, db_path):
         self.namespace = namespace
         self.conn = sqlite3.connect(db_path)
         self.conn.row_factory = sqlite3.Row
@@ -277,19 +277,22 @@ class Staging(object):
     S3_OPTIONS = {'reduced_redundancy': True}
     RESERVED_BRANCHES = {'cache'}
 
-    def __init__(self, branch, edition, bucket, username):
-        if branch in self.RESERVED_BRANCHES:
-            raise ValueError(branch)
-
-        self.branch = branch
-        self.edition = edition
-        self.username = username
-
+    def __init__(self, namespace, bucket, conf):
         # The S3 prefix for this staging site
-        self.full_prefix = '/'.join([x for x in (username, branch, edition) if x])
+        self.namespace = namespace
 
         self.bucket = bucket
-        self.collector = FileCollector(self.full_prefix)
+        self.collector = FileCollector(self.namespace, conf.paths.file_changes_database)
+
+    @classmethod
+    def compute_namespace(cls, username, branch, edition):
+        """Staging places each stage under a unique namespace computed from an
+           arbitrary username, branch, and edition. This helper returns such
+           a namespace, appropriate for constructing a new Staging instance."""
+        if branch in cls.RESERVED_BRANCHES:
+            raise ValueError(branch)
+
+        return '/'.join([x for x in (username, branch, edition) if x])
 
     def purge(self):
         """Remove all files associated with this branch and edition."""
@@ -297,14 +300,14 @@ class Staging(object):
         # inconsistent state, we want to err on the side of reuploading too much
         self.collector.purge_now()
 
-        keys = [k.key for k in self.bucket.list(prefix='/'.join((self.full_prefix, '')))]
+        keys = [k.key for k in self.bucket.list(prefix='/'.join((self.namespace, '')))]
         result = self.bucket.delete_keys(keys)
         if result.errors:
             raise SyncException(result.errors)
 
     def stage(self, root):
         """Synchronize the build directory with the staging bucket under
-           [username]/[branch]/[edition]/"""
+           the namespace [username]/[branch]/[edition]/"""
         tasks = []
 
         # Ensure that the root ends with a trailing slash to make future
@@ -335,7 +338,7 @@ class Staging(object):
 
         # Remove from staging any files that our FileCollector thinks have been
         # deleted locally.
-        remove_keys = ['/'.join((self.full_prefix, path.replace(root, '', 1)))
+        remove_keys = ['/'.join((self.namespace, path.replace(root, '', 1)))
                        for path in self.collector.removed_files]
         if remove_keys:
             LOGGER.info('Removing %s', remove_keys)
@@ -348,7 +351,7 @@ class Staging(object):
         return
 
     def __upload(self, local_path, src_path, file_hash):
-        full_name = '/'.join((self.full_prefix, local_path))
+        full_name = '/'.join((self.namespace, local_path))
         k = boto.s3.key.Key(self.bucket)
 
         try:
@@ -429,7 +432,7 @@ def print_stage_report(url, username, branch, editions):
 @argh.arg('--builder', '-b', default='html')
 @argh.named('stage')
 @argh.expects_obj
-def start(args):
+def main(args):
     """Start an HTTP server rooted in the build directory."""
     conf = fetch_config(args)
     staging_config = conf.deploy.get_staging(conf.project.name)
@@ -480,7 +483,8 @@ def start(args):
     try:
         bucket = conn.get_bucket(staging_config.bucket)
         for root, edition in zip(roots, editions):
-            staging = Staging(branch, edition, bucket, username=username)
+            namespace = Staging.compute_namespace(username, branch, edition)
+            staging = Staging(namespace, bucket, conf)
 
             if args._destage:
                 staging.purge()
