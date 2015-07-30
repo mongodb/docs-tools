@@ -173,7 +173,7 @@ div.body h1 {
     margin: -24px 0 24px 0;
 }
 div.body h2 {
-    font-size: 24px;
+    font-size: 26px;
 }
 div.body h3 {
     font-size: 18px;
@@ -642,7 +642,7 @@ div.section > h2, div.section > h3, div.section > h4 {
 
 div.section > h3,
 div.section > h4 {
-    margin-bottom: 0;
+    margin-bottom: 12px;
 }
 
 .body h3 + p,
@@ -1015,21 +1015,30 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 .sequence-block > .bullet-block {
     display: table-cell;
     padding-right: 10px;
-    width: 2.5em;
+    width: 3em;
 }
 
 .sequence-block .sequence-step {
     text-align: center;
-    background-color: #333;
+    font-size: 16px;
     color: white;
-    width: 24px;
+    background-color: #333;
+    width: 28px;
     font-weight: bold;
-    height: 24px;
-    border-radius: 12px;
+    height: 28px;
+    border-radius: 18px;
+    line-height: 1.6;
 }
 
 .sequence-block > .section {
     display: table-cell;
+    border-bottom: 1px solid #ebebed;
+    padding-bottom: 12px;
+}
+
+.sequence-block > .section > h3 {
+    font-weight: normal;
+    font-size: 20px;
 }
 
 .sequence-block > .section > h4 {
@@ -1113,7 +1122,7 @@ div.sphinxsidebar h3 a.showlink {
 }
 
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item {
-     background-color: #615f5f;
+     background-color: #807f7f;
 }
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a,
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > tt {
