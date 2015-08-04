@@ -1643,7 +1643,7 @@ h3 .guilabel,
 h4 .guilabel,
 h5 .guilabel,
 h6 .guilabel {
-  font-style: italic;
+  font-style: normal;
 }
 
 .expand-icon {
