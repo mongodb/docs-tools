@@ -1037,6 +1037,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 .sequence-block > .section > h3, .sequence-block > .section > h4, .sequence-block > .section > h5 {
     font-weight: normal;
     font-size: 20px;
+    margin: 12px 0;
 }
 
 /* Collapsible sidebar styles */
