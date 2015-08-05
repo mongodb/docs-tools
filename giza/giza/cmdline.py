@@ -47,7 +47,7 @@ commands = {
         giza.operations.sphinx_cmds.main,
         giza.operations.deploy.twofa_code,
         giza.operations.http_serve.start,
-        giza.operations.stage.start,
+        giza.operations.stage.main,
         giza.operations.configuration.report_version,
         giza.operations.make.main,
         giza.operations.test.integration_main
