@@ -627,7 +627,7 @@ table.docutils td div.highlight pre {
 }
 
 div.section {
-    padding-top: 48px;
+    margin-top: 48px;
 }
 
 h2 + div.section,
