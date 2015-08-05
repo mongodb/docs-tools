@@ -176,7 +176,7 @@ div.body h2 {
     font-size: 26px;
 }
 div.body h3 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
     margin-bottom: 0;
 }
@@ -627,7 +627,7 @@ table.docutils td div.highlight pre {
 }
 
 div.section {
-    padding-top: 48px;
+    margin-top: 48px;
 }
 
 h2 + div.section,
@@ -1034,7 +1034,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     display: table-cell;
 }
 
-.sequence-block > .section > h3, .sequence-block > .section > h4, .sequence-block > .section > h5 {
+.sequence-block > .section > h3, .sequence-block > .section > h4, .sequence-block > .section > h5, .sequence-block > .section > h6 {
     font-weight: normal;
     font-size: 20px;
     margin: 12px 0;
