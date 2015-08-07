@@ -159,11 +159,13 @@ a:hover {
 div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
     font-family: "Akzidenz", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 200;
-    line-height: 24px;
     color: #313030;
     margin: 0;
     padding: 0;
 }
+
+div.body h1, div.body h2 { line-height: 0px; }
+div.body h3, div.body h4, div.body h5, div.body h6 { line-height: 24px; }
 
 div.body h1 {
     border-top: none;
