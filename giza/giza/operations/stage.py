@@ -14,16 +14,15 @@
 
 """Amazon S3 staging system."""
 
+import time
 import binascii
 import collections
-import functools
 import hashlib
 import logging
 import os
 import os.path
 import sqlite3
 import stat
-import threading
 
 import argh
 import boto.s3.connection
@@ -31,7 +30,10 @@ import boto.s3.bucket
 import boto.s3.key
 import boto.s3.lifecycle
 
-from libgiza.git import GitRepo
+import libgiza.app
+import libgiza.task
+import libgiza.git
+
 from giza.config.helper import fetch_config
 
 try:
@@ -39,7 +41,7 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-LOGGER = logging.getLogger('giza.operations.stage')
+logger = logging.getLogger('giza.operations.stage')
 
 FileUpdate = collections.namedtuple('FileUpdate', ['path', 'mtime',
                                                    'file_hash', 'is_new'])
@@ -74,68 +76,6 @@ class SyncException(StagingException):
     def __init__(self, errors):
         StagingException.__init__(self, 'Errors syncing data')
         self.errors = errors
-
-
-class PoolWorker(threading.Thread):
-    """A threaded worker that works on a queue of functions."""
-    def __init__(self, **kwargs):
-        threading.Thread.__init__(self, **kwargs)
-
-        # Avoid needing to mutex-protect this queue by only ever appending to it
-        self.tasks = []
-        self.results = []
-        self.i = 0
-
-        self.semaphore = threading.Semaphore(0)
-
-    def run(self):
-        while True:
-            self.semaphore.acquire()
-
-            next_task = self.tasks[self.i]
-            if next_task is None:
-                return
-
-            try:
-                result = next_task()
-                if result is not None:
-                    self.results.append((next_task, result))
-            except Exception as err:
-                self.results.append((next_task, err))
-
-            self.i += 1
-
-    def add_task(self, task):
-        """Adds a function to this work queue. The worker will exit if it
-           reaches a None value."""
-        self.tasks.append(task)
-        self.semaphore.release()
-
-
-def run_pool(tasks, n_workers=50):
-    """Run a list of tasks using a pool of threads. Return non-None results or
-       exceptions as a list of (task, result) pairs in an arbitrary order."""
-    workers = []
-    for _ in range(n_workers):
-        worker = PoolWorker()
-        worker.start()
-        workers.append(worker)
-
-    # Schedule tasks round-robin
-    for i in range(len(tasks)):
-        workers[i % n_workers].add_task(tasks[i])
-
-    for worker in workers:
-        worker.add_task(None)
-
-    for worker in workers:
-        worker.join()
-
-    results = []
-    for worker in workers:
-        results.extend(worker.results)
-
-    return results
 
 
 class FileCollector(object):
@@ -280,9 +220,10 @@ class Staging(object):
     def __init__(self, namespace, bucket, conf):
         # The S3 prefix for this staging site
         self.namespace = namespace
-
+        self.conf = conf
         self.bucket = bucket
-        self.collector = FileCollector(self.namespace, conf.paths.file_changes_database)
+
+        self.collector = FileCollector(self.namespace, self.conf.paths.file_changes_database)
 
     @classmethod
     def compute_namespace(cls, username, branch, edition):
@@ -308,8 +249,6 @@ class Staging(object):
     def stage(self, root):
         """Synchronize the build directory with the staging bucket under
            the namespace [username]/[branch]/[edition]/"""
-        tasks = []
-
         # Ensure that the root ends with a trailing slash to make future
         # manipulations more predictable.
         if not root.endswith(os.path.sep):
@@ -318,30 +257,34 @@ class Staging(object):
         if not os.path.isdir(root):
             raise NoSuchEdition(root)
 
-        for entry in self.collector.collect(root):
-            # Run our actual staging operations in a thread pool. This would be
-            # better with async IO, but this will do for now.
-            path = entry.path.replace(root, '', 1)
-            tasks.append(functools.partial(
-                lambda path, file_hash: self.__upload(
-                    path,
-                    os.path.join(root, path),
-                    file_hash),
-                path, entry.file_hash))
+        with libgiza.app.BuildApp.new(pool_type="threads",
+                                      pool_size=50,
+                                      force=self.conf.runstate.force).context() as app:
+            for entry in self.collector.collect(root):
+                # Run our actual staging operations in a thread pool. This would be
+                # better with async IO, but this will do for now.
+                path = entry.path.replace(root, '', 1)
 
-        # Run our sync tasks, and retry any errors
-        errors = run_pool(tasks)
-        errors = run_pool([result[0] for result in errors])
+                message = "task to upload {0} to S3 ".format(path)
+                app.add(task=libgiza.task.Task(job=_upload_file_to_s3,
+                                               args={'local_path': path,
+                                                     'src_path': os.path.join(root, path),
+                                                     'file_hash': entry.file_hash,
+                                                     'namespace': self.namespace,
+                                                     'bucket': self.bucket},
+                                               description=message,
+                                               dependency=path,
+                                               target=True))
 
-        if errors:
-            raise SyncException([result[1] for result in errors])
+        # all tasks in the app execute when we clean up from the context
+        # manager.
 
         # Remove from staging any files that our FileCollector thinks have been
         # deleted locally.
         remove_keys = ['/'.join((self.namespace, path.replace(root, '', 1)))
                        for path in self.collector.removed_files]
         if remove_keys:
-            LOGGER.info('Removing %s', remove_keys)
+            logger.info('Removing %s', remove_keys)
             remove_result = self.bucket.delete_keys(remove_keys)
             if remove_result.errors:
                 raise SyncException(remove_result.errors)
@@ -350,34 +293,40 @@ class Staging(object):
 
         return
 
-    def __upload(self, local_path, src_path, file_hash):
-        full_name = '/'.join((self.namespace, local_path))
-        k = boto.s3.key.Key(self.bucket)
+
+def _upload_file_to_s3(local_path, src_path, file_hash, namespace, bucket, should_retry=False):
+    full_name = '/'.join((namespace, local_path))
+    k = boto.s3.key.Key(bucket)
+
+    try:
+        if local_path in Staging.SHARED_CACHE_BLACKLIST:
+            logger.info('Uploading %s', local_path)
+            k.key = full_name
+            k.set_contents_from_filename(src_path, **Staging.S3_OPTIONS)
+            return None
+
+        # Try to copy the file from the cache to its destination
+        file_hash = 'cache/' + binascii.b2a_hex(file_hash)
+        k.key = file_hash
 
         try:
-            if local_path in self.SHARED_CACHE_BLACKLIST:
-                LOGGER.info('Uploading %s', local_path)
-                k.key = full_name
-                k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
-                return None
-
-            # Try to copy the file from the cache to its destination
-            file_hash = 'cache/' + binascii.b2a_hex(file_hash)
-            k.key = file_hash
-
-            try:
-                k.copy(self.bucket.name, full_name, **self.S3_OPTIONS)
-            except boto.exception.S3ResponseError as err:
-                if err.status == 404:
-                    # Not found in cache. Upload it to the cache
-                    LOGGER.info('Uploading %s', local_path)
-                    k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
-
-                    # And then copy it to its final destination
-                    k.copy(self.bucket.name, full_name, **self.S3_OPTIONS)
-                else:
-                    raise err
+            k.copy(bucket.name, full_name, **Staging.S3_OPTIONS)
         except boto.exception.S3ResponseError as err:
+            if err.status == 404:
+                # Not found in cache. Upload it to the cache
+                logger.info('Uploading %s', local_path)
+                k.set_contents_from_filename(src_path, **Staging.S3_OPTIONS)
+
+                # And then copy it to its final destination
+                k.copy(bucket.name, full_name, **Staging.S3_OPTIONS)
+            else:
+                raise err
+    except boto.exception.S3ResponseError as err:
+        if should_retry is True:
+            logger.warning("encountered error uploading {0}, retrying once in a bit.".format())
+            time.sleep(0.25)
+            _upload_file_to_s3(local_path, src_path, file_hash, namespace, bucket, False)
+        else:
             raise SyncFileException(local_path, err.message)
 
 
@@ -387,15 +336,15 @@ def do_stage(root, staging):
     try:
         return staging.stage(root)
     except SyncException as err:
-        LOGGER.error('Failed to upload some files:')
+        logger.error('Failed to upload some files:')
         for sub_err in err.errors:
             try:
                 raise sub_err
             except SyncFileException:
-                LOGGER.error('%s: %s', sub_err.path, sub_err.reason)
+                logger.error('%s: %s', sub_err.path, sub_err.reason)
     except NoSuchEdition as err:
-        LOGGER.error('No edition found at %s', err.message)
-        LOGGER.info('Try specifying the -e [edition] option')
+        logger.error('No edition found at %s', err.message)
+        logger.info('Try specifying the -e [edition] option')
 
 
 def create_config_framework(path):
@@ -437,7 +386,7 @@ def main(args):
     conf = fetch_config(args)
     staging_config = conf.deploy.get_staging(conf.project.name)
 
-    branch = GitRepo().current_branch()
+    branch = libgiza.git.GitRepo().current_branch()
 
     cfg_path = os.path.expanduser(CONFIG_PATH)
     cfg = configparser.ConfigParser()
@@ -446,8 +395,8 @@ def main(args):
     # Warn the user if file permissions are too lax
     try:
         if os.name == 'posix' and stat.S_IMODE(os.stat(cfg_path).st_mode) != 0o600:
-            LOGGER.warn('Your AWS authentication file is poorly protected! You should run')
-            LOGGER.warn('    chmod 600 %s', cfg_path)
+            logger.warn('Your AWS authentication file is poorly protected! You should run')
+            logger.warn('    chmod 600 %s', cfg_path)
     except OSError:
         pass
 
@@ -493,8 +442,8 @@ def main(args):
             do_stage(root, staging)
     except boto.exception.S3ResponseError as err:
         if err.status == 403:
-            LOGGER.error('Failed to upload to S3: Permission denied.')
-            LOGGER.info('Check your authentication configuration at %s, '
+            logger.error('Failed to upload to S3: Permission denied.')
+            logger.info('Check your authentication configuration at %s, '
                         'and/or talk to IT.', cfg_path)
             return
 
