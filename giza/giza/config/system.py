@@ -27,6 +27,7 @@ from giza.config.content import ContentRegistry
 from giza.config.replacements import ReplacementData
 from giza.config.migrations import MigrationData
 from giza.config.images import ImageData
+from giza.config.jeerah import JeerahConfig
 
 logger = logging.getLogger('giza.config.system')
 
@@ -371,6 +372,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                 'manpages': ManpageConfig,
                 'pdfs': PdfConfig,
                 'intersphinx': IntersphinxConfig,
+                'jira': JeeraConfig,
             }
             # recur_mapping for config objects that subclass RecursiveConfigurationBase
             recur_mapping = {

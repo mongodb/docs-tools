@@ -13,7 +13,7 @@ class JeerahClient(object):
 
     def __init__(self, conf):
         self.conf = conf
-        self.credentials = CredentialsConfig(self.conf.site.credentials)
+        self.credentials = CredentialsConfig(self.conf.system.files.data.jira.credentials)
         self.c = None
         self.issues_created = []
         self.abort_on_error = True
@@ -22,7 +22,7 @@ class JeerahClient(object):
 
     def connect(self):
         if self.c is None:
-            self.c = JIRA(options={'server': self.conf.site.url},
+            self.c = JIRA(options={'server': self.conf.system.files.data.jira.url},
                           basic_auth=(self.credentials.jira.username,
                                       self.credentials.jira.password))
             logger.debug('created jira connection')
@@ -31,6 +31,12 @@ class JeerahClient(object):
 
         logger.debug('configured user: ' + self.credentials.jira.username)
         logger.debug('actual user: ' + self.c.current_user())
+
+    def connect_unauthenticated(self):
+        if self.c is None:
+            self.c = JIRA(options={'server': self.conf.site.url})
+
+        logger.info("creating an unauthenticated jira connection.")
 
     def comments(self, issue):
         return self.c.comments(issue)
