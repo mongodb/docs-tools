@@ -151,7 +151,6 @@ def update_code_review(cr_data, g, use_hash):
         '--oauth2',
         '-y',
         '--nojira',
-        '--no_oauth2_webbrowser',
         '--email', g.author_email(),
         '-m', '"' + cr_data.original_name + '"',
         '-i', cr_data.issue
@@ -161,6 +160,8 @@ def update_code_review(cr_data, g, use_hash):
         cmd.append('--rev')
 
     cmd.append(use_hash)
+
+    logger.debug(' '.join(cmd))
 
     try:
         cr_upload = subprocess.check_output(cmd, stderr=subprocess.STDOUT).strip()
@@ -185,7 +186,6 @@ def create_code_review(data, g, creds):
         cmd.extend(['--jira_user', creds.jira.username])
 
     cmd.extend(['--email', g.author_email(),
-                "--no_oauth2_webbrowser",
                 '-m', "'" + g.commit_messages()[0] + "'",
                 '..'.join(branch_data.commits)])
 
