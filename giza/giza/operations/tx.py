@@ -138,7 +138,8 @@ def update(conf):
     flogger = FileLogger(logger)
     update_txconfig_resources(transifex_project_name=project_name,
                               locale_dir=conf.paths.locale,
-                              pot_dir=os.path.join(conf.paths.projectroot, conf.paths.locale, 'pot'),
+                              pot_dir=os.path.join(conf.paths.projectroot,
+                                                   conf.paths.locale, 'pot'),
                               out=flogger)
 
     logger.info('sphinx-intl: updated pot directory')

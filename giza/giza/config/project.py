@@ -216,6 +216,7 @@ class ProjectConfig(libgiza.config.RecursiveConfigurationBase):
     def sitepath(self):
         return get_path_prefix(self.conf, self.conf.git.branches.current)
 
+
 class EditionListConfig(libgiza.config.ConfigurationBase):
     _option_registry = ['name', 'url']
 

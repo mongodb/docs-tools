@@ -117,8 +117,10 @@ class CorpCredentialsConfig(ConfigurationBase):
 class GithubCredentialsConfig(ConfigurationBase):
     _option_registry = ['username', 'password', 'token']
 
+
 class AwsCredentialsConfig(ConfigurationBase):
     _option_registry = ['key', 'secret']
+
 
 class RhnCredentialsConfig(ConfigurationBase):
     _option_registry = ['username', 'password']

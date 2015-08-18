@@ -179,8 +179,7 @@ def create_code_review(data, g, creds):
 
     cmd = ['upload.py',
            '--oauth2',
-           '-y'
-    ]
+           '-y']
 
     if creds is not None:
         cmd.extend(['--jira_user', creds.jira.username])

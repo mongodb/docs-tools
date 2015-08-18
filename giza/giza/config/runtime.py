@@ -283,7 +283,6 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
         fn = os.path.join(self.conf.paths.global_config, '-'.join([self.conf.project.name,
                                                                    'published', 'branches.yaml']))
 
-
         if os.path.isfile(fn):
             with open(fn, 'r') as f:
                 self._branch_conf = yaml.load(f)
