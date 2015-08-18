@@ -372,7 +372,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                 'manpages': ManpageConfig,
                 'pdfs': PdfConfig,
                 'intersphinx': IntersphinxConfig,
-                'jira': JeeraConfig,
+                'jira': JeerahConfig,
             }
             # recur_mapping for config objects that subclass RecursiveConfigurationBase
             recur_mapping = {

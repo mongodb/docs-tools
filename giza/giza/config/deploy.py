@@ -104,7 +104,7 @@ class StagingTargetConfig(libgiza.config.ConfigurationBase):
         try:
             return self.state['url']
         except KeyError as err:
-            LOGGER.critical('No staging URL specified')
+            logger.critical('No staging URL specified')
             raise err
 
     @url.setter
@@ -116,7 +116,7 @@ class StagingTargetConfig(libgiza.config.ConfigurationBase):
         try:
             return self.state['bucket']
         except KeyError as err:
-            LOGGER.critical('No staging bucket specified')
+            logger.critical('No staging bucket specified')
             raise err
 
     @bucket.setter
