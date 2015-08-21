@@ -55,4 +55,7 @@ def gettext_tasks(conf):
                               description="migrating po file {0} if needed".format(fn))
         tasks.append(t)
 
+    logger.info("if you added files to the corpus since your last gettext build,"
+                "please run the gettext build a second time for complete finalization.")
+
     return tasks

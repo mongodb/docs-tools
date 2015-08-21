@@ -28,7 +28,7 @@ import libgiza.task
 
 from giza.config.helper import fetch_config
 
-from sphinx_intl.commands import update_txconfig_resources
+import sphinx_intl.commands
 
 logger = logging.getLogger('giza.operations.tx')
 
@@ -124,8 +124,8 @@ def push_tasks(conf):
     return tasks
 
 
-def update(conf):
-    logger.info('updating translation artifacts. Long running.')
+def update_langauge(conf):
+    logger.info('updating translation artifacts for commit.')
 
     project_name = conf.project.title.lower().split()
     if conf.project.edition is not None and conf.project.edition != conf.project.name:
@@ -136,16 +136,38 @@ def update(conf):
     logger.info('starting translation upload with sphinx-intl')
 
     flogger = FileLogger(logger)
-    update_txconfig_resources(transifex_project_name=project_name,
-                              locale_dir=conf.paths.locale,
-                              pot_dir=os.path.join(conf.paths.projectroot,
-                                                   conf.paths.locale, 'pot'),
-                              out=flogger)
+
+    sphinx_intl.commands.update(
+        locale_dir=conf.paths.locale,
+        pot_dir=os.path.join(conf.paths.projectroot,
+                             conf.paths.locale, 'pot'),
+        out=flogger)
 
     logger.info('sphinx-intl: updated pot directory')
 
-# Commands
 
+def update_transifex(conf):
+    logger.info('updating transifex artifacts. Long running.')
+
+    project_name = conf.project.title.lower().split()
+    if conf.project.edition is not None and conf.project.edition != conf.project.name:
+        project_name.append(conf.project.edition)
+
+    project_name = '-'.join(project_name)
+
+    flogger = FileLogger(logger)
+
+    sphinx_intl.commands.update_txconfig_resources(
+        transifex_project_name=project_name,
+        locale_dir=conf.paths.locale,
+        pot_dir=os.path.join(conf.paths.projectroot,
+                             conf.paths.locale, 'pot'),
+        out=flogger)
+
+    logger.info('sphinx-intl: updated pot directory')
+
+
+# Commands
 
 @argh.named('check')
 @argh.expects_obj
@@ -157,13 +179,27 @@ def check_orphaned(args):
 
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')
+@argh.named('update-transifex')
+@argh.expects_obj
+def update_translations_transifex(args):
+    """Updates translation and uploads them to the transifex service."""
+
+    conf = fetch_config(args)
+
+    update_transifex(conf)
+    check_for_orphaned_tx_files(conf)
+
+
+@argh.arg('--edition', '-e')
+@argh.arg('--language', '-l')
 @argh.named('update')
 @argh.expects_obj
 def update_translations(args):
+    """Updates translations in the locale directory.."""
+
     conf = fetch_config(args)
 
-    update(conf)
-    check_for_orphaned_tx_files(conf)
+    update_langauge(conf)
 
 
 @argh.named('pull')
@@ -182,10 +218,12 @@ def pull_translations(args):
 @argh.named('push')
 @argh.expects_obj
 def push_translations(args):
+    """Sync translations with the transifex service."""
+
     conf = fetch_config(args)
 
     with libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
                                   pool_size=conf.runstate.pool_size,
                                   force=conf.runstate.force).context() as app:
         app.extend_queue(push_tasks(conf))
-        update(conf)
+        update_transifex(conf)

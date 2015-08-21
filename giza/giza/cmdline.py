@@ -104,6 +104,7 @@ commands = {
     'tx': [
         giza.operations.tx.check_orphaned,
         giza.operations.tx.update_translations,
+        giza.operations.tx.update_translations_transifex,
         giza.operations.tx.pull_translations,
         giza.operations.tx.push_translations,
     ]
