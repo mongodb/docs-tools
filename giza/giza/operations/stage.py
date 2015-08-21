@@ -21,6 +21,7 @@ import hashlib
 import logging
 import os
 import os.path
+import re
 import sqlite3
 import stat
 import threading
@@ -40,9 +41,9 @@ except ImportError:
     import ConfigParser as configparser
 
 LOGGER = logging.getLogger('giza.operations.stage')
-
 FileUpdate = collections.namedtuple('FileUpdate', ['path', 'mtime',
                                                    'file_hash', 'is_new'])
+AuthenticationInfo = collections.namedtuple('AuthenticationInfo', ['access_key', 'secret_key', 'username'])
 
 CONFIG_PATH = '~/.config/giza-aws-authentication.conf'
 SAMPLE_CONFIG = '''[authentication]
@@ -140,6 +141,8 @@ def run_pool(tasks, n_workers=50):
 
 class FileCollector(object):
     """Database for detecting changed files."""
+    HASHER = hashlib.sha256
+
     def __init__(self, namespace, db_path):
         self.namespace = namespace
         self.conn = sqlite3.connect(db_path)
@@ -164,13 +167,17 @@ class FileCollector(object):
             path text NOT NULL,
             PRIMARY KEY(namespace, path))''')
 
-    def collect(self, root):
+    def collect(self, root, bucket):
         """Yield each path underneath root. Only yield files that have changed
            since the last run."""
         cur = self.conn.cursor()
         cur.execute('DELETE FROM disk')
 
-        for basedir, _, files in os.walk(root):
+        # Crawl symbolic links to create a distinct "realized" tree for each
+        # branch, instead of using redirects. This is because Amazon uses 301
+        # permanant redirects, which prevents us from juggling "manual", "master",
+        # etc.
+        for basedir, _, files in os.walk(root, followlinks=True):
             for filename in files:
                 path = os.path.join(basedir, filename)
 
@@ -191,8 +198,7 @@ class FileCollector(object):
             SELECT path from disk WHERE namespace=?
             ''', (self.namespace, self.namespace))
 
-        removed_files = [entry[0] for entry in cur.fetchall()]
-        self.removed_files.extend(removed_files)
+        self.removed_files = [entry[0] for entry in cur.fetchall()]
 
     def has_changed(self, path):
         """Returns a FileUpdate instance if the given path has changed since it
@@ -254,10 +260,11 @@ class FileCollector(object):
         cur.execute('DELETE FROM files WHERE namespace=?', (self.namespace,))
         self.conn.commit()
 
-    @staticmethod
-    def hash(path):
-        """Return the SHA-256 hash of the given file path as a byte sequence."""
-        hasher = hashlib.sha256()
+    @classmethod
+    def hash(cls, path):
+        """Return the cryptographic hash of the given file path as a byte
+           sequence."""
+        hasher = cls.HASHER()
 
         with open(path, 'rb') as input_file:
             while True:
@@ -270,19 +277,59 @@ class FileCollector(object):
         return hasher.digest()
 
 
+class DeployCollector(object):
+    """A dummy file collector interface that always reports files as having
+       changed. Yields files and all symlinks."""
+    # Amazon S3 E-Tags use MD5
+    HASHER = hashlib.md5
+
+    def __init__(self, namespace, db_path):
+        self.removed_files = []
+
+    def collect(self, root, bucket):
+        for basedir, _, files in os.walk(root, followlinks=True):
+            for filename in files:
+                path = os.path.join(basedir, filename)
+                yield self.has_changed(path)
+
+        self.removed_files = []
+        remote_keys = bucket.list()
+        for key in remote_keys:
+            local_key = key.key
+            if key.key.startswith('/'):
+                local_key = local_key[1:]
+
+            if not os.path.exists(os.path.join(root, local_key)):
+                self.removed_files.append(key.key)
+
+
+    def has_changed(self, path):
+        return FileUpdate(path, 0, None, True)
+
+    def commit(self):
+        pass
+
+    def purge_now(self):
+        pass
+
+
 class Staging(object):
     # These files are always unique, and so there is no benefit in sharing them
     SHARED_CACHE_BLACKLIST = {'genindex.html', 'objects.inv', 'searchindex.js'}
 
     S3_OPTIONS = {'reduced_redundancy': True}
     RESERVED_BRANCHES = {'cache'}
+    PAGE_SUFFIX = ''
+    USE_CACHE = True
+
+    FileCollector = FileCollector
 
     def __init__(self, namespace, bucket, conf):
         # The S3 prefix for this staging site
         self.namespace = namespace
 
         self.bucket = bucket
-        self.collector = FileCollector(self.namespace, conf.paths.file_changes_database)
+        self.collector = self.FileCollector(self.namespace, conf.paths.file_changes_database)
 
     @classmethod
     def compute_namespace(cls, username, branch, edition):
@@ -300,7 +347,9 @@ class Staging(object):
         # inconsistent state, we want to err on the side of reuploading too much
         self.collector.purge_now()
 
-        keys = [k.key for k in self.bucket.list(prefix='/'.join((self.namespace, '')))]
+        prefix = '' if not self.namespace else '/'.join((self.namespace, ''))
+
+        keys = [k.key for k in self.bucket.list(prefix=prefix)]
         result = self.bucket.delete_keys(keys)
         if result.errors:
             raise SyncException(result.errors)
@@ -318,16 +367,37 @@ class Staging(object):
         if not os.path.isdir(root):
             raise NoSuchEdition(root)
 
-        for entry in self.collector.collect(root):
+        for entry in self.collector.collect(root, self.bucket):
             # Run our actual staging operations in a thread pool. This would be
             # better with async IO, but this will do for now.
-            path = entry.path.replace(root, '', 1)
-            tasks.append(functools.partial(
-                lambda path, file_hash: self.__upload(
-                    path,
-                    os.path.join(root, path),
-                    file_hash),
-                path, entry.file_hash))
+            src = entry.path.replace(root, '', 1)
+
+            if os.path.islink(entry.path):
+                # If redirecting from a directory, make sure we end it with a '/'
+                suffix = self.PAGE_SUFFIX if os.path.isdir(entry.path) and not entry.path.endswith('/') else ''
+
+                resolved = os.path.join(os.path.dirname(entry.path), os.readlink(entry.path))
+                if os.path.islink(resolved):
+                    LOGGER.warn('Multiple layers of symbolic link: %s', resolved)
+
+                if not os.path.exists(resolved):
+                    LOGGER.warn('Dead link: %s -> %s', entry.path, resolved)
+
+                if not resolved.startswith(root):
+                    LOGGER.warn('Skipping symbolic link %s: outside of root %s', resolved, root)
+
+                tasks.append(functools.partial(
+                    lambda src, resolved, suffix: self.__redirect(
+                        src + suffix,
+                        resolved.replace(root, '/', 1)),
+                    src, resolved, suffix))
+            else:
+                tasks.append(functools.partial(
+                    lambda path, file_hash: self.__upload(
+                        path,
+                        os.path.join(root, path),
+                        file_hash),
+                    src, entry.file_hash))
 
         # Run our sync tasks, and retry any errors
         errors = run_pool(tasks)
@@ -338,7 +408,8 @@ class Staging(object):
 
         # Remove from staging any files that our FileCollector thinks have been
         # deleted locally.
-        remove_keys = ['/'.join((self.namespace, path.replace(root, '', 1)))
+        namespace_component = [self.namespace] if self.namespace else []
+        remove_keys = ['/'.join(namespace_component + [path.replace(root, '', 1)])
                        for path in self.collector.removed_files]
         if remove_keys:
             LOGGER.info('Removing %s', remove_keys)
@@ -348,18 +419,15 @@ class Staging(object):
 
         self.collector.commit()
 
-        return
-
     def __upload(self, local_path, src_path, file_hash):
         full_name = '/'.join((self.namespace, local_path))
         k = boto.s3.key.Key(self.bucket)
 
         try:
-            if local_path in self.SHARED_CACHE_BLACKLIST:
-                LOGGER.info('Uploading %s to %s', local_path, full_name)
-                k.key = full_name
-                k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
-                return None
+            # If we don't have a hash, we can't do our normal caching stuff.
+            # Just upload the file.
+            if local_path in self.SHARED_CACHE_BLACKLIST or file_hash is None or not self.USE_CACHE:
+                return self.__upload_nocache(src_path, full_name)
 
             # Try to copy the file from the cache to its destination
             file_hash = 'cache/' + binascii.b2a_hex(file_hash)
@@ -379,11 +447,45 @@ class Staging(object):
                     raise err
         except boto.exception.S3ResponseError as err:
             raise SyncFileException(local_path, err.message)
+        except IOError as err:
+            LOGGER.warn('Error reading file: %s', err)
+
+    def __upload_nocache(self, src_path, full_name):
+        LOGGER.info('Uploading %s to %s', src_path, full_name)
+        k = boto.s3.key.Key(self.bucket)
+        k.key = full_name
+        k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
+
+    def __redirect(self, src, dest):
+        LOGGER.info('Redirecting %s to %s', src, dest)
+        key = boto.s3.key.Key(self.bucket, src)
+        key.set_redirect(dest)
+
+
+class DeployStaging(Staging):
+    FileCollector = DeployCollector
+    PAGE_SUFFIX = '/index.html'
+    USE_CACHE = False
+
+    @classmethod
+    def compute_namespace(cls, username, branch, edition):
+        return ''
 
 
 def do_stage(root, staging):
     """Drive the main staging process for a single edition, and print nicer
        error messages for exceptions."""
+    # try:
+    #     with open(os.path.join(root, '.htaccess')) as htfile:
+    #         for src, dest in REDIRECT_PAT.findall(htfile.read()):
+    #             if not src:
+    #                 continue
+
+    #             print(src, dest)
+    #     return
+    # except IOError:
+    #     return
+
     try:
         return staging.stage(root)
     except SyncException as err:
@@ -416,14 +518,135 @@ def create_config_framework(path):
         pass
 
 
-def print_stage_report(url, username, branch, editions):
-    """Print a list of staging URLs corresponding to the given editions."""
-    print('Staged at:')
-    for edition in editions:
-        suffix = '/'.join((username, branch))
-        if edition:
-            suffix = '{0}/{1}/{2}'.format(username, branch, edition)
-        print('    {0}/{1}'.format(url, suffix))
+class StagingPipeline:
+    Staging = Staging
+
+    def __init__(self, args, destage):
+        self.args = args
+        self.conf = fetch_config(args)
+        self.destage = destage
+
+    def check_builder(self):
+        if not self.args.builder:
+            print('No builder specified. Try specifying "-b html".')
+            raise ValueError(self.args.builder)
+
+    def setup_staging_conf(self):
+        self.staging_config = self.conf.deploy.get_staging(self.conf.project.name)
+
+    def load_authentication(self):
+        """Returns an AuthenticationInfo instance, or None."""
+        self.cfg_path = os.path.expanduser(CONFIG_PATH)
+        cfg = configparser.ConfigParser()
+        cfg.read(self.cfg_path)
+
+        # Warn the user if config permissions are too lax
+        try:
+            if os.name == 'posix' and stat.S_IMODE(os.stat(self.cfg_path).st_mode) != 0o600:
+                LOGGER.warn('Your AWS authentication file is poorly protected! You should run')
+                LOGGER.warn('    chmod 600 %s', self.cfg_path)
+        except OSError:
+            pass
+
+        # Load S3 authentication information
+        try:
+            access_key = cfg.get('authentication', 'accesskey')
+            secret_key = cfg.get('authentication', 'secretkey')
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            print('No staging authentication found. Create a file at {0} with '
+                  'contents like the following:\n'.format(self.cfg_path))
+            print(SAMPLE_CONFIG)
+            create_config_framework(self.cfg_path)
+            return None
+
+        # Get the user's preferred name; we use this as part of our S3 namespaces
+        try:
+            username = cfg.get('personal', 'username')
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            username = os.getlogin()
+
+        self.auth = AuthenticationInfo(access_key, secret_key, username)
+        self.conn = boto.s3.connection.S3Connection(self.auth.access_key,
+                                                    self.auth.secret_key)
+
+    def setup_sourcedir(self):
+        self.branch = GitRepo().current_branch()
+
+        self.editions = self.args.edition or ('',)
+        edition_suffixes = [self.args.builder[0] + ('-' if edition else '') + edition
+                            for edition in self.editions]
+
+        self.roots = [os.path.join(self.conf.paths.projectroot,
+                              self.conf.paths.branch_output,
+                              edition_suffix) for edition_suffix in edition_suffixes]
+
+    def stage(self):
+        try:
+            bucket = self.conn.get_bucket(self.staging_config.bucket)
+            for root, edition in zip(self.roots, self.editions):
+                namespace = self.Staging.compute_namespace(self.auth.username, self.branch, edition)
+                staging = self.Staging(namespace, bucket, self.conf)
+
+                if self.destage:
+                    staging.purge()
+                    continue
+
+                do_stage(root, staging)
+        except boto.exception.S3ResponseError as err:
+            if err.status == 403:
+                LOGGER.error('Failed to upload to S3: Permission denied.')
+                LOGGER.info('Check your authentication configuration at %s, '
+                            'and/or talk to IT.', self.cfg_path)
+                return
+
+            raise err
+
+    def print_report(self):
+        """Print a list of staging URLs corresponding to the given editions."""
+        if not self.destage:
+            print('Staged at:')
+            for edition in self.editions:
+                suffix = '/'.join((self.auth.username, self.branch))
+                if edition:
+                    suffix = '{0}/{1}/{2}'.format(self.auth.username, self.branch, edition)
+                print('    {0}/{1}'.format(self.staging_config.url, suffix))
+
+    def run(self):
+        self.check_builder()
+        self.setup_staging_conf()
+        self.load_authentication()
+        self.setup_sourcedir()
+        self.stage()
+        self.print_report()
+
+
+class DeployPipeline(StagingPipeline):
+    Staging = DeployStaging
+
+    def setup_deploy_conf(self):
+        self.staging_config = self.conf.deploy.get_deploy(self.conf.project.name)
+
+    def setup_sourcedir(self):
+        self.editions = self.args.edition or ('',)
+        self.branch = ''
+        edition_suffixes = self.editions
+
+        self.roots = [os.path.join(self.conf.paths.projectroot,
+                              self.conf.paths.public,
+                              edition_suffix) for edition_suffix in edition_suffixes]
+
+    def print_report(self):
+        """Print a list of staging URLs corresponding to the given editions."""
+        print('Staged at:')
+        print('    ' + self.staging_config.url)
+
+    def run(self):
+        self.check_builder()
+        self.setup_deploy_conf()
+        self.load_authentication()
+        self.setup_sourcedir()
+        self.stage()
+        self.print_report()
 
 
 @argh.arg('--edition', '-e', nargs='*')
@@ -432,71 +655,15 @@ def print_stage_report(url, username, branch, editions):
 @argh.arg('--builder', '-b', default='html')
 @argh.named('stage')
 @argh.expects_obj
-def main(args):
+def main_stage(args):
     """Start an HTTP server rooted in the build directory."""
-    conf = fetch_config(args)
-    staging_config = conf.deploy.get_staging(conf.project.name)
+    StagingPipeline(args, destage=args._destage).run()
 
-    branch = GitRepo().current_branch()
 
-    cfg_path = os.path.expanduser(CONFIG_PATH)
-    cfg = configparser.ConfigParser()
-    cfg.read(cfg_path)
-
-    # Warn the user if file permissions are too lax
-    try:
-        if os.name == 'posix' and stat.S_IMODE(os.stat(cfg_path).st_mode) != 0o600:
-            LOGGER.warn('Your AWS authentication file is poorly protected! You should run')
-            LOGGER.warn('    chmod 600 %s', cfg_path)
-    except OSError:
-        pass
-
-    try:
-        access_key = cfg.get('authentication', 'accesskey')
-        secret_key = cfg.get('authentication', 'secretkey')
-    except (configparser.NoSectionError, configparser.NoOptionError):
-        print('No staging authentication found. Create a file at {0} with '
-              'contents like the following:\n'.format(cfg_path))
-        print(SAMPLE_CONFIG)
-        create_config_framework(cfg_path)
-        return
-
-    try:
-        username = cfg.get('personal', 'username')
-    except (configparser.NoSectionError, configparser.NoOptionError):
-        username = os.getlogin()
-
-    if not args.builder:
-        print('No builder specified. Try specifying "-b html".')
-        return
-
-    editions = args.edition or ('',)
-    edition_suffixes = [args.builder[0] + ('-' if edition else '') + edition
-                        for edition in editions]
-
-    roots = [os.path.join(conf.paths.projectroot,
-                          conf.paths.branch_output,
-                          edition_suffix) for edition_suffix in edition_suffixes]
-
-    conn = boto.s3.connection.S3Connection(access_key, secret_key)
-
-    try:
-        bucket = conn.get_bucket(staging_config.bucket)
-        for root, edition in zip(roots, editions):
-            namespace = Staging.compute_namespace(username, branch, edition)
-            staging = Staging(namespace, bucket, conf)
-
-            if args._destage:
-                staging.purge()
-                continue
-
-            do_stage(root, staging)
-    except boto.exception.S3ResponseError as err:
-        if err.status == 403:
-            LOGGER.error('Failed to upload to S3: Permission denied.')
-            LOGGER.info('Check your authentication configuration at %s, '
-                        'and/or talk to IT.', cfg_path)
-            return
-
-    if not args._destage:
-        print_stage_report(staging_config.url, username, branch, editions)
+@argh.arg('--edition', '-e', nargs='*')
+@argh.arg('--builder', '-b', default='html')
+@argh.named('s3_deploy')
+@argh.expects_obj
+def main_deploy(args):
+    """Start an HTTP server rooted in the build directory."""
+    DeployPipeline(args, destage=False).run()

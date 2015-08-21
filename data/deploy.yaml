@@ -29,4 +29,11 @@ staging:
   ecosystem:
     url: 'https://docs-mongodborg-staging.corp.mongodb.com'
     bucket: 'docs-mongodb-org-staging'
+s3_deploy:
+  default:
+    url: 'https://mongodborg.corp.mongodb.com'
+    bucket: 'mongodb-org-prod'
+  mms:
+    url: 'https://mmsdocs.corp.mongodb.com'
+    bucket: 'mmsdocs'
 ...
