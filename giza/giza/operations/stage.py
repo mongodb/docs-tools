@@ -25,6 +25,7 @@ import re
 import sqlite3
 import stat
 import threading
+import operator
 
 import argh
 import boto.s3.connection
@@ -41,6 +42,7 @@ except ImportError:
     import ConfigParser as configparser
 
 LOGGER = logging.getLogger('giza.operations.stage')
+REDIRECT_PAT = re.compile('^Redirect 30[1|2|3] (\S+)\s+(\S+)', re.M)
 FileUpdate = collections.namedtuple('FileUpdate', ['path', 'mtime',
                                                    'file_hash', 'is_new'])
 AuthenticationInfo = collections.namedtuple('AuthenticationInfo', ['access_key', 'secret_key', 'username'])
@@ -139,10 +141,15 @@ def run_pool(tasks, n_workers=50):
     return results
 
 
+def translate_htaccess(path):
+    """Read a .htaccess file, and transform redirects into a mapping of redirects."""
+    with open(path, 'r') as f:
+        data = f.read()
+        return dict(REDIRECT_PAT.findall(data))
+
+
 class FileCollector(object):
     """Database for detecting changed files."""
-    HASHER = hashlib.sha256
-
     def __init__(self, namespace, db_path):
         self.namespace = namespace
         self.conn = sqlite3.connect(db_path)
@@ -167,7 +174,7 @@ class FileCollector(object):
             path text NOT NULL,
             PRIMARY KEY(namespace, path))''')
 
-    def collect(self, root, bucket):
+    def collect(self, root, bucket, redirects):
         """Yield each path underneath root. Only yield files that have changed
            since the last run."""
         cur = self.conn.cursor()
@@ -184,7 +191,7 @@ class FileCollector(object):
                 # Update our temporary list of on-disk files
                 cur.execute('INSERT INTO disk VALUES (?, ?)', (self.namespace, path))
 
-                update = self.has_changed(path)
+                update = self.has_changed(path, bucket)
                 if update is False:
                     continue
 
@@ -200,7 +207,7 @@ class FileCollector(object):
 
         self.removed_files = [entry[0] for entry in cur.fetchall()]
 
-    def has_changed(self, path):
+    def has_changed(self, path, bucket):
         """Returns a FileUpdate instance if the given path has changed since it
            was last checked, or else False."""
         path_stat = os.stat(path)
@@ -260,11 +267,11 @@ class FileCollector(object):
         cur.execute('DELETE FROM files WHERE namespace=?', (self.namespace,))
         self.conn.commit()
 
-    @classmethod
-    def hash(cls, path):
+    @staticmethod
+    def hash(path):
         """Return the cryptographic hash of the given file path as a byte
            sequence."""
-        hasher = cls.HASHER()
+        hasher = hashlib.sha256()
 
         with open(path, 'rb') as input_file:
             while True:
@@ -280,30 +287,55 @@ class FileCollector(object):
 class DeployCollector(object):
     """A dummy file collector interface that always reports files as having
        changed. Yields files and all symlinks."""
-    # Amazon S3 E-Tags use MD5
-    HASHER = hashlib.md5
-
     def __init__(self, namespace, db_path):
         self.removed_files = []
 
-    def collect(self, root, bucket):
-        for basedir, _, files in os.walk(root, followlinks=True):
-            for filename in files:
-                path = os.path.join(basedir, filename)
-                yield self.has_changed(path)
-
+    def collect(self, root, bucket, redirects):
         self.removed_files = []
+        remote_hashes = {}
+        remote_redirects = {}
         remote_keys = bucket.list()
+
+        # List all current redirects
+        tasks = []
         for key in remote_keys:
             local_key = key.key
             if key.key.startswith('/'):
                 local_key = local_key[1:]
 
+            # Get the redirect for this key, if it exists
+            if key.size == 0:
+                tasks.append(functools.partial(
+                    lambda key: operator.setitem(remote_redirects, key.name, key.get_redirect()),
+                    key))
+
+            # Store its MD5 hash. Might be useless if encryption or multi-part
+            # uploads are used.
+            remote_hashes[local_key] = key.etag.strip('"')
+
             if not os.path.exists(os.path.join(root, local_key)):
                 self.removed_files.append(key.key)
 
+        print('Running tasks')
+        run_pool(tasks)
 
-    def has_changed(self, path):
+        for basedir, _, files in os.walk(root, followlinks=True):
+            for filename in files:
+                path = os.path.join(basedir, filename)
+                local_hash = self.hash(path)
+
+                remote_path = path.replace(root, '')
+                if remote_hashes.get(remote_path, '') == local_hash:
+                    continue
+
+                yield self.has_changed(path, bucket)
+
+        # # Check redirects
+        # for (src, dest) in redirects.items():
+        #     if key.
+        #     return key.get_redirect() == dest
+
+    def has_changed(self, path, bucket):
         return FileUpdate(path, 0, None, True)
 
     def commit(self):
@@ -311,6 +343,22 @@ class DeployCollector(object):
 
     def purge_now(self):
         pass
+
+    @staticmethod
+    def hash(path):
+        """Return the cryptographic hash of the given file path as a byte
+           sequence."""
+        hasher = hashlib.md5()
+
+        with open(path, 'rb') as input_file:
+            while True:
+                data = input_file.read(2**13)
+                if not data:
+                    break
+
+                hasher.update(data)
+
+        return hasher.hexdigest()
 
 
 class Staging(object):
@@ -359,6 +407,13 @@ class Staging(object):
            the namespace [username]/[branch]/[edition]/"""
         tasks = []
 
+        redirects = []
+        htaccess_path = os.path.join(root, '.htaccess')
+        try:
+            redirects = translate_htaccess(htaccess_path)
+        except IOError:
+            LOGGER.error('No .htaccess found at %s', htaccess_path)
+
         # Ensure that the root ends with a trailing slash to make future
         # manipulations more predictable.
         if not root.endswith(os.path.sep):
@@ -367,7 +422,7 @@ class Staging(object):
         if not os.path.isdir(root):
             raise NoSuchEdition(root)
 
-        for entry in self.collector.collect(root, self.bucket):
+        for entry in self.collector.collect(root, self.bucket, redirects):
             # Run our actual staging operations in a thread pool. This would be
             # better with async IO, but this will do for now.
             src = entry.path.replace(root, '', 1)
