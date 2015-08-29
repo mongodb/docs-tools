@@ -214,10 +214,15 @@ def get_issue_url(output):
     if not isinstance(output, list):
         output = output.split('\n')
 
+    urls = []
     for ln in output:
         if 'http' in ln:
-            return ln.split(' ')[-1]
+            urls.append(ln.split(' ')[-1])
 
+    if len(urls) > 1:
+        urls = urls[1:]
+
+    return '\n'.join(urls)
 
 def get_issue_number(output):
     if not isinstance(output, list):
