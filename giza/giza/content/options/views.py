@@ -23,7 +23,7 @@ def render_options(option, conf):
     r = RstCloth()
 
     if 'program' not in option.replacement:
-        option.replacement['program'] = ':program:`{0}`'.format(option.program)
+        option.replacement['program'] = RstCloth.role("program", option.program)
 
     if option.directive == 'option':
         if option.name.startswith('<'):

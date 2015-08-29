@@ -12,12 +12,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
+
 from rstcloth.rstcloth import RstCloth
 from rstcloth.rstcloth import fill
 from rstcloth.table import TableData, TableBuilder, ListTable
 
+def setup_replacements(content):
+    if content.interface == "command": 
+        role_type = "dbcommand"
+    elif content.interface == "method": 
+        role_type = "method"
+    else: 
+        role_type = "samp"
+
+    if "role" not in content.replacement:
+        content.replacement["role"] = RstCloth.role(role_type, content.operation)
+
+    if "type" not in content.replacement: 
+        if isinstance(content.type, list):
+            if len(content.type) == 1: 
+                content.replacement["type"] = content.type[0]
+            elif len(content.type) == 2: 
+                content.replacement["type"] = "or".join(content.type)
+            else: 
+                types = copy.copy(content.type)
+                types[-1] = "and " + types[-1]
+                content.replacement["type"] = ",".join(types)
+        else: 
+            content.replacement["type"] = content.type
+
+    if "argname" not in content.replacement:
+        content.replacement["argname"] = content.name
+    
 
 def render_apiargs(apiargs):
+    for content in apiargs.ordered_content():
+        setup_replacements(content)
+        content.render() # run_replacements
+
     r = RstCloth()
 
     r.directive('only', '(html or singlehtml or dirhtml)')
@@ -49,13 +82,11 @@ def render_apiarg_table(r, apiargs):
     if num_columns == 2:
         widths = [20, 80]
         for entry in apiargs.ordered_content():
-            entry = apiargs.fetch(entry.ref)
             table.add_row([RstCloth.pre(entry.name),
                            fill(string=entry.description, first=0, hanging=3, wrap=False)])
     elif num_columns == 3:
         widths = [20, 20, 80]
         for entry in apiargs.ordered_content():
-            entry = apiargs.fetch(entry.ref)
             table.add_row([RstCloth.pre(entry.name),
                            entry.type_for_table_output(),
                            fill(string=entry.description, first=0, hanging=3, wrap=False)])
@@ -65,7 +96,6 @@ def render_apiarg_table(r, apiargs):
 
 def render_apiarg_fields(r, apiargs):
     for content in apiargs.ordered_content():
-        content = apiargs.fetch(content.ref)
 
         field_name = [content.arg_name]
 
