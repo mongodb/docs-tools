@@ -21,8 +21,8 @@ docsprod:
   input: code
 staging:
   manual:
-    url: 'https://mongodborg-staging.corp.mongodb.com'
-    bucket: 'mongodb-org-staging'
+    url: 'https://docs-mongodborg-staging.corp.mongodb.com'
+    bucket: 'docs-mongodb-org-staging'
   mms:
     url: 'https://mmsdocs-staging.corp.mongodb.com'
     bucket: 'mms-docs-staging'
