@@ -56,11 +56,8 @@ class DeployConfig(libgiza.config.ConfigurationBase):
     def get_deploy(self, project):
         """Returns the appropriate StagingTargetConfig deployment configuration
            for the current project."""
-        if project in self.state['s3_deploy']:
-            return self.state['s3_deploy'][project]
-
         try:
-            return self.state['s3_deploy']['default']
+            return self.state['s3_deploy'][project]
         except KeyError as err:
             logger.critical('No deployment information specified for project %s',
                             project)
