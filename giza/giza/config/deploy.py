@@ -46,11 +46,8 @@ class DeployConfig(libgiza.config.ConfigurationBase):
     def get_staging(self, project):
         """Returns the appropriate StagingTargetConfig staging configuration for
            the current project."""
-        if project in self.state['staging']:
-            return self.state['staging'][project]
-
         try:
-            return self.state['staging']['default']
+            return self.state['staging'][project]
         except KeyError as err:
             logger.critical('No staging information specified for project %s',
                             project)
