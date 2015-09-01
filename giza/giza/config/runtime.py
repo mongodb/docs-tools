@@ -105,13 +105,26 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
             'error': logging.ERROR,
             'critical': logging.critical
         }
+
         if value not in levels:
             value = 'info'
 
-        logging.basicConfig()
-        rlogger = logging.getLogger()
+        root_logger = logging.getLogger()
+        root_logger.setLevel(logging.DEBUG)
 
-        rlogger.setLevel(levels[value])
+        formatter = logging.Formatter(logging.BASIC_FORMAT)
+
+        file_logger = logging.FileHandler('giza.log')
+        file_logger.setLevel(logging.DEBUG)
+        file_logger.setFormatter(formatter)
+
+        console_logger = logging.StreamHandler()
+        console_logger.setLevel(levels[value])
+        console_logger.setFormatter(formatter)
+
+        root_logger.addHandler(file_logger)
+        root_logger.addHandler(console_logger)
+
         self.state['level'] = value
 
         logger.debug('set logging level to: ' + value)
