@@ -69,10 +69,10 @@ class ApiArgData(InheritableContentBase):
         for element in ("pre", "description", "post"):
             if element in self.state:
                 output.append(self.state[element])
-                output.append("\n\n")
+                output.append("\n")
         if self.optional is True:
             output[0] = "Optional. " + output[0]
-        return "".join(output)
+        return "\n".join(output)
 
     @description.setter
     def description(self, value):

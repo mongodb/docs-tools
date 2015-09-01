@@ -356,7 +356,7 @@ class Staging(object):
 
         try:
             if local_path in self.SHARED_CACHE_BLACKLIST:
-                LOGGER.info('Uploading %s', local_path)
+                LOGGER.info('Uploading %s to %s', local_path, full_name)
                 k.key = full_name
                 k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
                 return None
@@ -370,7 +370,7 @@ class Staging(object):
             except boto.exception.S3ResponseError as err:
                 if err.status == 404:
                     # Not found in cache. Upload it to the cache
-                    LOGGER.info('Uploading %s', local_path)
+                    LOGGER.info('Uploading from %s to %s (%s)', local_path, full_name, file_hash)
                     k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
 
                     # And then copy it to its final destination
