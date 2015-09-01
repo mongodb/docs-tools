@@ -35,7 +35,9 @@ field_type = {
 class ApiArgData(InheritableContentBase):
     _option_registry = [
         'interface',  # TODO validate because limited possibilities
-        'operation'
+        'operation',
+        'pre', 
+        'post', 
     ]
 
     @property
@@ -63,16 +65,18 @@ class ApiArgData(InheritableContentBase):
 
     @property
     def description(self):
-        if 'description' not in self.state:
-            if self.optional is True:
-                return 'Optional.'
-            else:
-                return ''
-        else:
-            if self.optional is True:
-                return 'Optional. ' + self.state['description']
-            else:
-                return self.state['description']
+        output = []
+
+        for element in ("pre", "description", "post"):
+            if element in self.state: 
+                output.append(element)
+                output.append("")
+
+        if self.optional is True: 
+            output[0] = "Optional. " + output[0]
+            output[0].rstrip()
+
+        return '\n'.join(output)
 
     @description.setter
     def description(self, value):
