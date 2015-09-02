@@ -174,7 +174,7 @@ class FileCollector(object):
             path text NOT NULL,
             PRIMARY KEY(namespace, path))''')
 
-    def collect(self, root, bucket, redirects):
+    def collect(self, root, bucket, redirects, branch):
         """Yield each path underneath root. Only yield files that have changed
            since the last run."""
         cur = self.conn.cursor()
@@ -290,7 +290,7 @@ class DeployCollector(object):
     def __init__(self, namespace, db_path):
         self.removed_files = []
 
-    def collect(self, root, bucket, redirects):
+    def collect(self, root, bucket, redirects, branch):
         self.removed_files = []
         remote_hashes = {}
         remote_redirects = {}
@@ -316,11 +316,41 @@ class DeployCollector(object):
             if not os.path.exists(os.path.join(root, local_key)):
                 self.removed_files.append(key.key)
 
-        print('Running tasks')
+        LOGGER.info('Running collection tasks')
         run_pool(tasks)
 
-        for basedir, _, files in os.walk(root, followlinks=True):
+        # Special-case the root directory, because we want to publish only:
+        # - Files
+        # - The current branch (if published)
+        # - Symlinks pointing to the current branch
+        skip = set()
+        for entry in os.listdir(root):
+            path = os.path.join(root, entry)
+            if os.path.isfile(path):
+                # Don't skip; i.e, upload all regular files
+                continue
+
+            if os.path.isdir(path) and entry == branch:
+                # This is the branch we want to upload
+                continue
+
+            # Only collect links that point to the current branch
+            try:
+                if os.readlink(path) == branch:
+                    continue
+            except OSError:
+                pass
+
+            skip.add(entry)
+
+        for basedir, dirs, files in os.walk(root, followlinks=True):
+            # Skip branches we wish not to publish
+            dirs[:] = [d for d in dirs if d not in skip]
+
             for filename in files:
+                if filename in skip:
+                    continue
+
                 path = os.path.join(basedir, filename)
                 local_hash = self.hash(path)
 
@@ -402,17 +432,17 @@ class Staging(object):
         if result.errors:
             raise SyncException(result.errors)
 
-    def stage(self, root):
+    def stage(self, root, branch):
         """Synchronize the build directory with the staging bucket under
            the namespace [username]/[branch]/[edition]/"""
         tasks = []
 
         redirects = []
         htaccess_path = os.path.join(root, '.htaccess')
-        try:
-            redirects = translate_htaccess(htaccess_path)
-        except IOError:
-            LOGGER.error('No .htaccess found at %s', htaccess_path)
+        # try:
+        #     redirects = translate_htaccess(htaccess_path)
+        # except IOError:
+        #     LOGGER.error('No .htaccess found at %s', htaccess_path)
 
         # Ensure that the root ends with a trailing slash to make future
         # manipulations more predictable.
@@ -422,7 +452,7 @@ class Staging(object):
         if not os.path.isdir(root):
             raise NoSuchEdition(root)
 
-        for entry in self.collector.collect(root, self.bucket, redirects):
+        for entry in self.collector.collect(root, self.bucket, redirects, branch):
             # Run our actual staging operations in a thread pool. This would be
             # better with async IO, but this will do for now.
             src = entry.path.replace(root, '', 1)
@@ -527,7 +557,7 @@ class DeployStaging(Staging):
         return ''
 
 
-def do_stage(root, staging):
+def do_stage(root, staging, branch):
     """Drive the main staging process for a single edition, and print nicer
        error messages for exceptions."""
     # try:
@@ -542,7 +572,7 @@ def do_stage(root, staging):
     #     return
 
     try:
-        return staging.stage(root)
+        return staging.stage(root, branch)
     except SyncException as err:
         LOGGER.error('Failed to upload some files:')
         for sub_err in err.errors:
@@ -580,6 +610,8 @@ class StagingPipeline:
         self.args = args
         self.conf = fetch_config(args)
         self.destage = destage
+
+        self.branch = GitRepo().current_branch()
 
     def check_builder(self):
         if not self.args.builder:
@@ -625,8 +657,6 @@ class StagingPipeline:
                                                     self.auth.secret_key)
 
     def setup_sourcedir(self):
-        self.branch = GitRepo().current_branch()
-
         self.editions = self.args.edition or ('',)
         edition_suffixes = [self.args.builder[0] + ('-' if edition else '') + edition
                             for edition in self.editions]
@@ -646,7 +676,8 @@ class StagingPipeline:
                     staging.purge()
                     continue
 
-                do_stage(root, staging)
+                print(self.branch)
+                do_stage(root, staging, self.branch)
         except boto.exception.S3ResponseError as err:
             if err.status == 403:
                 LOGGER.error('Failed to upload to S3: Permission denied.')
@@ -683,7 +714,6 @@ class DeployPipeline(StagingPipeline):
 
     def setup_sourcedir(self):
         self.editions = self.args.edition or ('',)
-        self.branch = ''
         edition_suffixes = self.editions
 
         self.roots = [os.path.join(self.conf.paths.projectroot,
@@ -696,6 +726,13 @@ class DeployPipeline(StagingPipeline):
         print('    ' + self.staging_config.url)
 
     def run(self):
+        # Check if the active branch is publishable. This is a sanity check
+        # more than anything else, since the active branch doesn't directly
+        # correlate to what is built.
+        if self.branch not in self.conf.git.branches.published:
+            print('Current branch ({0}) is not published'.format(self.branch))
+            return
+
         self.check_builder()
         self.setup_deploy_conf()
         self.load_authentication()
