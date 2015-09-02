@@ -114,7 +114,13 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
         formatter = logging.Formatter(logging.BASIC_FORMAT)
 
-        file_logger = logging.FileHandler('giza.log')
+        # We only want the log file to represent the most recent run.
+        try:
+            os.unlink('giza.log')
+        except OSError:
+            pass
+
+        file_logger = logging.FileHandler('giza.log', mode='wx')
         file_logger.setLevel(logging.DEBUG)
         file_logger.setFormatter(formatter)
 
