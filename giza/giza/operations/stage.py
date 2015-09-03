@@ -26,6 +26,7 @@ import sqlite3
 import stat
 import threading
 import operator
+import xml.etree.ElementTree
 
 import argh
 import boto.s3.connection
@@ -147,6 +148,8 @@ def translate_htaccess(path):
         data = f.read()
         return dict(REDIRECT_PAT.findall(data))
 
+    return {}
+
 
 class FileCollector(object):
     """Database for detecting changed files."""
@@ -174,7 +177,7 @@ class FileCollector(object):
             path text NOT NULL,
             PRIMARY KEY(namespace, path))''')
 
-    def collect(self, root, bucket, redirects, branch):
+    def collect(self, root, bucket, branch):
         """Yield each path underneath root. Only yield files that have changed
            since the last run."""
         cur = self.conn.cursor()
@@ -182,7 +185,7 @@ class FileCollector(object):
 
         # Crawl symbolic links to create a distinct "realized" tree for each
         # branch, instead of using redirects. This is because Amazon uses 301
-        # permanant redirects, which prevents us from juggling "manual", "master",
+        # permanent redirects, which prevents us from juggling "manual", "master",
         # etc.
         for basedir, _, files in os.walk(root, followlinks=True):
             for filename in files:
@@ -290,7 +293,7 @@ class DeployCollector(object):
     def __init__(self, namespace, db_path):
         self.removed_files = []
 
-    def collect(self, root, bucket, redirects, branch):
+    def collect(self, root, bucket, branch):
         self.removed_files = []
         remote_hashes = {}
         remote_redirects = {}
@@ -359,11 +362,6 @@ class DeployCollector(object):
                     continue
 
                 yield self.has_changed(path, bucket)
-
-        # # Check redirects
-        # for (src, dest) in redirects.items():
-        #     if key.
-        #     return key.get_redirect() == dest
 
     def has_changed(self, path, bucket):
         return FileUpdate(path, 0, None, True)
@@ -437,12 +435,12 @@ class Staging(object):
            the namespace [username]/[branch]/[edition]/"""
         tasks = []
 
-        redirects = []
+        redirects = ''
         htaccess_path = os.path.join(root, '.htaccess')
-        # try:
-        #     redirects = translate_htaccess(htaccess_path)
-        # except IOError:
-        #     LOGGER.error('No .htaccess found at %s', htaccess_path)
+        try:
+            redirects = translate_htaccess(htaccess_path)
+        except IOError:
+            LOGGER.error('No .htaccess found at %s', htaccess_path)
 
         # Ensure that the root ends with a trailing slash to make future
         # manipulations more predictable.
@@ -452,7 +450,7 @@ class Staging(object):
         if not os.path.isdir(root):
             raise NoSuchEdition(root)
 
-        for entry in self.collector.collect(root, self.bucket, redirects, branch):
+        for entry in self.collector.collect(root, self.bucket, branch):
             # Run our actual staging operations in a thread pool. This would be
             # better with async IO, but this will do for now.
             src = entry.path.replace(root, '', 1)
@@ -483,6 +481,15 @@ class Staging(object):
                         os.path.join(root, path),
                         file_hash),
                     src, entry.file_hash))
+
+        for src in redirects:
+            tasks.append(functools.partial(
+                    lambda src, dest, suffix: self.__redirect(
+                        src + suffix,
+                        dest),
+                    src, redirects[src], suffix))
+
+        LOGGER.info('Running %s tasks', len(tasks))
 
         # Run our sync tasks, and retry any errors
         errors = run_pool(tasks)
@@ -542,8 +549,15 @@ class Staging(object):
         k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
 
     def __redirect(self, src, dest):
-        LOGGER.info('Redirecting %s to %s', src, dest)
         key = boto.s3.key.Key(self.bucket, src)
+        try:
+            if key.get_redirect() == dest:
+                LOGGER.info('Skipping redirect %s', src)
+                return
+        except boto.exception.S3ResponseError:
+            pass
+
+        LOGGER.info('Redirecting %s to %s', src, dest)
         key.set_redirect(dest)
 
 
@@ -560,17 +574,6 @@ class DeployStaging(Staging):
 def do_stage(root, staging, branch):
     """Drive the main staging process for a single edition, and print nicer
        error messages for exceptions."""
-    # try:
-    #     with open(os.path.join(root, '.htaccess')) as htfile:
-    #         for src, dest in REDIRECT_PAT.findall(htfile.read()):
-    #             if not src:
-    #                 continue
-
-    #             print(src, dest)
-    #     return
-    # except IOError:
-    #     return
-
     try:
         return staging.stage(root, branch)
     except SyncException as err:
@@ -676,7 +679,6 @@ class StagingPipeline:
                     staging.purge()
                     continue
 
-                print(self.branch)
                 do_stage(root, staging, self.branch)
         except boto.exception.S3ResponseError as err:
             if err.status == 403:
