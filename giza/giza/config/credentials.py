@@ -39,11 +39,16 @@ def get_credentials_skeleton():
         'aws': {
             'key': None,
             'secret': None
+        },
+        's3': {
+            'key': None,
+            'secret': None
         }
     }
 
 
 class CredentialsConfig(ConfigurationBase):
+    _option_registry = []
 
     @property
     def jira(self):
@@ -76,6 +81,14 @@ class CredentialsConfig(ConfigurationBase):
     @aws.setter
     def aws(self, value):
         self.state['aws'] = AwsCredentialsConfig(value)
+
+    @property
+    def s3(self):
+        return self.state['s3']
+
+    @s3.setter
+    def s3(self, value):
+        self.state['s3'] = AwsCredentialsConfig(value)
 
     @property
     def rhn(self):

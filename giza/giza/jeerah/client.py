@@ -4,7 +4,7 @@ import datetime
 from jira.client import JIRA
 from jira.resources import Version
 
-from giza.config.credentials import CredentialsConfig
+import giza.config.credentials
 
 logger = logging.getLogger('giza.jeerah.client')
 
@@ -13,7 +13,7 @@ class JeerahClient(object):
 
     def __init__(self, conf):
         self.conf = conf
-        self.credentials = CredentialsConfig(self.conf.system.files.data.jira.credentials)
+        self.credentials = giza.config.credentials.CredentialsConfig(self.conf.system.files.data.jira.site.credentials).jira
         self.c = None
         self.issues_created = []
         self.abort_on_error = True
@@ -22,14 +22,14 @@ class JeerahClient(object):
 
     def connect(self):
         if self.c is None:
-            self.c = JIRA(options={'server': self.conf.system.files.data.jira.url},
-                          basic_auth=(self.credentials.jira.username,
-                                      self.credentials.jira.password))
+            self.c = JIRA(options={'server': self.credentials.url},
+                          basic_auth=(self.credentials.username,
+                                      self.credentials.password))
             logger.debug('created jira connection')
         else:
             logger.debug('jira connection exists')
 
-        logger.debug('configured user: ' + self.credentials.jira.username)
+        logger.debug('configured user: ' + self.credentials.username)
         logger.debug('actual user: ' + self.c.current_user())
 
     def connect_unauthenticated(self):
@@ -97,6 +97,9 @@ class JeerahClient(object):
             return {issue.key: issue for issue in query_results}
         elif self.results_format == 'list':
             return [issue for issue in query_results]
+
+    def components(self, project):
+        return self.c.project_components(project)
 
     def versions(self, project, released=False, archived=False):
         return [v
