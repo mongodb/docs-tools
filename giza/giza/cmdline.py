@@ -34,6 +34,7 @@ import giza.operations.sphinx_cmds
 import giza.operations.tx
 import giza.operations.code_review
 import giza.operations.test
+import giza.operations.changelog
 
 logger = logging.getLogger('giza.main')
 
@@ -52,6 +53,7 @@ commands = {
         giza.operations.configuration.report_version,
         giza.operations.make.main,
         giza.operations.test.integration_main,
+        giza.operations.changelog.main,
     ],
     'git': [
         giza.operations.git.apply_patch,
