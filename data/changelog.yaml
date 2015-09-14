@@ -1,0 +1,81 @@
+ordering:
+  - Security
+  - Sharding
+  - Replication
+  - Query
+  - Write Operations
+  - Aggregation
+  - JavaScript
+  - WiredTiger
+  - MMAP
+  - Storage
+  - GridFS
+  - Operations
+  - Build and Packaging
+  - Internals
+  - Tools
+nesting:
+  Storage:
+    - WiredTiger
+    - MMAP
+groups:
+  "Security":
+    - Security
+  "Sharding":
+    - Sharding
+  "Replication":
+    - Replication
+  "Query":
+    - Querying
+    - Indexing
+    - Geo
+    - Text Search
+  "Write Operations":
+    - Write Ops
+  "Aggregation":
+    - Aggregation Framework
+    - MapReduce
+  "JavaScript":
+    - JavaScript
+  "WiredTiger":
+    - WiredTiger
+  "MMAP":
+    - MMAPv1
+  "Storage":
+    - Storage
+  "GridFS":
+    - GridFS
+  "Operations":
+    - Operations
+    - Admin
+    - Diagnostics
+    - Logging
+    - Shell
+    - Usability
+    - HTTP Console
+  "Build and Packaging":
+    - Build
+    - Packaging
+  "Internals":
+    - Testing
+    - Stability
+    - Performance
+    - Portability
+    - Networking
+    - Internal Code
+    - Internal Client
+    - Concurrency
+  "Tools":
+    - Tools
+    - All Tools
+    - bsondump
+    - mongodump
+    - mongoexport
+    - mongofiles
+    - mongoimport
+    - mongooplog
+    - mongorestore
+    - mongosniff
+    - mongostat
+    - mongotop
+...
