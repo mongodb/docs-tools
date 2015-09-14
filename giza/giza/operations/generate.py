@@ -40,6 +40,8 @@ from giza.content.examples.tasks import example_tasks
 from giza.content.steps.tasks import step_tasks, step_clean
 from giza.content.options.tasks import option_tasks, option_clean
 from giza.content.release.tasks import release_tasks, release_clean
+from giza.content.glossary.tasks import glossary_tasks, glossary_clean
+from giza.content.changelog.tasks import changelog_tasks
 
 from giza.operations.sphinx_cmds import sphinx_content_preperation, sphinx_builder_tasks
 
@@ -195,6 +197,30 @@ def examples(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         app.extend_queue(example_tasks(c))
+
+
+@argh.expects_obj
+def changelogs(args):
+    c = fetch_config(args)
+
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
+        app.extend_queue(changelog_tasks(c))
+
+
+@argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
+@argh.expects_obj
+def glossary(args):
+    c = fetch_config(args)
+
+    with BuildApp.new(pool_type=c.runstate.runner,
+                      pool_size=c.runstate.pool_size,
+                      force=c.runstate.force).context() as app:
+        if c.runstate.clean_generated is True:
+            app.extend_queue(clean_glossary(c))
+        else:
+            app.extend_queue(glossary_tasks(c))
 
 
 @argh.arg('--edition', '-e')

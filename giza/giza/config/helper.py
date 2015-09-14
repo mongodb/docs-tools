@@ -34,6 +34,7 @@ from giza.content.steps.tasks import register_steps
 from giza.content.glossary.tasks import register_glossary
 from giza.content.tocs.tasks import register_toc
 from giza.content.apiargs.tasks import register_apiargs
+from giza.content.changelog.tasks import register_changelogs
 
 logger = logging.getLogger('giza.config.helper')
 
@@ -72,6 +73,7 @@ def register_content_generators(conf):
     register_extracts(conf)
     register_toc(conf)
     register_apiargs(conf)
+    register_changelogs(conf)
 
 
 def new_skeleton_config(conf=None):

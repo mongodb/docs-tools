@@ -17,8 +17,22 @@ class JeerahClient(object):
         self.c = None
         self.issues_created = []
         self.abort_on_error = True
-        self.results_format = 'list'
+        self._results_format = 'list'
         self.versions_cache = {}
+
+
+    @property
+    def results_format(self):
+        return self._results_format
+
+    @results_format.setter
+    def results_format(self, value):
+        if value not in ("list", "dict"):
+            m = "{0} is not in '{1}'", "value", ', '.join("list", "dict")
+            logger.error(m)
+            raise TypeError(m)
+        else:
+            self._results_format = value
 
     def connect(self):
         if self.c is None:

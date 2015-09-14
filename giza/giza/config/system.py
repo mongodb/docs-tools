@@ -372,10 +372,10 @@ class SystemConfigData(RecursiveConfigurationBase):
                 'manpages': ManpageConfig,
                 'pdfs': PdfConfig,
                 'intersphinx': IntersphinxConfig,
-                'jira': JeerahConfig,
             }
             # recur_mapping for config objects that subclass RecursiveConfigurationBase
             recur_mapping = {
+                'jira': JeerahConfig
             }
             special_lists = {
                 'htaccess': HtaccessData,

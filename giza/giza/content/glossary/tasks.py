@@ -54,7 +54,7 @@ def glossary_tasks(conf):
     return tasks
 
 
-def step_clean(conf):
+def glossary_clean(conf):
     return [Task(job=shutil.rmtree,
                  args=[conf.system.content.glossary.output_dir],
                  target=True,
