@@ -83,3 +83,6 @@ def redirect_tasks(conf):
                                        dependency=deps,
                                        description=' '.join(('generate and write redirects into:',
                                                              conf.paths.htaccess))))
+
+    logger.info("added {0} redirect generation tasks".format(len(tasks)))
+    return tasks
