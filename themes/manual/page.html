@@ -11,15 +11,7 @@
 {%- endblock -%}
 
 {%- block metadescription %}
-  <meta name="description" content="MongoDB Manual {{version}} {{title}}"/>
-{%- endblock -%}
-  
-{%- block canonicalref %}
-  {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
-  {%- else %}
-    <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/{{pagename}}" />
-  {%- endif -%}
+  <meta name="description" content="{{title}} MongoDB Version {{version}}"/>
 {%- endblock -%}
 
 {%- block adblockheader %}
