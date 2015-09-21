@@ -18,9 +18,19 @@
 {%- block rating -%}{%- endblock -%}
 
 {%- block subnav %}
-   <a href="https://docs.mongodb.org/manual">Manual</a>
-   <a href="https://docs.mongodb.org/ecosystem">Ecosystem</a>
-   <a href="https://www.mongodb.org/downloads">Downloads</a>
-   <a href="https://www.mongodb.org/get-involved">Community</a>
-   <a href="http://blog.mongodb.org">Blog</a>
+   <a class="flex-item navbar-link" href="https://docs.mongodb.org/manual/">Docs</a>
+   <a class="flex-item navbar-link" href="https://docs.mongodb.org/ecosystem/drivers/">Drivers</a>
+   <a class="flex-item navbar-link" href="https://university.mongodb.com/">University</a>
+   <a class="flex-item navbar-link" href="http://www.mongodb.org/get-involved">Community</a>
+   <a class="flex-item navbar-link" href="http://blog.mongodb.org">Blog</a>
+   <a class="flex-item navbar-link" href="https://www.mongodb.com/products/mongodb-enterprise-advanced">Enterprise</a>
+   <a class='flex-item navbar-link navbar-btn download' href="https://www.mongodb.org/downloads">
+      <div class='icon icon-in'></div>
+      <div class='text'>Download</div>
+   </a>
+   <a class='flex-item navbar-link navbar-btn contact' href='https://www.mongodb.com/contact?jmp=docs' target='_blank'>
+      <div class='icon icon-phone'></div>
+      <div class='text'>Contact</div>
+   </a>
 {% endblock %}
+

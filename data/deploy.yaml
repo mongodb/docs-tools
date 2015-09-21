@@ -26,4 +26,7 @@ staging:
   mms:
     url: 'https://mmsdocs-staging.corp.mongodb.com'
     bucket: 'mms-docs-staging'
+  ecosystem:
+    url: 'https://docs-mongodborg-staging.corp.mongodb.com'
+    bucket: 'docs-mongodb-org-staging'
 ...

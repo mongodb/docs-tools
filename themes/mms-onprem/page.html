@@ -46,8 +46,13 @@
   {%- endif %}
 {%- endblock -%}
 
-{%- block searchbox %}
-<div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.opsmanager.mongodb.com/current/search/" queryParameterName="query"></gcse:searchbox-only></div>
+{%- block topnav %}
+  {%- block subnav %}
+  {% endblock %}
+
+  {%- block searchbox %}
+      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.opsmanager.mongodb.com/current/search/" queryParameterName="query"></gcse:searchbox-only></div>
+  {% endblock %}
 {% endblock %}
 
 {% block version_selector %}

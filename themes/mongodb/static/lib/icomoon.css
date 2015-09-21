@@ -1,15 +1,16 @@
+
 @font-face {
 	font-family: 'icomoon';
-	src:url('//media.mongodb.org/fonts/icomoon.eot?qcwgdc');
-	src:url('//media.mongodb.org/fonts/icomoon.eot?#iefixqcwgdc') format('embedded-opentype'),
-		url('//media.mongodb.org/fonts/icomoon.ttf?qcwgdc') format('truetype'),
-		url('//media.mongodb.org/fonts/icomoon.woff?qcwgdc') format('woff'),
-		url('//media.mongodb.org/fonts/icomoon.svg?qcwgdc#icomoon') format('svg');
+	src:url('https://media.mongodb.org/icomoon_docs.eot?bbdgrv');
+	src:url('https://media.mongodb.org/icomoon_docs.eot?#iefixbbdgrv') format('embedded-opentype'),
+		url('https://media.mongodb.org/icomoon_docs.ttf?bbdgrv') format('truetype'),
+		url('https://media.mongodb.org/icomoon_docs.woff?bbdgrv') format('woff'),
+		url('https://media.mongodb.org/icomoon_docs.svg?bbdgrv#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
-[class*="icon-"] {
+[class^="icon-"], [class*=" icon-"] {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -23,21 +24,30 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.icon-file-pdf:before {
+.icon-edit:before {
+	content: "\f044";
+}
+.icon-file-code-o:before {
+	content: "\f1c9";
+}
+.icon-search:before {
+	content: "\e036";
+}
+.icon-menu:before {
+	content: "\e120";
+}
+.icon-in:before {
 	content: "\e600";
 }
-.icon-file-xml:before {
+.icon-book:before {
 	content: "\e601";
 }
-.icon-book:before {
+.icon-phone:before {
 	content: "\e602";
 }
-.icon-edit:before {
+.icon-bubbles4:before {
 	content: "\e603";
 }
-.icon-translation:before {
+.icon-file-pdf:before {
 	content: "\e604";
-}
-.icon-feedback:before {
-	content: "\e606";
 }

@@ -8,8 +8,12 @@
   {%- endif -%}
 {%- endblock -%}
 
-{% block searchbox %}
-<li class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.cloud.mongodb.com/search/" queryParameterName="query"></gcse:searchbox-only></li>
+{%- block topnav %}
+  {%- block subnav %} {% endblock %}
+
+  {%- block searchbox %}
+      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.cloud.mongodb.com/search/" queryParameterName="query"></gcse:searchbox-only></div>
+  {% endblock %}
 {% endblock %}
 
 {%- block sitesearch %}

@@ -761,7 +761,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 
 .content .main-column {
-    margin-top: 72px;
+    margin-top: 95px;
     margin-left: 293px;
     min-height: 600px;
     width: 800px;
@@ -789,45 +789,164 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 #header-db {
     position: fixed;
     -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
-    height: 50px;
+    height: 82px;
     top: 0;
     left: 0;
     width: 100%;
-    font-size: 31px;
-    background-color: #3b291f;
-    color: white;
+    font-size: 14px;
+    background-color: #ffffff;
+    fill: #ffffff;
+    color: #75747a;
     margin: 0;
-    padding: 0;
+    border: 1px solid #d2d2d4;
+    box-sizing: border-box;
     z-index: 100;
 }
 
 #header-db .header-content {
-    width: 1385px;
-    padding-left: 12px;
-
+    width: 1400px;
     transition: width 0.4s cubic-bezier(.02,.01,.47,1);
     -moz-transition: width 0.4s cubic-bezier(.02,.01,.47,1);
     -webkit-transition: width 0.4s cubic-bezier(.02,.01,.47,1);
 }
 
+#header-db .navbar-link {
+  color: #75747a;
+  background-color: transparent;
+  margin: 0 20px;
+  text-align: center;
+  -webkit-transition: 300ms;
+  transition: 300ms
+}
+
+#header-db .navbar-link:hover {
+   text-decoration:none
+}
+
+#header-db .navbar-link:not(.navbar-btn) {
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: 80px;
+    color: #75747a;
+}
+
+#header-db .navbar-link:not(.navbar-btn):before{
+   content:"";
+   position: absolute;
+   left:0;
+   bottom: 20px;
+   width:100%;
+   height:5px;
+   background-color:#69b241;
+   -webkit-transition:300ms;
+   transition:300ms;
+   -webkit-transform:scale(0, 1);
+   -ms-transform:scale(0, 1);
+   transform:scale(0, 1);
+   -webkit-transform-origin:0 50%;
+   -ms-transform-origin:0 50%;
+   transform-origin:0 50%
+}
+
+#header-db .icon{
+   padding-top:8px;
+   line-height:46px;
+   font-size:18px;
+   padding-bottom: 9px;
+}
+
+#header-db .navbar-link.navbar-btn {
+   cursor:pointer;
+   line-height:0;
+   font-size:12px
+}
+
+#header-db .navbar-link.navbar-btn.download .icon{
+   color: #69b241;
+}
+
+#header-db .navbar-link:not(.navbar-btn):hover:before {
+   -webkit-transform:scale(1, 1);
+   -ms-transform:scale(1, 1);
+   transform:scale(1, 1)
+}
+
 #header-db .nav-items {
-    display: inline-block;
+   float: right;
 }
 
-#header-db .nav-items > a {
-    font-size: 14px;
+#header-db .nav-items > a:hover{
+   color:#69b241;
+   text-decoration:none
 }
 
-#header-db a {
-    color: white;
+#header-db .logo {
+  padding-top: 18.4px;
+  padding-left: 78.3px;
+  padding-right: 100px;
 }
 
 #header-db .logo img {
-    height: 36px;
+    height: 36.7px;
     vertical-align: top;
 }
-#header-db .nav-items > a:not(:last-child) {
-    margin-right: 15px;
+
+.header-logo-replacement-text  a {
+   text-transform: uppercase;
+   line-height: 80px;
+   color: #75747a;
+   padding-left: 40px;
+   font-size: 28px;
+}
+
+.flex {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.flex-item {
+   position:relative
+}
+
+.flex-center {
+   -webkit-box-pack:center;
+   -webkit-justify-content:center;
+   -ms-flex-pack:center;
+   justify-content:center
+}
+.flex-left{
+   -webkit-box-pack: start;
+   -webkit-justify-content: flex-start;
+   -ms-flex-pack:start;
+   justify-content:flex-start
+}
+.flex-right {
+   -webkit-box-pack:end;
+   -webkit-justify-content:flex-end;
+   -ms-flex-pack:end;
+   justify-content:flex-end
+}
+.flex-wrap {
+   -webkit-flex-wrap:wrap;
+   -ms-flex-wrap:wrap;
+   flex-wrap:wrap
+}
+
+.bg-white {
+    background-color: #FFFFFF;
+}
+
+.flex-item .flex-full{ 
+   width:100%
+}
+
+.flex-item .flex-half {
+   width:50%
+}
+.flex-item .flex-quarter{
+   width:25%
 }
 
 @media print {
@@ -841,7 +960,7 @@ div.gsc-control-cse-en, div.gsc-control-cse { padding: 0 !important; }
 form.gsc-search-box {
     background-color: rgba(255,255,255,0.3);
     border-radius: 6px;
-    border: 1px solid #3b2920;
+    border: 1px solid #75747a;
 }
 
 .gsc-search-box.gsc-search-box-tools .gsc-search-box .gsc-input {
@@ -859,7 +978,7 @@ div.gsc-input-box,
 /* [name] selector is a hack to override google's stylsheet */
 .gsc-input input.gsc-input[name="search"] {
     background-color: transparent !important;
-    color: white;
+    color: #75747a;
     font-weight: 300;
     font-size: 15px;
     height: 1.3em !important;
@@ -887,27 +1006,25 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     -webkit-box-sizing: content-box;
 }
 
-#header-db .logo {
-    padding: 5px 0;
-}
-
 #header-db .search-db {
     transition: width 0.3s linear;
     -webkit-transition: width 0.3s linear;
     -moz-transition: width 0.3s linear;
     -o-transition: width 0.3s linear;
-    margin-left: 45px;
-    margin-top: 11px;
-    display: inline-block;
+    padding-top: 30px;
+    margin-right: 16px;
+    float: right;
 }
 
+
 #header-db .search-db.narrow {
-    width: 98px;
+    width:98px;
 }
 
 #header-db .search-db.wide {
-    width: 226px;
+    width: 225px;
 }
+
 
 /* Footer styles */
 .footer {
@@ -1057,7 +1174,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     background-color: #f5f6f7;
     width: 293px;
     height: auto;
-    top: 50px;
+    top: 82px;
     bottom: 0;
     left: 0;
     overflow: auto;
@@ -1332,7 +1449,7 @@ div.sphinxsidebarwrapper div.idxcontents {
     position: fixed;
     -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
     left: 1093px;
-    top: 72px;
+    top: 95px;
     bottom: 0;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1494,36 +1611,82 @@ div.admonition.note table.docutils tr:last-child td {
 }
 
 @media (max-width: 1393px) {
-    #header-db .header-content {
-        width: 1068px;
+   #header-db .header-content {
+      width: 100%;
+   }
+   .content .right-column {
+      display: none;
+   }
+}
+
+@media (min-width: 1121px) and  (max-width: 1392px) {
+
+    #header-db .nav-items {
+        margin-right: 15px;
+    }
+    #header-db .nav-items {
+      float: none;
     }
 
-    .content .right-column {
-        display: none;
-    }
+}
+
+@media (min-width: 1094px) and  (max-width: 1120px) {
+
+   #header-db .header-content {
+      float: none;
+   }
+   #header-db .nav-items {
+      float: none;
+   }
+
+   #header-db .nav-items {
+      margin-right: 15px;
+   }
 }
 
 .expand-toc-icon {
     display: none;
 }
 
+
 @media (max-width: 1093px) {
     .expand-toc-icon {
         display: block;
-        padding-top: 10px;
-        padding-right: 10px;
-        color: white;
+        padding-top: 20px;
+        height: 80px;
+        line-height: 46px;
+    }
+
+    .icon-menu {
+       color: #494747;
+       font-size: 26px;
+       text-decoration:none;
     }
 
     .expand-toc-icon:hover,
     .expand-toc-icon:active {
-        color: white;
+        color: #494747;
         text-decoration: none;
     }
 
+    .expand-toc-icon:focus {
+        color: #494747;
+    }
+
     #header-db .header-content {
-        width: 775px;
-        padding-left: 25px;
+        width: 1093px; 
+        padding-left: 30px;
+        float: none;
+    }
+
+    #header-db .nav-items {
+        margin-right: 15px;
+        float: none;
+    }
+
+    #header-db .logo {
+      padding-top: 18.4px;
+      padding-left: 22px;
     }
 
     .sidebar {

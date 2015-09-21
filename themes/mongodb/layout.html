@@ -188,22 +188,26 @@
   {%- block header %}
     <header id="header-db" class="row" role="navigation">
       <div class="header-content">
-        <a class="fa fa-bars expand-toc-icon pull-left" href="#"></a>
+        <a class="icon-menu expand-toc-icon pull-left" href="#"></a>
         {%- block header_logo %}
            <div class="logo pull-left">
              <a href="https://www.mongodb.org/">
-               <img src="https://media.mongodb.org/logo-mongodb-header.png", alt="MongoDB.org" />
+               <img src="https://media.mongodb.org/mongodb-logo-web-tagline.png", alt="MongoDB.org" />
              </a>
            </div>
         {% endblock %}
         <div>
-          {%- block searchbox %}
-          <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="https://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
-          {% endblock %}
-          <div class="nav-items pull-right">
-            {%- block subnav %}
-            {% endblock %}
-          </div>
+           {%- block topnav %}
+             <div class="flex nav-items">
+              {%- block subnav %}
+              {% endblock %}
+
+              {%- block searchbox %}
+              <div class="search-db narrow nav-item">
+                  <gcse:searchbox-only resultsUrl="https://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
+              {% endblock %}
+             </div>
+           {% endblock %}
         </div>
       </div>
     </header>

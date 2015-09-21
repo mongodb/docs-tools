@@ -30,3 +30,11 @@
 
 {%- block version_selector %}{%- endblock %}
 
+{%- block topnav %}
+  {%- block subnav %} {% endblock %}
+
+  {%- block searchbox %}
+      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="https://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
+  {% endblock %}
+{% endblock %}
+
