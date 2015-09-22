@@ -1444,7 +1444,7 @@ div.sphinxsidebarwrapper div.idxcontents {
 /* Right column TOC */
 
 .content .right-column {
-    width: 292px;
+    width: 295px;
     padding: 0;
     position: fixed;
     -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
