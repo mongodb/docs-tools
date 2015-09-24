@@ -196,7 +196,13 @@ conf['directives'] = [
         'prepend': False,
         'callable': False,
     },
-
+    {
+        'name': 'rsconf',
+        'tag': 'rsconf',
+        'description': 'replica set configuration setting',
+        'prepend': True,
+        'callable': False,
+    },
     ## Custom Setting Directives for MMS Agents
     {
         'name': 'msetting',
