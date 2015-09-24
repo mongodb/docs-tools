@@ -1445,11 +1445,11 @@ div.sphinxsidebarwrapper div.idxcontents {
 
 .content .right-column {
     width: 295px;
-    padding: 0;
+    padding: 5px 0 0 0;
     position: fixed;
     -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
     left: 1093px;
-    top: 95px;
+    top: 105px;
     bottom: 0;
     overflow-y: auto;
     overflow-x: hidden;
