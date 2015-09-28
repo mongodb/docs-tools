@@ -13,12 +13,14 @@
 {%- block metadescription %}
   <meta name="description" content="MongoDB Manual {{version}} {{title}}"/>
 {%- endblock -%}
-  
+
 {%- block canonicalref %}
-  {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
-  {%- else %}
-    <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/{{pagename}}" />
+  {%- if theme_branch == 'master' %}
+    {%- if pagename == 'index' %}
+      <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
+    {%- else %}
+      <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/{{pagename}}" />
+    {%- endif -%}
   {%- endif -%}
 {%- endblock -%}
 
@@ -32,7 +34,7 @@
 
 {%- block langauge_selector %}{%- endblock -%}
 
-{%- block subnav %}   
+{%- block subnav %}
    <a class="flex-item navbar-link" href="https://docs.mongodb.org/manual/">Docs</a>
    <a class="flex-item navbar-link" href="https://docs.mongodb.org/ecosystem/drivers/">Drivers</a>
    <a class="flex-item navbar-link" href="https://university.mongodb.com/">University</a>

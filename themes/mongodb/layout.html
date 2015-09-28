@@ -109,7 +109,13 @@
   <link rel="shortcut icon" href="https://media.mongodb.org/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
-  <meta name="robots" content="index" />
+
+  {%- if version in theme_active_branches or not theme_active_branches %}
+    <meta name="robots" content="index" />
+  {%- else -%}
+    <meta name="robots" content="noindex,nofollow" />
+  {%- endif %}
+
   <meta name="release" content="{{release}}"/>
   <meta name="version" content="{{version}}"/>
   <meta name="DC.Source" content="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt"/>
@@ -313,7 +319,7 @@
                   {{ body }}
                 {% endblock %}
                 {{- render_nextprev() -}}
-                
+
                 <!-- if anything changes in the rating block, update the doctools.js in themes/mongodb/static -->
                 {% block rating %}
                 <div id="rating-panel">

@@ -48,6 +48,27 @@ class VersionConfig(RecursiveConfigurationBase):
             self.state['published'] = []
 
     @property
+    def active(self):
+        if 'active' not in self.state:
+            self.active = None
+
+        return self.state['active']
+
+    @active.setter
+    def active(self, value):
+        if self.has_version('active'):
+            p = self.conf.runstate.branch_conf['version']['active']
+
+            if not isinstance(p, list):
+                msg = "active branches must be a list"
+                logger.critical(msg)
+                raise TypeError(msg)
+
+            self.state['active'] = p
+        else:
+            self.state['active'] = []
+
+    @property
     def upcoming(self):
         if 'upcoming' not in self.state:
             self.upcoming = None
