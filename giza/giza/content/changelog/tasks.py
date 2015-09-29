@@ -16,6 +16,7 @@ import os.path
 import logging
 
 import giza.content.changelog.views
+import giza.tools.files
 
 from giza.config.content import new_content_type
 from libgiza.task import Task
@@ -54,12 +55,15 @@ def changelog_tasks(conf):
         logger.warning("chagelog generation is not configured.")
         return []
 
+    dirname = os.path.join(conf.paths.projectroot, conf.paths.includes, "changelogs")
+
+    giza.tools.files.safe_create_directory(os.path.join(dirname, "releases"))
     # add tasks for generating intermediate files for each major version. we do
     # this on all branches, and publishers need to backport the config changes.
     jira_config = os.path.join(conf.paths.projectroot, conf.paths.builddata, "jira.yaml")
     major_versions = get_major_version_groupings(conf.system.files.data.jira.site.versions)
     for version, releases in major_versions.items():
-        fn = os.path.join(conf.paths.projectroot, conf.paths.includes, "changelogs", version + ".rst")
+        fn = os.path.join(dirname, version + ".rst")
         t = Task(job=giza.content.changelog.views.render_intermediate_files,
                  args=(fn, version, releases, conf),
                  target=fn,
