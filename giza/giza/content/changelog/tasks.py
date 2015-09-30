@@ -52,23 +52,22 @@ def changelog_tasks(conf):
     tasks = []
 
     if "jira" not in conf.system.files.data:
-        logger.warning("chagelog generation is not configured.")
+        logger.warning("changelog generation is not configured.")
         return []
 
     dirname = os.path.join(conf.paths.projectroot, conf.paths.includes, "changelogs")
 
     giza.tools.files.safe_create_directory(os.path.join(dirname, "releases"))
-    # add tasks for generating intermediate files for each major version. we do
-    # this on all branches, and publishers need to backport the config changes.
     jira_config = os.path.join(conf.paths.projectroot, conf.paths.builddata, "jira.yaml")
     major_versions = get_major_version_groupings(conf.system.files.data.jira.site.versions)
-    for version, releases in major_versions.items():
-        fn = os.path.join(dirname, version + ".rst")
-        t = Task(job=giza.content.changelog.views.render_intermediate_files,
-                 args=(fn, version, releases, conf),
-                 target=fn,
-                 dependency=[jira_config])
-        tasks.append(t)
+
+    # If no version listed in jira.yaml, just return; Should be same
+    # as if jira is not configured  in conf.system.files.data
+    # Also, log explicit message stating that 0 changelog tasks added.
+    if not major_versions:
+        logger.warning("changelog version is not configured in jira.yaml.")
+        logger.info("added {0} changelog tasks.".format(len(tasks)))
+        return []
 
     # don't generate changelog content except on the most recent published
     # branch (i.e. master, typically.).
@@ -86,8 +85,20 @@ def changelog_tasks(conf):
 
     # bump mtime of all existing files to avoid regenerating files that already committed files
     # exist.
-    for fn in os.listdir(os.path.join(conf.paths.projectroot, conf.paths.includes, "changelogs", "releases")):
-        os.utime(fn, None)
+    changelog_releases_dir = os.path.join(conf.paths.projectroot, conf.paths.includes, "changelogs", "releases")
+
+    for fn in os.listdir(changelog_releases_dir):
+        os.utime(os.path.join(changelog_releases_dir, fn), None)
+
+    # add tasks for generating intermediate files for each major version. we do
+    # this on all branches, and publishers need to backport the config changes.
+    for version, releases in major_versions.items():
+        fn = os.path.join(dirname, version + ".rst")
+        t = Task(job=giza.content.changelog.views.render_intermediate_files,
+                 args=(fn, version, releases, conf),
+                 target=fn,
+                 dependency=[jira_config])
+        tasks.append(t)
 
     # create a task for each version defined. should never regenerate existing files.
     for version in  conf.system.files.data.jira.site.versions:

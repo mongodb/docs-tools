@@ -70,7 +70,8 @@ def transfer_source(conf, sconf):
                   image_dir + os.path.sep + "*.eps"]
 
     prefix_len = len(os.path.join(conf.paths.projectroot, conf.paths.branch_source)) + 1
-    exclusions.extend([o for o in conf.system.content.output_directories(prefix_len)])
+
+    exclusions.extend([o for o in conf.system.content.output_directories(prefix_len) if o != "includes/changelogs"])
 
     # we don't want rsync to delete directories that hold generated content in
     # the target so we can have more incremental builds.
