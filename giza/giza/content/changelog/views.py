@@ -145,10 +145,10 @@ def get_changelog_content(fn, version, conf):
             r.newline()
 
             if len(issues) == 1:
-                r.content("{0} {1}".format(issues[0][1], r.role("issue", issues[0][0])), wrap=False)
+                r.content("{1} {0}".format(issues[0][1], r.role("issue", issues[0][0])), wrap=False)
             else:
                 for issue in issues:
-                    r.li("{0} {1}".format(issue[1], r.role("issue", issue[0])), wrap=False)
+                    r.li("{1} {0}".format(issue[1], r.role("issue", issue[0])), wrap=False)
             r.newline()
 
             # repeat the above formatting with minor variations to do the nesting.
@@ -163,10 +163,10 @@ def get_changelog_content(fn, version, conf):
 
                     sub_issues = headings[sub]
                     if len(sub_issues) == 0:
-                        r.content("{0} {1}".format(sub_issues[0][1].strip(), r.role("issue", sub_issues[0][0])), wrap=False)
+                        r.content("{1} {0}".format(sub_issues[0][1].strip(), r.role("issue", sub_issues[0][0])), wrap=False)
                     else:
                         for issue in sub_issues:
-                            r.li("{0} {1}".format(issue[1].strip(), r.role("issue", issue[0])), wrap=False)
+                            r.li("{1} {0}".format(issue[1].strip(), r.role("issue", issue[0])), wrap=False)
                     r.newline()
 
     r.write(fn)
