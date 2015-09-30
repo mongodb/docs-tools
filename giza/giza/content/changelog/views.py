@@ -44,7 +44,7 @@ def get_issue_structure(version, conf):
 
     # run the jira query
     projects = ', '.join(conf.system.files.data.jira.site.projects)
-    query = "project in ({0}) and fixVersion = {1}".format(projects, version)
+    query = "project in ({0}) and fixVersion = {1} and resolution = 'Fixed'".format(projects, version)
     issues = jira.query(query)
     logger.info("building changelog for {0} with {1} issue(s)".format(version, len(issues)))
 
