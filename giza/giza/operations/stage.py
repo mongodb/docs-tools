@@ -55,6 +55,50 @@ secretkey=<AWS secret key>
 '''
 
 
+class BulletProofS3:
+    """An S3 API that wraps boto to work around Amazon's 100-request limit and
+       implement caching."""
+    THRESHOLD = 20
+
+    def __init__(self, access_key, secret_key, bucket_name):
+        self.access_key = access_key
+        self.secret_key = secret_key
+        self.name = bucket_name
+
+        self.times_used = 0
+        self._conn = None
+
+        self.cache_list = []
+
+    def get_connection(self):
+        """Return a connection to S3. Not idempotent: will create a new connection
+           after some number of calls."""
+        if not self._conn or self.times_used > self.THRESHOLD:
+            conn = boto.s3.connection.S3Connection(self.access_key, self.secret_key)
+            self._conn = conn.get_bucket(self.name)
+            self.times_used = 0
+
+        self.times_used += 1
+        return self._conn
+
+    def list(self, prefix=None, cache=False):
+        """Returns a list of keys in this S3 bucket. If cache=True, will return
+           the last list result."""
+        if not cache or not self.cache_list:
+            self.cache_list = self.get_connection().list(prefix=prefix)
+
+        return list(self.cache_list)
+
+    def delete_keys(self, keys):
+        """Delete the given list of keys."""
+        return self.get_connection().delete_keys(keys)
+
+    def get_redirect(self, name):
+        """Return the destination redirect associated with a given source path."""
+        k = boto.s3.key.Key(self.get_connection(), name)
+        return k.get_redirect()
+
+
 class StagingException(Exception):
     """Base class for all giza stage exceptions."""
     pass
@@ -116,37 +160,47 @@ class PoolWorker(threading.Thread):
         self.semaphore.release()
 
 
-def run_pool(tasks, n_workers=50):
+def run_pool(tasks, n_workers=10, retries=1):
     """Run a list of tasks using a pool of threads. Return non-None results or
        exceptions as a list of (task, result) pairs in an arbitrary order."""
-    workers = []
-    for _ in range(n_workers):
-        worker = PoolWorker()
-        worker.start()
-        workers.append(worker)
-
-    # Schedule tasks round-robin
-    for i in range(len(tasks)):
-        workers[i % n_workers].add_task(tasks[i])
-
-    for worker in workers:
-        worker.add_task(None)
-
-    for worker in workers:
-        worker.join()
+    assert retries >= 0
 
     results = []
-    for worker in workers:
-        results.extend(worker.results)
+    while retries >= 0:
+        workers = []
+        for _ in range(n_workers):
+            worker = PoolWorker()
+            worker.start()
+            workers.append(worker)
 
-    return results
+        # Schedule tasks round-robin
+        for i in range(len(tasks)):
+            workers[i % n_workers].add_task(tasks[i])
+
+        for worker in workers:
+            worker.add_task(None)
+
+        for worker in workers:
+            worker.join()
+
+        results = []
+        for worker in workers:
+            results.extend(worker.results)
+
+        if not results:
+            return []
+
+        tasks = [result[0] for result in results]
+        retries -= 1
+
+    raise SyncException([result[1] for result in results])
 
 
 def translate_htaccess(path):
     """Read a .htaccess file, and transform redirects into a mapping of redirects."""
     with open(path, 'r') as f:
         data = f.read()
-        return dict(REDIRECT_PAT.findall(data))
+        return dict([(x.lstrip('/'), y) for x,y in REDIRECT_PAT.findall(data)])
 
     return {}
 
@@ -177,7 +231,7 @@ class FileCollector(object):
             path text NOT NULL,
             PRIMARY KEY(namespace, path))''')
 
-    def collect(self, root, bucket, branch):
+    def collect(self, root, s3, branch):
         """Yield each path underneath root. Only yield files that have changed
            since the last run."""
         cur = self.conn.cursor()
@@ -194,7 +248,7 @@ class FileCollector(object):
                 # Update our temporary list of on-disk files
                 cur.execute('INSERT INTO disk VALUES (?, ?)', (self.namespace, path))
 
-                update = self.has_changed(path, bucket)
+                update = self.has_changed(path, s3)
                 if update is False:
                     continue
 
@@ -210,7 +264,7 @@ class FileCollector(object):
 
         self.removed_files = [entry[0] for entry in cur.fetchall()]
 
-    def has_changed(self, path, bucket):
+    def has_changed(self, path, s3):
         """Returns a FileUpdate instance if the given path has changed since it
            was last checked, or else False."""
         path_stat = os.stat(path)
@@ -293,11 +347,10 @@ class DeployCollector(object):
     def __init__(self, namespace, db_path):
         self.removed_files = []
 
-    def collect(self, root, bucket, branch):
+    def collect(self, root, s3, branch):
         self.removed_files = []
         remote_hashes = {}
-        remote_redirects = {}
-        remote_keys = bucket.list()
+        remote_keys = s3.list()
 
         # List all current redirects
         tasks = []
@@ -308,19 +361,19 @@ class DeployCollector(object):
 
             # Get the redirect for this key, if it exists
             if key.size == 0:
-                tasks.append(functools.partial(
-                    lambda key: operator.setitem(remote_redirects, key.name, key.get_redirect()),
-                    key))
+                continue
 
             # Store its MD5 hash. Might be useless if encryption or multi-part
             # uploads are used.
             remote_hashes[local_key] = key.etag.strip('"')
 
             if not os.path.exists(os.path.join(root, local_key)):
+                LOGGER.info('Removing %s', os.path.join(root, local_key))
                 self.removed_files.append(key.key)
 
         LOGGER.info('Running collection tasks')
         run_pool(tasks)
+        LOGGER.info('Done. Scanning local filesystem')
 
         # Special-case the root directory, because we want to publish only:
         # - Files
@@ -361,9 +414,9 @@ class DeployCollector(object):
                 if remote_hashes.get(remote_path, '') == local_hash:
                     continue
 
-                yield self.has_changed(path, bucket)
+                yield self.has_changed(path, s3)
 
-    def has_changed(self, path, bucket):
+    def has_changed(self, path, s3):
         return FileUpdate(path, 0, None, True)
 
     def commit(self):
@@ -400,11 +453,11 @@ class Staging(object):
 
     FileCollector = FileCollector
 
-    def __init__(self, namespace, bucket, conf):
+    def __init__(self, namespace, s3, conf):
         # The S3 prefix for this staging site
         self.namespace = namespace
 
-        self.bucket = bucket
+        self.s3 = s3
         self.collector = self.FileCollector(self.namespace, conf.paths.file_changes_database)
 
     @classmethod
@@ -425,8 +478,8 @@ class Staging(object):
 
         prefix = '' if not self.namespace else '/'.join((self.namespace, ''))
 
-        keys = [k.key for k in self.bucket.list(prefix=prefix)]
-        result = self.bucket.delete_keys(keys)
+        keys = [k.key for k in self.s3.list(prefix=prefix, cache=False)]
+        result = self.s3.delete_keys(keys)
         if result.errors:
             raise SyncException(result.errors)
 
@@ -435,7 +488,7 @@ class Staging(object):
            the namespace [username]/[branch]/[edition]/"""
         tasks = []
 
-        redirects = ''
+        redirects = {}
         htaccess_path = os.path.join(root, '.htaccess')
         try:
             redirects = translate_htaccess(htaccess_path)
@@ -444,13 +497,13 @@ class Staging(object):
 
         # Ensure that the root ends with a trailing slash to make future
         # manipulations more predictable.
-        if not root.endswith(os.path.sep):
-            root += os.path.sep
+        if not root.endswith('/'):
+            root += '/'
 
         if not os.path.isdir(root):
             raise NoSuchEdition(root)
 
-        for entry in self.collector.collect(root, self.bucket, branch):
+        for entry in self.collector.collect(root, self.s3, branch):
             # Run our actual staging operations in a thread pool. This would be
             # better with async IO, but this will do for now.
             src = entry.path.replace(root, '', 1)
@@ -469,11 +522,7 @@ class Staging(object):
                 if not resolved.startswith(root):
                     LOGGER.warn('Skipping symbolic link %s: outside of root %s', resolved, root)
 
-                tasks.append(functools.partial(
-                    lambda src, resolved, suffix: self.__redirect(
-                        src + suffix,
-                        resolved.replace(root, '/', 1)),
-                    src, resolved, suffix))
+                redirects[src + suffix] = resolved.replace(root, '/', 1)
             else:
                 tasks.append(functools.partial(
                     lambda path, file_hash: self.__upload(
@@ -482,21 +531,35 @@ class Staging(object):
                         file_hash),
                     src, entry.file_hash))
 
+        LOGGER.info('Running %s tasks', len(tasks))
+        run_pool(tasks)
+
+        LOGGER.info('Finding redirects to remove')
+        removed = []
+        remote_redirects = self.s3.list()
+        for key in remote_redirects:
+            # Make sure this is a redirect
+            if key.size != 0:
+                continue
+
+            # Redirects are written /foo/bar/, not /foo/bar/index.html
+            redirect_key = key.key.rsplit(self.PAGE_SUFFIX, 1)[0]
+
+            if redirect_key not in redirects:
+                removed.append(key.key)
+
+        LOGGER.info('Removing %s redirects', len(removed))
+        self.s3.delete_keys(removed)
+
+        LOGGER.info('Creating %s redirects', len(redirects))
+        tasks = []
         for src in redirects:
             tasks.append(functools.partial(
                     lambda src, dest, suffix: self.__redirect(
                         src + suffix,
                         dest),
-                    src, redirects[src], suffix))
-
-        LOGGER.info('Running %s tasks', len(tasks))
-
-        # Run our sync tasks, and retry any errors
-        errors = run_pool(tasks)
-        errors = run_pool([result[0] for result in errors])
-
-        if errors:
-            raise SyncException([result[1] for result in errors])
+                    src, redirects[src], self.PAGE_SUFFIX))
+        run_pool(tasks)
 
         # Remove from staging any files that our FileCollector thinks have been
         # deleted locally.
@@ -505,7 +568,7 @@ class Staging(object):
                        for path in self.collector.removed_files]
         if remove_keys:
             LOGGER.info('Removing %s', remove_keys)
-            remove_result = self.bucket.delete_keys(remove_keys)
+            remove_result = self.s3.delete_keys(remove_keys)
             if remove_result.errors:
                 raise SyncException(remove_result.errors)
 
@@ -513,7 +576,7 @@ class Staging(object):
 
     def __upload(self, local_path, src_path, file_hash):
         full_name = '/'.join((self.namespace, local_path))
-        k = boto.s3.key.Key(self.bucket)
+        k = boto.s3.key.Key(self.s3.get_connection())
 
         try:
             # If we don't have a hash, we can't do our normal caching stuff.
@@ -526,7 +589,7 @@ class Staging(object):
             k.key = file_hash
 
             try:
-                k.copy(self.bucket.name, full_name, **self.S3_OPTIONS)
+                k.copy(self.s3.name, full_name, **self.S3_OPTIONS)
             except boto.exception.S3ResponseError as err:
                 if err.status == 404:
                     # Not found in cache. Upload it to the cache
@@ -534,28 +597,29 @@ class Staging(object):
                     k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
 
                     # And then copy it to its final destination
-                    k.copy(self.bucket.name, full_name, **self.S3_OPTIONS)
+                    k.copy(self.s3.name, full_name, **self.S3_OPTIONS)
                 else:
                     raise err
         except boto.exception.S3ResponseError as err:
             raise SyncFileException(local_path, err.message)
         except IOError as err:
-            LOGGER.warn('Error reading file: %s', err)
+            LOGGER.exception('IOError while uploading file "%s": %s', local_path, err)
 
     def __upload_nocache(self, src_path, full_name):
         LOGGER.info('Uploading %s to %s', src_path, full_name)
-        k = boto.s3.key.Key(self.bucket)
+        k = boto.s3.key.Key(self.s3.get_connection())
         k.key = full_name
         k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
 
     def __redirect(self, src, dest):
-        key = boto.s3.key.Key(self.bucket, src)
+        key = boto.s3.key.Key(self.s3.get_connection(), src)
         try:
             if key.get_redirect() == dest:
                 LOGGER.info('Skipping redirect %s', src)
                 return
-        except boto.exception.S3ResponseError:
-            pass
+        except boto.exception.S3ResponseError as err:
+            if err.status != 404:
+                LOGGER.exception('S3 error creating redirect from %s to %s', src, dest)
 
         LOGGER.info('Redirecting %s to %s', src, dest)
         key.set_redirect(dest)
@@ -656,8 +720,7 @@ class StagingPipeline:
             username = os.getlogin()
 
         self.auth = AuthenticationInfo(access_key, secret_key, username)
-        self.conn = boto.s3.connection.S3Connection(self.auth.access_key,
-                                                    self.auth.secret_key)
+        self.s3 = BulletProofS3(self.auth.access_key, self.auth.secret_key, self.staging_config.bucket)
 
     def setup_sourcedir(self):
         self.editions = self.args.edition or ('',)
@@ -670,10 +733,9 @@ class StagingPipeline:
 
     def stage(self):
         try:
-            bucket = self.conn.get_bucket(self.staging_config.bucket)
             for root, edition in zip(self.roots, self.editions):
                 namespace = self.Staging.compute_namespace(self.auth.username, self.branch, edition)
-                staging = self.Staging(namespace, bucket, self.conf)
+                staging = self.Staging(namespace, self.s3, self.conf)
 
                 if self.destage:
                     staging.purge()
