@@ -352,6 +352,31 @@ class DeployCollector(object):
         remote_hashes = {}
         remote_keys = s3.list()
 
+        # Special-case the root directory, because we want to publish only:
+        # - Files
+        # - The current branch (if published)
+        # - Symlinks pointing to the current branch
+        upload = set()
+        for entry in os.listdir(root):
+            path = os.path.join(root, entry)
+            if os.path.isfile(path):
+                # Don't skip; i.e, upload all regular files
+                upload.add(entry)
+                continue
+
+            if os.path.isdir(path) and entry == branch:
+                # This is the branch we want to upload
+                upload.add(entry)
+                continue
+
+            # Only collect links that point to the current branch
+            try:
+                if os.readlink(path) == branch:
+                    upload.add(entry)
+                    continue
+            except OSError:
+                pass
+
         # List all current redirects
         tasks = []
         for key in remote_keys:
@@ -359,8 +384,12 @@ class DeployCollector(object):
             if key.key.startswith('/'):
                 local_key = local_key[1:]
 
-            # Get the redirect for this key, if it exists
+            # Don't register redirects for deletion in this stage
             if key.size == 0:
+                continue
+
+            # Check if we want to skip this path
+            if local_key.split('/', 1)[0] not in upload:
                 continue
 
             # Store its MD5 hash. Might be useless if encryption or multi-part
@@ -375,36 +404,12 @@ class DeployCollector(object):
         run_pool(tasks)
         LOGGER.info('Done. Scanning local filesystem')
 
-        # Special-case the root directory, because we want to publish only:
-        # - Files
-        # - The current branch (if published)
-        # - Symlinks pointing to the current branch
-        skip = set()
-        for entry in os.listdir(root):
-            path = os.path.join(root, entry)
-            if os.path.isfile(path):
-                # Don't skip; i.e, upload all regular files
-                continue
-
-            if os.path.isdir(path) and entry == branch:
-                # This is the branch we want to upload
-                continue
-
-            # Only collect links that point to the current branch
-            try:
-                if os.readlink(path) == branch:
-                    continue
-            except OSError:
-                pass
-
-            skip.add(entry)
-
         for basedir, dirs, files in os.walk(root, followlinks=True):
             # Skip branches we wish not to publish
-            dirs[:] = [d for d in dirs if d not in skip]
+            dirs[:] = [d for d in dirs if d in upload]
 
             for filename in files:
-                if filename in skip:
+                if filename not in upload:
                     continue
 
                 path = os.path.join(basedir, filename)
