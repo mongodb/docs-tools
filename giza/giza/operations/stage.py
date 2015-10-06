@@ -22,11 +22,8 @@ import logging
 import os
 import os.path
 import re
-import sqlite3
 import stat
 import threading
-import operator
-import xml.etree.ElementTree
 
 import argh
 import boto.s3.connection
@@ -45,7 +42,7 @@ except ImportError:
 LOGGER = logging.getLogger('giza.operations.stage')
 REDIRECT_PAT = re.compile('^Redirect 30[1|2|3] (\S+)\s+(\S+)', re.M)
 FileUpdate = collections.namedtuple('FileUpdate', ['path', 'mtime',
-                                                   'file_hash', 'is_new'])
+                                                   'file_hash'])
 AuthenticationInfo = collections.namedtuple('AuthenticationInfo', ['access_key', 'secret_key', 'username'])
 
 CONFIG_PATH = '~/.config/giza-aws-authentication.conf'
@@ -55,7 +52,7 @@ secretkey=<AWS secret key>
 '''
 
 
-class BulletProofS3:
+class BulletProofS3(object):
     """An S3 API that wraps boto to work around Amazon's 100-request limit and
        implement caching."""
     THRESHOLD = 20
@@ -204,178 +201,21 @@ def translate_htaccess(path):
 
     return {}
 
-
-class FileCollector(object):
-    """Database for detecting changed files."""
-    def __init__(self, namespace, db_path):
-        self.namespace = namespace
-        self.conn = sqlite3.connect(db_path)
-        self.conn.row_factory = sqlite3.Row
-        self.__init()
-
-        self.dirty_files = []
-        self.removed_files = []
-
-    def __init(self):
-        cur = self.conn.cursor()
-        cur.execute('''CREATE TABLE IF NOT EXISTS files(
-            namespace text NOT NULL,
-            path text NOT NULL,
-            mtime int NOT NULL,
-            hash blob NOT NULL,
-            PRIMARY KEY(namespace, path))''')
-        cur.execute('''CREATE INDEX IF NOT EXISTS namespace ON files(namespace)''')
-
-        cur.execute('''CREATE TEMPORARY TABLE disk(
-            namespace text NOT NULL,
-            path text NOT NULL,
-            PRIMARY KEY(namespace, path))''')
-
-    def collect(self, root, s3, branch):
-        """Yield each path underneath root. Only yield files that have changed
-           since the last run."""
-        cur = self.conn.cursor()
-        cur.execute('DELETE FROM disk')
-
-        # Crawl symbolic links to create a distinct "realized" tree for each
-        # branch, instead of using redirects. This is because Amazon uses 301
-        # permanent redirects, which prevents us from juggling "manual", "master",
-        # etc.
-        for basedir, _, files in os.walk(root, followlinks=True):
-            for filename in files:
-                path = os.path.join(basedir, filename)
-
-                # Update our temporary list of on-disk files
-                cur.execute('INSERT INTO disk VALUES (?, ?)', (self.namespace, path))
-
-                update = self.has_changed(path, s3)
-                if update is False:
-                    continue
-
-                self.dirty_files.append(update)
-                yield update
-
-        # Find files that have disappeared from the filesystem
-        cur.execute('''
-            SELECT path from files WHERE namespace=?
-                EXCEPT
-            SELECT path from disk WHERE namespace=?
-            ''', (self.namespace, self.namespace))
-
-        self.removed_files = [entry[0] for entry in cur.fetchall()]
-
-    def has_changed(self, path, s3):
-        """Returns a FileUpdate instance if the given path has changed since it
-           was last checked, or else False."""
-        path_stat = os.stat(path)
-
-        # Provide ms-level precision
-        mtime = int(path_stat.st_mtime * 1000)
-
-        cur = self.conn.cursor()
-        cur.execute('SELECT * FROM files WHERE namespace=? AND path=?',
-                    (self.namespace, path,))
-        row = cur.fetchone()
-
-        if row is None:
-            file_hash = self.hash(path)
-            update = FileUpdate(path, mtime, file_hash, True)
-            return update
-
-        if row['mtime'] == mtime:
-            return False
-
-        file_hash = self.hash(path)
-        if file_hash != bytes(row['hash']):
-            update = FileUpdate(path, mtime, file_hash, False)
-            return update
-
-        return False
-
-    def commit(self):
-        """Commit to cache any file changes that collect() detected. You should
-           call this only once syncing is successful."""
-        cur = self.conn.cursor()
-        for entry in self.dirty_files:
-            hash_binary_view = sqlite3.Binary(entry.file_hash)
-
-            if entry.is_new:
-                cur.execute('INSERT INTO files VALUES(?, ?, ?, ?)', (
-                    self.namespace, entry.path, entry.mtime, hash_binary_view))
-            else:
-                cur.execute('''UPDATE files SET mtime=?, hash=?
-                            WHERE namespace=? AND path=?''',
-                            (entry.mtime, hash_binary_view,
-                             self.namespace, entry.path))
-
-        for path in self.removed_files:
-            cur.execute('DELETE FROM disk WHERE namespace=? AND path=?',
-                        (self.namespace, path))
-            cur.execute('DELETE FROM files WHERE namespace=? AND path=?',
-                        (self.namespace, path))
-
-        self.conn.commit()
-        self.removed_files = []
-
-    def purge_now(self):
-        """Purge the index for this namespace immediately. Does not wait for
-           commit()."""
-        cur = self.conn.cursor()
-        cur.execute('DELETE FROM files WHERE namespace=?', (self.namespace,))
-        self.conn.commit()
-
-    @staticmethod
-    def hash(path):
-        """Return the cryptographic hash of the given file path as a byte
-           sequence."""
-        hasher = hashlib.sha256()
-
-        with open(path, 'rb') as input_file:
-            while True:
-                data = input_file.read(2**13)
-                if not data:
-                    break
-
-                hasher.update(data)
-
-        return hasher.digest()
-
-
-class DeployCollector(object):
+class StagingCollector(object):
     """A dummy file collector interface that always reports files as having
        changed. Yields files and all symlinks."""
-    def __init__(self, namespace, db_path):
+    def __init__(self, branch, namespace):
         self.removed_files = []
+        self.branch = branch
+        self.namespace = namespace
 
-    def collect(self, root, s3, branch):
+    def get_upload_set(self, root):
+        return set(['/'.join((self.namespace, path)) for path in os.listdir(root)])
+
+    def collect(self, root, remote_keys):
         self.removed_files = []
         remote_hashes = {}
-        remote_keys = s3.list()
-
-        # Special-case the root directory, because we want to publish only:
-        # - Files
-        # - The current branch (if published)
-        # - Symlinks pointing to the current branch
-        upload = set()
-        for entry in os.listdir(root):
-            path = os.path.join(root, entry)
-            if os.path.isfile(path):
-                # Don't skip; i.e, upload all regular files
-                upload.add(entry)
-                continue
-
-            if os.path.isdir(path) and entry == branch:
-                # This is the branch we want to upload
-                upload.add(entry)
-                continue
-
-            # Only collect links that point to the current branch
-            try:
-                if os.readlink(path) == branch:
-                    upload.add(entry)
-                    continue
-            except OSError:
-                pass
+        whitelist = self.get_upload_set(root)
 
         # List all current redirects
         tasks = []
@@ -389,7 +229,7 @@ class DeployCollector(object):
                 continue
 
             # Check if we want to skip this path
-            if local_key.split('/', 1)[0] not in upload:
+            if local_key.split('/', 1)[0] not in whitelist:
                 continue
 
             # Store its MD5 hash. Might be useless if encryption or multi-part
@@ -406,23 +246,22 @@ class DeployCollector(object):
 
         for basedir, dirs, files in os.walk(root, followlinks=True):
             # Skip branches we wish not to publish
-            dirs[:] = [d for d in dirs if d in upload]
+            if basedir == root:
+                dirs[:] = [d for d in dirs if d in whitelist]
 
             for filename in files:
-                if filename not in upload:
-                    continue
-
                 path = os.path.join(basedir, filename)
-                local_hash = self.hash(path)
+
+                try:
+                    local_hash = self.hash(path)
+                except IOError:
+                    continue
 
                 remote_path = path.replace(root, '')
-                if remote_hashes.get(remote_path, '') == local_hash:
+                if remote_hashes.get(remote_path, None) == local_hash:
                     continue
 
-                yield self.has_changed(path, s3)
-
-    def has_changed(self, path, s3):
-        return FileUpdate(path, 0, None, True)
+                yield FileUpdate(path, 0, local_hash)
 
     def commit(self):
         pass
@@ -447,6 +286,31 @@ class DeployCollector(object):
         return hasher.hexdigest()
 
 
+class DeployCollector(StagingCollector):
+    def get_upload_set(self, root):
+        # Special-case the root directory, because we want to publish only:
+        # - Files
+        # - The current branch (if published)
+        # - Symlinks pointing to the current branch
+        upload = set()
+        for entry in os.listdir(root):
+            path = os.path.join(root, entry)
+            if os.path.isdir(path) and entry == self.branch:
+                # This is the branch we want to upload
+                upload.add(entry)
+                continue
+
+            # Only collect links that point to the current branch
+            try:
+                if os.readlink(path) == self.branch:
+                    upload.add(entry)
+                    continue
+            except OSError:
+                pass
+
+        return upload
+
+
 class Staging(object):
     # These files are always unique, and so there is no benefit in sharing them
     SHARED_CACHE_BLACKLIST = {'genindex.html', 'objects.inv', 'searchindex.js'}
@@ -456,14 +320,14 @@ class Staging(object):
     PAGE_SUFFIX = ''
     USE_CACHE = True
 
-    FileCollector = FileCollector
+    FileCollector = StagingCollector
 
-    def __init__(self, namespace, s3, conf):
+    def __init__(self, namespace, branch, s3):
         # The S3 prefix for this staging site
         self.namespace = namespace
 
         self.s3 = s3
-        self.collector = self.FileCollector(self.namespace, conf.paths.file_changes_database)
+        self.collector = self.FileCollector(branch, namespace)
 
     @classmethod
     def compute_namespace(cls, username, branch, edition):
@@ -488,12 +352,12 @@ class Staging(object):
         if result.errors:
             raise SyncException(result.errors)
 
-    def stage(self, root, branch):
+    def stage(self, root):
         """Synchronize the build directory with the staging bucket under
            the namespace [username]/[branch]/[edition]/"""
         tasks = []
 
-        redirects = {}
+        redirects = None
         htaccess_path = os.path.join(root, '.htaccess')
         try:
             redirects = translate_htaccess(htaccess_path)
@@ -508,7 +372,7 @@ class Staging(object):
         if not os.path.isdir(root):
             raise NoSuchEdition(root)
 
-        for entry in self.collector.collect(root, self.s3, branch):
+        for entry in self.collector.collect(root, self.s3.list(prefix=self.namespace)):
             # Run our actual staging operations in a thread pool. This would be
             # better with async IO, but this will do for now.
             src = entry.path.replace(root, '', 1)
@@ -539,9 +403,29 @@ class Staging(object):
         LOGGER.info('Running %s tasks', len(tasks))
         run_pool(tasks)
 
+        self.sync_redirects(redirects)
+
+        # Remove from staging any files that our FileCollector thinks have been
+        # deleted locally.
+        namespace_component = [self.namespace] if self.namespace else []
+        remove_keys = ['/'.join(namespace_component + [path.replace(root, '', 1)])
+                       for path in self.collector.removed_files]
+        if remove_keys:
+            LOGGER.info('Removing %s', remove_keys)
+            remove_result = self.s3.delete_keys(remove_keys)
+            if remove_result.errors:
+                raise SyncException(remove_result.errors)
+
+        self.collector.commit()
+
+    def sync_redirects(self, redirects):
+        """Upload the given path->url redirect mapping to the remote bucket."""
+        if redirects is None:
+            return
+
         LOGGER.info('Finding redirects to remove')
         removed = []
-        remote_redirects = self.s3.list()
+        remote_redirects = self.s3.list(cache=True)
         for key in remote_redirects:
             # Make sure this is a redirect
             if key.size != 0:
@@ -565,19 +449,6 @@ class Staging(object):
                         dest),
                     src, redirects[src], self.PAGE_SUFFIX))
         run_pool(tasks)
-
-        # Remove from staging any files that our FileCollector thinks have been
-        # deleted locally.
-        namespace_component = [self.namespace] if self.namespace else []
-        remove_keys = ['/'.join(namespace_component + [path.replace(root, '', 1)])
-                       for path in self.collector.removed_files]
-        if remove_keys:
-            LOGGER.info('Removing %s', remove_keys)
-            remove_result = self.s3.delete_keys(remove_keys)
-            if remove_result.errors:
-                raise SyncException(remove_result.errors)
-
-        self.collector.commit()
 
     def __upload(self, local_path, src_path, file_hash):
         full_name = '/'.join((self.namespace, local_path))
@@ -631,20 +502,21 @@ class Staging(object):
 
 
 class DeployStaging(Staging):
-    FileCollector = DeployCollector
     PAGE_SUFFIX = '/index.html'
     USE_CACHE = False
+
+    FileCollector = DeployCollector
 
     @classmethod
     def compute_namespace(cls, username, branch, edition):
         return ''
 
 
-def do_stage(root, staging, branch):
+def do_stage(root, staging):
     """Drive the main staging process for a single edition, and print nicer
        error messages for exceptions."""
     try:
-        return staging.stage(root, branch)
+        return staging.stage(root)
     except SyncException as err:
         LOGGER.error('Failed to upload some files:')
         for sub_err in err.errors:
@@ -675,7 +547,7 @@ def create_config_framework(path):
         pass
 
 
-class StagingPipeline:
+class StagingPipeline(object):
     Staging = Staging
 
     def __init__(self, args, destage):
@@ -740,13 +612,13 @@ class StagingPipeline:
         try:
             for root, edition in zip(self.roots, self.editions):
                 namespace = self.Staging.compute_namespace(self.auth.username, self.branch, edition)
-                staging = self.Staging(namespace, self.s3, self.conf)
+                staging = self.Staging(namespace, self.branch, self.s3)
 
                 if self.destage:
                     staging.purge()
                     continue
 
-                do_stage(root, staging, self.branch)
+                do_stage(root, staging)
         except boto.exception.S3ResponseError as err:
             if err.status == 403:
                 LOGGER.error('Failed to upload to S3: Permission denied.')
