@@ -217,6 +217,8 @@ class StagingCollector(object):
         remote_hashes = {}
         whitelist = self.get_upload_set(root)
 
+        LOGGER.info('Publishing %s', ', '.join(whitelist))
+
         # List all current redirects
         tasks = []
         for key in remote_keys:
@@ -302,7 +304,8 @@ class DeployCollector(StagingCollector):
 
             # Only collect links that point to the current branch
             try:
-                if os.readlink(path) == self.branch:
+                candidate = os.path.basename(os.path.realpath(path))
+                if candidate == self.branch:
                     upload.add(entry)
                     continue
             except OSError:
