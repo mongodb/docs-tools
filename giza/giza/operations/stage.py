@@ -210,7 +210,7 @@ class StagingCollector(object):
         self.namespace = namespace
 
     def get_upload_set(self, root):
-        return set(['/'.join((self.namespace, path)) for path in os.listdir(root)])
+        return set(os.listdir(root))
 
     def collect(self, root, remote_keys):
         self.removed_files = []
@@ -222,9 +222,8 @@ class StagingCollector(object):
         # List all current redirects
         tasks = []
         for key in remote_keys:
-            local_key = key.key
-            if key.key.startswith('/'):
-                local_key = local_key[1:]
+            local_key = key.key.replace(self.namespace, '', 1)
+            local_key = local_key.lstrip('/')
 
             # Don't register redirects for deletion in this stage
             if key.size == 0:
