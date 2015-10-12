@@ -58,6 +58,7 @@ class Path(object):
         self.segments = init.split('/')
 
     def replace_prefix(self, orig, new):
+        """Replace the "orig" string in this path ONLY if it is at the start."""
         cur = str(self)
         if cur.startswith(orig):
             return Path(str(self).replace(orig, new, 1))
@@ -65,6 +66,7 @@ class Path(object):
         return Path(str(self))
 
     def ensure_prefix(self, prefix):
+        """Prepend a string to this path ONLY if it does not already exist."""
         cur = str(self)
         if cur.startswith(prefix):
             return Path(str(self))
@@ -72,6 +74,7 @@ class Path(object):
         return Path('/'.join((prefix, cur)))
 
     def __str__(self):
+        """Format this path as a Unix-style path string."""
         return '/'.join(self.segments)
 
 
@@ -351,6 +354,7 @@ class Staging(object):
     RESERVED_BRANCHES = {'cache'}
     PAGE_SUFFIX = ''
     USE_CACHE = True
+    EXPECT_HTACCESS = False
 
     FileCollector = StagingCollector
 
@@ -394,7 +398,9 @@ class Staging(object):
         try:
             redirects = translate_htaccess(htaccess_path)
         except IOError:
-            LOGGER.error('No .htaccess found at %s', htaccess_path)
+            # Only log an error if deploying; staging doesn't use .htaccess
+            log_function = LOGGER.error if self.EXPECT_HTACCESS else lambda *args: None
+            log_function('No .htaccess found at %s', htaccess_path)
 
         # Ensure that the root ends with a trailing slash to make future
         # manipulations more predictable.
@@ -540,6 +546,7 @@ class Staging(object):
 class DeployStaging(Staging):
     PAGE_SUFFIX = '/index.html'
     USE_CACHE = False
+    EXPECT_HTACCESS = True
 
     FileCollector = DeployCollector
 
