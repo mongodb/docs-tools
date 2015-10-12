@@ -36,4 +36,17 @@ s3_deploy:
   mms:
     url: 'https://mmsdocs.corp.mongodb.com'
     bucket: 'mmsdocs'
+  ecosystem:
+    url: 'https://docs-mongodborg-prod.corp.mongodb.com'
+    bucket: 'docs-mongodb-org-prod'
+
+    # The prefix under the bucket under which to upload everything.
+    # Default: ''
+    prefix: 'ecosystem'
+
+    # ``use_branch`` is True if only the directory corresponding with the current
+    # git branch should be uploaded. False indicates that everything should be
+    # uploaded.
+    # Default: true
+    use_branch: false
 ...

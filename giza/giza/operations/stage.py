@@ -52,6 +52,29 @@ secretkey=<AWS secret key>
 '''
 
 
+class Path(object):
+    """Wraps Unix-style paths to ensure a normalized format."""
+    def __init__(self, init):
+        self.segments = init.split('/')
+
+    def replace_prefix(self, orig, new):
+        cur = str(self)
+        if cur.startswith(orig):
+            return Path(str(self).replace(orig, new, 1))
+
+        return Path(str(self))
+
+    def ensure_prefix(self, prefix):
+        cur = str(self)
+        if cur.startswith(prefix):
+            return Path(str(self))
+
+        return Path('/'.join((prefix, cur)))
+
+    def __str__(self):
+        return '/'.join(self.segments)
+
+
 class BulletProofS3(object):
     """An S3 API that wraps boto to work around Amazon's 100-request limit and
        implement caching."""
@@ -203,10 +226,14 @@ def translate_htaccess(path):
 
 class StagingCollector(object):
     """A dummy file collector interface that always reports files as having
-       changed. Yields files and all symlinks."""
-    def __init__(self, branch, namespace):
+       changed. Yields files and all symlinks.
+
+       Obtain use_branch from StagingTargetConfig. If it is True,
+       StagingCollector will only recurse into the directory given by branch."""
+    def __init__(self, branch, use_branch, namespace):
         self.removed_files = []
         self.branch = branch
+        self.use_branch = use_branch
         self.namespace = namespace
 
     def get_upload_set(self, root):
@@ -289,6 +316,9 @@ class StagingCollector(object):
 
 class DeployCollector(StagingCollector):
     def get_upload_set(self, root):
+        if not self.use_branch:
+            return set(os.listdir(root))
+
         # Special-case the root directory, because we want to publish only:
         # - Files
         # - The current branch (if published)
@@ -324,22 +354,22 @@ class Staging(object):
 
     FileCollector = StagingCollector
 
-    def __init__(self, namespace, branch, s3):
+    def __init__(self, namespace, branch, staging_config, s3):
         # The S3 prefix for this staging site
         self.namespace = namespace
 
         self.s3 = s3
-        self.collector = self.FileCollector(branch, namespace)
+        self.collector = self.FileCollector(branch, staging_config.use_branch, namespace)
 
     @classmethod
-    def compute_namespace(cls, username, branch, edition):
+    def compute_namespace(cls, prefix, username, branch, edition):
         """Staging places each stage under a unique namespace computed from an
            arbitrary username, branch, and edition. This helper returns such
            a namespace, appropriate for constructing a new Staging instance."""
         if branch in cls.RESERVED_BRANCHES:
             raise ValueError(branch)
 
-        return '/'.join([x for x in (username, branch, edition) if x])
+        return '/'.join([x for x in (prefix, username, branch, edition) if x])
 
     def purge(self):
         """Remove all files associated with this branch and edition."""
@@ -409,9 +439,9 @@ class Staging(object):
 
         # Remove from staging any files that our FileCollector thinks have been
         # deleted locally.
-        namespace_component = [self.namespace] if self.namespace else []
-        remove_keys = ['/'.join(namespace_component + [path.replace(root, '', 1)])
-                       for path in self.collector.removed_files]
+        remove_keys = [str(path.replace_prefix(root, '').ensure_prefix(self.namespace))
+                       for path in [Path(p) for p in self.collector.removed_files]]
+
         if remove_keys:
             LOGGER.info('Removing %s', remove_keys)
             remove_result = self.s3.delete_keys(remove_keys)
@@ -435,6 +465,10 @@ class Staging(object):
 
             # Redirects are written /foo/bar/, not /foo/bar/index.html
             redirect_key = key.key.rsplit(self.PAGE_SUFFIX, 1)[0]
+
+            # If it doesn't start with our namespace, ignore it
+            if not redirect_key.startswith(self.namespace):
+                continue
 
             if redirect_key not in redirects:
                 removed.append(key.key)
@@ -510,8 +544,8 @@ class DeployStaging(Staging):
     FileCollector = DeployCollector
 
     @classmethod
-    def compute_namespace(cls, username, branch, edition):
-        return ''
+    def compute_namespace(cls, prefix, username, branch, edition):
+        return prefix
 
 
 def do_stage(root, staging):
@@ -611,10 +645,12 @@ class StagingPipeline(object):
                               edition_suffix) for edition_suffix in edition_suffixes]
 
     def stage(self):
+        prefix = self.staging_config.prefix
+
         try:
             for root, edition in zip(self.roots, self.editions):
-                namespace = self.Staging.compute_namespace(self.auth.username, self.branch, edition)
-                staging = self.Staging(namespace, self.branch, self.s3)
+                namespace = self.Staging.compute_namespace(prefix, self.auth.username, self.branch, edition)
+                staging = self.Staging(namespace, self.branch, self.staging_config, self.s3)
 
                 if self.destage:
                     staging.purge()

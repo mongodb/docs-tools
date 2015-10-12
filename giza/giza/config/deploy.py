@@ -139,3 +139,29 @@ class StagingTargetConfig(libgiza.config.ConfigurationBase):
     @bucket.setter
     def bucket(self, value):
         self.state['bucket'] = str(value)
+
+    @property
+    def prefix(self):
+        """The prefix underwhich giza will upload everything in the bucket."""
+        try:
+            return self.state['prefix']
+        except KeyError as err:
+            return ''
+
+    @prefix.setter
+    def prefix(self, value):
+        self.state['prefix'] = str(value)
+
+    @property
+    def use_branch(self):
+        """Specifies whether only the directory corresponding to the current
+           git branch should be uploaded. False if giza should upload
+           everything."""
+        try:
+            return self.state['use_branch']
+        except KeyError as err:
+            return True
+
+    @use_branch.setter
+    def use_branch(self, value):
+        self.state['use_branch'] = bool(value)
