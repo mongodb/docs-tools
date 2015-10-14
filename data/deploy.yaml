@@ -29,6 +29,9 @@ staging:
   ecosystem:
     url: 'https://docs-mongodborg-staging.corp.mongodb.com'
     bucket: 'docs-mongodb-org-staging'
+  primer:
+    url: 'https://docs-mongodborg-staging.corp.mongodb.com'
+    bucket: 'docs-mongodb-org-staging'
 s3_deploy:
   manual:
     url: 'https://docs-mongodborg-prod.corp.mongodb.com'
@@ -48,5 +51,10 @@ s3_deploy:
     # git branch should be uploaded. False indicates that everything should be
     # uploaded.
     # Default: true
+    use_branch: false
+  primer:
+    url: 'https://docs-mongodborg-prod.corp.mongodb.com'
+    bucket: 'docs-mongodb-org-prod'
+    prefix: 'getting-started'
     use_branch: false
 ...
