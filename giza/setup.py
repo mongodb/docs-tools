@@ -16,7 +16,8 @@ REQUIRES = [
     'sphinx==1.2.3',
     'sphinxcontrib-httpdomain',
     'wand',
-    'boto'
+    'boto',
+    "jira"
 ]
 
 setup(
