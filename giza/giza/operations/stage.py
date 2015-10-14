@@ -393,7 +393,7 @@ class Staging(object):
            the namespace [username]/[branch]/[edition]/"""
         tasks = []
 
-        redirects = None
+        redirects = {}
         htaccess_path = os.path.join(root, '.htaccess')
         try:
             redirects = translate_htaccess(htaccess_path)
@@ -429,7 +429,7 @@ class Staging(object):
                 if not resolved.startswith(root):
                     LOGGER.warn('Skipping symbolic link %s: outside of root %s', resolved, root)
 
-                redirects[src + suffix] = resolved.replace(root, '/', 1)
+                redirects[str(Path(src + suffix).ensure_prefix(self.namespace))] = resolved.replace(root, '/', 1)
             else:
                 tasks.append(functools.partial(
                     lambda path, file_hash: self.__upload(
@@ -458,7 +458,7 @@ class Staging(object):
 
     def sync_redirects(self, redirects):
         """Upload the given path->url redirect mapping to the remote bucket."""
-        if redirects is None:
+        if not redirects:
             return
 
         LOGGER.info('Finding redirects to remove')
