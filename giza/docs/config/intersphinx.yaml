@@ -3,7 +3,7 @@ url: http://api.mongodb.org/python/current/
 path: pymongo.inv
 ---
 name: metadriver
-url: http://docs.mongodb.org/meta-driver/latest/
+url: https://docs.mongodb.org/meta-driver/latest/
 path: metadriver.inv
 ---
 name: python
@@ -11,10 +11,10 @@ url: https://docs.python.org/2/
 path: python2.inv
 ---
 name: mongodb
-url: http://docs.mongodb.org/manual/
+url: https://docs.mongodb.org/manual/
 path: mongodb.inv
 ---
 name: argh
-url: http://argh.readthedocs.org/en/latest/
+url: https://argh.readthedocs.org/en/latest/
 path: argh.inv
 ...
