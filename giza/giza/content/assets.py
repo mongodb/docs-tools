@@ -84,7 +84,7 @@ def assets_setup(path, branch, repo, commit=None):
         giza.tools.files.safe_create_directory(base)
 
         g = libgiza.git.GitRepo(base)
-        g.clone(repo, repo_path=name, branch=branch)
+        g.clone(repo, repo_path=path, branch=branch)
         logger.info('cloned {0} branch from repo {1}'.format(branch, repo))
 
         if commit is not None and (g.sha() == commit or g.sha().startswith(commit)):
