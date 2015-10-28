@@ -278,6 +278,7 @@
                    <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" target="_blank" rel="nofollow">{{ _("This Page's Source") }}</a></li>
                {%- endif %}
                {%- block pdflink %}<li><a href="{{ theme_pdfpath }}" target="_blank" rel="nofollow">PDF</a></li>{%- endblock %}
+               {%- block epublink %}{%- endblock %}
              </ul>
            </li>
         {% endblock %}
