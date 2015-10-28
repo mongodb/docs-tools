@@ -881,13 +881,13 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 
 #header-db .logo {
-  padding-top: 18.4px;
+  padding-top: 16px;
   padding-left: 78.3px;
   padding-right: 100px;
 }
 
 #header-db .logo img {
-    height: 36.7px;
+    height: 40px;
     vertical-align: top;
 }
 
@@ -1444,12 +1444,12 @@ div.sphinxsidebarwrapper div.idxcontents {
 /* Right column TOC */
 
 .content .right-column {
-    width: 292px;
-    padding: 0;
+    width: 295px;
+    padding: 5px 0 0 0;
     position: fixed;
     -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
     left: 1093px;
-    top: 95px;
+    top: 105px;
     bottom: 0;
     overflow-y: auto;
     overflow-x: hidden;
