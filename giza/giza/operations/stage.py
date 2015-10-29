@@ -23,6 +23,7 @@ import os
 import os.path
 import re
 import stat
+import sys
 import threading
 
 import argh
@@ -361,6 +362,7 @@ class Staging(object):
     def __init__(self, namespace, branch, staging_config, s3):
         # The S3 prefix for this staging site
         self.namespace = namespace
+        self.branch = branch
 
         self.s3 = s3
         self.collector = self.FileCollector(branch, staging_config.use_branch, namespace)
@@ -399,8 +401,11 @@ class Staging(object):
             redirects = translate_htaccess(htaccess_path)
         except IOError:
             # Only log an error if deploying; staging doesn't use .htaccess
-            log_function = LOGGER.error if self.EXPECT_HTACCESS else lambda *args: None
-            log_function('No .htaccess found at %s', htaccess_path)
+            level = logging.CRITICAL if self.EXPECT_HTACCESS else logging.INFO
+            LOGGER.log(level, 'Couldn\'t open required %s', htaccess_path)
+
+            if self.EXPECT_HTACCESS:
+                sys.exit(1)
 
         # Ensure that the root ends with a trailing slash to make future
         # manipulations more predictable.
