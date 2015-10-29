@@ -398,7 +398,8 @@ class Staging(object):
         redirects = {}
         htaccess_path = os.path.join(root, '.htaccess')
         try:
-            redirects = translate_htaccess(htaccess_path)
+            if self.branch == 'master':
+                redirects = translate_htaccess(htaccess_path)
         except IOError:
             # Only log an error if deploying; staging doesn't use .htaccess
             level = logging.CRITICAL if self.EXPECT_HTACCESS else logging.INFO
@@ -446,7 +447,14 @@ class Staging(object):
         LOGGER.info('Running %s tasks', len(tasks))
         run_pool(tasks)
 
-        self.sync_redirects(redirects)
+        # XXX Right now we only sync redirects on master.
+        #     Why: Master has the "canonical" .htaccess, and we'd need to attach
+        #          metadata to each redirect on S3 to differentiate .htaccess
+        #          redirects from symbolic links.
+        #     Ramifications: Symbolic link redirects for non-master branches
+        #                    will never be published.
+        if self.branch == 'master':
+            self.sync_redirects(redirects)
 
         # Remove from staging any files that our FileCollector thinks have been
         # deleted locally.
