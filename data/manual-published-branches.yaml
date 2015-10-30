@@ -1,20 +1,23 @@
 version:
   published:
+    - '3.2'
     - '3.0'
     - '2.6'
     - '2.4'
     - '2.2'
   active:
+    - '3.2'
     - '3.0'
     - '2.6'
     - '2.4'
   stable: '3.0'
-  upcoming: null
+  upcoming: '3.2'
 git:
   branches:
-    manual: 'master'
+    manual: 'v3.0'
     published:
       - 'master'
+      - 'v3.0'
       - 'v2.6'
       - 'v2.4'
       - 'v2.2'
