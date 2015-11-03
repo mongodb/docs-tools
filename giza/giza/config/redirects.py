@@ -210,22 +210,13 @@ def _get_redirect_base_paths(computed, out, conf):
 
 
 def resolve_outputs_for_redirect(outputs, conf):
-    if 'integration' in conf.system.files.data:
-        shadows = conf.system.files.data.integration['base']['links']
-    else:
-        shadows = []
-
+    """Resolve redirect outputs like 'before-v2.6', 'all', and 'manual' to a
+       tuple of filesystem paths. Returns a list containing [output, tuple]."""
     expanded_outputs = []
     for out in outputs:
         computed = []
 
         out_key, out_value = _get_redirect_base_paths(computed, out, conf)
-
-        for shadow in shadows:
-            key, value = shadow.items()[0]
-            if value == out_value:
-                expanded_outputs.extend((value, key))
-
         expanded_outputs.extend([_render_key(o, out_key, out_value) for o in computed])
 
     outputs.extend(expanded_outputs)
