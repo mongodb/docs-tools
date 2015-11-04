@@ -183,6 +183,13 @@ conf['directives'] = [
         'callable': False,
     },
     {
+        'name': 'readconcern',
+        'tag': 'readconcern',
+        'description': 'readConcern values',
+        'prepend': True,
+        'callable': False,
+    },
+    {
         'name': 'alert',
         'tag': 'alert',
         'description': 'system alert',
