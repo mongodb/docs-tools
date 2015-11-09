@@ -416,9 +416,17 @@ class Staging(object):
         if not os.path.isdir(root):
             raise NoSuchEdition(root)
 
+        # If a redirect is masking a file, we can run into an invalid 404
+        # when the redirect is deleted but the file isn't republished.
+        # If this is the case, warn and delete the redirect.
+        for src,dest in redirects.items():
+            src_path = os.path.join(root, src)
+            if os.path.isfile(src_path) and os.path.basename(src_path) in os.listdir(os.path.dirname(src_path)):
+                LOGGER.warn('Ignoring redirect that will mask file: %s', src)
+                del redirects[src]
+
+        # Collect files that need to be uploaded
         for entry in self.collector.collect(root, self.s3.list(prefix=self.namespace)):
-            # Run our actual staging operations in a thread pool. This would be
-            # better with async IO, but this will do for now.
             src = entry.path.replace(root, '', 1)
 
             if os.path.islink(entry.path):
@@ -444,6 +452,8 @@ class Staging(object):
                         file_hash),
                     src, entry.file_hash))
 
+        # Run our actual staging operations in a thread pool. This would be
+        # better with async IO, but this will do for now.
         LOGGER.info('Running %s tasks', len(tasks))
         run_pool(tasks)
 
