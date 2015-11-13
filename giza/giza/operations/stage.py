@@ -494,7 +494,7 @@ class Staging(object):
 
         LOGGER.warn('Removing %s redirects', len(removed))
         for remove in removed:
-            LOGGER.warn('    %s', remove)
+            LOGGER.warn('Removing redirect %s', remove)
 
         self.s3.delete_keys(removed)
 
