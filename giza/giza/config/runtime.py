@@ -113,15 +113,9 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
             value = 'info'
 
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.DEBUG)
+        root_logger.setLevel(logging.WARNING)
 
-        # We only want the log file to represent the most recent run.
-        try:
-            os.unlink('giza.log')
-        except OSError:
-            pass
-
-        file_logger = logging.FileHandler('giza.log', mode='wx')
+        file_logger = logging.FileHandler('giza.log', mode='a')
         file_logger.setLevel(logging.DEBUG)
         file_logger.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 

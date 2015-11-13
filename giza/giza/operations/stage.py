@@ -269,7 +269,7 @@ class StagingCollector(object):
             remote_hashes[local_key] = key.etag.strip('"')
 
             if not os.path.exists(os.path.join(root, local_key)):
-                LOGGER.info('Removing %s', os.path.join(root, local_key))
+                LOGGER.warn('Removing %s', os.path.join(root, local_key))
                 self.removed_files.append(key.key)
 
         LOGGER.info('Running collection tasks')
@@ -462,7 +462,7 @@ class Staging(object):
                        for path in [Path(p) for p in self.collector.removed_files]]
 
         if remove_keys:
-            LOGGER.info('Removing %s', remove_keys)
+            LOGGER.warn('Removing %s', remove_keys)
             remove_result = self.s3.delete_keys(remove_keys)
             if remove_result.errors:
                 raise SyncException(remove_result.errors)
@@ -492,7 +492,10 @@ class Staging(object):
             if redirect_key not in redirects:
                 removed.append(key.key)
 
-        LOGGER.info('Removing %s redirects', len(removed))
+        LOGGER.warn('Removing %s redirects', len(removed))
+        for remove in removed:
+            LOGGER.warn('    %s', remove)
+
         self.s3.delete_keys(removed)
 
         LOGGER.info('Creating %s redirects', len(redirects))
@@ -546,7 +549,7 @@ class Staging(object):
         key = boto.s3.key.Key(self.s3.get_connection(), src)
         try:
             if key.get_redirect() == dest:
-                LOGGER.info('Skipping redirect %s', src)
+                LOGGER.debug('Skipping redirect %s', src)
                 return
         except boto.exception.S3ResponseError as err:
             if err.status != 404:
