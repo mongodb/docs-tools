@@ -87,6 +87,9 @@ class BulletProofS3(object):
         self.secret_key = secret_key
         self.name = bucket_name
 
+        # For "dry" runs; only pretend to do anything.
+        self.dry_run = False
+
         self.times_used = 0
         self._conn = None
 
@@ -105,14 +108,41 @@ class BulletProofS3(object):
         """Returns a list of keys in this S3 bucket."""
         return self.get_connection().list(prefix=prefix)
 
-    def delete_keys(self, keys):
-        """Delete the given list of keys."""
-        return self.get_connection().delete_keys(keys)
-
     def get_redirect(self, name):
         """Return the destination redirect associated with a given source path."""
         k = boto.s3.key.Key(self.get_connection(), name)
         return k.get_redirect()
+
+    def set_redirect(self, key, dest):
+        """Redirect a given key to a destination."""
+        if not self.dry_run:
+            key.set_redirect(dest)
+
+    def delete_keys(self, keys):
+        """Delete the given list of keys."""
+        if self.dry_run:
+            keys = []
+
+        return self.get_connection().delete_keys(keys)
+
+    def copy(self, src_path, dest_name, **options):
+        """Copy a given key to the given path."""
+        if self.dry_run:
+            return
+
+        key = boto.s3.key.Key(self.get_connection())
+        key.key = src_path
+        key.copy(self.name, dest_name, **options)
+
+    def upload_path(self, src, dest, **options):
+        key = boto.s3.key.Key(self.get_connection())
+        key.key = dest
+
+        if self.dry_run:
+            return key
+
+        key.set_contents_from_filename(src, **options)
+        return key
 
 
 class StagingException(Exception):
@@ -526,7 +556,6 @@ class Staging(object):
 
     def __upload(self, local_path, src_path, file_hash):
         full_name = '/'.join((self.namespace, local_path))
-        k = boto.s3.key.Key(self.s3.get_connection())
 
         try:
             # If we don't have a hash, we can't do our normal caching stuff.
@@ -536,18 +565,17 @@ class Staging(object):
 
             # Try to copy the file from the cache to its destination
             file_hash = 'cache/' + binascii.b2a_hex(file_hash)
-            k.key = file_hash
 
             try:
-                k.copy(self.s3.name, full_name, **self.S3_OPTIONS)
+                self.s3.copy(file_hash, full_name, **self.S3_OPTIONS)
             except boto.exception.S3ResponseError as err:
                 if err.status == 404:
                     # Not found in cache. Upload it to the cache
                     LOGGER.info('Uploading from %s to %s (%s)', local_path, full_name, file_hash)
-                    k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
+                    self.s3.upload_path(src_path, file_hash, **self.S3_OPTIONS)
 
                     # And then copy it to its final destination
-                    k.copy(self.s3.name, full_name, **self.S3_OPTIONS)
+                    self.s3.copy(file_hash, full_name, **self.S3_OPTIONS)
                 else:
                     raise err
         except boto.exception.S3ResponseError as err:
@@ -557,9 +585,7 @@ class Staging(object):
 
     def __upload_nocache(self, src_path, full_name):
         LOGGER.info('Uploading %s to %s', src_path, full_name)
-        k = boto.s3.key.Key(self.s3.get_connection())
-        k.key = full_name
-        k.set_contents_from_filename(src_path, **self.S3_OPTIONS)
+        self.s3.upload_path(src_path, full_name, **self.S3_OPTIONS)
 
     def __redirect(self, src, dest):
         key = boto.s3.key.Key(self.s3.get_connection(), src)
@@ -572,7 +598,7 @@ class Staging(object):
                 LOGGER.exception('S3 error creating redirect from %s to %s', src, dest)
 
         LOGGER.info('Redirecting %s to %s', src, dest)
-        key.set_redirect(dest)
+        self.s3.set_redirect(key, dest)
 
 
 class DeployStaging(Staging):
@@ -625,10 +651,11 @@ def create_config_framework(path):
 class StagingPipeline(object):
     Staging = Staging
 
-    def __init__(self, args, destage):
+    def __init__(self, args, destage, dry_run=False):
         self.args = args
         self.conf = fetch_config(args)
         self.destage = destage
+        self.dry_run = dry_run
 
         self.branch = GitRepo().current_branch()
 
@@ -672,7 +699,10 @@ class StagingPipeline(object):
             username = os.getlogin()
 
         self.auth = AuthenticationInfo(access_key, secret_key, username)
-        self.s3 = BulletProofS3(self.auth.access_key, self.auth.secret_key, self.staging_config.bucket)
+        self.s3 = BulletProofS3(self.auth.access_key,
+                                self.auth.secret_key,
+                                self.staging_config.bucket)
+        self.s3.dry_run = self.dry_run
 
     def setup_sourcedir(self):
         self.editions = self.args.edition or ('',)
@@ -763,17 +793,19 @@ class DeployPipeline(StagingPipeline):
 @argh.arg('--destage', default=False,
           dest='_destage', help='Delete the contents of the current staged render')
 @argh.arg('--builder', '-b', default='html')
+@argh.arg('--dry', default=False, dest='_dry')
 @argh.named('stage')
 @argh.expects_obj
 def main_stage(args):
     """Start an HTTP server rooted in the build directory."""
-    StagingPipeline(args, destage=args._destage).run()
+    StagingPipeline(args, destage=args._destage, dry_run=args._dry).run()
 
 
 @argh.arg('--edition', '-e', nargs='*')
 @argh.arg('--builder', '-b', default='html')
+@argh.arg('--dry', default=False, dest='_dry')
 @argh.named('s3_deploy')
 @argh.expects_obj
 def main_deploy(args):
     """Start an HTTP server rooted in the build directory."""
-    DeployPipeline(args, destage=False).run()
+    DeployPipeline(args, destage=False, dry_run=args._dry).run()
