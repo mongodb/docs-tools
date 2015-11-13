@@ -36,12 +36,18 @@ s3_deploy:
   manual:
     url: 'https://docs-mongodborg-prod.corp.mongodb.com'
     bucket: 'docs-mongodb-org-prod'
+    redirect_dirs: ['v[0-9]\.[0-9]', 'manual', 'master']
   mms:
     url: 'https://mmsdocs.corp.mongodb.com'
     bucket: 'mmsdocs'
   ecosystem:
     url: 'https://docs-mongodborg-prod.corp.mongodb.com'
     bucket: 'docs-mongodb-org-prod'
+
+    # A list of directory regular expressions for which this project is
+    # considered to "own" redirects. Redirects outside of these directories
+    # will never be removed (but may be modified) by this project.
+    redirect_dirs: ['ecosystem']
 
     # The prefix under the bucket under which to upload everything.
     # Default: ''
@@ -56,5 +62,6 @@ s3_deploy:
     url: 'https://docs-mongodborg-prod.corp.mongodb.com'
     bucket: 'docs-mongodb-org-prod'
     prefix: 'getting-started'
+    redirect_dirs: ['getting-started']
     use_branch: false
 ...

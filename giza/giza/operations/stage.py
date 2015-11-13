@@ -80,8 +80,7 @@ class Path(object):
 
 
 class BulletProofS3(object):
-    """An S3 API that wraps boto to work around Amazon's 100-request limit and
-       implement caching."""
+    """An S3 API that wraps boto to work around Amazon's 100-request limit."""
     THRESHOLD = 20
 
     def __init__(self, access_key, secret_key, bucket_name):
@@ -91,8 +90,6 @@ class BulletProofS3(object):
 
         self.times_used = 0
         self._conn = None
-
-        self.cache_list = []
 
     def get_connection(self):
         """Return a connection to S3. Not idempotent: will create a new connection
@@ -105,13 +102,9 @@ class BulletProofS3(object):
         self.times_used += 1
         return self._conn
 
-    def list(self, prefix=None, cache=False):
-        """Returns a list of keys in this S3 bucket. If cache=True, will return
-           the last list result."""
-        if not cache or not self.cache_list:
-            self.cache_list = self.get_connection().list(prefix=prefix)
-
-        return list(self.cache_list)
+    def list(self, prefix=None):
+        """Returns a list of keys in this S3 bucket."""
+        return self.get_connection().list(prefix=prefix)
 
     def delete_keys(self, keys):
         """Delete the given list of keys."""
@@ -363,6 +356,7 @@ class Staging(object):
         # The S3 prefix for this staging site
         self.namespace = namespace
         self.branch = branch
+        self.staging_config = staging_config
 
         self.s3 = s3
         self.collector = self.FileCollector(branch, staging_config.use_branch, namespace)
@@ -385,7 +379,7 @@ class Staging(object):
 
         prefix = '' if not self.namespace else '/'.join((self.namespace, ''))
 
-        keys = [k.key for k in self.s3.list(prefix=prefix, cache=False)]
+        keys = [k.key for k in self.s3.list(prefix=prefix)]
         result = self.s3.delete_keys(keys)
         if result.errors:
             raise SyncException(result.errors)
@@ -484,9 +478,14 @@ class Staging(object):
         if not redirects:
             return
 
+        redirect_dirs = self.staging_config.redirect_dirs
+        if not redirect_dirs:
+            LOGGER.warn('No "redirect_dirs" listed for this project.')
+            LOGGER.warn('No redirects will be removed.')
+
         LOGGER.info('Finding redirects to remove')
         removed = []
-        remote_redirects = self.s3.list(cache=True)
+        remote_redirects = self.s3.list()
         for key in remote_redirects:
             # Make sure this is a redirect
             if key.size != 0:
@@ -497,6 +496,10 @@ class Staging(object):
 
             # If it doesn't start with our namespace, ignore it
             if not redirect_key.startswith(self.namespace):
+                continue
+
+            # If it doesn't match one of our "owned" directories, ignore it
+            if not [True for pat in redirect_dirs if pat.match(redirect_key)]:
                 continue
 
             if redirect_key not in redirects:
