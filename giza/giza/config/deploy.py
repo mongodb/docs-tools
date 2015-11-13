@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 import logging
 import libgiza.config
 
@@ -165,3 +166,18 @@ class StagingTargetConfig(libgiza.config.ConfigurationBase):
     @use_branch.setter
     def use_branch(self, value):
         self.state['use_branch'] = bool(value)
+
+    @property
+    def redirect_dirs(self):
+        """A list of directory regular expressions for which this project
+           is considered to "own" redirects. Redirects outside of these
+           directories will never be removed (but may be modified) by
+           this project."""
+        try:
+            return self.state['redirect_dirs']
+        except KeyError as err:
+            return []
+
+    @redirect_dirs.setter
+    def redirect_dirs(self, value):
+        self.state['redirect_dirs'] = [re.compile(d) for d in value]
