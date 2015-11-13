@@ -42,8 +42,7 @@ except ImportError:
 
 LOGGER = logging.getLogger('giza.operations.stage')
 REDIRECT_PAT = re.compile('^Redirect 30[1|2|3] (\S+)\s+(\S+)', re.M)
-FileUpdate = collections.namedtuple('FileUpdate', ['path', 'mtime',
-                                                   'file_hash'])
+FileUpdate = collections.namedtuple('FileUpdate', ['path', 'file_hash'])
 AuthenticationInfo = collections.namedtuple('AuthenticationInfo', ['access_key', 'secret_key', 'username'])
 
 CONFIG_PATH = '~/.config/giza-aws-authentication.conf'
@@ -282,6 +281,10 @@ class StagingCollector(object):
                 dirs[:] = [d for d in dirs if d in whitelist]
 
             for filename in files:
+                # Skip dotfiles
+                if filename.startswith('.'):
+                    continue
+
                 path = os.path.join(basedir, filename)
 
                 try:
@@ -293,7 +296,7 @@ class StagingCollector(object):
                 if remote_hashes.get(remote_path, None) == local_hash:
                     continue
 
-                yield FileUpdate(path, 0, local_hash)
+                yield FileUpdate(path, local_hash)
 
     def commit(self):
         pass
