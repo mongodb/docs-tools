@@ -210,13 +210,40 @@ def _get_redirect_base_paths(computed, out, conf):
 
 
 def resolve_outputs_for_redirect(outputs, conf):
+
+    """ integration.yaml contain links for non-branched versions such as manual and latest branch """
+    """ { 'manual': 'v3.0' } manual will link to v3.0 or later to v3.2, etc. """
+    """ { 'v3.2': 'master' } v3.2 will be pointing to master until actual branch exists and so on """
+    """ KLUGE:: This gets the same shadows for each 3000+ redirect which is unnecessary and inefficient """
+    """ But for now, putting back modified logic back where it was to limit scope of change until after 3.2 GA """
+
+    if 'integration' in conf.system.files.data:
+        shadows = conf.system.files.data.integration['base']['links']
+    else:
+        shadows = []
+
     """Resolve redirect outputs like 'before-v2.6', 'all', and 'manual' to a
        tuple of filesystem paths. Returns a list containing [output, tuple]."""
     expanded_outputs = []
     for out in outputs:
         computed = []
-
         out_key, out_value = _get_redirect_base_paths(computed, out, conf)
+
+        """If integrations.yaml link target is in the computed links or is listed in output
+           e.g. manual points to v3.0, and v3.0 is in the computed list, then
+           add the link key
+        """
+        for shadow in shadows:
+            """{key: value}"""
+            key, value = shadow.items()[0]
+            if value in computed or value == out:
+                
+                """ KLUGE:: This is a short-term kluge to be cleaned up in January  """
+                """ since both python code and the redirect yaml files have problems """
+                if conf.project.name == 'mms':
+                   key = key.replace('onprem/','')
+                expanded_outputs.extend([key])
+
         expanded_outputs.extend([_render_key(o, out_key, out_value) for o in computed])
 
     outputs.extend(expanded_outputs)
