@@ -449,8 +449,8 @@ class Staging(object):
         for src,dest in redirects.items():
             src_path = os.path.join(root, src)
             if os.path.isfile(src_path) and os.path.basename(src_path) in os.listdir(os.path.dirname(src_path)):
-                LOGGER.warn('Ignoring redirect that will mask file: %s', src)
-                del redirects[src]
+                LOGGER.warn('Would ignore redirect that will mask file: %s', src)
+#                del redirects[src]
 
         # Collect files that need to be uploaded
         for entry in self.collector.collect(root, self.s3.list(prefix=self.namespace)):
