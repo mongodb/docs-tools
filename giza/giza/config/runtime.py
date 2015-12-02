@@ -110,13 +110,13 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
         }
 
         if value not in levels:
-            value = 'info'
+            value = 'warning'
 
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.WARNING)
+        root_logger.setLevel(logging.DEBUG)
 
         file_logger = logging.FileHandler('giza.log', mode='a')
-        file_logger.setLevel(logging.DEBUG)
+        file_logger.setLevel(logging.WARNING)
         file_logger.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 
         console_logger = logging.StreamHandler()
