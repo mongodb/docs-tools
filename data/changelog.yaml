@@ -42,6 +42,7 @@ groups:
     - Packaging
   "Internals":
     - Testing
+    - Testing Infrastructure
     - Stability
     - Performance
     - Portability
