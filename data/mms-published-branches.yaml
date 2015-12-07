@@ -1,5 +1,6 @@
 version:
   published:
+    - '2.1-pre'
     - '2.0'
     - '1.8'
     - '1.6'
@@ -9,12 +10,13 @@ version:
     - '1.2'
     - '1.1'
   stable: '2.0'
-  upcoming: null
+  upcoming: '2.1-pre'
 git:
   branches:
     manual: 'v2.0'
     published:
       - 'master'
+      - 'v2.0'
       - 'v1.8'
       - 'v1.6'
       - 'v1.5'
