@@ -17,7 +17,7 @@ import os.path
 import logging
 
 import libgiza.config
-import sphinx.builders
+import sphinx.make_mode
 import yaml
 
 logger = logging.getLogger('giza.config.sphinx_config')
@@ -64,7 +64,7 @@ def resolve_builder_path(builder, edition, language, conf):
 
 
 def avalible_sphinx_builders():
-    builders = sphinx.builders.BUILTIN_BUILDERS.keys()
+    builders = [builder[1] for builder in sphinx.make_mode.BUILDERS]
     builders.append('slides')
     builders.append('publish')
 
