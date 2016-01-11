@@ -243,7 +243,9 @@ div.body li {
 }
 div.highlight{ background-color: white; }
 dl.binary { display: none; }
-div.topic { background-color: #eee; }
+div.topic {
+   background-color: #ffffff;
+}
 
 table.docutils > div.admonition-example {
     background-color:inherit;
@@ -722,10 +724,39 @@ div.body div.bc ul { padding:0; margin:0 }
 div.body div.bc ul li { list-style: none; font-size: 13px; display:inline; }
 div.body div.bc ul li a { color: #006cbc; }
 div.dc span.bcpoint { font-weight: bold; font-size:0.9em; color: #343434; }
-div.body div.contents { max-width: 30%; float: right; padding: 0 0.5em 0.5em; margin-left: 1em; }
+
+div.body div.contents {
+   padding: 0 0.5em 0.5em;
+}
+
 div.body div.contents.long-toc { max-width: 100%; float: none; margin-left: 0; }
-div.body div.contents li { padding-top: .25em; }
-div.body div.contents ul { margin: 0; padding-left: 1.5em; }
+
+div.body div.contents li {
+   padding-top: .25em;
+   column-break-inside: avoid;
+   list-style-position: inside;
+}
+div.body div.contents.singlecol ul {
+   margin: 0;
+   padding-left: 1.0em;
+}
+
+div.body div.contents.twocols  ul{ 
+   margin: 0;
+   padding-left: 1.0em; 
+   -webkit-column-count:2;
+   -moz-column-count:2;
+   -ms-column-count:2;
+   -o-column-count:2;
+   column-count:2;
+   -webkit-column-gap: 10px;
+   -moz-column-gap: 10px;
+   -ms-column-gap: 10px;
+   -o-column-gap: 10px;
+   column-gap: 10px;
+   columns:2;
+}
+
 div.hidden { display: none; }
 
 #vn {
