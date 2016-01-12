@@ -4,9 +4,9 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://mms.mongodb.com/{{theme_manual_path}}/" />
+    <link rel="canonical" href="https://docs.opsmanager.mongodb.com/current/" />
   {%- else %}
-    <link rel="canonical" href="http://mms.mongodb.com/{{theme_manual_path}}/{{pagename}}/" />
+    <link rel="canonical" href="https://docs.opsmanager.mongodb.com/current/{{pagename}}/" />
   {%- endif -%}
 {%- endblock -%}
 
@@ -54,6 +54,7 @@
       <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.opsmanager.mongodb.com/current/search/" queryParameterName="query"></gcse:searchbox-only></div>
   {% endblock %}
 {% endblock %}
+
 
 {% block version_selector %}
   <li>
