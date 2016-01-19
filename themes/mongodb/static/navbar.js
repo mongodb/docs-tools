@@ -162,7 +162,7 @@ $(function() {
         var expandElement = $('<span class="expand-icon"></span>');
         var self = $(this)
 
-        if(!isLeafNode(self) && !requiresPageload(self)) {
+        if(!isLeafNode(self)) {
             expandElement.addClass('fa fa-plus');
         }
 
