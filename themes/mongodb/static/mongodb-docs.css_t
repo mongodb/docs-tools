@@ -1641,7 +1641,7 @@ div.admonition.note table.docutils tr:last-child td {
     border-bottom: 0;
 }
 
-@media (max-width: 1393px) {
+@media (max-width: 1263px) {
    #header-db .header-content {
       width: 100%;
    }
@@ -1650,7 +1650,7 @@ div.admonition.note table.docutils tr:last-child td {
    }
 }
 
-@media (min-width: 1121px) and  (max-width: 1392px) {
+@media (min-width: 1121px) and (max-width: 1262px) {
 
     #header-db .nav-items {
         margin-right: 15px;

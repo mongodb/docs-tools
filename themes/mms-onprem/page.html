@@ -10,6 +10,14 @@
   {%- endif -%}
 {%- endblock -%}
 
+{%- block adblockheader %}
+    {%- include "onprem-adblock-header.html" %}
+{%- endblock -%}
+
+{%- block adblock %}
+    {%- include "onprem-adblock.html" %}
+{%- endblock -%}
+
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
     {%- if theme_branch in (theme_manual_branch, 'master') %}

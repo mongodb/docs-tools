@@ -10,6 +10,14 @@
 
 {%- block righttoc %} {% endblock %}
 
+{%- block adblockheader %}
+    {%- include "eco-adblock-header.html" %}
+{%- endblock -%}
+
+{%- block adblock %}
+    {%- include "eco-adblock.html" %}
+{%- endblock -%}
+
 {%- block subnav %}
    <a class="flex-item navbar-link" href="https://docs.mongodb.org/manual/">Docs</a>
    <a class="flex-item navbar-link" href="https://university.mongodb.com/">University</a>
