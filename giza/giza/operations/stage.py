@@ -770,7 +770,7 @@ class DeployPipeline(StagingPipeline):
 
     def print_report(self):
         """Print a list of staging URLs corresponding to the given editions."""
-        print('Staged at:')
+        print('Published to:')
         print('    ' + self.staging_config.url)
 
     def run(self):
