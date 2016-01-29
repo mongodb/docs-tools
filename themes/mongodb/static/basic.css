@@ -197,6 +197,14 @@ dt:hover > a.headerlink {
     visibility: visible;
 }
 
+div.body {
+    transition: opacity 0.25s linear;
+}
+
+div.body.loading {
+    opacity: 0.25;
+}
+
 div.body p.caption {
     text-align: inherit;
 }
