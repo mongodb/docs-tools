@@ -5,8 +5,7 @@
 
 {%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
 {%- set url_root = pathto('', 1) %}
-{%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.tipsy.js", "_static/lib/jquery.cookie.js", "_static/navbar.js"] %}
-{%  set css_files = css_files + ["_static/bootstrap-custom.css", "_static/lib/icomoon.css", "_static/lib/font-awesome.css", "_static/lib/tipsy.css"] %}
+{%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/navbar.js"] %}
 {%- set github_organization = "mongodb" %}
 
 {%- macro translationslink() -%}

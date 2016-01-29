@@ -1,6 +1,7 @@
 {%- extends "layout.html" -%}
 
-{% set script_files = script_files + ["_static/onboarding-modal.js"] %}
+{% set script_files = script_files + ["_static/lib/jquery.tipsy.js", "_static/lib/jquery.cookie.js", "_static/onboarding-modal.js"] %}
+{% set css_files = css_files + ["_static/lib/tipsy.css"] %}
 
 -{%- block header_logo %}
     <div class="header-logo-replacement-text pull-left">
