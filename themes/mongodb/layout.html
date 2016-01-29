@@ -5,7 +5,7 @@
 
 {%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
 {%- set url_root = pathto('', 1) %}
-{%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/navbar.js"] %}
+{%  set script_files = ["_static/jquery.js", "_static/doctools.js"] %}
 {%- set github_organization = "mongodb" %}
 
 {%- macro translationslink() -%}
