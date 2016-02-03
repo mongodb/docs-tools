@@ -210,6 +210,13 @@ conf['directives'] = [
         'prepend': True,
         'callable': False,
     },
+    {
+        'name': 'serverstatus',
+        'tag': 'serverstatus',
+        'description': 'serverstatus data',
+        'prepend': True,
+        'callable': False,
+    },
     ## Custom Setting Directives for MMS Agents
     {
         'name': 'msetting',
