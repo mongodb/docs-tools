@@ -1,6 +1,5 @@
 {%- extends "layout.html" -%}
 
-{%- set script_files = script_files + ["_static/onboarding-modal.js"] %}
 {%- set slide_path = 'slides/' + pagename + '.html' %}
 
 {%- block header_logo %}
@@ -54,8 +53,6 @@
   </div>
 {%- endblock -%}
 
-{%- block onboarding_modal -%}{% endblock %}
-
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
     <script type="text/javascript">
@@ -83,9 +80,6 @@
          };
          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
          })();
-      $(function() {
-        $('.translation-link').add('.jira-link').add('.edit-link').tipsy({gravity: 's'});
-      });
     </script>
   {%- endif %}
 {%- endblock -%}
