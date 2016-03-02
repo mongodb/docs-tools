@@ -304,7 +304,7 @@
           {%- block document %}
             <div class="documentwrapper">
               {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
-              <div class="body">
+              <div class="body" data-pagename="{{pagename}}">
                 {%- block editlink_icon %}
                    {{ editlink('icon') }}
                 {% endblock %}
@@ -384,19 +384,15 @@
   {%- block versionnav %}
 
   <script type="text/javascript">
-  var pagename = '{{pagename}}';
-  if (pagename == 'index') {
-    pagename = '';
-  }
-  window.basePath = '{{theme_basepath}}';
-
   window.fullDocsPath = function(base) {
-    var path = pagename;
+    var body = document.getElementsByClassName('body')[0]
+    var path = body.getAttribute('data-pagename');
 
     // skip if pagename is undefined (index.html)
     if (path) {
-      path = pagename + '/';
+      path = path + '/';
     }
+
     return '/' + base + '/' + path;
   }
   // Bootstrap array of links that should trigger a full page reload
