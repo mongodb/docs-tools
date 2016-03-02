@@ -296,11 +296,13 @@ $(function() {
 
     if(document.querySelector) {
         // Scroll so that the selected navbar element is in view.
-        document.querySelector('a.current').scrollIntoView(false);
-
-        // Scroll a bit more so that the selected element isn't hidden by
-        // the Options pane button.
-        var options_header = document.querySelector('.option-header');
-        document.querySelector('.sidebar').scrollTop += options_header.clientHeight;
+        var current = document.querySelector('a.current');
+        if(current) {
+            current.scrollIntoView(false);
+            // Scroll a bit more so that the selected element isn't hidden by
+            // the Options pane button.
+            var options_header = document.querySelector('.option-header');
+            document.querySelector('.sidebar').scrollTop += options_header.clientHeight;
+        }
     }
 });
