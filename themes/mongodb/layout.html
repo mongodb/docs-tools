@@ -389,7 +389,9 @@
     var path = body.getAttribute('data-pagename');
 
     // skip if pagename is undefined (index.html)
-    if (path) {
+    if (path == 'index') {
+        path = '';
+    } else if (path) {
       path = path + '/';
     }
 
