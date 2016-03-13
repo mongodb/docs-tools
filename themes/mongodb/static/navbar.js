@@ -165,16 +165,17 @@ $(function() {
                     newBody.classList.add('loading');
                 }
 
+                // Change URL before loading the DOM to properly resolve URLs
+                if (createHistory) {
+                    window.history.pushState({ href: href }, title, href);
+                }
+
                 // Replace the DOM elements
                 bodyElement.parentElement.replaceChild(newBody, bodyElement);
                 bodyElement = newBody;
                 navRootElement.parentElement.replaceChild(newNav, navRootElement);
                 navRootElement = newNav;
                 document.title = title;
-
-                if (createHistory) {
-                    window.history.pushState({ href: href }, title, href);
-                }
 
                 // Update the sidebar
                 updateSidebar();
