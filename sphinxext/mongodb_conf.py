@@ -217,6 +217,13 @@ conf['directives'] = [
         'prepend': True,
         'callable': False,
     },
+    {
+        'name': 'urioption',
+        'tag': 'urioption',
+        'description': 'uri option',
+        'prepend': True,
+        'callable': False,
+    },
     ## Custom Setting Directives for MMS Agents
     {
         'name': 'msetting',
