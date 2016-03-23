@@ -265,16 +265,17 @@ pre {
     margin: 24px 0;
 }
 
-tt {
+tt, code {
     color: #000;
     font-family: 'Source Code Pro', monospace;
 }
 
-a>tt {
+a>tt, a>code {
     color: #006cbc;
 }
 
-tt.xref, a tt {
+tt.xref, a tt,
+code.xref, a code {
     font-weight: normal;
 }
 
@@ -571,11 +572,12 @@ div#docs-header { width: 950px; }
 
 div#main-db.hidden { display: none; }
 
-tt,tt  span.pre {
+tt, tt span.pre,
+code, code span.pre {
     font-family: 'Source Code Pro', monospace;
 }
-tt.descname,
-tt.descclassname {
+tt.descname, tt.descclassname,
+code.descname, code.descclassname {
     font-size: 16px;
     font-weight: normal;
 }
@@ -741,9 +743,9 @@ div.body div.contents.singlecol ul {
    padding-left: 1.0em;
 }
 
-div.body div.contents.twocols  ul{ 
+div.body div.contents.twocols  ul{
    margin: 0;
-   padding-left: 1.0em; 
+   padding-left: 1.0em;
    -webkit-column-count:2;
    -moz-column-count:2;
    -ms-column-count:2;
@@ -969,7 +971,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     background-color: #FFFFFF;
 }
 
-.flex-item .flex-full{ 
+.flex-item .flex-full{
    width:100%
 }
 
@@ -1278,7 +1280,8 @@ div.sphinxsidebar h3 a.showlink {
      background-color: #615f5f;
 }
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a,
-.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > tt {
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > tt,
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > code {
     color: white;
 }
 
@@ -1368,7 +1371,8 @@ div.sphinxsidebar input[type="submit"] {
     width: 4.5em !important;
 }
 
-div.sphinxsidebar tt.literal .pre {
+div.sphinxsidebar tt.literal .pre,
+div.sphinxsidebar code.literal .pre {
     font-weight: normal;
 }
 
@@ -1376,7 +1380,8 @@ div.sphinxsidebarwrapper ul {
     margin: 12px 0 0 0;
     padding: 0;
 }
-div.sphinxsidebarwrapper ul li a tt span {
+div.sphinxsidebarwrapper ul li a tt span,
+div.sphinxsidebarwrapper ul li a code span {
     font-size:inherit;
 }
 div.sphinxsidebarwrapper div.idxcontents {
@@ -1705,7 +1710,7 @@ div.admonition.note table.docutils tr:last-child td {
     }
 
     #header-db .header-content {
-        width: 1093px; 
+        width: 1093px;
         padding-left: 30px;
         float: none;
     }
