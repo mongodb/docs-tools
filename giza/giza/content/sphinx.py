@@ -83,6 +83,7 @@ def get_sphinx_args(sconf, conf):
     o.append('-q')
 
     o.append('-b {0}'.format(sconf.builder))
+    n_workers = str(min(conf.runstate.pool_size, 4))
 
     if is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version):
         if 'serial_sphinx' in conf.runstate:
@@ -95,22 +96,22 @@ def get_sphinx_args(sconf, conf):
                         len(conf.runstate.editions_to_build) >= 1):
                     pass
                 else:
-                    o.append(' '.join(['-j', str(conf.runstate.pool_size)]))
+                    o.append(' '.join(['-j', n_workers]))
             elif conf.runstate.serial_sphinx is False:
                 logger.info('running with parallelized sphinx processes')
-                o.append(' '.join(['-j', str(conf.runstate.pool_size)]))
+                o.append(' '.join(['-j', n_workers]))
             elif (isinstance(conf.runstate.serial_sphinx, numbers.Number) and
                   conf.runstate.serial_sphinx > 1):
                 logger.info('running with parallelized sphinx processes')
-                o.append(' '.join(['-j', str(conf.runstate.serial_sphinx)]))
+                o.append(' '.join(['-j', n_workers]))
             else:
                 pass
         elif len(conf.runstate.builder) >= conf.runstate.pool_size:
-            logger.info('running with serail sphinx processes')
+            logger.info('running with serial sphinx processes')
             pass
         else:
             logger.info('running with parallelized sphinx processes')
-            o.append(' '.join(['-j', str(conf.runstate.pool_size)]))
+            o.append(' '.join(['-j', n_workers]))
 
     o.append(' '.join(['-c', conf.paths.projectroot]))
 
