@@ -2,7 +2,8 @@ TARGETS=../mongodb-docs.css
 CSS_INPUTS=css/bootstrap-custom.css \
 		   css/icomoon.css \
            css/font-awesome.css \
-           css/mongodb-docs.css
+           css/mongodb-docs.css \
+           css/header.css
 CSS_FILES=$(CSS_INPUTS) css/basic.css
 
 CSS_ERRORS=errors,empty-rules,duplicate-properties,selector-max-approaching

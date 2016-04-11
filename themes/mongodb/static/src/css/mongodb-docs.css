@@ -36,6 +36,7 @@
 /*Bold*/
 @font-face {
     font-family: 'Akzidenz';
+    font-family: 'Akzidenz Grotesk BQ Medium';
     src: url('fonts/akzidgrostdmed.eot');
     src: url('fonts/akzidgrostdmed.eot#iefix') format('embedded-opentype'),
     url('fonts/akzidgrostdmed.woff') format('woff'),
@@ -56,6 +57,7 @@
 /*Light*/
 @font-face {
     font-family: 'Akzidenz';
+    font-family: 'Akzidenz Grotesk BQ Light';
     src: url('fonts/akzidgrostdlig.eot');
     src: url('fonts/akzidgrostdlig.eot#iefix') format('embedded-opentype'),
     url('fonts/akzidgrostdlig.woff') format('woff'),
@@ -794,7 +796,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 
 .content .main-column {
-    margin-top: 95px;
+    margin-top: 108px;
     margin-left: 293px;
     min-height: 600px;
     width: 800px;
@@ -1207,7 +1209,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     background-color: #f5f6f7;
     width: 293px;
     height: auto;
-    top: 82px;
+    top: 100px;
     bottom: 0;
     left: 0;
     overflow: auto;
