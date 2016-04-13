@@ -119,6 +119,11 @@ $(function() {
         var bodyElement = document.querySelector('.body');
         var curLoading = {};
 
+        // Set up initial state so we can return to our initial landing page.
+        window.history.replaceState({ href: window.location.href },
+                                    document.querySelector('title').textContent,
+                                    window.location.href);
+
         // Stop loading the currently-in-progress page.
         var abortLoading = function() {
             if (curLoading.timeoutID !== undefined) {
