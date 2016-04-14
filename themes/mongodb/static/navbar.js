@@ -1,10 +1,10 @@
 $(function() {
     'use strict';
 
-    var docsExcludedNav = window.docsExcludedNav;
-
     /* Checks a whitelist for non-leaf nodes that should trigger a full page reload */
     function requiresPageload($node) {
+        var docsExcludedNav = window.docsExcludedNav;
+
         if (!docsExcludedNav || !docsExcludedNav.length) {
             return false;
         }
@@ -190,7 +190,11 @@ $(function() {
                 // animation and scroll the new contents to the top.
                 window.setTimeout(function() {
                     bodyElement.classList.remove('loading');
-                    window.scroll(0, 0);
+
+                    // Scroll to the top of the page only if this is a new history entry.
+                    if(createHistory) {
+                        window.scroll(0, 0);
+                    }
                 }, 1);
             }, error: function(ev) {
                 // Some browsers consider any file://-type request to be cross-origin.
