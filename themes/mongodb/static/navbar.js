@@ -186,6 +186,10 @@ $(function() {
                 updateSidebar();
                 setupFastLoad();
 
+                if (window.history.onnavigate) {
+                    window.history.onnavigate();
+                }
+
                 // Prime the new DOM so that we can set up our fade-in
                 // animation and scroll the new contents to the top.
                 window.setTimeout(function() {

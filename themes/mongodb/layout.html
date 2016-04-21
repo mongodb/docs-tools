@@ -70,6 +70,8 @@
   {%- for scriptfile in script_files %}
     <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
   {%- endfor %}
+
+  <script defer type="text/javascript" src="{{ pathto('_static/feedback.js', 1) }}"></script>
 {%- endmacro -%}
 
 {%- macro css() %}
@@ -176,7 +178,7 @@
   {%- endblock -%}
   {%- block adblockheader %}{%- endblock -%}
 </head>
-<body>
+<body data-project="{{theme_project}}">
   {%- block googletagmanager %}
   <!-- Google Tag Manager -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-JQHP"
@@ -314,21 +316,8 @@
                 {% endblock %}
                 {{- render_nextprev() -}}
 
-                <!-- if anything changes in the rating block, update the doctools.js in themes/mongodb/static -->
                 {% block rating %}
-                <div id="rating-panel">
-                  <div id="feedback-question">
-                    <p>Was this page helpful?</p>
-                    <a id="rate-up">Yes</a>
-                    <a id="rate-down">No</a>
-                  </div>
-                  <div id="feedback-response">
-                    <p>Thank you for your feedback!</p>
-                  </div>
-                  <div id="feedback-response-down">
-                    <p>We're sorry! You can {{ jiralink() }} to help us improve this page.</p>
-                  </div>
-                </div>
+                <div id="rating-panel"></div>
                 {% endblock %}
                 {%- block footer %}
                   <div class="footer">
@@ -376,11 +365,6 @@
     <div class="clearfix"></div>
   </div>
   {% block onboarding_modal %}{% endblock %}
-
-  {%- block jiracollector %}
-    {%- include "jiracollector.html" %}
-  {%- endblock %}
-
   {%- block versionnav %}
 
   <script type="text/javascript">
