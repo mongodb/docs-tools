@@ -4,10 +4,10 @@
     // We require DOM storage. Don't show anything if support is not present.
     if (window.localStorage === undefined) { return; }
 
-    const project = document.body.dataset.project;
+    var project = document.body.dataset.project;
 
     // Files on which we should not have feedback widgets
-    const blacklist = {'meta/404': true, 'search': true};
+    var blacklist = {'meta/404': true, 'search': true};
 
     // Set up the JIRA collector widget
     var _showCollectorDialog;
@@ -23,7 +23,7 @@
     };
 
     function updateLink(linkElement, pagename) {
-        const escaped_pagename = encodeURIComponent(pagename);
+        var escaped_pagename = encodeURIComponent(pagename);
 
         linkElement.onclick = showCollectorDialog;
         linkElement.target = '_blank';
@@ -40,14 +40,14 @@
             cache: true,
             dataType: 'script'});
 
-        const links = document.querySelectorAll('.jirafeedback');
+        var links = document.querySelectorAll('.jirafeedback');
         for(var i = 0; i < links.length; i += 1) {
             updateLink(links[i], pagename);
         }
     }
 
     function loadPage() {
-        const pagename = document.querySelector('.body').dataset.pagename;
+        var pagename = document.querySelector('.body').dataset.pagename;
         updateJiraProperties(pagename);
         if (blacklist.hasOwnProperty(pagename)) {
             return;
