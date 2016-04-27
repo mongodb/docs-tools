@@ -4,7 +4,7 @@
     // We require DOM storage. Don't show anything if support is not present.
     if (window.localStorage === undefined) { return; }
 
-    var project = document.body.dataset.project;
+    var project = document.body.getAttribute('data-project');
 
     // Files on which we should not have feedback widgets
     var blacklist = {'meta/404': true, 'search': true};
@@ -47,7 +47,7 @@
     }
 
     function loadPage() {
-        var pagename = document.querySelector('.body').dataset.pagename;
+        var pagename = document.querySelector('.body').getAttribute('data-pagename');
         updateJiraProperties(pagename);
         if (blacklist.hasOwnProperty(pagename)) {
             return;
