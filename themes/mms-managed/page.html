@@ -1,4 +1,7 @@
 {%- extends "page-layout.html" -%}
+{% block navbar %}
+  {% set search_url = "https://docs.opsmanager.mongodb.com/current/search/?query=" %}
+{% endblock %}
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
