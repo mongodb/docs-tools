@@ -132,7 +132,7 @@
     {{ script() }}
 
     {%- block googlecse_opensearch %}
-      <link rel="search" type="application/opensearchdescription+xml" href="https://docs.mongodb.org/osd.xml" title="MongoDB Help"/>
+      <link rel="search" type="application/opensearchdescription+xml" href="https://docs.mongodb.com/osd.xml" title="MongoDB Help"/>
     {%- endblock -%}
 
     {%- if favicon %}
@@ -165,7 +165,7 @@
                   $input.on('blur', function(e) {
                     if (!$input.val().length) { $div.addClass('narrow').removeClass('wide'); }
                   });
-                  $input.attr('placeholder', "Search mongodb.org");
+                  $input.attr('placeholder', "Search mongodb.com");
                   window.clearInterval(pollInput);
                 }
               }, 10);
@@ -251,7 +251,7 @@
                 <label>{{ _('Langauges') }}</label>
                 <select class="language-selector pull-right">
                   {%- for lc,lang in theme_translations -%}
-                      <option data-path="https://{{lc}}.docs.mongodb.org/{{ page_url }}">
+                      <option data-path="https://{{lc}}.docs.mongodb.com/{{ page_url }}">
                         {{lang}}
                       </option>
                   {% endfor -%}
