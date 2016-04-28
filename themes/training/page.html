@@ -4,7 +4,7 @@
 {%- set slide_path = 'slides/' + pagename + '.html' %}
 
 {%- block header_logo %}
-    <div class="header-logo-replacement-text pull-left">
+    <div class="logo pull-left">
       <a href="{{ url_root }}">
         {{ theme_sitename }}
       </a>
@@ -17,16 +17,7 @@
 
 {%- block commnav -%} {%- endblock -%}
 
-{%- block topnav %}
-  {%- block subnav %} {% endblock %}
-
-  {%- block searchbox %}
-     <div class="search-db narrow pull-right">
-       <gcse:searchbox-only resultsUrl="https://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only>
-     </div>
-  {% endblock %}
-{% endblock %}
-
+{%- block subnav -%} {%- endblock -%}
 
 {%- block translationslink -%} {%- endblock -%}
 

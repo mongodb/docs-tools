@@ -728,55 +728,8 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     margin-top: 12.5px;
 }
 
-.flex {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-}
 
-.flex-item {
-   position:relative
-}
 
-.flex-center {
-   -webkit-box-pack:center;
-   -webkit-justify-content:center;
-   -ms-flex-pack:center;
-   justify-content:center
-}
-.flex-left{
-   -webkit-box-pack: start;
-   -webkit-justify-content: flex-start;
-   -ms-flex-pack:start;
-   justify-content:flex-start
-}
-.flex-right {
-   -webkit-box-pack:end;
-   -webkit-justify-content:flex-end;
-   -ms-flex-pack:end;
-   justify-content:flex-end
-}
-.flex-wrap {
-   -webkit-flex-wrap:wrap;
-   -ms-flex-wrap:wrap;
-   flex-wrap:wrap
-}
-
-.bg-white {
-    background-color: #FFFFFF;
-}
-
-.flex-item .flex-full{
-   width:100%
-}
-
-.flex-item .flex-half {
-   width:50%
-}
-.flex-item .flex-quarter{
-   width:25%
-}
 
 @media print {
     header#header-db {
@@ -789,7 +742,7 @@ div.gsc-control-cse-en, div.gsc-control-cse { padding: 0 !important; }
 form.gsc-search-box {
     background-color: rgba(255,255,255,0.3);
     border-radius: 6px;
-    border: 1px solid #75747a;
+    border: 1px solid #3b2920;
 }
 
 .gsc-search-box.gsc-search-box-tools .gsc-search-box .gsc-input {
@@ -807,7 +760,7 @@ div.gsc-input-box,
 /* [name] selector is a hack to override google's stylsheet */
 .gsc-input input.gsc-input[name="search"] {
     background-color: transparent !important;
-    color: #75747a;
+    color: white;
     font-weight: 300;
     font-size: 15px;
     height: 1.3em !important;
@@ -835,25 +788,27 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     -webkit-box-sizing: content-box;
 }
 
+#header-db .logo {
+    padding: 5px 0;
+}
+
 #header-db .search-db {
     transition: width 0.3s linear;
     -webkit-transition: width 0.3s linear;
     -moz-transition: width 0.3s linear;
     -o-transition: width 0.3s linear;
-    padding-top: 30px;
-    margin-right: 16px;
-    float: right;
+    margin-left: 45px;
+    margin-top: 11px;
+    display: inline-block;
 }
 
-
 #header-db .search-db.narrow {
-    width:98px;
+    width: 98px;
 }
 
 #header-db .search-db.wide {
-    width: 225px;
+    width: 226px;
 }
-
 
 /* Footer styles */
 .footer {
@@ -1003,7 +958,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     background-color: #f5f6f7;
     width: 293px;
     height: auto;
-    top: 100px;
+    top: 50px;
     bottom: 0;
     left: 0;
     overflow: auto;
@@ -1281,7 +1236,7 @@ div.sphinxsidebarwrapper div.idxcontents {
     position: fixed;
     -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
     left: 1093px;
-    top: 105px;
+    top: 72px;
     bottom: 0;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1460,49 +1415,27 @@ div.admonition.note table.docutils tr:last-child td {
       float: none;
     }
 
-}
-
-@media (min-width: 1094px) and  (max-width: 1120px) {
-
-   #header-db .header-content {
-      float: none;
-   }
-   #header-db .nav-items {
-      float: none;
-   }
-
-   #header-db .nav-items {
-      margin-right: 15px;
-   }
+    .content .right-column {
+        display: none;
+    }
 }
 
 .expand-toc-icon {
     display: none;
 }
 
-
 @media (max-width: 1093px) {
     .expand-toc-icon {
         display: block;
-        padding-top: 20px;
-        height: 80px;
-        line-height: 46px;
-    }
-
-    .icon-menu {
-       color: #494747;
-       font-size: 26px;
-       text-decoration:none;
+        padding-top: 10px;
+        padding-right: 10px;
+        color: white;
     }
 
     .expand-toc-icon:hover,
     .expand-toc-icon:active {
-        color: #494747;
+        color: white;
         text-decoration: none;
-    }
-
-    .expand-toc-icon:focus {
-        color: #494747;
     }
 
     #header-db .header-content {
@@ -1514,11 +1447,6 @@ div.admonition.note table.docutils tr:last-child td {
     #header-db .nav-items {
         margin-right: 15px;
         float: none;
-    }
-
-    #header-db .logo {
-      padding-top: 18.4px;
-      padding-left: 22px;
     }
 
     .sidebar {
