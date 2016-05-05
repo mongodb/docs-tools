@@ -32,12 +32,6 @@ staging:
   primer:
     url: 'https://docs-mongodborg-staging.corp.mongodb.com'
     bucket: 'docs-mongodb-org-staging'
-  bi-connector:
-    url: 'https://docs-mongodborg-staging.corp.mongodb.com'
-    bucket: 'docs-mongodb-org-staging'
-  compass:
-    url: 'https://docs-mongodborg-staging.corp.mongodb.com'
-    bucket: 'docs-mongodb-org-staging'
 s3_deploy:
   manual:
     url: 'https://docs-mongodborg-prod.corp.mongodb.com'
@@ -70,14 +64,4 @@ s3_deploy:
     prefix: 'getting-started'
     redirect_dirs: ['getting-started']
     use_branch: false
-  bi-connector:
-    url: 'https://docs-mongodborg-prod.corp.mongodb.com'
-    prefix: 'bi-connector'
-    redirect_dirs: ['bi-connector']
-    bucket: 'docs-mongodb-org-prod'
-  compass:
-    url: 'https://docs-mongodborg-prod.corp.mongodb.com'
-    prefix: 'compass'
-    redirect_dirs: ['compass']
-    bucket: 'docs-mongodb-org-prod'
 ...
