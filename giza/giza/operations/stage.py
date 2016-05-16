@@ -21,6 +21,7 @@ import hashlib
 import logging
 import os
 import os.path
+import pwd
 import re
 import stat
 import sys
@@ -696,7 +697,7 @@ class StagingPipeline(object):
         try:
             username = cfg.get('personal', 'username')
         except (configparser.NoSectionError, configparser.NoOptionError):
-            username = os.getlogin()
+            username = pwd.getpwuid(os.getuid())[0]
 
         self.auth = AuthenticationInfo(access_key, secret_key, username)
         self.s3 = BulletProofS3(self.auth.access_key,
