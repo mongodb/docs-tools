@@ -611,7 +611,7 @@ class DeployStaging(Staging):
 
     @classmethod
     def compute_namespace(cls, prefix, username, branch, edition):
-        return prefix
+        return '/'.join([x for x in (prefix, edition) if x])
 
 
 def do_stage(root, staging):
