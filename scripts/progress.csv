@@ -1,0 +1,954 @@
+YEXINGZHE54 ispe54@gmail.com 2014-11-09 10:23:39 +0800 
+locale/zh/LC_MESSAGES/tutorial/text-search-in-aggregation.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-08 23:19:40 +0800 
+locale/zh/LC_MESSAGES/tutorial/limit-number-of-items-scanned-for-text-search.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-08 23:17:57 +0800 
+YEXINGZHE54 ispe54@gmail.com 2014-11-08 23:16:43 +0800 
+locale/zh/LC_MESSAGES/tutorial/limit-number-of-items-scanned-for-text-search.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-08 22:56:33 +0800 
+locale/zh/LC_MESSAGES/tutorial/control-results-of-text-search.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-08 22:39:26 +0800 
+locale/zh/LC_MESSAGES/tutorial/avoid-text-index-name-limit.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-08 22:22:30 +0800 
+locale/zh/LC_MESSAGES/tutorial/specify-language-for-text-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-08 21:57:30 +0800 
+locale/zh/LC_MESSAGES/tutorial/create-text-index-on-multiple-fields.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-08 21:39:40 +0800 
+locale/zh/LC_MESSAGES/administration/indexes-text.po
+
+henushang henushang@sina.cn 2014-11-07 22:16:44 +0800 
+locale/zh/LC_MESSAGES/tutorial/iterate-a-cursor.po
+
+tomliugen tomliugen@126.com 2014-11-07 14:48:47 +0800 
+locale/zh/LC_MESSAGES/core/map-reduce.po
+
+tomliugen tomliugen@126.com 2014-11-07 14:43:01 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-pipeline.po
+
+tomliugen tomliugen@126.com 2014-11-06 20:03:54 +0800 
+locale/zh/LC_MESSAGES/core/single-purpose-aggregation.po
+
+tomliugen tomliugen@126.com 2014-11-06 19:37:04 +0800 
+locale/zh/LC_MESSAGES/core/aggregation.po
+
+tomliugen tomliugen@126.com 2014-11-06 15:04:28 +0800 
+locale/zh/LC_MESSAGES/core/map-reduce.po
+
+tomliugen tomliugen@126.com 2014-11-06 15:02:22 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-pipeline.po
+
+tomliugen tomliugen@126.com 2014-11-06 14:58:24 +0800 
+locale/zh/LC_MESSAGES/core/aggregation.po
+
+tomliugen tomliugen@126.com 2014-11-06 14:55:57 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+xbsura xbsura@qq.com 2014-11-06 12:52:32 +0800 
+locale/zh/LC_MESSAGES/tutorial/convert-sharded-cluster-to-replica-set.po
+locale/zh/LC_MESSAGES/tutorial/manage-sharded-cluster-balancer.po
+locale/zh/LC_MESSAGES/tutorial/shard-collection-with-a-hashed-shard-key.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-11-04 17:43:54 +0800 
+locale/zh/LC_MESSAGES/tutorial/deploy-geographically-distributed-replica-set.po
+
+xuewolf phptiger86@gmail.com 2014-11-04 15:34:32 +0800 
+locale/zh/LC_MESSAGES/reference/method/db.collection.remove.po
+locale/zh/LC_MESSAGES/reference/method/db.collection.update.po
+
+tomliugen tomliugen@126.com 2014-11-03 14:53:11 +0800 
+locale/zh/LC_MESSAGES/core/map-reduce.po
+
+tomliugen tomliugen@126.com 2014-11-03 14:39:18 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-pipeline.po
+
+tomliugen tomliugen@126.com 2014-11-03 14:33:46 +0800 
+locale/zh/LC_MESSAGES/core/aggregation.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-02 14:05:24 +0800 
+locale/zh/LC_MESSAGES/tutorial/calculate-distances-using-spherical-geometry-with-2d-geospatial-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-02 13:50:56 +0800 
+locale/zh/LC_MESSAGES/tutorial/calculate-distances-using-spherical-geometry-with-2d-geospatial-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-02 13:20:20 +0800 
+locale/zh/LC_MESSAGES/tutorial/query-a-geohaystack-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-02 13:08:52 +0800 
+locale/zh/LC_MESSAGES/tutorial/build-a-geohaystack-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-01 23:13:25 +0800 
+locale/zh/LC_MESSAGES/tutorial/build-a-2d-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-01 22:41:02 +0800 
+locale/zh/LC_MESSAGES/tutorial/query-a-2d-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-01 22:08:35 +0800 
+locale/zh/LC_MESSAGES/tutorial/build-a-2d-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-01 21:45:41 +0800 
+locale/zh/LC_MESSAGES/tutorial/query-a-2dsphere-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-01 21:13:19 +0800 
+locale/zh/LC_MESSAGES/tutorial/build-a-2dsphere-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-11-01 20:46:54 +0800 
+locale/zh/LC_MESSAGES/administration/indexes-geo.po
+
+TJ evertang@gmail.com 2014-11-01 11:21:06 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-pipeline.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-30 16:35:28 +0800 
+locale/zh/LC_MESSAGES/tutorial/deploy-replica-set-for-testing.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-30 16:02:16 +0800 
+locale/zh/LC_MESSAGES/tutorial/deploy-replica-set.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-30 15:23:46 +0800 
+locale/zh/LC_MESSAGES/administration/replica-set-deployment.po
+
+tomliugen tomliugen@126.com 2014-10-30 13:47:55 +0800 
+locale/zh/LC_MESSAGES/core/map-reduce.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-30 12:31:02 +0800 
+locale/zh/LC_MESSAGES/administration/replica-sets.po
+locale/zh/LC_MESSAGES/core/master-slave.po
+
+tomliugen tomliugen@126.com 2014-10-29 19:48:48 +0800 
+locale/zh/LC_MESSAGES/core/map-reduce.po
+
+tomliugen tomliugen@126.com 2014-10-29 19:23:26 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-pipeline.po
+
+tomliugen tomliugen@126.com 2014-10-29 19:17:17 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+xbsura xbsura@qq.com 2014-10-29 14:34:24 +0800 
+locale/zh/LC_MESSAGES/tutorial/administer-shard-tags.po
+locale/zh/LC_MESSAGES/tutorial/backup-sharded-cluster-with-database-dumps.po
+locale/zh/LC_MESSAGES/tutorial/backup-small-sharded-cluster-with-mongodump.po
+locale/zh/LC_MESSAGES/tutorial/convert-replica-set-to-replicated-shard-cluster.po
+locale/zh/LC_MESSAGES/tutorial/create-chunks-in-sharded-cluster.po
+locale/zh/LC_MESSAGES/tutorial/enable-authentication-in-sharded-cluster.po
+locale/zh/LC_MESSAGES/tutorial/shard-collection-with-a-hashed-shard-key.po
+locale/zh/LC_MESSAGES/tutorial/shard-gridfs-data.po
+locale/zh/LC_MESSAGES/tutorial/troubleshoot-sharded-clusters.po
+
+tomliugen tomliugen@126.com 2014-10-29 13:56:44 +0800 
+locale/zh/LC_MESSAGES/core/map-reduce.po
+
+tomliugen tomliugen@126.com 2014-10-29 13:46:58 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+tomliugen tomliugen@126.com 2014-10-29 13:45:41 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-29 13:44:56 +0800 
+locale/zh/LC_MESSAGES/core/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-29 13:40:22 +0800 
+locale/zh/LC_MESSAGES/core/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-29 13:39:26 +0800 
+locale/zh/LC_MESSAGES/core/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-29 10:40:52 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-28 19:32:48 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+tomliugen tomliugen@126.com 2014-10-28 19:28:52 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-28 19:24:53 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-pipeline.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-28 14:02:40 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-sync.po
+
+tomliugen tomliugen@126.com 2014-10-28 13:52:34 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-pipeline.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-27 15:28:57 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-oplog.po
+
+tomliugen tomliugen@126.com 2014-10-27 13:57:49 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-pipeline.po
+
+tomliugen tomliugen@126.com 2014-10-27 13:35:20 +0800 
+locale/zh/LC_MESSAGES/core/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-27 13:27:12 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+henushang henushang@sina.cn 2014-10-27 13:26:24 +0800 
+locale/zh/LC_MESSAGES/core/crud-introduction.po
+
+tomliugen tomliugen@126.com 2014-10-27 13:24:26 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+henushang henushang@sina.cn 2014-10-27 12:48:52 +0800 
+locale/zh/LC_MESSAGES/core/crud-introduction.po
+
+henushang henushang@sina.cn 2014-10-27 12:25:34 +0800 
+locale/zh/LC_MESSAGES/core/crud-introduction.po
+
+henushang henushang@sina.cn 2014-10-26 16:43:48 +0800 
+locale/zh/LC_MESSAGES/core/read-operations.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-26 14:08:21 +0800 
+locale/zh/LC_MESSAGES/tutorial/measure-index-use.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-26 13:27:28 +0800 
+locale/zh/LC_MESSAGES/tutorial/list-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-26 13:09:35 +0800 
+locale/zh/LC_MESSAGES/tutorial/manage-in-progress-indexing-operations.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-26 12:59:34 +0800 
+locale/zh/LC_MESSAGES/tutorial/rebuild-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-26 12:50:30 +0800 
+locale/zh/LC_MESSAGES/tutorial/modify-an-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-26 12:32:17 +0800 
+locale/zh/LC_MESSAGES/administration/indexes-management.po
+locale/zh/LC_MESSAGES/tutorial/remove-indexes.po
+
+YEXINGZHE54 YEXINGZHE54@users.noreply.github.com 2014-10-25 19:20:20 +0800 
+locale/zh/LC_MESSAGES/administration/indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-25 17:39:34 +0800 
+locale/zh/LC_MESSAGES/tutorial/roll-back-to-v1.8-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-25 17:27:12 +0800 
+locale/zh/LC_MESSAGES/tutorial/build-indexes-in-the-background.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-25 17:13:23 +0800 
+YEXINGZHE54 ispe54@gmail.com 2014-10-25 17:12:20 +0800 
+locale/zh/LC_MESSAGES/tutorial/build-indexes-on-replica-sets.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-25 16:28:38 +0800 
+locale/zh/LC_MESSAGES/tutorial/create-a-hashed-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-25 16:19:54 +0800 
+locale/zh/LC_MESSAGES/tutorial/create-a-sparse-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-25 16:05:49 +0800 
+locale/zh/LC_MESSAGES/tutorial/create-a-unique-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-25 15:38:18 +0800 
+locale/zh/LC_MESSAGES/tutorial/create-a-compound-index.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-25 15:25:29 +0800 
+locale/zh/LC_MESSAGES/tutorial/create-an-index.po
+
+TJ evertang@gmail.com 2014-10-25 14:58:40 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-25 14:52:59 +0800 
+locale/zh/LC_MESSAGES/administration/indexes-creation.po
+locale/zh/LC_MESSAGES/administration/indexes.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-24 17:15:23 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-oplog.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-24 15:26:32 +0800 
+locale/zh/LC_MESSAGES/core/replication-process.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-24 14:56:36 +0800 
+locale/zh/LC_MESSAGES/core/read-preference-mechanics.po
+
+tomliugen tomliugen@126.com 2014-10-24 13:55:55 +0800 
+locale/zh/LC_MESSAGES/core/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-24 13:25:42 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-24 11:53:42 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-24 11:48:08 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+yexingzhe ispe54@gmail.com 2014-10-23 20:41:18 +0800 
+locale/zh/LC_MESSAGES/core/index-intersection.po
+
+yexingzhe ispe54@gmail.com 2014-10-23 20:32:39 +0800 
+yexingzhe ispe54@gmail.com 2014-10-23 20:31:58 +0800 
+locale/zh/LC_MESSAGES/core/index-intersection.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-23 19:52:27 +0800 
+locale/zh/LC_MESSAGES/core/read-preference-mechanics.po
+
+yexingzhe ispe54@gmail.com 2014-10-23 18:57:56 +0800 
+locale/zh/LC_MESSAGES/applications/geospatial-indexes.po
+
+tomliugen tomliugen@126.com 2014-10-22 20:02:38 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+tomliugen tomliugen@126.com 2014-10-22 19:11:50 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+xbsura xbsura@qq.com 2014-10-22 14:03:06 +0800 
+locale/zh/LC_MESSAGES/tutorial/backup-sharded-cluster-metadata.po
+locale/zh/LC_MESSAGES/tutorial/backup-sharded-cluster-with-filesystem-snapshots.po
+locale/zh/LC_MESSAGES/tutorial/enforce-unique-keys-for-sharded-collections.po
+locale/zh/LC_MESSAGES/tutorial/modify-chunk-size-in-sharded-cluster.po
+locale/zh/LC_MESSAGES/tutorial/remove-shards-from-cluster.po
+locale/zh/LC_MESSAGES/tutorial/restore-sharded-cluster.po
+
+tomliugen tomliugen@126.com 2014-10-21 19:53:35 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+henushang henushang@sina.cn 2014-10-21 19:27:35 +0800 
+locale/zh/LC_MESSAGES/core/crud-introduction.po
+
+rex giveme168@163.com 2014-10-21 18:06:50 +0800 
+locale/zh/LC_MESSAGES/core/indexes-introduction.po
+
+tomliugen tomliugen@126.com 2014-10-21 13:41:41 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+tomliugen tomliugen@126.com 2014-10-21 13:18:49 +0800 
+locale/zh/LC_MESSAGES/core/aggregation-introduction.po
+
+tomliugen tomliugen@126.com 2014-10-21 13:15:05 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-21 13:13:37 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-20 17:26:20 +0800 
+locale/zh/LC_MESSAGES/core/read-preference-mechanics.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-19 18:19:27 +0800 
+locale/zh/LC_MESSAGES/core/index-creation.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-19 16:41:47 +0800 
+locale/zh/LC_MESSAGES/applications/geospatial-indexes.po
+locale/zh/LC_MESSAGES/core/2dsphere.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-19 13:28:49 +0800 
+locale/zh/LC_MESSAGES/core/index-sparse.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-19 13:13:04 +0800 
+YEXINGZHE54 ispe54@gmail.com 2014-10-19 13:12:12 +0800 
+locale/zh/LC_MESSAGES/core/index-sparse.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-19 12:23:29 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-architecture-three-members.po
+locale/zh/LC_MESSAGES/core/replica-set-hidden-member.po
+locale/zh/LC_MESSAGES/core/replica-set-members.po
+locale/zh/LC_MESSAGES/core/replica-set-priority-0-member.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-19 12:09:48 +0800 
+locale/zh/LC_MESSAGES/core/index-unique.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-19 11:45:26 +0800 
+locale/zh/LC_MESSAGES/core/index-ttl.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-19 11:22:15 +0800 
+locale/zh/LC_MESSAGES/core/index-properties.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 19:53:29 +0800 
+locale/zh/LC_MESSAGES/core/index-hashed.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 19:36:54 +0800 
+locale/zh/LC_MESSAGES/core/index-text.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 15:34:41 +0800 
+locale/zh/LC_MESSAGES/core/geospatial-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 15:27:33 +0800 
+locale/zh/LC_MESSAGES/core/geospatial-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 15:17:42 +0800 
+locale/zh/LC_MESSAGES/core/geohaystack.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 15:13:38 +0800 
+locale/zh/LC_MESSAGES/core/geospatial-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 13:32:05 +0800 
+locale/zh/LC_MESSAGES/core/geohaystack.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 12:57:42 +0800 
+locale/zh/LC_MESSAGES/core/2dsphere.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 12:55:42 +0800 
+locale/zh/LC_MESSAGES/core/2d.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 12:27:03 +0800 
+YEXINGZHE54 ispe54@gmail.com 2014-10-18 12:25:55 +0800 
+locale/zh/LC_MESSAGES/core/2dsphere.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-18 11:07:31 +0800 
+locale/zh/LC_MESSAGES/core/read-preference.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-17 15:14:18 +0800 
+locale/zh/LC_MESSAGES/core/read-preference.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-17 15:08:27 +0800 
+locale/zh/LC_MESSAGES/core/read-preference.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-16 17:07:36 +0800 
+locale/zh/LC_MESSAGES/core/read-preference.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-15 11:02:51 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-write-concern.po
+
+Huang 214936150@qq.com 2014-10-14 22:09:40 +0800 
+locale/zh/LC_MESSAGES/tutorial/insert-documents.po
+
+Huang 214936150@qq.com 2014-10-14 21:41:38 +0800 
+locale/zh/LC_MESSAGES/tutorial/insert-documents.po
+
+Huang 214936150@qq.com 2014-10-14 21:23:56 +0800 
+locale/zh/LC_MESSAGES/tutorial/insert-documents.po
+
+Huang 214936150@qq.com 2014-10-14 20:55:21 +0800 
+locale/zh/LC_MESSAGES/tutorial/insert-documents.po
+
+tomliugen tomliugen@126.com 2014-10-14 20:25:48 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-14 20:14:09 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-14 19:56:38 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-14 17:18:47 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-write-concern.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-14 15:34:09 +0800 
+locale/zh/LC_MESSAGES/applications/replication.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-14 13:45:49 +0800 
+locale/zh/LC_MESSAGES/applications/replication.po
+
+tomliugen tomliugen@126.com 2014-10-14 09:42:32 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-14 09:16:03 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+xbsura xbsura@qq.com 2014-10-13 20:54:03 +0800 
+locale/zh/LC_MESSAGES/tutorial/deploy-shard-cluster.po
+
+xbsura xbsura@qq.com 2014-10-13 20:42:11 +0800 
+xbsura xbsura@qq.com 2014-10-13 20:41:51 +0800 
+locale/zh/LC_MESSAGES/tutorial/choose-a-shard-key.po
+locale/zh/LC_MESSAGES/tutorial/deploy-shard-cluster.po
+locale/zh/LC_MESSAGES/tutorial/migrate-chunks-in-sharded-cluster.po
+locale/zh/LC_MESSAGES/tutorial/restore-single-shard.po
+locale/zh/LC_MESSAGES/tutorial/troubleshoot-sharded-clusters.po
+
+tomliugen tomliugen@126.com 2014-10-13 20:06:35 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+tomliugen tomliugen@126.com 2014-10-13 19:53:35 +0800 
+locale/zh/LC_MESSAGES/aggregation.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-13 19:42:09 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-rollbacks.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-13 11:31:54 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-elections.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-12 20:49:50 +0800 
+locale/zh/LC_MESSAGES/applications/geospatial-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-12 20:43:14 +0800 
+locale/zh/LC_MESSAGES/applications/geospatial-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-12 20:38:42 +0800 
+locale/zh/LC_MESSAGES/applications/geospatial-indexes.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-12 16:41:56 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-elections.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-12 16:13:21 +0800 
+locale/zh/LC_MESSAGES/applications/geospatial-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-12 15:57:30 +0800 
+locale/zh/LC_MESSAGES/applications/geospatial-indexes.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-12 15:22:55 +0800 
+locale/zh/LC_MESSAGES/applications/geospatial-indexes.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-12 10:13:30 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-architectures.po
+locale/zh/LC_MESSAGES/core/replica-set-elections.po
+locale/zh/LC_MESSAGES/core/replica-set-hidden-member.po
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+locale/zh/LC_MESSAGES/core/replication.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-12 09:46:28 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-high-availability.po
+
+TJ evertang@gmail.com 2014-10-12 07:32:17 +0800 
+locale/zh/LC_MESSAGES/reference/sharding.po
+
+eshujiushiwo 378013446@qq.com 2014-10-11 18:30:10 +0800 
+locale/zh/LC_MESSAGES/replication.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-11 17:35:23 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-architecture-geographically-distributed.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-11 16:20:20 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-architecture-four-members.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-11 14:17:39 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-architecture-three-members.po
+
+xbsura xbsura@qq.com 2014-10-11 11:43:32 +0800 
+xbsura xbsura@qq.com 2014-10-11 11:43:08 +0800 
+locale/zh/LC_MESSAGES/reference/command/nav-sharding.po
+locale/zh/LC_MESSAGES/reference/command/shardCollection.po
+locale/zh/LC_MESSAGES/reference/command/shardConnPoolStats.po
+locale/zh/LC_MESSAGES/reference/method/js-sharding.po
+locale/zh/LC_MESSAGES/reference/method/sh.shardCollection.po
+locale/zh/LC_MESSAGES/reference/sharding.po
+locale/zh/LC_MESSAGES/tutorial/schedule-backup-window-for-sharded-clusters.po
+locale/zh/LC_MESSAGES/tutorial/view-sharded-cluster-configuration.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-11 11:13:21 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-architectures.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-11 11:04:08 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-architectures.po
+
+henushang henushang@sina.cn 2014-10-10 18:02:28 +0800 
+locale/zh/LC_MESSAGES/core/crud-introduction.po
+locale/zh/LC_MESSAGES/core/crud-introduction.txt
+
+henushang henushang@sina.cn 2014-10-10 18:01:43 +0800 
+locale/zh/LC_MESSAGES/core/crud-introduction.po
+locale/zh/LC_MESSAGES/core/crud-introduction.txt
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-10 17:30:36 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-arbiter.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-10 17:19:13 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-arbiter.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-10 15:41:18 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-hidden-member.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-10 15:35:27 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-delayed-member.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-10 11:19:45 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-hidden-member.po
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+locale/zh/LC_MESSAGES/core/replication.po
+
+xuewolf phptiger86@gmail.com 2014-10-10 10:54:39 +0800 
+locale/zh/LC_MESSAGES/reference/method/db.collection.find.po
+
+eshujiushiwo 378013446@qq.com 2014-10-10 10:39:22 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-primary.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-10 10:21:04 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-priority-0-member.po
+
+xuewolf phptiger86@gmail.com 2014-10-10 10:04:15 +0800 
+locale/zh/LC_MESSAGES/reference/method/db.collection.find.po
+
+xuewolf phptiger86@gmail.com 2014-10-10 09:43:27 +0800 
+locale/zh/LC_MESSAGES/reference/method/db.collection.find.po
+
+xuewolf phptiger86@gmail.com 2014-10-10 09:34:40 +0800 
+locale/zh/LC_MESSAGES/reference/method/db.collection.find.po
+
+TJ evertang@gmail.com 2014-10-10 09:21:06 +0800 
+xuewolf phptiger86@gmail.com 2014-10-10 09:04:04 +0800 
+locale/zh/LC_MESSAGES/reference/method/db.collection.find.po
+
+TJ evertang@gmail.com 2014-10-10 08:54:53 +0800 
+locale/zh/LC_MESSAGES/reference/sql-comparison.po
+
+TJ evertang@gmail.com 2014-10-10 08:49:55 +0800 
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-09 16:54:35 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-primary.po
+locale/zh/LC_MESSAGES/core/replica-set-secondary.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-09 15:55:13 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-primary.po
+
+eshujiushiwo 378013446@qq.com 2014-10-09 15:46:12 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-primary.po
+
+eshujiushiwo 378013446@qq.com 2014-10-09 15:36:16 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-primary.po
+
+eshujiushiwo 378013446@qq.com 2014-10-09 15:34:45 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-primary.po
+
+eshujiushiwo 378013446@qq.com 2014-10-09 15:25:46 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-primary.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-09 15:24:50 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-primary.po
+
+horizonhyg horizonhyg@163.com 2014-10-09 14:43:05 +0800 
+locale/zh/LC_MESSAGES/reference/sql-comparison.po
+
+xbsura xbsura@qq.com 2014-10-09 14:10:57 +0800 
+xbsura xbsura@qq.com 2014-10-09 14:10:34 +0800 
+locale/zh/LC_MESSAGES/administration/backup-sharded-clusters.po
+locale/zh/LC_MESSAGES/administration/sharded-cluster-data.po
+locale/zh/LC_MESSAGES/administration/sharded-cluster-deployment.po
+locale/zh/LC_MESSAGES/administration/sharded-cluster-maintenance.po
+locale/zh/LC_MESSAGES/administration/sharded-clusters.po
+locale/zh/LC_MESSAGES/core/aggregation-pipeline-sharded-collections.po
+locale/zh/LC_MESSAGES/core/map-reduce-sharded-collections.po
+locale/zh/LC_MESSAGES/core/tag-aware-sharding.po
+locale/zh/LC_MESSAGES/reference/command/mapreduce.shardedfinish.po
+locale/zh/LC_MESSAGES/reference/command/nav-sharding.po
+locale/zh/LC_MESSAGES/reference/command/shardingState.po
+locale/zh/LC_MESSAGES/sharding.po
+locale/zh/LC_MESSAGES/tutorial/deploy-shard-cluster.po
+
+eshujiushiwo 378013446@qq.com 2014-10-09 13:46:15 +0800 
+locale/zh/LC_MESSAGES/core/replication.po
+
+eshujiushiwo 378013446@qq.com 2014-10-09 13:45:43 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo 378013446@qq.com 2014-10-09 13:44:40 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-members.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-09 13:31:15 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-members.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-09 13:28:53 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-09 13:25:29 +0800 
+locale/zh/LC_MESSAGES/core/replication.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-09 10:46:13 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-members.po
+
+eshujiushiwo 378013446@qq.com 2014-10-09 10:29:55 +0800 
+locale/zh/LC_MESSAGES/core/replication.po
+
+eshujiushiwo 378013446@qq.com 2014-10-09 10:29:11 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-09 10:27:59 +0800 
+locale/zh/LC_MESSAGES/core/replica-set-members.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-08 20:35:09 +0800 
+locale/zh/LC_MESSAGES/core/replication.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-08 20:26:27 +0800 
+locale/zh/LC_MESSAGES/core/replication.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-08 20:08:59 +0800 
+locale/zh/LC_MESSAGES/core/replication.po
+
+eshujiushiwo zhou.liyang@cnsha-00868-mac.local 2014-10-08 18:37:00 +0800 
+locale/zh/LC_MESSAGES/core/replication.po
+
+horizonhyg horizonhyg@163.com 2014-10-08 18:12:13 +0800 
+locale/zh/LC_MESSAGES/reference/sql-comparison.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 17:47:04 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 17:29:27 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+xbsura xbsura@qq.com 2014-10-08 17:25:42 +0800 
+locale/zh/LC_MESSAGES/administration/sharded-cluster-deployment.po
+locale/zh/LC_MESSAGES/administration/sharded-clusters.po
+locale/zh/LC_MESSAGES/core/map-reduce-sharded-collections.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-components.po
+locale/zh/LC_MESSAGES/core/tag-aware-sharding.po
+locale/zh/LC_MESSAGES/tutorial/deploy-shard-cluster.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 17:17:23 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 16:56:49 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 16:56:07 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 16:54:59 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 15:41:06 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 15:31:29 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 15:24:15 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 14:17:04 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+eshujiushiwo 378013446@qq.com 2014-10-08 14:11:50 +0800 
+locale/zh/LC_MESSAGES/core/replication-introduction.po
+
+xbsura xbsura@qq.com 2014-10-08 12:32:13 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-architectures-production.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-components.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-config-servers.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-high-availability.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-query-router.po
+locale/zh/LC_MESSAGES/core/sharding-balancing.po
+locale/zh/LC_MESSAGES/core/sharding-chunk-migration.po
+locale/zh/LC_MESSAGES/core/sharding-chunk-splitting.po
+locale/zh/LC_MESSAGES/core/sharding-shard-key.po
+
+YEXINGZHE54 ispe54@gmail.com 2014-10-07 23:00:22 +0800 
+locale/zh/LC_MESSAGES/core/index-multikey.po
+
+TJ evertang@gmail.com 2014-10-06 14:57:13 +0800 
+locale/zh/LC_MESSAGES/installation.po
+
+TJ evertang@gmail.com 2014-10-05 03:09:54 +0800 
+locale/zh/LC_MESSAGES/tutorial/getting-started.po
+
+TJ evertang@gmail.com 2014-10-03 08:20:12 +0800 
+TJ evertang@gmail.com 2014-10-03 08:19:56 +0800 
+locale/zh/LC_MESSAGES/tutorial/getting-started.po
+
+yexingzhe ispe54@gmail.com 2014-09-30 16:23:01 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-high-availability.po
+
+xbsura xbsura@qq.com 2014-09-30 16:05:32 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-high-availability.po
+
+xbsura xbsura@qq.com 2014-09-30 15:29:57 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-high-availability.po
+
+xbsura xbsura@qq.com 2014-09-30 11:39:51 +0800 
+locale/zh/LC_MESSAGES/core/sharding-introduction.po
+
+xbsura xbsura@qq.com 2014-09-30 11:38:30 +0800 
+xbsura xbsura@qq.com 2014-09-30 11:38:19 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-architectures-production.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-architectures-test.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-components.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-config-servers.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-high-availability.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-metadata.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-query-router.po
+locale/zh/LC_MESSAGES/core/sharding-balancing.po
+locale/zh/LC_MESSAGES/core/sharding-chunk-splitting.po
+locale/zh/LC_MESSAGES/core/sharding-shard-key.po
+
+yexingzhe ispe54@gmail.com 2014-09-29 22:01:44 +0800 
+locale/zh/LC_MESSAGES/core/index-compound.po
+
+yexingzhe ispe54@gmail.com 2014-09-29 21:54:20 +0800 
+locale/zh/LC_MESSAGES/core/index-compound.po
+
+yexingzhe ispe54@gmail.com 2014-09-29 20:15:34 +0800 
+locale/zh/LC_MESSAGES/core/index-compound.po
+
+xbsura xbsura@qq.com 2014-09-29 17:33:15 +0800 
+locale/zh/LC_MESSAGES/sharding.po
+
+xbsura xbsura@qq.com 2014-09-29 17:23:01 +0800 
+locale/zh/LC_MESSAGES/core/sharding-balancing.po
+
+xbsura xbsura@qq.com 2014-09-29 17:01:03 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-architectures-production.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-architectures-test.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-architectures.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-components.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-config-servers.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-high-availability.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-mechanics.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-metadata.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-operations.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-query-router.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-requirements.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-shards.po
+locale/zh/LC_MESSAGES/core/sharding-balancing.po
+locale/zh/LC_MESSAGES/core/sharding-chunk-migration.po
+locale/zh/LC_MESSAGES/core/sharding-chunk-splitting.po
+locale/zh/LC_MESSAGES/core/sharding-introduction.po
+locale/zh/LC_MESSAGES/core/sharding-shard-key-indexes.po
+locale/zh/LC_MESSAGES/core/sharding-shard-key.po
+locale/zh/LC_MESSAGES/sharding.po
+
+yexingzhe ispe54@gmail.com 2014-09-28 22:16:19 +0800 
+locale/zh/LC_MESSAGES/core/index-single.po
+
+xbsura xbsura@qq.com 2014-09-28 20:38:36 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-query-router.po
+
+xbsura xbsura@qq.com 2014-09-28 12:54:41 +0800 
+xbsura xbsura@qq.com 2014-09-28 12:54:23 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-architectures-production.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-architectures-test.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-architectures.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-components.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-high-availability.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-mechanics.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-operations.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-shards.po
+locale/zh/LC_MESSAGES/core/sharding-introduction.po
+locale/zh/LC_MESSAGES/sharding.po
+
+TJ evertang@gmail.com 2014-09-28 07:34:34 +0800 
+TJ evertang@gmail.com 2014-09-28 07:34:10 +0800 
+locale/zh/LC_MESSAGES/index.po
+
+yexingzhe ispe54@gmail.com 2014-09-26 20:55:29 +0800 
+yexingzhe ispe54@gmail.com 2014-09-26 20:55:06 +0800 
+locale/zh/LC_MESSAGES/core/index-types.po
+
+TJ evertang@gmail.com 2014-09-26 17:56:18 +0800 
+locale/zh/LC_MESSAGES/tutorial/install-mongodb-on-windows.po
+
+TJ evertang@gmail.com 2014-09-26 17:54:53 +0800 
+locale/zh/LC_MESSAGES/tutorial/install-mongodb-on-windows.po
+
+TJ evertang@gmail.com 2014-09-26 17:27:49 +0800 
+locale/zh/LC_MESSAGES/index.po
+
+fangwei fang286090326@users.noreply.github.com 2014-09-26 16:26:30 +0800 
+locale/zh/LC_MESSAGES/tutorial/install-mongodb-on-windows.po
+
+xbsura xbsura@qq.com 2014-09-26 15:58:02 +0800 
+xbsura xbsura@qq.com 2014-09-26 15:33:30 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-high-availability.po
+
+TJ evertang@gmail.com 2014-09-26 15:12:13 +0800 
+TJ evertang@gmail.com 2014-09-26 15:11:56 +0800 
+locale/zh/LC_MESSAGES/index.po
+
+xbsura xbsura@qq.com 2014-09-26 14:42:43 +0800 
+xbsura xbsura@qq.com 2014-09-26 14:42:15 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-config-servers.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-high-availability.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-metadata.po
+locale/zh/LC_MESSAGES/core/sharded-cluster-query-router.po
+
+yexingzhe ispe54@gmail.com 2014-09-25 21:00:52 +0800 
+locale/zh/LC_MESSAGES/core/indexes-introduction.po
+
+yexingzhe ispe54@gmail.com 2014-09-25 20:41:48 +0800 
+locale/zh/LC_MESSAGES/core/indexes-introduction.po
+
+yexingzhe ispe54@gmail.com 2014-09-25 20:23:16 +0800 
+locale/zh/LC_MESSAGES/core/indexes-introduction.po
+
+yexingzhe ispe54@gmail.com 2014-09-25 20:10:04 +0800 
+locale/zh/LC_MESSAGES/core/indexes-introduction.po
+
+yexingzhe ispe54@gmail.com 2014-09-25 17:20:01 +0800 
+locale/zh/LC_MESSAGES/core/indexes-introduction.po
+
+yexingzhe ispe54@gmail.com 2014-09-24 20:01:25 +0800 
+locale/zh/LC_MESSAGES/core/indexes.po
+
+yexingzhe ispe54@gmail.com 2014-09-23 19:51:15 +0800 
+locale/zh/LC_MESSAGES/core/crud.po
+
+xbsura xbsura@qq.com 2014-09-22 22:43:28 +0800 
+xbsura xbsura@qq.com 2014-09-22 22:34:28 +0800 
+locale/zh/LC_MESSAGES/core/sharded-cluster-config-servers.po
+locale/zh/LC_MESSAGES/core/sharding-shard-key.po
+
+TJ evertang@gmail.com 2014-09-21 06:51:52 +0800 
+locale/zh/LC_MESSAGES/core/sharding-shard-key.po
+
+TJ evertang@gmail.com 2014-09-20 11:52:49 +0800 
+locale/zh/LC_MESSAGES/applications/data-models-applications.po
+locale/zh/LC_MESSAGES/data-modeling.po
+locale/zh/LC_MESSAGES/tutorial/model-data-for-atomic-operations.po
+locale/zh/LC_MESSAGES/tutorial/model-data-for-keyword-search.po
+locale/zh/LC_MESSAGES/tutorial/model-monetary-data.po
+
+xbsura xbsura@qq.com 2014-09-18 17:05:19 +0800 
+locale/zh/LC_MESSAGES/core/sharding-chunk-splitting.po
+locale/zh/LC_MESSAGES/core/sharding-shard-key.po
+
+TJ evertang@gmail.com 2014-09-18 11:29:53 +0800 
+locale/zh/LC_MESSAGES/applications/data-models-applications.po
+locale/zh/LC_MESSAGES/applications/data-models-relationships.po
+locale/zh/LC_MESSAGES/tutorial/model-data-for-atomic-operations.po
+locale/zh/LC_MESSAGES/tutorial/model-data-for-keyword-search.po
+locale/zh/LC_MESSAGES/tutorial/model-tree-structures-with-materialized-paths.po
+
+TJ evertang@gmail.com 2014-09-16 23:54:52 +0800 
+locale/zh/LC_MESSAGES/tutorial/model-tree-structures-with-child-references.po
+locale/zh/LC_MESSAGES/tutorial/model-tree-structures-with-materialized-paths.po
+locale/zh/LC_MESSAGES/tutorial/model-tree-structures-with-nested-sets.po
+
+TJ evertang@gmail.com 2014-09-16 23:08:41 +0800 
+locale/zh/LC_MESSAGES/applications/data-models-tree-structures.po
+locale/zh/LC_MESSAGES/tutorial/model-referenced-one-to-many-relationships-between-documents.po
+locale/zh/LC_MESSAGES/tutorial/model-tree-structures-with-ancestors-array.po
+locale/zh/LC_MESSAGES/tutorial/model-tree-structures-with-child-references.po
+locale/zh/LC_MESSAGES/tutorial/model-tree-structures-with-materialized-paths.po
+locale/zh/LC_MESSAGES/tutorial/model-tree-structures-with-nested-sets.po
+locale/zh/LC_MESSAGES/tutorial/model-tree-structures-with-parent-references.po
+
+TJ evertang@gmail.com 2014-09-16 15:54:21 +0800 
+TJ evertang@gmail.com 2014-09-16 15:54:01 +0800 
+locale/zh/LC_MESSAGES/applications/data-models-relationships.po
+locale/zh/LC_MESSAGES/core/data-model-operations.po
+locale/zh/LC_MESSAGES/tutorial/model-embedded-one-to-many-relationships-between-documents.po
+locale/zh/LC_MESSAGES/tutorial/model-embedded-one-to-one-relationships-between-documents.po
+locale/zh/LC_MESSAGES/tutorial/model-referenced-one-to-many-relationships-between-documents.po
+
+xbsura xbsura@qq.com 2014-09-11 19:22:51 +0800 
+locale/zh/LC_MESSAGES/core/sharding-balancing.po
+
+xbsura xbsura@qq.com 2014-09-11 14:09:40 +0800 
+locale/zh/LC_MESSAGES/core/sharding-balancing.po
+locale/zh/LC_MESSAGES/core/sharding-introduction.po
+
+xbsura xbsura@qq.com 2014-09-10 14:32:37 +0800 
+locale/zh/LC_MESSAGES/core/sharding.po
+
+xbsura xbsura@qq.com 2014-09-10 14:10:00 +0800 
+locale/zh/LC_MESSAGES/core/sharding.po
+
+xbsura xbsura@qq.com 2014-09-10 13:38:01 +0800 
+locale/zh/LC_MESSAGES/core/sharding.po
+locale/zh/LC_MESSAGES/sharding.po
+
+xbsura xbsura@qq.com 2014-09-09 16:37:47 +0800 
+locale/zh/LC_MESSAGES/core/sharding.po
+locale/zh/LC_MESSAGES/sharding.po
+
+TJ evertang@gmail.com 2014-09-08 19:08:45 +0800 
+locale/zh/LC_MESSAGES/core/data-model-operations.po
+locale/zh/LC_MESSAGES/core/data-models.po
+
+TJ evertang@gmail.com 2014-09-07 22:59:29 +0800 
+locale/zh/LC_MESSAGES/applications/data-models.po
+
+TJ evertang@gmail.com 2014-09-07 22:59:02 +0800 
+locale/zh/LC_MESSAGES/core/data-model-design.po
+
+TJ evertang@gmail.com 2014-09-07 22:58:32 +0800 
+locale/zh/LC_MESSAGES/core/data-models.po
+
+TJ evertang@gmail.com 2014-09-06 10:16:36 +0800 
+locale/zh/LC_MESSAGES/core/data-modeling-introduction.po
+
+TJ evertang@gmail.com 2014-09-05 22:22:33 +0800 
+locale/zh/LC_MESSAGES/core/data-modeling-introduction.po
+locale/zh/LC_MESSAGES/crud.po
