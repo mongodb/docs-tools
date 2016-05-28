@@ -16,38 +16,17 @@ import logging
 import os.path
 import re
 import sys
+import subprocess
+import shutil
+
+from giza.tools.transformation import munge_page
+from giza.tools.files import create_link, copy_if_needed
+from giza.content.post.singlehtml import get_single_html_dir
 
 logger = logging.getLogger('giza.content.post.sites')
 
-from giza.core.task import check_dependency
-from giza.tools.command import command
-from giza.tools.serialization import ingest_yaml_list, ingest_yaml_doc
-from giza.tools.transformation import munge_page
-from giza.tools.files import (expand_tree, create_link, copy_if_needed,
-                              decode_lines_from_file, encode_lines_to_file)
+# Sphinx Post-Processing
 
-def manual_single_html(input_file, output_file):
-    # don't rebuild this if its not needed.
-    if check_dependency(output_file, input_file) is False:
-        logging.info('singlehtml not changed, not reprocessing.')
-        return False
-    else:
-        text_lines = decode_lines_from_file(input_file)
-
-        regexes = [
-            (re.compile('href="contents.html'), 'href="index.html'),
-            (re.compile('name="robots" content="index"'), 'name="robots" content="noindex"'),
-            (re.compile('href="genindex.html'), 'href="../genindex/')
-        ]
-
-        for regex, subst in regexes:
-            text_lines = [ regex.sub(subst, text) for text in text_lines ]
-
-        encode_lines_to_file(output_file, text_lines)
-
-        logging.info('processed singlehtml file.')
-
-#################### Sphinx Post-Processing ####################
 
 def finalize_epub_build(builder, conf):
     epub_name = '-'.join(conf.project.title.lower().split())
@@ -61,45 +40,10 @@ def finalize_epub_build(builder, conf):
                                             conf.paths.public_site_output,
                                             epub_branched_filename))
     create_link(input_fn=epub_branched_filename,
-                 output_fn=os.path.join(conf.paths.projectroot,
-                                        conf.paths.public_site_output,
-                                        epub_src_filename))
+                output_fn=os.path.join(conf.paths.projectroot,
+                                       conf.paths.public_site_output,
+                                       epub_src_filename))
 
-
-def get_single_html_dir(conf):
-    return os.path.join(conf.paths.public_site_output, 'single')
-
-def finalize_single_html_jobs(builder, conf):
-    pjoin = os.path.join
-
-    single_html_dir = get_single_html_dir(conf)
-
-    if not os.path.exists(single_html_dir):
-        os.makedirs(single_html_dir)
-
-    try:
-        manual_single_html(input_file=pjoin(conf.paths.branch_output,
-                                                    builder, 'contents.html'),
-                                   output_file=pjoin(single_html_dir, 'index.html'))
-    except (IOError, OSError):
-        manual_single_html(input_file=pjoin(conf.paths.branch_output,
-                                                    builder, 'index.html'),
-                                   output_file=pjoin(single_html_dir, 'index.html'))
-    copy_if_needed(source_file=pjoin(conf.paths.branch_output,
-                                     builder, 'objects.inv'),
-                   target_file=pjoin(single_html_dir, 'objects.inv'))
-
-    single_path = pjoin(single_html_dir, '_static')
-
-    for fn in expand_tree(pjoin(conf.paths.branch_output,
-                                builder, '_static'), None):
-
-        yield {
-            'job': copy_if_needed,
-            'args': [fn, pjoin(single_path, os.path.basename(fn))],
-            'target': None,
-            'dependency': None
-        }
 
 def error_pages(sconf, conf):
     builder = sconf.builder
@@ -115,57 +59,92 @@ def error_pages(sconf, conf):
                                 'meta', error, 'index.html')
             munge_page(fn=page, regex=sub, tag='error-pages')
 
-        logging.info('error-pages: rendered {0} error pages'.format(idx))
+        logger.info('error-pages: rendered {0} error pages'.format(idx))
+
 
 def finalize_dirhtml_build(sconf, conf):
-    pjoin = os.path.join
     builder = sconf.builder
 
     single_html_dir = get_single_html_dir(conf)
-    search_page = pjoin(conf.paths.branch_output, builder, 'index.html')
+    search_page = os.path.join(conf.paths.branch_output, builder, 'index.html')
 
     if os.path.exists(search_page):
         copy_if_needed(source_file=search_page,
-                       target_file=pjoin(single_html_dir, 'search.html'))
+                       target_file=os.path.join(single_html_dir, 'search.html'))
 
-    dest = pjoin(conf.paths.projectroot, conf.paths.public_site_output)
-    m_cmd = command('rsync -a {source}/ {destination}'.format(source=sconf.build_output,
-                                                              destination=dest))
+    dest = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
 
-    logger.info('"{0}" migrated build from {1} to {2}, with result {3}'.format(sconf.name, sconf.build_output, dest, m_cmd.return_code))
+    cmd_str = 'rsync -a {source}/ {destination}'.format(source=sconf.fq_build_output,
+                                                        destination=dest)
+
+    with open(os.devnull, 'w') as f:
+        return_code = subprocess.call(args=cmd_str.split(),
+                                      stdout=f,
+                                      stderr=f)
+        m = '"{0}" migrated build from {1} to {2}, with result {3}'
+        logger.info(m.format(sconf.name, sconf.fq_build_output, dest, return_code))
 
     if 'excluded_files' in sconf:
-        fns = [ pjoin(conf.paths.projectroot,
-                      conf.paths.public_site_output,
-                      fn)
-                for fn in sconf['dirhtml']['excluded_files'] ]
+        fns = [os.path.join(conf.paths.projectroot,
+                            conf.paths.public_site_output,
+                            fn)
+               for fn in sconf['dirhtml']['excluded_files']]
 
-        cleaner(fns)
-        logging.info('removed excluded files from dirhtml output directory')
+        for fn in fns:
+            if os.path.isdir(fn):
+                shutil.rmtree(fn)
+            elif os.path.isfile(fn):
+                os.remove(fn)
+            else:
+                continue
+
+            logger.info('removed file from dirhtml output directory: ' + fn)
 
     if conf.git.branches.current in conf.git.branches.published:
         sitemap_exists = sitemap(config_path=None, conf=conf)
 
-        if sitemap_exists is True:
-            copy_if_needed(source_file=pjoin(conf.paths.projectroot,
-                                             conf.paths.branch_output,
-                                             'sitemap.xml.gz'),
-                           target_file=pjoin(conf.paths.projectroot,
-                                             conf.paths.public_site_output,
-                                             'sitemap.xml.gz'))
+        legacy_sitemap_fn = os.path.join(conf.paths.projectroot,
+                                         conf.paths.branch_output,
+                                         'sitemap.xml.gz')
+
+        if os.path.exists(legacy_sitemap_fn) and sitemap_exists is True:
+            copy_if_needed(source_file=legacy_sitemap_fn,
+                           target_file=os.path.join(conf.paths.projectroot,
+                                                    conf.paths.public_site_output,
+                                                    'sitemap.xml.gz'))
 
 
 def sitemap(config_path, conf):
-    paths = conf.paths
-
-    sys.path.append(os.path.join(paths.projectroot, paths.buildsystem, 'bin'))
+    sys.path.append(os.path.join(conf.paths.projectroot, conf.paths.buildsystem, 'bin'))
     import sitemap_gen
 
-    if config_path is None:
-        config_path = os.path.join(paths.projectroot, 'conf-sitemap.xml')
+    config_paths = []
+    if config_path is not None:
+        config_paths.append(config_path)
+        config_paths.append(os.path.join(conf.paths.projectroot, conf.paths.builddata, config_path))
+        config_path = None
 
-    if not os.path.exists(config_path):
-        logger.error('sitemap: configuration file {0} does not exist. Returning early'.format(config_path))
+    default_name = 'conf-sitemap.xml'
+    config_paths.extend([default_name,
+                         os.path.join(conf.paths.projectroot, default_name),
+                         os.path.join(conf.paths.projectroot,
+                                      conf.paths.builddata, default_name)])
+
+    if 'edition' in conf.project and conf.project.edition != conf.project.name:
+        edition_name = '-'.join(['conf', conf.project.edition, 'sitemap.xml'])
+        config_paths.extend([edition_name,
+                            os.path.join(conf.paths.projectroot, edition_name),
+                            os.path.join(conf.paths.projectroot,
+                                         conf.paths.builddata, edition_name)])
+
+    for path in config_paths:
+        if os.path.isfile(path):
+            config_path = path
+            break
+
+    if config_path is None:
+        m = 'sitemap: configuration file {0} does not exist. Returning early'
+        logger.error(m.format(config_path))
         return False
 
     sitemap = sitemap_gen.CreateSitemapFromFile(configpath=config_path,
@@ -176,5 +155,5 @@ def sitemap(config_path, conf):
 
     sitemap.Generate()
 
-    logger.error('sitemap: generated sitemap according to the config file {0}'.format(config_path))
+    logger.info('sitemap: generated sitemap according to the config file {0}'.format(config_path))
     return True

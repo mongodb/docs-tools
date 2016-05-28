@@ -1,0 +1,9 @@
+=============================================================
+``release`` -- Generate Content for Installation Instructions
+=============================================================
+
+.. deprecated:: 0.4.0
+
+.. automodule:: giza.content.release
+   :members:
+   :undoc-members:

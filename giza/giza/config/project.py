@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
+import logging
+import libgiza.config
+
+logger = logging.getLogger('giza.config.')
+
 
 def get_path_prefix(conf, branch):
     """
@@ -24,20 +28,23 @@ def get_path_prefix(conf, branch):
 
     if conf.project.siteroot is True:
         if (conf.project.branched is True and
-            conf.git.branches.manual != branch):
+                conf.git.branches.manual != branch):
             o.append(branch)
         else:
             o.append(conf.project.tag)
     else:
-        o.append(conf.project.basepath)
+        if conf.project.basepath not in ('', None):
+            o.append(conf.project.basepath)
 
         if conf.project.branched is True:
-            if branch == conf.git.branches.current and conf.git.branches.manual == conf.git.branches.current:
+            if (branch == conf.git.branches.current and
+                    conf.git.branches.manual == conf.git.branches.current):
                 o.append('current')
             else:
                 o.append(branch)
 
     return '/'.join(o)
+
 
 def get_current_path(conf):
     branch = conf.git.branches.current
@@ -46,8 +53,22 @@ def get_current_path(conf):
 
     return get_path_prefix(conf, branch)
 
-class ProjectConfig(RecursiveConfigurationBase):
-    _option_registry = ['name', 'tag', 'url', 'title']
+
+class ProjectConfig(libgiza.config.RecursiveConfigurationBase):
+    _option_registry = ['name', 'title']
+
+    @property
+    def tag(self):
+        if self.edition in self.edition_list:
+            return self.edition_map[self.edition].tag
+        elif 'tag' in self.state:
+            return self.state['tag']
+        else:
+            return ''
+
+    @tag.setter
+    def tag(self, value):
+        self.state['tag'] = value
 
     @property
     def editions(self):
@@ -63,6 +84,13 @@ class ProjectConfig(RecursiveConfigurationBase):
         else:
             return []
 
+    @property
+    def edition_map(self):
+        if '_edition_map' in self.state:
+            return self.state['_edition_map']
+        else:
+            return {}
+
     @editions.setter
     def editions(self, value):
         if isinstance(value, list):
@@ -70,9 +98,15 @@ class ProjectConfig(RecursiveConfigurationBase):
                 self.state['_edition_list'] = []
             if 'editions' not in self.state:
                 self.state['editions'] = []
+            if '_edition_map' not in self.state:
+                self.state['_edition_map'] = {}
 
-            self.state['_edition_list'].extend( [ v['name'] for v in value ] )
-            self.state['editions'].extend([EditionListConfig(v) for v in value])
+            for v in value:
+                ename = v['name']
+                ed = EditionListConfig(v)
+                self.state['_edition_list'].append(ename)
+                self.state['editions'].append(ed)
+                self.state['_edition_map'][ename] = ed
         else:
             logger.critical('editions must be a list')
             raise TypeError
@@ -91,11 +125,10 @@ class ProjectConfig(RecursiveConfigurationBase):
     @edition.setter
     def edition(self, value):
         if 'editions' in self.state:
-            if self.conf.runstate.edition in self.state['_edition_list']:
-                self.state['edition'] = self.conf.runstate.edition
-            elif value in self.state['_edition_list']:
+            if value in self.state['_edition_list']:
                 self.state['edition'] = value
-
+            elif self.conf.runstate.edition in self.state['_edition_list']:
+                self.state['edition'] = self.conf.runstate.edition
 
     @property
     def branched(self):
@@ -116,23 +149,54 @@ class ProjectConfig(RecursiveConfigurationBase):
                     break
 
     @property
+    def url(self):
+        if 'url' not in self.state:
+            self.url = None
+
+        return self.state['url']
+
+    @url.setter
+    def url(self, value):
+        url = None
+        for edition in self.editions:
+            if self.edition == edition.name:
+                url = edition.url
+                break
+
+        if url is None:
+            if value is None:
+                self.state['url'] = ''
+            else:
+                self.state['url'] = value
+        else:
+            self.state['url'] = url
+
+    @property
     def basepath(self):
         if 'basepath' not in self.state:
             self.basepath = None
 
-        return self.state['basepath']
+        if 'basepath' in self.state:
+            return self.state['basepath']
+        else:
+            return ''
 
     @basepath.setter
     def basepath(self, value):
         if value is not None:
             self.state['basepath'] = value
         else:
-            self.state['basepath'] = self.tag
-
             for edition in self.editions:
                 if self.edition == edition.name:
-                    self.state['basepath'] = edition.tag
+                    if edition.tag is None:
+                        self.state['basepath'] = ''
+                    else:
+                        self.state['basepath'] = edition.tag
+
                     break
+
+            if 'basepath' not in self.state and 'tag' in self.state:
+                self.state['basepath'] = self.tag
 
     @property
     def siteroot(self):
@@ -152,8 +216,9 @@ class ProjectConfig(RecursiveConfigurationBase):
     def sitepath(self):
         return get_path_prefix(self.conf, self.conf.git.branches.current)
 
-class EditionListConfig(ConfigurationBase):
-    _option_registry = ['name']
+
+class EditionListConfig(libgiza.config.ConfigurationBase):
+    _option_registry = ['name', 'url']
 
     @property
     def branched(self):

@@ -1,0 +1,7 @@
+==========================================================
+``inheritance`` -- Inheritance Implementation for Exmaples
+==========================================================
+
+.. automodule:: giza.content.examples.inheritance
+   :members:
+   :undoc-members:

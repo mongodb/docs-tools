@@ -1,4 +1,4 @@
- # Copyright 2014 MongoDB, Inc.
+# Copyright 2014 MongoDB, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,32 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Defines the ways that example content can inherit content from other
+examples. This module holds two classes: a representation of a single file that
+contains a set of examples and
+
+See :mod:`giza.inheritance`
+"""
+
 import logging
-import os.path
 
-logger = logging.getLogger('giza.inheritance')
-
-from giza.config.base import RecursiveConfigurationBase
+from libgiza.inheritance import InheritableContentError
 from giza.content.examples.models import ExampleData, ExampleCase
-from giza.core.inheritance import InheritableContentError, DataContentBase, DataCache
-from giza.tools.serialization import ingest_yaml_list
+from giza.inheritance import DataContentBase, DataCache
+
+logger = logging.getLogger('giza.content.examples.inheritance')
 
 # Example specific inheritance machinery
 
-class ExampleError(Exception): pass
+
+class ExampleError(InheritableContentError):
+    pass
+
 
 class ExampleFile(DataContentBase):
-    def ingest(self, src):
-        if not isinstance(src, list) and os.path.isfile(src):
-            src = ingest_yaml_list(src)
 
-        for doc in src:
-            self.add(doc)
+    """
+    There is a one to one mapping of example files and output examples. Each
+    example file has some "starting data," or a "collection" and then a sequence
+    of operation and result pairs (i.e. "examples") that contain both a sequence
+    of operations *and* an expected result. Each example *must* have a
+    collection, and typically has 1 or more output examples.
 
-        if self.collection is None:
-            m = 'all examples must have a collection'
-            logger.error(m)
-            raise InheritableContentError(m)
+    The ``ingest()`` method adds a check to ensure to produce an error to ensure
+    that there's a "collection" value, while ``add()`` and ``fetch()`` capture
+    collection and examples separately.
+    """
 
     @property
     def collection(self):
@@ -60,24 +70,27 @@ class ExampleFile(DataContentBase):
 
     @property
     def examples(self):
-        return [ example
-                 for example in self.content.values()
-                 if 'collection' not in example
-        ]
+        l = []
+        for ref in self.ordering:
+            example = self.fetch(ref)
+            if 'collection' not in example:
+                l.append(example)
+
+        return l
 
     def add(self, doc):
-        if ('edition' in doc and
-            'edition' in self.conf.project and
-            doc['edition'] != self.conf.project.edition):
-            return
-
         if 'collection' in doc:
             self.collection = ExampleData(doc, self.conf)
 
             if not self.collection.is_resolved():
                 self.collection.resolve(self.data)
-        elif 'operation' in doc:
+
+            return self.collection
+        else:
             op = ExampleCase(doc, self.conf)
+            if 'edition' in op:
+                op.ref = '-'.join((str(op.ref), op.edition))
+
             if op.ref in self.content:
                 m = 'example named {0} already exists'.format(op.ref)
                 logger.error(m)
@@ -86,8 +99,9 @@ class ExampleFile(DataContentBase):
                 self.content[op.ref] = op
                 if not op.is_resolved():
                     op.resolve(self.data)
-
                 logger.debug('added operation {0}'.format(op.name))
+
+            return op
 
     def fetch(self, ref):
         if ref == self.collection.name:
@@ -109,5 +123,16 @@ class ExampleFile(DataContentBase):
             logger.error(m)
             raise ExampleError(m)
 
+
 class ExampleDataCache(DataCache):
     content_class = ExampleFile
+    content_type = 'examples'
+
+    def file_iter(self):
+        for fn in self.cache:
+            data = self.cache[fn]
+
+            if data.collection is None or data.collection.options.base_file is True:
+                continue
+
+            yield fn, data

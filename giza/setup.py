@@ -2,8 +2,23 @@ import giza
 
 from setuptools import setup, find_packages
 
-REQUIRES = ['argh', 'pyyaml', 'rstcloth>=0.2.2', 'docutils', 'jinja2', 'sphinx',
-            'hieroglyph', 'sphinxcontrib-httpdomain', 'sphinx-intl', 'polib', 'onetimepass']
+REQUIRES = [
+    'argh',
+    'docutils',
+    'hieroglyph',
+    'jinja2',
+    'libgiza==0.2.7',
+    'onetimepass',
+    'polib',
+    'pyyaml',
+    'rstcloth==0.2.5',
+    'sphinx-intl',
+    'sphinx==1.2.3',
+    'sphinxcontrib-httpdomain',
+    'wand',
+    'boto',
+    'jira'
+]
 
 setup(
     name='giza',
@@ -16,9 +31,9 @@ setup(
     packages=find_packages(),
     test_suite=None,
     install_requires=REQUIRES,
-    package_data={'giza': ['quickstart/*']},
+    package_data={'giza': ['quickstart/makefile', "quickstart/source/*", "quickstart/source/.gitignore", 'quickstart/config/*.yaml']},
     extras_require={
-        'jira': ['jira-python', 'pyOpenSSL', 'ndg-httpsclient', 'pyasn1'],
+        'jira': ['jira', 'pyOpenSSL', 'ndg-httpsclient', 'pyasn1', 'requests>=2.1.0'],
         'github': ['github3.py']
     },
     classifiers=[

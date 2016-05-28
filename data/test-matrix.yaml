@@ -1,0 +1,100 @@
+project: mongodb-manual
+uri: https://github.com/mongodb/docs.git
+private: false
+branches:
+  - master
+  - v2.2
+  - v2.4
+  - v2.6
+operations:
+  minimal:
+    - "giza generate source"
+    - "giza --serial generate sphinx --builder html"
+    - "giza packaging create --target push"
+  complete:
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish"
+    - "giza packaging create --target push"
+---
+project: mongodb-primer
+uri: https://github.com/mongodb/docs.git
+root: 'primer'
+private: false
+branches:
+  - master
+operations:
+  minimal:
+    - "giza generate source --edition shell python cpp node"
+    - "giza --serial generate sphinx --builder html --edition shell python cpp node"
+    # - "giza packaging create --target push-shell push-python push-cpp push-node"
+  complete:
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish --edition shell python cpp node"
+    - "giza packaging create --target push-shell push-python push-cpp push-node"
+---
+project: mms-docs
+uri: git@github.com:10gen/mms-docs.git
+private: true
+branches:
+  - master
+  - v1.1
+  - v1.2
+  - v1.3
+  - v1.4
+  - v1.5
+  - v1.6
+  - v1.8
+operations:
+  minimal:
+    - "giza generate source --edition cloud classic onprem"
+    - "giza --serial generate sphinx --builder html --edition cloud classic onprem"
+    - "giza packaging create --target push-onprem"
+  complete:
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish --edition cloud classic onprem"
+    - "giza packaging create --target push-cloud push-classic push-onprem"
+---
+project: docs-ecosystem
+uri: https://github.com/mongodb/docs-ecosystem.git
+branches:
+  - master
+private: false
+operations:
+  minimal:
+    - "giza generate source"
+    - "giza --serial generate sphinx --builder html"
+    - "giza packaging create --target push"
+  complete:
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish"
+    - "giza packaging create --target push"
+---
+project: docs-training
+uri: git@github.com:mongodb/docs-training.git
+branches:
+  - master
+private: true
+operations:
+  minimal:
+    - "giza generate source --edition instructor student"
+    - "giza --serial generate sphinx --builder html --edition instructor student"
+  complete:
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish"
+    - "giza packaging create --target push-student push-instructor"
+---
+project: www-about
+uri: git@github.com:10gen/mongodb-www-about.git
+branches:
+  - master
+private: true
+operations:
+  minimal:
+    - "giza generate source"
+    - "giza --serial generate sphinx --builder html"
+    - "giza packaging create --target push"
+  complete:
+    - "giza make publish --serial_sphinx"
+    - "giza env package --builder publish"
+    - "giza packaging create --target push"
+...

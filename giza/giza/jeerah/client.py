@@ -1,35 +1,56 @@
 import logging
-import os.path
-import yaml
 import datetime
-
-logger = logging.getLogger('giza.jeerah.client')
 
 from jira.client import JIRA
 from jira.resources import Version
 
-from giza.config.credentials import CredentialsConfig
+import giza.config.credentials
+
+logger = logging.getLogger('giza.jeerah.client')
+
 
 class JeerahClient(object):
+
     def __init__(self, conf):
         self.conf = conf
-        self.credentials = CredentialsConfig(self.conf.site.credentials)
+        self.credentials = giza.config.credentials.CredentialsConfig(self.conf.system.files.data.jira.site.credentials).jira
         self.c = None
         self.issues_created = []
         self.abort_on_error = True
-        self.results_format = 'list'
+        self._results_format = 'list'
         self.versions_cache = {}
+
+
+    @property
+    def results_format(self):
+        return self._results_format
+
+    @results_format.setter
+    def results_format(self, value):
+        if value not in ("list", "dict"):
+            m = "{0} is not in '{1}'", "value", ', '.join("list", "dict")
+            logger.error(m)
+            raise TypeError(m)
+        else:
+            self._results_format = value
 
     def connect(self):
         if self.c is None:
-            self.c = JIRA(options={'server': self.conf.site.url},
-                          basic_auth=(self.credentials.jira.username, self.credentials.jira.password))
+            self.c = JIRA(options={'server': self.credentials.url},
+                          basic_auth=(self.credentials.username,
+                                      self.credentials.password))
             logger.debug('created jira connection')
         else:
             logger.debug('jira connection exists')
 
-        logger.debug('configured user: ' + self.credentials.jira.username)
+        logger.debug('configured user: ' + self.credentials.username)
         logger.debug('actual user: ' + self.c.current_user())
+
+    def connect_unauthenticated(self):
+        if self.c is None:
+            self.c = JIRA(options={'server': self.conf.site.url})
+
+        logger.info("creating an unauthenticated jira connection.")
 
     def comments(self, issue):
         return self.c.comments(issue)
@@ -41,19 +62,20 @@ class JeerahClient(object):
             logger.debug("adding '{0}' to version cache".format(ver.name))
 
             if project not in self.versions_cache:
-                self.versions_cache[project] = { }
+                self.versions_cache[project] = {}
 
             self.versions_cache[project][ver.name] = ver.id
 
-    def create_issue(self, title, text, assignee, project, reporter=None, tags=None, version=None, uid=None):
+    def create_issue(self, title, text, assignee, project, reporter=None,
+                     tags=None, version=None, uid=None):
         issue = {'project': {'key': project},
                  'issuetype': {'name': 'Task'},
                  'summary': title,
                  'description': text,
-                 'assignee': {'name': assignee }}
+                 'assignee': {'name': assignee}}
 
         if reporter is not None:
-            issue['reporter'] = { 'name': reporter }
+            issue['reporter'] = {'name': reporter}
         if tags is not None:
             issue['labels'] = [tags]
         if version is not None:
@@ -64,15 +86,15 @@ class JeerahClient(object):
             if version not in self.versions_cache[project]:
                 logger.error("version {0} doesn't exist in {1} project".format(version, project))
             else:
-                issue['fixVersions'] = [ { 'id': self.versions_cache[project][version] } ]
+                issue['fixVersions'] = [{'id': self.versions_cache[project][version]}]
                 logger.debug('adding version to issue: {0}'.format(issue['fixVersions']))
 
         new_issue = self.c.create_issue(fields=issue)
 
         logger.debug('created new issue {0}'.format(new_issue.key))
-        self.issues_created.append( { 'key': new_issue.key,
-                                      'uid': uid,
-                                      'title': title})
+        self.issues_created.append({'key': new_issue.key,
+                                    'uid': uid,
+                                    'title': title})
 
     def query(self, query_string):
         logger.info('running query for: {0}'.format(query_string))
@@ -86,15 +108,18 @@ class JeerahClient(object):
                 raise SystemExit(e)
 
         if self.results_format == 'dict':
-            return { issue.key: issue for issue in query_results }
+            return {issue.key: issue for issue in query_results}
         elif self.results_format == 'list':
-            return [ issue for issue in query_results ]
+            return [issue for issue in query_results]
+
+    def components(self, project):
+        return self.c.project_components(project)
 
     def versions(self, project, released=False, archived=False):
-        return [ v
-                 for v in self.c.project_versions(project)
-                 if v.released is released and v.archived is archived
-               ]
+        return [v
+                for v in self.c.project_versions(project)
+                if v.released is released and v.archived is archived
+                ]
 
     def release_version(self, version):
         if not isinstance(version, Version):

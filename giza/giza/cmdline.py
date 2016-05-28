@@ -12,10 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import logging
-
-logger = logging.getLogger('giza.main')
 
 import argh
 
@@ -30,10 +27,16 @@ import giza.operations.http_serve
 import giza.operations.includes
 import giza.operations.make
 import giza.operations.packaging
+import giza.operations.build_env
 import giza.operations.quickstart
-import giza.operations.sphinx
-import giza.operations.translate
+import giza.operations.stage
+import giza.operations.sphinx_cmds
 import giza.operations.tx
+import giza.operations.code_review
+import giza.operations.test
+import giza.operations.changelog
+
+logger = logging.getLogger('giza.main')
 
 commands = {
     'main': [
@@ -41,31 +44,48 @@ commands = {
         giza.operations.configuration.render_config,
         giza.operations.deploy.main,
         giza.operations.deploy.publish_and_deploy,
-        giza.operations.make.main,
         giza.operations.quickstart.make_project,
-        giza.operations.sphinx.main,
+        giza.operations.sphinx_cmds.main,
         giza.operations.deploy.twofa_code,
         giza.operations.http_serve.start,
+        giza.operations.stage.main_stage,
+        giza.operations.stage.main_deploy,
+        giza.operations.configuration.report_version,
+        giza.operations.make.main,
+        giza.operations.test.integration_main,
+        giza.operations.changelog.main,
     ],
     'git': [
         giza.operations.git.apply_patch,
         giza.operations.git.pull_rebase,
         giza.operations.git.cherry_pick,
         giza.operations.git.merge,
+        giza.operations.git.create_branch,
+    ],
+    'cr': [
+        giza.operations.code_review.create_or_update,
+        giza.operations.code_review.list_reviews,
+        giza.operations.code_review.close,
+        giza.operations.code_review.checkout,
     ],
     'generate': [
-        giza.operations.generate.api,
         giza.operations.generate.assets,
         giza.operations.generate.images,
+        giza.operations.generate.api,
         giza.operations.generate.intersphinx,
         giza.operations.generate.options,
-        giza.operations.generate.primer,
+        giza.operations.generate.migration,
         giza.operations.generate.steps,
         giza.operations.generate.tables,
         giza.operations.generate.toc,
         giza.operations.generate.examples,
         giza.operations.generate.redirects,
-        giza.operations.generate.robots
+        giza.operations.generate.robots,
+        giza.operations.generate.source,
+        giza.operations.generate.sphinx,
+        giza.operations.generate.release,
+        giza.operations.generate.glossary,
+        giza.operations.generate.changelogs,
     ],
     'includes': [
         giza.operations.includes.recursive,
@@ -82,40 +102,59 @@ commands = {
         giza.operations.packaging.create,
         giza.operations.packaging.deploy,
     ],
-    'translate': [
-        giza.operations.translate.create_corpora,
-        giza.operations.translate.build_translation_model,
-        giza.operations.translate.model_results,
-        giza.operations.translate.merge_translations,
-        giza.operations.translate.po_to_corpus,
-        giza.operations.translate.dict_to_corpus,
-        giza.operations.translate.translate_po,
-        giza.operations.translate.translate_text_doc,
-        giza.operations.translate.flip_text,
-        giza.operations.translate.auto_approve_obvious_po,
+    'env': [
+        giza.operations.build_env.package,
+        giza.operations.build_env.extract,
     ],
     'tx': [
         giza.operations.tx.check_orphaned,
         giza.operations.tx.update_translations,
+        giza.operations.tx.update_translations_transifex,
         giza.operations.tx.pull_translations,
         giza.operations.tx.push_translations,
-    ]
+    ],
 }
 
+
 def get_base_parser():
+    """
+    Adds global arguments/settings giza build process, and creates the top-level
+    argument parser object.
+    """
+
     parser = argh.ArghParser()
     parser.add_argument('--level', '-l',
                         choices=['debug', 'warning', 'info', 'critical', 'error'],
                         default='info')
-    parser.add_argument('--serial', '-s', default=None, dest='runner', const='serial', action='store_const')
-    parser.add_argument('--thread', default=None, dest='runner', const='thread', action='store_const')
+    parser.add_argument('--serial', '-s', default=None, dest='runner',
+                        const='serial', action='store_const')
+    parser.add_argument('--thread', default=None, dest='runner', const='thread',
+                        action='store_const')
     parser.add_argument('--event', default=None, dest='runner', const='event', action='store_const')
-    parser.add_argument('--process', default=None, dest='runner', const='process', action='store_const')
+    parser.add_argument('--process', default=None, dest='runner',
+                        const='process', action='store_const')
     parser.add_argument('--force', '-f', default=False, action='store_true')
+    parser.add_argument('--fast', action='store_true')
 
     return parser
 
+
 def main():
+    """
+    The main entry point, as specified in the ``setup.py`` file. Adds commands
+    from other subsidiary entry points (specified in the ``commands`` variable
+    above,) and then uses ``arch.dispatch()`` to start the process.
+
+    The ``RuntimeStateConfig()`` object is created here and handed to the parser
+    as the object that will recive all command line data, rather than using a
+    standard argparse namespace object. This allows all runtime argument parsing
+    to happen inside of these config objects rather than spread among all of the
+    entry points.
+
+    This function catches and recovers from :exc:`KeyboardInterupt` which means
+    that doesn't dump a stack trace following a Control-C.
+    """
+
     parser = get_base_parser()
 
     for namespace, entry_points in commands.items():

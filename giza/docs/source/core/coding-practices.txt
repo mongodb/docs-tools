@@ -1,0 +1,214 @@
+================
+Coding Practices
+================
+
+Overview
+--------
+
+The coding practices overview describes the basic
+organization of the :mod:`giza` codebase, including pointers to common
+functions, and discussions of expected behavior. As you start to
+extend or enhance :mod:`giza`, use these insights to ensure that your
+changes are consistent with existing idioms and patterns.
+
+Shell Commands
+--------------
+
+The implementation of many operations in giza are pure-Python;
+however, for some operations it makes sense to call out to an external
+program. Key examples of this include: Sphinx itself, to provide
+better isolation between builds; ``inkscape``, to generate images;
+``grep``, for efficiency, and other cases.
+
+All external commands run using the :func:`~giza.command.command()`
+function. This helper, inspired by Fabric's ``local()`` function, uses
+:mod:`subprocess` and can optionally collect output from standard
+output (buffered in a temporary file). :func:`~giza.command.command()`
+can either raise an :exc:`giza.command.CommandError` on error or if
+the ``ignore`` parameter is ``False`` (default). All other
+:func:`~giza.command.command()` invocations return a
+:class:`~giza.command.CommandResult()` object which contains output
+information, if collected, return status, and information about the
+command.
+
+Use :func:`~giza.command.command()` to run all external processes.
+
+Logging
+-------
+
+All logging in :mod:`giza` uses the standard library :mod:`logging`
+module.
+
+While some library operations may not log anything, in general most
+giza components will at least include debug logging. The default
+configuration of the logger is in
+:attr:`giza.config.runtime.RuntimeStateConfig.level`, and configurable
+as part of the global runtime configuration.
+
+The begging of any new Python source file should have the following
+code to create a logger:
+
+.. code-block:: python
+
+   import logging
+   logger = logging.getLogger('<module.name>')
+
+By default, :mod:`giza` uses the ``info`` level. Use logging for all
+output.
+
+Operations and Entry Points
+---------------------------
+
+The ``giza`` command runs the :func:`giza.cmdline.main()` function,
+which registers all other sub-commands and operations. Operations,
+sub-commands, arguments and dispatching control rely on the
+:mod:`argh` package. The :data:`giza.cmdline.commands` dictionary
+holds a mapping of strings, each representing a namespace of
+sub-commands, to lists of function objects, which are each operation
+(i.e. a sub-sub-command).
+
+Define global options in :func:`giza.cmdline.get_base_parser()` and
+add operations to the :data:`giza.cmdline.commands` structure. Define
+the implementation of *actual* operations in the
+:mod:`giza.operations` package.
+
+Entry points are simply Python callables, decorated with :mod:`argh`
+decorators. Consider the following example:
+
+.. code-block:: python
+
+   import argh
+
+   @argh.arg('--force', '-f')
+   @argh.named('clean')
+   @argh.expects_obj
+   def remove_unused_files(args):
+       raise NotImplementedError
+
+These decorators ensure that the :mod:`argh` dispatch mechanism passes
+the function a complete
+:class:`giza.config.runtime.RuntimeStateConfig`
+(:func:`argh.expects_obj`),
+object. The :func:`argh.named` ensures that the command uses a
+reasonable name (i.e. ``clean``) rather than the function name
+itself. Because of how :mod:`giza` uses namespaces for commands, it
+often makes sense for entry points to have more explicit names than
+the operation on the command line.
+
+Finally the :func:`argh.arg()` decorator
+specifies an option that will set the ``force`` attribute of the
+:class:`giza.config.runtime.RuntimeStateConfig`
+object. :class:`giza.config.runtime.RuntimeStateConfig`  does
+not permit setting arbitrary attributes. By convention, in :mod:`giza`, set default
+types, values, and behaviors in the :class:`giza.config.runtime.RuntimeStateConfig`
+object itself rather than then in
+:func:`argh.arg()`. :func:`argh.arg()` is a wrapper around
+:meth:`argparse.ArgumentParser.add_argument()`.
+
+In :mod:`giza`, most entry points are lightweight wrappers around a
+set of core functions, typically in :mod:`giza.content`,
+,:mod:`giza.quickstart`, :mod:`giza.deploy`, and :mod:`giza.deploy`
+which implement the core business logic.
+
+This execution architecture minimizes the dependence on :mod:`argh`
+and opens the possibility of writing alternate frameworks (i.e. as a
+web service, etc.)
+
+Tasks and Parallelism
+---------------------
+
+See :doc:`/core/parallelism` for an overview of how :mod:`giza`
+executes tasks in parallel (internally.) By default, all tasks in
+:mod:`giza` run in a pool using Python threads. Because of the
+implementation of Python, only operations which yield Python's
+global interpreter lock actually run in parallel: typically
+mathematical operations, input/output tasks (network or file access,)
+and :mod:`subprocess` tasks.
+
+You can also run :mod:`giza` tasks using a process pool; however the
+IPC overhead negates any observable benefit for most tasks.
+
+Task execution is entirely encapsulated by the
+:class:`giza.core.app.BaseApp()` class. Typically, entry points will
+create a :class:`~giza.core.app.BaseApp()` class, and then pass this
+object to functions as the ``app`` argument, which define all before
+the top-level function runs the application, although the ``app`` may
+run at different levels, depending on requirements.
+
+:class:`~giza.core.app.BaseApp()` instances are reusable, so you will
+almost never need to create a new top-level
+:class:`~giza.core.app.BaseApp()` instance outside of a new entry
+point. Consider the following basic "lifecycle" of a task and
+operation.
+
+.. code-block:: python
+
+   from giza.core.app import BaseApp
+
+   def hello_someone(name="user"):
+       print('hello ' + name)
+
+   app = BaseApp(<conf>)
+   t = app.add('task')
+   t.job = hello_someone
+   t.dependency = None
+   t.target = True
+
+   for user in ('john', 'jon', 'jack', 'sean'):
+       t = app.add('task')
+       t.job = hello_someone
+       t.dependency = None
+       t.target = True
+       t.args = user
+
+   app.run()
+
+The return value of the :meth:`~giza.core.app.BaseApp.run()` method or
+the :attr:`~giza.core.app.BaseApp.results` value contain the return
+values of all tasks in the application, in the order that the tasks
+were added to the application.
+
+Typically, running an application happens in the
+:mod:`giza.operations` package in or near the entry points, while
+defining tasks happen in the :mod:`giza.content` package near the
+definitions of content production.
+
+Configuration
+-------------
+
+All configuration and runtime data are available in rich configuration
+object, defined in the :mod:`giza.config` package. These objects
+are implementations of :class:`giza.config.base.ConfigurationBase`.
+Previous implementations, used a more flexible dict-like object to
+store configuration, and configuration objects make it possible to
+separate data validation and synthesis from business logic.
+
+In addition :class:`giza.config.base.ConfigurationBase`,
+:class:`giza.config.base.RecusriveConfigurationBase` adds a ``conf``
+attribute, which should contain a reference to the top-level
+configuration object for those objects that require access to this
+data. Internally, a dictionary in the ``state`` attribute of a
+configuration object holds most of a configuration objects data,
+although, and the string representation of these objects largely
+resembles their dictionary implementation.
+
+Unless you explicitly configure a configuration object to support a
+value, you cannot set any value in the object. Consider the following
+behaviors:
+
+- you can set private attributes without directly adding support for
+  them to the object (i.e. those attributes that start with an
+  underscore (``_``)). *Only* use private attributes in exceptional
+  cases in the object's definition.
+
+- The ``_object_registry`` property is a list that provides a list of
+  "default" attributes. Add attributes using the default list to avoid
+  defining boilerpate setters and getters.
+
+- Use the :func:`property()` decorators to define attributes as
+  needed. For dynamic and self-referential values, put logic in the
+  getter method; for static methods, put logic in the setter.
+
+The use the helper functions in :mod:`giza.config.helper`,
+particularly :func:`giza.config.helper.new_config()` to create
+configuration objects.

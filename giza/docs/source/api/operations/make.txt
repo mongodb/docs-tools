@@ -1,0 +1,7 @@
+===================================
+``make`` -- Makefile Emulation Mode
+===================================
+
+.. automodule:: giza.operations.make
+   :members:
+   :undoc-members:

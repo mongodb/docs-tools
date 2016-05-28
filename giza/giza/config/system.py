@@ -15,19 +15,25 @@
 import logging
 import os.path
 
-logger = logging.getLogger('giza.config.system')
+import yaml
 
-from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
+from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
 from giza.config.sphinx_local import SphinxLocalConfig
 from giza.config.manpage import ManpageConfig
 from giza.config.pdfs import PdfConfig
 from giza.config.intersphinx import IntersphinxConfig
-from giza.config.translate import TranslateConfig
-from giza.config.corpora import CorporaConfig
 from giza.config.redirects import HtaccessData
-from giza.tools.serialization import ingest_yaml_list
+from giza.config.content import ContentRegistry
+from giza.config.replacements import ReplacementData
+from giza.config.migrations import MigrationData
+from giza.config.images import ImageData
+from giza.config.jeerah import JeerahConfig
+
+logger = logging.getLogger('giza.config.system')
+
 
 class SystemConfig(RecursiveConfigurationBase):
+
     @property
     def make(self):
         return self.state['make']
@@ -88,15 +94,47 @@ class SystemConfig(RecursiveConfigurationBase):
         if value is not None:
             self.state['dependency_cache'] = value
         else:
-            p = [ self.conf.paths.projectroot, self.conf.paths.branch_output ]
+            self.state['dependency_cache'] = os.path.join(self.conf.paths.projectroot,
+                                                          self.dependency_cache_fn)
+
+    @property
+    def dependency_cache_fn(self):
+        if 'dependency_cache_fn' not in self.state:
+            self.dependency_cache_fn = None
+
+        return self.state['dependency_cache_fn']
+
+    @dependency_cache_fn.setter
+    def dependency_cache_fn(self, value):
+        if value is None:
+            p = [self.conf.paths.branch_output]
             if self.conf.project.edition is None:
                 p.append('dependencies.json')
             else:
                 p.append('dependencies-' + self.conf.project.edition + '.json')
 
-            self.state['dependency_cache'] = os.path.sep.join(p)
+            self.state['dependency_cache_fn'] = os.path.sep.join(p)
+        else:
+            self.state['dependency_cache_fn'] = value
+
+    @property
+    def runstate(self):
+        return self.conf.runstate
+
+    @runstate.setter
+    def runstate(self, value):
+        self.conf.runstate = value
+
+    @property
+    def content(self):
+        if 'content' not in self.state:
+            self.state['content'] = ContentRegistry()
+
+        return self.state['content']
+
 
 class SystemToolsConfig(ConfigurationBase):
+
     @property
     def pinned(self):
         return self.state['pinned']
@@ -119,7 +157,9 @@ class SystemToolsConfig(ConfigurationBase):
         else:
             raise TypeError
 
+
 class SystemMakeConfig(ConfigurationBase):
+
     @property
     def generated(self):
         return self.state['generated']
@@ -142,7 +182,9 @@ class SystemMakeConfig(ConfigurationBase):
         else:
             raise TypeError
 
+
 class SystemConfigFiles(RecursiveConfigurationBase):
+
     def __init__(self, conf):
         super(SystemConfigFiles, self).__init__(None, conf)
 
@@ -169,11 +211,40 @@ class SystemConfigFiles(RecursiveConfigurationBase):
         if 'data' not in self.state:
             self.state['data'] = SystemConfigData(value, self.conf)
 
-class SystemConfigData(RecursiveConfigurationBase):
-    ## There shouldn't be any setters in this class. All items in this class
-    ## must exist in SystemConfigPaths() objects.
+    def get_configs(self, key):
+        fns = []
+        for value in self.conf.system.files.paths:
+            if isinstance(value, dict):
+                if 'migration' in value:
+                    if isinstance(value[key], list):
+                        fns.exnted(value[key])
+                    else:
+                        fns.append(value[key])
+            elif value.startswith(key):
+                fns.append(value)
 
-    _always_list_configs = ('manpages', 'pdfs', 'htaccess', 'push', 'images', 'robots')
+        results = []
+
+        for fn in fns:
+            if fn.startswith(os.path.sep):
+                fn = fn[len(os.path.sep):]
+
+            for new_file in [os.path.join(self.conf.paths.projectroot, fn),
+                             os.path.join(self.conf.paths.projectroot,
+                                          self.conf.paths.source, fn),
+                             os.path.join(self.conf.paths.projectroot,
+                                          self.conf.paths.builddata, fn)]:
+                if os.path.isfile(new_file):
+                    results.append(new_file)
+
+        return results
+
+
+class SystemConfigData(RecursiveConfigurationBase):
+    # There shouldn't be any setters in this class. All items in this class
+    # must exist in SystemConfigPaths() objects.
+
+    _always_list_configs = ['manpages', 'pdfs', 'push', 'images', 'robots']
 
     def __init__(self, obj, conf):
         super(SystemConfigData, self).__init__(None, conf)
@@ -189,7 +260,7 @@ class SystemConfigData(RecursiveConfigurationBase):
     def __getattr__(self, key):
         try:
             return object.__getattribute__(self, key)
-        except AttributeError as e:
+        except AttributeError:
             if key in self._option_registry:
                 if isinstance(key, dict):
                     basename, fn = key.items()[0]
@@ -213,7 +284,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                 if len(self.state[key]) == 1 and key not in self._always_list_configs:
                     return self.state[key][0]
                 else:
-                     return self.state[key]
+                    return self.state[key]
             else:
                 m = 'key "{0}" in system.data object does not exist'.format(key)
                 if not key.startswith('__'):
@@ -243,7 +314,7 @@ class SystemConfigData(RecursiveConfigurationBase):
             if os.path.isfile(full_path):
                 d = self._resolve_config_data(full_path, basename)
             else:  # if os.path.isfile(self.state[basename]):
-                full_path = self.state[basename]# .items()[0][1]
+                full_path = self.state[basename]  # .items()[0][1]
                 d = self._resolve_config_data(self._resolve_config_path(full_path), basename)
             self._set_config_data(basename, fn, d)
 
@@ -257,7 +328,9 @@ class SystemConfigData(RecursiveConfigurationBase):
             else:
                 self.state[basename].append(d)
         else:
-            if isinstance(self.state[basename], (ConfigurationBase, dict)) and len(self.state[basename]) == 1:
+            if (isinstance(self.state[basename], (ConfigurationBase, dict)) and
+                    len(self.state[basename]) == 1):
+
                 self.state[basename] = []
             elif self.state[basename] != fn:
                 self.state[basename] = [self.state[basename]]
@@ -293,32 +366,44 @@ class SystemConfigData(RecursiveConfigurationBase):
         if fn is None:
             return []
         else:
-            data = ingest_yaml_list(fn)
-
             mapping = {
                 'sphinx_local': SphinxLocalConfig,
                 'sphinx-local': SphinxLocalConfig,
                 'manpages': ManpageConfig,
                 'pdfs': PdfConfig,
                 'intersphinx': IntersphinxConfig,
-                'corpora': CorporaConfig,
             }
             # recur_mapping for config objects that subclass RecursiveConfigurationBase
             recur_mapping = {
-                'translate': TranslateConfig,
+                'jira': JeerahConfig
             }
+            special_lists = {
+                'htaccess': HtaccessData,
+                'migrations': MigrationData,
+                'images': ImageData,
+            }
+            self._always_list_configs.extend(special_lists.keys())
 
-            if basename in mapping:
-                data = [ mapping[basename](doc) for doc in data ]
-            elif basename in recur_mapping:
-                data = [ recur_mapping[basename](doc, self.conf) for doc in data ]
-            elif basename == 'htaccess':
-                l = HtaccessData()
-                l.conf = self.conf
-                l.extend(data)
-                data = l
+            with open(fn, 'r') as f:
+                data = yaml.safe_load_all(f)
 
-            if len(data) == 1 and basename not in self._always_list_configs:
+                if basename in mapping:
+                    data = [mapping[basename](doc) for doc in data]
+                elif basename in recur_mapping:
+                    data = [recur_mapping[basename](doc, self.conf) for doc in data]
+                elif basename in special_lists:
+                    l = special_lists[basename]()
+                    l.conf = self.conf
+                    l.extend([d for d in data])
+                    data = l
+                elif basename == 'replacement':
+                    data = ReplacementData([d for d in data], self.conf)
+                    return data
+
+                if not isinstance(data, list):
+                    data = [item for item in data]
+
+            if len(data) == 1 and (basename not in self._always_list_configs):
                 return data[0]
             else:
                 return data

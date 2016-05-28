@@ -1,0 +1,7 @@
+=========================================
+``hash`` -- Build Metadata File Generator
+=========================================
+
+.. automodule:: giza.content.hash
+   :members:
+   :undoc-members:

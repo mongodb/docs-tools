@@ -1,0 +1,7 @@
+=====================================
+``git`` -- Version Control Management
+=====================================
+
+.. automodule:: giza.operations.git
+   :members:
+   :undoc-members:

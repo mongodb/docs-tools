@@ -12,19 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Post-process all output produced by JSON to add a "text" field to these
+documents that omits the XML data injected into this format by default so that
+search tools can use this data to index content. Also generates a file with a
+list of paths in the output.
+"""
+
 import json
-import re
-import os
 import logging
+import os
+import re
+import subprocess
+
+import libgiza.task
+
+from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
+from giza.tools.transformation import munge_content
 
 logger = logging.getLogger('giza.content.post.json_output')
 
-from giza.tools.command import command
-from giza.tools.strings import dot_concat
-from giza.tools.files import expand_tree, copy_if_needed
-from giza.tools.transformation import munge_content
+# Process Sphinx Json Output
 
-########## Process Sphinx Json Output ##########
 
 def json_output(conf):
     list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
@@ -32,26 +41,30 @@ def json_output(conf):
                                     conf.paths.public_site_output,
                                     'json', '.file_list')
 
-    cmd = 'rsync --recursive --times --delete --exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" {src} {dst}'
+    cmd = ('rsync --recursive --times --delete '
+           '--exclude="*pickle" --exclude=".buildinfo" --exclude="*fjson" '
+           '{src} {dst}')
 
     json_dst = os.path.join(conf.paths.projectroot, conf.paths.public_site_output, 'json')
-
-    if not os.path.exists(json_dst):
-        logger.debug('created directories for {0}'.format(json_dst))
-        os.makedirs(json_dst)
+    safe_create_directory(json_dst)
 
     builder = 'json'
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
         builder += '-' + conf.project.edition
 
-    command(cmd.format(src=os.path.join(conf.paths.projectroot,
-                                        conf.paths.branch_output, builder) + '/',
-                       dst=json_dst))
+    cmd_str = cmd.format(src=os.path.join(conf.paths.projectroot,
+                                          conf.paths.branch_output, builder) + '/',
+                         dst=json_dst)
 
-    copy_if_needed(list_file, public_list_file)
-    logger.info('deployed json files to local staging.')
+    try:
+        subprocess.check_call(cmd_str.split())
+        copy_if_needed(list_file, public_list_file)
+        logger.info('deployed json files to local staging.')
+    except subprocess.CalledProcessError:
+        logger.error('error migrating json artifacts to local staging')
 
-def json_output_tasks(conf, app):
+
+def json_output_tasks(conf):
     regexes = [
         (re.compile(r'<a class=\"headerlink\"'), '<a'),
         (re.compile(r'<[^>]*>'), ''),
@@ -66,6 +79,9 @@ def json_output_tasks(conf, app):
     ]
 
     outputs = []
+
+    tasks = []
+
     for fn in expand_tree('source', 'txt'):
         # path = build/<branch>/json/<filename>
 
@@ -78,35 +94,35 @@ def json_output_tasks(conf, app):
             path = os.path.join(conf.paths.branch_output,
                                 'json', os.path.splitext(fn.split(os.path.sep, 1)[1])[0])
 
+        fjson = path + '.fjson'
+        jsonf = path + '.json'
 
-
-        fjson = dot_concat(path, 'fjson')
-        json = dot_concat(path, 'json')
-
-        task = app.add('task')
-        task.target = json
-        task.dependency = fjson
-        task.job = process_json_file
-        task.description = "processing json file".format(json)
-        task.args = [fjson, json, regexes, conf]
-
-        outputs.append(json)
+        task = libgiza.task.Task(job=process_json_file,
+                                 args=(fjson, jsonf, regexes, conf),
+                                 target=jsonf,
+                                 dependency=fjson,
+                                 description="processing json file".format(json))
+        tasks.append(task)
+        outputs.append(jsonf)
 
     list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
+    tasks.append(libgiza.task.Task(job=generate_list_file,
+                                   args=(outputs, list_file, conf),
+                                   target=list_file,
+                                   dependency=None,
+                                   description="generating list of json files"))
 
-    list_task = app.add('task')
-    list_task.target = list_file
-    list_task.job = generate_list_file
-    list_task.args = [outputs, list_file, conf]
+    transfer = libgiza.task.Task(job=json_output,
+                                 args=[conf],
+                                 target=True,
+                                 dependency=None,
+                                 description='transfer json output to public directory')
 
-    output = app.add('app')
-    out_task = output.add('task')
-    out_task.job = json_output
-    out_task.args = [conf]
-    out_task.description = 'transfer json output to public directory'
+    return tasks, transfer
+
 
 def process_json_file(input_fn, output_fn, regexes, conf=None):
-    if  os.path.isfile(input_fn) is False:
+    if os.path.isfile(input_fn) is False:
         return False
 
     with open(input_fn, 'r') as f:
@@ -126,9 +142,8 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
 
         doc['title'] = title
 
-    url = [ conf.project.url, conf.project.basepath ]
+    url = get_site_url(conf)
     url.extend(input_fn.rsplit('.', 1)[0].split(os.path.sep)[3:])
-
     doc['url'] = '/'.join(url) + '/'
 
     with open(output_fn, 'w') as f:
@@ -136,18 +151,32 @@ def process_json_file(input_fn, output_fn, regexes, conf=None):
 
     return True
 
+
 def generate_list_file(outputs, path, conf):
     dirname = os.path.dirname(path)
+    safe_create_directory(dirname)
 
-    url = '/'.join([ conf.project.url, conf.project.basepath, 'json' ])
-
-    if not os.path.exists(dirname):
-        os.mkdir(dirname)
+    url = get_site_url(conf)
+    url.append('json')
+    url = '/'.join(url)
 
     with open(path, 'w') as f:
         for fn in outputs:
             if os.path.isfile(fn) is True:
-                f.write( '/'.join([ url, fn.split('/', 3)[3:][0]]) )
+                line = '/'.join([url, fn.split('/', 3)[3:][0]])
+                f.write(line)
                 f.write('\n')
 
     logger.info('rebuilt inventory of json output.')
+
+
+def get_site_url(conf):
+    url = [conf.project.url]
+
+    if conf.project.basepath not in ('', None):
+        url.append(conf.project.basepath)
+
+    if conf.project.branched is True and 'editions' in conf.project:
+        url.append(conf.git.branches.current)
+
+    return url

@@ -12,30 +12,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os.path
+import os
 import re
+import itertools
+import operator
+import subprocess
+import shlex
 
-from itertools import groupby
-from operator import itemgetter
+import yaml
 
-from giza.tools.serialization import ingest_yaml_doc, ingest_yaml_list
 from giza.tools.files import expand_tree
-from giza.tools.command import command
+
 
 def include_files(conf, files=None):
     if files is not None:
         return files
     else:
         source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
-        grep = command('grep -R ".. include:: /" {0} || exit 0'.format(source_dir), capture=True).out
+        cmd = shlex.split('grep -R ".. include:: /" {0}'.format(source_dir))
+
+        with open(os.devnull, 'w') as null:
+            try:
+                grep = subprocess.check_output(args=cmd, stderr=null)
+            except subprocess.CalledProcessError as e:
+                grep = e.output
 
         rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
 
-        s = [ m.groups()
-              for m in [ rx.match(d)
-                         for d in grep.split('\n') ]
-              if m is not None
-            ]
+        s = [m.groups()
+             for m in [rx.match(d)
+                       for d in grep.split('\n')]
+             if m is not None
+             ]
 
         def tuple_sort(k):
             return k[1]
@@ -43,7 +51,7 @@ def include_files(conf, files=None):
 
         files = dict()
 
-        for i in groupby(s, itemgetter(1)):
+        for i in itertools.groupby(s, operator.itemgetter(1)):
             files[i[0]] = set()
             for src in i[1]:
                 if not src[0].endswith('~') and not src[0].endswith('overview.rst'):
@@ -51,9 +59,14 @@ def include_files(conf, files=None):
             files[i[0]] = list(files[i[0]])
             files[i[0]].sort()
 
-        files.update(generated_includes(conf))
+        for k, v in generated_includes(conf).items():
+            if k in files:
+                files[k].extend(v)
+            else:
+                files[k] = v
 
         return files
+
 
 def included_once(conf, inc_files=None):
     results = []
@@ -61,6 +74,7 @@ def included_once(conf, inc_files=None):
         if len(includes) == 1:
             results.append(file)
     return results
+
 
 def included_recusively(conf, inc_files=None):
     files = include_files(conf=conf, files=inc_files)
@@ -76,6 +90,7 @@ def included_recusively(conf, inc_files=None):
 
     return results
 
+
 def includes_masked(mask, conf, inc_files=None):
     files = include_files(conf=conf, files=inc_files)
 
@@ -90,53 +105,48 @@ def includes_masked(mask, conf, inc_files=None):
 
     return results
 
+
 def generated_includes(conf):
-    toc_spec_files = []
     step_files = []
+    mapping = {}
+
+    content_prefixes = []
+    for _, prefixes in conf.system.content.content_prefixes:
+        content_prefixes.extend(prefixes)
+
     for fn in expand_tree(os.path.join(conf.paths.includes), input_extension='yaml'):
         base = os.path.basename(fn)
 
-        if base.startswith('toc-spec'):
-            toc_spec_files.append(fn)
-        elif base.startswith('ref-spec'):
-            toc_spec_files.append(fn)
-        elif base.startswith('steps'):
-            step_files.append(fn)
-        elif base.startswith('example'):
-            # example files, for the purpose of this have the same structure as
-            # steps, so we can just use that:
-            step_files.append(fn)
+        # example/toc-specs files, for the purpose of this have the same
+        # structure as steps, so we can just use that
+        for prefix in content_prefixes:
+            if base.startswith(prefix):
+                step_files.append(fn)
+                break
 
     maskl = len(conf.paths.source)
     path_prefix = conf.paths.includes[len(conf.paths.source):]
-    mapping = {}
-    for spec_file in toc_spec_files:
-        if os.path.exists(spec_file):
-            data = ingest_yaml_doc(spec_file)
-        else:
-            continue
-
-        deps = [ os.path.join(path_prefix, i ) for i in data['sources']]
-
-        mapping[spec_file[maskl:]] = deps
 
     for step_def in step_files:
-        data = ingest_yaml_list(step_def)
-
         deps = []
-        for step in data:
-            if 'source' in step:
-                deps.append(step['source']['file'])
+
+        with open(step_def, 'r') as f:
+            data = yaml.safe_load_all(f)
+
+            for step in data:
+                if 'source' in step:
+                    deps.append(step['source']['file'])
 
         if len(deps) != 0:
-            deps = [ os.path.join(path_prefix, i ) for i in deps ]
+            deps = [os.path.join(path_prefix, i) for i in deps]
 
             mapping[step_def[maskl:]] = deps
 
     return mapping
 
+
 def include_files_unused(conf, inc_files=None):
-    inc_files = [ fn[6:] for fn in expand_tree(os.path.join(conf.paths.includes), None) ]
+    inc_files = [fn[6:] for fn in expand_tree(os.path.join(conf.paths.includes), None)]
     mapping = include_files(conf=conf)
 
     results = []
@@ -148,6 +158,7 @@ def include_files_unused(conf, inc_files=None):
 
     return results
 
+
 def changed_includes(conf):
     from pygit2 import Repository, GIT_STATUS_CURRENT, GIT_STATUS_IGNORED
 
@@ -157,12 +168,11 @@ def changed_includes(conf):
 
     changed = []
     for path, flag in r.status().items():
-        if flag not in [ GIT_STATUS_CURRENT, GIT_STATUS_IGNORED ]:
+        if flag not in [GIT_STATUS_CURRENT, GIT_STATUS_IGNORED]:
             if path.startswith('source/'):
                 if path.endswith('.txt') or path.endswith('.rst'):
                     changed.append(path[6:])
 
-    source_path = os.path.join(conf.paths.source, conf.paths.output, conf.git.branches.current, 'json')
     changed_report = []
 
     for fn in include_files(conf):

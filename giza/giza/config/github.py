@@ -16,13 +16,14 @@ import os
 import sys
 import logging
 
-logger = logging.getLogger('giza.config.github')
-
-from giza.config.base import ConfigurationBase
+from libgiza.config import ConfigurationBase
 from giza.config.runtime import RuntimeStateConfigurationBase
+
+logger = logging.getLogger('giza.config.github')
 
 if sys.version_info >= (3, 0):
     basestring = str
+
 
 def fetch_config(args):
     c = GithubConfig()
@@ -31,7 +32,9 @@ def fetch_config(args):
 
     return c
 
+
 class GithubRuntimeConfig(RuntimeStateConfigurationBase):
+
     @property
     def conf_path(self):
         if 'conf_path' not in self.state:
@@ -49,10 +52,12 @@ class GithubRuntimeConfig(RuntimeStateConfigurationBase):
             except OSError:
                 self._discover_conf_file('github.yaml')
             except OSError:
-                logger.error('could not find mdbgh github config file.')
+                logger.error('could not find mdbpr github config file.')
                 raise OSError
 
+
 class GithubConfig(ConfigurationBase):
+
     @property
     def runstate(self):
         return self.state['runstate']
@@ -118,8 +123,10 @@ class GithubConfig(ConfigurationBase):
         else:
             self.state['reporting'] = GithubReportingConfig(value)
 
+
 class GithubRepoConfig(ConfigurationBase):
-    _option_registry = [ 'user', 'name' ]
+    _option_registry = ['user', 'name']
+
 
 class GithubSiteConfig(ConfigurationBase):
     _option_registry = ['corp']
@@ -132,6 +139,7 @@ class GithubSiteConfig(ConfigurationBase):
     def credentials(self, value):
         value = os.path.expanduser(value)
         self.state['credentials'] = value
+
 
 class GithubReportingConfig(ConfigurationBase):
     _option_registry = ['format']

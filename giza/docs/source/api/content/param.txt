@@ -1,0 +1,7 @@
+===================================================
+``param`` -- Generate Tables for Function Arguments
+===================================================
+
+.. automodule:: giza.content.param
+   :members:
+   :undoc-members:

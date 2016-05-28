@@ -12,98 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 import os.path
 import logging
 
+from libgiza.config import ConfigurationBase, RecursiveConfigurationBase
+
 logger = logging.getLogger('giza.config.jeerah')
 
-from giza.config.base import ConfigurationBase, RecursiveConfigurationBase
-from giza.config.runtime import RuntimeStateConfigurationBase
-
-def fetch_config(args):
-    c = JeerahConfig()
-    c.ingest(args.conf_path)
-    c.runstate = args
-
-    return c
-
-class JeerahRuntimeStateConfig(RuntimeStateConfigurationBase):
-    _option_registry = ['project', 'user_conf_path']
-
-    @property
-    def sprint(self):
-        if 'sprint' in self.state:
-            return self.state['sprint']
-        else:
-            return 'current'
-
-    @sprint.setter
-    def sprint(self, value):
-        self.state['sprint'] = value
-
-    @property
-    def conf_path(self):
-        if 'conf_path' not in self.state:
-            self.conf_path = None
-
-        return self.state['conf_path']
-
-    @conf_path.setter
-    def conf_path(self, value):
-        if value is not None and os.path.exists(value):
-            self.state['conf_path'] = value
-        else:
-            try:
-                self._discover_conf_file('.scrumpy.yaml')
-            except OSError:
-                self._discover_conf_file('scrumpy.yaml')
-            except OSError:
-                logger.error('could not find scrumpy config file.')
-                raise OSError
+if sys.version_info >= (3, 0):
+    basestring = str
 
 
-class JeerahConfig(ConfigurationBase):
-    @property
-    def runstate(self):
-        return self.state['runstate']
-
-    @runstate.setter
-    def runstate(self, value):
-        if isinstance(value, JeerahRuntimeStateConfig):
-            value.conf = self
-            self.state['runstate'] = value
-        else:
-            msg = "invalid runtime state"
-            logger.critical(msg)
-            raise TypeError(msg)
-
+class JeerahConfig(RecursiveConfigurationBase):
     @property
     def buckets(self):
         if 'buckets' in self.state:
             return self.state['buckets']
         else:
             return {}
-
-    @buckets.setter
-    def buckets(self, value):
-        if isinstance(value, dict):
-            if 'buckets' in self.state:
-                self.state['buckets'].update(value)
-            else:
-                self.state['buckets'] = value
-        else:
-            raise TypeError('{0} is not a dict'.format(value))
-
-    @property
-    def sprints(self):
-        return self.state['sprints']
-
-    @sprints.setter
-    def sprints(self, value):
-        if isinstance(value, SprintCollectionConfig):
-            self.state['sprints'] = value
-        else:
-            self.state['sprints'] = SprintCollectionConfig(value)
 
     @property
     def site(self):
@@ -117,86 +44,80 @@ class JeerahConfig(ConfigurationBase):
             self.state['site'] = JeerahSiteConfig(value)
 
     @property
-    def reporting(self):
-        return self.state['reporting']
+    def changelog(self):
+        return self.state['changelog']
 
-    @reporting.setter
-    def reporting(self, value):
-        if isinstance(value, ReportingConfig):
-            self.state['reporting'] = value
+    @changelog.setter
+    def changelog(self, value):
+        # changelog canfig can either be specified in the the project, or we can
+        # source it from the global config, if a filename is defined.
+        cconfig = ChangelogConfiguration()
+
+        if isinstance(value, dict):
+            if "source" in value:
+                value = os.path.join(self.conf.paths.projectroot, self.conf.paths.global_config, value['source'])
+
+            cconfig.ingest(value)
+
+            self.state["changelog"] = cconfig
         else:
-            self.state['reporting'] = ReportingConfig(value)
+            raise TypeError("invalid changelog")
 
+
+class ChangelogConfiguration(ConfigurationBase):
     @property
-    def modification(self):
-        return self.state['modification']
+    def ordering(self):
+        return self.state["ordering"]
 
-    @modification.setter
-    def modification(self, value):
-        if isinstance(value, ModificationConfig):
-            self.state['modification'] = value
-        else:
-            self.state['modification'] = ModificationConfig(value, self)
-
-class SprintCollectionConfig(ConfigurationBase):
-    @property
-    def current(self):
-        return self.state['current']
-
-    @current.setter
-    def current(self, value):
+    @ordering.setter
+    def ordering(self, value):
         if isinstance(value, list):
-            self.state['current'] = value
+            invalid = []
+            for item in value:
+                if not isinstance(item, basestring):
+                    invalid.append(item)
+
+            if len(invalid) > 0:
+                raise TypeError("{0} item(s) are not strings.".format(', '.join(invalid)))
+            else:
+                self.state["ordering"] = value
+
         else:
-            raise TypeError('{0} is not a list, and must be.'.format(value))
+            raise TypeError("changelog ordering must be list.")
 
     @property
-    def previous(self):
-        return self.state['previous']
+    def nesting(self):
+        return self.state["nesting"]
 
-    @previous.setter
-    def previous(self, value):
-        if isinstance(value, list):
-            self.state['previous'] = value
-        else:
-            raise TypeError('{0} is not a list, and must be.'.format(value))
+    @nesting.setter
+    def nesting(self, value):
+        self._set_dict2list_mapping("nesting", value)
 
     @property
-    def next(self):
-        return self.state['next']
+    def groups(self):
+        return self.state["groups"]
 
-    @next.setter
-    def next(self, value):
-        if isinstance(value, list):
-            self.state['next'] = value
+    @groups.setter
+    def groups(self, value):
+        self._set_dict2list_mapping("groups", value)
+
+    def _set_dict2list_mapping(self, name, value):
+        if isinstance(value, dict):
+            invalid = []
+
+            for k, v in value.items():
+                if isinstance(v, list):
+                    continue
+                else:
+                    invalid.append(k)
+
+            if len(invalid) > 0:
+                raise TypeError("item(s) {0} are not valid {1} definitions.".format(', '.join(invalid), name))
+            else:
+                self.state[name] = value
         else:
-            raise TypeError('{0} is not a list, and must be.'.format(value))
+            raise TypeError("invalid {0} definition.".format(name))
 
-    @property
-    def future(self):
-        return self.state['future']
-
-    @future.setter
-    def future(self, value):
-        if isinstance(value, list):
-            self.state['future'] = value
-        else:
-            raise TypeError('{0} is not a list, and must be.'.format(value))
-
-    @property
-    def archived(self):
-        return self.state['archived']
-
-    @archived.setter
-    def archived(self, value):
-        if isinstance(value, list):
-            for sprint in value:
-                if not isinstance(sprint, list):
-                    raise TypeError('archived sprint {0} is not a list'.format(sprint))
-
-            self.state['archived'] = value
-        else:
-            raise TypeError('sprint archives is not a list: {0}'.format(value))
 
 class JeerahSiteConfig(ConfigurationBase):
     _option_registry = ['url']
@@ -212,88 +133,33 @@ class JeerahSiteConfig(ConfigurationBase):
 
     @property
     def projects(self):
-        return self.state['project']
+        return self.state['projects']
 
     @projects.setter
     def projects(self, value):
         if isinstance(value, list):
-            self.state['project'] = value
-        else:
-            self.state['project'] = [value]
+            for item in value:
+                if not isinstance(item, basestring):
+                    raise TypeError("jira project {0} is not a string".format(value))
 
-class ReportingConfig(ConfigurationBase):
-    @property
-    def units(self):
-        if 'units' not in self.state:
-            return 'hours'
+            self.state['projects'] = value
         else:
-            return self.state['units']
-
-    @units.setter
-    def units(self, value):
-        possible_values = ('days', 'hours', 'count')
-        if value in possible_values:
-            self.state['units'] = value
-        else:
-            raise TypeError('{0} is not in {1}'.format(value, possible_values))
+            raise TypeError("jira projects must be a list: {0}".format(value))
 
     @property
-    def format(self):
-        if 'format' not in self.state:
-            return 'json'
-        else:
-            return self.state['format']
+    def versions(self):
+        return self.state["versions"]
 
-    @format.setter
-    def format(self, value):
-        if value in ('json', 'yaml'):
-            self.state['format'] = value
-
-class ModificationConfig(RecursiveConfigurationBase):
-    @property
-    def mirroring(self):
-        return self.state['mirroring']
-
-    @mirroring.setter
-    def mirroring(self, value):
-        if isinstance(value, ProjectMirroringConfig):
-            self.state['mirroring'] = value
-        else:
-            self.state['mirroring'] = ProjectMirroringConfig(value, self.conf)
-
-class ProjectMirroringConfig(RecursiveConfigurationBase):
-    @property
-    def source(self):
-        # can't validate this during injestion/setting because self.conf may not
-        # point to a populated config object yet.
-
-        value = self.state['source']
-
-        if value not in self.conf.site.projects:
-            logger.warning('{0} is not a valid project'.format(value))
-
-        return value
-
-    @source.setter
-    def source(self, value):
-        self.state['source'] = value
-
-    @property
-    def target(self):
-        # can't validate this during injestion/setting because self.conf may not
-        # point to a populated config object yet.
-
-        value = self.state['target']
-
-        for project in value:
-            if project not in self.conf.site.projects:
-                logger.warning('{0} is not in the list of projects ({1})'.format(project, self.conf.site.projects))
-
-        return value
-
-    @target.setter
-    def target(self, value):
+    @versions.setter
+    def versions(self, value):
         if isinstance(value, list):
-            self.state['target'] = value
+            for item in value:
+                if not isinstance(item, basestring):
+                    raise TypeError("jira version {0} is not a string".format(value))
+
+                if len(item.split(".")) != 3:
+                    raise TypeError("{0} is an invalid version".format(item))
+
+            self.state['versions'] = value
         else:
-            self.state['target'] = [value]
+            raise TypeError("jira versions must be a list: {0}".format(value))

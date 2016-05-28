@@ -1,0 +1,7 @@
+============================================
+``translate`` -- Machine Translation Control
+============================================
+
+.. automodule:: giza.operations.translate
+   :members:
+   :undoc-members:

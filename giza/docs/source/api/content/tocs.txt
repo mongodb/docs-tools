@@ -1,0 +1,12 @@
+=======================================
+``tocs`` -- Tables of Content Generator
+=======================================
+
+.. automodule:: giza.content.tocs
+
+.. toctree::
+
+   /api/content/tocs/models
+   /api/content/tocs/views
+   /api/content/tocs/inheritance
+   /api/content/tocs/tasks

@@ -12,25 +12,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
+"""
+Takes the ingested and processed data from all examples and renders the content
+into reStructuredText using rstcloth.
+"""
 
-logger = logging.getLogger('giza.content.examples.views')
+import logging
 
 from rstcloth.rstcloth import RstCloth
 
+logger = logging.getLogger('giza.content.examples.views')
+
+
 def full_example(collection, examples):
+    """
+    :pram collection: An object with collection information and description.
+
+    :pram examples:  An object with examples, procedures and results.
+
+    See :mod:`giza.content.examples.modules` for full documentation of the
+    example data format.
+
+    :returns: A populated ``RstCloth()`` object with the content of one example.
+    """
+
     r = RstCloth()
 
-    if collection.options.show_title is True:
-        if len(examples) == 1:
-            ex_str = 'Example'
-        else:
-            ex_str = 'Examples'
-
-        r.h2(ex_str)
-        r.newline()
-
     if collection is not None:
+        collection.render()
+
+        if collection.options.show_title is True:
+            if len(examples) == 1:
+                ex_str = 'Example'
+            else:
+                ex_str = 'Examples'
+
+            r.h2(ex_str)
+            r.newline()
+
         if 'pre' in collection:
             r.content(collection.pre)
             r.newline()
@@ -53,10 +72,11 @@ def full_example(collection, examples):
             r.newline()
 
     for idx, example in enumerate(examples):
-        if idx != 0 :
+        example.render()
+        if idx != 0:
             r.newline(2)
 
-        if len(examples) > 1:
+        if len(examples) > 1 and 'title' in example:
             getattr(r, 'h' + str(example.title.level))(example.title.text)
             r.newline()
 
@@ -64,27 +84,46 @@ def full_example(collection, examples):
             r.content(example.pre)
             r.newline()
 
+        lang = set()
         for op in example.operation:
             if 'pre' in op:
                 r.content(op.pre)
                 r.newline()
 
-            r.codeblock(content=op.code,
-                        language=op.language)
-            r.newline()
+            # if content in op (e.g. for literalincludes) then
+            # no need for code or language
+            if 'content' in op:
+                r.content(op.content)
+                r.newline()
+            elif 'literalinclude' in op:  # Temporary and klugey
+                include_options = []
+                if 'language' in op:
+                    include_options.append(('language', op.language))
+                r.directive('literalinclude', op.literalinclude, include_options)
+                r.newline()
+            elif 'code' in op:
+                lang.add(op.language)
+                r.codeblock(content=op.code,
+                            language=op.language)
+                r.newline()
 
             if 'post' in op:
                 r.content(op.post)
                 r.newline()
 
-
         if 'post' in example:
             r.content(example.post)
             r.newline()
 
-        if example.results is not None:
+        if 'results' in example and example.results is not None:
+            num_langs = len(lang)
+            lang = list(lang)[0]
+            if num_langs > 1:
+                msg = 'specified more than one language for examples {0}, using {1} for results'
+                logger.warning(msg.foramt(example.ref, lang))
+
             r.codeblock(content=example.results,
-                        language='javascript')
+                        language=lang)
 
         if 'final' in example:
             r.newline()

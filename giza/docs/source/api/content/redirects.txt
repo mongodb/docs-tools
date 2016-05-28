@@ -1,0 +1,7 @@
+=============================================
+``redirects`` -- Generate ``.htaccess`` Files
+=============================================
+
+.. automodule:: giza.content.redirects
+   :members:
+   :undoc-members:

@@ -1,0 +1,7 @@
+=====================================
+``tasks`` -- Integration for Examples
+=====================================
+
+.. automodule:: giza.content.examples.tasks
+   :members:
+   :undoc-members:

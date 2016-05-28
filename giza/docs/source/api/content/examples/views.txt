@@ -1,0 +1,7 @@
+===================================
+``views`` -- Rendering for Examples
+===================================
+
+.. automodule:: giza.content.examples.views
+   :members:
+   :undoc-members:

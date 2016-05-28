@@ -12,13 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+For slides builds, build a tarball and migrate source to the output
+directory. Modeled on the :mod:`giza.content.post.json_output` and
+:mod:`giza.content.post.html` post-processing operation.
+"""
+
 import os
 import logging
+import subprocess
 
-from giza.tools.command import command
+import libgiza.task
 from giza.content.post.archives import slides_tarball, get_tarball_name
 
 logger = logging.getLogger('giza.content.post.slides')
+
 
 def slides_output(conf):
     cmd = 'rsync --recursive --times --delete {src} {dst}'
@@ -34,20 +42,25 @@ def slides_output(conf):
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
         builder += '-' + conf.project.edition
 
-    command(cmd.format(src=os.path.join(conf.paths.branch_output, builder) + '/',
-                       dst=dst))
+    cmd_str = cmd.format(src=os.path.join(conf.paths.branch_output, builder) + '/',
+                         dst=dst)
 
-    logger.info('deployed slides local staging.')
+    with open(os.devnull, 'w') as f:
+        try:
+            subprocess.check_call(args=cmd_str.split(),
+                                  stdout=f,
+                                  stderr=f)
+            logger.info('deployed slides local staging.')
+        except subprocess.CalledProcessError:
+            logger.error('issue deploying slides to local staging')
 
-def slide_tasks(sconf, conf, app):
-    task = app.add('task')
-    task.job = slides_tarball
-    task.target = [get_tarball_name('slides', conf),
-                   get_tarball_name('link-slides', conf)]
-    task.args = [sconf.name, conf]
-    task.description = "creating tarball for slides"
 
-    task = app.add('task')
-    task.job = slides_output
-    task.args = [conf]
-    task.description = 'migrating slide output to production'
+def slide_tasks(sconf, conf):
+    return [libgiza.task.Task(job=slides_tarball,
+                              target=[get_tarball_name('slides', conf),
+                                      get_tarball_name('link-slides', conf)],
+                              args=(sconf.name, sconf.build_output, conf),
+                              description="creating tarball for slides"),
+            libgiza.task.Task(job=slides_output,
+                              args=[conf],
+                              description='migrating slide output to production')]

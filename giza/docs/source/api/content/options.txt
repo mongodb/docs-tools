@@ -1,0 +1,7 @@
+==================================================
+``options`` -- Generate Commandline Option Content
+==================================================
+
+.. automodule:: giza.content.options
+   :members:
+   :undoc-members:

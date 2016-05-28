@@ -14,9 +14,10 @@
 
 import logging
 
+from libgiza.config import ConfigurationBase
+
 logger = logging.getLogger('giza.config.helper')
 
-from giza.config.base import ConfigurationBase
 
 class IntersphinxConfig(ConfigurationBase):
     _option_registry = ['name']

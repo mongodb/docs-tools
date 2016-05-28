@@ -2,18 +2,11 @@
 ``steps`` -- Procedural Content Generator
 =========================================
 
-.. note::
-
-   The current implementation of :mod:`~giza.content.steps` does not
-   depend on :mod:`~giza.core.inheritance`, and will be rewritten in
-   the future to use this infrastructure.
-
 .. automodule:: giza.content.steps
 
-.. autoclass:: giza.content.steps.Steps
+.. toctree::
 
-.. autoclass:: giza.content.steps.StepsOutput
-
-.. autoclass:: giza.content.steps.PrintStepsOutput
-
-.. autoclass:: giza.content.steps.WebStepsOutput
+   /api/content/steps/models
+   /api/content/steps/views
+   /api/content/steps/inheritance
+   /api/content/steps/tasks

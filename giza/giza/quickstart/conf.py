@@ -11,8 +11,8 @@ import datetime
 import logging
 
 from giza.config.runtime import RuntimeStateConfig
-from giza.config.helper import fetch_config, get_versions, get_manual_path
-from giza.tools.strings import dot_concat
+from giza.content.replacements import get_replacements
+from giza.config.helper import fetch_config
 
 logging.basicConfig(level=logging.INFO)
 conf = fetch_config(RuntimeStateConfig())
@@ -32,7 +32,7 @@ extensions = [
     'intermanual',
 ]
 
-locale_dirs = [ os.path.join(conf.paths.projectroot, conf.paths.locale) ]
+locale_dirs = [os.path.join(conf.paths.projectroot, conf.paths.locale)]
 gettext_compact = False
 
 templates_path = ['.templates']
@@ -47,21 +47,23 @@ copyright = u'2011-{0}'.format(datetime.date.today().year)
 version = conf.version.branch
 release = conf.version.release
 
-rst_epilog = '\n'.join([
-    '.. |branch| replace:: ``{0}``'.format(conf.git.branches.current),
+rst_epilog = [
+    '.. include:: {0}/hash.rst'.format(conf.paths.includes[len(conf.paths.source):]),
     '.. |copy| unicode:: U+000A9',
-    '.. |year| replace:: {0}'.format(datetime.date.today().year),
-    '.. |hardlink| replace:: {0}/{1}'.format(conf.project.url, conf.git.branches.current)
-])
+]
+
+rst_epilog.extend(get_replacements(conf))
+rst_epilog = '\n'.join(rst_epilog)
 
 pygments_style = 'sphinx'
 
 extlinks = {
-    'issue': ('https://jira.mongodb.org/browse/%s', '' ),
+    'issue': ('https://jira.mongodb.org/browse/%s', ''),
     'api': ('http://api.mongodb.org/%s', ''),
     'source': ('https://github.com/mongodb/mongo/blob/master/%s', ''),
-    'docsgithub' : ( 'http://github.com/mongodb/docs/blob/{0}/%s'.format(conf.git.branches.current), ''),
-    'hardlink' : ( 'http://docs.mongodb.org/{0}/%s'.format(conf.git.branches.current), ''),
+    'docsgithub': ('http://github.com/mongodb/docs/blob/{0}/%s'.format(conf.git.branches.current),
+                   ''),
+    'hardlink': ('http://docs.mongodb.org/{0}/%s'.format(conf.git.branches.current), ''),
     'manual': ('http://docs.mongodb.org/manual%s', ''),
     'ecosystem': ('http://docs.mongodb.org/ecosystem%s', ''),
     'meta-driver': ('http://docs.mongodb.org/meta-driver/latest%s', ''),
@@ -70,15 +72,15 @@ extlinks = {
     'about': ('http://www.mongodb.org/about%s', '')
 }
 
-## add `extlinks` for each published version.
+# add `extlinks` for each published version.
 for i in conf.git.branches.published:
-    extlinks[i] = ( ''.join([ conf.project.url, '/', i, '%s' ]), '' )
+    extlinks[i] = (''.join([conf.project.url, '/', i, '%s']), '')
 
 intersphinx_mapping = {}
 for i in conf.system.files.data.intersphinx:
-    intersphinx_mapping[i.name] = ( i.url, os.path.join(conf.paths.projectroot,
-                                                        conf.paths.output,
-                                                        i.path))
+    intersphinx_mapping[i.name] = (i.url, os.path.join(conf.paths.projectroot,
+                                                       conf.paths.output,
+                                                       i.path))
 
 languages = [
     ("ar", "Arabic"),
@@ -104,7 +106,7 @@ languages = [
 # -- Options for HTML output ---------------------------------------------------
 
 html_theme = sconf.theme.name
-html_theme_path = [ os.path.join(conf.paths.buildsystem, 'themes') ]
+html_theme_path = [os.path.join(conf.paths.buildsystem, 'themes')]
 html_title = conf.project.title
 htmlhelp_basename = 'MongoDB'
 
@@ -146,12 +148,12 @@ if 'pdfs' in conf.system.files.data:
     for pdf in conf.system.files.data.pdfs:
         latex_documents.append((pdf.source, pdf.output, pdf.title, pdf.author, pdf.doc_class))
 
-latex_preamble_elements = [ r'\DeclareUnicodeCharacter{FF04}{\$}',
-                            r'\DeclareUnicodeCharacter{FF0E}{.}',
-                            r'\PassOptionsToPackage{hyphens}{url}',
-                            r'\usepackage{upquote}',
-                            r'\pagestyle{plain}',
-                            r'\pagenumbering{arabic}' ]
+latex_preamble_elements = [r'\DeclareUnicodeCharacter{FF04}{\$}',
+                           r'\DeclareUnicodeCharacter{FF0E}{.}',
+                           r'\PassOptionsToPackage{hyphens}{url}',
+                           r'\usepackage{upquote}',
+                           r'\pagestyle{plain}',
+                           r'\pagenumbering{arabic}']
 latex_elements = {
     'preamble': '\n'.join(latex_preamble_elements),
     'pointsize': '10pt',
@@ -192,6 +194,8 @@ epub_pre_files = []
 epub_post_files = []
 
 # put it into your conf.py
+
+
 def setup(app):
     # disable versioning for speed
     from sphinx.builders.gettext import I18nBuilder

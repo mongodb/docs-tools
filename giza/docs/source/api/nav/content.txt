@@ -9,16 +9,17 @@ processing the content and output.
 
    /api/content/assets
    /api/content/dependencies
+   /api/content/examples
    /api/content/hash
    /api/content/helper
    /api/content/images
    /api/content/includes
    /api/content/intersphinx
    /api/content/links
-   /api/content/manpages
    /api/content/options
    /api/content/param
    /api/content/primer
+   /api/nav/content-post
    /api/content/redirects
    /api/content/release
    /api/content/robots
@@ -26,4 +27,4 @@ processing the content and output.
    /api/content/sphinx
    /api/content/steps
    /api/content/table
-   /api/content/toc
+   /api/content/tocs

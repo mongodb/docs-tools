@@ -47,60 +47,112 @@ stable over time.
 """
 
 import logging
-import os.path
+import os
+import shutil
+import subprocess
+
+import libgiza.task
+import libgiza.git
+
+import giza.tools.files
 
 logger = logging.getLogger('giza.content.assets')
 
-from giza.core.git import GitRepo
-from giza.tools.files import rm_rf
-from giza.tools.command import command
 
-def assets_setup(path, branch, repo):
+def assets_setup(path, branch, repo, commit=None):
+    """
+    Worker function that clones a repository if one doesn't exist and pulls
+    the repository otherwise.
+    """
+    # TODO: In the future this should be able to pin the repository to a
+    #       specific hash.
+
     if os.path.exists(path):
-        g = GitRepo(path)
-        g.pull(branch=branch)
-        logger.info('updated {0} repository'.format(path))
+        g = libgiza.git.GitRepo(path)
+
+        if commit is None:
+            g.pull(branch=branch)
+            logger.info('updated {0} repository'.format(path))
+            return
+        elif g.sha() == commit or g.sha().startswith(commit):
+            logger.info('repository {0} is currently at ({1})'.format(path, commit))
+        else:
+            g.checkout(commit)
+            logger.info('update  {0} repository to ({1})'.format(path, commit))
     else:
         base, name = os.path.split(path)
+        giza.tools.files.safe_create_directory(base)
 
-        g = GitRepo(base)
-
-        g.clone(repo, repo_path=name, branch=branch)
+        g = libgiza.git.GitRepo(base)
+        g.clone(repo, repo_path=path, branch=branch)
         logger.info('cloned {0} branch from repo {1}'.format(branch, repo))
 
+        if commit is not None and (g.sha() == commit or g.sha().startswith(commit)):
+            g.checkout(commit)
+            logger.info('repository {0} is currently at ({1})'.format(path, commit))
 
-def assets_tasks(conf, app):
+
+def assets_tasks(conf):
+    """Add tasks to an app to create/update the assets."""
+
+    tasks = []
+    generate_tasks = []
     if conf.assets is not None:
-        gen_app = app.add('app')
-
+        giza.tools.files.safe_create_directory(conf.paths.projectroot)
         for asset in conf.assets:
             path = os.path.join(conf.paths.projectroot, asset.path)
 
             logger.debug('adding asset resolution job for {0}'.format(path))
 
-            t = app.add('task')
-            t.job = assets_setup
-            t.target = path
-            t.depends = None
-            t.args = { 'path': path,
-                       'branch': asset.branch,
-                       'repo': asset.repository }
+            args = {'path': path,
+                    'branch': asset.branch,
+                    'repo': asset.repository}
 
+            if 'commit' in asset:
+                args['commit'] = asset.commit
+
+            description = "setup assets for: {0} in {1}".format(asset.repository, path)
+            tasks.append(libgiza.task.Task(job=assets_setup,
+                                           args=args,
+                                           target=path,
+                                           dependency=None,
+                                           description=description))
+
+            # If you specify a list of "generate" items, giza will call ``giza
+            # generate`` to build content after updating the
+            # repository. Deprecated, and largely unused.
             if 'generate' in asset:
                 for content_type in asset.generate:
-                    t = gen_app.add('task')
-                    t.job = command
-                    t.target = path
-                    t.depends = None
-                    t.args = 'cd {0}; giza generate {1}'.format(path, content_type)
+                    description = 'generating objects in {0}'.format(path)
+                    args = dict(cwd=path, args=['giza', 'generate', content_type])
+                    generate_tasks.append(libgiza.task.Task(job=subprocess.call,
+                                                            target=path,
+                                                            dependency=None,
+                                                            args=args,
+                                                            description=description))
 
-def assets_clean(conf, app):
+    if len(generate_tasks) > 0:
+        tasks.append(generate_tasks)
+
+    return tasks
+
+
+def assets_clean(conf):
+    """Adds tasks to remove all asset repositories."""
+
+    tasks = []
+
     if conf.assets is not None:
         for asset in conf.assets:
             path = os.path.join(conf.paths.projectroot, asset.path)
-
             logger.debug('adding asset cleanup {0}'.format(path))
 
-            t = app.add('task')
-            t.job = rm_rf
-            t.args = [path]
+            t = libgiza.task.Task(job=shutil.rmtree,
+                                  args=[path],
+                                  target=path,
+                                  dependency=None,
+                                  description='cleaning up asset: ' + path)
+
+            tasks.append(t)
+
+    return tasks

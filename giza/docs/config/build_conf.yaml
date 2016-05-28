@@ -28,6 +28,7 @@ system:
     - 'push.yaml'
     - 'pdfs.yaml'
     - 'sphinx_local.yaml'
+    - 'integration.yaml'
     # - images: '/source/images/metadata.yaml'
     # - includes: '/source/includes/metadata.yaml'
 assets:

@@ -12,33 +12,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Generate ``rst`` tables from ``yaml`` files in the ``source/includes`` directory
+that begin with ``table-``. Uses the table builder capacity in the
+:mod:`rstcloth.table` module.
+
+Legacy implementation.
+"""
+
 import os.path
 import logging
 
-logger = logging.getLogger('giza.content.table')
+import libgiza.task
 
 from rstcloth.table import TableBuilder, YamlTable, ListTable
+from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
 
-from giza.tools.strings import dot_concat, hyph_concat
-from giza.tools.files import expand_tree, verbose_remove
+logger = logging.getLogger('giza.content.table')
 
-#################### Table Builder ####################
+# Table Builder
+
 
 def _get_table_output_name(fn):
     base, leaf = os.path.split(os.path.splitext(fn)[0])
 
-    return dot_concat(os.path.join(base, 'table', leaf[6:]), 'rst')
+    return os.path.join(base, 'table', leaf[6:]) + '.rst'
+
 
 def _get_list_table_output_name(fn):
     base, leaf = os.path.split(os.path.splitext(fn)[0])
 
-    return dot_concat(hyph_concat(os.path.join(base, 'table', leaf[6:]), 'list'), 'rst')
+    return ''.join((os.path.join(base, 'table', leaf[6:]), '-list', '.rst'))
+
 
 def make_parent_dirs(*paths):
     for path in paths:
-        dirname = os.path.dirname(path)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
+        safe_create_directory(os.path.dirname(path))
+
 
 def _generate_tables(source, target, list_target):
     table_data = YamlTable(source)
@@ -69,36 +79,42 @@ def _generate_tables(source, target, list_target):
     logger.info('rebuilt rendered table output for {0}'.format(source))
 
 
-#################### Table Source Iterators ####################
+# Table Source Iterators
 
 def table_sources(conf):
-    for source in expand_tree(os.path.join(conf.paths.projectroot, conf.paths.includes), 'yaml'):
+    path = os.path.join(conf.paths.projectroot, conf.paths.branch_includes)
+
+    for source in expand_tree(path, 'yaml'):
         if os.path.basename(source).startswith('table'):
             yield source
 
-#################### Table Tasks ####################
+# Table Tasks
 
 
-def table_tasks(conf, app):
+def table_tasks(conf):
+    tasks = []
     for source in table_sources(conf):
         target = _get_table_output_name(source)
         list_target = _get_list_table_output_name(source)
 
-        t = app.add('task')
-        t.target = [ target, list_target ]
-        t.dependency = source
-        t.job = _generate_tables
-        t.args = [ source, target, list_target ]
-        t.description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
+        description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
+        tasks.append(libgiza.task.Task(job=_generate_tables,
+                                       args=(source, target, list_target),
+                                       target=[target, list_target],
+                                       dependency=source,
+                                       description=description))
 
         logger.debug('adding table job to build: {0}'.format(target))
 
-def table_clean(conf, app):
-    for source in table_sources(conf):
-        t = app.add('task')
-        t.job = verbose_remove
-        t.arg = _get_table_output_name(source)
+    return tasks
 
-        lt = app.add('task')
-        lt.job = verbose_remove
-        lt.arg = _get_list_table_output_name(source)
+
+def table_clean(conf):
+    tasks = []
+    for source in table_sources(conf):
+        tasks.extend([libgiza.task.Task(job=verbose_remove,
+                                        args=[_get_table_output_name(source)]),
+                      libgiza.task.Task(job=verbose_remove,
+                                        args=[_get_list_table_output_name(source)])])
+
+    return tasks

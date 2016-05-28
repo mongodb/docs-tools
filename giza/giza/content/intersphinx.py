@@ -12,39 +12,64 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Alternate implementation of the system that fetches intersphinx inventories from
+other Sphinx sites. Implemented separately to avoid using Sphinx so that that
+Giza can check and update inventories once per build-run rather than once per
+build run. Useful for minimizing the start-up time for ``sphinx-build`` and
+useful for reducing redundant work in parallel build situations.
+"""
+
 import time
 import os
 import logging
+import subprocess
+
+import libgiza.task
+
+from giza.tools.files import verbose_remove, safe_create_directory
 
 logger = logging.getLogger('giza.content.intersphinx')
 
-from giza.tools.command import command
-from giza.tools.serialization import ingest_yaml_list
-from giza.tools.files import verbose_remove
-
 ACCEPTABLE = 864000
 
-#### Helper functions
+# Helper functions
+
 
 def download_file(file, url):
-    if not os.path.isdir(os.path.dirname(file)):
-        os.makedirs(os.path.dirname(file))
+    cmd = ['curl', '--silent', '--location', '--remote-time', url, '-o', file]
 
-    cmd = ['curl', '-s', '--remote-time', url, '-o', file]
-    command(' '.join(cmd))
-    logger.info('downloaded {0}'.format(file))
+    safe_create_directory(os.path.dirname(file))
+
+    try:
+        subprocess.check_call(cmd)
+        logger.info('downloaded {0}'.format(file))
+        return True
+    except subprocess.CalledProcessError:
+        logger.error('trouble downloading interspinx inventory: ' + file)
+        return False
+
 
 def file_timestamp(path):
     return os.stat(path)[8]
 
-#### Tasks
+# Tasks
 
-def download(f, s):
+
+def download(f, s, conf):
+    if conf.runstate.force is True:
+        newf = download_file(f, s)
+
     if os.path.isfile(f):
         newf = False
     else:
         logger.info('{0} file does not exist, downloading now'.format(f))
         newf = download_file(f, s)
+
+        if newf is False:
+            m = "intersphinx inventory ({0}) download failed. skipping"
+            logger.warning(m.format(f))
+            return
 
     mtime = file_timestamp(f)
 
@@ -64,10 +89,12 @@ def download(f, s):
                 # download it for a few days.
                 os.utime(f, (newtime, newtime))
 
-def intersphinx_tasks(conf, app):
+
+def intersphinx_tasks(conf):
     if 'intersphinx' not in conf.system.files.data:
         return
 
+    tasks = []
     for i in conf.system.files.data.intersphinx:
         try:
             f = os.path.join(conf.paths.projectroot,
@@ -80,16 +107,20 @@ def intersphinx_tasks(conf, app):
 
             s = i['url'] + 'objects.inv'
 
-        t = app.add('task')
-
-        t.target = f
-        t.job = download
-        t.args = { 'f': f, 's': s }
-        t.description = 'download intersphinx inventory from {0}'.format(s)
-
+        description = 'download intersphinx inventory from {0}'.format(s)
+        tasks.append(libgiza.task.Task(job=download,
+                                       args=(f, s, conf),
+                                       target=f,
+                                       dependency=None,
+                                       description=description))
         logger.debug('added job for {0}'.format(s))
 
-def intersphinx_clean(conf, app):
+    return tasks
+
+
+def intersphinx_clean(conf):
+    tasks = []
+
     for inv in conf.system.files.data.intersphinx:
         try:
             fn = os.path.join(conf.paths.projectroot,
@@ -98,8 +129,9 @@ def intersphinx_clean(conf, app):
             fn = os.path.join(conf.paths.projectroot,
                               conf.paths.output, inv['path'])
 
-
         if os.path.exists(fn):
-            t = app.add('task')
-            t.job = verbose_remove
-            t.args = [fn]
+            t = libgiza.task.Task(job=verbose_remove,
+                                  args=[fn])
+            tasks.append(t)
+
+    return tasks

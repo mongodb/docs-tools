@@ -1,0 +1,12 @@
+===================================
+``examples`` -- Structured Examples
+===================================
+
+.. automodule:: giza.content.examples
+
+.. toctree::
+
+   /api/content/examples/models
+   /api/content/examples/views
+   /api/content/examples/inheritance
+   /api/content/examples/tasks

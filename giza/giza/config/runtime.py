@@ -13,16 +13,21 @@
 # limitations under the License.
 
 import logging
+import os
 import os.path
+import sys
 import yaml
 
-from multiprocessing import cpu_count
+import multiprocessing
+
+from libgiza.git import GitError
+from libgiza.config import ConfigurationBase
+from giza.config.sphinx_config import avalible_sphinx_builders
+from giza.config.error import ConfigurationError
+from giza.tools.colorformatter import ColorFormatter
 
 logger = logging.getLogger('giza.config.runtime')
 
-from giza.core.git import GitError
-from giza.config.base import ConfigurationBase, ConfigurationError
-from giza.config.sphinx_config import avalible_sphinx_builders
 
 class RuntimeStateConfigurationBase(ConfigurationBase):
     def __init__(self, obj=None):
@@ -51,7 +56,13 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
     @function.setter
     def function(self, value):
-        self.state['_entry_point'] = value
+        if callable(value):
+            self.state['_entry_point'] = value
+        else:
+            raise TypeError
+
+    def get_function(self):
+        return self.state['_entry_point']
 
     @property
     def force(self):
@@ -65,7 +76,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
         if isinstance(value, bool):
             self.state['force'] = value
         else:
-            raise TypeError
+            raise TypeError(type(value), value)
 
     @property
     def serial(self):
@@ -97,16 +108,41 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
             'error': logging.ERROR,
             'critical': logging.critical
         }
+
         if value not in levels:
-            value = 'info'
+            value = 'warning'
 
-        logging.basicConfig()
-        rlogger = logging.getLogger()
+        root_logger = logging.getLogger()
+        root_logger.setLevel(logging.DEBUG)
 
-        rlogger.setLevel(levels[value])
+        file_logger = logging.FileHandler('giza.log', mode='a')
+        file_logger.setLevel(logging.WARNING)
+        file_logger.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+
+        console_logger = logging.StreamHandler()
+        console_logger.setLevel(levels[value])
+        console_logger.setFormatter(ColorFormatter(color=os.isatty(sys.stdout.fileno())))
+
+        root_logger.addHandler(file_logger)
+        root_logger.addHandler(console_logger)
+
         self.state['level'] = value
 
         logger.debug('set logging level to: ' + value)
+
+    @property
+    def fast(self):
+        if 'fast_and_loose' not in self.state:
+            return False
+        else:
+            return self.state['fast_and_loose']
+
+    @fast.setter
+    def fast(self, value):
+        if isinstance(value, bool):
+            self.state['fast_and_loose'] = value
+        else:
+            logger.warning('invalid option for "fast" build option')
 
     @property
     def runner(self):
@@ -120,20 +156,24 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
         supported_runners = ['process', 'thread', 'event', 'serial']
 
         if value is None:
-            self.state['runner'] = 'thread'
+            self.state['runner'] = 'process'
         elif value in supported_runners:
             self.state['runner'] = value
         else:
-            m = '{0} is not a supported runner type, choose from: {1}'.format(vale, supported_runners)
+            m = '{0} is not a supported runner type, choose from: {1}'.format(value,
+                                                                              supported_runners)
             logger.error(m)
             raise TypeError(m)
 
     @property
     def pool_size(self):
         if 'pool_size' not in self.state:
-            return cpu_count()
-        else:
-            return self.state['pool_size']
+            try:
+                self.state['pool_size'] = multiprocessing.cpu_count()
+            except:
+                self.state['pool_size'] = 1
+
+        return self.state['pool_size']
 
     @pool_size.setter
     def pool_size(self, value):
@@ -158,8 +198,8 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
                 self.state['conf_path'] = fq_conf_file
                 return True
         elif os.path.exists(home_path):
-             self.state['conf_path'] = home_path
-             return True
+            self.state['conf_path'] = home_path
+            return True
 
         # now we'll try crawling up the directory tree to find the file
         cur = cur.split(os.path.sep)
@@ -180,21 +220,35 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
         # If we couldn't find a config file, throw an error.
         if self.state['conf_path'] is None:
-            m = 'cannot locate config file'
-            logger.error(m)
-            raise OSError(m)
+            raise RuntimeError('cannot locate config file')
+
 
 class RuntimeStateConfig(RuntimeStateConfigurationBase):
-    _option_registry = [ 'serial', 'length', 'days_to_save',
-                         'builder_to_delete', 'git_branch', 'make_target',
-                         'git_sign_patch', 'serial_sphinx', 'package_path',
-                         'clean_generated', 'include_mask', 'push_targets',
-                         'dry_run', 't_corpora_config', 't_translate_config',
-                         't_output_file', 't_source', 't_target', 'port']
+    _option_registry = ['serial', 'length', 'days_to_save',
+                        'git_branch', 'make_target',
+                        'git_sign_patch', 'package_path',
+                        'clean_generated', 'include_mask', 'push_targets',
+                        'dry_run', 't_corpora_config', 't_translate_config',
+                        't_output_file', 't_source', 't_target', 'port',
+                        "changelog_version"]
 
     def __init__(self, obj=None):
         super(RuntimeStateConfig, self).__init__(obj)
         self._branch_conf = None
+
+    @property
+    def serial_sphinx(self):
+        if 'serial_sphinx' in self.state:
+            return self.state['serial_sphinx']
+        else:
+            return None
+
+    @serial_sphinx.setter
+    def serial_sphinx(self, value):
+        if value is False:
+            pass
+        else:
+            self.state['serial_sphinx'] = value
 
     @property
     def conf_path(self):
@@ -205,7 +259,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @conf_path.setter
     def conf_path(self, value):
-        if value is not None and os.path.exists(value):
+        if value is not None and os.path.isfile(value):
             self.state['conf_path'] = value
         else:
             self._discover_conf_file('build_conf.yaml')
@@ -241,32 +295,44 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @branch_conf.setter
     def branch_conf(self, value):
-        fn = os.path.join(self.conf.paths.builddata, 'published_branches.yaml')
+        fn = os.path.join(self.conf.paths.global_config, '-'.join([self.conf.project.name,
+                                                                   'published', 'branches.yaml']))
 
-        if self.conf.git.branches.current == 'master' and not os.path.isfile(os.path.join(self.conf.paths.projectroot, fn)):
-            self._branch_conf = {}
+        if os.path.isfile(fn):
+            with open(fn, 'r') as f:
+                self._branch_conf = yaml.load(f)
         else:
-            try:
-                data = self.conf.git.repo.branch_file(path=fn, branch='master')
-            except GitError:
-                logger.critical('giza not configured to work with buildbot repos')
-                self._branch_conf = {}
-                return
+            logger.warning('this project does uses legacy published branch configuration.')
 
-            self._branch_conf = yaml.load(data)
+            fn = os.path.join(self.conf.paths.builddata, 'published_branches.yaml')
+            fq_fn = os.path.join(self.conf.paths.projectroot, fn)
+
+            if self.conf.git.branches.current == 'master' and not os.path.isfile(fq_fn):
+                self._branch_conf = {}
+            else:
+                try:
+                    data = self.conf.git.repo.branch_file(path=fn, branch='master')
+                except GitError:
+                    logger.critical('giza does not support "detached head" state, '
+                                    'and local repositories without a master branch.')
+                    self._branch_conf = {}
+                    return
+
+                self._branch_conf = yaml.load(data)
 
     @property
     def builder(self):
         if 'builder' not in self.state:
-            return [ ]
+            return []
         elif 'publish' in self.state['builder']:
+            self.fast = False
             self.state['builder'].remove('publish')
 
             if 'integration' in self.conf.system.files.data:
                 targets = self.conf.system.files.data.integration['base']['targets']
-                self.state['builder'].extend(set([ target.split('-')[0] for target in targets
-                                                   if '/' not in target and
-                                                   not target.startswith('htaccess') ]))
+                self.state['builder'].extend(set([target.split('-')[0] for target in targets
+                                                  if '/' not in target and
+                                                  not target.startswith('htaccess')]))
                 return self.state['builder']
             else:
                 m = 'Builder integration not specified for "publish" target'
@@ -303,7 +369,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
         return self.state['git_objects']
 
     @git_objects.setter
-    def git_objects(self,value):
+    def git_objects(self, value):
         if isinstance(value, list):
             self.state['git_objects'] = value
         else:
@@ -315,7 +381,9 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @editions_to_build.setter
     def editions_to_build(self, value):
-        if isinstance(value, list):
+        if value == [] or value is None:
+            self.state['editions_to_build'] = [None]
+        elif isinstance(value, list):
             self.state['editions_to_build'] = value
         else:
             self.state['editions_to_build'] = [value]
@@ -326,7 +394,9 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
     @languages_to_build.setter
     def languages_to_build(self, value):
-        if isinstance(value, list):
+        if value == [] or value is None:
+            self.state['languages_to_build'] = [None]
+        elif isinstance(value, list):
             self.state['languages_to_build'] = value
         else:
             self.state['languages_to_build'] = [value]

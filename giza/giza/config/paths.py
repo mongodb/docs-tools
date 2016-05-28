@@ -15,10 +15,10 @@
 import logging
 import os.path
 
+from libgiza.config import RecursiveConfigurationBase
+
 logger = logging.getLogger('giza.config.paths')
 
-from giza.tools.strings import hyph_concat
-from giza.config.base import RecursiveConfigurationBase
 
 class PathsConfig(RecursiveConfigurationBase):
     _option_registry = ['output', 'source', 'includes', 'images', 'buildsystem',
@@ -26,8 +26,10 @@ class PathsConfig(RecursiveConfigurationBase):
 
     @property
     def locale(self):
-        if self.conf.project.edition is not None and self.conf.project.edition != self.conf.project.name:
-            return hyph_concat(self.state['locale'], self.conf.project.edition)
+        if (self.conf.project.edition is not None and
+                self.conf.project.edition != self.conf.project.name):
+
+            return '-'.join((self.state['locale'], self.conf.project.edition))
         else:
             return self.state['locale']
 
@@ -66,9 +68,10 @@ class PathsConfig(RecursiveConfigurationBase):
                 for idx, _ in enumerate(cwd_parts):
                     if idx == 0:
                         continue
+
                     path = os.path.sep.join(cwd_parts[0:-idx])
 
-                    if 'config' in os.listdir(path):
+                    if os.path.isdir(path) and 'config' in os.listdir(path):
                         return path
 
                 return None
@@ -116,7 +119,7 @@ class PathsConfig(RecursiveConfigurationBase):
     def branch_source(self, value):
         p = os.path.join(self.branch_output, self.source)
         if (self.conf.project.edition is not None and
-            self.conf.project.edition != self.conf.project.name):
+                self.conf.project.edition != self.conf.project.name):
             p += '-' + self.conf.project.edition
 
         self.state['branch_source'] = p
@@ -133,25 +136,42 @@ class PathsConfig(RecursiveConfigurationBase):
         self.state['branch_staging'] = os.path.join(self.public, self.conf.git.branches.current)
 
     @property
-    def global_config(self):
-        if 'global_config' not in self.state:
-            self.global_config = None
+    def branch_includes(self):
+        if self.includes.startswith(self.source):
+            p = os.path.join(self.branch_source,
+                             self.includes[len(self.source) + 1:])
+        else:
+            p = os.path.join(self.branch_source,
+                             self.includes)
 
-        return self.state['global_config']
+        if 'branch_includes' not in self.state:
+            self.state['branch_includes'] = p
 
-    @global_config.setter
-    def global_config(self, value):
-        self.state['global_config'] = os.path.join(self.buildsystem, 'data')
+        return p
+
+    @property
+    def branch_images(self):
+        if self.images.startswith(self.source):
+            p = os.path.join(self.branch_source,
+                             self.images[len(self.source) + 1:])
+        else:
+            p = os.path.join(self.branch_source,
+                             self.images)
+
+        if 'branch_images' not in self.state:
+            self.state['branch_images'] = p
+
+        return p
 
     @property
     def public_site_output(self):
         if 'public_site_output' in self.state:
             return self.state['public_site_output']
         else:
-            p = [ self.conf.paths.public ]
+            p = [self.conf.paths.public]
 
             if (self.conf.project.edition != self.conf.project.name and
-                self.conf.project.edition is not None):
+                    self.conf.project.edition is not None):
                 p.append(self.conf.project.edition)
 
             if self.conf.project.branched is True:
@@ -171,10 +191,10 @@ class PathsConfig(RecursiveConfigurationBase):
         if 'htaccess' in self.state:
             return self.state['htaccess']
         else:
-            p = [ self.conf.paths.public ]
+            p = [self.conf.paths.public]
 
             if (self.conf.project.edition != self.conf.project.name and
-                self.conf.project.edition is not None):
+                    self.conf.project.edition is not None):
                 p.append(self.conf.project.edition)
 
             p.append('.htaccess')
@@ -183,3 +203,9 @@ class PathsConfig(RecursiveConfigurationBase):
 
             self.state['htaccess'] = p
             return self.state['htaccess']
+
+    @property
+    def file_changes_database(self):
+        """Returns a path to the database containing output path mtimes and
+           hashes to back FileCollector."""
+        return os.path.join(self.projectroot, self.output, 'stage-cache.db')

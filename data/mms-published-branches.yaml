@@ -1,0 +1,29 @@
+version:
+  published:
+    - '2.1-pre'
+    - '2.0'
+    - '1.8'
+    - '1.6'
+    - '1.5'
+    - '1.4'
+    - '1.3'
+    - '1.2'
+    - '1.1'
+  stable: '2.0'
+  upcoming: '2.1-pre'
+git:
+  branches:
+    manual: 'v2.0'
+    published:
+      - 'master'
+      - 'v2.0'
+      - 'v1.8'
+      - 'v1.6'
+      - 'v1.5'
+      - 'v1.4'
+      - 'v1.3'
+      - 'v1.2'
+      - 'v1.1'
+      # the branches/published list **must** be ordered from most to
+      # least recent release.
+...

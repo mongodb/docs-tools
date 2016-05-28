@@ -1,0 +1,7 @@
+==================================
+``quickstart`` -- Project Creation
+==================================
+
+.. automodule:: giza.operations.quickstart
+   :members:
+   :undoc-members:

@@ -1,0 +1,184 @@
+collection: "restaurants"
+options:
+  show_title: False
+  show_collection: False
+edition:
+  - shell
+  - python
+  - node
+ref: collection-example
+---
+source:
+  file: examples-one.yaml
+  ref: _group-documents-by-a-field-and-calculate-count
+ref: group-documents-by-a-field-and-calculate-count
+edition: shell
+operation:
+  - language: javascript
+    code: |
+      db.restaurants.aggregate(
+         [
+           { $group: { "_id": "$borough", "count": { $sum: 1 } } }
+         ]
+      );
+results:
+  - '{ "_id" : "Staten Island", "count" : 969 }'
+  - '{ "_id" : "Brooklyn", "count" : 6086 }'
+  - '{ "_id" : "Manhattan", "count" : 10259 }'
+  - '{ "_id" : "Queens", "count" : 5656 }'
+  - '{ "_id" : "Bronx", "count" : 2338 }'
+  - '{ "_id" : "Missing", "count" : 51 }'
+---
+source:
+  file: examples-one.yaml
+  ref: _filter-and-group-documents
+ref: filter-and-group-documents
+edition: shell
+operation:
+  - language: javascript
+    code: |
+      db.restaurants.aggregate(
+         [
+           { $match: { "borough": "Queens", "cuisine": "Brazilian" } },
+           { $group: { "_id": "$address.zipcode" , "count": { $sum: 1 } } }
+         ]
+      );
+results:
+  - '{ "_id" : "11368", "count" : 1 }'
+  - '{ "_id" : "11106", "count" : 3 }'
+  - '{ "_id" : "11377", "count" : 1 }'
+  - '{ "_id" : "11103", "count" : 1 }'
+  - '{ "_id" : "11101", "count" : 2 }'
+---
+source:
+  file: examples-one.yaml
+  ref: _group-documents-by-a-field-and-calculate-count
+ref: group-documents-by-a-field-and-calculate-count
+edition: python
+operation:
+  - language: python
+    code: |
+      cursor = db.restaurants.aggregate(
+         [
+           { "$group": { "_id": "$borough", "count": { "$sum": 1 } } }
+         ],
+         cursor={}
+      )
+  - pre: "Iterate the cursor and print the matching documents."
+    language: python
+    code: |
+      for document in cursor:
+          print(document)
+results:
+  - "{u'count': 969, u'_id': u'Staten Island'}"
+  - "{u'count': 6086, u'_id': u'Brooklyn'}"
+  - "{u'count': 10259, u'_id': u'Manhattan'}"
+  - "{u'count': 5656, u'_id': u'Queens'}"
+  - "{u'count': 2338, u'_id': u'Bronx'}"
+  - "{u'count': 51, u'_id': u'Missing'}"
+---
+source:
+  file: examples-one.yaml
+  ref: _filter-and-group-documents
+ref: filter-and-group-documents
+edition: python
+operation:
+  - language: python
+    code: |
+      cursor = db.restaurants.aggregate(
+         [
+             { "$match": { "borough": "Queens", "cuisine": "Brazilian" } },
+             { "$group": { "_id": "$address.zipcode" , "count": { "$sum": 1 } } }
+         ],
+         cursor={}
+      )
+  - pre: |
+      Iterate the cursor and print the matching documents.
+    language: python
+    code: |
+      for document in cursor:
+          print(document)
+results:
+  - "{u'count': 1, u'_id': u'11368'}"
+  - "{u'count': 3, u'_id': u'11106'}"
+  - "{u'count': 1, u'_id': u'11377'}"
+  - "{u'count': 1, u'_id': u'11103'}"
+  - "{u'count': 2, u'_id': u'11101'}"
+---
+source:
+  file: examples-one.yaml
+  ref: _group-documents-by-a-field-and-calculate-count
+ref: group-documents-by-a-field-and-calculate-count
+edition: node
+operation:
+  - language: javascript
+    code: |
+      var aggregateRestaurants = function(db, callback) {
+         db.collection('restaurants').aggregate(
+           [
+             { $group: { "_id": "$borough", "count": { $sum: 1 } } }
+           ],
+           function(err, result) {
+             assert.equal(err, null);
+             console.log(result);
+             callback(result);
+           }
+         );
+      };
+  - pre: |
+      Call the ``aggregateRestaurants`` function.
+    language: javascript
+    code: | 
+      MongoClient.connect(url, function(err, db) {
+        assert.equal(null, err);
+        aggregateRestaurants(db, function() {
+            db.close();
+        });
+      }); 
+results: |
+  [ { _id: 'Missing', count: 51 },
+    { _id: 'Staten Island', count: 969 },
+    { _id: 'Manhattan', count: 10259 },
+    { _id: 'Brooklyn', count: 6086 },
+    { _id: 'Queens', count: 5656 },
+    { _id: 'Bronx', count: 2338 } ]
+---
+source:
+  file: examples-one.yaml
+  ref: _filter-and-group-documents
+ref: filter-and-group-documents
+edition: node
+operation:
+  - pre: "Define an aggregateRestaurants function."
+    language: javascript
+    code: |
+      var aggregateRestaurants = function(db, callback) {
+         db.collection('restaurants').aggregate(
+           [
+             { $match: { "borough": "Queens", "cuisine": "Brazilian" } },
+             { $group: { "_id": "$address.zipcode" , "count": { $sum: 1 } } }
+           ],
+           function(err, result) {
+             assert.equal(err, null);
+             console.log(result);
+             callback(result);
+           }
+         );
+      };
+  - pre: |
+      Call the ``aggregateRestaurants`` function.
+    language: javascript
+    code: | 
+      MongoClient.connect(url, function(err, db) {
+        assert.equal(null, err);
+        aggregateRestaurants(db, function() {
+            db.close();
+        });
+      }); 
+results: |
+  [ { _id: '11377', count: 1 },
+    { _id: '11368', count: 1 },
+    { _id: '11101', count: 2 },
+    { _id: '11106', count: 3 },
+    { _id: '11103', count: 1 } ]
+...

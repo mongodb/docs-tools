@@ -1,0 +1,7 @@
+=============================================
+``gettext`` -- Translation Catalog Processing
+=============================================
+
+.. automodule:: giza.content.post.gettext
+   :members:
+   :undoc-members:

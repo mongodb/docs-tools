@@ -12,59 +12,87 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Simple operations to create and bootstrap the content for new projects.
+"""
+
 import inspect
 import logging
 import os
 import shutil
-
-logger = logging.getLogger('giza.operations.quickstart')
+import subprocess
 
 import argh
 import giza
 
+from libgiza.app import BuildApp
+from libgiza.git import GitRepo, GitError
+
 from giza.config.helper import fetch_config
-from giza.core.app import BuildApp
-from giza.operations.sphinx import sphinx_publication
-from giza.tools.command import command, CommandError
+from giza.operations.sphinx_cmds import sphinx_publication
+from giza.tools.files import safe_create_directory
 
-@argh.named('quickstart')
+logger = logging.getLogger('giza.operations.quickstart')
+
+
 @argh.arg('--with-git', action='store_true', dest='quickstart_git')
+@argh.named('quickstart')
+@argh.expects_obj
 def make_project(args):
-    curdir = os.getcwd()
-    curdir_list = os.listdir(curdir)
-
-    _weak_bootstrapping(args)
-
+    """
+    Generate a project skeleton. Prefer this operation over
+    ``sphinx-quickstart``. Also builds skeleton HTML artifacts.
+    """
     if args.quickstart_git is True:
         logger.info('creating a new git repository')
-        r = command('git init', capture=True)
-
-        if not r.out.startswith('Reinitialized'):
-            command('git add .')
-            try:
-                command('git commit -m "initial commit"')
-            except CommandError:
-                pass
-
-def _weak_bootstrapping(args):
-    args.languages_to_build = args.editions_to_build = []
-    args.builder = 'html'
-    conf = fetch_config(args)
-    app = BuildApp(conf)
+        g = GitRepo(os.getcwd())
+        g.create_repo()
+        build_sphinx = True
+    else:
+        try:
+            GitRepo().sha()
+            build_sphinx = True
+        except GitError:
+            build_sphinx = False
 
     mod_path = os.path.dirname(inspect.getfile(giza))
     qstart_path = os.path.join(mod_path, 'quickstart')
 
-    command('rsync --ignore-existing --recursive {0}/. {1}'.format(qstart_path, os.getcwd()))
+    cmd = 'rsync --ignore-existing --recursive {0}/. {1}'.format(qstart_path, os.getcwd())
+    r = subprocess.check_output(cmd.split(), stderr=subprocess.STDOUT)
     logger.info('migrated new site files')
 
-    try:
-        sphinx_publication(conf, args, app)
-    except:
-        sphinx_publication(conf, args, app)
-        shutil.rmtree('docs-tools')
+    if args.quickstart_git is True:
+        if not r.startswith('Reinitialized'):
+            g.cmd('add', '-A')
 
-    command('python build/docs-tools/makecloth/meta.py build/makefile.meta')
+            try:
+                g.cmd('commit', '-m', '"initial commit"')
+            except GitError:
+                build_sphinx = False
+                pass
+
+    if build_sphinx is True:
+        test_build_site(args)
+
+
+def test_build_site(args):
+    args.languages_to_build = args.editions_to_build = []
+    args.builder = 'html'
+
+    conf = fetch_config(args)
+
+    safe_create_directory('build')
+    with BuildApp.new(pool_type=conf.runstate.runner,
+                      pool_size=conf.runstate.pool_size,
+                      force=conf.runstate.force).context() as app:
+        try:
+            sphinx_publication(conf, args, app)
+        except:
+            sphinx_publication(conf, args, app)
+            if os.path.exists('doc-tools'):
+                shutil.rmtree('docs-tools')
+
     logger.info('bootstrapped makefile system')
 
     logger.info('updated project skeleton in current directory.')

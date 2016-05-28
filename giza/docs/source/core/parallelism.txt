@@ -16,15 +16,15 @@ some overhead, the overall build time is lower.
 Giza contains a model for describing a concurrent build system that is
 independent from the actual parallelism mechanism, this functionally,
 accessible using :class:`~giza.core.app.BuildApp()` and
-:class:`~giza.core.task.Task()` objects have the following features: 
-       
+:class:`~giza.core.task.Task()` objects have the following features:
+
 - parallelism mechanisms are pluggable. Users can decide at runtime to
   use a different default mechanism, or to execute tasks serially.
 
 - except for requirements related to parallelism mechanisms
   (e.g. pickle-ability,) functions do not need to be aware of the
   concurrent execution.
-  
+
 - developers can easily control the execution order of tasks.
 
 - exceptions propagate "correctly" out of concurrent environments, and

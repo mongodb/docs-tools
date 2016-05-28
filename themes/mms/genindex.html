@@ -7,6 +7,7 @@
     :copyright: Copyright 2007-2014 by the Sphinx team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 #}
+
 {% macro indexentries(firstname, links) %}
   <dt>
   {%- if links -%}
@@ -28,7 +29,7 @@
   </dt>
 {% endmacro %}
 
-{%- extends "page-layout.html" %}
+{%- extends "page.html" %}
 {% set title = _('Index') %}
 {% block body %}
 

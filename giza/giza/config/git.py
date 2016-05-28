@@ -15,10 +15,11 @@
 import logging
 import os
 
+from libgiza.git import GitRepo
+from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
+
 logger = logging.getLogger('giza.config.git')
 
-from giza.core.git import GitRepo
-from giza.config.base import RecursiveConfigurationBase, ConfigurationBase
 
 class GitConfigBase(RecursiveConfigurationBase):
     def __init__(self, obj, conf, repo=None):
@@ -68,7 +69,9 @@ class GitConfig(GitConfigBase):
     def remote(self, value):
         self.state['remote'] = GitRemoteConfig(value)
 
+
 class GitBranchConfig(GitConfigBase):
+
     @property
     def current(self):
         if 'current' not in self.state:
@@ -89,7 +92,7 @@ class GitBranchConfig(GitConfigBase):
 
     @manual.setter
     def manual(self, value):
-        if 'git' in self.conf.runstate.branch_conf and 'branches' in self.conf.runstate.branch_conf['git']:
+        if self.has_branches() is True:
             if 'manual' in self.conf.runstate.branch_conf['git']['branches']:
                 self.state['manual'] = self.conf.runstate.branch_conf['git']['branches']['manual']
             else:
@@ -104,9 +107,13 @@ class GitBranchConfig(GitConfigBase):
 
         return self.state['published']
 
+    def has_branches(self):
+        return ('git' in self.conf.runstate.branch_conf and
+                'branches' in self.conf.runstate.branch_conf['git'])
+
     @published.setter
     def published(self, value):
-        if 'git' in self.conf.runstate.branch_conf and 'branches' in self.conf.runstate.branch_conf['git']:
+        if self.has_branches() is True:
             if 'published' in self.conf.runstate.branch_conf['git']['branches']:
                 p = self.conf.runstate.branch_conf['git']['branches']['published']
 
@@ -125,6 +132,7 @@ class GitBranchConfig(GitConfigBase):
                 self.state['published'] = []
         else:
             self.state['published'] = ['master']
+
 
 class GitRemoteConfig(ConfigurationBase):
     _option_registry = ['upstream', 'tools']

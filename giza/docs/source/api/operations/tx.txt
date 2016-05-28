@@ -1,0 +1,7 @@
+================================================
+``tx`` -- Translation Generation and Integration
+================================================
+
+.. automodule:: giza.operations.tx
+   :members:
+   :undoc-members:

@@ -1,0 +1,7 @@
+==================================
+``clean`` -- Clean Build Artifacts
+==================================
+
+.. automodule:: giza.operations.clean
+   :members:
+   :undoc-members:

@@ -12,13 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Generates a ``robot.txt`` file in the output directory. Use to exclude content
+from search engines that respect ``robots.txt``. Robots definitions resemble the
+following: ::
+
+   {
+     "file": "/<path>",
+     "branches": [
+       <string,>
+       # ..
+       <string>
+     ]
+   }
+
+You can specify "``{{published}}``" as a string in the branches array, to
+exclude a path from all published branches, current and future.
+"""
+
 import os
 import logging
 
+import libgiza.task
+import giza.content.helper
+
 logger = logging.getLogger('giza.content.robots')
 
-from giza.tools.serialization import ingest_yaml_list
-import giza.content.helper
 
 def robots_txt_builder(fn, conf, override=False):
     if override is False:
@@ -56,9 +75,8 @@ def robots_txt_builder(fn, conf, override=False):
                             f.write('Disallow: /{0}{1}'.format(pbranch, page))
                             f.write('\n')
                     else:
-                        f.write('Disallow: /{0}{1}'.format(branch,page))
+                        f.write('Disallow: /{0}{1}'.format(branch, page))
                         f.write('\n')
-
 
     if counter > 0 and counter == len(conf.system.files.data.robots):
         try:
@@ -69,7 +87,10 @@ def robots_txt_builder(fn, conf, override=False):
     else:
         logger.info('regenerated {0} file.'.format(fn))
 
-def robots_txt_tasks(conf, app):
+
+def robots_txt_tasks(conf):
+    tasks = []
+
     if 'robots' in conf.system.files.data and len(conf.system.files.data.robots) > 0:
         dep_path = None
         for k in conf.system.files.paths:
@@ -78,9 +99,12 @@ def robots_txt_tasks(conf, app):
                 break
 
         robots_fn = os.path.join(conf.paths.projectroot, conf.paths.public_site_output,
-                                'robots.txt')
-        t = app.add('task')
-        t.job = robots_txt_builder
-        t.target = robots_fn
-        t.dependency = dep_path
-        t.args = [  robots_fn, conf ]
+                                 'robots.txt')
+
+        tasks.append(libgiza.task.Task(job=robots_txt_builder,
+                                       args=(robots_fn, conf),
+                                       target=robots_fn,
+                                       dependency=dep_path,
+                                       description="building robots.txt file"))
+
+    return tasks

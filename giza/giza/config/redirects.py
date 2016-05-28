@@ -1,4 +1,4 @@
-# 2014 MongoDB, Inc.
+# Copyright 2014 MongoDB, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,22 +14,24 @@
 
 import logging
 
-logger = logging.getLogger('giza.config.redirects')
-
-from giza.config.base import ConfigurationBase
+from libgiza.config import ConfigurationBase
 from giza.content.helper import edition_check
 
+logger = logging.getLogger('giza.config.redirects')
+
+
 def redirect_path_spec_normalization(value):
-        o = []
-        if not value.startswith('/'):
-            o.append('/')
+    o = []
+    if not value.startswith('/'):
+        o.append('/')
 
-        if value.endswith('/'):
-            value = value[:-1]
+    if value.endswith('/'):
+        value = value[:-1]
 
-        o.append(value)
+    o.append(value)
 
-        return ''.join(o)
+    return ''.join(o)
+
 
 class RedirectSpecification(ConfigurationBase):
     _option_registry = ['type', 'external', 'edition']
@@ -64,7 +66,10 @@ class RedirectSpecification(ConfigurationBase):
 
     @property
     def code(self):
-        return self.state['code']
+        if 'code' in self.state:
+            return self.state['code']
+        else:
+            return 303
 
     @code.setter
     def code(self, value):
@@ -77,7 +82,9 @@ class RedirectSpecification(ConfigurationBase):
     def output(self):
         left, right = self.state['output']
 
-        if left != '/' and not left.startswith('/') and not left.startswith('http'):
+        if left in ('', '/'):
+            pass
+        elif left != '/' and not left.startswith('/') and not left.startswith('http'):
             left = '/' + left
 
         if right == '/':
@@ -109,7 +116,9 @@ class RedirectSpecification(ConfigurationBase):
             'external': self.external if 'external' in self.state else ''
         }
 
+
 class HtaccessData(list):
+
     def append(self, item):
         self.insert(-1, item)
 
@@ -128,6 +137,7 @@ class HtaccessData(list):
         for doc in process_redirect_inputs(outputs, item):
             super(HtaccessData, self).insert(index, RedirectSpecification(doc))
 
+
 def is_computed_output(key):
     if isinstance(key, (tuple, list)):
         key = key[0]
@@ -137,10 +147,11 @@ def is_computed_output(key):
     else:
         return False
 
-########## Redirect Resolution ##########
+# Redirect Resolution
 
 # the following three private functions are refactored components of
 # ``resolve_output_for_redirect()``
+
 
 def _add_outputs_to_computed(computed, keyword, base, conf):
     if keyword == 'all':
@@ -149,6 +160,7 @@ def _add_outputs_to_computed(computed, keyword, base, conf):
         computed.extend(conf.git.branches.published[conf.git.branches.published.index(base):])
     elif keyword == 'after':
         computed.extend(conf.git.branches.published[:conf.git.branches.published.index(base)])
+
 
 def _render_key(sub_key, left_base, right_base):
     if sub_key == left_base:
@@ -162,6 +174,7 @@ def _render_key(sub_key, left_base, right_base):
         right = '/'.join([right_base, sub_key])
 
     return left, right
+
 
 def _get_redirect_base_paths(computed, out, conf):
     if out == 'all':
@@ -195,27 +208,47 @@ def _get_redirect_base_paths(computed, out, conf):
 # The following functions describe the process for inserting documents into the
 # HtaccessData list and are called in HtaccessData.list()
 
+
 def resolve_outputs_for_redirect(outputs, conf):
+
+    """ integration.yaml contain links for non-branched versions such as manual and latest branch """
+    """ { 'manual': 'v3.0' } manual will link to v3.0 or later to v3.2, etc. """
+    """ { 'v3.2': 'master' } v3.2 will be pointing to master until actual branch exists and so on """
+    """ KLUGE:: This gets the same shadows for each 3000+ redirect which is unnecessary and inefficient """
+    """ But for now, putting back modified logic back where it was to limit scope of change until after 3.2 GA """
+
     if 'integration' in conf.system.files.data:
         shadows = conf.system.files.data.integration['base']['links']
     else:
         shadows = []
 
+    """Resolve redirect outputs like 'before-v2.6', 'all', and 'manual' to a
+       tuple of filesystem paths. Returns a list containing [output, tuple]."""
     expanded_outputs = []
     for out in outputs:
         computed = []
-
         out_key, out_value = _get_redirect_base_paths(computed, out, conf)
 
+        """If integrations.yaml link target is in the computed links or is listed in output
+           e.g. manual points to v3.0, and v3.0 is in the computed list, then
+           add the link key
+        """
         for shadow in shadows:
+            """{key: value}"""
             key, value = shadow.items()[0]
-            if value == out_value:
-                expanded_outputs.extend((value, key))
+            if value in computed or value == out:
+                
+                """ KLUGE:: This is a short-term kluge to be cleaned up in January  """
+                """ since both python code and the redirect yaml files have problems """
+                if conf.project.name == 'mms':
+                   key = key.replace('onprem/','')
+                expanded_outputs.extend([key])
 
-        expanded_outputs.extend([ _render_key(o, out_key, out_value) for o in computed ])
+        expanded_outputs.extend([_render_key(o, out_key, out_value) for o in computed])
 
     outputs.extend(expanded_outputs)
     return outputs
+
 
 def process_redirect_inputs(outputs, item):
     docs = []
@@ -238,7 +271,7 @@ def process_redirect_inputs(outputs, item):
             if is_computed_output(output[0]):
                 continue
 
-            redir = { 'output': output }
+            redir = {'output': output}
             redir.update(item)
             del redir['outputs']
             docs.append(redir)

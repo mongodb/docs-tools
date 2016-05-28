@@ -15,11 +15,8 @@
 import os.path
 import logging
 
-logger = logging.getLogger('giza.config.main')
+from libgiza.config import ConfigurationBase
 
-from giza.tools.serialization import ingest_yaml_doc
-
-from giza.config.base import ConfigurationBase, RecursiveConfigurationBase
 from giza.config.assets import AssetsConfig
 from giza.config.project import ProjectConfig
 from giza.config.paths import PathsConfig
@@ -28,8 +25,13 @@ from giza.config.system import SystemConfig
 from giza.config.runtime import RuntimeStateConfig
 from giza.config.version import VersionConfig
 from giza.config.deploy import DeployConfig
+from giza.config.test import TestConfig
+
+logger = logging.getLogger('giza.config.main')
+
 
 class Configuration(ConfigurationBase):
+
     @property
     def project(self):
         return self.state['project']
@@ -65,8 +67,22 @@ class Configuration(ConfigurationBase):
     @runstate.setter
     def runstate(self, value):
         if isinstance(value, RuntimeStateConfig):
-            value.conf = self
-            self.state['runstate'] = value
+            if 'runstate' in self.state:
+                self.state['runstate'].state.update(value.state)
+            else:
+                value.conf = self
+                self.state['runstate'] = value
+        elif isinstance(value, dict):
+            if 'runstate' in self.state:
+                self.state['runstate'].ingest(value)
+            else:
+                runtime = RuntimeStateConfig(value)
+                runtime.conf = self
+                self.state['runstate'] = runtime
+        elif value is None:
+            runtime = RuntimeStateConfig()
+            runtime.conf = self
+            self.state['runstate'] = runtime
         else:
             msg = "invalid runtime state"
             logger.critical(msg)
@@ -116,8 +132,22 @@ class Configuration(ConfigurationBase):
 
     @deploy.setter
     def deploy(self, value):
-        fn = os.path.join(self.paths.global_config, 'deploy.yaml')
+        fn = os.path.join(self.paths.projectroot, self.paths.global_config, 'deploy.yaml')
         if os.path.exists(fn):
             self.state['deploy'] = DeployConfig(fn)
         else:
             self.state['deploy'] = {}
+
+    @property
+    def test(self):
+        if 'test' not in self.state:
+            self.test = None
+        return self.state['test']
+
+    @test.setter
+    def test(self, value):
+        fn = os.path.join(self.paths.projectroot, self.paths.global_config, 'test-matrix.yaml')
+        if os.path.exists(fn):
+            self.state['test'] = TestConfig(fn)
+        else:
+            self.state['test'] = {}

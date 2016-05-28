@@ -1,0 +1,7 @@
+================================================
+``latex`` -- Process TeX and Generate PDF Output
+================================================
+
+.. automodule:: giza.content.post.latex
+   :members:
+   :undoc-members:

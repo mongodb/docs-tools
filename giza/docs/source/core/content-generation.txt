@@ -14,7 +14,7 @@ metaphor.
 Giza generation works by reading data from a ``yaml`` formatted text
 file in the content tree, and producing reSructuredText output that
 other files in the content tree can include using the in-lining
-mechanism. 
+mechanism.
 
 While each type of files has a slightly different
 structure, generally these ``yaml`` files consist of a sequence of
@@ -26,7 +26,7 @@ document.
 
 The content generation runs as needed before beginning the Sphinx
 portion of a build, and Giza is generally aware of the dependencies
-between source files and included files, and between source files. 
+between source files and included files, and between source files.
 
 Implementation
 --------------
@@ -34,15 +34,15 @@ Implementation
 .. note:: In practice, at the time of writing, many of the content
    generators use legacy implementations that implement the
    inheritance resolution and have limited access to the build state,
-   relative to the implementation described in this section. 
+   relative to the implementation described in this section.
 
-A content generator has a number of high level components: 
+A content generator has a number of high level components:
 
 - a cache that holds all DE-serialized content, hashed by file and
   then by unique identifier (i.e. ``ref``). Having a single cache of
   all this data in one interface makes it possible to resolve
-  inherited content quickly, while limiting file access. 
-  
+  inherited content quickly, while limiting file access.
+
 - some representation of each file-level collection of content
   object. This serves as a connector between the cache and the
   representation of each content unit, and the requirements of this
@@ -51,7 +51,7 @@ A content generator has a number of high level components:
   sequence. If there is some relationship between source file and
   output file, or if the content units in the file have different
   structures then this layer has stronger requirements.
-  
+
 - a representation of the content unit. This layer is responsible for
   validating input content, and inferring any computed values based on
   the input content.
@@ -72,11 +72,11 @@ When using the Giza-based content generation authors and editors
 should write content.
 
 - avoid references between content units.
-  
+
 - when possible, include content in top-level fields within the content
   unit document. Some formats may support some level of nesting,
   however this limits the potential for custom reuse.
-  
+
 - prefer using a larger number of smaller content units to a fewer
   number of larger content units.
 
@@ -87,14 +87,14 @@ In the future, the content generation system will:
 
 - have some system "context change" so that the build system can
   notify when the context around a reused content unit changes.
-  
+
 - legacy content generators will migrate to using the new
   infrastructure.
 
 - improve sophistication and consistency around the edition-based
   filtering and begin to use the
   :func:`~giza.content.helper.edition_check()` operation.
-        
+
 - increased consistency about when and where the build creates
   files. Currently some generators write files to the source directly,
   while other builders write to the

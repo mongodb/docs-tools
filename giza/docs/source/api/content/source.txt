@@ -1,0 +1,7 @@
+========================================
+``source`` -- Prepare and Process Source
+========================================
+
+.. automodule:: giza.content.source
+   :members:
+   :undoc-members:

@@ -20,3 +20,4 @@ config
 fabsrc/giza
 *.egg-info
 !giza/docs/config
+node_modules/

@@ -1,0 +1,7 @@
+=======================================================
+``inheritance`` -- Inheritance Implementation for Steps
+=======================================================
+
+.. automodule:: giza.content.steps.inheritance
+   :members:
+   :undoc-members:

@@ -1,0 +1,7 @@
+=====================================
+``includes`` -- Include File Overview
+=====================================
+
+.. automodule:: giza.content.includes
+   :members:
+   :undoc-members:

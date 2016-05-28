@@ -12,30 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import collections
 import logging
-import re
+
+import libgiza.task
+
+from giza.tools.files import copy_always, copy_if_needed
 
 logger = logging.getLogger('giza.transformation')
 
-from giza.tools.files import copy_always, copy_if_needed, encode_lines_to_file, decode_lines_from_file
-from giza.tools.serialization import ingest_yaml
 
 class ProcessingError(Exception):
     pass
+
+
+def decode_lines_from_file(fn):
+    with open(fn, 'r') as f:
+        return [line.decode('utf-8').rstrip() for line in f.readlines()]
+
+
+def encode_lines_to_file(fn, lines):
+    with open(fn, 'w') as f:
+        f.write('\n'.join(lines).encode('utf-8'))
+        f.write('\n')
+
 
 def munge_page(fn, regex, out_fn=None,  tag='build'):
     if out_fn is None:
         out_fn = fn
 
-    page_lines = [ munge_content(ln, regex) for ln in decode_lines_from_file(fn)
-                   if ln is not None ]
+    page_lines = [munge_content(ln, regex) for ln in decode_lines_from_file(fn)
+                  if ln is not None]
 
     if len(page_lines) > 0:
         encode_lines_to_file(out_fn, page_lines)
-        logger.info('{0}: processed {1}'.format(tag, fn))
     else:
         logger.warning('{0}: did not write {1}'.format(tag, out_fn))
+
 
 def munge_content(content, regex):
     if isinstance(regex, list):
@@ -47,25 +59,50 @@ def munge_content(content, regex):
 
 
 def truncate_file(fn, start_after=None, end_before=None):
+    if start_after is not None and end_before is not None:
+        if type(start_after) != type(end_before):
+            raise TypeError('start-after and end-before types must match')
+
     with open(fn, 'r') as f:
         source_lines = f.readlines()
 
-    start_idx = 0
-    end_idx = len(source_lines) - 1
+    should_find_line_num = False
 
-    for idx, ln in enumerate(source_lines):
+    if isinstance(start_after, int):
+        start_idx = start_after
+    else:
+        # start_after is none or some string -- if string, find line num
+        start_idx = 0
         if start_after is not None:
-            if start_idx == 0 and ln.startswith(start_after):
-                start_idx = idx - 1
-                start_after = None
+            should_find_line_num = True
 
+    if isinstance(end_before, int):
+        end_idx = end_before - 1
+    else:
+        # end_before is none or some string -- if string, find line num
+        end_idx = len(source_lines) - 1
         if end_before is not None:
-            if ln.startswith(end_before):
+            should_find_line_num = True
+
+    # should_find_line_num is True if:
+    #  - start_after = string and end_before = string
+    #  - start_after = string and end_before is None
+    #  - start_after is None and end_before is string
+
+    if should_find_line_num is True:
+        for idx, ln in enumerate(source_lines):
+            if start_after is not None and start_after in ln:
+                start_idx = idx + 1
+                if end_before is None:
+                    break
+
+            if end_before is not None and end_before in ln:
                 end_idx = idx
                 break
 
     with open(fn, 'w') as f:
         f.writelines(source_lines[start_idx:end_idx])
+
 
 def append_to_file(fn, text):
     with open(fn, 'a') as f:
@@ -73,75 +110,44 @@ def append_to_file(fn, text):
         f.write(text)
 
 
+def prepend_to_file(fn, text):
+    with open(fn, 'r') as f:
+        body = f.readlines()
+
+    with open(fn, 'w') as f:
+        f.write(text)
+        f.writelines(body)
+
+
+def process_page_task(fn, output_fn, regex, builder='processor', copy='always'):
+    return libgiza.task.Task(job=_process_page,
+                             args=(fn, output_fn, regex, copy, builder),
+                             target=output_fn,
+                             dependency=None,
+                             description="modify page: ({0}, {1})".format(fn, output_fn))
+
+
 def process_page(fn, output_fn, regex, app, builder='processor', copy='always'):
+    t = app.add('task')
+    t.job = _process_page
+    t.args = [fn, output_fn, regex, copy, builder]
+    t.target = output_fn
+    t.depenency = None
+    t.description = "modify page"
+
+    logger.debug('added tasks to process file: {0}'.format(fn))
+
+
+def _process_page(fn, output_fn, regex, copy, builder):
     tmp_fn = fn + '~'
 
-    munge = app.add('task')
-    munge.target = tmp_fn
-    munge.dependency = fn
-    munge.job = munge_page
-    munge.args = dict(fn=fn, out_fn=tmp_fn, regex=regex)
+    munge_page(fn=fn, out_fn=tmp_fn, regex=regex)
 
-    cp = app.add('task')
-    cp.target = output_fn
-    cp.depdency = tmp_fn
-
-    if copy == 'always':
-        cp.job = copy_always
-    else:
-        cp.job = copy_if_needed
-
-    cp.args = dict(source_file=tmp_fn,
+    cp_args = dict(source_file=tmp_fn,
                    target_file=output_fn,
                    name=builder)
 
-    logger.info('added tasks to process file: {0}'.format(fn))
-
-def post_process_tasks(app, tasks=None, source_fn=None):
-    """
-    input documents should be:
-
-    {
-      'transform': {
-                     'regex': str,
-                     'replace': str
-                   }
-      'type': <str>
-      'file': <str|list>
-    }
-
-    ``transform`` can be either a document or a list of documents.
-    """
-
-    if tasks is None:
-        if source_fn is not None:
-            tasks = ingest_yaml(source_fn)
-        else:
-            raise ProcessingError('[ERROR]: no input tasks or file')
-    elif not isinstance(tasks, collections.Iterable):
-        raise ProcessingError('[ERROR]: cannot parse post processing specification.')
-
-    def rjob(fn, regex, type):
-        page_app = app.add('app')
-        process_page(fn=fn, output_fn=fn, regex=regex, app=page_app, builder=type)
-
-    for job in tasks:
-        if not isinstance(job, dict):
-            raise ProcessingError('[ERROR]: invalid replacement specification.')
-        elif not 'file' in job and not 'transform' in job:
-            raise ProcessingError('[ERROR]: replacement specification incomplete.')
-
-        if 'type' not in job:
-            job['type'] = 'processor'
-
-        if isinstance(job['transform'], list):
-            regex = [ (re.compile(rs['regex']), rs['replace'])
-                      for rs in job['transform'] ]
-        else:
-            regex = (re.compile(job['transform']['regex']), job['transform']['replace'])
-
-        if not isinstance(job['file'], list):
-            job['file'] = [ job['file'] ]
-
-        for fn in job['file']:
-            rjob(fn, regex, job['type'])
+    if copy == 'always':
+        copy_always(**cp_args)
+    else:
+        copy_if_needed(**cp_args)

@@ -1,0 +1,7 @@
+=====================================================
+``sphinx`` -- Run ``sphinx-build`` and Process Output
+=====================================================
+
+.. automodule:: giza.content.sphinx
+   :members:
+   :undoc-members:

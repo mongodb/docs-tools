@@ -2,7 +2,7 @@
 
 {%- block htmltitle %}
   {%- if not embedded and docstitle %}
-    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + version|e %}
   {%- else %}
     {%- set titlesuffix = "" %}
   {%- endif -%}
@@ -10,14 +10,29 @@
   <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
 {%- endblock -%}
 
+{%- block metadescription %}
+  <meta name="description" content="MongoDB Manual {{version}} {{title}}"/>
+{%- endblock -%}
+
 {%- block canonicalref %}
-  {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
-  {%- else %}
-    <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/{{pagename}}" />
+  {%- if theme_branch == 'master' %}
+    {%- if pagename == 'index' %}
+      <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/" />
+    {%- else %}
+      <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/{{pagename}}" />
+    {%- endif -%}
   {%- endif -%}
 {%- endblock -%}
 
+{%- block alertbar -%}
+    {%- if theme_active_branches and version not in theme_active_branches %}
+        <div class="alert alert-info">
+           <span class="alert-message">This version of the manual is no longer supported.</span>
+        </div>
+    {%- endif %}
+{%- endblock -%}
+
+{%- block righttoc %} {% endblock %}
 {%- block adblockheader %}
     {%- include "adblock-header.html" %}
 {%- endblock -%}
@@ -26,7 +41,7 @@
     {%- include "adblock.html" %}
 {%- endblock -%}
 
-{%- block langauge_selector %}{%- endblock -%}
+{%- block pdflink %}{%- endblock %}
 
 {%- block subnav %}
    <a href="http://mongoing.com">中文社区首页</a>

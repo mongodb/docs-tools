@@ -12,25 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Contains schema, type checking, and validation structures for the data in
+example files.
+"""
+
 import sys
 import logging
 
+from libgiza.config import ConfigurationBase
+from libgiza.inheritance import InheritableContentError
+
+from giza.inheritance import InheritableContentBase
+from giza.content.helper import get_all_languages
+
 logger = logging.getLogger('giza.content.examples.models')
-
-from giza.config.base import ConfigurationBase
-from giza.core.inheritance import DataCache, DataContentBase, InheritableContentBase
-from giza.tools.serialization import ingest_yaml_doc
-
-from pygments.lexers import get_all_lexers
-
-# get a list of all supported pygment lexers.
-all_languages = []
-[ all_languages.extend(lexers[1]) for lexers in get_all_lexers() ]
 
 if sys.version_info >= (3, 0):
     basestring = str
 
+
 class ExampleData(InheritableContentBase):
+
     @property
     def collection(self):
         if 'collection' not in self.state:
@@ -72,7 +75,9 @@ class ExampleData(InheritableContentBase):
     def options(self, value):
         self.state['options'] = ExampleOptions(value)
 
+
 class ExampleOptions(ConfigurationBase):
+
     @property
     def show_title(self):
         if 'title' not in self.state:
@@ -101,6 +106,21 @@ class ExampleOptions(ConfigurationBase):
         else:
             raise TypeError
 
+    @property
+    def base_file(self):
+        if 'is_base_file' not in self.state:
+            return False
+        else:
+            return self.state['is_base_file']
+
+    @base_file.setter
+    def base_file(self, value):
+        if isinstance(value, bool):
+            self.state['is_base_file'] = value
+        else:
+            raise TypeError
+
+
 class ExampleOperationBlock(ConfigurationBase):
     _option_registry = ['pre', 'post', 'final']
 
@@ -116,36 +136,60 @@ class ExampleOperationBlock(ConfigurationBase):
             self.state['code'] = value.split('\n')
 
     @property
+    def content(self):
+        return self.state['content']
+
+    @content.setter
+    def content(self, value):
+        self.state['content'] = value.split('\n')
+
+    @property
+    def literalinclude(self):
+        return self.state['literalinclude']
+
+    @literalinclude.setter
+    def literalinclude(self, value):
+        self.state['literalinclude'] = value
+
+    @property
     def language(self):
         return self.state['language']
 
     @language.setter
     def language(self, value):
-        if value in all_languages:
+        if value in get_all_languages():
             self.state['language'] = value
         else:
             m = '{0} is not a supported language'.format(value)
             logger.error(m)
             TypeError(m)
 
+
 class ExampleCase(InheritableContentBase):
+
     @property
     def operation(self):
-        return self.state['operation']
+        if 'operation' in self.state:
+            return self.state['operation']
+        elif self.ref.startswith("_"):
+            return ""
+        else:
+            raise InheritableContentError('no operation specified in: ' + self.ref)
 
     @operation.setter
     def operation(self, value):
         if isinstance(value, list):
-            self.state['operation'] = [ ExampleOperationBlock(doc)
-                                        for doc in value ]
+            self.state['operation'] = [ExampleOperationBlock(doc)
+                                       for doc in value]
         elif isinstance(value, dict):
-            self.state['operation'] = [ ExampleOperationBlock(value) ]
+            self.state['operation'] = [ExampleOperationBlock(value)]
         else:
             m = 'unable to create operation block from {0}'.format(value)
             logger.error(m)
             TypeError(m)
 
     name = operation
+
     @property
     def results(self):
         return self.state['results']

@@ -1,0 +1,7 @@
+======================================
+``manpages`` -- Process Manpage Output
+======================================
+
+.. automodule:: giza.content.post.manpages
+   :members:
+   :undoc-members:

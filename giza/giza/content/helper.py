@@ -12,6 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Helper functions and data for interacting with content generation and
+processing. The most used function is
+:fun:`~giza.content.helper.edition_check()` which compares a content object and
+the current build environment and returns a boolean that reflects if the object
+is appropriate for the edition.
+"""
+
+from pygments.lexers import get_all_lexers
+
+level_characters = {
+    "=": 1,
+    "-": 2,
+    "~": 3,
+    "`": 4,
+    "^": 5,
+    "'": 6
+}
+
+character_levels = dict(zip(level_characters.values(),
+                            level_characters.keys()))
+
+
 def edition_check(data, conf):
     """
     Tests a content structure against the current configuration object to ensure
@@ -32,22 +55,41 @@ def edition_check(data, conf):
     """
 
     if 'edition' in data:
+        # compatibility to support data that are objects as well as (typically
+        # legacy) dictionary data.
         try:
             local_edition = data.edition
         except AttributeError:
             local_edition = data['edition']
 
+        # if the edition is the project's short name, assume that there is
+        # effectively no edition, and consider that all editions match.
         if conf.project.edition == conf.project.name:
             return True
 
         if isinstance(local_edition, list):
-            if conf.project.edition not in local_edition:
-                return False
-            else:
-                return True
-        elif local_edition != conf.project.edition:
-            return False
+            # if the content item has more than one edition, the current edition
+            # setting only needs to be present in that list.
+
+            return conf.project.edition in local_edition
         else:
-            return True
+            # if the content item specifies a single (string) edition name, it
+            # must match the current edition string.
+
+            return local_edition == conf.project.edition
     else:
+        # if the content does not specify an edition, then the build will render
+        # all data.
+
         return True
+
+# get a list of all supported pygment lexers.
+
+
+def get_all_languages():
+    all_languages = ['none']
+
+    for lexers in get_all_lexers():
+        all_languages.extend(lexers[1])
+
+    return all_languages

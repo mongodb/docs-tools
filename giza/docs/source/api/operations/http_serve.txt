@@ -1,0 +1,7 @@
+=====================================================
+``http_serve`` -- Local Development Server Management
+=====================================================
+
+.. automodule:: giza.operations.http_serve
+   :members:
+   :undoc-members:

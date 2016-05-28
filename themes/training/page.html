@@ -1,0 +1,77 @@
+{%- extends "layout.html" -%}
+
+{%- set script_files = script_files + ["_static/mms-version-selector"] %}
+{%- set slide_path = 'slides/' + pagename + '.html' %}
+
+{%- block header_logo %}
+    <div class="logo pull-left">
+      <a href="{{ url_root }}">
+        {{ theme_sitename }}
+      </a>
+    </div>
+{%- endblock -%}
+
+{%- block googlecse_opensearch -%} {%- endblock -%}
+
+{%- block gcseresults -%} {%- endblock -%}
+
+{%- block commnav -%} {%- endblock -%}
+
+{%- block subnav -%} {%- endblock -%}
+
+{%- block translationslink -%} {%- endblock -%}
+
+{%- block editlink -%} {%- endblock -%}
+
+{%- block editlink_icon -%}
+    <div class="slides-link">
+      <a href="{{ pathto(slide_path, 1)}}">{{ _('Slides') }}</a>
+    </div>
+{%- endblock -%}
+
+{%- block epublink -%} {%- endblock -%}
+
+{%- block langauge_selector %}{%- endblock -%}
+
+{%- block adblockheader %}{%- endblock -%}
+
+{%- block adblock %}{%- endblock -%}
+
+{%- block rating -%}{%- endblock -%}
+
+{%- block alertbar -%}
+  <div class="redirect-alert alert alert-warning hide">
+    <span class="alert-message">You were redirected from a different version of the documentation. Click <a href="#" class="redirect-link">here</a> to go back.</span>
+  </div>
+{%- endblock -%}
+
+{%- block sitesearch %}
+  {%- if builder != 'singlehtml' %}
+    <script type="text/javascript">
+      (function() {
+         var cx = '017213726194841070573:sntjladnaos';
+         var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
+         gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
+         gcse.onload = gcse.onreadystatechange = function() {
+          $(function() {
+            // hack to set a placeholder in google's custom search input
+            var pollInput = window.setInterval(function() {
+              var $input = $('.gsc-input input.gsc-input'),
+                  $div = $('.search-db');
+
+              if ($input.length) {
+                $input.on('focus', function(e) { $div.addClass('wide').removeClass('narrow'); });
+                $input.on('blur', function(e) {
+                  if (!$input.val().length) { $div.addClass('narrow').removeClass('wide'); }
+                });
+                $input.attr('placeholder', "Search mongodb.com");
+                window.clearInterval(pollInput);
+              }
+            }, 10);
+          });
+         };
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
+         })();
+    </script>
+  {%- endif %}
+{%- endblock -%}

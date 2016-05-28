@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from giza.config.base import ConfigurationBase
+from libgiza.config import ConfigurationBase
+
 
 class AssetsConfig(ConfigurationBase):
-    _option_registry = ['path', 'branch', 'repository']
+    _option_registry = ['path', 'branch', 'repository', 'commit']
 
     @property
     def generate(self):
@@ -27,4 +28,3 @@ class AssetsConfig(ConfigurationBase):
             self.state['generate'] = value
         else:
             raise TypeError
-

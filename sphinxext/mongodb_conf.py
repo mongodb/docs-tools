@@ -44,7 +44,7 @@ conf['directives'] = [
     },
     {
         'name': 'operator',
-        'tag': 'op',
+        'tag': 'metaOp',
         'description': 'operator',
         'prepend': True,
         'callable': False,
@@ -176,6 +176,20 @@ conf['directives'] = [
         'callable': False,
     },
     {
+        'name': 'writeconcern',
+        'tag': 'writeconcern',
+        'description': 'write concern values',
+        'prepend': True,
+        'callable': False,
+    },
+    {
+        'name': 'readconcern',
+        'tag': 'readconcern',
+        'description': 'readConcern values',
+        'prepend': True,
+        'callable': False,
+    },
+    {
         'name': 'alert',
         'tag': 'alert',
         'description': 'system alert',
@@ -189,7 +203,27 @@ conf['directives'] = [
         'prepend': False,
         'callable': False,
     },
-
+    {
+        'name': 'rsconf',
+        'tag': 'rsconf',
+        'description': 'replica set configuration setting',
+        'prepend': True,
+        'callable': False,
+    },
+    {
+        'name': 'serverstatus',
+        'tag': 'serverstatus',
+        'description': 'serverstatus data',
+        'prepend': True,
+        'callable': False,
+    },
+    {
+        'name': 'urioption',
+        'tag': 'urioption',
+        'description': 'uri option',
+        'prepend': True,
+        'callable': False,
+    },
     ## Custom Setting Directives for MMS Agents
     {
         'name': 'msetting',
@@ -207,7 +241,7 @@ conf['directives'] = [
     },
     {
         'name': 'asetting',
-        'tag': 'bsetting',
+        'tag': 'asetting',
         'description': 'Automation Agent Setting',
         'prepend': True,
         'callable': False,

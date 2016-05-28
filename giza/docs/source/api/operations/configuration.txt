@@ -1,0 +1,7 @@
+================================================
+``configuration`` -- Configuration Introspection
+================================================
+
+.. automodule:: giza.operations.configuration
+   :members:
+   :undoc-members:

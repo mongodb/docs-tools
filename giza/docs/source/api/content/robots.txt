@@ -1,0 +1,7 @@
+===========================================
+``robots`` -- Generate ``robots.txt`` Files
+===========================================
+
+.. automodule:: giza.content.robots
+   :members:
+   :undoc-members:

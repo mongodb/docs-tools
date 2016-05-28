@@ -5,9 +5,10 @@
 
 {%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
 {%- set url_root = pathto('', 1) %}
-{%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.tipsy.js", "_static/lib/jquery.cookie.js", "_static/navbar.js"] %}
-{%  set css_files = css_files + ["_static/bootstrap-custom.css", "_static/lib/icomoon.css", "_static/lib/font-awesome.css", "_static/lib/tipsy.css"] %}
+
+{%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.cookie.js", "_static/navbar.js"] %}
 {%- set github_organization = "tjworks" %}
+
 
 {%- macro translationslink() -%}
   {%- block translationslink %}
@@ -71,6 +72,8 @@
   {%- for scriptfile in script_files %}
     <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
   {%- endfor %}
+
+  <script defer type="text/javascript" src="{{ pathto('_static/feedback.js', 1) }}"></script>
 {%- endmacro -%}
 
 {%- macro css() %}
@@ -106,12 +109,21 @@
     <title>{{ title|striptags|e }}</title>
   {%- endblock -%}
 
-  <link rel="shortcut icon" href="//media.mongodb.org/favicon.ico" />
+  <link rel="shortcut icon" href="https://media.mongodb.org/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
-  <meta name="robots" content="index" />
+
+  {%- if version in theme_active_branches or not theme_active_branches %}
+    <meta name="robots" content="index" />
+  {%- else -%}
+    <meta name="robots" content="noindex,nofollow" />
+  {%- endif %}
+
   <meta name="release" content="{{release}}"/>
+  <meta name="version" content="{{version}}"/>
   <meta name="DC.Source" content="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt"/>
+
+  {%- block metadescription %}{%- endblock -%}
 
   {%- block canonicalref %}{%- endblock -%}
 
@@ -122,7 +134,7 @@
     {{ script() }}
 
     {%- block googlecse_opensearch %}
-      <link rel="search" type="application/opensearchdescription+xml" href="http://docs.mongodb.org/osd.xml" title="MongoDB Help"/>
+      <link rel="search" type="application/opensearchdescription+xml" href="https://docs.mongodb.com/osd.xml" title="MongoDB Help"/>
     {%- endblock -%}
 
     {%- if favicon %}
@@ -155,7 +167,7 @@
                   $input.on('blur', function(e) {
                     if (!$input.val().length) { $div.addClass('narrow').removeClass('wide'); }
                   });
-                  $input.attr('placeholder', "Search mongodb.org");
+                  $input.attr('placeholder', "Search mongodb.com");
                   window.clearInterval(pollInput);
                 }
               }, 10);
@@ -168,10 +180,22 @@
   {%- endblock -%}
   {%- block adblockheader %}{%- endblock -%}
 </head>
-<body>
+<body data-project="{{theme_project}}">
+  {% block navbar %}
+    <script
+    async
+    id='mongodb-nav-data'
+    data-props='{"environment":"docs","isOpaque":true,
+                 "includeSearch":true,
+                 "searchUrl":"https://docs.mongodb.com/manual/search/?query=",
+                 "contactUrl":"https://www.mongodb.com/contact?jmp=docs"}'
+    data-container='#header-db'
+    src="{{ pathto('_static/header.js', 1) }}"></script>
+  {% endblock %}
+
   {%- block googletagmanager %}
   <!-- Google Tag Manager -->
-  <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-JQHP"
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-JQHP"
                     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push(
      {'gtm.start': new Date().getTime(),event:'gtm.js'}
@@ -182,35 +206,16 @@
   <!-- End Google Tag Manager -->
   {%- endblock -%}
 
-  {%- block header %}
-    <header id="header-db" class="row" role="navigation">
-      <div class="header-content">
-        <a class="fa fa-bars expand-toc-icon pull-left" href="#"></a>
-        {%- block header_logo %}
-           <div class="logo pull-left">
-             <a href="http://www.mongodb.org/">
-               <img src="//media.mongodb.org/logo-mongodb-header.png", alt="MongoDB.org" />
-             </a>
-           </div>
-        {% endblock %}
-        <div>
-          {%- block searchbox %}
-          <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.mongodb.org/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
-          {% endblock %}
-          <div class="nav-items pull-right">
-            {%- block subnav %}
-            {% endblock %}
-          </div>
-        </div>
-      </div>
-    </header>
-  {%- endblock %}
-
   <aside class="sidebar">
     {%- block sidebar2 %}
        {{ sidebar() }}
     {% endblock %}
   </aside>
+
+  {%- block header %}
+    <nav id="header-db"><nav class="nav-panel flex flex--center-y flex--wrap" data-reactid=".0"><div class="nav-panel-top font--center" data-reactid=".0.0"><ul class="flex flex--space-between" style="height:100%;" data-reactid=".0.0.0"><div style="margin-left: 0px; opacity: 1;" class="flex flex--center-y font--center" data-reactid=".0.0.0.0"><a class="nav-panel-top__a" target="_blank" href="https://mongodb.com" data-reactid=".0.0.0.0.$0"><li class="nav-panel-top__li" data-reactid=".0.0.0.0.$0.0">Company</li></a><a class="nav-panel-top__a" target="_blank" href="https://www.mongodb.com/community" data-reactid=".0.0.0.0.$1"><li class="nav-panel-top__li" data-reactid=".0.0.0.0.$1.0">Open Source</li></a><a class="nav-panel-top__a" target="_blank" href="https://university.mongodb.com" data-reactid=".0.0.0.0.$2"><li class="nav-panel-top__li" data-reactid=".0.0.0.0.$2.0">University</li></a></div><div class="flex flex--center-y" data-reactid=".0.0.0.1"><a href="https://www.mongodb.com/contact?jmp=docs" data-reactid=".0.0.0.1.0"><button class="flex flex--center-all flex--wrap nav-panel-top__contact" style="margin-right:15px;" data-reactid=".0.0.0.1.0.0"><svg width="18px" height="18px" viewBox="0 0 22 22" data-reactid=".0.0.0.1.0.0.0"><g stroke="none" stroke-width="1" fill="none" data-reactid=".0.0.0.1.0.0.0.0"><g transform="translate(-1104.000000, -19.000000)" fill="#9E9E9E" data-reactid=".0.0.0.1.0.0.0.0.0"><g transform="translate(0.000000, -1.000000)" data-reactid=".0.0.0.1.0.0.0.0.0.0"><g transform="translate(85.000000, 0.000000)" data-reactid=".0.0.0.1.0.0.0.0.0.0.0"><g transform="translate(1019.000000, 20.000000)" data-reactid=".0.0.0.1.0.0.0.0.0.0.0.0"><path d="M20.7058824,14.2352941 L15.5294118,14.2352941 C14.8137647,14.2352941 14.2352941,14.8137647 14.2352941,15.5294118 L14.2352941,16.8235294 C9.05882353,16.8235294 5.25670588,12.8596471 5.17647059,7.76470588 L6.47058824,7.76470588 C7.18623529,7.76470588 7.76470588,7.18623529 7.76470588,6.47058824 L7.76470588,1.29411765 C7.76470588,0.578470588 7.18623529,0 6.47058824,0 L1.29411765,0 C0.578470588,0 0,0.578470588 0,1.29411765 L0,7.76470588 C0,15.6264706 6.37352941,22 14.2352941,22 L20.7058824,22 C21.4215294,22 22,21.4215294 22,20.7058824 L22,15.5294118 C22,14.8137647 21.4215294,14.2352941 20.7058824,14.2352941 L20.7058824,14.2352941 Z" data-reactid=".0.0.0.1.0.0.0.0.0.0.0.0.0"></path></g></g></g></g></g></svg></button></a><a class="nav-panel-top__a" href="/lp/download/mongodb-enterprise?jmp=nav" data-reactid=".0.0.0.1.2"><button class=" btn-small btn-fill btn-fill--light-green margin--left-xs nav-panel-top__download " data-reactid=".0.0.0.1.2.0"><span style="vertical-align:middle;" data-reactid=".0.0.0.1.2.0.0">Download</span><svg width="14px" height="21px" viewBox="0 0 16 21" data-reactid=".0.0.0.1.2.0.1"><g stroke="none" stroke-width="1" fill="none" data-reactid=".0.0.0.1.2.0.1.0"><g transform="translate(-1282.000000, -16.000000)" fill="#FFFFFF" data-reactid=".0.0.0.1.2.0.1.0.0"><g transform="translate(0.000000, -1.000000)" data-reactid=".0.0.0.1.2.0.1.0.0.0"><g transform="translate(85.000000, 0.000000)" data-reactid=".0.0.0.1.2.0.1.0.0.0.0"><g transform="translate(1197.000000, 17.000000)" data-reactid=".0.0.0.1.2.0.1.0.0.0.0.0"><path d="M13.9079108,6.9539554 L13.0386664,6.9539554 L13.0386664,8.69244425 L13.9079108,8.69244425 L13.9079108,13.9079108 L1.73848885,13.9079108 L1.73848885,8.69244425 L2.60773328,8.69244425 L2.60773328,6.9539554 L1.73848885,6.9539554 C0.77971225,6.9539554 0,7.73366765 0,8.69244425 L0,16.5156441 C0,17.4744207 0.77971225,18.2541329 1.73848885,18.2541329 L6.9539554,18.2541329 L6.9539554,19.1233774 L4.34622213,19.1233774 L4.34622213,20.8618662 L11.3001775,20.8618662 L11.3001775,19.1233774 L8.69244425,19.1233774 L8.69244425,18.2541329 L13.9079108,18.2541329 C14.8666874,18.2541329 15.6463997,17.4744207 15.6463997,16.5156441 L15.6463997,8.69244425 C15.6463997,7.73366765 14.8666874,6.9539554 13.9079108,6.9539554 L13.9079108,6.9539554 Z" data-reactid=".0.0.0.1.2.0.1.0.0.0.0.0.0"></path><path d="M11.9147333,6.69926679 L10.6856217,5.47015517 L8.69244425,7.46333264 L8.69244425,0 L6.9539554,0 L6.9539554,7.46333264 L4.96077794,5.47015517 L3.73166632,6.69926679 L7.82319983,10.7908003 L11.9147333,6.69926679 Z" id="Shape" data-reactid=".0.0.0.1.2.0.1.0.0.0.0.0.1"></path></g></g></g></g></g></svg></button></a></div></ul></div><div class="nav-panel-middle" data-reactid=".0.1"><ul class="nav-panel-middle__ul flex flex--space-between flex--wrap" data-reactid=".0.1.0"><a href="https://docs.mongodb.com" class="flex flex--center-y" data-reactid=".0.1.0.0"><li class="nav-panel-middle__li nav-panel-middle__logo" data-reactid=".0.1.0.0.0"><img class="nav-panel-middle__logo-img" src="https://webassets.mongodb.com/_com_assets/global/mongodb-logo-white.png" data-reactid=".0.1.0.0.0.0"></li><li class="nav-panel-middle__li nav-panel-middle__tagline-container" data-reactid=".0.1.0.0.1"><p class="nav-panel-middle__tagline" data-reactid=".0.1.0.0.1.0">Documentation</p></li></a><div class="flex flex--center-all flex--wrap" style="display: inherit; opacity: 1;" data-reactid=".0.1.0.1"><li class="nav-panel-middle__li nav-panel-middle__btn" data-reactid=".0.1.0.1.$0"><a class="font--white" href="https://docs.mongodb.com/manual" data-reactid=".0.1.0.1.$0.0">Server</a></li><li class="nav-panel-middle__li nav-panel-middle__btn" data-reactid=".0.1.0.1.$1"><a class="font--white" href="https://docs.mongodb.com/ecosystem/drivers/" data-reactid=".0.1.0.1.$1.0">Drivers</a></li><li class="nav-panel-middle__li nav-panel-middle__btn" data-reactid=".0.1.0.1.$2"><a class="font--white" data-reactid=".0.1.0.1.$2.0">Cloud Services</a></li><li class="nav-panel-middle__li nav-panel-middle__btn" data-reactid=".0.1.0.1.$3"><a class="font--white" href="https://docs.mongodb.com/compass" data-reactid=".0.1.0.1.$3.0">Compass</a></li><li class="nav-panel-middle__li nav-panel-middle__btn" data-reactid=".0.1.0.1.$4"><a class="font--white" href="https://docs.mongodb.com/bi-connector" data-reactid=".0.1.0.1.$4.0">BI Connector</a></li></div><li class="nav-panel-middle__hamburger" data-reactid=".0.1.0.2"><button data-reactid=".0.1.0.2.0"><svg width="768" height="768" viewBox="0 0 768 768"><path d="M96 160h576q13.25 0 22.625 9.375t9.375 22.625-9.375 22.625-22.625 9.375h-576q-13.25 0-22.625-9.375t-9.375-22.625 9.375-22.625 22.625-9.375zM96 544h576q13.25 0 22.625 9.375t9.375 22.625-9.375 22.625-22.625 9.375h-576q-13.25 0-22.625-9.375t-9.375-22.625 9.375-22.625 22.625-9.375zM96 352h576q13.25 0 22.625 9.375t9.375 22.625-9.375 22.625-22.625 9.375h-576q-13.25 0-22.625-9.375t-9.375-22.625 9.375-22.625 22.625-9.375z"></path></svg></button></li></ul></div><div class="nav-background flex flex--center-x nav-background--opaque" data-reactid=".0.2"><div class="nav-panel-bottom" data-reactid=".0.2.0"><div style="width:inherit;" class="nav-panel-bottom__section--inactive" data-reactid=".0.2.0.$0"><div style="opacity: 0;" class="nav-panel-bottom__section flex flex--space-between flex--wrap" data-reactid=".0.2.0.$0.0"><ul data-reactid=".0.2.0.$0.0.1:$0"><a href="https://docs.mongodb.com/manual" data-reactid=".0.2.0.$0.0.1:$0.$0=10"><li data-reactid=".0.2.0.$0.0.1:$0.$0=10.0"><strong data-reactid=".0.2.0.$0.0.1:$0.$0=10.0.0">Server</strong></li></a></ul></div></div><div style="width:inherit;" class="nav-panel-bottom__section--inactive" data-reactid=".0.2.0.$1"><div style="opacity: 0;" class="nav-panel-bottom__section flex flex--space-between flex--wrap" data-reactid=".0.2.0.$1.0"><ul data-reactid=".0.2.0.$1.0.1:$0"><a href="https://docs.mongodb.com/ecosystem/drivers/" data-reactid=".0.2.0.$1.0.1:$0.$0=10"><li data-reactid=".0.2.0.$1.0.1:$0.$0=10.0"><strong data-reactid=".0.2.0.$1.0.1:$0.$0=10.0.0">Drivers</strong></li></a></ul></div></div><div style="width:inherit;" class="nav-panel-bottom__section--inactive" data-reactid=".0.2.0.$2"><div style="opacity: 0;" class="nav-panel-bottom__section flex flex--space-between flex--wrap" data-reactid=".0.2.0.$2.0"><div class="nav-cta flex flex--wrap flex--center-all" data-reactid=".0.2.0.$2.0.0"><h2 class="nav-cta__header" data-reactid=".0.2.0.$2.0.0.0">Try It Now</h2><ul style="width:100%;padding:0;" data-reactid=".0.2.0.$2.0.0.1"><a class="nav-cta__a" href="/mongodb-3.2" data-reactid=".0.2.0.$2.0.0.1.$0"><li data-reactid=".0.2.0.$2.0.0.1.$0.0"><strong data-reactid=".0.2.0.$2.0.0.1.$0.0.0">MongoDB 3.2</strong></li></a><a class="nav-cta__a" href="/download-center" data-reactid=".0.2.0.$2.0.0.1.$1"><li data-reactid=".0.2.0.$2.0.0.1.$1.0"><strong data-reactid=".0.2.0.$2.0.0.1.$1.0.0">Download Center</strong></li></a></ul></div><ul data-reactid=".0.2.0.$2.0.1:$0"><a href="https://docs.cloud.mongodb.com/" data-reactid=".0.2.0.$2.0.1:$0.$0=10"><li data-reactid=".0.2.0.$2.0.1:$0.$0=10.0"><strong data-reactid=".0.2.0.$2.0.1:$0.$0=10.0.0">Cloud Manager</strong></li></a><a href="https://docs.opsmanager.mongodb.com/current" data-reactid=".0.2.0.$2.0.1:$0.$0=11"><li data-reactid=".0.2.0.$2.0.1:$0.$0=11.0"><strong data-reactid=".0.2.0.$2.0.1:$0.$0=11.0.0">Ops Manager</strong></li></a></ul></div></div><div style="width:inherit;" class="nav-panel-bottom__section--inactive" data-reactid=".0.2.0.$3"><div style="opacity: 0;" class="nav-panel-bottom__section flex flex--space-between flex--wrap" data-reactid=".0.2.0.$3.0"><ul data-reactid=".0.2.0.$3.0.1:$0"><a href="https://docs.mongodb.com/compass" data-reactid=".0.2.0.$3.0.1:$0.$0=10"><li data-reactid=".0.2.0.$3.0.1:$0.$0=10.0"><strong data-reactid=".0.2.0.$3.0.1:$0.$0=10.0.0">Compass</strong></li></a></ul></div></div><div style="width:inherit;" class="nav-panel-bottom__section--inactive" data-reactid=".0.2.0.$4"><div style="opacity: 0;" class="nav-panel-bottom__section flex flex--space-between flex--wrap" data-reactid=".0.2.0.$4.0"><ul data-reactid=".0.2.0.$4.0.1:$0"><a href="https://docs.mongodb.com/bi-connector" data-reactid=".0.2.0.$4.0.1:$0.$0=10"><li data-reactid=".0.2.0.$4.0.1:$0.$0=10.0"><strong data-reactid=".0.2.0.$4.0.1:$0.$0=10.0.0">BI Connector</strong></li></a></ul></div></div></div></div></nav></nav>
+  {%- endblock %}
+
   <div class="option-popup closed">
     <div class="option-header">
       <i class="fa fa-gear"></i>
@@ -248,7 +253,7 @@
                 <label>{{ _('Langauges') }}</label>
                 <select class="language-selector pull-right">
                   {%- for lc,lang in theme_translations -%}
-                      <option data-path="http://{{lc}}.docs.mongodb.org/{{ page_url }}">
+                      <option data-path="https://{{lc}}.docs.mongodb.com/{{ page_url }}">
                         {{lang}}
                       </option>
                   {% endfor -%}
@@ -264,13 +269,8 @@
                {%- if show_source and has_source and sourcename %}
                    <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" target="_blank" rel="nofollow">{{ _("This Page's Source") }}</a></li>
                {%- endif %}
-               {%- if builder != 'singlehtml' %}
-                   <li><a href="/{{ theme_manual_path }}/single/" target="_blank">HTML</span></a></li>
-               {%- else %}
-                   <li><a href="/{{ theme_manual_path }}" target="_blank">SITE</span></a></li>
-               {%- endif %}
                {%- block pdflink %}<li><a href="{{ theme_pdfpath }}" target="_blank" rel="nofollow">PDF</a></li>{%- endblock %}
-               {%- block epublink %}<li><a href="{{ theme_epubpath }}" target="_blank" rel="nofollow">EPUB</a></li>{%- endblock %}
+               {%- block epublink %}{%- endblock %}
              </ul>
            </li>
         {% endblock %}
@@ -297,7 +297,7 @@
           {%- block document %}
             <div class="documentwrapper">
               {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
-              <div class="body">
+              <div class="body" data-pagename="{{pagename}}">
                 {%- block editlink_icon %}
                    {{ editlink('icon') }}
                 {% endblock %}
@@ -306,10 +306,14 @@
                   {{ body }}
                 {% endblock %}
                 {{- render_nextprev() -}}
+
+                {% block rating %}
+                <div id="rating-panel"></div>
+                {% endblock %}
                 {%- block footer %}
                   <div class="footer">
                     <div class="copyright">
-                      <p>Copyright &copy; {{copyright}} <a class="smalltext" href="http://www.mongodb.com">MongoDB, Inc</a>. Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/ ">Creative Commons</a>. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
+                      <p>&copy; MongoDB, Inc {{copyright}}. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
                     </div>
                   </div>
                 {%- endblock %}
@@ -322,14 +326,17 @@
     </div>
     <div class="right-column">
       <div class="wrapper">
-        {%- if builder != 'singlehtml' %}
-           {%- if pagename != 'index' %}
-             <div class="toc">
-               <span class="toc-header">ON THIS PAGE</span>
-               {{ toc }}
-             </div>
-           {%- endif %}
-        {%- endif %}
+         {%- block righttoc %}
+            {%- if builder != 'singlehtml' %}
+              {%- if pagename != 'index' %}
+                <div class="toc">
+                  <span class="toc-header">ON THIS PAGE</span>
+                  {{ toc }}
+                </div>
+              {%- endif %}
+            {%- endif %}
+         {%- endblock %}
+
         {%- block adblock %}{% endblock %}
         {%- block reportlink %}
           <div class="report-link">
@@ -338,8 +345,8 @@
         {% endblock %}
         {%- block social %}
            <div class="social">
-             <a class="twitter-icon" href="https://twitter.com/mongodbinc"><i class="fa fa-twitter-square"></i></a>
-             <a class="youtube-icon" href="http://www.youtube.com/user/MongoDB"><i class="fa fa-youtube-square"></i></a>
+             <a class="twitter-icon" href="https://twitter.com/MongoDB"><i class="fa fa-twitter-square"></i></a>
+             <a class="youtube-icon" href="https://www.youtube.com/user/MongoDB"><i class="fa fa-youtube-square"></i></a>
              <a class="facebook-icon" href="https://www.facebook.com/mongodb"><i class="fa fa-facebook-square"></i></a>
              <a class="gplus-icon" href="https://plus.google.com/u/1/101024085748034940765/posts?cfem=1"><i class="fa fa-google-plus-square"></i></a>
            </div>
@@ -349,30 +356,20 @@
     <div class="clearfix"></div>
   </div>
   {% block onboarding_modal %}{% endblock %}
-
-  {%- block analytics %}
-    {%- include "analytics.html" %}
-  {%- endblock %}
-
-  {%- block jiracollector %}
-    {%- include "jiracollector.html" %}
-  {%- endblock %}
-
   {%- block versionnav %}
-  <script type="text/javascript">
-  var pagename = '{{pagename}}';
-  if (pagename == 'index') {
-    pagename = '';
-  }
-  window.basePath = '{{theme_basepath}}';
 
+  <script type="text/javascript">
   window.fullDocsPath = function(base) {
-    var path = pagename;
+    var body = document.getElementsByClassName('body')[0]
+    var path = body.getAttribute('data-pagename');
 
     // skip if pagename is undefined (index.html)
-    if (path) {
-      path = pagename + '/';
+    if (path == 'index') {
+        path = '';
+    } else if (path) {
+      path = path + '/';
     }
+
     return '/' + base + '/' + path;
   }
   // Bootstrap array of links that should trigger a full page reload
@@ -395,4 +392,6 @@
   {%- endblock -%}
 
 </body>
+
+{%- block endjs %} {%- endblock %}
 </html>

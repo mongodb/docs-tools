@@ -12,9 +12,9 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/" />
+    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/" />
   {%- else %}
-    <link rel="canonical" href="http://docs.mongodb.org/{{theme_project}}/{{pagename}}" />
+    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/{{pagename}}" />
   {%- endif -%}
 {%- endblock -%}
 
@@ -30,3 +30,12 @@
 
 {%- block version_selector %}{%- endblock %}
 
+{%- block topnav %}
+  {%- block subnav %} {% endblock %}
+
+  {%- block searchbox %}
+      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="https://docs.mongodb.com/manual/search/" queryParameterName="query"></gcse:searchbox-only></div>
+  {% endblock %}
+{% endblock %}
+
+{%- block righttoc %} {% endblock %}

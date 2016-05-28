@@ -1,0 +1,108 @@
+pre:
+  - command: git.get_project
+    params:
+      directory: "docs-tools"
+  - command: git.apply_patch
+    params:
+      directory: "docs-tools"
+  - command: shell.exec
+    params:
+      working_dir: "docs-tools/giza"
+      script: |
+        rm -rf ~/venv
+        virtualenv ~/venv
+        ${venv}/pip install -e .
+
+tasks:
+  - name: "small-tests"
+    commands:
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools/giza"
+          script: |
+            . ${venv}/activate
+            ${venv}/pip install pep8 pyflakes  # nose
+
+            # ${venv}/nosetests ./test
+            pyflakes giza
+            pep8 --max-line-length=100 giza
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools"
+          script: |
+            . ${venv}/activate
+
+            giza test --project www-about --operation minimal
+            giza test --project docs-ecosystem --operation minimal
+            giza test --project mongodb-primer --operation minimal
+  - name: "mms-docs-minimal-test"
+    commands:
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools"
+          script: |
+            . ${venv}/activate
+
+            giza test --project mms-docs --operation minimal
+  - name: "manual-minimal-test-master"
+    commands:
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools"
+          script: |
+            . ${venv}/activate
+
+            giza test --project mongodb-manual --operation minimal --branch master
+  - name: "manual-minimal-test-v2.6"
+    commands:
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools"
+          script: |
+            . ${venv}/activate
+
+            giza test --project mongodb-manual --operation minimal --branch v2.6
+  - name: "manual-minimal-test-v2.4"
+    commands:
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools"
+          script: |
+            . ${venv}/activate
+
+            giza test --project mongodb-manual --operation minimal --branch v2.4
+  - name: "manual-minimal-test-v2.2"
+    commands:
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools"
+          script: |
+            . ${venv}/activate
+
+            giza test --project mongodb-manual --operation minimal --branch v2.2
+  - name: "training-minimal-test"  # disabled because of access limitations
+    commands:
+      - command: shell.exec
+        params:
+          working_dir: "docs-tools"
+          script: |
+            . ${venv}/activate
+
+            giza test --project docs-training --operation minimal
+
+
+buildvariants:
+  - name: ubuntu1404-release
+    display_name: "Ubuntu 14.04"
+    run_on:
+      - ubuntu1404-test
+    expansions:
+      venv: "~/venv/bin"
+    tasks:
+      - name: "small-tests"
+      - name: "mms-docs-minimal-test"
+      - name: "manual-minimal-test-master"
+      - name: "manual-minimal-test-v2.6"
+      - name: "manual-minimal-test-v2.4"
+      - name: "manual-minimal-test-v2.2"
+      # - name: "training-minimal-test"

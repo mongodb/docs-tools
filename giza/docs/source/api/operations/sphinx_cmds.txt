@@ -1,0 +1,7 @@
+=================================================
+``sphinx_cmds`` -- Sphinx Generation Processes
+=================================================
+
+.. automodule:: giza.operations.sphinx_cmds
+   :members:
+   :undoc-members:

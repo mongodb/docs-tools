@@ -12,19 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 import os.path
 import logging
 
+import libgiza.config
 import sphinx.builders
-
-from giza.config.base import ConfigurationBase
-from giza.config.base import RecursiveConfigurationBase
-from giza.tools.serialization import ingest_yaml_doc
-from giza.tools.strings import hyph_concat
+import yaml
 
 logger = logging.getLogger('giza.config.sphinx_config')
 
-#################### Ingestion and Rendering ####################
+# Ingestion and Rendering
+
 
 def is_legacy_sconf(conf):
     if 'v' not in conf or conf['v'] == 0:
@@ -32,10 +31,14 @@ def is_legacy_sconf(conf):
     else:
         return False
 
+
 def get_sconf_base(conf):
     sconf_path = os.path.join(conf.paths.projectroot, conf.paths.builddata, 'sphinx.yaml')
+    with open(sconf_path, 'r') as f:
+        sconf = yaml.safe_load(f)
 
-    return ingest_yaml_doc(sconf_path)
+    return sconf
+
 
 def render_sconf(edition, builder, language, conf):
     sconf_base = get_sconf_base(conf)
@@ -45,18 +48,20 @@ def render_sconf(edition, builder, language, conf):
 
     return sconf
 
-############### Helpers ###############
+# Helpers
+
 
 def resolve_builder_path(builder, edition, language, conf):
     dirname = builder
 
     if edition is not None and edition != conf.project.name:
-        dirname = hyph_concat(dirname, edition)
+        dirname = '-'.join((dirname, edition))
 
     if language is not None and language != 'en':
-        dirname = hyph_concat(dirname, language)
+        dirname = '-'.join((dirname, language))
 
-    return os.path.join(conf.paths.projectroot, conf.paths.branch_output, dirname)
+    return dirname
+
 
 def avalible_sphinx_builders():
     builders = sphinx.builders.BUILTIN_BUILDERS.keys()
@@ -65,10 +70,11 @@ def avalible_sphinx_builders():
 
     return builders
 
-#################### New-Style Config Object ####################
+# New-Style Config Object
 
-class SphinxConfig(RecursiveConfigurationBase):
-    _option_registry = [ 'languages' ]
+
+class SphinxConfig(libgiza.config.RecursiveConfigurationBase):
+    _option_registry = ['languages']
 
     def __init__(self, conf, input_obj=None):
         # register the global config, but use our ingestion
@@ -93,14 +99,18 @@ class SphinxConfig(RecursiveConfigurationBase):
         self.builder = builder
         self.edition = edition
 
+        lookup_opts = []
+
         if edition is None:
-            lookup = self.builder
+            lookup_opts.append(self.builder)
         else:
-            lookup = hyph_concat(self.builder, self.edition)
+            lookup_opts.append('-'.join((self.builder, self.edition)))
 
-        self.name = lookup
-
-        base = self._raw[lookup]
+        base = {}
+        for opt in lookup_opts:
+            if opt in self._raw:
+                base = self._raw[opt]
+                break
 
         for i in ['excluded', 'tags', 'languages']:
             if i in base:
@@ -122,17 +132,27 @@ class SphinxConfig(RecursiveConfigurationBase):
 
     @property
     def build_output(self):
-        path = resolve_builder_path(self.builder, self.edition, self.language, self.conf)
-
         if 'build_output' not in self.state:
-            self.state['build_output'] = path
+            self.build_output = None
 
-        return path
+        return self.state['build_output']
 
     @build_output.setter
     def build_output(self, value):
+        if value is None:
+            path = resolve_builder_path(self.builder, self.edition, self.language, self.conf)
+            self.state['build_output'] = path
+        else:
+            self.state['build_output'] = path
+
+    @property
+    def fq_build_output(self):
         if 'build_output' not in self.state:
-            self.state['build_output'] = value
+            self.build_output = None
+
+        return os.path.join(self.conf.paths.projectroot,
+                            self.conf.paths.branch_output,
+                            self.build_output)
 
     @property
     def language(self):
@@ -150,7 +170,9 @@ class SphinxConfig(RecursiveConfigurationBase):
         if 'edition' in self.state:
             return self.state['edition']
         else:
-            if 'edition' in self.conf.project and self.conf.project.edition != self.conf.project.name:
+            if ('edition' in self.conf.project and
+                    self.conf.project.edition != self.conf.project.name):
+
                 return self.conf.project.edition
             else:
                 return ''
@@ -202,7 +224,10 @@ class SphinxConfig(RecursiveConfigurationBase):
             logger.error('builder tags must be a list.')
             raise TypeError
         else:
-            self.state['tags'] = value
+            if 'tags' in self.state:
+                self.state['tags'].extend(value)
+            else:
+                self.state['tags'] = value
 
     @languages.setter
     def languages(self, value):
@@ -213,9 +238,8 @@ class SphinxConfig(RecursiveConfigurationBase):
             self.state['languages'] = value
 
 
-#################### Rendering for Legacy Config ####################
+# Rendering for Legacy Config
 
-from copy import deepcopy
 
 def resolve_legacy_sphinx_config(sconf_base, edition, builder, language):
     sconf_base = render_sphinx_config(sconf_base)
@@ -234,15 +258,16 @@ def resolve_legacy_sphinx_config(sconf_base, edition, builder, language):
 
     return sconf
 
+
 def render_sphinx_config(conf):
     computed = {}
 
     def resolver(v, conf, computed):
         while 'inherit' in v:
             if v['inherit'] in computed:
-                base = deepcopy(computed[v['inherit']])
+                base = copy.deepcopy(computed[v['inherit']])
             else:
-                base = deepcopy(conf[v['inherit']])
+                base = copy.deepcopy(conf[v['inherit']])
 
             if 'excluded' in v and 'excluded' in base:
                 if isinstance(v['excluded'], list):
@@ -257,12 +282,12 @@ def render_sphinx_config(conf):
 
     to_compute = []
 
-    for k,v in conf.items():
+    for k, v in conf.items():
         v = resolver(v, conf, computed)
         computed[k] = v
 
         if 'languages' in v:
-            to_compute.append((k,v))
+            to_compute.append((k, v))
 
     for k, v in to_compute:
         if k in ['prerequisites', 'generated-source',
@@ -271,9 +296,9 @@ def render_sphinx_config(conf):
 
         if 'languages' in v:
             for lang in v['languages']:
-                computed['-'.join([k,lang])] = resolver({ 'inherit': k,
-                                                          'language': lang },
-                                                        conf, computed)
+                computed['-'.join([k, lang])] = resolver({'inherit': k,
+                                                          'language': lang},
+                                                         conf, computed)
 
     for i in computed.keys():
         if i in ['prerequisites', 'generated-source',
