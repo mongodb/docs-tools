@@ -246,6 +246,21 @@ conf['directives'] = [
         'prepend': True,
         'callable': False,
     },
+    ## Custom Directives for PHP Library Docs
+    {
+        'name': 'phpclass',
+        'tag': 'phpclass',
+        'description': 'PHP Library class',
+        'prepend': True,
+        'callable': False
+    },
+    {
+        'name': 'phpmethod',
+        'tag': 'phpmethod',
+        'description': 'PHP Library method',
+        'prepend': True,
+        'callable': False
+    }
 ]
 
 conf['prepend'] = { }
