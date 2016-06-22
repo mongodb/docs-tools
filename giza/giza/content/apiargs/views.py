@@ -23,6 +23,8 @@ def setup_replacements(content):
         role_type = "dbcommand"
     elif content.interface == "method": 
         role_type = "method"
+    elif content.interface == "phpmethod":
+        role_type = "phpmethod"
     else: 
         role_type = "samp"
 
