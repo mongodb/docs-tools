@@ -5,7 +5,7 @@
     id='mongodb-nav-data'
     data-props='{"environment":"docs","isOpaque":true,
                  "includeSearch":true,
-                 "searchUrl":"https://docs.cloud.mongodb.com/search/?query=",
+                 "searchUrl":"https://docs.cloudmanager.mongodb.com/search/?query=",
                  "contactUrl":"https://www.mongodb.com/contact?jmp=docs"}'
     data-container='#header-db'
     src="{{ pathto('_static/header.js', 1) }}"></script>
@@ -31,7 +31,7 @@
   {%- block subnav %} {% endblock %}
 
   {%- block searchbox %}
-      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.cloud.mongodb.com/search/" queryParameterName="query"></gcse:searchbox-only></div>
+      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.cloudmanager.mongodb.com/search/" queryParameterName="query"></gcse:searchbox-only></div>
   {% endblock %}
 {% endblock %}
 
@@ -41,7 +41,7 @@
       (function() {
          var cx = '017213726194841070573:sntjladnaos';
          var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
-         gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
+         gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
          gcse.onload = gcse.onreadystatechange = function() {
           $(function() {
             // hack to set a placeholder in google's custom search input
