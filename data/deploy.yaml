@@ -23,9 +23,9 @@ staging:
   manual:
     url: 'https://docs-mongodborg-staging.corp.mongodb.com'
     bucket: 'docs-mongodb-org-staging'
-  mms:
-    url: 'https://mmsdocs-staging.corp.mongodb.com'
-    bucket: 'mms-docs-staging'
+#  mms:
+#    url: 'https://mmsdocs-staging.corp.mongodb.com'
+#    bucket: 'mms-docs-staging'
   ecosystem:
     url: 'https://docs-mongodborg-staging.corp.mongodb.com'
     bucket: 'docs-mongodb-org-staging'
@@ -37,9 +37,9 @@ s3_deploy:
     url: 'https://docs-mongodborg-prod.corp.mongodb.com'
     bucket: 'docs-mongodb-org-prod'
     redirect_dirs: ['v[0-9]\.[0-9]', 'manual', 'master']
-  mms:
-    url: 'https://mmsdocs.corp.mongodb.com'
-    bucket: 'mmsdocs'
+#  mms:
+#    url: 'https://mmsdocs.corp.mongodb.com'
+#    bucket: 'mmsdocs'
   ecosystem:
     url: 'https://docs-mongodborg-prod.corp.mongodb.com'
     bucket: 'docs-mongodb-org-prod'

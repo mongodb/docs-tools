@@ -1,13 +1,21 @@
 {%- extends "page-layout.html" -%}
 {% block navbar %}
-  {% set search_url = "https://docs.opsmanager.mongodb.com/current/search/?query=" %}
+  <script
+    async
+    id='mongodb-nav-data'
+    data-props='{"environment":"docs","isOpaque":true,
+                 "includeSearch":true,
+                 "searchUrl":"https://docs.atlas.mongodb.com/search/?query=",
+                 "contactUrl":"https://www.mongodb.com/contact?jmp=docs"}'
+    data-container='#header-db'
+    src="{{ pathto('_static/header.js', 1) }}"></script>
 {% endblock %}
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="https://docs.managed.mongodb.com/current/" />
+    <link rel="canonical" href="http://docs.atlas.mongodb.com/" />
   {%- else %}
-    <link rel="canonical" href="https://docs.managed.mongodb.com/current/{{pagename}}/" />
+    <link rel="canonical" href="http://docs.atlas.mongodb.com/{{pagename}}/" />
   {%- endif -%}
 {%- endblock -%}
 
@@ -23,7 +31,7 @@
   {%- block subnav %} {% endblock %}
 
   {%- block searchbox %}
-      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.managed.mongodb.com/search/" queryParameterName="query"></gcse:searchbox-only></div>
+      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="http://docs.atlas.mongodb.com/search/" queryParameterName="query"></gcse:searchbox-only></div>
   {% endblock %}
 {% endblock %}
 
@@ -31,9 +39,11 @@
   {%- if builder != 'singlehtml' %}
     <script type="text/javascript">
       (function() {
-         var cx = '017213726194841070573:sntjladnaos';
-         var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
-         gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
+         var cx = '017213726194841070573:atohpekehkg';
+         var gcse = document.createElement('script');
+         gcse.type = 'text/javascript';
+         gcse.async = true;
+         gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
          gcse.onload = gcse.onreadystatechange = function() {
           $(function() {
             // hack to set a placeholder in google's custom search input
