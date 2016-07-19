@@ -1,5 +1,5 @@
 ==========================================
-``singlehtml`` -- Proces SingleHTML Output
+``singlehtml`` -- Process SingleHTML Output
 ==========================================
 
 .. automodule:: giza.content.post.singlehtml
