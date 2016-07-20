@@ -3,6 +3,7 @@ CSS_INPUTS=css/bootstrap-custom.css \
 		   css/icomoon.css \
            css/font-awesome.css \
            css/mongodb-docs.css \
+           css/feedback.css \
            css/header.css
 CSS_FILES=$(CSS_INPUTS) css/basic.css
 
