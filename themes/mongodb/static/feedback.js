@@ -1,6 +1,8 @@
 (function() {
     'use strict';
 
+    var FEEDBACK_URL = 'http://deluge.us-east-1.elasticbeanstalk.com/';
+
     // We require DOM storage. Don't show anything if support is not present.
     if (window.localStorage === undefined) { return; }
 
@@ -67,7 +69,27 @@
 
         function rateFunc(rating) {
             voted = rating;
-            localStorage.setItem(key, (new Date()).toJSON());
+
+            // Parse our string rating into a number
+            var ratingComponent = 0;
+            if(rating === 'up') { ratingComponent = 1; }
+            else if(rating === 'down') { ratingComponent = 0; }
+            else { return; }
+
+            // Report this rating using an image GET to work around the
+            // same-origin policy
+            var url =  FEEDBACK_URL + '?v=' + ratingComponent +
+                                      '&p=' + encodeURIComponent(project + '/') +
+                                              encodeURIComponent(pagename);
+            var img = new Image();
+            img.onload = function() {
+                // Only commit into localStorage once we have committed the rating
+                localStorage.setItem(key, (new Date()).toJSON());
+            };
+            img.onerror = function() {
+                console.error('Error reporting feedback');
+            };
+            img.src = url;
         }
 
         function draw() {
