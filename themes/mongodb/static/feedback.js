@@ -56,11 +56,11 @@
         }
 
         (new Deluge(project, pagename)).
-            askQuestion('completeness', 'How <strong>complete</strong> is the information on this page?').
-            askQuestion('accuracy', 'How <strong>accurate</strong> is the information on this page?').
-            askQuestion('clarity', 'How <strong>clear</strong> is the information on this page?').
+            askQuestion('completeness', 'Is the information on this page <strong>complete</strong>?').
+            askQuestion('accuracy', 'Is the information on this page <strong>accurate</strong>?').
+            askQuestion('clarity', 'Is the information on this page <strong>clear</strong>?').
             askFreeformQuestion('reason', 'Any comments to help us make this page better?').
-            draw(document.getElementById('rating-panel'))
+            draw(document.getElementById('rating-panel'));
     }
 
     window.history.onnavigate = function() { loadPage(); };
