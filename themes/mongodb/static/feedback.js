@@ -56,12 +56,11 @@
         }
 
         (new Deluge(project, pagename)).
-            askQuestion('findability', 'Did you find what you were looking for?').
             askFreeformQuestion('reason', 'What were you looking for?').
-            askQuestion('fragmentation', 'Was the information you needed all on one page?').
+            askQuestion('findability', 'Did you find it?').
             askQuestion('accuracy', 'Was the information you found <strong>accurate</strong>?').
             askQuestion('clarity', 'Was the information <strong>clear</strong>?').
-            askFreeformQuestion('comments', 'How can we improve this page?').
+            askQuestion('fragmentation', 'Was the information you needed <strong>all on one page</strong>?').
             draw(document.getElementById('rating-panel'));
     }
 
