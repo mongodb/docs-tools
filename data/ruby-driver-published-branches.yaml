@@ -3,11 +3,9 @@ version:
     - '2.2'
     - '2.0'
     - '1.1'
-
   active:
     - '2.2'
     - '2.0'
-    - '1.1'
   stable: '2.2'
   upcoming: null
 git:
