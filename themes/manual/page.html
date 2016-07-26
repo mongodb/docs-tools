@@ -11,7 +11,7 @@
 {%- endblock -%}
 
 {%- block metadescription %}
-  <meta name="description" content="MongoDB Manual {{version}} {{title}}"/>
+  <meta name="description" content="MongoDB Manual {{version}} {{title|striptags|e}}"/>
 {%- endblock -%}
 
 {%- block canonicalref %}

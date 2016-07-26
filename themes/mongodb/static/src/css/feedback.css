@@ -1,0 +1,97 @@
+#rating-panel {
+    font-size: 80%;
+    overflow: hidden;
+    position: fixed;
+    top: 95px;
+    left: 323px;
+    background-color: rgba(255,255,255,0.95);
+    width: 740px;
+    line-height: 30px;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.25);
+}
+
+#rating-panel a.button {
+    display: inline-block;
+    text-align: center;
+    width: 50px;
+}
+
+#rating-panel a.button:hover {
+    cursor: pointer;
+}
+
+#rating-panel .button-group {
+    display: flex;
+}
+
+#rating-panel .button-group > button {
+    border: 0;
+    background-color: white;
+    flex-grow: 1;
+}
+
+#rating-panel .button-group > button.primary {
+    background-color: #f5f6f7;
+}
+
+#rating-panel textarea {
+    width: 100%;
+    height: 100px;
+    border: 1px solid black;
+    line-height: 1.5em;
+}
+
+#rating-panel ul {
+    padding: 0;
+    margin: 0;
+    width: 300px;
+}
+
+#rating-panel li {
+    list-style-type: none;
+}
+
+#rating-panel p {
+    display: inline-block;
+    padding-right: 20px;
+    margin: 0px;
+}
+
+#rating-panel .switch {
+    display: inline-block;
+    line-height: 25px;
+    width: 25px;
+    text-align: center;
+}
+
+#rating-panel .switch:hover {
+    cursor: pointer;
+}
+
+#rating-panel .switch.good.selected {
+    color: #7fc857;
+}
+
+#rating-panel .switch.good:hover {
+    color: #589636;
+}
+
+#rating-panel .switch.bad.selected {
+    color: #c85757;
+}
+
+#rating-panel .switch.bad:hover {
+    color: #963636;
+}
+
+@media print {
+    #rating-panel {
+        display: none;
+    }
+}
+
+@media (max-width: 1093px) {
+    #rating-panel  {
+        left: 30px;
+    }
+}

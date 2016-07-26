@@ -707,7 +707,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 
 .content .main-column {
-    margin-top: 108px;
+    margin-top: 128px;
     margin-left: 293px;
     min-height: 600px;
     width: 800px;
@@ -1654,46 +1654,4 @@ table.compatibility-large th:nth-child(1){
     padding: 10px 12px;
     background-color: rgb(238,238, 238);
     color: rgb(127, 127, 127);
-}
-
-#rating-panel {
-    font-size: 80%;
-    line-height: 1em;
-    min-height: 75px;
-    overflow: hidden;
-}
-
-#rating-panel a.button {
-    display: inline-block;
-    background-color: rgb(59,41,31);
-    color: white;
-    padding: 10px;
-    text-align: center;
-    width: 50px;
-}
-
-#rating-panel p {
-    display: inline-block;
-    padding-right: 20px;
-}
-
-#rating-panel a.button:hover {
-    cursor: pointer;
-    text-decoration: none;
-    background-color: #6f503f;
-}
-
-#rating-panel a.choice {
-    display: block;
-    padding: 10px;
-}
-
-#rating-panel a.choice:hover {
-    cursor: pointer;
-}
-
-@media print {
-    #rating-panel {
-        display: none;
-    }
 }
