@@ -707,7 +707,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 
 .content .main-column {
     margin-top: 128px;
-    margin-left: 293px;
+    margin-left: 313px;
     min-height: 600px;
     width: 800px;
     padding: 0 30px;
@@ -956,7 +956,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     position: fixed;
     -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
     background-color: #f5f6f7;
-    width: 293px;
+    width: 313px;
     height: auto;
     top: 50px;
     bottom: 0;
@@ -1144,7 +1144,7 @@ div.sphinxsidebarwrapper div.idxcontents {
 .option-popup {
     position: fixed;
     -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
-    width: 293px;
+    width: 313px;
     height: 303px;
     bottom: 0;
     left: 0;
@@ -1450,7 +1450,7 @@ div.admonition.note table.docutils tr:last-child td {
     }
 
     .sidebar {
-        left: -293px;
+        left: -313px;
         box-shadow: 0 0 13px rgba(0,0,0,0.3);
     }
 
