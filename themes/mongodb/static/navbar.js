@@ -1,6 +1,32 @@
 $(function() {
     'use strict';
 
+    /* Wrapper around XMLHttpRequest to make it more convenient
+     * Calls options.success(response, url), providing the response text and
+     *         the canonical URL after redirects.
+     * jQuery's wrapper does not supply XMLHttpRequest.responseURL, making
+     * this rewrite necessary. */
+    function xhrGet(url, options) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+
+        xhr.onload = function() {
+            if(xhr.status >= 200 && xhr.status < 400) {
+                options.success(xhr.responseText, xhr.responseURL);
+            } else {
+                xhr.onerror(xhr);
+            }
+            options.complete();
+        };
+
+        xhr.onerror = function() {
+            options.error(xhr);
+            options.complete();
+        };
+
+        xhr.send();
+    }
+
     /* Checks a whitelist for non-leaf nodes that should trigger a full page reload */
     function requiresPageload($node) {
         var docsExcludedNav = window.docsExcludedNav;
@@ -111,7 +137,8 @@ $(function() {
     function setupFastLoad() {
         if (window.history === undefined ||
             document.querySelectorAll === undefined ||
-            document.body.classList === undefined) {
+            document.body.classList === undefined ||
+            (new XMLHttpRequest()).responseURL === undefined) {
             return false;
         }
 
@@ -130,8 +157,8 @@ $(function() {
                 window.clearTimeout(curLoading.timeoutID);
             }
 
-            if (curLoading.ajax !== undefined) {
-                curLoading.ajax.abort();
+            if (curLoading.xhr !== undefined) {
+                curLoading.xhr.abort();
             }
 
             curLoading = {};
@@ -155,7 +182,7 @@ $(function() {
             }, 10000);
 
             var startTime = new Date();
-            curLoading.ajax = $.ajax({ url: href, dataType: 'html', success: function(pageText) {
+            curLoading.xhr = xhrGet(href, { success: function(pageText, trueUrl) {
                 var enlapsedMs = (new Date()) - startTime;
                 bodyElement.classList.remove('loading');
 
@@ -172,7 +199,7 @@ $(function() {
 
                 // Change URL before loading the DOM to properly resolve URLs
                 if (createHistory) {
-                    window.history.pushState({ href: href }, title, href);
+                    window.history.pushState({ href: trueUrl }, title, trueUrl);
                 }
 
                 // Replace the DOM elements
