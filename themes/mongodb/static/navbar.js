@@ -186,20 +186,20 @@ $(function() {
                 var enlapsedMs = (new Date()) - startTime;
                 bodyElement.classList.remove('loading');
 
+                // Change URL before loading the DOM to properly resolve URLs
+                if (createHistory) {
+                    window.history.pushState({ href: trueUrl }, title, trueUrl);
+                }
+
                 var page = document.createElement('html');
                 page.innerHTML = pageText;
                 var title = page.querySelector('title').textContent;
                 var newBody = page.querySelector('.body');
                 var newNav = page.querySelector('.sphinxsidebarwrapper');
 
-                // Fade in ONLY if we had enough time to fade out at least some.
+                // Fade in ONLY if we had enough time to start fading out.
                 if (enlapsedMs > (250 / 4)) {
                     newBody.classList.add('loading');
-                }
-
-                // Change URL before loading the DOM to properly resolve URLs
-                if (createHistory) {
-                    window.history.pushState({ href: trueUrl }, title, trueUrl);
                 }
 
                 // Replace the DOM elements
