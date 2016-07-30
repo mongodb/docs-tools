@@ -2,7 +2,7 @@ version:
   published:
     - '2.2'
     - '2.0'
-    - '1.1'
+    - '1.x'
   active:
     - '2.2'
     - '2.0'
@@ -14,7 +14,7 @@ git:
     published:
       - 'master'
       - 'v2.0'
-      - 'v1.1'
+      - 'v1.x'
       # the branches/published list **must** be ordered from most to
       # least recent release.
 ...
