@@ -84,6 +84,16 @@
     color: #963636;
 }
 
+#rating-panel .rangestar {
+    text-align: center;
+    width: 15px;
+    line-height: 25px;
+}
+
+#rating-panel .rangestar:hover {
+    cursor: pointer;
+}
+
 @media print {
     #rating-panel {
         display: none;
