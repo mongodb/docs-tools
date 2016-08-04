@@ -4,7 +4,7 @@ $(function() {
     /* Wrapper around XMLHttpRequest to make it more convenient
      * Calls options.success(response, url), providing the response text and
      *         the canonical URL after redirects.
-     * Calls options.error({cors: <?boolean>}) on error.
+     * Calls options.error() on error.
      * jQuery's wrapper does not supply XMLHttpRequest.responseURL, making
      * this rewrite necessary. */
     function xhrGet(url, options) {
@@ -15,13 +15,13 @@ $(function() {
                 options.success(xhr.responseText, xhr.responseURL);
                 options.complete();
             } else {
-                options.error({});
+                options.error();
                 options.complete();
             }
         };
 
         xhr.onerror = function() {
-            options.error({});
+            options.error();
             options.complete();
         };
 
@@ -29,7 +29,7 @@ $(function() {
         try {
             xhr.send();
         } catch(err) {
-            options.error({cors: true});
+            options.error();
             options.complete();
         }
     }
@@ -236,12 +236,9 @@ $(function() {
                 }, 1);
             }, error: function(err) {
                 // Some browsers consider any file://-type request to be cross-origin.
-                // In this case, fall back to old-style behavior.
-                if (err.cors) {
-                    window.location = href;
-                }
-
+                // Upon any kind of error, fall back to classic behavior
                 console.error('Failed to load ' + href);
+                window.location = href;
             }, complete: function() {
                 abortLoading();
             } });
