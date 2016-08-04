@@ -247,7 +247,8 @@ $(function() {
             } });
         };
 
-        var nodes = document.querySelectorAll('.sphinxsidebarwrapper > ul a.reference');
+        // Set up fastnav links
+        var nodes = document.querySelectorAll('.sphinxsidebarwrapper > ul a.reference.internal');
         var handleClickFunction = function(ev) {
             // Ignore anything but vanilla click events, so that people can
             // still use special browser behaviors like open in new tab.
