@@ -4,27 +4,34 @@ $(function() {
     /* Wrapper around XMLHttpRequest to make it more convenient
      * Calls options.success(response, url), providing the response text and
      *         the canonical URL after redirects.
+     * Calls options.error({cors: <?boolean>}) on error.
      * jQuery's wrapper does not supply XMLHttpRequest.responseURL, making
      * this rewrite necessary. */
     function xhrGet(url, options) {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
 
         xhr.onload = function() {
             if(xhr.status >= 200 && xhr.status < 400) {
                 options.success(xhr.responseText, xhr.responseURL);
+                options.complete();
             } else {
-                xhr.onerror(xhr);
+                options.error({});
+                options.complete();
             }
-            options.complete();
         };
 
         xhr.onerror = function() {
-            options.error(xhr);
+            options.error({});
             options.complete();
         };
 
-        xhr.send();
+        xhr.open('GET', url, true);
+        try {
+            xhr.send();
+        } catch(err) {
+            options.error({cors: true});
+            options.complete();
+        }
     }
 
     /* Checks a whitelist for non-leaf nodes that should trigger a full page reload */
@@ -188,7 +195,7 @@ $(function() {
 
                 // Change URL before loading the DOM to properly resolve URLs
                 if (createHistory) {
-                    window.history.pushState({ href: trueUrl }, title, trueUrl);
+                    window.history.pushState({ href: trueUrl }, '', trueUrl);
                 }
 
                 var page = document.createElement('html');
@@ -227,10 +234,10 @@ $(function() {
                         window.scroll(0, 0);
                     }
                 }, 1);
-            }, error: function(ev) {
+            }, error: function(err) {
                 // Some browsers consider any file://-type request to be cross-origin.
                 // In this case, fall back to old-style behavior.
-                if (ev.status === 0 && ev.statusText === 'error') {
+                if (err.cors) {
                     window.location = href;
                 }
 
