@@ -55,13 +55,16 @@
             return;
         }
 
-        (new Deluge(project, pagename)).
-            askFreeformQuestion('reason', 'What were you looking for?').
-            askQuestion('findability', 'Did you find it?').
-            askQuestion('accuracy', 'Was the information you found <strong>accurate</strong>?').
-            askQuestion('clarity', 'Was the information <strong>clear</strong>?').
-            askQuestion('fragmentation', 'Was the information you needed <strong>all on one page</strong>?').
-            draw(document.getElementById('rating-panel'));
+        var ratingPanelElement = document.getElementById('rating-panel');
+        if (ratingPanelElement) {
+            (new Deluge(project, pagename)).
+                askFreeformQuestion('reason', 'What were you looking for?').
+                askQuestion('findability', 'Did you find it?').
+                askQuestion('accuracy', 'Was the information you found <strong>accurate</strong>?').
+                askQuestion('clarity', 'Was the information <strong>clear</strong>?').
+                askQuestion('fragmentation', 'Was the information you needed <strong>all on one page</strong>?').
+                draw();
+        }
     }
 
     window.history.onnavigate = function() { loadPage(); };
