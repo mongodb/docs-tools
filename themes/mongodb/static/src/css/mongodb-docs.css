@@ -992,7 +992,6 @@ div.sphinxsidebar {
 div.sphinxsidebarwrapper {
     padding: 0; /* overwrites basic.css rules */
     padding-top: 75px;
-    padding-bottom: 130px; /* Extra padding for the footer items at the bottom */
     min-height: 100%;
     position: relative;
 }
@@ -1059,12 +1058,6 @@ div.sphinxsidebar h3 a.showlink {
 
 .sphinxsidebarwrapper .mms-hosted-search {
     margin-top: 15px;
-}
-
-.sphinxsidebarwrapper .nav-footer {
-    padding: 50px 12px 12px 12px;
-    position: absolute;
-    bottom: 48px;
 }
 
 div.sphinxsidebar li.toctree-l2 > a {
@@ -1146,94 +1139,6 @@ div.sphinxsidebarwrapper ul li a code span {
 div.sphinxsidebarwrapper div.idxcontents {
     margin-left: 8px;
     font-size: 88%;
-}
-
-/* Options panel */
-.option-popup {
-    position: fixed;
-    -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
-    width: 313px;
-    height: 303px;
-    bottom: 0;
-    left: 0;
-    box-shadow: 0 -2px 3px rgba(0,0,0,0.15);
-    z-index: 100;
-
-    transition: bottom 300ms cubic-bezier(.02,.01,.47,1);
-    -moz-transition: bottom 300ms cubic-bezier(.02,.01,.47,1);
-    -webkit-transition: bottom 300ms cubic-bezier(.02,.01,.47,1);
-}
-
-.option-popup.closed {
-    bottom: -255px;
-}
-
-.option-popup .option-header {
-    cursor: pointer;
-    height: 50px;
-    background-color: rgb(49, 48, 48);
-    color: rgb(160, 159, 158);
-    padding: 15px 14px;
-    font-size: 15px;
-    font-weight: bold;
-}
-
-.option-popup .option-header > .fa-gear {
-    font-size: 18px;
-    margin-right: 10px;
-}
-
-.option-popup .option-header > .fa-angle-up,
-.option-popup .option-header > .fa-angle-down {
-    font-size: 18px;
-}
-
-.option-popup .option-body {
-    height: 253px;
-    padding: 22px 16px;
-    background-color: rgb(73, 71, 71);
-    color: rgb(191, 191, 190);
-    font-size: 13px;
-}
-
-.option-popup .option-body > ul {
-    padding: 0;
-}
-
-.option-popup > .option-body > ul > li {
-    list-style-type: none;
-    padding-bottom: 20px;
-}
-
-.option-popup .formats-list,
-.option-popup .contribute-list {
-    margin: 0;
-    padding: 0;
-}
-
-.option-popup .formats-list li,
-.option-popup .contribute-list li {
-    display: inline;
-    margin-right: 30px;
-}
-
-.option-body > ul > li > label {
-    color: rgb( 191, 191, 190 );
-    line-height: 1.714;
-    font-weight: normal;
-}
-
-.option-popup .formats-list > li > a,
-.option-popup .contribute-list > li > a {
-    color: rgb( 255, 255, 255 );
-    font-weight: bold;
-    line-height: 0.914;
-}
-
-@media print {
-    .option-popup {
-        display: none;
-    }
 }
 
 /* Right column TOC */

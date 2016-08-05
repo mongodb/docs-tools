@@ -243,55 +243,6 @@
 
   {%- endblock %}
 
-  <div class="option-popup closed">
-    <div class="option-header">
-      <i class="fa fa-gear"></i>
-      <span>OPTIONS</span>
-      <i class="fa fa-angle-up pull-right"></i>
-    </div>
-    <div class="option-body">
-      <ul>
-        {%- block language_selector %}
-           {#
-              <!-- language selector -->
-              <li>
-                <label>{{ _('Langauges') }}</label>
-                <select class="language-selector pull-right">
-                  {%- for lc,lang in theme_translations -%}
-                      <option data-path="https://{{lc}}.docs.mongodb.com/{{ page_url }}">
-                        {{lang}}
-                      </option>
-                  {% endfor -%}
-                 </select>
-              </li>
-           #}
-        {% endblock %}
-        {%- block format_selector %}
-           <!-- format selector -->
-           <li>
-             <label>{{ _('Formats') }}</label>
-             <ul class="formats-list">
-               {%- if show_source and has_source and sourcename %}
-                   <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}" target="_blank" rel="nofollow">{{ _("This Page's Source") }}</a></li>
-               {%- endif %}
-               {%- block pdflink %}<li><a href="{{ theme_pdfpath }}" target="_blank" rel="nofollow">PDF</a></li>{%- endblock %}
-               {%- block epublink %}{%- endblock %}
-             </ul>
-           </li>
-        {% endblock %}
-        <!-- contribute -->
-        <li>
-          <label>{{ _('Contribute' ) }}</label>
-          <ul class="contribute-list">
-            <li>{{ jiralink() }}</li>
-            {%- block editlink %}
-               <li>{{ editlink() }}</li>
-            {%- endblock %}
-          </ul>
-        </li>
-      </ul>
-    </div>
-  </div>
   <div class="content">
     <div class="main-column pull-left">
 
