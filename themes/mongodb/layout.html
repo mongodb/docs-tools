@@ -8,6 +8,25 @@
 {%  set script_files = script_files + ["_static/lib/bootstrap.js", "_static/lib/jquery.cookie.js", "_static/navbar.js"] %}
 {%- set github_organization = "mongodb" %}
 
+{% macro version_selector() %}
+    <div class="btn-group btn-group-xs pull-right">
+      <button type="button" class="version-button dropdown-toggle" data-toggle="dropdown">
+        {{ theme_version_selector|selectattr('current')|map(attribute='text')|first|e }}<span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        {% for v in theme_version_selector %}
+          {% if v.current %}
+          <li class="active">
+          {% else %}
+          <li>
+          {% endif %}
+            <a {% if not v.current %}class="version-selector" {% endif %}href="#" data-path="{{ v.path }}">{{ v.text }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+{% endmacro %}
+
 {%- macro translationslink() -%}
   {%- block translationslink %}
     <a class="translation-link" href="{{ pathto('meta/translation', 1) }}" title="View in another language"><span class="icon-translation"></span></a>
@@ -232,28 +251,6 @@
     </div>
     <div class="option-body">
       <ul>
-        {% block version_selector %}
-          <!-- version selector -->
-          <li>
-            <label>{{ _('Version') }}</label>
-            <div class="btn-group btn-group-xs pull-right">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                Select Version <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu" role="menu">
-                {% for v in theme_version_selector %}
-                  {% if v.current %}
-                  <li class="active">
-                  {% else %}
-                  <li>
-                  {% endif %}
-                    <a {% if not v.current %}class="version-selector" {% endif %}href="#" data-path="{{ v.path }}">{{ v.text }}</a>
-                  </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </li>
-        {% endblock %}
         {%- block language_selector %}
            {#
               <!-- language selector -->
