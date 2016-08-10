@@ -240,6 +240,14 @@ a.headerlink:hover {
     color: white;
 }
 
+a.reference.external:after{
+    font-family: FontAwesome;
+    content: "\f08e";
+    display: inline-block;
+    padding-left: 3px;
+    vertical-align: middle;
+}
+
 div.body li {
     padding-top: .2em;
 }
