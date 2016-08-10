@@ -1,0 +1,136 @@
+# git requires the "console" pool added in 1.5
+ninja_required_version = 1.5
+
+# Limit ourselves to 4 concurrent downloads. Note that repositories requiring
+# authentication should instead use the "console" pool.
+pool http
+    depth = 4
+
+rule clone
+    command = cd `dirname $out` && $
+              git clone -n $url
+    description = Cloning $url
+    pool = console
+
+rule update
+    command = for dir in source/*; do $
+                (cd "$$dir" && if [ -d .git ]; then git fetch; fi); $
+              done
+    description = Updating all source repositories
+    pool = console
+
+rule giza
+    command = rm -rf "$out" && $
+              cp -Rp "$in" "$out" && $
+              cd "$out" && $
+              git checkout -q "$branch" && $
+              giza -l warning make publish --serial_sphinx
+    description = Building $name/$branch
+
+build update: update
+
+# Private repositories requiring authentication
+build source/cloud-docs: clone
+    url = git@github.com:10gen/cloud-docs.git
+
+build source/mms-docs: clone
+    url = git@github.com:10gen/mms-docs.git
+
+
+# Public repositories that we can download without interactive prompts
+build source/docs: clone
+    url = https://github.com/mongodb/docs.git
+    pool = http
+
+build source/docs-ecosystem: clone
+    url = https://github.com/mongodb/docs-ecosystem.git
+    pool = http
+
+build source/docs-compass: clone
+    url = https://github.com/mongodb/docs-compass
+    pool = http
+
+build source/docs-bi-connector: clone
+    url = https://github.com/mongodb/docs-bi-connector
+    pool = http
+
+build source/docs-spark-connector: clone
+    url = https://github.com/mongodb/docs-spark-connector
+    pool = http
+
+build source/docs-ruby: clone
+    url = https://github.com/mongodb/docs-ruby
+    pool = http
+
+# Build commands
+build build/$name/$branch: giza source/$name
+    name = docs
+    branch = master
+
+build build/$name/$branch: giza source/$name
+    name = docs
+    branch = v3.0
+
+build build/$name/$branch: giza source/$name
+    name = docs
+    branch = v2.6
+
+build build/$name: giza source/$name
+    branch = master
+    name = docs-ecosystem
+
+build build/$name: giza source/$name
+    branch = master
+    name = docs-compass
+
+build build/$name: giza source/$name
+    branch = master
+    name = docs-bi-connector
+
+build build/$name: giza source/$name
+    branch = master
+    name = docs-spark-connector
+
+build build/$name: giza source/$name
+    branch = master
+    name = cloud-docs
+
+build build/$name/$branch: giza source/$name
+    branch = master
+    name = mms-docs
+
+build build/$name/$branch: giza source/$name
+    branch = v2.0
+    name = mms-docs
+
+build build/$name/$branch: giza source/$name
+    branch = v1.8
+    name = mms-docs
+
+build build/$name/$branch: giza source/$name
+    branch = v1.6
+    name = mms-docs
+
+build build/$name/$branch: giza source/$name
+    branch = v1.4
+    name = mms-docs
+
+build build/$name/$branch: giza source/$name
+    branch = v1.2
+    name = mms-docs
+
+build build/$name/$branch: giza source/$name
+    branch = v1.1
+    name = mms-docs
+
+build build/$name/$branch: giza source/$name
+    branch = master
+    name = docs-ruby
+
+build build/$name/$branch: giza source/$name
+    branch = v2.0
+    name = docs-ruby
+
+build build/$name/$branch: giza source/$name
+    branch = v1.x
+    name = docs-ruby

@@ -21,3 +21,7 @@ fabsrc/giza
 *.egg-info
 !giza/docs/config
 node_modules/
+
+/world-builder/source
+/world-builder/build
+/world-builder/.ninja*
