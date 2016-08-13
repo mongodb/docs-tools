@@ -270,18 +270,6 @@ $(function() {
         return true;
     }
 
-    /* Options panel */
-    $('.option-header').on('click', function(e) {
-        // stop propagation to prevent the other click handler below
-        // from reclosing the options panel
-        e.stopPropagation();
-
-        var $target = $(e.currentTarget);
-
-        $target.parent().toggleClass('closed');
-        $target.find('.fa-angle-down, .fa-angle-up').toggleClass('fa-angle-down fa-angle-up');
-    });
-
     $('body').on('click', '#header-db, .sidebar, .content', function(e) {
         $('.option-popup').addClass('closed')
             .find('.fa-angle-down, .fa-angle-up').removeClass('fa-angle-down').addClass('fa-angle-up');
@@ -345,10 +333,6 @@ $(function() {
         var current = document.querySelector('a.current');
         if(current) {
             current.scrollIntoView(false);
-            // Scroll a bit more so that the selected element isn't hidden by
-            // the Options pane button.
-            var options_header = document.querySelector('.option-header');
-            document.querySelector('.sidebar').scrollTop += options_header.clientHeight;
         }
     }
 });
