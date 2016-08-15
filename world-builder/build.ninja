@@ -75,6 +75,14 @@ build build/$name/$branch: giza source/$name
     name = docs
     branch = v2.6
 
+build build/$name/$branch: giza source/$name
+    name = docs
+    branch = v2.4
+
+build build/$name/$branch: giza source/$name
+    name = docs
+    branch = v2.2
+
 build build/$name: giza source/$name
     branch = master
     name = docs-ecosystem
