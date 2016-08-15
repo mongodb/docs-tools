@@ -1,6 +1,20 @@
 $(function() {
     'use strict';
 
+    function fullDocsPath(base) {
+        var body = document.getElementsByClassName('body')[0];
+        var path = body.getAttribute('data-pagename');
+
+        // skip if pagename is undefined (index.html)
+        if (path == 'index') {
+            path = '';
+        } else if (path) {
+          path = path + '/';
+        }
+
+        return '/' + base + '/' + path;
+    }
+
     /* Wrapper around XMLHttpRequest to make it more convenient
      * Calls options.success(response, url), providing the response text and
      *         the canonical URL after redirects.
@@ -57,6 +71,14 @@ $(function() {
 
     function isLeafNode($node) {
         return !$node.siblings('ul:not(.simple)').length;
+    }
+
+    function updateVersionSelector() {
+        $('.version-selector').on('click', function(e) {
+            e.preventDefault();
+            var base = $(e.currentTarget).data('path');
+            window.location.href = fullDocsPath(base);
+        });
     }
 
     function updateSidebar() {
@@ -219,6 +241,7 @@ $(function() {
                 // Update the sidebar
                 updateSidebar();
                 setupFastLoad();
+                updateVersionSelector();
 
                 if (window.history.onnavigate) {
                     window.history.onnavigate();
@@ -314,7 +337,7 @@ $(function() {
             $(window).scrollTop(window.scrollY - 75);
         }
     }
-    window.addEventListener("hashchange", offsetHashLink);
+    window.addEventListener('hashchange', offsetHashLink);
     if (location.hash) {
         window.setTimeout(offsetHashLink, 10);
     }
@@ -327,6 +350,7 @@ $(function() {
 
     updateSidebar();
     setupFastLoad();
+    updateVersionSelector();
 
     if(document.querySelector) {
         // Scroll so that the selected navbar element is in view.

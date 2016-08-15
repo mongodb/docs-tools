@@ -315,35 +315,8 @@
   {%- block versionnav %}
 
   <script type="text/javascript">
-  window.fullDocsPath = function(base) {
-    var body = document.getElementsByClassName('body')[0]
-    var path = body.getAttribute('data-pagename');
-
-    // skip if pagename is undefined (index.html)
-    if (path == 'index') {
-        path = '';
-    } else if (path) {
-      path = path + '/';
-    }
-
-    return '/' + base + '/' + path;
-  }
   // Bootstrap array of links that should trigger a full page reload
   window.docsExcludedNav = {{ theme_nav_excluded }};
-
-  $(document).ready(function(){
-    $(".version-selector").on('click', function(e) {
-      e.preventDefault();
-      var base = $(e.currentTarget).data('path');
-      window.location.href = fullDocsPath(base);
-    });
-
-    $("select.language-selector").on('change', function(e) {
-      var path = $(e.currentTarget).find('option:selected').data('path');
-      window.location.href = path;
-    });
-  });
-
   </script>
   {%- endblock -%}
 
