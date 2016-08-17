@@ -243,7 +243,6 @@ a.headerlink:hover {
 a.reference.external:after {
     font-family: FontAwesome;
     content: "\f08e";
-    display: inline-block;
     padding-left: 3px;
     vertical-align: middle;
 }
