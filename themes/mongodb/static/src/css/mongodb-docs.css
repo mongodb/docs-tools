@@ -369,6 +369,15 @@ table.index-table > thead th.head {
     border-bottom: none;
 }
 
+table.index-table-less-padding td {
+    padding-left: 10px;
+
+}
+
+table.index-table-less-padding > thead th.head {
+    padding: 0 0 5px 10px;
+ }
+
 div#mongodb ul {
     list-style: none;
     padding-left:0px;
