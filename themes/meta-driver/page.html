@@ -10,6 +10,8 @@
   <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
 {%- endblock -%}
 
+{%- block editlink_icon %}{% endblock %}
+
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
     <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/" />
