@@ -224,7 +224,7 @@ conf['directives'] = [
         'prepend': True,
         'callable': False,
     },
-    ## Custom Setting Directives for MMS Agents
+    ## Custom Setting Directives for MMS
     {
         'name': 'msetting',
         'tag': 'msetting',
@@ -244,6 +244,13 @@ conf['directives'] = [
         'tag': 'asetting',
         'description': 'Automation Agent Setting',
         'prepend': True,
+        'callable': False,
+    },
+    {
+        'name': 'apierror',
+        'tag': 'apierror',
+        'description': 'Error Code for Public API',
+        'prepend': False,
         'callable': False,
     },
     ## Custom Directives for PHP Library Docs
