@@ -748,7 +748,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 
 
 @media print {
-    header#header-db {
+    #header-db {
         display: none;
     }
 }
