@@ -23,10 +23,13 @@ def render_options(option, conf):
     r = RstCloth()
 
     if 'program' not in option.replacement:
-        option.replacement['program'] = RstCloth.role("program", option.program)
+        option.replacement['program'] = RstCloth.role('program', option.program)
 
-    if option.directive == 'option':
-        if option.name.startswith('<'):
+    if option.has_field('command'):
+        option.replacement['command'] = RstCloth.role('toolcommand', option.command)
+
+    if option.directive in ['option']:
+        if len(option.name) >1 and option.name[0] in ("<", "-"):
             prefix = ''
         else:
             prefix = '--'
