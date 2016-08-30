@@ -71,6 +71,18 @@ class OptionData(InheritableContentBase):
             raise TypeError
 
     @property
+    def command(self):
+        if 'command' in self.state:
+            return self.state['command']
+
+    @command.setter
+    def command(self, value):
+        if isinstance(value, basestring):
+            self.state['command'] = value
+        else:
+            raise TypeError('command name must be a string')
+
+    @property
     def directive(self):
         if 'directive' in self.state:
             return self.state['directive']
@@ -79,7 +91,7 @@ class OptionData(InheritableContentBase):
 
     @directive.setter
     def directive(self, value):
-        if (value in ('option', 'data', 'setting',
+        if (value in ('option', 'commandoption', 'data', 'setting',
                       'method', 'function', 'class') or
                 value.endswith('setting')):
             self.state['directive'] = value

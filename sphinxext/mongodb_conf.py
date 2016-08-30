@@ -224,6 +224,22 @@ conf['directives'] = [
         'prepend': True,
         'callable': False,
     },
+    {
+        ## Support defining mongotape's commands
+        'name': 'toolcommand',
+        'tag': 'toolcommand',
+        'description': 'mongo tool command',
+        'prepend': True,
+        'callable': False,
+    },
+    {
+        ## Support mongotape's command-specific options
+        'name': 'commandoption',
+        'tag': 'commandoption',
+        'description': 'mongo tool command-specific option',
+        'prepend': True,
+        'callable': False,
+    },
     ## Custom Setting Directives for MMS
     {
         'name': 'msetting',
