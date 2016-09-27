@@ -130,7 +130,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
 
-  {%- if version in theme_active_branches or not theme_active_branches %}
+  {%- if version == theme_upcoming %}
+    <meta name="robots" content="noindex,nofollow" />
+  {%- elif version in theme_active_branches or not theme_active_branches %}
     <meta name="robots" content="index" />
   {%- else -%}
     <meta name="robots" content="noindex,nofollow" />
