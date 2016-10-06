@@ -25,7 +25,8 @@ if sys.version_info >= (3, 0):
 
 class OptionData(InheritableContentBase):
     _option_registry = ['pre', 'post', 'final', 'ref', 'content', 'edition',
-                        'description', 'name', 'args', 'aliases', 'default', 'type']
+                        'description', 'name', 'args', 'aliases', 'default', 
+                        'type', 'filename']
 
     @property
     def source(self):
@@ -81,6 +82,18 @@ class OptionData(InheritableContentBase):
             self.state['command'] = value
         else:
             raise TypeError('command name must be a string')
+
+    @property
+    def filename(self):
+        if 'filename' in self.state:
+            return self.state['filename']
+
+    @filename.setter
+    def filename(self, value):
+        if isinstance(value, basestring):
+            self.state['filename'] = value
+        else:
+            raise TypeError('filename must be a string')
 
     @property
     def directive(self):
