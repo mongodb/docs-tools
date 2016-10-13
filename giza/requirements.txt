@@ -8,7 +8,7 @@ docutils==0.12
 enum34==1.1.2
 future==0.15.2
 github3.py==0.9.5
-giza==0.5.7a0
+giza==0.5.8
 hieroglyph==0.7.1
 idna==2.0
 ipaddress==1.0.16
