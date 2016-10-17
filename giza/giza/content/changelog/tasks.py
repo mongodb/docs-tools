@@ -52,7 +52,7 @@ def changelog_tasks(conf):
     tasks = []
 
     if "jira" not in conf.system.files.data:
-        logger.warning("changelog generation is not configured.")
+        logger.debug("changelog generation is not configured.")
         return []
 
     dirname = os.path.join(conf.paths.projectroot, conf.paths.includes, "changelogs")
