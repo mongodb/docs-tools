@@ -69,6 +69,10 @@ build build/$name/$branch: giza source/$name
 
 build build/$name/$branch: giza source/$name
     name = docs
+    branch = v3.2
+
+build build/$name/$branch: giza source/$name
+    name = docs
     branch = v3.0
 
 build build/$name/$branch: giza source/$name
