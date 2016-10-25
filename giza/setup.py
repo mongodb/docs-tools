@@ -17,6 +17,7 @@ REQUIRES = [
     'sphinxcontrib-httpdomain',
     'wand',
     'boto',
+    'fett',
     'jira'
 ]
 

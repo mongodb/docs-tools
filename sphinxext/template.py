@@ -1,13 +1,12 @@
-import json
 import os.path
 import sys
 
 from docutils import nodes, statemachine, utils
 from docutils.utils.error_reporting import ErrorString
 from docutils.parsers.rst import directives
-from jinja2 import Template
 from sphinx.util.compat import Directive
 
+import fett
 import yaml
 
 if sys.version_info.major >= 3:
@@ -26,8 +25,8 @@ def populate(obj, options):
                 populate(obj[i], options)
     elif isinstance(obj, dict):
         # Add references
-        if '_reference' in obj:
-            foreign_dict = obj['_reference']
+        if 'inherit' in obj:
+            foreign_dict = obj['inherit']
             for name, path in foreign_dict.items():
                 path = options.get_asset_path(path)
                 with options.open_file(path) as f:
@@ -90,7 +89,7 @@ class Options:
 
 
 def create_directive(name, template, is_yaml):
-    template = Template(template)
+    template = fett.Template(template)
 
     class CustomDirective(Directive):
         has_content = True
@@ -119,7 +118,7 @@ def create_directive(name, template, is_yaml):
             level = self.options.get('level', None)
             source_path = self.state_machine.input_lines.source(
                 self.lineno - self.state_machine.input_offset - 1)
-            data = json.loads(contents)
+            data = yaml.safe_load(contents)
             options = Options(self.state, source_path, data)
 
             if level:
