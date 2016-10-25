@@ -12,6 +12,11 @@ import yaml
 if sys.version_info.major >= 3:
     basestring = str
 
+# Maps source filenames (.txt) to a set of directives registered within that
+# scope. Makes sure that directives are always registered in each file, to
+# prevent inconsistent errors.
+REGISTERED = {}
+
 
 def populate(obj, options):
     """Apply reference substitutions and add magical values to objects."""
@@ -88,8 +93,13 @@ class Options:
         return path
 
 
-def create_directive(name, template, is_yaml):
+def create_directive(name, template, defined_in, is_yaml):
     template = fett.Template(template)
+
+    # Quick-and-dirty fixup. In giza projects, people shouldn't be including
+    # things underneath build/<branch>
+    if defined_in.startswith('build/'):
+        defined_in = '/'.join(defined_in.split('/')[2:])
 
     class CustomDirective(Directive):
         has_content = True
@@ -99,6 +109,11 @@ def create_directive(name, template, is_yaml):
         option_spec = {'level': int}
 
         def run(self):
+            source_path = self.state.document.get('source')
+            if source_path not in REGISTERED or name not in REGISTERED[source_path]:
+                raise self.severe(u'Unknown directive: {}. '
+                                  u'Try including {}'.format(self.name, defined_in))
+
             contents = '\n'.join(self.content)
 
             if is_yaml:
@@ -145,10 +160,21 @@ def create_template_factory(app):
         option_spec = {'yaml': directives.flag}
 
         def run(self):
-            template = '\n'.join(self.content)
-            is_yaml = 'yaml' in self.options
-            directive = create_directive(self.arguments[0], template, is_yaml)
-            app.add_directive(self.arguments[0], directive)
+            name = self.arguments[0]
+            defined_in = self.state.document.current_source
+            source_path = self.state.document.get('source')
+
+            # Register this directive as existing in the current document.
+            if not source_path in REGISTERED:
+                REGISTERED[source_path] = set()
+
+            if not name in REGISTERED[source_path]:
+                template = '\n'.join(self.content)
+                is_yaml = 'yaml' in self.options
+                directive = create_directive(name, template, defined_in, is_yaml)
+                app.add_directive(name, directive)
+
+                REGISTERED[source_path].add(name)
 
             return []
 
