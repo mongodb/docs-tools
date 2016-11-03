@@ -1,11 +1,11 @@
 version:
   published:
-    - 'master'
+    - 'latest stable'
     - 'beta'
   active:
     - 'master'
     - 'beta'
-  stable: 'current'
+  stable: ''
   upcoming: beta
 git:
   branches:
