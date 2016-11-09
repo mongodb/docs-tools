@@ -1,6 +1,16 @@
+
 <h3>
+  <a href="javascript:void(0)" class="closeNav" onclick="closeNav()">close nav &times;</a>
+  <div id="searchContainer" class="searchContainer">
+    <input type="text" id="search" class="search" placeholder="Search Docs">
+    <button class="searchButton">
+      <i class="fa fa-search" aria-hidden="true"></i>
+    </button>
+  </div>
   <a class="index-link" href="{{ pathto('index') }}">{{ shorttitle }}</a>
   {{ version_selector() }}
 </h3>
 
 {{ toctree( collapse=false, titles_only=1) }}
+
+

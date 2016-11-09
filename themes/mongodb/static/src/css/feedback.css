@@ -2,18 +2,29 @@
     font-size: 80%;
     overflow: hidden;
     position: fixed;
-    top: 95px;
-    left: 323px;
-    background-color: rgba(255,255,255,0.95);
-    width: 740px;
-    line-height: 30px;
-    border-bottom: 0.5px solid rgba(0, 0, 0, 0.25);
+    top: 90px;
+    background-color: rgba(255,255,255,1);
+    width: 800px;
+    line-height: 60px;
+    height: 50px;
+    font-size: 14px;
+    color: #ACACAC;
+    border-bottom: 0.5px solid #ccc;
 }
 
 #rating-panel a.button {
     display: inline-block;
     text-align: center;
     width: 50px;
+    color: #ACACAC;
+}
+
+#rating-panel a.jira-link {
+    display: inline-block;
+    float: right;
+    text-align: center;
+    width: auto;
+    color: #FF7676;
 }
 
 #rating-panel a.button:hover {
@@ -102,6 +113,6 @@
 
 @media (max-width: 1093px) {
     #rating-panel  {
-        left: 30px;
+       display: none;
     }
 }
