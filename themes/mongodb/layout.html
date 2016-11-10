@@ -9,7 +9,7 @@
 {%- set github_organization = "mongodb" %}
 
 {% macro version_selector() %}
-    <div class="btn-group btn-group-xs pull-right">
+    <div id="version-toggle" class="btn-group btn-group-xs pull-right version-toggle">
       <button type="button" class="version-button dropdown-toggle" data-toggle="dropdown">
         {{ theme_version_selector|selectattr('current')|map(attribute='text')|first|e }}<span class="caret"></span>
       </button>
@@ -66,7 +66,7 @@
 
 {%- macro sidebar() %}
   <div class="sphinxsidebar">
-    <div class="sphinxsidebarwrapper" style="display: none;">
+    <div id="sphinxsidebarwrapper" class="sphinxsidebarwrapper"">
       {%- if sidebars != None %}
         {%- for sidebartemplate in sidebars %}
           {%- include sidebartemplate %}
@@ -91,6 +91,27 @@
   {%- endfor %}
 
   <script defer type="text/javascript" src="{{ pathto('_static/feedback.js', 1) }}"></script>
+{%- endmacro -%}
+
+{%- macro script() -%}
+  <script type="text/javascript">
+    function showNav() {
+        document.getElementById("sidebar").style.flex = "1 0 280px";
+        document.getElementById("sidebar").style.flex = "1 0 280px";
+        document.getElementById("sphinxsidebarwrapper").style.setProperty("visibility", "visible", "important");
+        document.getElementById("showNav").style.display = "none";
+        document.getElementById("main-column").style.flex = "1 1 800px";
+        document.getElementById("searchContainer").style.left = "285px";
+        document.getElementById("version-toggle").style.left = "535px";
+    }
+
+    function closeNav() {
+        document.getElementById("sidebar").style.flex = "0";
+        document.getElementById("showNav").style.display="block";
+        document.getElementById("searchContainer").style.left = "200px";
+        document.getElementById("version-toggle").style.left = "450px";
+    }
+  </script>
 {%- endmacro -%}
 
 {%- macro css() %}
@@ -225,12 +246,6 @@
   <!-- End Google Tag Manager -->
   {%- endblock -%}
 
-  <aside class="sidebar">
-    {%- block sidebar2 %}
-       {{ sidebar() }}
-    {% endblock %}
-  </aside>
-
   {%- block header %}
    <!-- The "header-db" nav must be copied manually. Yes, manually.  To copy, view the rendered page, inspect element, and copy the header-id block here. -->
 
@@ -246,7 +261,16 @@
   {%- endblock %}
 
   <div class="content">
-    <div class="main-column pull-left">
+
+    <span id="showNav" class="showNav" onclick="showNav()">Navigation</span>
+
+    <aside id="sidebar" class="sidebar">
+      {%- block sidebar2 %}
+         {{ sidebar() }}
+      {% endblock %}
+    </aside>
+
+    <div id="main-column" class="main-column">
 
       {% block alertbar %}{% endblock %}
 
