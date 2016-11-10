@@ -9,7 +9,7 @@
 {%- set github_organization = "mongodb" %}
 
 {% macro version_selector() %}
-    <div id="version-toggle" class="btn-group btn-group-xs pull-right">
+    <div id="version-toggle" class="btn-group btn-group-xs pull-right version-toggle">
       <button type="button" class="version-button dropdown-toggle" data-toggle="dropdown">
         {{ theme_version_selector|selectattr('current')|map(attribute='text')|first|e }}<span class="caret"></span>
       </button>
@@ -66,7 +66,7 @@
 
 {%- macro sidebar() %}
   <div class="sphinxsidebar">
-    <div id="sphinxsidebarwrapper" class="sphinxsidebarwrapper" style="display: none;">
+    <div id="sphinxsidebarwrapper" class="sphinxsidebarwrapper"">
       {%- if sidebars != None %}
         {%- for sidebartemplate in sidebars %}
           {%- include sidebartemplate %}
