@@ -65,6 +65,10 @@ def write_redirects(fn, conf):
 
 def redirect_tasks(conf):
     tasks = []
+
+    if conf.git.branches.current != 'master':
+        return tasks
+
     if 'htaccess' in conf.system.files.data:
         fn = os.path.join(conf.paths.projectroot, conf.paths.htaccess)
 
