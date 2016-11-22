@@ -26,6 +26,12 @@
            <span class="alert-message">This version of the manual is no longer supported.</span>
         </div>
     {%- endif %}
+    {%- if theme_is_upcoming %}
+        <div class="alert alert-info">
+           <span class="alert-message">This manual pertains to an upcoming
+           release, and is made available for testing purposes only.</span>
+        </div>
+    {%- endif %}
 {%- endblock -%}
 
 {%- block adblockheader %}
