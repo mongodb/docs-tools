@@ -5,8 +5,8 @@ version:
   active:
     - '2.0'
     - '1.1'
-  stable: '1.1'
-  upcoming: '2.0'
+  stable: '2.0'
+  upcoming: ''
 git:
   branches:
     manual: 'master'
