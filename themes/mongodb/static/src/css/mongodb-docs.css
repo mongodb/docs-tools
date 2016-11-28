@@ -1298,6 +1298,11 @@ div.admonition {
     color: #ed271c;
 }
 
+.admonition.admonition-advisories, .admonition.admonition-advisory {
+    background-color: #fae6e5;
+    border-color: #ed271c;
+}
+
 div.admonition pre {
     margin: 10px 0;
 }
