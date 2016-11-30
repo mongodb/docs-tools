@@ -66,8 +66,7 @@ def transfer_source(conf, sconf):
     exclusions = [os.path.join('includes', 'table'),
                   os.path.join('includes', 'generated'),
                   image_dir + os.path.sep + "*.png",
-                  image_dir + os.path.sep + "*.rst",
-                  image_dir + os.path.sep + "*.eps"]
+                  image_dir + os.path.sep + "*.rst"]
 
     prefix_len = len(os.path.join(conf.paths.projectroot, conf.paths.branch_source)) + 1
 
