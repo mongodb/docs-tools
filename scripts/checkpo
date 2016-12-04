@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+import sys,traceback,os,re,copy,time
+from po_file_checker.base import check_files
+
+commits = "5"
+if(len(sys.argv)>1):
+    commits = sys.argv[1]
+
+print("commits ### ")
+print(commits)
+
+# obtain a list of the latest git log
+
+script_dir=os.path.dirname(os.path.realpath(__file__))
+
+output=os.popen("git log --name-status -"+commits+" locale/ | grep locale | grep .po | awk '{print $2}' " ).read()
+#print output
+
+
+pat = re.compile("(locale/.*?\.po)")
+
+articles = {}
+cur={}
+errors=""
+for line in output.splitlines():
+    words = line.split()
+    print( "==========  ============\n"+ line)
+	#~/work/translation/po-file-checker/build/lib/po_file_checker/check.py $line
+    missing = None
+    try:
+        missing = tuple(check_files([line]))
+    except:
+        stack = traceback.format_exc()        
+        print("**********")
+        print stack
+        for el in stack.splitlines():
+            if("Syntax error in po file" in el):
+                el = pat.sub("<a href='https://github.com/tjworks/docs/blob/master/\g<1>'>\g<1></a>", el)
+                if(el not in errors):
+                    errors= errors + el +"\n"
+        print("##########")
+
+    #if missing:        errors =  "\n".join(missing)
+
+#locale/zh/LC_MESSAGES/index.po        
+file=open("po-errors", "w")
+file.write("<p>Last run at: "+   time.strftime("%c")+"</p>")
+if(errors):
+    file.write("<span style='color:red'>"+errors+"</span>")  
+else:
+    file.write("No errors")
+file.write("\n")
+file.close()
