@@ -9,7 +9,7 @@
 {%- set github_organization = "mongodb" %}
 
 {% macro version_selector() %}
-    <div id="version-toggle" class="btn-group btn-group-xs pull-right version-toggle">
+    <div class="btn-group btn-group-xs pull-right">
       <button type="button" class="version-button dropdown-toggle" data-toggle="dropdown">
         {{ theme_version_selector|selectattr('current')|map(attribute='text')|first|e }}<span class="caret"></span>
       </button>
@@ -65,8 +65,8 @@
 {%- endmacro %}
 
 {%- macro sidebar() %}
-  <div class="sphinxsidebar">
-    <div id="sphinxsidebarwrapper" class="sphinxsidebarwrapper"">
+  <div class="sphinxsidebar" id="sphinxsidebar">
+    <div id="sphinxsidebarwrapper" class="sphinxsidebarwrapper">
       {%- if sidebars != None %}
         {%- for sidebartemplate in sidebars %}
           {%- include sidebartemplate %}
@@ -91,26 +91,18 @@
   {%- endfor %}
 
   <script defer type="text/javascript" src="{{ pathto('_static/feedback.js', 1) }}"></script>
-{%- endmacro -%}
 
-{%- macro script() -%}
   <script type="text/javascript">
-    function showNav() {
-        document.getElementById("sidebar").style.flex = "1 0 280px";
-        document.getElementById("sidebar").style.flex = "1 0 280px";
-        document.getElementById("sphinxsidebarwrapper").style.setProperty("visibility", "visible", "important");
-        document.getElementById("showNav").style.display = "none";
-        document.getElementById("main-column").style.flex = "1 1 800px";
-        document.getElementById("searchContainer").style.left = "285px";
-        document.getElementById("version-toggle").style.left = "535px";
-    }
+     function showNav() {
+       document.getElementById("sphinxsidebar").style.display = "block";
+       document.getElementById("left-column").style.display = "flex";
+       document.getElementById("showNav").style.display="none";
+     }
 
-    function closeNav() {
-        document.getElementById("sidebar").style.flex = "0";
-        document.getElementById("showNav").style.display="block";
-        document.getElementById("searchContainer").style.left = "200px";
-        document.getElementById("version-toggle").style.left = "450px";
-    }
+     function closeNav() {
+       document.getElementById("showNav").style.display="flex";
+       document.getElementById("left-column").style.display="none";
+     }
   </script>
 {%- endmacro -%}
 
@@ -257,17 +249,26 @@
 
   {%- endblock %}
 
-  <div class="content">
+
+
+  <div class="content" >
+
+
+   <div id="left-column">
+         <aside id="sidebar" class="sidebar">
+
+           {%- block sidebar2 %}
+             {{ sidebar() }}
+           {% endblock %}
+         </aside>
+
+   </div>
+
+
+    <div id="main-column" class="main-column">
 
     <span id="showNav" class="showNav" onclick="showNav()">Navigation</span>
 
-    <aside id="sidebar" class="sidebar">
-      {%- block sidebar2 %}
-         {{ sidebar() }}
-      {% endblock %}
-    </aside>
-
-    <div id="main-column" class="main-column">
 
       {% block alertbar %}{% endblock %}
 
