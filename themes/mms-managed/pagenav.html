@@ -1,7 +1,8 @@
-<a href="javascript:void(0)" class="closeNav" onclick="closeNav()">&times;</a>
+<a href="javascript:void(0)" class="closeNav" id="closeNav" onclick="closeNav()">Close &times;</a>
+
 
 <h3>
-  <a href="{{ pathto('index') }}">{{ shorttitle }}</a>
+  <a class="index-link" href="{{ pathto('index') }}">{{ shorttitle }}</a>
   {% for v in theme_version_selector %}
     {% if v.current %}
       <a class="version" style="display: inline-block;" href="">{{ v.text }}</a>
