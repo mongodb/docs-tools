@@ -1064,17 +1064,20 @@ div.sphinxsidebar h3 a.showlink {
 .sphinxsidebarwrapper > ul > .toctree-l1 {
     padding: 6px 0;
     line-height: 24px;
- }
+    border-top: 1px solid #ebebed;
+}
 
+  
 .sphinxsidebarwrapper li.toctree-l1 ul > li > a {
     line-height: 24px;
     display: inline-block;
     width: 100%;
 }
-
+/* Commenting out [Kay]:  I don't think I like the green on active although a pretty green.
 .sphinxsidebarwrapper li.toctree-l1 ul > li > a:active {
     color: #7fc857;
 }
+*/
 /* .sphinxsidebarwrapper > ul > .toctree-l1:last-child {
     border-bottom: 1px solid #ebebed;
 } */
@@ -1090,16 +1093,15 @@ div.sphinxsidebar h3 a.showlink {
 } */
 
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item {
-     background-color: #615f5f;
+     color: #615f5f;
 }
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a,
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > tt,
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > code {
-    color: white;
+   font-weight: bold;
 }
 
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > ul {
-    background-color: white;
     color: #333;
 }
 
