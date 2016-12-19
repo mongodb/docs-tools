@@ -64,17 +64,18 @@
 
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-     <script type="text/javascript">
-       (function() {
-         var cx = '017213726194841070573:f1ky3bnchs0';
-         var gcse = document.createElement('script');
-         gcse.type = 'text/javascript';
-         gcse.async = true;
-         gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-         var s = document.getElementsByTagName('script')[0];
-         s.parentNode.insertBefore(gcse, s);
-       })();
-     </script>
+      <script>
+        (function() {
+          var cx = '014132741538533607290:c-yktti2kz8';
+          var gcse = document.createElement('script');
+          gcse.type = 'text/javascript';
+          gcse.async = true;
+          gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+          var s = document.getElementsByTagName('script')[0];
+          s.parentNode.insertBefore(gcse, s);
+        })();
+      </script>
+     
   {%- endif %}
 {%- endblock -%}
  
