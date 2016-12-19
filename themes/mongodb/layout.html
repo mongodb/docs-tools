@@ -222,9 +222,8 @@
 
   <div id="topbar" >
      <div id="searchContainer" class="searchContainer">  
-        {%- block sitesearch %}
-        {%- endblock -%}
-         <gcse:searchbox-only resultsUrl="http://docs.atlas.mongodb.com/search/" queryParameterName="query"></gcse:searchbox-only>
+        {%- block sitesearch %}{%- endblock -%}
+        
        </div>
        
      {% block rating %}

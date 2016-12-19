@@ -858,6 +858,7 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     background-color: #7fc857;
     padding: 0 8px;
     height: 80%;
+    width: initial;
     box-sizing: content-box;
     -moz-box-sizing: content-box;
     -webkit-box-sizing: content-box;
