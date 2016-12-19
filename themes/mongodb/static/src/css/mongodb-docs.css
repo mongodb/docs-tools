@@ -720,8 +720,8 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 
 .content {
     box-sizing: border-box;
-    display:flex;
-    margin: 94px auto 0;
+    display: flex;
+    margin: 120px auto 0;
 }
 
 .content .main-column {
@@ -743,6 +743,16 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 
 }
 
+#topbar {
+   display: block;
+   top:  95px;
+   height: 36px;
+   position: fixed;
+   width: 100%;
+   background-color: #fff;
+   z-index: 100;
+   border-bottom: .5px solid #ccc;
+}
 
 #left-column {
    flex-shrink: 1;
@@ -751,7 +761,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
    background-color: #f5f6f7;
    min-width: 310px;
    display:flex;
-
+   overflow-y: auto;
 }
 
 div.document {
@@ -781,12 +791,18 @@ div.document {
     }
 }
 
+
 div.gsc-control-cse-en, div.gsc-control-cse { padding: 0 !important; }
 
 form.gsc-search-box {
-    background-color: rgba(255,255,255,0.3);
-    border-radius: 6px;
-    border: 1px solid #3b2920;
+   font-family: sans-serif;
+   font-size: 1em;
+   padding-left: 10px;
+   float: left;
+   height: 100%;
+   margin-left: 5px;
+
+
 }
 
 .gsc-search-box.gsc-search-box-tools .gsc-search-box .gsc-input {
@@ -796,7 +812,6 @@ form.gsc-search-box {
 div.gsc-input-box,
 .gsc-search-box .gsc-input>input:hover, .gsc-input-box-hover,
 .gsc-search-box .gsc-input>input:focus, .gsc-input-box-focus {
-    border: 0;
     background: transparent;
     box-shadow: none;
 }
@@ -804,7 +819,6 @@ div.gsc-input-box,
 /* [name] selector is a hack to override google's stylsheet */
 .gsc-input input.gsc-input[name="search"] {
     background-color: transparent !important;
-    color: white;
     font-weight: 300;
     font-size: 15px;
     height: 1.3em !important;
@@ -822,15 +836,34 @@ div.gsc-input-box,
     display: none;
 }
 
+td.gsc-search-button {
+   background: #7fc857;
+}
+/*
+input.gsc-search-button {
+   height: 100%;
+   width: 15%;
+   border: 0;
+   background-color: #7fc857;
+   float: right;
+   color: white;
+   text-align: center;
+   font-size: 12px;
+}
+*/
+
 /* [title] selector is a hack to override google's stylesheet */
 input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-search-button:focus[title] {
     border-color: transparent;
-    background-color: transparent;
+    background-color: #7fc857;
     padding: 0 8px;
+    height: 80%;
     box-sizing: content-box;
     -moz-box-sizing: content-box;
     -webkit-box-sizing: content-box;
+    background-image: none;
 }
+
 
 #header-db .logo {
     padding: 5px 0;
@@ -1013,9 +1046,9 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     text-decoration: none;
     text-align: right;
     position: relative;
-    right: 5px;
+    right: 12px;
     display: block;
-    top: 3px;
+    top: 12px;
 }
 
 
@@ -1032,9 +1065,11 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 
 div.sphinxsidebar {
     font-size: 14px;
-    height: 100%;
     line-height: 20px;
+    height: calc(100% - 131px); /* 131px is height of the top bars */
+
     position: fixed;
+    overflow-y: auto;
 }
 
 div.sphinxsidebarwrapper {
@@ -1101,6 +1136,11 @@ div.sphinxsidebar h3 a.showlink {
    font-weight: bold;
 }
 
+.sphinxsidebarwrapper > ul > .toctree-l1 > a.current{
+   font-weight: bold;
+}
+
+
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > ul {
     color: #333;
 }
@@ -1111,6 +1151,9 @@ div.sphinxsidebar h3 a.showlink {
     width: 100%;
     display: inline-block;
 }
+
+
+
 
 .sphinxsidebarwrapper .mms-hosted-search {
     margin-top: 15px;
@@ -1167,23 +1210,27 @@ div.sphinxsidebar a { color: #333; }
 
 .searchContainer {
     margin-top: 5px;
-    margin-bottom: 10px;
     height: 30px;
-    min-width: 240px;
+    min-width: 310px;
+    float: left;
 }
 
-div.sphinxsidebar input {
+#search {
     font-family: sans-serif;
     font-size: 1em;
     border: 1px solid #ccc;
-    border-right: 0;
-    outline: none;
     padding-left: 10px;
     float: left;
     height: 100%;
-    width: 85%;
+    width: 250px;
+    margin-left: 5px;
 }
 
+.gsc-control-searchbox-only {
+   width: 310px;
+   padding-left: 10px;
+   
+}
 .searchButton {
     height: 100%;
     width: 15%;
@@ -1411,8 +1458,9 @@ div.admonition.note table.docutils tr:last-child td {
    #left-column {
      display: flex;
    }
+
    .sphinxsidebar{
-       display: fixed;
+     display: block;
    }
 
 }

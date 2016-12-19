@@ -1,13 +1,12 @@
 #rating-panel {
     font-size: 80%;
     overflow: hidden;
-    position: fixed;
-    top: 95px;
     background-color: rgba(255,255,255,1);
-    width: 740px;
     line-height: 30px;
     color: #ACACAC;
-    border-bottom: 0.5px solid #ccc;
+    margin-top: 5px;
+    padding-left: 42px;
+    border-bottom: .5px solid #ccc;
 }
 
 #rating-panel a.button {
