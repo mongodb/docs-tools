@@ -1,0 +1,89 @@
+{%- extends "layout.html" -%}
+
+{% block navbar %}
+  <script
+    async
+    id='mongodb-nav-data'
+    data-props='{"environment":"docs","isOpaque":true,
+                 "includeSearch":true,
+                 "searchUrl":"https://docs.mongodb.com/compass/{{version}}/search/?query=",
+                 "contactUrl":"https://www.mongodb.com/contact?jmp=docs"}'
+    data-container='#header-db'
+    src="{{ pathto('_static/header.js', 1) }}"></script>
+{% endblock %}
+
+{%- block htmltitle %}
+  {%- if not embedded and docstitle %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif -%}
+
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
+
+{%- block editlink_icon %}{% endblock %}
+
+{%- block canonicalref %}
+  {%- if pagename == 'index' %}
+    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/" />
+  {%- else %}
+    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/{{pagename}}" />
+  {%- endif -%}
+{%- endblock -%}
+
+{%- block alertbar -%}
+    {%- if theme_active_branches and version not in theme_active_branches %}
+        <div class="alert alert-info">
+           <span class="alert-message">This version of the manual is no longer supported.</span>
+        </div>
+    {%- endif %}
+    {%- if theme_is_upcoming %}
+        <div class="alert alert-info">
+           <span class="alert-message">This manual pertains to an upcoming
+           release, and is made available for testing purposes only.</span>
+        </div>
+    {%- endif %}
+{%- endblock -%}
+
+{%- block adblockheader %}
+    {%- include "adblock-header.html" %}
+{%- endblock -%}
+
+{%- block adblock %}
+    {%- include "adblock.html" %}
+{%- endblock -%}
+
+{%- block topnav %}
+  {%- block subnav %} {% endblock %}
+
+  {%- block searchbox %}
+      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="https://docs.mongodb.com/{{theme_project}}/search/" queryParameterName="query"></gcse:searchbox-only></div>
+  {% endblock %}
+{% endblock %}
+
+{%- block sitesearch %}
+  {%- if builder != 'singlehtml' %}
+      <script>
+        (function() {
+          var cx = '014132741538533607290:cgznrev_wu0';
+          var gcse = document.createElement('script');
+          gcse.type = 'text/javascript';
+          gcse.async = true;
+          gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+          var s = document.getElementsByTagName('script')[0];
+          s.parentNode.insertBefore(gcse, s);
+        })();
+      </script>
+  {%- endif %}
+{%- endblock -%}
+ 
+{%- block langauge_selector %}{%- endblock -%}
+{%- block pdflink %}{%- endblock %}
+{%- block epublink %}{%- endblock %}
+
+
+
+
+
+{%- block righttoc %} {% endblock %}
