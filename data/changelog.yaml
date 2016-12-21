@@ -63,6 +63,7 @@ groups:
     - mongosniff
     - mongostat
     - mongotop
+    - mongoreplay
 
 ordering:
   # Defines an order of groups. Issues with multiple components use
