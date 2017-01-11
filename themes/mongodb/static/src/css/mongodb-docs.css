@@ -1076,6 +1076,7 @@ div.sphinxsidebar {
 div.sphinxsidebarwrapper {
     padding: 0; /* overwrites basic.css rules */
     min-height: 100%;
+    max-width: 310px;
     min-width: 310px;
     right: 0;
 }
