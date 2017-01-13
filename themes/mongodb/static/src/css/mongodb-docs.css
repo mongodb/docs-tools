@@ -1722,3 +1722,19 @@ table.compatibility-large th:nth-child(1){
     background-color: rgb(238,238, 238);
     color: rgb(127, 127, 127);
 }
+
+@media print {
+    #topbar {
+        display: none;
+    }
+    
+    #left-column {
+        display: none;
+    }
+    
+    #showNav {
+        display: none;
+    }
+    
+    
+}
