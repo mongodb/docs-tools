@@ -54,7 +54,7 @@
                 $input.on('blur', function(e) {
                   if (!$input.val().length) { $div.addClass('narrow').removeClass('wide'); }
                 });
-                $input.attr('placeholder', "Search Cloud Manager Help");
+                $input.attr('placeholder', "Search Cloud Manager Manual");
                 window.clearInterval(pollInput);
               }
             }, 10);
@@ -63,6 +63,7 @@
          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
          })();
     </script>
+    <gcse:searchbox-only resultsUrl="http://docs.cloudmanager.mongodb.com/search/" queryParameterName="query"></gcse:searchbox-only>
   {%- endif %}
 {%- endblock -%}
 

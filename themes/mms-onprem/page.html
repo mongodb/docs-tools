@@ -29,10 +29,14 @@
     {%- include "onprem-adblock.html" %}
 {%- endblock -%}
 
+{%- block topnav %}
+  {%- block subnav %} {% endblock %}
+
+{% endblock %}
+
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-    {%- if theme_branch in (theme_manual_branch, 'master') %}
-      <script type="text/javascript">
+       <script type="text/javascript">
         (function() {
            var cx = '017938353964985089139:s4tijscdeac';
            var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
@@ -49,7 +53,7 @@
                   $input.on('blur', function(e) {
                     if (!$input.val().length) { $div.addClass('narrow').removeClass('wide'); }
                   });
-                  $input.attr('placeholder', "Search Ops Manager Help");
+                  $input.attr('placeholder', "Search Ops Manager Manual");
                   window.clearInterval(pollInput);
                 }
               }, 10);
@@ -58,13 +62,11 @@
            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
            })();
       </script>
-    {%- endif %}
+           
+      <gcse:searchbox-only resultsUrl="https://docs.opsmanager.mongodb.com/current/search/" queryParameterName="query"></gcse:searchbox-only>
   {%- endif %}
 {%- endblock -%}
 
-{%- block searchbox %}
-<div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="https://docs.opsmanager.mongodb.com/current/search/" queryParameterName="query"></gcse:searchbox-only></div>
-{% endblock %}
 
 
 {% block version_selector %}
