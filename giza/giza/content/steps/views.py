@@ -123,6 +123,10 @@ def render_action(action, indent, level, r):
         r.newline()
 
     if 'code' in action:
+        if action.copyable:
+            r.directive(name='class', arg='copyable-code', indent=indent)
+            r.newline()
+
         r.directive(name='code-block',
                     arg=action.language,
                     indent=indent,

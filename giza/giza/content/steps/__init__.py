@@ -24,6 +24,7 @@ Steps schema is: ::
      "action": {
                   "heading": <str>,
                   "code": <str>,
+                  "copyable": <boolean>,
                   "language": <str>,
                   "content": <str>,
                   "pre": <str>,

@@ -1,0 +1,21 @@
+.copy-button {
+    display: block;
+    border: 1px solid #7a7b7b;
+    background-color: #7a7b7b;
+    color: white;
+    height: 25px;
+    font-size: 13px;
+    top: -25px;
+    left: 12px;
+    position: relative;
+    float: right;
+}
+
+.copy-button:active {
+    background-color: rgb(157, 158, 158);
+    border-color: rgb(157, 158, 158);
+}
+
+.copy-button > .fa {
+    padding-right: 3px;
+}
