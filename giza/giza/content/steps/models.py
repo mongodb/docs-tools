@@ -93,8 +93,45 @@ class HeadingMixin(object):
             self.state['optional'] = False
 
 
+class ActionMixin(object):
+    @property
+    def code(self):
+        return self.state['code']
+
+    @code.setter
+    def code(self, value):
+        if isinstance(value, list):
+            self.state['code'] = value
+        else:
+            self.state['code'] = value.split('\n')
+
+    @property
+    def language(self):
+        return self.state['language']
+
+    @language.setter
+    def language(self, value):
+        if value in get_all_languages():
+            self.state['language'] = value
+        else:
+            m = '{0} is not a supported language'.format(value)
+            logger.error(m)
+            TypeError(m)
+
+    @property
+    def copyable(self):
+        return self.state.get('copyable', False)
+
+    @copyable.setter
+    def copyable(self, value):
+        if not isinstance(value, bool):
+            raise TypeError('"copyable" expects boolean')
+
+        self.state['copyable'] = value
+
+
 class StepData(HeadingMixin, InheritableContentBase):
-    _defalut_level = 3
+    _default_level = 3
 
     @property
     def number(self):
@@ -142,32 +179,8 @@ class StepData(HeadingMixin, InheritableContentBase):
             self.state['action'] = actions
 
 
-class ActionContent(HeadingMixin, InheritableContentBase):
-    _option_registry = ['pre', 'post', 'content']
-
-    @property
-    def code(self):
-        return self.state['code']
-
-    @code.setter
-    def code(self, value):
-        if isinstance(value, list):
-            self.state['code'] = value
-        else:
-            self.state['code'] = value.split('\n')
-
-    @property
-    def language(self):
-        return self.state['language']
-
-    @language.setter
-    def language(self, value):
-        if value in get_all_languages():
-            self.state['language'] = value
-        else:
-            m = '{0} is not a supported language'.format(value)
-            logger.error(m)
-            TypeError(m)
+class ActionContent(HeadingMixin, ActionMixin, InheritableContentBase):
+    _option_registry = ['copyable', 'pre', 'post', 'content']
 
     def render(self):
         if self.replacement and 'code' in self:

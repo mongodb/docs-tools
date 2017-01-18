@@ -16,39 +16,15 @@ import logging
 import os.path
 
 from giza.inheritance import InheritableContentBase
-from giza.content.steps.models import HeadingMixin
+from giza.content.steps.models import HeadingMixin, ActionMixin
 from giza.content.helper import get_all_languages
 
 logger = logging.getLogger('giza.content.models')
 
 
-class ReleaseData(HeadingMixin, InheritableContentBase):
-    _option_registry = ['ref', 'description', 'pre', 'post', 'content']
+class ReleaseData(HeadingMixin, ActionMixin, InheritableContentBase):
+    _option_registry = ['copyable', 'ref', 'description', 'pre', 'post', 'content']
 
     @property
     def target(self):
         return os.path.join(self.conf.system.content.releases.fn_prefix, self.ref) + '.rst'
-
-    @property
-    def code(self):
-        return self.state['code']
-
-    @code.setter
-    def code(self, value):
-        if isinstance(value, list):
-            self.state['code'] = value
-        else:
-            self.state['code'] = value.split('\n')
-
-    @property
-    def language(self):
-        return self.state['language']
-
-    @language.setter
-    def language(self, value):
-        if value in get_all_languages():
-            self.state['language'] = value
-        else:
-            m = '{0} is not a supported language'.format(value)
-            logger.error(m)
-            TypeError(m)

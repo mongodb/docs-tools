@@ -161,6 +161,47 @@ $(function() {
         });
     }
 
+    function createCopyButtons() {
+        var copyableBlocks = document.getElementsByClassName('copyable-code');
+        for(var i = 0; i < copyableBlocks.length; i += 1) {
+            // IIFE to support loop scope without needing let
+            ;(function() {
+                var copyBlock = copyableBlocks[i];
+                var preElement = copyBlock.getElementsByTagName('pre')[0];
+                if(!preElement) {
+                    return;
+                }
+
+                var text = preElement.innerText.trim();
+                var copyButton = document.createElement('button');
+                var copyIcon = document.createElement('span');
+                copyIcon.className = 'fa fa-clipboard';
+                copyButton.className = 'copy-button';
+                copyButton.appendChild(copyIcon);
+                copyButton.appendChild(new Text('Copy'));
+                preElement.insertBefore(copyButton, preElement.children[0]);
+                copyButton.addEventListener('click', function() {
+                    var tempElement = document.createElement('textarea');
+                    document.body.appendChild(tempElement);
+                    tempElement.value = text;
+                    tempElement.select();
+
+                    try {
+                        var successful = document.execCommand('copy');
+                        if (!successful) {
+                            throw new Error('Failed to copy');
+                        }
+                    } catch (err) {
+                        console.error('Failed to copy');
+                        console.error(err);
+                    }
+
+                    document.body.removeChild(tempElement);
+                })
+            })();
+        }
+    }
+
     // If the browser is sufficiently modern, make navbar links load only
     // content pieces to avoid a full page load.
     function setupFastLoad() {
@@ -238,10 +279,11 @@ $(function() {
                 navRootElement = newNav;
                 document.title = title;
 
-                // Update the sidebar
+                // Update dynamic page features
                 updateSidebar();
                 setupFastLoad();
                 updateVersionSelector();
+                createCopyButtons();
 
                 if (window.history.onnavigate) {
                     window.history.onnavigate();
@@ -348,9 +390,11 @@ $(function() {
         }
     });
 
+    // Update dynamic page features
     updateSidebar();
     setupFastLoad();
     updateVersionSelector();
+    createCopyButtons();
 
     if(document.querySelector) {
         // Scroll so that the selected navbar element is in view.
