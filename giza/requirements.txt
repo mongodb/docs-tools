@@ -14,7 +14,7 @@ idna==2.0
 ipaddress==1.0.16
 Jinja2==2.8
 jira==1.0.3
-libgiza==0.2.7
+libgiza==0.2.13
 MarkupSafe==0.23
 ndg-httpsclient==0.4.0
 oauthlib==1.0.3
@@ -29,7 +29,7 @@ PyYAML==3.11
 requests==2.9.1
 requests-oauthlib==0.6.0
 requests-toolbelt==0.6.0
-rstcloth==0.2.5
+rstcloth==0.2.6
 six==1.10.0
 Sphinx==1.2.3
 sphinx-intl==0.9.9
