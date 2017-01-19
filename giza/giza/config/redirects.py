@@ -205,15 +205,16 @@ def _get_redirect_base_paths(computed, out, conf):
 
     return out_key, out_value
 
+
 # The following functions describe the process for inserting documents into the
 # HtaccessData list and are called in HtaccessData.list()
-
 def resolve_outputs_for_redirect(outputs, conf):
-    """ integration.yaml contain links for non-branched versions such as manual and latest branch
+    """ integration.yaml contain links for non-branched versions such as manual and latest branch.
         { 'manual': 'v3.0' } manual will link to v3.0 or later to v3.2, etc.
         { 'v3.2': 'master' } v3.2 will be pointing to master until actual branch exists and so on
-        KLUGE:: This gets the same shadows for each 3000+ redirect which is unnecessary and inefficient
-        But for now, putting back modified logic back where it was to limit scope of change until after 3.2 GA"""
+        KLUGE:: This gets the same shadows for each 3000+ redirect which is
+        unnecessary and inefficient. But for now, putting back modified logic
+        back where it was to limit scope of change until after 3.2 GA"""
 
     if 'integration' in conf.system.files.data:
         shadows = conf.system.files.data.integration['base']['links']
@@ -237,7 +238,7 @@ def resolve_outputs_for_redirect(outputs, conf):
                 # KLUGE:: This is a short-term kluge to be cleaned up in January
                 # since both python code and the redirect yaml files have problems
                 if conf.project.name == 'mms':
-                   key = key.replace('onprem/','')
+                    key = key.replace('onprem/', '')
                 expanded_outputs.extend([key])
 
         expanded_outputs.extend([_render_key(o, out_key, out_value) for o in computed])

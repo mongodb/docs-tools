@@ -18,40 +18,41 @@ from rstcloth.rstcloth import RstCloth
 from rstcloth.rstcloth import fill
 from rstcloth.table import TableData, TableBuilder, ListTable
 
+
 def setup_replacements(content):
-    if content.interface == "command": 
-        role_type = "dbcommand"
-    elif content.interface == "method": 
-        role_type = "method"
-    elif content.interface == "phpmethod":
-        role_type = "phpmethod"
-    else: 
-        role_type = "samp"
+    if content.interface == 'command':
+        role_type = 'dbcommand'
+    elif content.interface == 'method':
+        role_type = 'method'
+    elif content.interface == 'phpmethod':
+        role_type = 'phpmethod'
+    else:
+        role_type = 'samp'
 
-    if "role" not in content.replacement:
-        content.replacement["role"] = RstCloth.role(role_type, content.operation)
+    if 'role' not in content.replacement:
+        content.replacement['role'] = RstCloth.role(role_type, content.operation)
 
-    if "type" not in content.replacement: 
+    if 'type' not in content.replacement:
         if isinstance(content.type, list):
-            if len(content.type) == 1: 
-                content.replacement["type"] = content.type[0]
-            elif len(content.type) == 2: 
-                content.replacement["type"] = "or".join(content.type)
-            else: 
+            if len(content.type) == 1:
+                content.replacement['type'] = content.type[0]
+            elif len(content.type) == 2:
+                content.replacement['type'] = 'or'.join(content.type)
+            else:
                 types = copy.copy(content.type)
-                types[-1] = "and " + types[-1]
-                content.replacement["type"] = ",".join(types)
-        else: 
-            content.replacement["type"] = content.type
+                types[-1] = 'and ' + types[-1]
+                content.replacement['type'] = ','.join(types)
+        else:
+            content.replacement['type'] = content.type
 
-    if "argname" not in content.replacement:
-        content.replacement["argname"] = content.name
-    
+    if 'argname' not in content.replacement:
+        content.replacement['argname'] = content.name
+
 
 def render_apiargs(apiargs):
     for content in apiargs.ordered_content():
         setup_replacements(content)
-        content.render() # run_replacements
+        content.render()  # run_replacements
 
     r = RstCloth()
 

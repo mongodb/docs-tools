@@ -25,7 +25,7 @@ if sys.version_info >= (3, 0):
 
 class OptionData(InheritableContentBase):
     _option_registry = ['pre', 'post', 'final', 'ref', 'content', 'edition',
-                        'description', 'name', 'args', 'aliases', 'default', 
+                        'description', 'name', 'args', 'aliases', 'default',
                         'type', 'filename']
 
     @property

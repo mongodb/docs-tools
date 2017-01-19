@@ -58,5 +58,5 @@ def glossary_clean(conf):
     return [Task(job=shutil.rmtree,
                  args=[conf.system.content.glossary.output_dir],
                  target=True,
-                 depdency=[conf.system.content.glossary.output_dir],
-                 descrption='removing {0}'.format(conf.system.content.glossary.output_dir))]
+                 dependency=[conf.system.content.glossary.output_dir],
+                 description='removing {0}'.format(conf.system.content.glossary.output_dir))]

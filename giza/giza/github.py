@@ -132,7 +132,7 @@ def mine_github_pulls(gh, app, conf):
 @argh.expects_obj
 def setup(args):
     skel = {
-        'site': {'credentials': "~/.giza-credentials.yaml",
+        'site': {'credentials': '~/.giza-credentials.yaml',
                  'corp': None},
         'repos': [{'user': 'mongodb', 'name': 'docs'},
                   {'user': 'mongodb', 'name': 'docs-ecosystem'}],

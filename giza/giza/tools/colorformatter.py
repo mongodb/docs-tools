@@ -14,6 +14,7 @@
 
 import logging
 
+
 class ColorFormatter(logging.Formatter):
     """Logging formatter using VT100 terminal color codes."""
     VT100 = {

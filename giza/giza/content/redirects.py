@@ -47,7 +47,7 @@ def make_redirect(conf):
               '<FilesMatch "\.(ttf|otf|eot|woff)$">', '\n',
               '   Header set Access-Control-Allow-Origin "*"', '\n',
               '</FilesMatch>',
-              ])
+             ])
 
     return o
 

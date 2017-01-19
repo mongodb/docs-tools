@@ -101,7 +101,7 @@ def json_output_tasks(conf):
                                  args=(fjson, jsonf, regexes, conf),
                                  target=jsonf,
                                  dependency=fjson,
-                                 description="processing json file".format(json))
+                                 description="processing json file {}".format(json))
         tasks.append(task)
         outputs.append(jsonf)
 

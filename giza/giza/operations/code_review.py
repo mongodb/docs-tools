@@ -224,6 +224,7 @@ def get_issue_url(output):
 
     return '\n'.join(urls)
 
+
 def get_issue_number(output):
     if not isinstance(output, list):
         output = output.split('\n')

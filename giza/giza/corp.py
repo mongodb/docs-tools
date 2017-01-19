@@ -11,7 +11,7 @@ logger = logging.getLogger('giza.corp')
 def corp_api_call(endpoint, conf):
     credentials = CredentialsConfig(conf.site.credentials).corp
 
-    url = conf.site.corp + "/api/" + endpoint
+    url = conf.site.corp + '/api/' + endpoint
     headers = {'accept': 'application/json'}
     response = requests.get(url,
                             auth=HTTPDigestAuth(credentials.username, credentials.password),

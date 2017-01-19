@@ -247,9 +247,10 @@ def translate_htaccess(path):
     """Read a .htaccess file, and transform redirects into a mapping of redirects."""
     with open(path, 'r') as f:
         data = f.read()
-        return dict([(x.lstrip('/'), y) for x,y in REDIRECT_PAT.findall(data)])
+        return dict([(x.lstrip('/'), y) for x, y in REDIRECT_PAT.findall(data)])
 
     return {}
+
 
 class StagingCollector(object):
     """A dummy file collector interface that always reports files as having
@@ -447,7 +448,7 @@ class Staging(object):
         # If a redirect is masking a file, we can run into an invalid 404
         # when the redirect is deleted but the file isn't republished.
         # If this is the case, warn and delete the redirect.
-        for src,dest in redirects.items():
+        for src, dest in redirects.items():
             src_path = os.path.join(root, src)
             if os.path.isfile(src_path) and os.path.basename(src_path) in os.listdir(os.path.dirname(src_path)):
                 LOGGER.warn('Would ignore redirect that will mask file: %s', src)
@@ -711,8 +712,8 @@ class StagingPipeline(object):
                             for edition in self.editions]
 
         self.roots = [os.path.join(self.conf.paths.projectroot,
-                              self.conf.paths.branch_output,
-                              edition_suffix) for edition_suffix in edition_suffixes]
+                                   self.conf.paths.branch_output,
+                                   edition_suffix) for edition_suffix in edition_suffixes]
 
     def stage(self):
         prefix = self.staging_config.prefix
@@ -766,8 +767,8 @@ class DeployPipeline(StagingPipeline):
         edition_suffixes = self.editions
 
         self.roots = [os.path.join(self.conf.paths.projectroot,
-                              self.conf.paths.public,
-                              edition_suffix) for edition_suffix in edition_suffixes]
+                                   self.conf.paths.public,
+                                   edition_suffix) for edition_suffix in edition_suffixes]
 
     def print_report(self):
         """Print a list of staging URLs corresponding to the given editions."""

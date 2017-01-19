@@ -67,7 +67,7 @@ def get_issue_structure(version, conf):
             components.append(c.name)
 
             if c.name not in groups:
-                logger.error("undefined component. update configuration before continuing".format(c.name))
+                logger.error("undefined component %s. update configuration before continuing", c.name)
 
         issue_pair = (issue.key.encode("utf-8"), issue.fields.summary.encode("utf-8"))
 

@@ -60,10 +60,10 @@ def _generate_tables(source, target, list_target):
 
     list_table = TableBuilder(ListTable(table_data))
     list_table.write(list_target)
-    logger.debug('rebuilt rendered table {0}'.format(list_target))
+    logger.debug('rebuilt rendered table %s', list_target)
 
     list_table.write(target)
-    logger.debug('rebuilt rendered list table {0}'.format(target))
+    logger.debug('rebuilt rendered list table %s', target)
 
     # if build_all or table_data.format == 'list':
     #     list_table = TableBuilder(ListTable(table_data))
@@ -76,7 +76,7 @@ def _generate_tables(source, target, list_target):
 
     #     print('[table]: rebuilt {0} as (a list table)'.format(target))
 
-    logger.info('rebuilt rendered table output for {0}'.format(source))
+    logger.info('rebuilt rendered table output for %s', source)
 
 
 # Table Source Iterators
@@ -97,14 +97,14 @@ def table_tasks(conf):
         target = _get_table_output_name(source)
         list_target = _get_list_table_output_name(source)
 
-        description = 'generating tables: {0}, {1} from'.format(target, list_target, source)
+        description = 'generating tables: {}, {} from {}'.format(target, list_target, source)
         tasks.append(libgiza.task.Task(job=_generate_tables,
                                        args=(source, target, list_target),
                                        target=[target, list_target],
                                        dependency=source,
                                        description=description))
 
-        logger.debug('adding table job to build: {0}'.format(target))
+        logger.debug('adding table job to build: %s', target)
 
     return tasks
 

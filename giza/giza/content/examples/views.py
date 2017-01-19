@@ -119,8 +119,8 @@ def full_example(collection, examples):
             num_langs = len(lang)
             lang = list(lang)[0]
             if num_langs > 1:
-                msg = 'specified more than one language for examples {0}, using {1} for results'
-                logger.warning(msg.foramt(example.ref, lang))
+                msg = 'specified more than one language for examples %s, using %s for results'
+                logger.warning(msg, example.ref, lang)
 
             r.codeblock(content=example.results,
                         language=lang)

@@ -10,7 +10,6 @@ logger = logging.getLogger('giza.jeerah.client')
 
 
 class JeerahClient(object):
-
     def __init__(self, conf):
         self.conf = conf
         self.credentials = giza.config.credentials.CredentialsConfig(self.conf.system.files.data.jira.site.credentials).jira
@@ -19,7 +18,6 @@ class JeerahClient(object):
         self.abort_on_error = True
         self._results_format = 'list'
         self.versions_cache = {}
-
 
     @property
     def results_format(self):

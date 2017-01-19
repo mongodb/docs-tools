@@ -217,7 +217,7 @@ class SystemConfigFiles(RecursiveConfigurationBase):
             if isinstance(value, dict):
                 if 'migration' in value:
                     if isinstance(value[key], list):
-                        fns.exnted(value[key])
+                        fns.extend(value[key])
                     else:
                         fns.append(value[key])
             elif value.startswith(key):
@@ -306,7 +306,7 @@ class SystemConfigData(RecursiveConfigurationBase):
             if os.path.isfile(full_path):
                 # TODO we should make this process lazy with a more custom getter/setter
                 self.state[basename] = self._resolve_config_data(full_path, basename)
-                logger.debug('set sub-config {0} with data from {0}'.format(basename, full_path))
+                logger.debug('set sub-config %s with data from %s', basename, full_path)
             else:
                 self.state[basename] = []
                 logger.warning('{0} does not exist. continuing.'.format(full_path))

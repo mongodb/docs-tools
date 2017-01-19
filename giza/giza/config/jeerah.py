@@ -54,20 +54,22 @@ class JeerahConfig(RecursiveConfigurationBase):
         cconfig = ChangelogConfiguration()
 
         if isinstance(value, dict):
-            if "source" in value:
-                value = os.path.join(self.conf.paths.projectroot, self.conf.paths.global_config, value['source'])
+            if 'source' in value:
+                value = os.path.join(self.conf.paths.projectroot,
+                                     self.conf.paths.global_config,
+                                     value['source'])
 
             cconfig.ingest(value)
 
-            self.state["changelog"] = cconfig
+            self.state['changelog'] = cconfig
         else:
-            raise TypeError("invalid changelog")
+            raise TypeError('invalid changelog')
 
 
 class ChangelogConfiguration(ConfigurationBase):
     @property
     def ordering(self):
-        return self.state["ordering"]
+        return self.state['ordering']
 
     @ordering.setter
     def ordering(self, value):
@@ -78,28 +80,28 @@ class ChangelogConfiguration(ConfigurationBase):
                     invalid.append(item)
 
             if len(invalid) > 0:
-                raise TypeError("{0} item(s) are not strings.".format(', '.join(invalid)))
+                raise TypeError('{0} item(s) are not strings.'.format(', '.join(invalid)))
             else:
-                self.state["ordering"] = value
+                self.state['ordering'] = value
 
         else:
-            raise TypeError("changelog ordering must be list.")
+            raise TypeError('changelog ordering must be list.')
 
     @property
     def nesting(self):
-        return self.state["nesting"]
+        return self.state['nesting']
 
     @nesting.setter
     def nesting(self, value):
-        self._set_dict2list_mapping("nesting", value)
+        self._set_dict2list_mapping('nesting', value)
 
     @property
     def groups(self):
-        return self.state["groups"]
+        return self.state['groups']
 
     @groups.setter
     def groups(self, value):
-        self._set_dict2list_mapping("groups", value)
+        self._set_dict2list_mapping('groups', value)
 
     def _set_dict2list_mapping(self, name, value):
         if isinstance(value, dict):
@@ -112,11 +114,12 @@ class ChangelogConfiguration(ConfigurationBase):
                     invalid.append(k)
 
             if len(invalid) > 0:
-                raise TypeError("item(s) {0} are not valid {1} definitions.".format(', '.join(invalid), name))
+                raise TypeError('item(s) {} are not valid {} definitions.'.format(
+                    ', '.join(invalid), name))
             else:
                 self.state[name] = value
         else:
-            raise TypeError("invalid {0} definition.".format(name))
+            raise TypeError('invalid {0} definition.'.format(name))
 
 
 class JeerahSiteConfig(ConfigurationBase):
@@ -140,26 +143,26 @@ class JeerahSiteConfig(ConfigurationBase):
         if isinstance(value, list):
             for item in value:
                 if not isinstance(item, basestring):
-                    raise TypeError("jira project {0} is not a string".format(value))
+                    raise TypeError('jira project {0} is not a string'.format(value))
 
             self.state['projects'] = value
         else:
-            raise TypeError("jira projects must be a list: {0}".format(value))
+            raise TypeError('jira projects must be a list: {0}'.format(value))
 
     @property
     def versions(self):
-        return self.state["versions"]
+        return self.state['versions']
 
     @versions.setter
     def versions(self, value):
         if isinstance(value, list):
             for item in value:
                 if not isinstance(item, basestring):
-                    raise TypeError("jira version {0} is not a string".format(value))
+                    raise TypeError('jira version {0} is not a string'.format(value))
 
-                if len(item.split(".")) != 3:
-                    raise TypeError("{0} is an invalid version".format(item))
+                if len(item.split('.')) != 3:
+                    raise TypeError('{0} is an invalid version'.format(item))
 
             self.state['versions'] = value
         else:
-            raise TypeError("jira versions must be a list: {0}".format(value))
+            raise TypeError('jira versions must be a list: {0}'.format(value))
