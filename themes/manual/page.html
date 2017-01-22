@@ -10,9 +10,7 @@
   <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
 {%- endblock -%}
 
-{%- block metadescription %}
-  <meta name="description" content="MongoDB Manual {{version}} {{title|striptags|e}}"/>
-{%- endblock -%}
+{%- block metadescription %}{%- endblock -%}
 
 {%- block canonicalref %}
   {%- if theme_branch == 'master' %}
