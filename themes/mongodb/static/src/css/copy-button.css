@@ -4,19 +4,15 @@
     color: white;
     height: 25px;
     font-size: 13px;
-    left: 1040px;
-    position: absolute;
+    left: 12px;
+    top: -24px;
+    float: right;
+    position: relative;
 }
 
 @media print {
     .copy-button {
         display: none;
-    }
-}
-
-@media (max-width: 1093px) {
-    .copy-button {
-        left: 730px;
     }
 }
 
