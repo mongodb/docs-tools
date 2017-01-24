@@ -1,14 +1,23 @@
 .copy-button {
-    display: block;
     border: 1px solid #7a7b7b;
     background-color: #7a7b7b;
     color: white;
     height: 25px;
     font-size: 13px;
-    top: -25px;
-    left: 12px;
-    position: relative;
-    float: right;
+    left: 1040px;
+    position: absolute;
+}
+
+@media print {
+    .copy-button {
+        display: none;
+    }
+}
+
+@media (max-width: 1093px) {
+    .copy-button {
+        left: 730px;
+    }
 }
 
 .copy-button:active {
