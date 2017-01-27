@@ -28,7 +28,7 @@ class TestCode(Directive):
         except yaml.scanner.ScannerError as error:
             raise self.severe(u'Error parsing YAML:\n{}.'.format(ErrorString(error)))
         except Exception as error:
-            raise self.severe(u'Error:\n{}.'.format(ErrorString(error)))
+            raise self.severe(u'Invalid test-code block:\n{}.'.format(ErrorString(error)))
 
         code = '\n'.join(['.. code-block:: javascript\n'] +
             ['   ' + line for line in code.split('\n')])
