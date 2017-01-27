@@ -23,7 +23,6 @@ import giza.operations.configuration
 import giza.operations.deploy
 import giza.operations.generate
 import giza.operations.git
-import giza.operations.http_serve
 import giza.operations.includes
 import giza.operations.make
 import giza.operations.packaging
@@ -47,7 +46,6 @@ commands = {
         giza.operations.quickstart.make_project,
         giza.operations.sphinx_cmds.main,
         giza.operations.deploy.twofa_code,
-        giza.operations.http_serve.start,
         giza.operations.stage.main_stage,
         giza.operations.stage.main_deploy,
         giza.operations.configuration.report_version,
