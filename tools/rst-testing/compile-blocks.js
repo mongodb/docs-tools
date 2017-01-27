@@ -101,7 +101,7 @@ function compileBlock(block) { // -> Program node
         if (check) {
             const checkBlock = subst(checkTemplate, {
                 $check: esprima.parse(check),
-                $message: literal(`from rST file: ${filename}: ${lineno}: ${description}`),
+                $message: literal(`from rST file: ${filename}: ${lineno}\n    ${description}`),
             });
 
             return concatPrograms(codeBlock, checkBlock);
