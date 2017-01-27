@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-"""Runs MongoDB jstests.
-
-Usage:
-        rst_tester <test.js>...
-        
-        Options:
-                -h --help        Show this help text.
-                
-"""
+"""Runs MongoDB jstests."""
+import argparse
 import os
 import subprocess
 from subprocess import PIPE
 import time
 import unittest
-
-from docopt import docopt
 
 
 FNULL = open(os.devnull, 'w')
@@ -39,7 +30,7 @@ def test_factory():
 
 def addTest(cls, js_test):
     def test(self):
-        # return_code = subprocess.call("mongo {} --port {}".format(js_test, MONGOD_PORT), shell=True)  
+        # return_code = subprocess.call("mongo {} --port {}".format(js_test, MONGOD_PORT), shell=True)
         # TODO: Replace with check_call
         mongo = subprocess.Popen("mongo {} --port {}".format(js_test, MONGOD_PORT), shell=True, stdout=PIPE)
         stdout, _ = mongo.communicate()
@@ -65,5 +56,7 @@ def main(tests):
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__)
-    main(args['<test.js>'])
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('test', metavar='TEST', nargs='+', help='The JS test file to run.')
+    args = parser.parse_args()
+    main(args.test)

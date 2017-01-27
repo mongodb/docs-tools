@@ -7,32 +7,31 @@ import json
 import logging
 from typing import Dict, List, Optional
 
-PAT_DIRECTIVE = re.compile(r'^([^\S\n]*).. test-code::\s*$', re.M)
+PAT_DIRECTIVE = re.compile(r'^([^\S\n]*).. test::\s*(\w*)$', re.M)
 logger = logging.getLogger('doctest')
 
 
 class Block:
-    __slots__ = ('filename', 'lineno', 'code', 'results',
-                 'description', 'hidden')
+    __slots__ = ('filename', 'lineno', 'code', 'check',
+                 'description', 'language')
 
-    def __init__(self, filename: str, lineno: int, code: str,
-                       results: Optional[str], description: str,
-                       hidden: bool) -> None:
+    def __init__(self, filename: str, lineno: int, code: str, check: str,
+                       description: str, language: str) -> None:
         self.filename = filename
         self.lineno = lineno
         self.code = code
-        self.results = results
+        self.check = check
         self.description = description
-        self.hidden = hidden
+        self.language = language
 
     def serialize(self) -> Dict[str, object]:
         return {
             'filename': self.filename,
             'lineno': self.lineno,
             'code': self.code,
-            'results': self.results,
+            'check': self.check,
             'description': self.description,
-            'hidden': self.hidden
+            'language': self.language
         }
 
 
@@ -68,21 +67,20 @@ class Doctest:
 
         for match in PAT_DIRECTIVE.finditer(file_text):
             indentation = match.group(1) + '   '
+            language = match.group(2)
             pat = re.compile('(?:^{}[^\n]*\n)+'.format(indentation), re.M)
             block_match = pat.search(file_text, match.end(0))
             directive_text = block_match.group(0)
 
             data = yaml.safe_load(directive_text)
-            code = data['code']
+            code = data.get('code', '')
+            check = data.get('check', '')
             lineno = file_text.count('\n', 0, match.start(0)) + 1
-            results = data.get('results', None)
-            test = data.get('test', None)
-            hidden = data.get('hidden', False)
             description = data.get('description', None)
 
             blocks.append(Block(filename=path, lineno=lineno, code=code,
-                                results=results, description=description,
-                                hidden=hidden))
+                                check=check, description=description,
+                                language=language))
 
         return blocks
 

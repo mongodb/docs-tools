@@ -12,23 +12,25 @@ import yaml
 
 class TestCode(Directive):
     has_content = True
-    required_arguments = 0
+    required_arguments = 1
     optional_arguments = 1
     final_argument_whitespace = True
     option_spec = {}
 
     def run(self):
-        contents = self.arguments[0]
+        language = self.arguments[0]
+        contents = self.arguments[1]
         defined_in = self.state.document.current_source
         source_path = self.state.document.get('source')
 
         try:
             data = yaml.safe_load(contents)
-            code = data['code']
+            code = data.get('code', '')
         except yaml.scanner.ScannerError as error:
             raise self.severe(u'Error parsing YAML:\n{}.'.format(ErrorString(error)))
-        except Exception as error:
-            raise self.severe(u'Invalid test-code block:\n{}.'.format(ErrorString(error)))
+
+        if not code:
+            return []
 
         code = '\n'.join(['.. code-block:: javascript\n'] +
             ['   ' + line for line in code.split('\n')])
@@ -41,7 +43,7 @@ class TestCode(Directive):
 
 
 def setup(app):
-    app.add_directive('test-code', TestCode)
+    app.add_directive('test', TestCode)
 
     return {'parallel_read_safe': True,
             'parallel_write_safe': True}

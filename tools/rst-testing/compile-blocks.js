@@ -80,27 +80,35 @@ function compileBlocks(blocks) { // -> Program node
     return blocks.map(compileBlock).reduce(concatPrograms, prelude);
 }
 
-const assertionTemplate = esprima.parse(`
-assert.eq(__coerceCursorToArray($query), $result, $message);
+const checkTemplate = esprima.parse(`
+try {
+    $check;
+} catch(err) {
+    print('\x1b[31;1mFailed ' + $message + '\x1b[0m');
+    throw err;
+}
 `);
 
 function compileBlock(block) { // -> Program node
-    const { filename, lineno, code, results, hidden, handouts } = block;
-    const language = block.language || 'javascript';
+    const { filename, lineno, language, handouts } = block;
+    const description = block.description || '';
+    const check = block.check || '';
+    const code = block.code || '';
 
-    if (language === 'javascript') {
-        if (results) {
-            // When there is a results field, we require the code part to be a single expression.
-            // Otherwise it's not clear what the return value would be.
-            return subst(assertionTemplate, {
-                $query: parseExpression(code),
-                $result: parseExpression(results),
-                $message: literal('From rST file: ' + filename + ':' + lineno),
+    const codeBlock = esprima.parse(code);
+
+    if (language === 'js') {
+        if (check) {
+            const checkBlock = subst(checkTemplate, {
+                $check: esprima.parse(check),
+                $message: literal(`from rST file: ${filename}: ${lineno}: ${description}`),
             });
-        } else {
-            return esprima.parse(code);
+
+            return concatPrograms(codeBlock, checkBlock);
         }
-    } else if (language === 'shell') {
+
+        return codeBlock;
+    } else if (language === 'bash') {
         if (results) {
             throw Error("Shell blocks cannot have results");
         }
@@ -212,7 +220,7 @@ function literal(value) { // -> Expression node
                     value: literal(value[key]),
                 };
             }),
-        }
+        };
     } else {
         return { type: 'Literal', value: value };
     }
