@@ -1,3 +1,7 @@
+"""
+Implements the RST Testing Squad spec.
+"""
+
 import os.path
 import sys
 
