@@ -19,14 +19,19 @@ class TestCode(Directive):
 
     def run(self):
         language = self.arguments[0]
-        contents = self.arguments[1]
+
+        first_line = [self.arguments[1]] if len(self.arguments) > 1 else []
+        contents = u'\n'.join(first_line + list(self.content))
         defined_in = self.state.document.current_source
         source_path = self.state.document.get('source')
 
         try:
             data = yaml.safe_load(contents)
+            if not isinstance(data, dict):
+                raise self.severe(u'Expected YAML dictionary')
+
             code = data.get('code', '')
-        except yaml.scanner.ScannerError as error:
+        except (yaml.scanner.ScannerError, yaml.parser.ParserError) as error:
             raise self.severe(u'Error parsing YAML:\n{}.'.format(ErrorString(error)))
 
         if not code:
