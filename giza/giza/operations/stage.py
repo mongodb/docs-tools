@@ -513,7 +513,7 @@ class Staging(object):
         if not redirects:
             return
 
-        redirect_dirs = self.staging_config.redirect_dirs
+        redirect_dirs = [re.compile(d) for d in self.staging_config.redirect_dirs]
         if not redirect_dirs:
             LOGGER.warn('No "redirect_dirs" listed for this project.')
             LOGGER.warn('No redirects will be removed.')

@@ -18,12 +18,16 @@ object.
 """
 
 import json
-import argh
+import logging
+import sys
 
 import giza
+import argh
 import libgiza
 
 from giza.config.helper import fetch_config
+
+logger = logging.getLogger('giza.operations.configuration')
 
 
 @argh.named('version')
@@ -35,6 +39,8 @@ def report_version(args):
     print("libgiza: " + libgiza.__version__)
 
 
+@argh.arg('config_target', nargs='*')
+@argh.arg('--simple', action='store_true')
 @argh.arg('--conf_path', '-c')
 @argh.arg('--edition', '-e')
 @argh.arg('--language', '-l')
@@ -58,8 +64,37 @@ def render_config(args):
      c.system.dependency_cache_fn, c.paths.public_site_output,
      c.system.content, c.runstate.runner, c.runstate.force,
      c.system.files, c.system.files.paths, c.system.files.data,
-     c.paths.htaccess]
+     c.system.files.data.integration, c.paths.htaccess]
 
-    print('--- ' + "str of config object >>>")
-    print(json.dumps(c.dict(), indent=3))
-    print('---  <<<')
+    # Print out everything
+    if not args.config_target:
+        print(json.dumps(c.dict(), indent=2))
+        return
+
+    query = args.config_target[0]
+    cursor = c
+
+    for segment in query.split('.'):
+        try:
+            if hasattr(cursor, segment):
+                cursor = getattr(cursor, segment)
+            else:
+                cursor = cursor[segment]
+        except (KeyError, TypeError):
+            logger.fatal('No key "%s" in configuration', query)
+            sys.exit(1)
+
+    # Convert a giza.config.system.SystemConfigData object into a dict
+    if hasattr(cursor, 'dict'):
+        cursor = cursor.dict()
+
+    if args.simple:
+        try:
+            result = ' '.join(cursor)
+        except TypeError:
+            logger.fatal('Cannot represent %s with --simple', query)
+            sys.exit(1)
+    else:
+        result = json.dumps(cursor, indent=2)
+
+    print(result)

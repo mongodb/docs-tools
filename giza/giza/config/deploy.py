@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
 import logging
 import libgiza.config
 
@@ -180,4 +179,4 @@ class StagingTargetConfig(libgiza.config.ConfigurationBase):
 
     @redirect_dirs.setter
     def redirect_dirs(self, value):
-        self.state['redirect_dirs'] = [re.compile(d) for d in value]
+        self.state['redirect_dirs'] = value
