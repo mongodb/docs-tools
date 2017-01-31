@@ -1,0 +1,33 @@
+{%- extends "layout.html" -%}
+
+{%- block translationslink -%} {%- endblock -%}
+
+{%- block version_selector %} {% endblock %}
+
+{%- block format_selector %} {%- endblock -%}
+
+{%- block rating -%}{%- endblock -%}
+
+
+{%- block righttoc %} {% endblock %}
+
+
+{%- block sitesearch %}
+  {%- if builder != 'singlehtml' %}
+
+   <script>
+     (function() {
+       var cx = '014132741538533607290:xl0kbqanc9y';
+       var gcse = document.createElement('script');
+       gcse.type = 'text/javascript';
+       gcse.async = true;
+       gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+       var s = document.getElementsByTagName('script')[0];
+       s.parentNode.insertBefore(gcse, s);
+     })();
+   </script>
+   <gcse:searchbox-only resultsUrl="http://docs.mongodb.com/ruby-driver/search/" queryParameterName="query"></gcse:searchbox-only>
+   
+  {%- endif %}
+{%- endblock -%}
+   
