@@ -3,17 +3,17 @@ from nose.tools import nottest, istest
 import os
 
 # this runs tests of the inheritance.py baseclasses, as is.
-from libgiza.test.test_inheritance import (TestDataCache, TestDataContentBase,
-                                           TestInheritedContentResolution,
-                                           TestBaseTemplateRendering,
-                                           get_test_file_path,
-                                           get_inheritance_data_files)
+from giza.libgiza.test.test_inheritance import (TestDataCache, TestDataContentBase,
+                                                TestInheritedContentResolution,
+                                                TestBaseTemplateRendering,
+                                                get_test_file_path,
+                                                get_inheritance_data_files)
 
 from giza.config.main import Configuration
 from giza.config.runtime import RuntimeStateConfig
 
-import libgiza.test
-import libgiza.git
+import giza.libgiza.test
+import giza.libgiza.git
 
 import giza.inheritance
 import giza.config.git
