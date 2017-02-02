@@ -218,7 +218,7 @@ def glossary(args):
                       pool_size=c.runstate.pool_size,
                       force=c.runstate.force).context() as app:
         if c.runstate.clean_generated is True:
-            app.extend_queue(clean_glossary(c))
+            app.extend_queue(glossary_clean(c))
         else:
             app.extend_queue(glossary_tasks(c))
 

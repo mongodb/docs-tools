@@ -1,7 +1,5 @@
-import os
 import logging
 import argh
-import giza.content.changelog.views
 
 logger = logging.getLogger('giza.jeerah.client')
 
