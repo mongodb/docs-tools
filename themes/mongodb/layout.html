@@ -296,7 +296,11 @@
          {%- endblock %}
 
         {%- block adblock %}{% endblock %}
-        {%- block reportlink %}{% endblock %}
+        {%- block reportlink %}
+           <div class="report-link">
+             {{ jiralink() }}
+           </div>
+        {% endblock %}
         {%- block social %}
            <div class="social">
              <a class="twitter-icon" href="https://twitter.com/MongoDB"><i class="fa fa-twitter-square"></i></a>
