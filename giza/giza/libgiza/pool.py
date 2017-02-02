@@ -147,15 +147,9 @@ class WorkerPool(object):
                         try:
                             task_result = ret.get()
                         except Exception as e:
-                            if job.ignore_errors is True:
-                                m = 'caught error "{0}", waiting for other tasks to finish'
-                                logger.error(m.format(e))
-                                has_errors = True
-                                errors.append((job, e))
-                            else:
-                                m = "caught error {0} with task {1}. exiting now."
-                                logger.error(m.format(e, job.description))
-                                raise SystemExit(1)
+                            m = "caught error {0} with task {1}. exiting now."
+                            logger.error(m.format(e, job.description))
+                            raise SystemExit(1)
 
                         retval.append((idx, task_result))
                         self.do_finalizers(job, results)
@@ -170,15 +164,9 @@ class WorkerPool(object):
                 try:
                     retval.append((idx, ret.get()))
                 except Exception as e:
-                    if job.ignore_errors is True:
-                        m = 'caught error "{0}" in {1}, waiting for other tasks to finish'
-                        logger.error(m.format(e, job.description))
-                        has_errors = True
-                        errors.append((job, e))
-                    else:
-                        m = "caught error {0} with task {1}. exiting now."
-                        logger.error(m.format(e, job.description))
-                        raise SystemExit(1)
+                    m = "caught error {0} with task {1}. exiting now."
+                    logger.error(m.format(e, job.description))
+                    raise SystemExit(1)
 
         if has_errors is True:
             error_list = []

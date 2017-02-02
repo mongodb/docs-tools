@@ -41,7 +41,7 @@ class Task(object):
     """
 
     def __init__(self, job=None, args=None,
-                 description=None, target=None, dependency=None, ignore=None):
+                 description=None, target=None, dependency=None):
         """
         All arguments are optional. You can define a :class:`~giza.task.Task()`
         either upon creation, or after creation by modifying attributes.
@@ -63,7 +63,6 @@ class Task(object):
         self._conf = None
         self._args = None
         self._force = None
-        self._ignore_errors = None
         self._description = None
         if job is not None:
             self.job = job
@@ -76,8 +75,6 @@ class Task(object):
         # use default setter logic for these options
         if args is not None:
             self.args = args
-        if ignore is not None:
-            self.ignore_errors = ignore
         if description is not None:
             self.description = description
 
@@ -133,22 +130,6 @@ class Task(object):
     def force(self, value):
         if isinstance(value, bool):
             self._force = value
-
-    @property
-    def ignore_errors(self):
-        if self._ignore_errors is None:
-            if self.conf is None:
-                return True
-            else:
-                logger.warning('deprecated use of conf object in app setup for ignore_errors value')
-                return self.conf.runstate.ignore_errors
-
-        return False
-
-    @ignore_errors.setter
-    def ignore_errors(self, value):
-        if isinstance(value, bool):
-            self._ignore_errors = value
 
     def define_dependency_node(self, target, dependency):
         self.target = target

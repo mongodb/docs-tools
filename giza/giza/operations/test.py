@@ -141,18 +141,15 @@ def integration_main(args):
             git_path = os.path.join(build_path, project.project)
 
         task = app.add(giza.libgiza.task.Task(job=setup_test_repo,
-                                              args=(git_path, project),
-                                              ignore=False))
+                                              args=(git_path, project)))
 
         if args._test_op.startswith('clean'):
             task = task.add_finalizer(giza.libgiza.task.Task(job=cleaner,
-                                                             args=[path],
-                                                             ignore=False))
+                                                             args=[path]))
 
         for branch in project.branches:
             task = task.add_finalizer(giza.libgiza.task.Task(job=change_branch,
-                                                             args=(path, branch),
-                                                             ignore=False))
+                                                             args=(path, branch)))
 
             if args._test_op.startswith('clean'):
                 op_name = args._test_op.lower()[5:]
@@ -161,7 +158,6 @@ def integration_main(args):
 
             for op in project.operations[op_name]:
                 task = task.add_finalizer(giza.libgiza.task.Task(job=run_test_op,
-                                                                 args=(op, path),
-                                                                 ignore=False))
+                                                                 args=(op, path)))
 
     app.run()
