@@ -37,7 +37,7 @@ class Task(object):
     With :attr:`~giza.task.Task.target` and :attr:`~giza.task.Task.dependency`
     defined, if a ``target`` file exists and was modified after the
     ``dependency`` file, the :class:`~giza.task.Task()` operation becomes a
-    no-op, unless forced.
+    no-op.
     """
 
     def __init__(self, job=None, args=None,
@@ -56,13 +56,12 @@ class Task(object):
 
         :param string dependency: A file name. A path to a file that the task
            depends on. When specified, the task will only run if forced or if
-           the ``depdendency`` file is newer than the target file.
+           the ``dependency`` file is newer than the target file.
         """
 
         self.spec = {}
         self._conf = None
         self._args = None
-        self._force = None
         self._description = None
         if job is not None:
             self.job = job
@@ -114,22 +113,6 @@ class Task(object):
     @target.setter
     def target(self, value):
         self._target = value
-
-    @property
-    def force(self):
-        if self._force is None:
-            if self.conf is None:
-                return False
-            else:
-                logger.warning('deprecated use of conf object in app setup for force value')
-                return self.conf.runstate.force
-
-        return self._force
-
-    @force.setter
-    def force(self, value):
-        if isinstance(value, bool):
-            self._force = value
 
     def define_dependency_node(self, target, dependency):
         self.target = target
@@ -213,16 +196,13 @@ class Task(object):
     def needs_rebuild(self):
         """
         Used by the execution application to see if a rebuild is needed. Always
-        returns ``True`` if there is no target or when running in *force* mode,
-        otherwise checks the ``mtime`` of the files using
-        :func:`libgiza.task.check_dependency()`.
+        returns ``True`` if there is no target, otherwise checks the ``mtime``
+        of the files using :func:`libgiza.task.check_dependency()`.
         """
 
         if self.target is None:
             return True
         elif self.dependency is None:
-            return True
-        elif self.force is True:
             return True
         else:
             return check_dependency(self.target, self.dependency)

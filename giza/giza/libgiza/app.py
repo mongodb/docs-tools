@@ -390,7 +390,7 @@ class BuildApp(object):
                     if self.randomize is True:
                         random.shuffle(group)
 
-                    self.results.extend(self.pool.runner(group))
+                    self.results.extend(self.pool.runner(group, force=self.force))
                     group = []
 
                 if task.pool is None:
@@ -399,7 +399,7 @@ class BuildApp(object):
                 self.results.extend(task.run())
 
         if len(group) != 0:
-            self.results.extend(self.pool.runner(group))
+            self.results.extend(self.pool.runner(group, force=self.force))
 
     def run(self, randomize=None):
         "Executes all tasks in the :attr:`~giza.app.BuildApp.queue`."
@@ -418,7 +418,7 @@ class BuildApp(object):
             if self.randomize is True:
                 random.shuffle(self.queue)
 
-            self.results.extend(self.pool.runner(self.queue))
+            self.results.extend(self.pool.runner(self.queue, force=self.force))
 
         self.queue = []
         return self.results

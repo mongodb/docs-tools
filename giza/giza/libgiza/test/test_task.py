@@ -96,17 +96,6 @@ class BaseTaskSuite(object):
 
         self.assertTrue(self.task.needs_rebuild)
 
-    def test_rebuild_requirment_checker_force(self):
-        self.task.target = True
-        self.task.dependency = True
-        self.c.runstate.force = True
-
-        self.assertIsNotNone(self.task.target)
-        self.assertIsNotNone(self.task.dependency)
-        self.assertTrue(self.c.runstate.force)
-
-        self.assertTrue(self.task.needs_rebuild)
-
     def test_finalizer_setter_error_app(self):
         with self.assertRaises(TypeError):
             self.task.finalizers = BuildApp()

@@ -75,17 +75,17 @@ class WorkerPool(object):
         self.p.close()
         self.p.join()
 
-    def runner(self, jobs):
-        return self.get_results(self.async_runner(jobs))
+    def runner(self, jobs, force: bool=False):
+        return self.get_results(self.async_runner(jobs, force=force))
 
-    def async_runner(self, jobs):
+    def async_runner(self, jobs, force: bool=False):
         results = []
 
         for job in jobs:
             if not hasattr(job, 'run'):
                 raise TypeError('task "{0}" is not a valid Task'.format(job))
 
-            if job.needs_rebuild is True:
+            if force or job.needs_rebuild is True:
                 self.add_task(job, results)
             else:
                 logger.debug("{0} does not need a rebuild".format(job.target))
@@ -191,10 +191,10 @@ class SerialPool(object):
     def get_results(self, results):
         return results
 
-    def runner(self, jobs):
+    def runner(self, jobs, force: bool=False):
         results = []
         for job in jobs:
-            if job.needs_rebuild is False:
+            if force or job.needs_rebuild is False:
                 continue
 
             if job.description is not None:
