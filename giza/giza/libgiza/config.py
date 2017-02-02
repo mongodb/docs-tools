@@ -16,15 +16,11 @@ import logging
 import os.path
 import json
 import contextlib
-import sys
 import numbers
 
 import yaml
 
 logger = logging.getLogger('libgiza.config')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 class ConfigurationError(Exception):
@@ -126,7 +122,7 @@ class ConfigurationBase(object):
 
     @staticmethod
     def _is_value_type(value):
-        acceptable_types = (ConfigurationBase, basestring, list, numbers.Number)
+        acceptable_types = (ConfigurationBase, str, list, numbers.Number)
 
         if isinstance(value, acceptable_types):
             return True
@@ -175,7 +171,7 @@ class ConfigurationBase(object):
             else:
                 fn = self._source_fn
 
-        if not isinstance(fn, basestring):
+        if not isinstance(fn, str):
             raise OutputError("unsupported file format: {0}".format(fn))
 
         if add_version is True and 'v' not in self.state:

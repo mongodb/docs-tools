@@ -1,0 +1,12 @@
+ref: three-first
+source:
+  file: example-add-two.yaml
+  ref: two-second
+---
+ref: three-second
+pre: |
+  Grouping the documents by the ``item`` field, the following operation
+  uses the :group:`$first` accumulator to compute the first sales date for
+  each item:
+post: "The operation returns the following results:"
+...

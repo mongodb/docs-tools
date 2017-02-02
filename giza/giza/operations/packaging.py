@@ -22,7 +22,9 @@ import datetime
 import os
 import tarfile
 import contextlib
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
+import urllib.parse
 
 import argh
 import libgiza.app

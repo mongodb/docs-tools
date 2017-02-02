@@ -24,7 +24,6 @@ import copy
 import collections
 import logging
 import os.path
-import sys
 
 import jinja2
 import yaml
@@ -32,9 +31,6 @@ import yaml
 from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
 
 logger = logging.getLogger('libgiza.inheritance')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 class InheritableContentError(Exception):
@@ -148,7 +144,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     @title.setter
     def title(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['title'] = TitleData({'text': value})
         elif isinstance(value, TitleData):
             self.state['title'] = value
@@ -234,7 +230,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     def render(self):
         if self.replacement:
-            attempts = range(10)
+            attempts = list(range(10))
 
             for key in self.state.keys():
                 if isinstance(self.state[key], collections.Iterable):
@@ -246,7 +242,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
                     # and then split it back up.
                     if isinstance(self.state[key], list):
                         for it in self.state[key]:
-                            if not isinstance(it, basestring):
+                            if not isinstance(it, str):
                                 should_resplit = False
                                 break
 
@@ -278,7 +274,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
                     self.state[key].render()
 
-                if isinstance(self.state[key], basestring) and "{{" in self.state[key]:
+                if isinstance(self.state[key], str) and "{{" in self.state[key]:
                     logger.error("unable to resolve all tokens in content"
                                  " '{0}' key '{1}'.".format(self.ref, key))
 

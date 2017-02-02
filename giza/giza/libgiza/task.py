@@ -21,16 +21,12 @@ the context of a :class:`~giza.app.BuildApp()` procedure.
 """
 
 import logging
-import sys
 import os.path
 import collections
 
 from libgiza.config import ConfigurationBase
 
 logger = logging.getLogger('libgiza.task')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 class Task(object):
@@ -194,7 +190,7 @@ class Task(object):
         elif isinstance(value, (list, tuple)):
             self.args_type = 'args'
             self._args = value
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             self.args_type = 'args'
             self._args = [value]
         else:
@@ -301,7 +297,7 @@ class MapTask(Task):
             raise TypeError
 
     def run(self):
-        return map(self.job, self.iter)
+        return list(map(self.job, self.iter))
 
 # Dependency Checking
 

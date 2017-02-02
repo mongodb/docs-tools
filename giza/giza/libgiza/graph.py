@@ -34,9 +34,9 @@ def get_dependency_graph(app):
 
         if task.target is None:
             print(type(task),
-                  task.dependency if hasattr(task, 'dependency') else "no dep",
-                  task.job if hasattr(task, 'job') else "no job",
-                  task.description if hasattr(task, 'description') else "no text")
+                  task.dependency if hasattr(task, 'dependency') else 'no dep',
+                  task.job if hasattr(task, 'job') else 'no job',
+                  task.description if hasattr(task, 'description') else 'no text')
 
         if isinstance(task.dependency, list):
             graph[task.target].extend(task.dependency)

@@ -4,16 +4,12 @@ encountered while checking or validating a resource.
 """
 import logging
 import multiprocessing
-import sys
 import threading
 import traceback
 
 import libgiza.config
 
 logger = logging.getLogger('libgiza.error')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 _DEFAULT_ERROR_MESSAGE = "generic error"
 
@@ -41,7 +37,7 @@ class Error(object):
         if hasattr(self, "_message") and self._message != _DEFAULT_ERROR_MESSAGE:
             raise ValueError("cannot overwrite existing message ({0}) with new message "
                              "({1})".format(self._message, value))
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             self._message = value
         else:
             raise TypeError("error message should be a string. cannot set to: "
@@ -176,7 +172,7 @@ class ErrorCollector(object):
 
     @name.setter
     def name(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self._name = value
         else:
             raise TypeError("name option must be a string. "
@@ -253,5 +249,5 @@ class ErrorCollector(object):
     def __format__(self):
         return self.render_output()
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.has_errors() and self.fatal

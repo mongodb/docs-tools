@@ -20,18 +20,11 @@ Python-layer on top of common git operations.
 import logging
 import os
 import re
-import sys
 import contextlib
 import subprocess
 import shlex
 
 logger = logging.getLogger('libgiza.git')
-
-if sys.version_info >= (3, 0):
-    basestring = str
-
-    def unicode(s):
-        return str(s, 'utf-8')
 
 
 class GitError(Exception):
@@ -75,13 +68,13 @@ class GitRepo(object):
             if os.path.exists(self.path):
                 logger.debug("running git command ({0}) at path {1}".format(' '.join(cmd_parts),
                                                                             self.path))
-                return unicode(subprocess.check_output(args=cmd_parts,
-                                                       cwd=self.path,
-                                                       stderr=subprocess.STDOUT).strip())
+                return str(subprocess.check_output(args=cmd_parts,
+                                                   cwd=self.path,
+                                                   stderr=subprocess.STDOUT).strip(), 'utf-8')
             else:
                 logger.debug("running git command: " + ' '.join(cmd_parts))
-                return unicode(subprocess.check_output(args=cmd_parts,
-                                                       stderr=subprocess.STDOUT).strip())
+                return str(subprocess.check_output(args=cmd_parts,
+                                                   stderr=subprocess.STDOUT).strip(), 'utf-8')
 
         except Exception as e:
             raise GitError('encountered error {0} ({1}) with {2} in repository '
@@ -95,7 +88,7 @@ class GitRepo(object):
 
         if depth is not None:
             if isinstance(depth, int):
-                depth = str(int)
+                depth = str(depth)
             args.extend(["--depth", depth])
 
         if repo_path is not None:
@@ -229,7 +222,7 @@ class GitRepo(object):
             args.append("-f")
 
         if annotation is not None:
-            if isinstance(annotation, basestring):
+            if isinstance(annotation, str):
                 args.extend(["-m", annotation])
             else:
                 raise TypeError("tag annotations must be strings. {0} {1} "
