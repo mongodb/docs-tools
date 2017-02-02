@@ -64,7 +64,7 @@ def resolve_builder_path(builder, edition, language, conf):
 
 
 def avalible_sphinx_builders():
-    builders = sphinx.builders.BUILTIN_BUILDERS.keys()
+    builders = list(sphinx.builders.BUILTIN_BUILDERS.keys())
     builders.append('slides')
     builders.append('publish')
 
@@ -300,7 +300,7 @@ def render_sphinx_config(conf):
                                                           'language': lang},
                                                          conf, computed)
 
-    for i in computed.keys():
+    for i in list(computed.keys()):
         if i in ['prerequisites', 'generated-source',
                  'sphinx-builders'] or 'base' in i:
             del computed[i]

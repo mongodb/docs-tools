@@ -17,7 +17,6 @@ Contains schema, type checking, and validation structures for the data in
 example files.
 """
 
-import sys
 import logging
 
 from libgiza.config import ConfigurationBase
@@ -27,9 +26,6 @@ from giza.inheritance import InheritableContentBase
 from giza.content.helper import get_all_languages
 
 logger = logging.getLogger('giza.content.examples.models')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 class ExampleData(InheritableContentBase):

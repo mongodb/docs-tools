@@ -25,6 +25,7 @@ from libgiza.config import ConfigurationBase
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.config.error import ConfigurationError
 from giza.tools.colorformatter import ColorFormatter
+import collections
 
 logger = logging.getLogger('giza.config.runtime')
 
@@ -56,7 +57,7 @@ class RuntimeStateConfigurationBase(ConfigurationBase):
 
     @function.setter
     def function(self, value):
-        if callable(value):
+        if isinstance(value, collections.Callable):
             self.state['_entry_point'] = value
         else:
             raise TypeError

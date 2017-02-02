@@ -37,6 +37,7 @@ def include_files(conf, files=None):
             except subprocess.CalledProcessError as e:
                 grep = e.output
 
+        grep = str(grep, 'utf-8')
         rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
 
         s = [m.groups()
@@ -78,8 +79,7 @@ def included_once(conf, inc_files=None):
 
 def included_recusively(conf, inc_files=None):
     files = include_files(conf=conf, files=inc_files)
-    # included_files is a py2ism, depends on it being an actual list
-    included_files = files.keys()
+    included_files = set(files.keys())
 
     results = {}
     for inc, srcs in files.items():
@@ -153,7 +153,7 @@ def include_files_unused(conf, inc_files=None):
     for fn in inc_files:
         if fn.endswith('yaml') or fn.endswith('~'):
             continue
-        if fn not in mapping.keys():
+        if fn not in list(mapping.keys()):
             results.append(fn)
 
     return results

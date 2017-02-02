@@ -13,16 +13,12 @@
 # limitations under the License.
 
 import logging
-import sys
 import os
 
 import libgiza.config
 import yaml
 
 logger = logging.getLogger('giza.config.test')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 class TestConfig(libgiza.config.ConfigurationBase):
@@ -83,7 +79,7 @@ class TestProject(libgiza.config.ConfigurationBase):
 
     @project.setter
     def project(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['project'] = value
         else:
             raise TypeError(type(value), value)
@@ -94,7 +90,7 @@ class TestProject(libgiza.config.ConfigurationBase):
 
     @uri.setter
     def uri(self, value):
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             raise TypeError(type(value), value)
         elif not value.endswith('.git'):
             raise TypeError('malformed uri: ' + value)
@@ -110,14 +106,14 @@ class TestProject(libgiza.config.ConfigurationBase):
 
     @branches.setter
     def branches(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             value = [value]
 
         if not isinstance(value, list):
             raise TypeError(type(value), value)
         else:
             for branch in value:
-                if not isinstance(branch, basestring):
+                if not isinstance(branch, str):
                     raise TypeError(type(value), value)
 
         self.state['branches'] = value
@@ -145,7 +141,7 @@ class TestProject(libgiza.config.ConfigurationBase):
 
     @root.setter
     def root(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['root'] = value
         else:
             raise TypeError(type(value), value)
@@ -166,7 +162,7 @@ class TestProject(libgiza.config.ConfigurationBase):
         for key, op in value.items():
             ops[key] = []
             for cmd in op:
-                if isinstance(cmd, basestring):
+                if isinstance(cmd, str):
                     ops[key].append(cmd)
                 elif isinstance(cmd, list):
                     ops[key].extend(cmd)

@@ -13,14 +13,10 @@
 # limitations under the License.
 
 import logging
-import sys
 
 from giza.inheritance import InheritableContentBase, InheritanceReference
 
 logger = logging.getLogger('giza.content.options.models')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 class OptionData(InheritableContentBase):
@@ -51,7 +47,7 @@ class OptionData(InheritableContentBase):
 
     @program.setter
     def program(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['program'] = value
             self.state['ref'] = value
         else:
@@ -78,7 +74,7 @@ class OptionData(InheritableContentBase):
 
     @command.setter
     def command(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['command'] = value
         else:
             raise TypeError('command name must be a string')
@@ -90,7 +86,7 @@ class OptionData(InheritableContentBase):
 
     @filename.setter
     def filename(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['filename'] = value
         else:
             raise TypeError('filename must be a string')

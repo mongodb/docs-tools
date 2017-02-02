@@ -18,6 +18,7 @@ import logging
 
 import libgiza.config
 import giza.tools.files
+import collections
 
 logger = logging.getLogger('giza.config.')
 
@@ -103,7 +104,7 @@ class ContentType(libgiza.config.ConfigurationBase):
 
     @task_generator.setter
     def task_generator(self, value):
-        if callable(value):
+        if isinstance(value, collections.Callable):
             self.state['_task_generator'] = value
         else:
             raise TypeError

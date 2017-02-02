@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os.path
-import sys
 import logging
 import numbers
 import collections
@@ -22,9 +21,6 @@ import libgiza.config
 import giza.content.helper
 
 logger = logging.getLogger('giza.config.images')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 class ImageData(list):
@@ -51,7 +47,7 @@ class ImageSpecification(libgiza.config.RecursiveConfigurationBase):
 
     @name.setter
     def name(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['name'] = value
             self.state['source_base'] = os.path.join(self.conf.paths.projectroot,
                                                      self.conf.paths.branch_images, value)
@@ -66,7 +62,7 @@ class ImageSpecification(libgiza.config.RecursiveConfigurationBase):
 
     @alt.setter
     def alt(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['alt'] = value
         else:
             raise TypeError('{0}: {1}'.format(type(value), value))
@@ -137,7 +133,7 @@ class ImageOutputSpecification(libgiza.config.RecursiveConfigurationBase):
 
     @tag.setter
     def tag(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['tag'] = value
         else:
             raise TypeError('{0}: {1}'.format(type(value), value))
@@ -151,7 +147,7 @@ class ImageOutputSpecification(libgiza.config.RecursiveConfigurationBase):
 
     @target.setter
     def target(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['target'] = value
         else:
             raise TypeError('{0}: {1}'.format(type(value), value))

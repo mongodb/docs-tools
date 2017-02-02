@@ -38,6 +38,7 @@ from giza.content.migrations import migration_tasks
 from giza.content.assets import assets_tasks
 
 from giza.tools.timing import Timer
+from functools import reduce
 
 logger = logging.getLogger('giza.operations.sphinx')
 
@@ -144,14 +145,10 @@ def sphinx_builder_tasks(app, conf):
         # otherwise, exit.
         ret_code = sum([o[0] for o in results])
 
-        output = [o[1].split('\n') for o in results if o != '']
+        output = [str(o[1], 'utf-8').split('\n') for o in results if o != '']
 
         sphinx_output = list(reduce(itertools.chain, output))
-        try:
-            output_sphinx_stream(sphinx_output, conf)
-        except:
-            logger.error('problem parsing sphinx output, exiting')
-            raise SystemExit(1)
+        output_sphinx_stream(sphinx_output, conf)
 
         if ret_code != 0:
             raise SystemExit(ret_code)

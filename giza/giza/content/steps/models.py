@@ -13,16 +13,12 @@
 # limitations under the License.
 
 import logging
-import sys
 import jinja2
 
 from giza.inheritance import InheritableContentBase
 from giza.content.helper import get_all_languages, level_characters
 
 logger = logging.getLogger('giza.content.steps.models')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 class HeadingMixin(object):
@@ -68,7 +64,7 @@ class HeadingMixin(object):
 
     @level.setter
     def level(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             if value in level_characters:
                 self.state['level'] = level_characters[value]
             else:
@@ -187,8 +183,7 @@ class ActionContent(HeadingMixin, ActionMixin, InheritableContentBase):
             super(ActionContent, self).render()
             code_block = '\n'.join(self.code)
 
-            attempts = range(10)
-            for attempt in attempts:
+            for attempt in range(10):
                 if "{{" in code_block:
                     template = jinja2.Template(code_block)
                     code_block = template.render(**self.replacement)

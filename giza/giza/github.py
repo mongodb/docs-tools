@@ -28,13 +28,6 @@ from libgiza.app import BuildApp
 
 logger = logging.getLogger('giza.github')
 
-try:
-    # Python 2
-    prompt = raw_input
-except NameError:
-    # Python 3
-    prompt = input
-
 # mdbpr helpers
 
 
@@ -43,7 +36,7 @@ def collect_two_factor_token():
     while not code:
         # The user could accidentally press Enter before being ready,
         # let's protect them from doing that.
-        code = prompt('Enter 2FA code: ')
+        code = input('Enter 2FA code: ')
     return code
 
 

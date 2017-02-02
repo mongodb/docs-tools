@@ -165,7 +165,7 @@ def fix_build_env(builder, conf):
 
     with open(fn, 'w') as f:
         config_dict = dict((name, sphinx_app.config[name])
-                           for (name, desc) in sphinx_app.config.values.items()
+                           for name, desc in sphinx_app.config.values.items()
                            if desc[1] == 'html')
 
         f.write('# Sphinx build info version 1')

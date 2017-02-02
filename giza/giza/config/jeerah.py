@@ -12,16 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 import os.path
 import logging
 
 from libgiza.config import ConfigurationBase, RecursiveConfigurationBase
 
 logger = logging.getLogger('giza.config.jeerah')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 class JeerahConfig(RecursiveConfigurationBase):
@@ -76,7 +72,7 @@ class ChangelogConfiguration(ConfigurationBase):
         if isinstance(value, list):
             invalid = []
             for item in value:
-                if not isinstance(item, basestring):
+                if not isinstance(item, str):
                     invalid.append(item)
 
             if len(invalid) > 0:
@@ -142,7 +138,7 @@ class JeerahSiteConfig(ConfigurationBase):
     def projects(self, value):
         if isinstance(value, list):
             for item in value:
-                if not isinstance(item, basestring):
+                if not isinstance(item, str):
                     raise TypeError('jira project {0} is not a string'.format(value))
 
             self.state['projects'] = value
@@ -157,7 +153,7 @@ class JeerahSiteConfig(ConfigurationBase):
     def versions(self, value):
         if isinstance(value, list):
             for item in value:
-                if not isinstance(item, basestring):
+                if not isinstance(item, str):
                     raise TypeError('jira version {0} is not a string'.format(value))
 
                 if len(item.split('.')) != 3:

@@ -97,7 +97,7 @@ class RedirectSpecification(ConfigurationBase):
     @output.setter
     def output(self, value):
         if isinstance(value, dict):
-            o = value.items()[0]
+            o = list(value.items())[0]
         elif isinstance(value, tuple) and len(value) == 2:
             o = value
         elif not isinstance(value, list):
@@ -181,7 +181,7 @@ def _get_redirect_base_paths(computed, out, conf):
         out_key = out_value = ''
         _add_outputs_to_computed(computed, 'all', 0, conf)
     elif isinstance(out, dict):
-        out_key, out_value = out.items()[0]
+        out_key, out_value = list(out.items())[0]
         if isinstance(out_value, dict):
             # for mms where from/to paths are mapped differently
             if '-' in out_key:
@@ -189,7 +189,7 @@ def _get_redirect_base_paths(computed, out, conf):
             else:
                 keyword = out_key
                 base = ''
-            out_key, out_value = out_value.items()[0]
+            out_key, out_value = list(out_value.items())[0]
             _add_outputs_to_computed(computed, keyword, base, conf)
     else:
         if out == []:
@@ -233,7 +233,7 @@ def resolve_outputs_for_redirect(outputs, conf):
         # add the link key"""
         for shadow in shadows:
             """{key: value}"""
-            key, value = shadow.items()[0]
+            key, value = list(shadow.items())[0]
             if value in computed or value == out:
                 # KLUGE:: This is a short-term kluge to be cleaned up in January
                 # since both python code and the redirect yaml files have problems
@@ -259,7 +259,7 @@ def process_redirect_inputs(outputs, item):
     else:
         for out in item['outputs']:
             if isinstance(out, dict):
-                output = out.items()[0]
+                output = list(out.items())[0]
             elif isinstance(out, tuple) and len(out) == 2:
                 output = out
             else:

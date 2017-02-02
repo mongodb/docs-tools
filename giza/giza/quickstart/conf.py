@@ -43,7 +43,7 @@ source_suffix = '.txt'
 master_doc = sconf.master_doc
 language = 'en'
 project = sconf.project
-copyright = u'2011-{0}'.format(datetime.date.today().year)
+copyright = '2011-{0}'.format(datetime.date.today().year)
 version = conf.version.branch
 release = conf.version.release
 
@@ -179,8 +179,8 @@ if 'manpages' in conf.system.files.data:
 
 # Bibliographic Dublin Core info.
 epub_title = conf.project.title
-epub_author = u'MongoDB Documentation Project'
-epub_publisher = u'MongoDB, Inc.'
+epub_author = 'MongoDB Documentation Project'
+epub_publisher = 'MongoDB, Inc.'
 epub_copyright = copyright
 epub_theme = 'epub_mongodb'
 epub_tocdup = True

@@ -26,6 +26,6 @@ def get_contributor_list(conf):
     c_github = list({str(c['github_username']) for c in contributors
                      if ('github_username' in c and
                          c['github_username'] is not None and
-                         c['github_username'] != u'')})
+                         c['github_username'] != '')})
 
     return c_github

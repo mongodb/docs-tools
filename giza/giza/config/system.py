@@ -250,7 +250,7 @@ class SystemConfigData(RecursiveConfigurationBase):
         super(SystemConfigData, self).__init__(None, conf)
         for fn in self.conf.system.files.paths:
             if isinstance(fn, dict):
-                attr_name = fn.keys()[0]
+                attr_name = list(fn.keys())[0]
             else:
                 attr_name = os.path.splitext(fn)[0]
 
@@ -263,7 +263,7 @@ class SystemConfigData(RecursiveConfigurationBase):
         except AttributeError:
             if key in self._option_registry:
                 if isinstance(key, dict):
-                    basename, fn = key.items()[0]
+                    basename, fn = list(key.items())[0]
                 else:
                     fn = key
                     basename = os.path.splitext(fn)[0]
@@ -272,7 +272,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                     pass
                 elif isinstance(self.state[key], dict):
                     if len(self.state[key]) == 1:
-                        basename, fns = self.state[key].items()[0]
+                        basename, fns = list(self.state[key].items())[0]
                         if isinstance(fns, list):
                             for fn in fns:
                                 self._load_file(basename, fn)
@@ -345,7 +345,7 @@ class SystemConfigData(RecursiveConfigurationBase):
     def _resolve_config_path(self, fn):
         if isinstance(fn, dict):
             if len(fn) == 1:
-                fn = fn.values()[0]
+                fn = list(fn.values())[0]
             else:
                 logger.error("unsupported config file specification: " + str(fn))
 
@@ -382,7 +382,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                 'migrations': MigrationData,
                 'images': ImageData,
             }
-            self._always_list_configs.extend(special_lists.keys())
+            self._always_list_configs.extend(list(special_lists.keys()))
 
             with open(fn, 'r') as f:
                 data = yaml.safe_load_all(f)

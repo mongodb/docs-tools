@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from urllib import quote
+from urllib.parse import quote
 
 
 def equality(user_input):

@@ -14,15 +14,11 @@
 
 import logging
 import os.path
-import sys
 
 from giza.inheritance import InheritableContentBase
 from giza.content.steps.models import HeadingMixin
 
 logger = logging.getLogger('giza.content.extract.models')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 class ExtractData(HeadingMixin, InheritableContentBase):
@@ -34,7 +30,7 @@ class ExtractData(HeadingMixin, InheritableContentBase):
 
     @only.setter
     def only(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             self.state['only'] = value
         else:
             raise TypeError

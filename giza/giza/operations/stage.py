@@ -39,7 +39,7 @@ from giza.config.helper import fetch_config
 try:
     import configparser
 except ImportError:
-    import ConfigParser as configparser
+    import configparser as configparser
 
 LOGGER = logging.getLogger('giza.operations.stage')
 REDIRECT_PAT = re.compile('^Redirect 30[1|2|3] (\S+)\s+(\S+)', re.M)

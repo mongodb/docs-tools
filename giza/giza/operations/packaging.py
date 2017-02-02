@@ -22,7 +22,7 @@ import datetime
 import os
 import tarfile
 import contextlib
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 import argh
 import libgiza.app
@@ -130,7 +130,7 @@ def fetch_package(path, conf):
                                 local_path)
 
         if not os.path.exists(tar_path):
-            with contextlib.closing(urllib2.urlopen(path)) as u:
+            with contextlib.closing(urllib.request.urlopen(path)) as u:
                 with open(tar_path, 'w') as f:
                     f.write(u.read())
             logger.info('downloaded {0}'.format(local_path))

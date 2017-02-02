@@ -50,15 +50,11 @@ class Configuration(ConfigurationBase):
 
     @property
     def git(self):
-        if 'git' not in self.state:
-            self.git = None
-
-        return self.state['git']
+        return GitConfig(obj=self.state['git'], repo=self.paths.projectroot, conf=self)
 
     @git.setter
     def git(self, value):
-        c = GitConfig(obj=value, repo=self.paths.projectroot, conf=self)
-        self.state['git'] = c
+        self.state['git'] = value
 
     @property
     def runstate(self):

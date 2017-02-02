@@ -13,16 +13,12 @@
 # limitations under the License.
 
 import os
-import sys
 import logging
 
 from libgiza.config import ConfigurationBase
 from giza.config.runtime import RuntimeStateConfigurationBase
 
 logger = logging.getLogger('giza.config.github')
-
-if sys.version_info >= (3, 0):
-    basestring = str
 
 
 def fetch_config(args):
@@ -107,7 +103,7 @@ class GithubConfig(ConfigurationBase):
     def organizations(self, value):
         if isinstance(value, list):
             self.state['organizations'] = value
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             self.state['organizations'] = [value]
         else:
             raise TypeError('{0} is not a valid organization or organization list'.format(value))
