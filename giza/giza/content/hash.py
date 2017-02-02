@@ -22,7 +22,7 @@ directory so that you can reference the commit in the documentation text.
 import logging
 import os
 
-import libgiza.task
+import giza.libgiza.task
 from rstcloth.rstcloth import RstCloth
 
 logger = logging.getLogger('giza.hash')
@@ -80,13 +80,13 @@ def hash_tasks(conf):
                               conf.paths.public_site_output,
                               'release.txt')
 
-    return [libgiza.task.Task(job=generate_hash_file,
-                              args=(hash_fn, conf),
-                              target=hash_fn,
-                              dependency=None,
-                              description='creating hash file: {0}'.format(hash_fn)),
-            libgiza.task.Task(job=generate_release_file,
-                              args=(release_fn, conf),
-                              target=hash_fn,
-                              dependency=None,
-                              description="creating release filename: {0}".format(release_fn))]
+    return [giza.libgiza.task.Task(job=generate_hash_file,
+                                   args=(hash_fn, conf),
+                                   target=hash_fn,
+                                   dependency=None,
+                                   description='creating hash file: {0}'.format(hash_fn)),
+            giza.libgiza.task.Task(job=generate_release_file,
+                                   args=(release_fn, conf),
+                                   target=hash_fn,
+                                   dependency=None,
+                                   description="creating release filename: {0}".format(release_fn))]

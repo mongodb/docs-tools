@@ -1,12 +1,12 @@
 import unittest
 import tempfile
 
-import libgiza.config
+import giza.libgiza.config
 
 
 class TestConfigurationObjectPersistance(unittest.TestCase):
     def setUp(self):
-        self.conf = libgiza.config.ConfigurationBase
+        self.conf = giza.libgiza.config.ConfigurationBase
 
     def test_create_empty_file(self):
         with tempfile.NamedTemporaryFile(suffix=".yaml") as f:
@@ -36,7 +36,7 @@ class TestConfigurationObjectPersistance(unittest.TestCase):
 
 class TestConfigurationObjectMembership(unittest.TestCase):
     def setUp(self):
-        self.conf = libgiza.config.ConfigurationBase()
+        self.conf = giza.libgiza.config.ConfigurationBase()
 
     def test_internal_values(self):
         self.assertNotIn("_foo", self.conf)

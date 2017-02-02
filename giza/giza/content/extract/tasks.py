@@ -18,7 +18,7 @@ from giza.tools.transformation import append_to_file, prepend_to_file
 from giza.content.extract.inheritance import ExtractDataCache
 from giza.content.extract.views import render_extracts, get_include_statement
 from giza.config.content import new_content_type
-from libgiza.task import Task
+from giza.libgiza.task import Task
 
 logger = logging.getLogger('giza.content.extract.tasks')
 

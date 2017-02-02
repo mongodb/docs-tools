@@ -33,7 +33,7 @@ exclude a path from all published branches, current and future.
 import os
 import logging
 
-import libgiza.task
+import giza.libgiza.task
 import giza.content.helper
 
 logger = logging.getLogger('giza.content.robots')
@@ -101,10 +101,10 @@ def robots_txt_tasks(conf):
         robots_fn = os.path.join(conf.paths.projectroot, conf.paths.public_site_output,
                                  'robots.txt')
 
-        tasks.append(libgiza.task.Task(job=robots_txt_builder,
-                                       args=(robots_fn, conf),
-                                       target=robots_fn,
-                                       dependency=dep_path,
-                                       description="building robots.txt file"))
+        tasks.append(giza.libgiza.task.Task(job=robots_txt_builder,
+                                            args=(robots_fn, conf),
+                                            target=robots_fn,
+                                            dependency=dep_path,
+                                            description="building robots.txt file"))
 
     return tasks

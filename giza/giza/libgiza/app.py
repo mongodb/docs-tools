@@ -23,12 +23,12 @@ import logging
 import random
 import numbers
 
-import libgiza.pool
+import giza.libgiza.pool
 
-from libgiza.task import Task, MapTask
-from libgiza.config import ConfigurationBase
+from giza.libgiza.task import Task, MapTask
+from giza.libgiza.config import ConfigurationBase
 
-logger = logging.getLogger('libgiza.app')
+logger = logging.getLogger('giza.libgiza.app')
 
 
 class BuildApp(object):
@@ -70,10 +70,10 @@ class BuildApp(object):
         self._randomize = False
 
         self.pool_mapping = {
-            'thread': libgiza.pool.ThreadPool,
-            'process': libgiza.pool.ProcessPool,
-            'event': libgiza.pool.EventPool,
-            'serial': libgiza.pool.SerialPool
+            'thread': giza.libgiza.pool.ThreadPool,
+            'process': giza.libgiza.pool.ProcessPool,
+            'event': giza.libgiza.pool.EventPool,
+            'serial': giza.libgiza.pool.SerialPool
         }
 
         self.pool_types = tuple(self.pool_mapping.values())

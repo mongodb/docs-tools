@@ -19,8 +19,8 @@ example files.
 
 import logging
 
-from libgiza.config import ConfigurationBase
-from libgiza.inheritance import InheritableContentError
+from giza.libgiza.config import ConfigurationBase
+from giza.libgiza.inheritance import InheritableContentError
 
 from giza.inheritance import InheritableContentBase
 from giza.content.helper import get_all_languages

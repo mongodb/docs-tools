@@ -14,7 +14,7 @@
 
 import logging
 
-from libgiza.config import ConfigurationBase
+from giza.libgiza.config import ConfigurationBase
 
 logger = logging.getLogger('giza.config.sphinx_local')
 

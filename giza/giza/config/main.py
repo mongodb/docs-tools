@@ -15,7 +15,7 @@
 import os.path
 import logging
 
-from libgiza.config import ConfigurationBase
+from giza.libgiza.config import ConfigurationBase
 
 from giza.config.assets import AssetsConfig
 from giza.config.project import ProjectConfig

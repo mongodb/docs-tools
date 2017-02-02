@@ -29,7 +29,7 @@ import json
 import logging
 import os
 
-import libgiza.task
+import giza.libgiza.task
 
 from giza.includes import include_files
 from giza.tools.files import expand_tree, safe_create_directory, md5_file
@@ -129,20 +129,20 @@ def refresh_deps(conf):
 
 
 def refresh_dependency_tasks(conf):
-    return [libgiza.task.Task(job=refresh_deps,
-                              args=[conf],
-                              target=None,
-                              dependency=conf.system.dependency_cache,
-                              description="check and touch files affected by dependency changes")]
+    return [giza.libgiza.task.Task(job=refresh_deps,
+                                   args=[conf],
+                                   target=None,
+                                   dependency=conf.system.dependency_cache,
+                                   description="check and touch files affected by dependency changes")]
 
 
 def dump_file_hash_tasks(conf):
-    return [libgiza.task.Task(job=dump_file_hashes,
-                              args=[conf],
-                              target=conf.system.dependency_cache,
-                              dependency=os.path.join(conf.paths.projectroot,
-                                                      conf.paths.branch_source),
-                              description="writing dependency cache to a file for the next build")]
+    return [giza.libgiza.task.Task(job=dump_file_hashes,
+                                   args=[conf],
+                                   target=conf.system.dependency_cache,
+                                   dependency=os.path.join(conf.paths.projectroot,
+                                                           conf.paths.branch_source),
+                                   description="writing dependency cache to a file for the next build")]
 
 # Hashed Dependency Checking
 

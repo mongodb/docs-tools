@@ -24,7 +24,7 @@ from giza.config.github import fetch_config, GithubRuntimeConfig
 from giza.config.credentials import CredentialsConfig
 from giza.cmdline import get_base_parser
 from giza.corp import get_contributor_list
-from libgiza.app import BuildApp
+from giza.libgiza.app import BuildApp
 
 logger = logging.getLogger('giza.github')
 

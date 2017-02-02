@@ -23,7 +23,7 @@ Legacy implementation.
 import os.path
 import logging
 
-import libgiza.task
+import giza.libgiza.task
 
 from rstcloth.table import TableBuilder, YamlTable, ListTable
 from giza.tools.files import expand_tree, verbose_remove, safe_create_directory
@@ -98,11 +98,11 @@ def table_tasks(conf):
         list_target = _get_list_table_output_name(source)
 
         description = 'generating tables: {}, {} from {}'.format(target, list_target, source)
-        tasks.append(libgiza.task.Task(job=_generate_tables,
-                                       args=(source, target, list_target),
-                                       target=[target, list_target],
-                                       dependency=source,
-                                       description=description))
+        tasks.append(giza.libgiza.task.Task(job=_generate_tables,
+                                            args=(source, target, list_target),
+                                            target=[target, list_target],
+                                            dependency=source,
+                                            description=description))
 
         logger.debug('adding table job to build: %s', target)
 
@@ -112,9 +112,9 @@ def table_tasks(conf):
 def table_clean(conf):
     tasks = []
     for source in table_sources(conf):
-        tasks.extend([libgiza.task.Task(job=verbose_remove,
-                                        args=[_get_table_output_name(source)]),
-                      libgiza.task.Task(job=verbose_remove,
-                                        args=[_get_list_table_output_name(source)])])
+        tasks.extend([giza.libgiza.task.Task(job=verbose_remove,
+                                             args=[_get_table_output_name(source)]),
+                      giza.libgiza.task.Task(job=verbose_remove,
+                                             args=[_get_list_table_output_name(source)])])
 
     return tasks

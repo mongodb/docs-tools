@@ -14,7 +14,7 @@
 
 import logging
 
-from libgiza.config import ConfigurationBase
+from giza.libgiza.config import ConfigurationBase
 from giza.content.helper import edition_check
 
 logger = logging.getLogger('giza.config.redirects')

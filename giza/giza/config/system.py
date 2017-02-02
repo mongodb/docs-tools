@@ -17,7 +17,7 @@ import os.path
 
 import yaml
 
-from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
+from giza.libgiza.config import RecursiveConfigurationBase, ConfigurationBase
 from giza.config.sphinx_local import SphinxLocalConfig
 from giza.config.manpage import ManpageConfig
 from giza.config.pdfs import PdfConfig

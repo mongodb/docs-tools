@@ -24,7 +24,7 @@ import contextlib
 import subprocess
 import shlex
 
-logger = logging.getLogger('libgiza.git')
+logger = logging.getLogger('giza.libgiza.git')
 
 
 class GitError(Exception):

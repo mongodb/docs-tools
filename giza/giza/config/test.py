@@ -15,13 +15,13 @@
 import logging
 import os
 
-import libgiza.config
+import giza.libgiza.config
 import yaml
 
 logger = logging.getLogger('giza.config.test')
 
 
-class TestConfig(libgiza.config.ConfigurationBase):
+class TestConfig(giza.libgiza.config.ConfigurationBase):
     def ingest(self, input_obj):
         if os.path.isfile(input_obj) is True:
             with open(input_obj, 'r') as f:
@@ -72,7 +72,7 @@ class TestConfig(libgiza.config.ConfigurationBase):
                 yield project
 
 
-class TestProject(libgiza.config.ConfigurationBase):
+class TestProject(giza.libgiza.config.ConfigurationBase):
     @property
     def project(self):
         return self.state['project']

@@ -7,12 +7,12 @@ import unittest
 import multiprocessing
 import threading
 
-import libgiza.error
+import giza.libgiza.error
 
 
 class TestErrorConstruction(unittest.TestCase):
     def test_create_without_arguments_have_expected_values(self):
-        error = libgiza.error.Error()
+        error = giza.libgiza.error.Error()
 
         self.assertIsNone(error._payload)
         self.assertEqual({}, error.payload)
@@ -23,7 +23,7 @@ class TestErrorConstruction(unittest.TestCase):
 
     def test_create_with_positional_arguments_have_values_that_persist(self):
         msg = "a new message"
-        error = libgiza.error.Error(msg, False, False)
+        error = giza.libgiza.error.Error(msg, False, False)
 
         self.assertIsNone(error._payload)
         self.assertEqual({}, error.payload)
@@ -34,7 +34,7 @@ class TestErrorConstruction(unittest.TestCase):
 
     def test_create_with_keyword_arguments_have_values_that_persist(self):
         msg = "a new message"
-        error = libgiza.error.Error(message=msg, include_trace=False, fatal=False)
+        error = giza.libgiza.error.Error(message=msg, include_trace=False, fatal=False)
 
         self.assertIsNone(error._payload)
         self.assertEqual({}, error.payload)
@@ -46,7 +46,7 @@ class TestErrorConstruction(unittest.TestCase):
 
 class TestErrorObject(unittest.TestCase):
     def setUp(self):
-        self.error = libgiza.error.Error()
+        self.error = giza.libgiza.error.Error()
 
     def test_message_setter_only_accepts_strings_and_raises_type_error_otherwise(self):
         self.assertEqual("generic error", self.error.message)
@@ -116,16 +116,16 @@ class TestErrorObject(unittest.TestCase):
         self.assertIsNone(self.error._payload)
         self.assertEqual(0, len(self.error.payload))
 
-        conf = libgiza.config.ConfigurationBase()
+        conf = giza.libgiza.config.ConfigurationBase()
         conf._option_registry = ["a"]
         conf.a = 1
 
         for obj in [{"a": 1}, {1: True}, {}, conf,
-                    libgiza.config.ConfigurationBase()]:
+                    giza.libgiza.config.ConfigurationBase()]:
             self.error.payload = obj
             self.assertIs(obj, self.error._payload)
             self.assertIsInstance(self.error.payload, dict)
-            if isinstance(obj, libgiza.config.ConfigurationBase):
+            if isinstance(obj, giza.libgiza.config.ConfigurationBase):
                 self.assertEqual(len(obj.state), len(self.error.payload))
             else:
                 self.assertEqual(len(obj), len(self.error.payload))
@@ -178,7 +178,7 @@ class CollectorChecks(object):
         self.assertFalse(self.collector.has_errors())
 
     def test_add_error_modifies_state_of_error_collector(self):
-        err = libgiza.error.Error()
+        err = giza.libgiza.error.Error()
         self.assertFalse(self.collector.has_errors())
         self.collector.add(err)
         self.assertTrue(self.collector.has_errors())
@@ -193,10 +193,10 @@ class CollectorChecks(object):
 
     def test_add_collector_to_collector_causes_second_collector_to_be_absorbed(self):
         self.assertFalse(self.collector.has_errors())
-        sub_collector = libgiza.error.ErrorCollector()
+        sub_collector = giza.libgiza.error.ErrorCollector()
         for _ in range(3):
-            self.collector.add(libgiza.error.Error())
-            sub_collector.add(libgiza.error.Error())
+            self.collector.add(giza.libgiza.error.Error())
+            sub_collector.add(giza.libgiza.error.Error())
 
         self.assertTrue(self.collector.has_errors())
         self.assertEqual(3, len(self.collector))
@@ -210,7 +210,7 @@ class CollectorChecks(object):
 
     def test_collector_with_non_fatal_errors_render_output_returns_string(self):
         for _ in range(3):
-            self.collector.add(libgiza.error.Error(fatal=False))
+            self.collector.add(giza.libgiza.error.Error(fatal=False))
 
         output = self.collector.render_output()
         self.assertTrue(len(output) > 1)
@@ -218,7 +218,7 @@ class CollectorChecks(object):
 
     def test_collector_with_fatal_errors_render_output_returns_string(self):
         for _ in range(3):
-            self.collector.add(libgiza.error.Error(fatal=True))
+            self.collector.add(giza.libgiza.error.Error(fatal=True))
 
         output = self.collector.render_output()
         self.assertTrue(len(output) > 1)
@@ -227,7 +227,7 @@ class CollectorChecks(object):
 
     def test_render_output_always_prefixes_value(self):
         for _ in range(3):
-            self.collector.add(libgiza.error.Error())
+            self.collector.add(giza.libgiza.error.Error())
 
         for prefix in [" ", "   ", "   ", "--", "---", "--->"]:
             output = self.collector.render_output(prefix=prefix)
@@ -249,7 +249,7 @@ class CollectorChecks(object):
 
     def test_dict_output_from_collector_is_well_typed(self):
         for _ in range(3):
-            self.collector.add(libgiza.error.Error(fatal=True))
+            self.collector.add(giza.libgiza.error.Error(fatal=True))
 
         output = self.collector.dict()
         self.assertTrue("errors" in output)
@@ -281,8 +281,8 @@ class CollectorChecks(object):
 
 class TestErrorCollectorProcessLock(CollectorChecks, unittest.TestCase):
     def setUp(self):
-        self.collector = libgiza.error.ErrorCollector(name="process-collector",
-                                                      concurrency_type="process")
+        self.collector = giza.libgiza.error.ErrorCollector(name="process-collector",
+                                                           concurrency_type="process")
 
     def test_collector_reports_expected_name(self):
         self.assertEqual("process-collector", self.collector.name)
@@ -293,8 +293,8 @@ class TestErrorCollectorProcessLock(CollectorChecks, unittest.TestCase):
 
 class TestErrorCollectorThreadLock(CollectorChecks, unittest.TestCase):
     def setUp(self):
-        self.collector = libgiza.error.ErrorCollector(name="thread-collector",
-                                                      concurrency_type="thread")
+        self.collector = giza.libgiza.error.ErrorCollector(name="thread-collector",
+                                                           concurrency_type="thread")
 
     def test_collector_reports_expected_name(self):
         self.assertEqual("thread-collector", self.collector.name)
@@ -305,7 +305,7 @@ class TestErrorCollectorThreadLock(CollectorChecks, unittest.TestCase):
 
 class TestErrorCollector(unittest.TestCase):
     def setUp(self):
-        self.collector = libgiza.error.ErrorCollector()
+        self.collector = giza.libgiza.error.ErrorCollector()
 
     def test_default_name_behavior(self):
         self.assertTrue(hasattr(self.collector, "_name"))

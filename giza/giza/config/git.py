@@ -15,8 +15,8 @@
 import logging
 import os
 
-from libgiza.git import GitRepo
-from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
+from giza.libgiza.git import GitRepo
+from giza.libgiza.config import RecursiveConfigurationBase, ConfigurationBase
 
 logger = logging.getLogger('giza.config.git')
 

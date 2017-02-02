@@ -21,8 +21,8 @@ import logging
 import argh
 
 from giza.config.helper import fetch_config, get_builder_jobs, get_restricted_builder_jobs
-from libgiza.app import BuildApp
-from libgiza.task import Task
+from giza.libgiza.app import BuildApp
+from giza.libgiza.task import Task
 
 from giza.content.robots import robots_txt_tasks
 from giza.content.images.tasks import image_tasks

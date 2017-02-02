@@ -8,9 +8,9 @@ import abc
 import future.utils
 import logging
 
-import libgiza.error
+import giza.libgiza.error
 
-logger = logging.getLogger('libgiza.typed_dict')
+logger = logging.getLogger('giza.libgiza.typed_dict')
 
 
 class TypedDict(future.utils.with_metaclass(abc.ABCMeta, dict)):
@@ -22,17 +22,17 @@ class TypedDict(future.utils.with_metaclass(abc.ABCMeta, dict)):
     """
 
     def __init__(self, key_type, value_type):
-        errors = libgiza.error.ErrorCollector()
+        errors = giza.libgiza.error.ErrorCollector()
         if isinstance(key_type, type):
             self.key_type = key_type
         else:
-            errors.add(libgiza.error.Error(
+            errors.add(giza.libgiza.error.Error(
                 message="key_type ({0}) is not a type value".format(key_type)))
 
         if isinstance(value_type, type):
             self.value_type = value_type
         else:
-            errors.add(libgiza.error.Error(
+            errors.add(giza.libgiza.error.Error(
                 "value_type ({0}) is not a type value".format(value_type)))
 
         if errors.has_errors() and errors.fatal:
@@ -40,8 +40,8 @@ class TypedDict(future.utils.with_metaclass(abc.ABCMeta, dict)):
             raise TypeError(errors.dict())
 
     def __setitem__(self, key, value):
-        type_errors = libgiza.error.ErrorCollector()
-        value_errors = libgiza.error.ErrorCollector()
+        type_errors = giza.libgiza.error.ErrorCollector()
+        value_errors = giza.libgiza.error.ErrorCollector()
 
         if isinstance(key, self.key_type):
             value_errors.add(self.check_key(key))
@@ -49,7 +49,7 @@ class TypedDict(future.utils.with_metaclass(abc.ABCMeta, dict)):
             try:
                 key = self.key_type(key)
             except Exception as e:
-                type_errors.add(libgiza.error.ErrorCollector(
+                type_errors.add(giza.libgiza.error.ErrorCollector(
                     message=("key {0} ({1}) is not of type {2} (had error "
                              "{3}:{4})").format(key, type(key), self.key_type, type(e), e)))
 
@@ -59,7 +59,7 @@ class TypedDict(future.utils.with_metaclass(abc.ABCMeta, dict)):
             try:
                 value = self.value_type(value)
             except Exception as e:
-                type_errors.add(libgiza.error.ErrorCollector(
+                type_errors.add(giza.libgiza.error.ErrorCollector(
                     message=("value for key {0} is not of type {1} (is {2}). (had error "
                              "{3}:{4})").format(key, self.value_type, type(value), type(e), e)))
 
@@ -68,7 +68,7 @@ class TypedDict(future.utils.with_metaclass(abc.ABCMeta, dict)):
         try:
             value_errors.add(self.check_pair(key, value))
         except Exception as e:
-            value_errors.add(libgiza.error.Error(
+            value_errors.add(giza.libgiza.error.Error(
                 message=("encountered {0} error when validating "
                          "pair for key {1}").format(type(e), key)))
 
@@ -94,12 +94,12 @@ class TypedDict(future.utils.with_metaclass(abc.ABCMeta, dict)):
 
     @abc.abstractmethod
     def check_key(self, key):
-        return libgiza.error.ErrorCollector()
+        return giza.libgiza.error.ErrorCollector()
 
     @abc.abstractmethod
     def check_value(self, value):
-        return libgiza.error.ErrorCollector()
+        return giza.libgiza.error.ErrorCollector()
 
     @abc.abstractmethod
     def check_pair(self, key, value):
-        return libgiza.error.ErrorCollector()
+        return giza.libgiza.error.ErrorCollector()

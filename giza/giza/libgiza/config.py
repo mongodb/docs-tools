@@ -20,7 +20,7 @@ import numbers
 
 import yaml
 
-logger = logging.getLogger('libgiza.config')
+logger = logging.getLogger('giza.libgiza.config')
 
 
 class ConfigurationError(Exception):

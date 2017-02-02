@@ -19,7 +19,7 @@ import subprocess
 
 import argh
 
-from libgiza.git import GitRepo
+from giza.libgiza.git import GitRepo
 from giza.config.code_review import CodeReviewConfiguration
 from giza.config.helper import new_credentials_config
 

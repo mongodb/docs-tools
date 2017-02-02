@@ -22,7 +22,7 @@ import os.path
 import logging
 import re
 
-import libgiza.task
+import giza.libgiza.task
 
 from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
 from giza.tools.transformation import decode_lines_from_file, encode_lines_to_file
@@ -36,7 +36,7 @@ def get_single_html_dir(conf):
 
 def manual_single_html(input_file, output_file):
     # don't rebuild this if its not needed.
-    if libgiza.task.check_dependency(output_file, input_file) is False:
+    if giza.libgiza.task.check_dependency(output_file, input_file) is False:
         logging.info('singlehtml not changed, not reprocessing.')
         return False
     else:
@@ -82,19 +82,19 @@ def finalize_single_html_tasks(builder, conf):
     else:
         artifact_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_output, builder)
 
-    tasks = [libgiza.task.Task(job=finalize_single_html,
-                               args=(single_html_dir, artifact_dir, conf),
-                               target=True,
-                               dependency=None,
-                               description="migrating singlehtml")]
+    tasks = [giza.libgiza.task.Task(job=finalize_single_html,
+                                    args=(single_html_dir, artifact_dir, conf),
+                                    target=True,
+                                    dependency=None,
+                                    description="migrating singlehtml")]
 
     for fn in expand_tree(os.path.join(artifact_dir, '_static'), None):
         target_fn = os.path.join(single_html_dir, '_static', os.path.basename(fn))
 
-        tasks.append(libgiza.task.Task(job=copy_if_needed,
-                                       args=(fn, target_fn),
-                                       target=target_fn,
-                                       dependency=fn,
-                                       description="moving static files to the singlehtml build"))
+        tasks.append(giza.libgiza.task.Task(job=copy_if_needed,
+                                            args=(fn, target_fn),
+                                            target=target_fn,
+                                            dependency=fn,
+                                            description="moving static files to the singlehtml build"))
 
     return tasks

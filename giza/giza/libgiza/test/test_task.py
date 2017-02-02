@@ -16,8 +16,8 @@ import numbers
 
 from unittest import TestCase
 
-from libgiza.task import MapTask, Task
-from libgiza.app import BuildApp
+from giza.libgiza.task import MapTask, Task
+from giza.libgiza.app import BuildApp
 from giza.config.main import Configuration
 from giza.config.runtime import RuntimeStateConfig
 

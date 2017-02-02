@@ -16,8 +16,8 @@ import os
 
 from unittest import TestCase
 
-from libgiza.inheritance import (DataContentBase, DataCache,
-                                 InheritableContentError, InheritableContentBase)
+from giza.libgiza.inheritance import (DataContentBase, DataCache,
+                                      InheritableContentError, InheritableContentBase)
 
 from giza.config.main import Configuration
 from giza.config.runtime import RuntimeStateConfig

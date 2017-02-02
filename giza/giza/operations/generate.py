@@ -22,7 +22,7 @@ import logging
 
 import argh
 
-from libgiza.app import BuildApp
+from giza.libgiza.app import BuildApp
 
 from giza.config.helper import fetch_config, get_restricted_builder_jobs
 

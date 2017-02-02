@@ -15,7 +15,7 @@
 import logging
 import os.path
 
-from libgiza.task import Task
+from giza.libgiza.task import Task
 
 from giza.content.tocs.inheritance import TocDataCache
 from giza.content.tocs.views import render_toctree, render_dfn_list, render_toc_table

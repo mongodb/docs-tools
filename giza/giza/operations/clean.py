@@ -24,7 +24,7 @@ import shutil
 
 import argh
 
-from libgiza.app import BuildApp
+from giza.libgiza.app import BuildApp
 from giza.config.helper import fetch_config, get_builder_jobs
 from giza.config.sphinx_config import resolve_builder_path
 

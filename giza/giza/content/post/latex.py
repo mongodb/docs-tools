@@ -22,7 +22,7 @@ import re
 import subprocess
 import shlex
 
-import libgiza.task
+import giza.libgiza.task
 
 from giza.content.helper import edition_check
 from giza.tools.transformation import process_page_task
@@ -157,19 +157,19 @@ def pdf_tasks(sconf, conf):
         tasks.append(t)
 
         # add task for changing TEX to PDF. (this also copies the pdf to the deployed path).
-        render_task = libgiza.task.Task(job=_render_tex_into_pdf,
-                                        args=(i['processed'], i['deployed'],
-                                              i['path'], output_format),
-                                        target=i['pdf'],
-                                        dependency=None)  # i['processed']
+        render_task = giza.libgiza.task.Task(job=_render_tex_into_pdf,
+                                             args=(i['processed'], i['deployed'],
+                                                   i['path'], output_format),
+                                             target=i['pdf'],
+                                             dependency=None)  # i['processed']
         t.finalizers.append(render_task)
 
         # if needed create links.
         if i['link'] != i['deployed']:
-            link_task = libgiza.task.Task(job=create_link,
-                                          args=(deploy_fn, i['link']),
-                                          target=i['link'],
-                                          dependency=i['deployed'])
+            link_task = giza.libgiza.task.Task(job=create_link,
+                                               args=(deploy_fn, i['link']),
+                                               target=i['link'],
+                                               dependency=i['deployed'])
             render_task.finalizers.append(link_task)
 
     return tasks

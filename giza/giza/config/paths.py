@@ -15,7 +15,7 @@
 import logging
 import os.path
 
-from libgiza.config import RecursiveConfigurationBase
+from giza.libgiza.config import RecursiveConfigurationBase
 
 logger = logging.getLogger('giza.config.paths')
 

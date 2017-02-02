@@ -10,63 +10,63 @@ implemented.) and type checking (always.)
 import datetime
 import unittest
 
-import libgiza.typed_dict
-import libgiza.error
+import giza.libgiza.typed_dict
+import giza.libgiza.error
 
 
 class TestTypedDictionaryObjectCreation(unittest.TestCase):
     def test_object_creation_returns_correctly_typed_values(self):
-        d = libgiza.typed_dict.TypedDict(key_type=str,
-                                         value_type=bool)
+        d = giza.libgiza.typed_dict.TypedDict(key_type=str,
+                                              value_type=bool)
 
-        self.assertIsInstance(d, libgiza.typed_dict.TypedDict)
+        self.assertIsInstance(d, giza.libgiza.typed_dict.TypedDict)
 
-        d = libgiza.typed_dict.TypedDict(key_type=str,
-                                         value_type=bool)
+        d = giza.libgiza.typed_dict.TypedDict(key_type=str,
+                                              value_type=bool)
 
-        self.assertIsInstance(d, libgiza.typed_dict.TypedDict)
+        self.assertIsInstance(d, giza.libgiza.typed_dict.TypedDict)
 
     def test_object_initialization_with_invalid_inputs(self):
         with self.assertRaises(TypeError):
-            libgiza.typed_dict.TypedDict()
+            giza.libgiza.typed_dict.TypedDict()
 
         with self.assertRaises(TypeError):
-            libgiza.typed_dict.TypedDict("1", 2)
+            giza.libgiza.typed_dict.TypedDict("1", 2)
 
         with self.assertRaises(TypeError):
-            libgiza.typed_dict.TypedDict(bool, 2)
+            giza.libgiza.typed_dict.TypedDict(bool, 2)
 
         with self.assertRaises(TypeError):
-            libgiza.typed_dict.TypedDict(2, bool)
+            giza.libgiza.typed_dict.TypedDict(2, bool)
 
         with self.assertRaises(TypeError):
-            libgiza.typed_dict.TypedDict({})
+            giza.libgiza.typed_dict.TypedDict({})
 
         with self.assertRaises(TypeError):
-            libgiza.typed_dict.TypedDict("1", 2, {})
+            giza.libgiza.typed_dict.TypedDict("1", 2, {})
 
         with self.assertRaises(TypeError):
-            libgiza.typed_dict.TypedDict(bool, 2, {})
+            giza.libgiza.typed_dict.TypedDict(bool, 2, {})
 
         with self.assertRaises(TypeError):
-            libgiza.typed_dict.TypedDict(2, bool, {})
+            giza.libgiza.typed_dict.TypedDict(2, bool, {})
 
     def test_check_persistence_of_values_set_after_creation(self):
-        d = libgiza.typed_dict.TypedDict(str, bool)
+        d = giza.libgiza.typed_dict.TypedDict(str, bool)
         d["foo"] = True
         self.assertEqual(True, d["foo"])
 
     def test_abc_implementations_return_correctly_typed_values(self):
-        d = libgiza.typed_dict.TypedDict(str, bool)
+        d = giza.libgiza.typed_dict.TypedDict(str, bool)
 
-        self.assertIsInstance(d.check_key("foo"), libgiza.error.ErrorCollector)
-        self.assertIsInstance(d.check_value(True), libgiza.error.ErrorCollector)
-        self.assertIsInstance(d.check_pair("foo", True), libgiza.error.ErrorCollector)
+        self.assertIsInstance(d.check_key("foo"), giza.libgiza.error.ErrorCollector)
+        self.assertIsInstance(d.check_value(True), giza.libgiza.error.ErrorCollector)
+        self.assertIsInstance(d.check_pair("foo", True), giza.libgiza.error.ErrorCollector)
 
     def test_creation_of_objects_works_correctly_with_input_base_object(self):
         for base in [{"foo": True, "bar": False}, [("foo", True), ("bar", False)],
                      {"baz": False}, [("baz", False)], {}, [], tuple()]:
-            d = libgiza.typed_dict.TypedDict(str, bool)
+            d = giza.libgiza.typed_dict.TypedDict(str, bool)
             d.ingest(base)
             self.assertTrue(len(d) == len(base))
 
@@ -74,18 +74,18 @@ class TestTypedDictionaryObjectCreation(unittest.TestCase):
 class Fake(object):
     def __init__(self, left, right):
         self.value = (left, right)
-        self.validate_results = libgiza.error.ErrorCollector()
+        self.validate_results = giza.libgiza.error.ErrorCollector()
 
     def validate(self):
         return self.validate_results
 
 
-class FakeTypedDict(libgiza.typed_dict.TypedDict):
+class FakeTypedDict(giza.libgiza.typed_dict.TypedDict):
     def __init__(self, *args):
         super(FakeTypedDict, self).__init__(key_type=Fake,
                                             value_type=Fake)
         self.ingest(args)
-        self.pair_results = libgiza.error.ErrorCollector()
+        self.pair_results = giza.libgiza.error.ErrorCollector()
 
     def check_key(self, key):
         collector = key.validate()
@@ -116,7 +116,7 @@ class TestTypedDictionaryOperations(unittest.TestCase):
 
     def test_fake_object_exists_with_correct_types(self):
         self.assertIsInstance(self.d, FakeTypedDict)
-        self.assertIsInstance(self.d, libgiza.typed_dict.TypedDict)
+        self.assertIsInstance(self.d, giza.libgiza.typed_dict.TypedDict)
         self.assertIsInstance(self.d, dict)
 
     def test_setting_object_invalid_types_raises_type_errors(self):
@@ -152,34 +152,34 @@ class TestTypedDictionaryOperations(unittest.TestCase):
         self.assertTrue(len(self.d) == 1)
 
     def test_setting_object_with_invalid_key_raises_value_error(self):
-        self.key.validate_results.add(libgiza.error.Error(message="key has an error"))
+        self.key.validate_results.add(giza.libgiza.error.Error(message="key has an error"))
 
         with self.assertRaises(ValueError):
             self.d[self.key] = self.value
 
     def test_setting_object_with_invalid_value_raises_value_error(self):
-        self.key.validate_results.add(libgiza.error.Error(message="value has an error"))
+        self.key.validate_results.add(giza.libgiza.error.Error(message="value has an error"))
 
         with self.assertRaises(ValueError):
             self.d[self.key] = self.value
 
     def test_setting_object_with_invalid_value_and_key_raises_value_error(self):
-        self.key.validate_results.add(libgiza.error.Error(message="key has an error"))
-        self.key.validate_results.add(libgiza.error.Error(message="value has an error"))
+        self.key.validate_results.add(giza.libgiza.error.Error(message="key has an error"))
+        self.key.validate_results.add(giza.libgiza.error.Error(message="value has an error"))
 
         with self.assertRaises(ValueError):
             self.d[self.key] = self.value
 
     def test_setting_with_invalid_pair_raises_value_error(self):
-        self.key.validate_results.add(libgiza.error.Error(message="an object has errors"))
+        self.key.validate_results.add(giza.libgiza.error.Error(message="an object has errors"))
 
         with self.assertRaises(ValueError):
             self.d[self.key] = self.value
 
     def test_abc_implementations_of_checks_return_correctly_typed_values(self):
-        self.assertIsInstance(self.d.check_key(self.key), libgiza.error.ErrorCollector)
-        self.assertIsInstance(self.d.check_value(self.value), libgiza.error.ErrorCollector)
-        self.assertIsInstance(self.d.check_pair(self.key, self.value), libgiza.error.ErrorCollector)
+        self.assertIsInstance(self.d.check_key(self.key), giza.libgiza.error.ErrorCollector)
+        self.assertIsInstance(self.d.check_value(self.value), giza.libgiza.error.ErrorCollector)
+        self.assertIsInstance(self.d.check_pair(self.key, self.value), giza.libgiza.error.ErrorCollector)
 
     def test_check_functions_raise_exception(self):
         def bad_pair_validator(self, key, value):
@@ -191,40 +191,40 @@ class TestTypedDictionaryOperations(unittest.TestCase):
             self.d[self.key] = self.value
 
 
-class LatestReleaseDownloads(libgiza.typed_dict.TypedDict):
+class LatestReleaseDownloads(giza.libgiza.typed_dict.TypedDict):
     def __init__(self, *args):
         super(LatestReleaseDownloads, self).__init__(key_type=str,
                                                      value_type=str)
         self.ingest(args)
 
     def check_key(self, key):
-        return libgiza.error.ErrorCollector()
+        return giza.libgiza.error.ErrorCollector()
 
     def check_value(self, value):
-        errors = libgiza.error.ErrorCollector()
+        errors = giza.libgiza.error.ErrorCollector()
 
         if "win" in value:
             if not value.endswith(".zip"):
-                errors.add(libgiza.error.Error(
+                errors.add(giza.libgiza.error.Error(
                     message="windows binaries must end with .zip, not: " + value))
         else:
             if not value.endswith(".tgz"):
-                errors.add(libgiza.error.Error(
+                errors.add(giza.libgiza.error.Error(
                     message="unix-like packages should end with .tgz: " + value))
 
         return errors
 
     def check_pair(self, key, value):
-        errors = libgiza.error.ErrorCollector()
+        errors = giza.libgiza.error.ErrorCollector()
 
         if key.replace("_", "-", 1) not in value:
-            errors.add(libgiza.error.ErrorCollector(
+            errors.add(giza.libgiza.error.ErrorCollector(
                 message="key '{0}' is not in value '{1}'".format(key, value)))
 
         return errors
 
 
-class LatestReleaseDict(libgiza.typed_dict.TypedDict):
+class LatestReleaseDict(giza.libgiza.typed_dict.TypedDict):
     def __init__(self, *args):
         super(LatestReleaseDict, self).__init__(key_type=str,
                                                 value_type=LatestReleaseDocument)
@@ -240,7 +240,7 @@ class LatestReleaseDict(libgiza.typed_dict.TypedDict):
         return None
 
 
-class LatestReleaseDocument(libgiza.config.ConfigurationBase):
+class LatestReleaseDocument(giza.libgiza.config.ConfigurationBase):
     _option_registry = ["major", "minor", "maintenance"]
 
     @property
@@ -294,13 +294,13 @@ class LatestReleaseDocument(libgiza.config.ConfigurationBase):
         self.state["downloads"] = LatestReleaseDownloads(value)
 
     def validate(self):
-        errors = libgiza.error.ErrorCollector()
+        errors = giza.libgiza.error.ErrorCollector()
 
         for key in ("rc", "version", "major", "minor", "maintenance", "date", "downloads"):
             if key not in self.state:
                 m = ("missing {0} in latest release for series {1} "
                      "object".format(key, self.version))
-                errors.add(libgiza.error.Error(message=m, include_trace=False))
+                errors.add(giza.libgiza.error.Error(message=m, include_trace=False))
 
         for platform, url in self.downloads.items():
             errors.add(self.downloads.check_pair(platform, url))
@@ -310,7 +310,7 @@ class LatestReleaseDocument(libgiza.config.ConfigurationBase):
             if self.version not in url:
                 m = ("incorrect version ({0}) for url "
                      "{1}".format(self.version.string, url))
-                errors.add(libgiza.error.Error(message=m, include_trace=False))
+                errors.add(giza.libgiza.error.Error(message=m, include_trace=False))
 
         return errors
 

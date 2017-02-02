@@ -16,9 +16,9 @@ import numbers
 import random
 from unittest import TestCase
 
-from libgiza.app import BuildApp
-from libgiza.pool import ThreadPool, ProcessPool, SerialPool
-from libgiza.task import Task
+from giza.libgiza.app import BuildApp
+from giza.libgiza.pool import ThreadPool, ProcessPool, SerialPool
+from giza.libgiza.task import Task
 from giza.config.main import Configuration
 from giza.config.runtime import RuntimeStateConfig
 

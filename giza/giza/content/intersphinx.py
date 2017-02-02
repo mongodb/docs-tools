@@ -25,7 +25,7 @@ import os
 import logging
 import subprocess
 
-import libgiza.task
+import giza.libgiza.task
 
 from giza.tools.files import verbose_remove, safe_create_directory
 
@@ -108,11 +108,11 @@ def intersphinx_tasks(conf):
             s = i['url'] + 'objects.inv'
 
         description = 'download intersphinx inventory from {0}'.format(s)
-        tasks.append(libgiza.task.Task(job=download,
-                                       args=(f, s, conf),
-                                       target=f,
-                                       dependency=None,
-                                       description=description))
+        tasks.append(giza.libgiza.task.Task(job=download,
+                                            args=(f, s, conf),
+                                            target=f,
+                                            dependency=None,
+                                            description=description))
         logger.debug('added job for {0}'.format(s))
 
     return tasks
@@ -130,8 +130,7 @@ def intersphinx_clean(conf):
                               conf.paths.output, inv['path'])
 
         if os.path.exists(fn):
-            t = libgiza.task.Task(job=verbose_remove,
-                                  args=[fn])
+            t = giza.libgiza.task.Task(job=verbose_remove, args=[fn])
             tasks.append(t)
 
     return tasks

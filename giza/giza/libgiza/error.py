@@ -7,9 +7,9 @@ import multiprocessing
 import threading
 import traceback
 
-import libgiza.config
+import giza.libgiza.config
 
-logger = logging.getLogger('libgiza.error')
+logger = logging.getLogger('giza.libgiza.error')
 
 _DEFAULT_ERROR_MESSAGE = "generic error"
 
@@ -85,18 +85,18 @@ class Error(object):
     def payload(self):
         if isinstance(self._payload, dict):
             return self._payload
-        elif isinstance(self._payload, libgiza.config.ConfigurationBase):
+        elif isinstance(self._payload, giza.libgiza.config.ConfigurationBase):
             return self._payload.dict()
         else:
             return {}
 
     @payload.setter
     def payload(self, value):
-        if isinstance(value, (dict, libgiza.config.ConfigurationBase)):
+        if isinstance(value, (dict, giza.libgiza.config.ConfigurationBase)):
             self._payload = value
         else:
             raise TypeError("error payloads must be dict subclasses or "
-                            "libgiza configuration objects, cannot set to: "
+                            "giza.libgiza configuration objects, cannot set to: "
                             "{0} ({1})".format(value, type(value)))
 
     def render_output(self, prefix=""):

@@ -20,9 +20,9 @@ import tempfile
 import contextlib
 
 import argh
-import libgiza.task
+import giza.libgiza.task
 
-from libgiza.app import BuildApp
+from giza.libgiza.app import BuildApp
 from sphinx.application import Sphinx, ENV_PICKLE_FILENAME
 from sphinx.builders.html import get_stable_hash
 
@@ -183,11 +183,11 @@ def fix_build_env_tasks(builders, conf):
 
     message = "fix up sphinx environment for builder '{0}'"
     for builder in builders:
-        t = libgiza.task.Task(job=fix_build_env,
-                              args=(builder, conf),
-                              target=True,
-                              dependency=None,
-                              description=message.format(builder))
+        t = giza.libgiza.task.Task(job=fix_build_env,
+                                   args=(builder, conf),
+                                   target=True,
+                                   dependency=None,
+                                   description=message.format(builder))
         tasks.append(t)
 
     return tasks

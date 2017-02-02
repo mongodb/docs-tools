@@ -24,9 +24,9 @@ import logging
 import os.path
 import collections
 
-from libgiza.config import ConfigurationBase
+from giza.libgiza.config import ConfigurationBase
 
-logger = logging.getLogger('libgiza.task')
+logger = logging.getLogger('giza.libgiza.task')
 
 
 class Task(object):

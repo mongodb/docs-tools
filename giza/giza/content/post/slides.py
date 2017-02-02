@@ -22,7 +22,7 @@ import os
 import logging
 import subprocess
 
-import libgiza.task
+import giza.libgiza.task
 from giza.content.post.archives import slides_tarball, get_tarball_name
 
 logger = logging.getLogger('giza.content.post.slides')
@@ -56,11 +56,11 @@ def slides_output(conf):
 
 
 def slide_tasks(sconf, conf):
-    return [libgiza.task.Task(job=slides_tarball,
-                              target=[get_tarball_name('slides', conf),
-                                      get_tarball_name('link-slides', conf)],
-                              args=(sconf.name, sconf.build_output, conf),
-                              description="creating tarball for slides"),
-            libgiza.task.Task(job=slides_output,
-                              args=[conf],
-                              description='migrating slide output to production')]
+    return [giza.libgiza.task.Task(job=slides_tarball,
+                                   target=[get_tarball_name('slides', conf),
+                                           get_tarball_name('link-slides', conf)],
+                                   args=(sconf.name, sconf.build_output, conf),
+                                   description="creating tarball for slides"),
+            giza.libgiza.task.Task(job=slides_output,
+                                   args=[conf],
+                                   description='migrating slide output to production')]

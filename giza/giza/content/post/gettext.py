@@ -21,7 +21,7 @@ as a basis for translation.
 import os.path
 import logging
 
-import libgiza.task
+import giza.libgiza.task
 
 from giza.tools.files import expand_tree, copy_if_needed
 from giza.config.sphinx_config import resolve_builder_path
@@ -48,11 +48,11 @@ def gettext_tasks(conf):
         target = os.path.join(locale_dirs, fn[path_offset:])
         source = fn
 
-        t = libgiza.task.Task(job=copy_if_needed,
-                              args=(source, target, None),
-                              target=target,
-                              dependency=source,
-                              description="migrating po file {0} if needed".format(fn))
+        t = giza.libgiza.task.Task(job=copy_if_needed,
+                                   args=(source, target, None),
+                                   target=target,
+                                   dependency=source,
+                                   description="migrating po file {0} if needed".format(fn))
         tasks.append(t)
 
     logger.info("if you added files to the corpus since your last gettext build,"

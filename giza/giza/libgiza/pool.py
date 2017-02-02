@@ -25,7 +25,7 @@ import multiprocessing.dummy
 import numbers
 import sys
 
-from libgiza.task import MapTask, Task
+from giza.libgiza.task import MapTask, Task
 
 logger = logging.getLogger('giza.pool')
 

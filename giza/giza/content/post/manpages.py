@@ -21,7 +21,7 @@ import re
 import os
 import logging
 
-import libgiza.task
+import giza.libgiza.task
 
 from giza.tools.files import expand_tree
 
@@ -75,10 +75,10 @@ def manpage_url_tasks(builder, conf):
                                             builder), ['1', '5']):
 
         description = 'processing urls in manpage file: {0}'.format(manpage)
-        tasks.append(libgiza.task.Task(job=manpage_url,
-                                       args=(regex_obj, manpage),
-                                       target=manpage,
-                                       dependency=None,
-                                       description=description))
+        tasks.append(giza.libgiza.task.Task(job=manpage_url,
+                                            args=(regex_obj, manpage),
+                                            target=manpage,
+                                            dependency=None,
+                                            description=description))
 
     return tasks

@@ -33,7 +33,7 @@ import boto.s3.bucket
 import boto.s3.key
 import boto.s3.lifecycle
 
-from libgiza.git import GitRepo
+from giza.libgiza.git import GitRepo
 from giza.config.helper import fetch_config
 
 try:

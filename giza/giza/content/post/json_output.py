@@ -25,7 +25,7 @@ import os
 import re
 import subprocess
 
-import libgiza.task
+import giza.libgiza.task
 
 from giza.tools.files import expand_tree, copy_if_needed, safe_create_directory
 from giza.tools.transformation import munge_content
@@ -97,26 +97,26 @@ def json_output_tasks(conf):
         fjson = path + '.fjson'
         jsonf = path + '.json'
 
-        task = libgiza.task.Task(job=process_json_file,
-                                 args=(fjson, jsonf, regexes, conf),
-                                 target=jsonf,
-                                 dependency=fjson,
-                                 description="processing json file {}".format(json))
+        task = giza.libgiza.task.Task(job=process_json_file,
+                                      args=(fjson, jsonf, regexes, conf),
+                                      target=jsonf,
+                                      dependency=fjson,
+                                      description="processing json file {}".format(json))
         tasks.append(task)
         outputs.append(jsonf)
 
     list_file = os.path.join(conf.paths.branch_output, 'json-file-list')
-    tasks.append(libgiza.task.Task(job=generate_list_file,
-                                   args=(outputs, list_file, conf),
-                                   target=list_file,
-                                   dependency=None,
-                                   description="generating list of json files"))
+    tasks.append(giza.libgiza.task.Task(job=generate_list_file,
+                                        args=(outputs, list_file, conf),
+                                        target=list_file,
+                                        dependency=None,
+                                        description="generating list of json files"))
 
-    transfer = libgiza.task.Task(job=json_output,
-                                 args=[conf],
-                                 target=True,
-                                 dependency=None,
-                                 description='transfer json output to public directory')
+    transfer = giza.libgiza.task.Task(job=json_output,
+                                      args=[conf],
+                                      target=True,
+                                      dependency=None,
+                                      description='transfer json output to public directory')
 
     return tasks, transfer
 

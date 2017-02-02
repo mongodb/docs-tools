@@ -23,8 +23,8 @@ import subprocess
 
 import argh
 
-import libgiza.app
-import libgiza.task
+import giza.libgiza.app
+import giza.libgiza.task
 
 from giza.config.helper import fetch_config
 
@@ -97,12 +97,12 @@ def pull_tasks(conf):
     tasks = []
 
     for page in resources:
-        t = libgiza.task.Task(job=logged_command,
-                              args=('pull', ' '.join(['tx', 'pull', '-l',
-                                                      conf.runstate.language, '-r', page])),
-                              target=True,
-                              dependency=None,
-                              description='pulling {0} from transifex client'.format(page))
+        t = giza.libgiza.task.Task(job=logged_command,
+                                   args=('pull', ' '.join(['tx', 'pull', '-l',
+                                                           conf.runstate.language, '-r', page])),
+                                   target=True,
+                                   dependency=None,
+                                   description='pulling {0} from transifex client'.format(page))
         tasks.append(t)
 
     return tasks
@@ -113,12 +113,12 @@ def push_tasks(conf):
     tasks = []
 
     for page in resources:
-        t = libgiza.task.Task(job=logged_command,
-                              args=('pull', ' '.join(['tx', 'pull', '-l',
-                                                      conf.runstate.language, '-r', page])),
-                              target=True,
-                              dependency=None,
-                              description='pulling {0} from transifex client'.format(page))
+        t = giza.libgiza.task.Task(job=logged_command,
+                                   args=('pull', ' '.join(['tx', 'pull', '-l',
+                                                           conf.runstate.language, '-r', page])),
+                                   target=True,
+                                   dependency=None,
+                                   description='pulling {0} from transifex client'.format(page))
         tasks.append(t)
 
     return tasks
@@ -207,9 +207,9 @@ def update_translations(args):
 def pull_translations(args):
     conf = fetch_config(args)
 
-    with libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
-                                  pool_size=conf.runstate.pool_size,
-                                  force=conf.runstate.force).context() as app:
+    with giza.libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
+                                       pool_size=conf.runstate.pool_size,
+                                       force=conf.runstate.force).context() as app:
         app.extend_queue(pull_tasks(conf))
 
 
@@ -222,8 +222,8 @@ def push_translations(args):
 
     conf = fetch_config(args)
 
-    with libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
-                                  pool_size=conf.runstate.pool_size,
-                                  force=conf.runstate.force).context() as app:
+    with giza.libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
+                                       pool_size=conf.runstate.pool_size,
+                                       force=conf.runstate.force).context() as app:
         app.extend_queue(push_tasks(conf))
         update_transifex(conf)

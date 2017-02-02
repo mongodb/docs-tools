@@ -22,7 +22,7 @@ try:
     import pygit2
 except ImportError:
     pygit2 = None
-    import libgiza.git
+    import giza.libgiza.git
 
 
 class GitError(Exception):
@@ -39,7 +39,7 @@ class GitRepo(object):
         if pygit2 is None:
             logger.warning("without pylibgit2 installed, falling back "
                            "to wrapped git repo implementation.")
-            return libgiza.git.GitRepo(path)
+            return giza.libgiza.git.GitRepo(path)
 
         if path is None:
             self.path = os.getcwd()

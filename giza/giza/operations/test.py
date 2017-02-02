@@ -19,9 +19,9 @@ import subprocess
 import shlex
 import shutil
 
-import libgiza.git
-import libgiza.app
-import libgiza.task
+import giza.libgiza.git
+import giza.libgiza.app
+import giza.libgiza.task
 
 import giza.content.assets
 import giza.config.helper
@@ -33,13 +33,13 @@ logger = logging.getLogger('GIZA.OPERATIONS.TEST')
 
 def setup_test_repo(path, project):
     if os.path.isdir(path):
-        g = libgiza.git.GitRepo(path)
+        g = giza.libgiza.git.GitRepo(path)
         if g.current_branch() != 'master':
             g.checkout_branch('master')
         g.pull(remote='origin', branch='master')
         logger.info('updated repository at: ' + path)
     else:
-        g = libgiza.git.GitRepo(os.path.dirname(path))
+        g = giza.libgiza.git.GitRepo(os.path.dirname(path))
         g.clone(project.uri, os.path.basename(path))
         logger.info('cloned new repository into: ' + path)
 
@@ -66,7 +66,7 @@ def get_test_config(args):
 
 
 def change_branch(path, branch):
-    g = libgiza.git.GitRepo(path)
+    g = giza.libgiza.git.GitRepo(path)
     tracking = '/'.join(('origin', branch))
 
     if g.branch_exists(branch) is True:
@@ -80,7 +80,7 @@ def change_branch(path, branch):
 
 
 def run_test_op(cmd, dir):
-    g = libgiza.git.GitRepo(dir)
+    g = giza.libgiza.git.GitRepo(dir)
 
     r = subprocess.call(args=shlex.split(cmd), cwd=dir)
     if r != 0:
@@ -111,9 +111,9 @@ integration_targets = ('complete', 'minimal', 'cleanComplete', 'cleanMinimal')
 @argh.named('test')
 def integration_main(args):
     conf = get_test_config(args)
-    app = libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
-                                   pool_size=conf.runstate.pool_size,
-                                   force=conf.runstate.force)
+    app = giza.libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
+                                        pool_size=conf.runstate.pool_size,
+                                        force=conf.runstate.force)
 
     build_path = os.path.join(conf.paths.projectroot, conf.paths.output)
 
@@ -140,19 +140,19 @@ def integration_main(args):
             path = os.path.join(build_path, project.project, project.root)
             git_path = os.path.join(build_path, project.project)
 
-        task = app.add(libgiza.task.Task(job=setup_test_repo,
-                                         args=(git_path, project),
-                                         ignore=False))
+        task = app.add(giza.libgiza.task.Task(job=setup_test_repo,
+                                              args=(git_path, project),
+                                              ignore=False))
 
         if args._test_op.startswith('clean'):
-            task = task.add_finalizer(libgiza.task.Task(job=cleaner,
-                                                        args=[path],
-                                                        ignore=False))
+            task = task.add_finalizer(giza.libgiza.task.Task(job=cleaner,
+                                                             args=[path],
+                                                             ignore=False))
 
         for branch in project.branches:
-            task = task.add_finalizer(libgiza.task.Task(job=change_branch,
-                                                        args=(path, branch),
-                                                        ignore=False))
+            task = task.add_finalizer(giza.libgiza.task.Task(job=change_branch,
+                                                             args=(path, branch),
+                                                             ignore=False))
 
             if args._test_op.startswith('clean'):
                 op_name = args._test_op.lower()[5:]
@@ -160,8 +160,8 @@ def integration_main(args):
                 op_name = args._test_op
 
             for op in project.operations[op_name]:
-                task = task.add_finalizer(libgiza.task.Task(job=run_test_op,
-                                                            args=(op, path),
-                                                            ignore=False))
+                task = task.add_finalizer(giza.libgiza.task.Task(job=run_test_op,
+                                                                 args=(op, path),
+                                                                 ignore=False))
 
     app.run()

@@ -28,9 +28,9 @@ import os.path
 import jinja2
 import yaml
 
-from libgiza.config import RecursiveConfigurationBase, ConfigurationBase
+from giza.libgiza.config import RecursiveConfigurationBase, ConfigurationBase
 
-logger = logging.getLogger('libgiza.inheritance')
+logger = logging.getLogger('giza.libgiza.inheritance')
 
 
 class InheritableContentError(Exception):

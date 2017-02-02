@@ -15,15 +15,15 @@
 import copy
 import os
 
-import libgiza.inheritance
-import libgiza.config
+import giza.libgiza.inheritance
+import giza.libgiza.config
 
 import giza.content.helper
 
 import giza.tools.files
 
 
-class InheritanceReference(libgiza.inheritance.InheritanceReference):
+class InheritanceReference(giza.libgiza.inheritance.InheritanceReference):
 
     @property
     def file(self):
@@ -46,7 +46,7 @@ class InheritanceReference(libgiza.inheritance.InheritanceReference):
             raise TypeError('file named {0} does not exist'.format(value))
 
 
-class InheritableContentBase(libgiza.inheritance.InheritableContentBase):
+class InheritableContentBase(giza.libgiza.inheritance.InheritableContentBase):
     _reference_type = InheritanceReference
 
     def get_default_replacement(self):
@@ -62,12 +62,12 @@ class InheritableContentBase(libgiza.inheritance.InheritableContentBase):
         return base
 
 
-class DataContentBase(libgiza.inheritance.DataContentBase):
+class DataContentBase(giza.libgiza.inheritance.DataContentBase):
     edition_check = staticmethod(giza.content.helper.edition_check)
     content_class = InheritableContentBase
 
 
-class DataCache(libgiza.inheritance.DataCache):
+class DataCache(giza.libgiza.inheritance.DataCache):
     content_class = DataContentBase
 
     def create_output_dir(self):
