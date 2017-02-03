@@ -71,25 +71,31 @@ def assets_setup(path, branch, repo, commit=None):
         g = libgiza.git.GitRepo(path)
 
         if commit is None:
-            g.pull(branch=branch)
-            logger.info('updated {0} repository'.format(path))
+            try:
+                g.pull(branch=branch)
+            except giza.libgiza.git.GitError as error:
+                logger.error('failed to pull %s repository', path)
+                logger.debug(error)
+                return
+
+            logger.info('updated %s repository', path)
             return
         elif g.sha() == commit or g.sha().startswith(commit):
-            logger.info('repository {0} is currently at ({1})'.format(path, commit))
+            logger.info('repository %s is currently at (%s)', path, commit)
         else:
             g.checkout(commit)
-            logger.info('update  {0} repository to ({1})'.format(path, commit))
+            logger.info('update %s repository to (%s)', path, commit)
     else:
         base, name = os.path.split(path)
         giza.tools.files.safe_create_directory(base)
 
         g = libgiza.git.GitRepo(base)
         g.clone(repo, repo_path=path, branch=branch)
-        logger.info('cloned {0} branch from repo {1}'.format(branch, repo))
+        logger.info('cloned %s branch from repo %s', branch, repo)
 
         if commit is not None and (g.sha() == commit or g.sha().startswith(commit)):
             g.checkout(commit)
-            logger.info('repository {0} is currently at ({1})'.format(path, commit))
+            logger.info('repository %s is currently at (%s)', path, commit)
 
 
 def assets_tasks(conf):
@@ -102,7 +108,7 @@ def assets_tasks(conf):
         for asset in conf.assets:
             path = os.path.join(conf.paths.projectroot, asset.path)
 
-            logger.debug('adding asset resolution job for {0}'.format(path))
+            logger.debug('adding asset resolution job for %s', path)
 
             args = {'path': path,
                     'branch': asset.branch,
@@ -145,7 +151,7 @@ def assets_clean(conf):
     if conf.assets is not None:
         for asset in conf.assets:
             path = os.path.join(conf.paths.projectroot, asset.path)
-            logger.debug('adding asset cleanup {0}'.format(path))
+            logger.debug('adding asset cleanup %s', path)
 
             t = libgiza.task.Task(job=shutil.rmtree,
                                   args=[path],
