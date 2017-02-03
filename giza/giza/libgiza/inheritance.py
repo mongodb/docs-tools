@@ -420,13 +420,6 @@ class DataContentBase(RecursiveConfigurationBase):
         then we sort in this order. Otherwise, we return in the order that they
         were specified in the file.
         """
-        def sorter(ref_a, ref_b):
-            # would be cmp() in python 2, but this is py3 compatible
-            a_num = self.fetch(ref_a).number
-            b_num = self.fetch(ref_b).number
-
-            return (a_num > b_num) - (a_num < b_num)
-
         if self._reordered is False:
             for content in self.content.values():
                 if 'number' not in content:
@@ -434,7 +427,7 @@ class DataContentBase(RecursiveConfigurationBase):
                     break
 
         if self._reordered is False:
-            self._ordering.sort(cmp=sorter)
+            self._ordering.sort(key=lambda x: self.fetch(x).number)
             self._reordered = True
 
         for ref in self._ordering:
