@@ -49,7 +49,6 @@ stable over time.
 import logging
 import os
 import shutil
-import subprocess
 
 import giza.libgiza.task
 import giza.libgiza.git
@@ -96,7 +95,6 @@ def assets_tasks(conf):
     """Add tasks to an app to create/update the assets."""
 
     tasks = []
-    generate_tasks = []
     if conf.assets is not None:
         giza.tools.files.safe_create_directory(conf.paths.projectroot)
         for asset in conf.assets:
@@ -117,22 +115,6 @@ def assets_tasks(conf):
                                                 target=path,
                                                 dependency=None,
                                                 description=description))
-
-            # If you specify a list of "generate" items, giza will call ``giza
-            # generate`` to build content after updating the
-            # repository. Deprecated, and largely unused.
-            if 'generate' in asset:
-                for content_type in asset.generate:
-                    description = 'generating objects in {0}'.format(path)
-                    args = dict(cwd=path, args=['giza', 'generate', content_type])
-                    generate_tasks.append(giza.libgiza.task.Task(job=subprocess.call,
-                                                                 target=path,
-                                                                 dependency=None,
-                                                                 args=args,
-                                                                 description=description))
-
-    if len(generate_tasks) > 0:
-        tasks.append(generate_tasks)
 
     return tasks
 
