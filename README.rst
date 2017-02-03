@@ -13,7 +13,7 @@ documentation source trees to facilitate maintenance of these
 components in the context of a multi-branch and multi-repository
 documentation project.
 
-This document explains the componets and operations of the build
+This document explains the components and operations of the build
 system, and serves as a guide for anyone who wants to maintain a
 MongoDB Documentation-like project. 
 
