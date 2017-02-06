@@ -1,13 +1,18 @@
+.copy-button-container {
+    width: 0;
+    height: 0;
+    position: relative;
+}
+
 .copy-button {
     border: 1px solid #7a7b7b;
     background-color: #7a7b7b;
     color: white;
     height: 25px;
+    width: 65px;
     font-size: 13px;
-    left: 12px;
-    top: -24px;
-    float: right;
-    position: relative;
+    left: 684px;
+    position: absolute;
 }
 
 @media print {

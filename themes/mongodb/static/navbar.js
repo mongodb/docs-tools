@@ -167,19 +167,22 @@ $(function() {
             // IIFE to support loop scope without needing let
             ;(function() {
                 var copyBlock = copyableBlocks[i];
-                var preElement = copyBlock.getElementsByTagName('pre')[0];
-                if(!preElement) {
+                var highlightElement = copyBlock.getElementsByClassName('highlight')[0];
+                if(!highlightElement) {
                     return;
                 }
 
-                var text = preElement.innerText.trim();
+                var text = highlightElement.innerText.trim();
+                var copyButtonContainer = document.createElement('div');
                 var copyButton = document.createElement('button');
                 var copyIcon = document.createElement('span');
+                copyButtonContainer.className = 'copy-button-container';
                 copyIcon.className = 'fa fa-clipboard';
                 copyButton.className = 'copy-button';
                 copyButton.appendChild(copyIcon);
                 copyButton.appendChild(new Text('Copy'));
-                preElement.insertBefore(copyButton, preElement.children[0]);
+                copyButtonContainer.appendChild(copyButton);
+                highlightElement.insertBefore(copyButtonContainer, highlightElement.children[0]);
                 copyButton.addEventListener('click', function() {
                     var tempElement = document.createElement('textarea');
                     document.body.appendChild(tempElement);
