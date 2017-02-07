@@ -283,6 +283,13 @@ conf['directives'] = [
         'description': 'PHP Library method',
         'prepend': True,
         'callable': False
+    },
+    {
+        'name': 'atlasrole',
+        'tag': 'atlasrole',
+        'description': 'Atlas Specific User Privilege group',
+        'prepend': True,
+        'callable': False
     }
 ]
 
