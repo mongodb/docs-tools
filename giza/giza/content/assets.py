@@ -73,7 +73,7 @@ def assets_setup(path, branch, repo, commit=None):
         if commit is None:
             try:
                 g.pull(branch=branch)
-            except giza.libgiza.git.GitError as error:
+            except libgiza.git.GitError as error:
                 logger.error('failed to pull %s repository', path)
                 logger.debug(error)
                 return
