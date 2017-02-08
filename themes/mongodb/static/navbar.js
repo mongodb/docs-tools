@@ -204,6 +204,65 @@ $(function() {
             })();
         }
     }
+    
+
+    // Create tab functionality for code examples
+    function setupTabs() {
+        // Check if the user has a preference stored, if so load it
+        if (localStorage.getItem("languagePref")) {
+            var currentAttrValue = localStorage.getItem("languagePref");
+            
+            // Show the appropriate tab content and mark the tab as active
+            showHideTabContent(currentAttrValue);
+            showHideSelectedTab(currentAttrValue);
+        }
+        
+        document.querySelectorAll('.tabs .nav-tabs a').forEach(function(element) {
+            element.onclick = function(e) {
+                // Get the href of the clicked tab
+                var currentAttrValue = element.getAttribute('href');
+                
+                // Check to make sure value is not null, i.e., don't do anything on "other"
+                if (currentAttrValue) {
+                    // Save the users preference
+                    localStorage.setItem("languagePref", currentAttrValue);
+                    
+                    // Show the appropriate tab content and mark the tab as active
+                    showHideTabContent(currentAttrValue);
+                    showHideSelectedTab(currentAttrValue);
+                    
+                    e.preventDefault();
+                }
+            };
+        });
+    }
+    
+    // Show the appropriate tab content and hide other tab's content
+    function showHideTabContent(currentAttrValue) {
+        $('.tabs ' + currentAttrValue).show().siblings().hide();
+    }
+    
+    // Marks the selected tab as active, handles special cases for the dropdown
+    function showHideSelectedTab(currentAttrValue) {
+        // Get the <a>, <li> and <ul> of the selected tab
+        var tabLink = $('a[href='+ currentAttrValue +']');
+        var tabListItem = tabLink.parent('li');
+        var tabList = tabListItem.parent('ul');
+        
+         // Get the dropdown <a> and <li> for active and label management
+         var dropdownLink = $('.dropdown-toggle');
+         var dropdownListItem = $('.dropdown');
+         
+        // Set the active tab, if it's on the dropdown set it to active and change label
+        if (tabList.hasClass('dropdown-menu')) {
+            dropdownLink.text(tabLink.text() + ' ').append('<span class="caret"></span>');
+            dropdownListItem.addClass('active').siblings().removeClass('active');
+        } else {
+            // Set a non-dropdown tab to active, and change the dropdown label back to "Other"
+            tabListItem.addClass('active').siblings().removeClass('active');
+            dropdownLink.text('Other ').append('<span class="caret"></span>');
+        }
+    }
 
     // If the browser is sufficiently modern, make navbar links load only
     // content pieces to avoid a full page load.
@@ -287,6 +346,7 @@ $(function() {
                 setupFastLoad();
                 updateVersionSelector();
                 createCopyButtons();
+                setupTabs();
 
                 if (window.history.onnavigate) {
                     window.history.onnavigate();
@@ -398,6 +458,7 @@ $(function() {
     setupFastLoad();
     updateVersionSelector();
     createCopyButtons();
+    setupTabs();
 
     if(document.querySelector) {
         // Scroll so that the selected navbar element is in view.

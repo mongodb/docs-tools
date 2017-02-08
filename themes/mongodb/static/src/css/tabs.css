@@ -1,0 +1,83 @@
+/*
+ * Display and hide the appropriate tab content
+ */
+.tab {
+    display: none;
+}
+
+.tab-active {
+    display: block;
+}
+
+/*Clear the padding above the tabs*/
+div.tabs > * > li {
+    padding-top: 0;
+}
+
+/*Styles for inactive & unhovered tabs*/
+.nav-tabs.nav-justified > li > a {
+    color: #babdbe;
+    background-color: #f4f6f6;
+    font-weight: bold;
+    margin-right: -1px;
+    border: 1px solid #babdbe;
+    padding: 5px 15px;
+}
+
+/*Styles for active tabs*/
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:focus,
+.nav-tabs > li.active > a:hover {
+    color: #6ba442;
+    font-weight: bold;
+    background-color: #fff;
+    border: 1px solid #babdbe;
+    border-bottom-color: transparent;
+    cursor: default;
+}
+
+/*White background on hover*/
+.nav-tabs > li > a:hover {
+    background: #fff;
+}
+
+/*
+ *Dropdown styles
+ */
+/*Caret styling*/
+.nav-tabs > li.active > a > .caret,
+.nav-tabs > li.active > a:focus > .caret,
+.nav-tabs > li.active > a:hover > .caret {
+    border-top-color: #6ba442;
+    border-bottom-color: #6ba442;
+}
+
+.nav-tabs > li > a > .caret,
+.nav-tabs > li > a:hover > .caret {
+    border-top-color: #babdbe;
+    border-bottom-color: #babdbe;
+}
+
+/*Make dropdown list width the same as dropdown tab*/
+.nav-tabs > li > ul {
+     min-width: 0;
+     width: 100%;
+     background-color: #fff;
+}
+
+/*Dropdown hover highlight mongo green*/
+.dropdown-menu > .active > a,
+.nav-tabs > .dropdown > ul > li > a:hover {
+     background-color: #6ba442;
+}
+
+/*White background for dropdown items*/
+.nav-tabs > li > ul > li{
+     background-color: #fff;
+}
+
+/*Dropdown will always have the cursor*/
+.dropdown-toggle:hover,
+.nav-tabs > .dropdown > .dropdown-toggle:hover {
+     cursor: pointer;
+ }
