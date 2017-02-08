@@ -2,6 +2,7 @@
     width: 0;
     height: 0;
     position: relative;
+    width: 100%;
 }
 
 .copy-button {
@@ -11,12 +12,12 @@
     height: 25px;
     width: 65px;
     font-size: 13px;
-    left: 684px;
+    left: calc(100% - 65px);
     position: absolute;
 }
 
 @media print {
-    .copy-button {
+    .copy-button-container {
         display: none;
     }
 }

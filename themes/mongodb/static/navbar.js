@@ -180,7 +180,7 @@ $(function() {
                 copyIcon.className = 'fa fa-clipboard';
                 copyButton.className = 'copy-button';
                 copyButton.appendChild(copyIcon);
-                copyButton.appendChild(new Text('Copy'));
+                copyButton.appendChild(document.createTextNode('Copy'));
                 copyButtonContainer.appendChild(copyButton);
                 highlightElement.insertBefore(copyButtonContainer, highlightElement.children[0]);
                 copyButton.addEventListener('click', function() {
