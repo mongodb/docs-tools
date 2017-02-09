@@ -1,4 +1,5 @@
 import os.path
+import re
 import sys
 
 from docutils import nodes, statemachine, utils
@@ -17,6 +18,13 @@ if sys.version_info.major >= 3:
 # prevent inconsistent errors.
 REGISTERED = {}
 
+PAT_SUBSTITUTION = re.compile(r'^\$[\w\.]+$')
+
+
+def should_substitute(value):
+    """Return true if a value should be substituted."""
+    return isinstance(value, basestring) and PAT_SUBSTITUTION.match(value)
+
 
 def populate(obj, options):
     """Apply reference substitutions and add magical values to objects."""
@@ -24,7 +32,7 @@ def populate(obj, options):
         for i, item in enumerate(obj):
             if isinstance(item, dict):
                 populate(item, options)
-            elif isinstance(item, basestring) and item.startswith('$'):
+            elif should_substitute(item):
                 obj[i] = options.get_foreign(item)
             else:
                 populate(obj[i], options)
@@ -35,7 +43,11 @@ def populate(obj, options):
             for name, path in foreign_dict.items():
                 path = options.get_asset_path(path)
                 with options.open_file(path) as f:
-                    options.foreign[name] = yaml.safe_load(f)
+                    try:
+                        options.foreign[name] = yaml.safe_load(f)
+                    except yaml.YAMLError as error:
+                        raise self.severe(u'Error parsing inherited YAML file {}:\n{}.'.format(
+                            path, ErrorString(error)))
                     populate(options.foreign[name], options)
 
         # Add magic values
@@ -43,7 +55,7 @@ def populate(obj, options):
 
         # Resolve references
         for key, value in obj.items():
-            if isinstance(value, basestring) and value.startswith('$'):
+            if should_substitute(value):
                 obj[key] = options.get_foreign(value)
             else:
                 populate(value, options)
@@ -65,7 +77,7 @@ class Options:
     def get_foreign(self, path):
         """Returns a field in a defined reference field using a
            dot-delimited path."""
-        if path.startswith('$'):
+        if should_substitute(path):
             path = path[1:]
 
         obj = self.foreign
@@ -122,7 +134,11 @@ def create_directive(name, template, defined_in, is_yaml):
                 title = self.arguments[0]
                 data = {'directive': name, 'body': contents, 'title': title}
 
-            rendered = template.render(data)
+            try:
+                rendered = template.render(data)
+            except Exception as error:
+                raise self.severe('Failed to render template: {}'.format(ErrorString(error)))
+
             rendered_lines = statemachine.string2lines(
                 rendered, 4, convert_whitespace=1)
             self.state_machine.insert_input(rendered_lines, '')
@@ -133,7 +149,10 @@ def create_directive(name, template, defined_in, is_yaml):
             level = self.options.get('level', None)
             source_path = self.state_machine.input_lines.source(
                 self.lineno - self.state_machine.input_offset - 1)
-            data = yaml.safe_load(contents)
+            try:
+                data = yaml.safe_load(contents)
+            except yaml.YAMLError as error:
+                raise self.severe(u'Error parsing YAML:\n{}.'.format(ErrorString(error)))
             options = Options(self.state, source_path, data)
 
             if level:
