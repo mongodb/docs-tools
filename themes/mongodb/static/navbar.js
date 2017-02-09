@@ -208,14 +208,17 @@ $(function() {
 
     // Create tab functionality for code examples
     function setupTabs() {
+        var currentAttrValue
         // Check if the user has a preference stored, if so load it
         if (localStorage.getItem("languagePref")) {
-            var currentAttrValue = localStorage.getItem("languagePref");
-            
-            // Show the appropriate tab content and mark the tab as active
-            showHideTabContent(currentAttrValue);
-            showHideSelectedTab(currentAttrValue);
+            currentAttrValue = localStorage.getItem("languagePref");
+        } else {
+            currentAttrValue = document.querySelector('.nav-tabs > .active > [href]').getAttribute('href')
         }
+
+        // Show the appropriate tab content and mark the tab as active
+        showHideTabContent(currentAttrValue);
+        showHideSelectedTab(currentAttrValue);
         
         document.querySelectorAll('.tabs .nav-tabs a').forEach(function(element) {
             element.onclick = function(e) {
