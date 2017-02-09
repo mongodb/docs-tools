@@ -290,6 +290,14 @@ conf['directives'] = [
         'description': 'Atlas Specific User Privilege group',
         'prepend': True,
         'callable': False
+    },
+    ## Custom Directives for Atlas Docs
+    {
+        'name': 'atlasrole',
+        'tag': 'atlasrole',
+        'description': 'Atlas user role',
+        'prepend': False,
+        'callable': False,
     }
 ]
 
