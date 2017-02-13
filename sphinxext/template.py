@@ -1,6 +1,7 @@
 import os.path
 import re
 import sys
+import re
 
 from docutils import nodes, statemachine, utils
 from docutils.utils.error_reporting import ErrorString
@@ -19,6 +20,7 @@ if sys.version_info.major >= 3:
 REGISTERED = {}
 
 PAT_SUBSTITUTION = re.compile(r'^\$[\w\.]+$')
+PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^````+$))', re.M)
 
 
 def should_substitute(value):
@@ -205,3 +207,13 @@ def setup(app):
 
     return {'parallel_read_safe': True,
             'parallel_write_safe': True}
+
+
+def convertSections(tabContent):
+    """Convert rst-style sections into custom directives that ONLY insert
+       the HTML header tags."""
+    return PAT_RST_SECTION.sub(
+        lambda match: '.. h{}:: {}'.format(Options.HEADING_LEVELS.index(match.group(2)[0]) + 1, match.group(1)),
+        tabContent)
+
+fett.Template.FILTERS['convertSections'] = convertSections
