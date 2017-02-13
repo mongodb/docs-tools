@@ -213,7 +213,12 @@ $(function() {
         if (localStorage.getItem("languagePref")) {
             currentAttrValue = localStorage.getItem("languagePref");
         } else {
-            currentAttrValue = document.querySelector('.nav-tabs > .active > [href]').getAttribute('href')
+            var tabsElement = document.querySelector('.nav-tabs > .active > [href]');
+            if (!tabsElement) {
+                return;
+            }
+
+            currentAttrValue = tabsElement.getAttribute('href');
         }
 
         // Show the appropriate tab content and mark the tab as active
