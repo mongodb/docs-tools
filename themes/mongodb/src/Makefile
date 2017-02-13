@@ -1,4 +1,4 @@
-TARGETS=../mongodb-docs.css
+TARGETS=../static/mongodb-docs.css
 CSS_INPUTS=css/bootstrap-custom.css \
 		   css/icomoon.css \
            css/font-awesome.css \
@@ -17,7 +17,7 @@ CSS_WARNINGS=regex-selectors,unqualified-attributes,text-indent
 
 all: $(TARGETS)
 
-../mongodb-docs.css: $(CSS_FILES) | node_modules
+../static/mongodb-docs.css: $(CSS_FILES) | node_modules
 	$(MAKE) lint
 	./node_modules/.bin/cleancss --skip-rebase --semantic-merging -o $@ $(CSS_INPUTS)
 
