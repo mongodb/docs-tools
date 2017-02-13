@@ -211,28 +211,11 @@ div.section h1 + ul, div.section h2 + ul, div.section h3 + ul, div.section  h4 +
     margin-left: -1.5em !important;
 }
 
-/* Prevent the fixed header from covering up content when jumping to an
- * anchor. Don't apply to h1, since linking to them is a bit rarer, and it
- * causes unwanted whitespace at the top of each page. */
-div.section > h2:before,
-  div.section > h3:before,
-  div.section > h4:before,
-  div.section > h5:before,
-  div.section > h6:before {
-    content: "";
-    display: block;
-    height: 50px;
-    margin: -50px 0 0;
-}
-
 a.headerlink {
-
     color: #c60f0f;
     font-size: 0.8em;
     padding: 0 4px 0 4px;
     text-decoration: none;
-
-
 }
 
 a.headerlink:hover {
@@ -570,10 +553,6 @@ table.docutils td div.highlight pre {
     background: none;
     border: none;
     padding: 0;
-}
-
-div.section {
-    margin-top: 48px;
 }
 
 h2 + div.section,
@@ -1011,10 +990,6 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
     font-weight: bold;
     height: 24px;
     border-radius: 12px;
-}
-
-.sequence-block > .section {
-    display: table-cell;
 }
 
 .sequence-block > .section > h4 {
@@ -1737,4 +1712,15 @@ table.compatibility-large th:nth-child(1){
     }
     
     
+}
+
+/* Prevent the fixed header from covering up content when jumping to an
+ * anchor. Don't apply to h1, since linking to them is a bit rarer, and it
+ * causes unwanted whitespace at the top of each page. */
+.section {
+    border-top: 131px solid transparent;
+    margin-top: -131px;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    display: block;
 }
