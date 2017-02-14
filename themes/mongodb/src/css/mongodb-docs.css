@@ -1714,13 +1714,3 @@ table.compatibility-large th:nth-child(1){
     
 }
 
-/* Prevent the fixed header from covering up content when jumping to an
- * anchor. Don't apply to h1, since linking to them is a bit rarer, and it
- * causes unwanted whitespace at the top of each page. */
-.section {
-    border-top: 131px solid transparent;
-    margin-top: -131px;
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    display: block;
-}
