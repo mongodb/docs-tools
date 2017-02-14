@@ -312,5 +312,7 @@ class MongoDBDomain(Domain):
 def setup(app):
     app.add_domain(MongoDBDomain)
 
-    return { 'parallel_read_safe': True,
+    # Do NOT turn on parallel reads until we know what's causing massive
+    # (2+ GB per worker) memory bloat and thrashing.
+    return { 'parallel_read_safe': False,
              'parallel_write_safe': True }
