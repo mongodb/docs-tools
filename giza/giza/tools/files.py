@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import gzip
 import os
 import shutil
 import tarfile
@@ -59,7 +60,10 @@ def tarball(name, path, newp=None, cdir=None):
     safe_create_directory(tarball_path)
 
     logger.debug('creating tarball: {0}'.format(name))
-    with tarfile.open(name, 'w:gz') as t:
+    with open(name, 'wb') as raw_file:
+        gzipped_file = gzip.GzipFile(name, 'wb', 9, raw_file, 0.0)
+        tarball_file = tarfile.open(mode='w', fileobj=gzipped_file)
+
         if newp is not None:
             arcname = os.path.join(newp, os.path.basename(path))
         else:
@@ -70,7 +74,7 @@ def tarball(name, path, newp=None, cdir=None):
 
         logger.debug('tarball internal path {0}'.format(path))
 
-        t.add(name=path, arcname=arcname)
+        tarball_file.add(name=path, arcname=arcname)
 
     logger.info('created tarball: {0}'.format(name))
 
