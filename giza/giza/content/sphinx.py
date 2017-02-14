@@ -244,8 +244,6 @@ def run_sphinx(builder, sconf, conf):
             logger.error('sphinx-intl encountered error: ' + str(e.returncode))
             logger.info(cmd_str)
 
-    logger.info('starting sphinx build {0}'.format(builder))
-
     cmd = 'sphinx-build {0} -d {1}/doctrees-{2} {3} {4}'  # per-builder-doctree
 
     sphinx_cmd = cmd.format(get_sphinx_args(sconf, conf),
@@ -254,7 +252,7 @@ def run_sphinx(builder, sconf, conf):
                             os.path.join(conf.paths.projectroot, conf.paths.branch_source),
                             sconf.fq_build_output)
 
-    logger.debug(sphinx_cmd)
+    logger.info('Starting sphinx build: ' + sphinx_cmd)
     m = "running sphinx build for: {0}, {1}, {2}"
 
     with Timer(m.format(builder, sconf.language, sconf.edition)):
