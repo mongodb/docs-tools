@@ -14,7 +14,7 @@
 
 import os.path
 
-from sphinx import addnodes
+import sphinx
 from sphinx.domains import Domain, ObjType
 from sphinx.locale import l_, _
 from sphinx.directives import ObjectDescription
@@ -24,6 +24,11 @@ from sphinx.util.nodes import make_refnode
 from sphinx.util.docfields import Field, GroupedField, TypedField
 
 from mongodb_conf import conf
+
+def make_index_entry(*args):
+    """Sphinx 1.4 makes a breaking change in index format, so return a valid
+       index entry whichever version we're running."""
+    return args + (None,) if sphinx.version_info >= (1, 4) else args
 
 def basename(path):
     return os.path.splitext(os.path.basename(path))[0]
@@ -72,8 +77,8 @@ class MongoDBObject(ObjectDescription):
         signode['fullname'] = fullname
 
         if self.display_prefix:
-            signode += addnodes.desc_annotation(self.display_prefix,
-                                                self.display_prefix)
+            signode += sphinx.addnodes.desc_annotation(self.display_prefix,
+                                                       self.display_prefix)
 
         if nameprefix:
             if nameprefix in conf['suppress-prefix']:
@@ -85,13 +90,13 @@ class MongoDBObject(ObjectDescription):
                         nameprefix = nameprefix[len(prefix)+1:]
                         break
 
-                signode += addnodes.desc_addname(nameprefix, nameprefix)
+                signode += sphinx.addnodes.desc_addname(nameprefix, nameprefix)
                 nameprefix[:-1]
 
-        signode += addnodes.desc_name(name, name)
+        signode += sphinx.addnodes.desc_name(name, name)
         if self.has_arguments:
             if not arglist:
-                signode += addnodes.desc_parameterlist()
+                signode += sphinx.addnodes.desc_parameterlist()
             else:
                 _pseudo_parse_arglist(signode, arglist)
         return fullname, nameprefix
@@ -151,9 +156,11 @@ class MongoDBObject(ObjectDescription):
 
         indextext = self.get_index_text(objectname, name_obj)
         if indextext:
-            self.indexnode['entries'].append(('single', indextext,
-                                              fullname.replace('$', '_S_'),
-                                              ''))
+            self.indexnode['entries'].append(
+                make_index_entry('single',
+                                 indextext,
+                                 fullname.replace('$', '_S_'),
+                                 ''))
 
     def get_index_text(self, objectname, name_obj):
         name, obj = name_obj
