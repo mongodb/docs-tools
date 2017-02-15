@@ -213,6 +213,10 @@ def is_msg_worthy(l):
         return False
     elif l.startswith('WARNING: search index'):
         return False
+    elif 'WARNING: Could not lex literal_block as' in l:
+        return False
+    elif 'extension is not safe for parallel reading, doing serial read' in l:
+        return False
     elif l.endswith('source/reference/sharding-commands.txt'):
         return False
     elif l.endswith('Duplicate ID: "cmdoption-h".'):
