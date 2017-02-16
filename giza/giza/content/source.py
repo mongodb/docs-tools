@@ -61,12 +61,13 @@ def transfer_source(conf, sconf):
         raise InvalidFile(msg)
 
     source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
-    image_dir = os.path.join(conf.paths.images[len(conf.paths.source) + 1:])
-
     exclusions = [os.path.join('includes', 'table'),
-                  os.path.join('includes', 'generated'),
-                  image_dir + os.path.sep + "*.png",
-                  image_dir + os.path.sep + "*.rst"]
+                  os.path.join('includes', 'generated')]
+
+    if conf.paths.images is not None:
+        image_dir = os.path.join(conf.paths.images[len(conf.paths.source) + 1:])
+        exclusions.append(image_dir + os.path.sep + '*.png')
+        exclusions.append(image_dir + os.path.sep + '*.rst')
 
     prefix_len = len(os.path.join(conf.paths.projectroot, conf.paths.branch_source)) + 1
 
@@ -120,6 +121,9 @@ def source_exclusion(conf, sconf):
 
 
 def transfer_images(conf, sconf):
+    if conf.paths.images is None:
+        return
+
     image_dir = os.path.join(conf.paths.projectroot, conf.paths.branch_images)
     if not os.path.isdir(image_dir):
         return False

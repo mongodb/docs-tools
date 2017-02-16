@@ -151,6 +151,9 @@ class PathsConfig(RecursiveConfigurationBase):
 
     @property
     def branch_images(self):
+        if self.images is None:
+            return None
+
         if self.images.startswith(self.source):
             p = os.path.join(self.branch_source,
                              self.images[len(self.source) + 1:])
@@ -209,3 +212,7 @@ class PathsConfig(RecursiveConfigurationBase):
         """Returns a path to the database containing output path mtimes and
            hashes to back FileCollector."""
         return os.path.join(self.projectroot, self.output, 'stage-cache.db')
+
+    @property
+    def images(self):
+        return self.state.get('images', None)
