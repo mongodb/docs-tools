@@ -15,15 +15,16 @@
 """
 Alternate implementation of the system that fetches intersphinx inventories from
 other Sphinx sites. Implemented separately to avoid using Sphinx so that that
-Giza can check and update inventories once per build-run rather than once per
+Giza can check and update inventories once per day rather than once per
 build run. Useful for minimizing the start-up time for ``sphinx-build`` and
 useful for reducing redundant work in parallel build situations.
 """
 
-import time
-import os
+import email.utils
 import logging
-import subprocess
+import os
+import time
+import urllib2
 
 import libgiza.task
 
@@ -31,63 +32,38 @@ from giza.tools.files import verbose_remove, safe_create_directory
 
 logger = logging.getLogger('giza.content.intersphinx')
 
-ACCEPTABLE = 864000
+MAX_AGE = 60 * 60 * 24 * 1  # One day
+TIMEOUT_SECONDS = 5
 
-# Helper functions
 
+def download(path, url, conf):
+    try:
+        mtime = os.stat(path).st_mtime
+    except OSError:
+        mtime = -1
 
-def download_file(file, url):
-    cmd = ['curl', '--silent', '--location', '--remote-time', url, '-o', file]
+    now = time.time()
+    if now < (mtime + MAX_AGE):
+        logger.debug('Intersphinx file still young: %s', url)
+        return
 
-    safe_create_directory(os.path.dirname(file))
+    request = urllib2.Request(url, headers={
+        'If-Modified-Since': email.utils.formatdate(mtime)
+    })
+
+    safe_create_directory(os.path.dirname(path))
 
     try:
-        subprocess.check_call(cmd)
-        logger.info('downloaded {0}'.format(file))
-        return True
-    except subprocess.CalledProcessError:
-        logger.error('trouble downloading interspinx inventory: ' + file)
-        return False
-
-
-def file_timestamp(path):
-    return os.stat(path)[8]
-
-# Tasks
-
-
-def download(f, s, conf):
-    if conf.runstate.force is True:
-        newf = download_file(f, s)
-
-    if os.path.isfile(f):
-        newf = False
-    else:
-        logger.info('{0} file does not exist, downloading now'.format(f))
-        newf = download_file(f, s)
-
-        if newf is False:
-            m = "intersphinx inventory ({0}) download failed. skipping"
-            logger.warning(m.format(f))
+        response = urllib2.urlopen(request, timeout=TIMEOUT_SECONDS)
+        with open(path, 'wb') as f:
+            f.write(response.read())
+    except urllib2.HTTPError as err:
+        if err.status == 304:
+            logger.debug('Not modified: %s', url)
             return
-
-    mtime = file_timestamp(f)
-
-    if mtime < time.time() - ACCEPTABLE:
-        # if mtime is less than now - n days, it may be stale.
-
-        newtime = time.time() - (ACCEPTABLE / 2)
-
-        if newf is True:
-            # if we just downloaded the file it isn't stale yet
-            os.utime(f, (newtime, newtime))
-        else:
-            # definitley stale, must download it again.
-            newf = download_file(f, s)
-            if mtime == file_timestamp(f):
-                # if the source is stale, modify mtime so we don't
-                # download it for a few days.
-                os.utime(f, (newtime, newtime))
+        logger.error('Error downloading %s: Got %d', url, err.status)
+    except urllib2.URLError as err:
+        logger.error('Error downloading %s: %s', url, str(err))
 
 
 def intersphinx_tasks(conf):
