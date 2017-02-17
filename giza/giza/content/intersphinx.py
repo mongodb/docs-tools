@@ -58,7 +58,7 @@ def download(path, url, conf):
         with open(path, 'wb') as f:
             f.write(response.read())
     except urllib2.HTTPError as err:
-        if err.status == 304:
+        if err.code == 304:
             logger.debug('Not modified: %s', url)
             return
         logger.error('Error downloading %s: Got %d', url, err.status)
