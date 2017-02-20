@@ -177,7 +177,11 @@ def run_make_operations(targets, conf):
     packaging_opts = {}
 
     sphinx_builders = avalible_sphinx_builders()
-    deploy_configs = dict((item['target'], item) for item in conf.system.files.data.push)
+
+    if 'push' in conf.system.files.data:
+        deploy_configs = dict((item['target'], item) for item in conf.system.files.data.push)
+    else:
+        deploy_configs = []
 
     tasks = []
     for action, options in targets:
