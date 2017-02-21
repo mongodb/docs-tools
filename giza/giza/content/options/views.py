@@ -57,6 +57,7 @@ def render_options(option, conf):
         option.replacement['role'] = ':{0}:`{1}{2}`'.format(option.directive, prefix, option.name)
 
     option.render()  # jinja template render
+    r.directive('program', option.program)
     r.directive(option.directive, directive_str)
     r.newline()
 
