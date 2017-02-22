@@ -51,7 +51,12 @@ class ConfigurationBase(object):
 
         input_obj = self._prep_load_data(input_obj)
 
-        for key, value in input_obj.items():
+        # We need deterministic iteration order---"paths" must come before
+        # "git", or else we have an uninitialized read from Configuration.paths
+        items = list(input_obj.items())
+        items.sort(reverse=True)
+
+        for key, value in items:
             try:
                 setattr(self, key, value)
             except AttributeError as e:
