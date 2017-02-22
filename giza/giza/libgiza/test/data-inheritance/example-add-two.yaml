@@ -1,0 +1,14 @@
+ref: two-first
+pre: |
+  Grouping the documents by the ``item`` field, the following operation
+  uses the :group:`$first` accumulator to compute the first sales date for
+  each item:
+post: "The operation returns the following results:"
+---
+ref: two-second
+pre: |
+  Grouping the documents by the ``item`` field, the following operation
+  uses the :group:`$first` accumulator to compute the first sales date for
+  each item:
+post: "The operation returns the following results:"
+...

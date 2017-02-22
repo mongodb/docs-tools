@@ -18,7 +18,7 @@ import logging
 import numbers
 import collections
 
-import libgiza.config
+import giza.libgiza.config
 import giza.content.helper
 
 logger = logging.getLogger('giza.config.images')
@@ -44,7 +44,7 @@ class ImageData(list):
         super(ImageData, self).insert(index, ImageSpecification(item, self.conf))
 
 
-class ImageSpecification(libgiza.config.RecursiveConfigurationBase):
+class ImageSpecification(giza.libgiza.config.RecursiveConfigurationBase):
     @property
     def name(self):
         return self.state['name']
@@ -111,7 +111,7 @@ class ImageSpecification(libgiza.config.RecursiveConfigurationBase):
         return self.source_base + '.rst'
 
 
-class ImageOutputSpecification(libgiza.config.RecursiveConfigurationBase):
+class ImageOutputSpecification(giza.libgiza.config.RecursiveConfigurationBase):
     @property
     def type(self):
         if 'type' in self.state:

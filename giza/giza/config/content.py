@@ -16,13 +16,13 @@ import os.path
 import itertools
 import logging
 
-import libgiza.config
+import giza.libgiza.config
 import giza.tools.files
 
 logger = logging.getLogger('giza.config.')
 
 
-class ContentType(libgiza.config.ConfigurationBase):
+class ContentType(giza.libgiza.config.ConfigurationBase):
     _option_registry = ['dir']
 
     @property
@@ -109,7 +109,7 @@ class ContentType(libgiza.config.ConfigurationBase):
             raise TypeError
 
 
-class ContentRegistry(libgiza.config.ConfigurationBase):
+class ContentRegistry(giza.libgiza.config.ConfigurationBase):
 
     def add(self, name, definition):
         if not isinstance(definition, ContentType):

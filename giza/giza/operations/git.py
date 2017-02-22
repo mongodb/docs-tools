@@ -23,8 +23,8 @@ import subprocess
 
 import argh
 
-from libgiza.app import BuildApp
-from libgiza.git import GitRepo
+from giza.libgiza.app import BuildApp
+from giza.libgiza.git import GitRepo
 from giza.config.helper import fetch_config
 from giza.operations.build_env import fix_build_env_tasks, get_existing_builders
 

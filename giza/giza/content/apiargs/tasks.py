@@ -15,7 +15,7 @@
 import os
 import logging
 
-from libgiza.task import Task
+from giza.libgiza.task import Task
 
 from giza.content.apiargs.inheritance import ApiArgDataCache
 from giza.content.apiargs.views import render_apiargs

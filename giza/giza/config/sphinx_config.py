@@ -16,7 +16,7 @@ import copy
 import os.path
 import logging
 
-import libgiza.config
+import giza.libgiza.config
 import sphinx.make_mode
 import yaml
 
@@ -73,7 +73,7 @@ def avalible_sphinx_builders():
 # New-Style Config Object
 
 
-class SphinxConfig(libgiza.config.RecursiveConfigurationBase):
+class SphinxConfig(giza.libgiza.config.RecursiveConfigurationBase):
     _option_registry = ['languages']
 
     def __init__(self, conf, input_obj=None):

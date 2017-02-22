@@ -22,7 +22,7 @@ See :mod:`giza.inheritance`
 
 import logging
 
-from libgiza.inheritance import InheritableContentError
+from giza.libgiza.inheritance import InheritableContentError
 from giza.content.examples.models import ExampleData, ExampleCase
 from giza.inheritance import DataContentBase, DataCache
 

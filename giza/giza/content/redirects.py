@@ -14,7 +14,7 @@
 
 """
 Contains the output specification for redirects (i.e. ``.htaccess`` files,) as
-well as integration into the :class:`libgiza.app.BuildApp()`
+well as integration into the :class:`giza.libgiza.app.BuildApp()`
 infrastructure. All of the data processing and definition happens in
 :mod:`giza.config.redirects`.
 """
@@ -22,7 +22,7 @@ infrastructure. All of the data processing and definition happens in
 import os.path
 import logging
 
-import libgiza.task
+import giza.libgiza.task
 
 logger = logging.getLogger('giza.content.post.redirects')
 
@@ -47,7 +47,7 @@ def make_redirect(conf):
               '<FilesMatch "\.(ttf|otf|eot|woff)$">', '\n',
               '   Header set Access-Control-Allow-Origin "*"', '\n',
               '</FilesMatch>',
-             ])
+              ])
 
     return o
 
@@ -81,12 +81,12 @@ def redirect_tasks(conf):
             elif configfn.startswith('htaccess'):
                 deps.append(os.path.join(conf.paths.projectroot, conf.paths.builddata, configfn))
 
-        tasks.append(libgiza.task.Task(job=write_redirects,
-                                       args=(fn, conf),
-                                       target=fn,
-                                       dependency=deps,
-                                       description=' '.join(('generate and write redirects into:',
-                                                             conf.paths.htaccess))))
+        tasks.append(giza.libgiza.task.Task(job=write_redirects,
+                                            args=(fn, conf),
+                                            target=fn,
+                                            dependency=deps,
+                                            description=' '.join(('generate and write redirects into:',
+                                                                  conf.paths.htaccess))))
 
     logger.info("added {0} redirect generation tasks".format(len(tasks)))
     return tasks

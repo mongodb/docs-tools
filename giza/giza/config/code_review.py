@@ -15,12 +15,12 @@
 import collections
 import logging
 
-import libgiza.config
+import giza.libgiza.config
 
 logger = logging.getLogger('giza.config.code_review')
 
 
-class CodeReviewConfiguration(libgiza.config.ConfigurationBase):
+class CodeReviewConfiguration(giza.libgiza.config.ConfigurationBase):
     _version = 1
 
     @property
@@ -82,7 +82,7 @@ class CodeReviewConfiguration(libgiza.config.ConfigurationBase):
         return self.state['branches'][branch]
 
 
-class CodeReviewBranchConfiguration(libgiza.config.ConfigurationBase):
+class CodeReviewBranchConfiguration(giza.libgiza.config.ConfigurationBase):
     _option_registry = ['original_name', 'issue']
 
     @property

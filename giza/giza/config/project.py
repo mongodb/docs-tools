@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import logging
-import libgiza.config
+import giza.libgiza.config
 
 logger = logging.getLogger('giza.config.')
 
@@ -54,7 +54,7 @@ def get_current_path(conf):
     return get_path_prefix(conf, branch)
 
 
-class ProjectConfig(libgiza.config.RecursiveConfigurationBase):
+class ProjectConfig(giza.libgiza.config.RecursiveConfigurationBase):
     _option_registry = ['name', 'title']
 
     @property
@@ -217,7 +217,7 @@ class ProjectConfig(libgiza.config.RecursiveConfigurationBase):
         return get_path_prefix(self.conf, self.conf.git.branches.current)
 
 
-class EditionListConfig(libgiza.config.ConfigurationBase):
+class EditionListConfig(giza.libgiza.config.ConfigurationBase):
     _option_registry = ['name', 'url']
 
     @property

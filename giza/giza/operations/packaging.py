@@ -25,7 +25,7 @@ import contextlib
 import urllib2
 
 import argh
-import libgiza.app
+import giza.libgiza.app
 
 from giza.config.helper import fetch_config
 from giza.tools.files import safe_create_directory, FileNotFoundError
@@ -181,9 +181,9 @@ def deploy(args):
     extract_package(conf)
     logger.info('extracted package')
 
-    app = libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
-                                   pool_size=conf.runstate.pool_size,
-                                   force=conf.runstate.force)
+    app = giza.libgiza.app.BuildApp.new(pool_type=conf.runstate.runner,
+                                        pool_size=conf.runstate.pool_size,
+                                        force=conf.runstate.force)
 
     logger.info('beginning deploy now.')
     deploy_tasks(conf, app)

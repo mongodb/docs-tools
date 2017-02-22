@@ -14,7 +14,7 @@
 
 import logging
 
-from libgiza.config import RecursiveConfigurationBase
+from giza.libgiza.config import RecursiveConfigurationBase
 
 logger = logging.getLogger('giza.config.version')
 

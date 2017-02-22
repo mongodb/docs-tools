@@ -25,8 +25,8 @@ import subprocess
 import argh
 import giza
 
-from libgiza.app import BuildApp
-from libgiza.git import GitRepo, GitError
+from giza.libgiza.app import BuildApp
+from giza.libgiza.git import GitRepo, GitError
 
 from giza.config.helper import fetch_config
 from giza.operations.sphinx_cmds import sphinx_publication

@@ -23,7 +23,7 @@ import sys
 
 import giza
 import argh
-import libgiza
+import giza.libgiza
 
 from giza.config.helper import fetch_config
 
@@ -36,7 +36,7 @@ def report_version(args):
     "Returns current version of giza"
 
     print("giza: " + giza.__version__)
-    print("libgiza: " + libgiza.__version__)
+    print("giza.libgiza: " + giza.libgiza.__version__)
 
 
 @argh.arg('config_target', nargs='*')

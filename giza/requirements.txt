@@ -13,7 +13,6 @@ hieroglyph==0.7.1
 imagesize==0.7.1
 Jinja2==2.9.5
 jira==1.0.9
-libgiza==0.2.13
 MarkupSafe==0.23
 oauthlib==2.0.1
 onetimepass==1.0.1

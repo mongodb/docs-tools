@@ -13,12 +13,12 @@
 # limitations under the License.
 
 import logging
-import libgiza.config
+import giza.libgiza.config
 
 logger = logging.getLogger('giza.config.deploy')
 
 
-class DeployConfig(libgiza.config.ConfigurationBase):
+class DeployConfig(giza.libgiza.config.ConfigurationBase):
     @property
     def production(self):
         return self.state['production']
@@ -84,7 +84,7 @@ class DeployConfig(libgiza.config.ConfigurationBase):
             self.state['s3_deploy'][project] = StagingTargetConfig(config)
 
 
-class DeployTargetConfig(libgiza.config.ConfigurationBase):
+class DeployTargetConfig(giza.libgiza.config.ConfigurationBase):
     _option_registry = ['input']
 
     @property
@@ -112,7 +112,7 @@ class DeployTargetConfig(libgiza.config.ConfigurationBase):
             raise TypeError
 
 
-class StagingTargetConfig(libgiza.config.ConfigurationBase):
+class StagingTargetConfig(giza.libgiza.config.ConfigurationBase):
     """Configuration for a project's staging environment, specifying both an S3
        bucket and an HTTP/S URL pointing to that bucket, appropriate for user
        consumption."""

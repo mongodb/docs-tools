@@ -16,7 +16,7 @@ import os
 import sys
 import logging
 
-from libgiza.config import ConfigurationBase
+from giza.libgiza.config import ConfigurationBase
 from giza.config.runtime import RuntimeStateConfigurationBase
 
 logger = logging.getLogger('giza.config.github')

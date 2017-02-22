@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import logging
-import libgiza.task
+import giza.libgiza.task
 import giza.tools.files
 import giza.tools.transformation
 
@@ -33,22 +33,22 @@ def migration_tasks(conf):
         return []
 
     for migration in conf.system.files.data.migrations:
-        copy_job = libgiza.task.Task(job=giza.tools.files.copy_if_needed,
-                                     args=(migration.source, migration.target),
-                                     target=migration.target,
-                                     dependency=migration.source)
+        copy_job = giza.libgiza.task.Task(job=giza.tools.files.copy_if_needed,
+                                          args=(migration.source, migration.target),
+                                          target=migration.target,
+                                          dependency=migration.source)
 
-        copy_job.finalizers = libgiza.task.Task(job=log_migration,
-                                                args=(migration.source, migration.target))
+        copy_job.finalizers = giza.libgiza.task.Task(job=log_migration,
+                                                     args=(migration.source, migration.target))
 
         if migration.truncate is not None:
             # this only needs to run if the parent task runs
-            copy_job.finalizers = libgiza.task.Task(job=giza.tools.transformation.truncate_file,
-                                                    args=(migration.target,
-                                                          migration.truncate.start_after,
-                                                          migration.truncate.end_before),
-                                                    target=migration.target,
-                                                    dependency=migration.source)
+            copy_job.finalizers = giza.libgiza.task.Task(job=giza.tools.transformation.truncate_file,
+                                                         args=(migration.target,
+                                                               migration.truncate.start_after,
+                                                               migration.truncate.end_before),
+                                                         target=migration.target,
+                                                         dependency=migration.source)
 
         if migration.transform is not None:
             # causes needs_rebuild() to be always true, this must always run
@@ -67,10 +67,10 @@ def migration_tasks(conf):
             # causes needs_rebuild() to be always true, this must always run
             copy_job.dependency = None
             copy_job.job = giza.tools.files.copy_always
-            copy_job.finalizers = libgiza.task.Task(job=giza.tools.transformation.append_to_file,
-                                                    args=(migration.target, migration.append),
-                                                    target=migration.target,
-                                                    dependency=migration_spec_files)
+            copy_job.finalizers = giza.libgiza.task.Task(job=giza.tools.transformation.append_to_file,
+                                                         args=(migration.target, migration.append),
+                                                         target=migration.target,
+                                                         dependency=migration_spec_files)
 
         tasks.append(copy_job)
 
@@ -80,8 +80,8 @@ def migration_tasks(conf):
 
 
 def migration_clean(conf):
-    return [libgiza.task.Task(job=giza.tools.files.verbose_remove,
-                              args=[migration.target],
-                              target=migration.target,
-                              dependency=None)
+    return [giza.libgiza.task.Task(job=giza.tools.files.verbose_remove,
+                                   args=[migration.target],
+                                   target=migration.target,
+                                   dependency=None)
             for migration in conf.system.files.data.migrations]

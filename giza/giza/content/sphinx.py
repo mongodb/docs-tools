@@ -40,7 +40,7 @@ import numbers
 import subprocess
 import shlex
 
-from libgiza.task import Task
+from giza.libgiza.task import Task
 from giza.tools.files import safe_create_directory, expand_tree
 from giza.tools.timing import Timer
 

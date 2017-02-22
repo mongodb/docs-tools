@@ -16,7 +16,7 @@ import logging
 import os
 import sys
 import re
-import libgiza.config
+import giza.libgiza.config
 import giza.content.helper
 
 logger = logging.getLogger('giza.config.migrations')
@@ -52,7 +52,7 @@ class MigrationData(list):
             super(MigrationData, self).insert(index, m)
 
 
-class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
+class MigrationSpecification(giza.libgiza.config.RecursiveConfigurationBase):
     @property
     def source_dir(self):
         if 'source_dir' not in self.state:
@@ -175,7 +175,7 @@ class MigrationSpecification(libgiza.config.RecursiveConfigurationBase):
             raise TypeError('{0}: {1}'.format(type(value), str(value)))
 
 
-class TransformSpecification(libgiza.config.ConfigurationBase):
+class TransformSpecification(giza.libgiza.config.ConfigurationBase):
     @property
     def regex(self):
         return self.state['regex']
@@ -203,7 +203,7 @@ class TransformSpecification(libgiza.config.ConfigurationBase):
             raise TypeError('{0}: {1}'.format(type(value), str(value)))
 
 
-class TruncateSpecification(libgiza.config.ConfigurationBase):
+class TruncateSpecification(giza.libgiza.config.ConfigurationBase):
     def ingest(self, input_obj):
         if input_obj is None:
             return

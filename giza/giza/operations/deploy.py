@@ -22,7 +22,7 @@ import argh
 import onetimepass as otp
 
 from giza.config.helper import fetch_config, new_credentials_config
-from libgiza.app import BuildApp
+from giza.libgiza.app import BuildApp
 from giza.deploy import Deploy, deploy_target
 from giza.operations.sphinx_cmds import sphinx_publication
 

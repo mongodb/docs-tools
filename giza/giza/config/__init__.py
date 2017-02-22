@@ -18,7 +18,7 @@ data. The classes that describe these objects validate input from configuration
 files, compute dynamic values, and provide a stable interface for the
 configuration data. Important aspects of this code:
 
-:class:`ConfigurationBase` (:mod:`libgiza.config`)
+:class:`ConfigurationBase` (:mod:`giza.libgiza.config`)
    The base class from which all configuration classes descend. Implements
    :meth:`~ConfigurationBase.ingest()`, which runs after initialization to load
    configuration data from a ``yaml`` file or from a dictionary structure, as
@@ -27,7 +27,7 @@ configuration data. Important aspects of this code:
    internal fields. Additionally provides customized attribute setting and
    retrieving for these objects.
 
-:class:`RecursiveConfigurationBase` (:mod:`libgiza.base`)
+:class:`RecursiveConfigurationBase` (:mod:`giza.libgiza.base`)
    A base configuration object that contains a reference to the global config
    object in the :attr:`RecursiveConfigurationBase` attribute to facilitate
    resolving values in reference to other values.

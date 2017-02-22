@@ -20,8 +20,8 @@ import yaml
 
 import multiprocessing
 
-from libgiza.git import GitError
-from libgiza.config import ConfigurationBase
+from giza.libgiza.git import GitError
+from giza.libgiza.config import ConfigurationBase
 from giza.config.sphinx_config import avalible_sphinx_builders
 from giza.config.error import ConfigurationError
 from giza.tools.colorformatter import ColorFormatter

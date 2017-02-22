@@ -19,7 +19,7 @@ import giza.content.changelog.views
 import giza.tools.files
 
 from giza.config.content import new_content_type
-from libgiza.task import Task
+from giza.libgiza.task import Task
 
 logger = logging.getLogger('giza.content.changelog.tasks')
 

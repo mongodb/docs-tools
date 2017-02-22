@@ -33,7 +33,7 @@ import boto.s3.bucket
 import boto.s3.key
 import boto.s3.lifecycle
 
-from libgiza.git import GitRepo
+from giza.libgiza.git import GitRepo
 from giza.config.helper import fetch_config
 
 try:
@@ -550,10 +550,10 @@ class Staging(object):
         tasks = []
         for src in redirects:
             tasks.append(functools.partial(
-                    lambda src, dest, suffix: self.__redirect(
-                        src + suffix,
-                        dest),
-                    src, redirects[src], self.PAGE_SUFFIX))
+                lambda src, dest, suffix: self.__redirect(
+                    src + suffix,
+                    dest),
+                src, redirects[src], self.PAGE_SUFFIX))
         run_pool(tasks)
 
     def __upload(self, local_path, src_path, file_hash):

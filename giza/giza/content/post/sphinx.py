@@ -15,7 +15,7 @@
 import logging
 import os.path
 
-from libgiza.task import Task
+from giza.libgiza.task import Task
 
 from giza.content.links import create_manual_symlink, get_public_links
 from giza.content.post.json_output import json_output_tasks

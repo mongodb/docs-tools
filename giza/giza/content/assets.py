@@ -51,8 +51,8 @@ import os
 import shutil
 import subprocess
 
-import libgiza.task
-import libgiza.git
+import giza.libgiza.task
+import giza.libgiza.git
 
 import giza.tools.files
 
@@ -68,12 +68,12 @@ def assets_setup(path, branch, repo, commit=None):
     #       specific hash.
 
     if os.path.exists(path):
-        g = libgiza.git.GitRepo(path)
+        g = giza.libgiza.git.GitRepo(path)
 
         if commit is None:
             try:
                 g.pull(branch=branch)
-            except libgiza.git.GitError as error:
+            except giza.libgiza.git.GitError as error:
                 logger.error('failed to pull %s repository', path)
                 logger.debug(error)
                 return
@@ -89,7 +89,7 @@ def assets_setup(path, branch, repo, commit=None):
         base, name = os.path.split(path)
         giza.tools.files.safe_create_directory(base)
 
-        g = libgiza.git.GitRepo(base)
+        g = giza.libgiza.git.GitRepo(base)
         g.clone(repo, repo_path=path, branch=branch)
         logger.info('cloned %s branch from repo %s', branch, repo)
 
@@ -118,11 +118,11 @@ def assets_tasks(conf):
                 args['commit'] = asset.commit
 
             description = "setup assets for: {0} in {1}".format(asset.repository, path)
-            tasks.append(libgiza.task.Task(job=assets_setup,
-                                           args=args,
-                                           target=path,
-                                           dependency=None,
-                                           description=description))
+            tasks.append(giza.libgiza.task.Task(job=assets_setup,
+                                                args=args,
+                                                target=path,
+                                                dependency=None,
+                                                description=description))
 
             # If you specify a list of "generate" items, giza will call ``giza
             # generate`` to build content after updating the
@@ -131,11 +131,11 @@ def assets_tasks(conf):
                 for content_type in asset.generate:
                     description = 'generating objects in {0}'.format(path)
                     args = dict(cwd=path, args=['giza', 'generate', content_type])
-                    generate_tasks.append(libgiza.task.Task(job=subprocess.call,
-                                                            target=path,
-                                                            dependency=None,
-                                                            args=args,
-                                                            description=description))
+                    generate_tasks.append(giza.libgiza.task.Task(job=subprocess.call,
+                                                                 target=path,
+                                                                 dependency=None,
+                                                                 args=args,
+                                                                 description=description))
 
     if len(generate_tasks) > 0:
         tasks.append(generate_tasks)
@@ -153,11 +153,11 @@ def assets_clean(conf):
             path = os.path.join(conf.paths.projectroot, asset.path)
             logger.debug('adding asset cleanup %s', path)
 
-            t = libgiza.task.Task(job=shutil.rmtree,
-                                  args=[path],
-                                  target=path,
-                                  dependency=None,
-                                  description='cleaning up asset: ' + path)
+            t = giza.libgiza.task.Task(job=shutil.rmtree,
+                                       args=[path],
+                                       target=path,
+                                       dependency=None,
+                                       description='cleaning up asset: ' + path)
 
             tasks.append(t)
 

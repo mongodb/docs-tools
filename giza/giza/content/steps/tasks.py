@@ -15,7 +15,7 @@
 import logging
 import shutil
 
-from libgiza.task import Task
+from giza.libgiza.task import Task
 
 from giza.content.steps.inheritance import StepDataCache
 from giza.content.steps.views import render_steps

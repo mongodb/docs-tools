@@ -16,7 +16,7 @@ import sys
 import os.path
 import logging
 
-from libgiza.config import ConfigurationBase, RecursiveConfigurationBase
+from giza.libgiza.config import ConfigurationBase, RecursiveConfigurationBase
 
 logger = logging.getLogger('giza.config.jeerah')
 

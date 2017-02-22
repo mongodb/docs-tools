@@ -15,7 +15,7 @@
 import logging
 import shutil
 
-from libgiza.task import Task
+from giza.libgiza.task import Task
 
 from giza.content.glossary.inheritance import GlossaryDataCache
 from giza.content.glossary.views import render_glossary

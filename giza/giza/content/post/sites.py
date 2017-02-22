@@ -133,9 +133,9 @@ def sitemap(config_path, conf):
     if 'edition' in conf.project and conf.project.edition != conf.project.name:
         edition_name = '-'.join(['conf', conf.project.edition, 'sitemap.xml'])
         config_paths.extend([edition_name,
-                            os.path.join(conf.paths.projectroot, edition_name),
-                            os.path.join(conf.paths.projectroot,
-                                         conf.paths.builddata, edition_name)])
+                             os.path.join(conf.paths.projectroot, edition_name),
+                             os.path.join(conf.paths.projectroot,
+                                          conf.paths.builddata, edition_name)])
 
     for path in config_paths:
         if os.path.isfile(path):

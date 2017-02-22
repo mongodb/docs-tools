@@ -17,7 +17,7 @@ import os
 import shlex
 import subprocess
 
-import libgiza.task
+import giza.libgiza.task
 
 import giza.content.images.views
 import giza.tools.files
@@ -102,11 +102,11 @@ def image_tasks(conf, sconf):
 
         description = "generating rst include file {0} for {1}".format(image.rst_file,
                                                                        image.source_core)
-        t = libgiza.task.Task(job=giza.content.images.views.generate_image_pages,
-                              args=(image, conf),  # as kwargs
-                              target=image.rst_file,
-                              dependency=deps,
-                              description=description)
+        t = giza.libgiza.task.Task(job=giza.content.images.views.generate_image_pages,
+                                   args=(image, conf),  # as kwargs
+                                   target=image.rst_file,
+                                   dependency=deps,
+                                   description=description)
         tasks.append(t)
 
         if conf.runstate.fast is True:
@@ -115,12 +115,12 @@ def image_tasks(conf, sconf):
         for output in image.outputs:
             description = 'generating image file {0} from {1}'.format(output.output,
                                                                       image.source_core)
-            t = libgiza.task.Task(job=generate_image_inkscape,
-                                  args=(output.build_type, output.dpi, output.width,
-                                        output.output, image.source_file),
-                                  target=output.output,
-                                  dependency=image.source_core,
-                                  description=description)
+            t = giza.libgiza.task.Task(job=generate_image_inkscape,
+                                       args=(output.build_type, output.dpi, output.width,
+                                             output.output, image.source_file),
+                                       target=output.output,
+                                       dependency=image.source_core,
+                                       description=description)
             tasks.append(t)
 
             if output.type == 'target':
@@ -136,11 +136,11 @@ def image_tasks(conf, sconf):
                 description = 'copying fullsize image file {0} from {1}'.format(image_output,
                                                                                 output.output)
 
-                t.add_finalizer(libgiza.task.Task(job=giza.tools.files.copy_if_needed,
-                                                  args=(output.output, image_output),
-                                                  description=description,
-                                                  target=image_output,
-                                                  dependency=None))
+                t.add_finalizer(giza.libgiza.task.Task(job=giza.tools.files.copy_if_needed,
+                                                       args=(output.output, image_output),
+                                                       description=description,
+                                                       target=image_output,
+                                                       dependency=None))
 
     logger.info('registered {0} image generation tasks'.format(len(tasks)))
 
@@ -155,11 +155,11 @@ def image_clean(conf):
     tasks = []
     for image in conf.system.files.data.images:
         for output in image.outputs:
-            t = libgiza.task.Task(job=giza.tools.files.verbose_remove,
-                                  args=output.output,
-                                  target=True,
-                                  dependency=None,
-                                  description="removing img file")
+            t = giza.libgiza.task.Task(job=giza.tools.files.verbose_remove,
+                                       args=output.output,
+                                       target=True,
+                                       dependency=None,
+                                       description="removing img file")
             tasks.append(t)
 
     return tasks

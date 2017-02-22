@@ -37,7 +37,7 @@ import shutil
 import shlex
 import subprocess
 
-import libgiza.task
+import giza.libgiza.task
 
 from giza.tools.files import InvalidFile, safe_create_directory
 
@@ -156,16 +156,16 @@ def transfer_images(conf, sconf):
 def latex_image_transfer_tasks(conf, sconf):
     description = 'transferring images to build directory to {0}'.format(conf.paths.branch_source)
 
-    return [libgiza.task.Task(job=transfer_images,
-                              args=(conf, sconf),
-                              target=True,
-                              description=description)]
+    return [giza.libgiza.task.Task(job=transfer_images,
+                                   args=(conf, sconf),
+                                   target=True,
+                                   description=description)]
 
 
 def source_tasks(conf, sconf):
     description = 'migrating source to {0}'.format(conf.paths.branch_source)
 
-    return [libgiza.task.Task(job=transfer_source,
-                              args=(conf, sconf),
-                              target=os.path.join(conf.paths.branch_source),
-                              description=description)]
+    return [giza.libgiza.task.Task(job=transfer_source,
+                                   args=(conf, sconf),
+                                   target=os.path.join(conf.paths.branch_source),
+                                   description=description)]
