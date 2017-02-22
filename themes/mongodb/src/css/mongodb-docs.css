@@ -208,7 +208,7 @@ div.section h1 + ul, div.section h2 + ul, div.section h3 + ul, div.section  h4 +
     padding-top:0;
     margin-top: 0.3em;
     text-indent:0;
-    margin-left: -1.5em !important;
+    margin-left: -1.5em;
 }
 
 a.headerlink {

@@ -21,7 +21,22 @@ REGISTERED = {}
 
 PAT_SUBSTITUTION = re.compile(r'^\$[\w\.]+$')
 PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^````+$))', re.M)
-
+# List of tuples with language tab ( ID, Display Name)
+LANGUAGES_RAW = [('shell', 'Mongo Shell'), 
+             ('python', 'Python'),
+             ('java', 'Java'),
+             ('nodejs', 'Node.js'),
+             ('php', 'PHP'),
+             ('c', 'C'),
+             ('cpp11', 'C++11'),
+             ('csharp', 'C#'),
+             ('perl', 'Perl'),
+             ('ruby', 'Ruby'),
+             ('scala', 'Scala'),
+             ('motor', 'Motor'),
+             ('go', 'Go')]
+LANGUAGES_IDS = [lang[0] for lang in LANGUAGES_RAW]
+LANGUAGES_DISPLAY = [lang[1] for lang in LANGUAGES_RAW]
 
 def should_substitute(value):
     """Return true if a value should be substituted."""
@@ -217,3 +232,19 @@ def convertSections(tabContent):
         tabContent)
 
 fett.Template.FILTERS['convertSections'] = convertSections
+
+def sortLanguages(tabData):
+    # Create a list for the sorted data
+    sorted = [None] * len(LANGUAGES_RAW)
+    
+    for tab in tabData:
+        sorted[LANGUAGES_IDS.index(tab['id'])] = tab
+    
+    # Fill in any missing languages with empty content
+    for index in range(len(sorted)):
+        if sorted[index] is None:
+            sorted[index] = {'id': LANGUAGES_IDS[index], 'name': LANGUAGES_DISPLAY[index], 'content': ''}
+
+    return sorted
+
+fett.Template.FILTERS['sortLanguages'] = sortLanguages
