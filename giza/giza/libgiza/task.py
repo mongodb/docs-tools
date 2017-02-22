@@ -301,7 +301,7 @@ class MapTask(Task):
             raise TypeError
 
     def run(self):
-        return map(self.job, self.iter)
+        return list(map(self.job, self.iter))
 
 # Dependency Checking
 

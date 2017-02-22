@@ -106,7 +106,7 @@ class Deploy(object):
                                   host + ':' + self.remote_path]
 
     def run(self):
-        map(deploy_target, self.deploy_commands())
+        list(map(deploy_target, self.deploy_commands()))
 
 
 def deploy_target(cmd):

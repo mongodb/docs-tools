@@ -234,7 +234,7 @@ class InheritableContentBase(RecursiveConfigurationBase):
 
     def render(self):
         if self.replacement:
-            attempts = range(10)
+            attempts = list(range(10))
 
             for key in self.state.keys():
                 if isinstance(self.state[key], collections.Iterable):

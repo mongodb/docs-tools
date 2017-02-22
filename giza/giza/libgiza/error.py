@@ -253,5 +253,9 @@ class ErrorCollector(object):
     def __format__(self):
         return self.render_output()
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.has_errors() and self.fatal
+
+    def __nonzero__(self):
+        # Python 2 compat
+        return self.__bool__()

@@ -187,8 +187,7 @@ class ActionContent(HeadingMixin, ActionMixin, InheritableContentBase):
             super(ActionContent, self).render()
             code_block = '\n'.join(self.code)
 
-            attempts = range(10)
-            for attempt in attempts:
+            for attempt in range(10):
                 if "{{" in code_block:
                     template = jinja2.Template(code_block)
                     code_block = template.render(**self.replacement)

@@ -105,11 +105,11 @@ class ConfigurationBase(object):
                 try:
                     return self.state[key]
                 except KeyError:
-                    raise AttributeError(m, e.message)
+                    raise AttributeError(m, str(e))
             else:
                 if not key.startswith('_'):
                     logger.debug(m)
-                raise AttributeError(m, e.message)
+                raise AttributeError(m, str(e))
 
     def __setattr__(self, key, value):
         if key in self._option_registry:

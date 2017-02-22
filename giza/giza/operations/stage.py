@@ -581,7 +581,7 @@ class Staging(object):
                 else:
                     raise err
         except boto.exception.S3ResponseError as err:
-            raise SyncFileException(local_path, err.message)
+            raise SyncFileException(local_path, str(err))
         except IOError as err:
             LOGGER.exception('IOError while uploading file "%s": %s', local_path, err)
 
@@ -628,7 +628,7 @@ def do_stage(root, staging):
             except SyncFileException:
                 LOGGER.error('%s: %s', sub_err.path, sub_err.reason)
     except NoSuchEdition as err:
-        LOGGER.error('No edition found at %s', err.message)
+        LOGGER.error('No edition found at %s', str(err))
         LOGGER.info('Try specifying the -e [edition] option')
 
 

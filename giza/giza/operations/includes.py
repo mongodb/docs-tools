@@ -75,7 +75,7 @@ def unused(args):
 def list(args):
     c = fetch_config(args)
 
-    render_for_console(include_files(conf=c).keys())
+    render_for_console(list(include_files(conf=c).keys()))
 
 
 @argh.arg('--filter', '-f', default=None, dest="include_mask")

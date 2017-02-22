@@ -38,6 +38,7 @@ from giza.content.migrations import migration_tasks
 from giza.content.assets import assets_tasks
 
 from giza.tools.timing import Timer
+from functools import reduce
 
 logger = logging.getLogger('giza.operations.sphinx')
 

@@ -24,7 +24,7 @@ import email.utils
 import logging
 import os
 import time
-import urllib2
+from six.moves import urllib
 
 import giza.libgiza.task
 
@@ -47,22 +47,22 @@ def download(path, url, conf):
         logger.debug('Intersphinx file still young: %s', url)
         return
 
-    request = urllib2.Request(url, headers={
+    request = urllib.request.Request(url, headers={
         'If-Modified-Since': email.utils.formatdate(mtime)
     })
 
     safe_create_directory(os.path.dirname(path))
 
     try:
-        response = urllib2.urlopen(request, timeout=TIMEOUT_SECONDS)
+        response = urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS)
         with open(path, 'wb') as f:
             f.write(response.read())
-    except urllib2.HTTPError as err:
+    except urllib.error.HTTPError as err:
         if err.code == 304:
             logger.debug('Not modified: %s', url)
             return
         logger.error('Error downloading %s: Got %d', url, err.status)
-    except urllib2.URLError as err:
+    except urllib.error.URLError as err:
         logger.error('Error downloading %s: %s', url, str(err))
 
 

@@ -250,7 +250,7 @@ class SystemConfigData(RecursiveConfigurationBase):
         super(SystemConfigData, self).__init__(None, conf)
         for fn in self.conf.system.files.paths:
             if isinstance(fn, dict):
-                attr_name = fn.keys()[0]
+                attr_name = next(iter(fn))
             else:
                 attr_name = os.path.splitext(fn)[0]
 
@@ -263,7 +263,7 @@ class SystemConfigData(RecursiveConfigurationBase):
         except AttributeError:
             if key in self._option_registry:
                 if isinstance(key, dict):
-                    basename, fn = key.items()[0]
+                    basename, fn = next(iter(key.items()))
                 else:
                     fn = key
                     basename = os.path.splitext(fn)[0]
@@ -272,7 +272,7 @@ class SystemConfigData(RecursiveConfigurationBase):
                     pass
                 elif isinstance(self.state[key], dict):
                     if len(self.state[key]) == 1:
-                        basename, fns = self.state[key].items()[0]
+                        basename, fns = next(iter(self.state[key].items()))
                         if isinstance(fns, list):
                             for fn in fns:
                                 self._load_file(basename, fn)
@@ -345,7 +345,7 @@ class SystemConfigData(RecursiveConfigurationBase):
     def _resolve_config_path(self, fn):
         if isinstance(fn, dict):
             if len(fn) == 1:
-                fn = fn.values()[0]
+                fn = next(iter(fn.values()))
             else:
                 logger.error("unsupported config file specification: " + str(fn))
 

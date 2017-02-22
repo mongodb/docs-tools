@@ -35,7 +35,6 @@ import logging
 import os.path
 import pkg_resources
 import re
-import sys
 import numbers
 import subprocess
 import shlex
@@ -174,10 +173,7 @@ def stable_deduplicate(lines):
     for idx, ln in enumerate(lines):
         mapping[ln] = idx
 
-    if sys.version_info >= (3, 0):
-        return [ln for _, ln in mapping.keys()]
-    else:
-        return mapping.keys()
+    return list(mapping.keys())
 
 
 def print_build_messages(messages):

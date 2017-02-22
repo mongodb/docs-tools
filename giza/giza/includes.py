@@ -78,8 +78,7 @@ def included_once(conf, inc_files=None):
 
 def included_recusively(conf, inc_files=None):
     files = include_files(conf=conf, files=inc_files)
-    # included_files is a py2ism, depends on it being an actual list
-    included_files = files.keys()
+    included_files = set(files.keys())
 
     results = {}
     for inc, srcs in files.items():
@@ -147,13 +146,13 @@ def generated_includes(conf):
 
 def include_files_unused(conf, inc_files=None):
     inc_files = [fn[6:] for fn in expand_tree(os.path.join(conf.paths.includes), None)]
-    mapping = include_files(conf=conf)
+    keys = set(include_files(conf=conf).keys())
 
     results = []
     for fn in inc_files:
         if fn.endswith('yaml') or fn.endswith('~'):
             continue
-        if fn not in mapping.keys():
+        if fn not in keys:
             results.append(fn)
 
     return results
