@@ -17,6 +17,7 @@ div.tabs > * > li {
 /*Add a margin below the tab bar*/
 .nav-tabs.nav-justified {
     margin-bottom: 24px;
+    margin-left: 0px;
 }
 
 /*Styles for inactive & unhovered tabs*/
