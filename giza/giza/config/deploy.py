@@ -145,7 +145,7 @@ class StagingTargetConfig(libgiza.config.ConfigurationBase):
         """The prefix underwhich giza will upload everything in the bucket."""
         try:
             return self.state['prefix']
-        except KeyError as err:
+        except KeyError:
             return ''
 
     @prefix.setter
@@ -159,7 +159,7 @@ class StagingTargetConfig(libgiza.config.ConfigurationBase):
            everything."""
         try:
             return self.state['use_branch']
-        except KeyError as err:
+        except KeyError:
             return True
 
     @use_branch.setter
@@ -174,7 +174,7 @@ class StagingTargetConfig(libgiza.config.ConfigurationBase):
            this project."""
         try:
             return self.state['redirect_dirs']
-        except KeyError as err:
+        except KeyError:
             return []
 
     @redirect_dirs.setter
