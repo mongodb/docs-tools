@@ -7,11 +7,11 @@ version:
     - '2.1'
     - '2.0'
     - '1.1'
-  stable: ''
-  upcoming: ''
+  stable: '2.0'
+  upcoming: '2.1'
 git:
   branches:
-    manual: 'master'
+    manual: 'v2.0'
     published:
       - 'master'
       - 'v2.0'
