@@ -75,6 +75,8 @@ def tarball(name, path, newp=None, cdir=None):
         logger.debug('tarball internal path {0}'.format(path))
 
         tarball_file.add(name=path, arcname=arcname)
+        tarball_file.close()
+        gzipped_file.close()
 
     logger.info('created tarball: {0}'.format(name))
 
