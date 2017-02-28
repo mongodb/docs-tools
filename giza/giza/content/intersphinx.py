@@ -61,7 +61,7 @@ def download(path, url, conf):
         if err.code == 304:
             logger.debug('Not modified: %s', url)
             return
-        logger.error('Error downloading %s: Got %d', url, err.status)
+        logger.error('Error downloading %s: Got %d', url, err.code)
     except urllib.error.URLError as err:
         logger.error('Error downloading %s: %s', url, str(err))
 
