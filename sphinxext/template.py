@@ -238,7 +238,9 @@ def sortLanguages(tabData):
     sorted = [None] * len(LANGUAGES_RAW)
     
     for tab in tabData:
-        sorted[LANGUAGES_IDS.index(tab['id'])] = tab
+        index = LANGUAGES_IDS.index(tab['id'])
+        tab['name'] = LANGUAGES_DISPLAY[index]
+        sorted[index] = tab
     
     # Fill in any missing languages with empty content
     for index in range(len(sorted)):
