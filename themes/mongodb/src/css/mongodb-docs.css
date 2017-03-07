@@ -810,6 +810,11 @@ div.gsc-input-box,
     color: #CCC;
 }
 
+/* Temporary fix for Google Site Search wonkiness. */
+.gsc-branding {
+    display: none;
+}
+
 /* Clear search button */
 .gsib_b {
     display: none;
