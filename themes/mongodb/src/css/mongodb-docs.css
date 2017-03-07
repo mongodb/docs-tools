@@ -812,7 +812,7 @@ div.gsc-input-box,
 
 /* Temporary fix for Google Site Search wonkiness. */
 .gsc-branding {
-    display: none;
+    display: none !important;
 }
 
 /* Clear search button */
