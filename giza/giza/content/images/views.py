@@ -59,11 +59,10 @@ def generate_image_pages(image, conf):
                         indent=3)
         elif img_output.type == 'offset':
             tex_figure = [
-                r'\begin{figure}[h!]',
-                r'\centering',
+                r'\begin{center}',
                 ''.join([r'\includegraphics[width=', width,
                          ']{', name, tag, '}']),
-                r'\end{figure}'
+                r'\end{center}'
             ]
 
             r.directive('only', 'latex and offset', wrap=False)
