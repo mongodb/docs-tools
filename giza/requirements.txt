@@ -6,7 +6,7 @@ boto==2.45.0
 click==6.7
 defusedxml==0.4.1
 docutils==0.13.1
-fett==0.2.0
+fett==0.3.0
 future==0.16.0
 github3.py==0.9.5
 hieroglyph==0.7.1
