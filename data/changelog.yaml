@@ -27,6 +27,7 @@ groups:
     - MMAPv1
   "Storage":
     - Storage
+  "TTL":
     - TTL
   "GridFS":
     - GridFS
@@ -81,6 +82,7 @@ ordering:
   - WiredTiger
   - MMAP
   - Storage
+  - TTL
   - GridFS
   - Operations
   - Build and Packaging
