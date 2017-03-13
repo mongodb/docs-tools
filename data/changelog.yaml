@@ -27,6 +27,7 @@ groups:
     - MMAPv1
   "Storage":
     - Storage
+    - TTL
   "GridFS":
     - GridFS
   "Operations":
