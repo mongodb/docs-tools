@@ -955,6 +955,8 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 .right-column .wrapper {
     min-height: 100%;
     position: fixed;
+    margin-top: 10px;
+    /* the margin-top of 38px or so should make this align at top with the body text, couldn't decide */
 }
 
 .right-column .social .img {
