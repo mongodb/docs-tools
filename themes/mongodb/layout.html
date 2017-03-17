@@ -223,12 +223,19 @@
   <div id="topbar" >
      <div id="searchContainer" class="searchContainer">  
         {%- block sitesearch %}{%- endblock -%}
-        
+
        </div>
-       
+
      {% block rating %}
         <div id="rating-panel"></div>
      {% endblock %}
+
+     {%- block reportlink %}
+         <div id="jira-panel">
+          {{ jiralink() }}
+         </div>
+     {% endblock %}
+
   </div>
  
   <div class="content" >
@@ -296,11 +303,6 @@
          {%- endblock %}
 
         {%- block adblock %}{% endblock %}
-        {%- block reportlink %}
-           <div class="report-link">
-             {{ jiralink() }}
-           </div>
-        {% endblock %}
         {%- block social %}
            <div class="social">
              <a class="twitter-icon" href="https://twitter.com/MongoDB"><i class="fa fa-twitter-square"></i></a>

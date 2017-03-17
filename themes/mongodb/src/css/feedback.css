@@ -1,12 +1,13 @@
 #rating-panel {
-    font-size: 80%;
+   display: inline-block;
     overflow: hidden;
     background-color: rgba(255,255,255,1);
     line-height: 30px;
-    color: #ACACAC;
+    width: 350px;
+/*    color: #ACACAC; */
     margin-top: 5px;
     padding-left: 42px;
-    border-bottom: .5px solid #ccc;
+/*    border-bottom: .5px solid #ccc; */
 }
 
 #rating-panel a.button {
@@ -99,3 +100,8 @@
     }
 }
 
+@media (max-width: 660px) {
+   #rating-panel {
+       display: none;
+   }
+}

@@ -1,0 +1,29 @@
+#jira-panel {
+   float: right;
+   margin-top: 8px;
+   margin-left: 10px;
+   display: inline-block;
+}
+
+
+@media (min-width: 1330px) {
+   #jira-panel {
+      left: 1025px;
+      position: absolute;
+   }
+}
+
+@media (min-width: 901px) and (max-width: 1330px) {
+   #jira-panel {
+      margin-right: 15%;
+      position: static;
+      
+   }
+}
+
+@media (max-width: 900px) {
+   #jira-panel {
+      display: none;
+   }
+}
+   

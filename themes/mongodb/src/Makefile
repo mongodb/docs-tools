@@ -7,7 +7,8 @@ CSS_INPUTS=css/bootstrap-custom.css \
            css/header.css \
            css/mws.css \
            css/copy-button.css \
-           css/tabs.css
+           css/tabs.css \
+           css/jirapanel.css
 CSS_FILES=$(CSS_INPUTS) css/basic.css
 
 CSS_ERRORS=errors,empty-rules,duplicate-properties,selector-max-approaching

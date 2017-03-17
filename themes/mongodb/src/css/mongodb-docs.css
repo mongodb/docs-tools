@@ -723,7 +723,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 
 #topbar {
-   display: block;
+   display: inline-block;
    top:  95px;
    height: 36px;
    position: fixed;
