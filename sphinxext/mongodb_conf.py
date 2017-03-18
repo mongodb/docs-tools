@@ -284,13 +284,6 @@ conf['directives'] = [
         'prepend': True,
         'callable': False
     },
-    {
-        'name': 'atlasrole',
-        'tag': 'atlasrole',
-        'description': 'Atlas Specific User Privilege group',
-        'prepend': True,
-        'callable': False
-    },
     ## Custom Directives for Atlas Docs
     {
         'name': 'atlasrole',
@@ -298,7 +291,14 @@ conf['directives'] = [
         'description': 'Atlas user role',
         'prepend': False,
         'callable': False,
-    }
+    },
+    {
+        'name': 'expansion',
+        'tag': 'expansion',
+        'description': 'Expansion',
+        'prepend': True,
+        'callable': False
+    },
 ]
 
 conf['prepend'] = { }
