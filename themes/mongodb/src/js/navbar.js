@@ -1,5 +1,6 @@
 import * as componentCopyButtons from './componentCopyButtons';
 import * as componentFastLoad from './componentFastLoad';
+import * as componentFeedback from './componentFeedback';
 import * as componentSidebar from './componentSidebar';
 import * as componentTabs from './componentTabs';
 import * as componentVersionSelector from './componentVersionSelector';
@@ -11,6 +12,7 @@ class FastNav {
 
     register(component) {
         this.components.push(component);
+        if (component.init) { component.init(); }
     }
 
     update() {
@@ -22,11 +24,12 @@ class FastNav {
 const fastNav = new FastNav();
 
 $(() => {
-    fastNav.register(componentSidebar);
-    fastNav.register(componentFastLoad);
-    fastNav.register(componentVersionSelector);
     fastNav.register(componentCopyButtons);
+    fastNav.register(componentFastLoad);
+    fastNav.register(componentFeedback);
+    fastNav.register(componentSidebar);
     fastNav.register(componentTabs);
+    fastNav.register(componentVersionSelector);
 
     $('body').on('click', '#header-db, .sidebar, .content', (e) => {
         $('.option-popup').

@@ -21,6 +21,7 @@ fabsrc/giza
 *.egg-info
 !giza/docs/config
 node_modules/
+src/build/
 
 /world-builder/source
 /world-builder/build

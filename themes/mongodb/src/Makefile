@@ -14,35 +14,24 @@ CSS_FILES=$(CSS_INPUTS) css/basic.css
 CSS_ERRORS=errors,empty-rules,duplicate-properties,selector-max-approaching
 CSS_WARNINGS=regex-selectors,unqualified-attributes,text-indent
 
-.PHONY: all lint-js lint-css clean
+.PHONY: all lint-css clean
 
 all: $(TARGETS)
+
+../static/navbar.js: js/*.js | node_modules
+	greni
+	cp build/navbar.js $@
+	cp build/navbar.js.map $@.map
 
 ../static/mongodb-docs.css: $(CSS_FILES) | node_modules
 	$(MAKE) lint-css
 	./node_modules/.bin/cleancss --skip-rebase --semantic-merging -o $@ $(CSS_INPUTS)
 
-../static/navbar.js: build/bundle.es5.min.js
-	./node_modules/.bin/sorcery -i $^ -o $@
-
-build/bundle.es5.min.js: build/bundle.es5.js
-	./node_modules/.bin/uglifyjs --source-map-inline --source-map-include-sources -cm -o $@ $^
-
-build/bundle.es5.js: build/bundle.js
-	./node_modules/.bin/buble $^ -o $@ -t ie:10 -m inline -y dangerousForOf
-
-build/bundle.js: js/*.js
-	$(MAKE) lint-js
-	./node_modules/.bin/rollup -o $@ -f iife -m inline -- js/navbar.js
-
 lint-css: | node_modules
 	./node_modules/.bin/csslint --quiet --format=compact --errors=$(ERRORS) --warnings=$(CSS_WARNINGS) css/basic.css css/mongodb-docs.css
-
-lint-js: | node_modules
-	./node_modules/.bin/eslint js/
 
 node_modules: package.json
 	npm update
 
 clean:
-	rm -f $(TARGETS) build/*
+	rm -f $(TARGETS) ../static/navbar.js.map build/*

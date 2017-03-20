@@ -1,11 +1,19 @@
 {
   "dependencies" : {
-    "buble" : "0.15.2",
     "clean-css" : "3.4",
     "csslint" : "0.10",
     "eslint" : "3.15.0",
-    "rollup" : "0.41.4",
-    "sorcery" : "0.10.0",
-    "uglify-js" : "2.7.5"
+    "rigning": "2.1.0",
+    "greni": "0.3.0"
+  },
+
+  "greniConfig": {
+    "entryPoints": {"navbar.js": "js/navbar.js"},
+    "output": "build",
+    "buble": {
+      "transforms": {
+        "dangerousForOf": true
+      }
+    }
   }
 }
