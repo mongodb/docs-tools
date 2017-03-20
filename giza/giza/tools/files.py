@@ -56,6 +56,18 @@ def verbose_remove(path):
 
 
 def tarball(name, path, newp=None, cdir=None):
+    def filter(info):
+        """Filter a tarball to create a repeatable build."""
+        if info.name.endswith('.buildinfo'):
+            return None
+
+        info.mtime = 0
+        info.uid = 0
+        info.gid = 0
+        info.uname = ''
+        info.gname = ''
+        return info
+
     tarball_path = os.path.dirname(name)
     safe_create_directory(tarball_path)
 
@@ -74,7 +86,9 @@ def tarball(name, path, newp=None, cdir=None):
 
         logger.debug('tarball internal path {0}'.format(path))
 
-        tarball_file.add(name=path, arcname=arcname)
+        tarball_file.add(name=path,
+                         arcname=arcname,
+                         filter=filter)
         tarball_file.close()
         gzipped_file.close()
 
