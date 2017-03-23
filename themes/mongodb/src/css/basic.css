@@ -471,19 +471,23 @@ pre {
     overflow-y: hidden;  /* fixes display issues on Chrome browsers */
 }
 
-td.linenos pre {
-    padding: 5px 0px;
+.linenos pre {
+    padding: 0;
     border: 0;
     background-color: transparent;
     color: #aaa;
+    font-family: 'Source Code Pro',monospace;
+    font-size: 14px;
+    line-height: 24px;
+}
+
+.linenos {
+    float: left;
+    width: 2em;
 }
 
 table.highlighttable {
     margin-left: 0.5em;
-}
-
-table.highlighttable td {
-    padding: 0 0.5em 0 0.5em;
 }
 
 tt.descname {
