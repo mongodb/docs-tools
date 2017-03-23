@@ -1,0 +1,64 @@
+{%- extends "layout.html" -%}
+
+{% block navbar %}
+  <script
+    async
+    id='mongodb-nav-data'
+    data-props='{"environment":"docs","isOpaque":true,
+                 "includeSearch":true,
+                 "searchUrl":"https://docs.mongodb.com/manual/{{version}}/search/?query=",
+                 "contactUrl":"https://www.mongodb.com/contact?jmp=docs"}'
+    data-container='#header-db'
+    src="{{ pathto('_static/header.js', 1) }}"></script>
+{% endblock %}
+
+{%- block htmltitle %}
+  {%- if not embedded and docstitle %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif -%}
+
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
+
+{%- block editlink_icon %}{% endblock %}
+
+{%- block canonicalref %}
+{%- endblock -%}
+
+{%- block alertbar -%}
+    {%- if theme_is_upcoming %}
+        <div class="alert alert-info">
+           <span class="alert-message">This is a draft version of the manual. The draft version reflects current work in progress, including content stubs and rapidly changing content.</span>
+        </div>
+    {%- endif %}
+{%- endblock -%}
+
+{%- block adblockheader %}
+    {%- include "adblock-header.html" %}
+{%- endblock -%}
+
+{%- block adblock %}
+    {%- include "adblock.html" %}
+{%- endblock -%}
+
+{%- block topnav %}
+  {%- block subnav %} {% endblock %}
+
+  {%- block searchbox %}
+  {% endblock %}
+{% endblock %}
+
+{%- block sitesearch %}
+{%- endblock -%}
+ 
+{%- block langauge_selector %}{%- endblock -%}
+{%- block pdflink %}{%- endblock %}
+{%- block epublink %}{%- endblock %}
+
+
+
+
+
+{%- block righttoc %} {% endblock %}
