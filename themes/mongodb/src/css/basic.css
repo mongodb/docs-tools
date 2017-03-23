@@ -486,8 +486,9 @@ pre {
     width: 2em;
 }
 
-table.highlighttable {
-    margin-left: 0.5em;
+.highlighttable {
+    overflow: scroll;
+    width: 100%;
 }
 
 tt.descname {
