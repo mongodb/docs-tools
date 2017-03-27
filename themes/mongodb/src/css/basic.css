@@ -484,6 +484,9 @@ pre {
 .linenos {
     float: left;
     width: 2em;
+
+    /* This should match the padding of <pre> */
+    padding-top: 24px;
 }
 
 .highlighttable {

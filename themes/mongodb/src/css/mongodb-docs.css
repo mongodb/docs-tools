@@ -303,11 +303,7 @@ table.footnote {
 
 div td pre {
     border: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
     margin: 0px;
-    padding-top: 0px;
-    padding-right: 8px;
     background-color: transparent;
 }
 
