@@ -292,6 +292,9 @@ table.docutils.field-list ul.first.last.simple>li>p { padding-top: 1em; }
 
 div.highlight-javascript>div.highlight>pre>span.hll { background-color: transparent; }
 div.highlight-javascript>div.highlight>pre>span.hll>span.nx { font-weight: bold; }
+.hll {
+    display: inherit;
+}
 
 table.footnote {
     font-size: 0.95em;
