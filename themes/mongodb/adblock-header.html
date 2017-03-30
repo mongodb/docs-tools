@@ -14,9 +14,24 @@
 <script type="text/javascript">
    googletag.cmd.push(function() {
 
-      //Adslot 1 declaration
-      gptadslots[1]= googletag.defineSlot('/40039723/docs.mongodb.org', [[160,600],[243,202],[293,244]],'mongodb-docs-1').addService(googletag.pubads());
-
+      var pathname = location.href;
+      
+      if ( (pathname.indexOf("auth") >= 0) || (pathname.indexOf("security") >= 0) ) {
+         gptadslots[1]= googletag.defineSlot('/40039723/docs.mongodb.org/security', [[160,600],[243,202],[293,244]],'mongodb-docs-1').addService(googletag.pubads());
+      } else if ( (pathname.indexOf("crud") >= 0) ||  (pathname.indexOf("query") >= 0) || (pathname.indexOf("insert") >= 0) || (pathname.indexOf("update") >= 0) || (pathname.indexOf("remove") >= 0) || (pathname.indexOf("delete") >= 0) || (pathname.indexOf("aggregation") >= 0) ) {
+         gptadslots[1]= googletag.defineSlot('/40039723/docs.mongodb.org/crud', [[160,600],[243,202],[293,244]],'mongodb-docs-1').addService(googletag.pubads());
+      } else if (pathname.indexOf("shard") >= 0) {
+         gptadslots[1]= googletag.defineSlot('/40039723/docs.mongodb.org/sharding', [[160,600],[243,202],[293,244]],'mongodb-docs-1').addService(googletag.pubads());
+      } else if (pathname.indexOf("replica") >= 0) {
+         gptadslots[1]= googletag.defineSlot('/40039723/docs.mongodb.org/replication', [[160,600],[243,202],[293,244]],'mongodb-docs-1').addService(googletag.pubads());
+      } else if (pathname.indexOf("model") >= 0) {
+         gptadslots[1]= googletag.defineSlot('/40039723/docs.mongodb.org/data-modeling', [[160,600],[243,202],[293,244]],'mongodb-docs-1').addService(googletag.pubads());
+      } else if (pathname.indexOf("administration") >= 0) {
+         gptadslots[1]= googletag.defineSlot('/40039723/docs.mongodb.org/support', [[160,600],[243,202],[293,244]],'mongodb-docs-1').addService(googletag.pubads());
+      } else {
+         //Adslot 1 declaration
+         gptadslots[1]= googletag.defineSlot('/40039723/docs.mongodb.org', [[160,600],[243,202],[293,244]],'mongodb-docs-1').addService(googletag.pubads());
+      }
       googletag.pubads().enableSingleRequest();
       googletag.pubads().enableAsyncRendering();
       googletag.enableServices();
