@@ -246,6 +246,7 @@ class SystemConfigData(RecursiveConfigurationBase):
 
     _always_list_configs = ['errors', 'images', 'intersphinx', 'manpages',
                             'pdfs', 'push', 'robots']
+    _single_document_configs = ['errors']
 
     def __init__(self, obj, conf):
         super(SystemConfigData, self).__init__(None, conf)
@@ -262,35 +263,37 @@ class SystemConfigData(RecursiveConfigurationBase):
         try:
             return object.__getattribute__(self, key)
         except AttributeError:
-            if key in self._option_registry:
-                if isinstance(key, dict):
-                    basename, fn = next(iter(key.items()))
-                else:
-                    fn = key
-                    basename = os.path.splitext(fn)[0]
+            pass
 
-                if isinstance(self.state[key], list):
-                    pass
-                elif isinstance(self.state[key], dict):
-                    if len(self.state[key]) == 1:
-                        basename, fns = next(iter(self.state[key].items()))
-                        if isinstance(fns, list):
-                            for fn in fns:
-                                self._load_file(basename, fn)
-                        else:
-                            self._load_file(basename, fn)
-                else:
-                    self._load_file(basename, self.state[key])
+        if key not in self._option_registry:
+            m = 'key "{0}" in system.data object does not exist'.format(key)
+            if not key.startswith('__'):
+                logger.debug(m)
+            raise AttributeError(m)
 
-                if len(self.state[key]) == 1 and key not in self._always_list_configs:
-                    return self.state[key][0]
+        if isinstance(key, dict):
+            basename, fn = next(iter(key.items()))
+        else:
+            fn = key
+            basename = os.path.splitext(fn)[0]
+
+        if isinstance(self.state[key], list):
+            pass
+        elif isinstance(self.state[key], dict):
+            if len(self.state[key]) == 1:
+                basename, fns = next(iter(self.state[key].items()))
+                if isinstance(fns, list):
+                    for fn in fns:
+                        self._load_file(basename, fn)
                 else:
-                    return self.state[key]
-            else:
-                m = 'key "{0}" in system.data object does not exist'.format(key)
-                if not key.startswith('__'):
-                    logger.debug(m)
-                raise AttributeError(m)
+                    self._load_file(basename, fn)
+        else:
+            self._load_file(basename, self.state[key])
+
+        if len(self.state[key]) == 1 and key not in self._always_list_configs:
+            return self.state[key][0]
+        else:
+            return self.state[key]
 
     def __contains__(self, value):
         return value in self._option_registry
@@ -386,7 +389,10 @@ class SystemConfigData(RecursiveConfigurationBase):
             self._always_list_configs.extend(special_lists.keys())
 
             with open(fn, 'r') as f:
-                data = yaml.safe_load_all(f)
+                if basename in self._single_document_configs:
+                    data = yaml.safe_load(f)
+                else:
+                    data = yaml.safe_load_all(f)
 
                 if basename in mapping:
                     data = [mapping[basename](doc) for doc in data]

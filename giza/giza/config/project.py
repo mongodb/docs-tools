@@ -131,6 +131,17 @@ class ProjectConfig(giza.libgiza.config.RecursiveConfigurationBase):
                 self.state['edition'] = self.conf.runstate.edition
 
     @property
+    def error_prefix(self):
+        if 'error_prefix' not in self.state:
+            self.error_prefix = None
+
+        return self.state['error_prefix']
+
+    @error_prefix.setter
+    def error_prefix(self, value):
+        self.state['error_prefix'] = value
+
+    @property
     def branched(self):
         if 'branched' not in self.state:
             self.branched = None

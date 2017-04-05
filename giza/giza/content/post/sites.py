@@ -50,16 +50,21 @@ def error_pages(sconf, conf):
 
     if 'errors' not in conf.system.files.data:
         return None
-    else:
-        sub = (re.compile(r'\.\./\.\./'), conf.project.url + r'/' + conf.project.tag + r'/')
 
-        for idx, error in enumerate(conf.system.files.data.errors):
-            page = os.path.join(conf.paths.projectroot,
-                                conf.paths.branch_output, builder,
-                                'meta', error, 'index.html')
-            munge_page(fn=page, regex=sub, tag='error-pages')
+    regex = re.compile(r'\.\./\.\./')
+    segments = [conf.project.url, conf.project.tag]
+    if conf.project.error_prefix:
+        segments.append(conf.project.error_prefix)
 
-        logger.info('error-pages: rendered {0} error pages'.format(idx))
+    sub = (regex, '/'.join(segments).rstrip('/') + '/')
+
+    for idx, error in enumerate(conf.system.files.data.errors):
+        page = os.path.join(conf.paths.projectroot,
+                            conf.paths.branch_output, builder,
+                            'meta', error, 'index.html')
+        munge_page(fn=page, regex=sub, tag='error-pages')
+
+    logger.info('error-pages: rendered {0} error pages'.format(idx))
 
 
 def finalize_dirhtml_build(sconf, conf):
