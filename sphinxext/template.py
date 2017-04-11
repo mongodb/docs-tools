@@ -23,7 +23,8 @@ PAT_SUBSTITUTION = re.compile(r'^\$[\w\.]+$')
 PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^````+$))', re.M)
 # List of tuples with language tab ( ID, Display Name)
 LANGUAGES_RAW = [('shell', 'Mongo Shell'), 
-             ('python', 'Python')]
+             ('python', 'Python'),
+             ('php', 'PHP')]
 LANGUAGES_IDS = [lang[0] for lang in LANGUAGES_RAW]
 LANGUAGES_DISPLAY = [lang[1] for lang in LANGUAGES_RAW]
 
