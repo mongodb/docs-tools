@@ -62,7 +62,7 @@ def render_apiargs(apiargs):
 
     r.newline()
 
-    r.directive('only', '(texinfo or latex or epub)')
+    r.directive('only', 'not(html or singlehtml or dirhtml)')
     r.newline()
     render_apiarg_fields(r, apiargs)
 

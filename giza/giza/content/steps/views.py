@@ -59,7 +59,7 @@ def render_steps(steps, conf):
                     indent=3)
         r.newline()
 
-        r.directive('only', 'latex or epub')
+        r.directive('only', 'not(html or dirhtml or singlehtml)')
         r.newline()
 
         if 'heading' in step:
