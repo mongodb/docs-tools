@@ -37,7 +37,7 @@ import itertools
 from giza.libgiza.app import BuildApp
 from giza.libgiza.task import Task
 from giza.config.helper import fetch_config
-from giza.config.sphinx_config import avalible_sphinx_builders
+from giza.config.sphinx_config import available_sphinx_builders
 from giza.operations.deploy import deploy_tasks
 from giza.operations.sphinx_cmds import sphinx_publication
 from giza.operations.build_env import env_package_worker
@@ -106,7 +106,7 @@ def add_sphinx_build_options(action_spec, action, options, conf):
     editions, will add all configured editions to the build operation.
     """
 
-    sphinx_builders = avalible_sphinx_builders()
+    sphinx_builders = available_sphinx_builders()
 
     if action in sphinx_builders:
         action_spec['builders'].add(action)
@@ -176,7 +176,7 @@ def run_make_operations(targets, conf):
                  "type": None}
     packaging_opts = {}
 
-    sphinx_builders = avalible_sphinx_builders()
+    sphinx_builders = available_sphinx_builders()
 
     if 'push' in conf.system.files.data:
         deploy_configs = dict((item['target'], item) for item in conf.system.files.data.push)

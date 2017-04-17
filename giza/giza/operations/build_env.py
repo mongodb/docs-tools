@@ -27,7 +27,7 @@ from sphinx.application import Sphinx, ENV_PICKLE_FILENAME
 from sphinx.builders.html import get_stable_hash
 
 from giza.config.helper import fetch_config, get_builder_jobs
-from giza.config.sphinx_config import avalible_sphinx_builders
+from giza.config.sphinx_config import available_sphinx_builders
 from giza.operations.packaging import fetch_package
 from giza.tools.files import safe_create_directory, FileNotFoundError
 
@@ -63,7 +63,7 @@ def extract_package_at_root(path, conf):
 
 def get_existing_builders(conf):
     return [b
-            for b in avalible_sphinx_builders()
+            for b in available_sphinx_builders()
             if os.path.isdir(os.path.join(conf.paths.projectroot, conf.paths.branch_output, b))]
 
 

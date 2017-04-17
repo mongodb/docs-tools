@@ -22,7 +22,7 @@ import multiprocessing
 
 from giza.libgiza.git import GitError
 from giza.libgiza.config import ConfigurationBase
-from giza.config.sphinx_config import avalible_sphinx_builders
+from giza.config.sphinx_config import available_sphinx_builders
 from giza.config.error import ConfigurationError
 from giza.tools.colorformatter import ColorFormatter
 import collections
@@ -352,7 +352,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
                 builder = 'latex'
                 value[idx] = builder
 
-            if builder not in avalible_sphinx_builders():
+            if builder not in available_sphinx_builders():
                 raise TypeError("{0} is not a valid builder".format(builder))
 
         self.state['builder'] = value

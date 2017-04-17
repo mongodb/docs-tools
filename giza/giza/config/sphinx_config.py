@@ -63,7 +63,7 @@ def resolve_builder_path(builder, edition, language, conf):
     return dirname
 
 
-def avalible_sphinx_builders():
+def available_sphinx_builders():
     builders = [builder[1] for builder in sphinx.make_mode.BUILDERS]
     builders.append('slides')
     builders.append('publish')
@@ -202,7 +202,7 @@ class SphinxConfig(giza.libgiza.config.RecursiveConfigurationBase):
 
     @builder.setter
     def builder(self, value):
-        if value in avalible_sphinx_builders():
+        if value in available_sphinx_builders():
             self.state['builder'] = value
         else:
             raise TypeError('{0} is not a valid sphinx builder'.format(value))
