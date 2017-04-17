@@ -22,6 +22,10 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
         self.nested_table = 0
         self.pending_links = []
 
+        # The wrapping algorithm provided with the TextWriter breaks formatting.
+        # Let's play it safe, and not bother wrapping.
+        sphinx.writers.text.my_wrap = lambda s, *args, **kwargs: s.split('\n')
+
     def depart_title(self, node):
         text = ''.join(x[1] for x in self.states.pop() if x[0] == -1)
         self.stateindent.pop()
