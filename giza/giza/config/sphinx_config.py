@@ -67,6 +67,7 @@ def available_sphinx_builders():
     builders = [builder[1] for builder in sphinx.make_mode.BUILDERS]
     builders.append('slides')
     builders.append('publish')
+    builders.append('markdown')
 
     return builders
 
