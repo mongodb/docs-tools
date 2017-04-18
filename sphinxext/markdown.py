@@ -1,18 +1,9 @@
-import codecs
-import json
 import logging
-import os
-import os.path
-import re
-import shutil
-import sys
-import sphinx.writers.text
-import sphinx.builders.text
 import docutils
-from sphinx.util.osutil import SEP, os_path, relative_uri, ensuredir, movefile, copyfile
-from sphinx.builders.html import StandaloneHTMLBuilder
+import sphinx.builders.text
+import sphinx.writers.text
 
-logger = logging.getLogger('fasthtml')
+logger = logging.getLogger('markdown')
 PAT_FILENAME_TEMPLATE = r'^{}(.+?)\.fjson$'
 
 
@@ -43,6 +34,7 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
 
     def visit_table(self, node):
         if self.table:
+            logger.warning('Nested table skipped.', location=node)
             self.nested_table += 1
         else:
             sphinx.writers.text.TextTranslator.visit_table(self, node)
