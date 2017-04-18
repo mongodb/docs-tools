@@ -1,10 +1,23 @@
-import logging
+import warnings
 import docutils
+import docutils.utils
 import sphinx.builders.text
 import sphinx.writers.text
+import sphinx.util.images
 
-logger = logging.getLogger('markdown')
 PAT_FILENAME_TEMPLATE = r'^{}(.+?)\.fjson$'
+
+
+def warn(message, node):
+    (source, line) = docutils.utils.get_source_line(node)
+    if source and line:
+        location = '{}:{}'.format(source, line)
+    elif source:
+        location = '{}:'.format(source)
+    elif line:
+        location = '<unknown>:{}'.format(line)
+
+    warnings.warn('{}: {}'.format(location, message), Warning)
 
 
 class MarkdownTranslator(sphinx.writers.text.TextTranslator):
@@ -12,6 +25,7 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
         sphinx.writers.text.TextTranslator.__init__(self, document, builder)
         self.nested_table = 0
         self.pending_links = []
+        self.pending_image = None
 
         # The wrapping algorithm provided with the TextWriter breaks formatting.
         # Let's play it safe, and not bother wrapping.
@@ -34,7 +48,7 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
 
     def visit_table(self, node):
         if self.table:
-            logger.warning('Nested table skipped.', location=node)
+            warn('Nested table skipped', node)
             self.nested_table += 1
         else:
             sphinx.writers.text.TextTranslator.visit_table(self, node)
@@ -70,6 +84,47 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
     def depart_literal_block(self, node):
         self.end_state(wrap=False)
         self.add_text('```')
+
+    def visit_figure(self, node):
+        assert not self.pending_image
+        self.pending_image = (node.get('width', 0), node.get('height', 0))
+
+    def depart_figure(self, node):
+        self.pending_image = None
+
+    def visit_image(self, node):
+        parts = ['<img src="{}"'.format(node['uri'])]
+
+        width = 0
+        height = 0
+        if self.pending_image:
+            width, height = self.pending_image
+
+        if 'width' in node:
+            width = node['width']
+
+        if 'height' in node:
+            height = node['height']
+
+        if 'scale' in node:
+            warn('Image scaling unsupported', node)
+
+        if 'align' in node:
+            warn('Image alignment unsupported', node)
+
+        if width:
+            parts.append(' width="{}"'.format(width))
+
+        if height:
+            parts.append(' height="{}"'.format(height))
+
+        if 'alt' in node:
+            parts.append(' alt="{}"'.format(node['alt']))
+
+        parts.append('>')
+
+        self.add_text(''.join(parts))
+        raise docutils.nodes.SkipNode
 
 
 class MarkdownWriter(sphinx.writers.text.TextWriter):
