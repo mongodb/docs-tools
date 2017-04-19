@@ -24,6 +24,7 @@ PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^``
 # List of tuples with language tab ( ID, Display Name)
 LANGUAGES_RAW = [('shell', 'Mongo Shell'), 
              ('python', 'Python'),
+             ('php', 'PHP'),
              ('perl', 'Perl')]
 LANGUAGES_IDS = [lang[0] for lang in LANGUAGES_RAW]
 LANGUAGES_DISPLAY = [lang[1] for lang in LANGUAGES_RAW]
