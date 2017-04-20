@@ -53,12 +53,6 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
         else:
             sphinx.writers.text.TextTranslator.visit_table(self, node)
 
-    def depart_table(self, node):
-        if self.nested_table:
-            self.nested_table -= 1
-        else:
-            sphinx.writers.text.TextTranslator.depart_table(self, node)
-
     def visit_reference(self, node):
         href = ''
         if 'refuri' in node:
@@ -125,6 +119,27 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
 
         self.add_text(''.join(parts))
         raise docutils.nodes.SkipNode
+
+    def depart_table(self, node):
+        if self.nested_table:
+            self.nested_table -= 1
+            return
+
+        lines = self.table[1:]
+        n_cols = max(len(row) for row in lines)
+        for row in lines:
+            if row == 'sep':
+                self.add_text('| - ' * n_cols + '|' + self.nl)
+                continue
+
+            out = ['|']
+            for cell in row:
+                out.append(' ' + cell.replace('\n', '') + ' |')
+
+            self.add_text(''.join(out) + self.nl)
+
+        self.table = None
+        self.end_state(wrap=False)
 
 
 class MarkdownWriter(sphinx.writers.text.TextWriter):
