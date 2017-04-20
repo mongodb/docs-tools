@@ -76,7 +76,7 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
 
     def visit_literal_block(self, node):
         self.add_text('```')
-        if 'language' in node:
+        if 'language' in node and node['language'] != 'none':
             self.add_text(node['language'])
 
         self.new_state(0)
