@@ -69,6 +69,7 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
         self.add_text(']({})'.format(self.pending_links.pop()))
 
     def visit_literal_block(self, node):
+        self.new_state(0)
         self.add_text('```')
         if 'language' in node and node['language'] != 'none':
             self.add_text(node['language'])
@@ -78,6 +79,7 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
     def depart_literal_block(self, node):
         self.end_state(wrap=False)
         self.add_text('```')
+        self.end_state(wrap=False)
 
     def visit_figure(self, node):
         assert not self.pending_image
