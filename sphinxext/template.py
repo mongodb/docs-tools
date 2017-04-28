@@ -25,8 +25,16 @@ PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^``
 LANGUAGES_RAW = [('shell', 'Mongo Shell'), 
              ('python', 'Python'),
              ('java-sync', 'Java (Sync)'),
+             ('nodejs', 'Node.js'),
              ('php', 'PHP'),
-             ('perl', 'Perl')]
+             #('java-async', 'Java (Sync)'),
+             #('c', 'C'),
+             #('cpp11', 'C++11'),
+             #('csharp', 'C#'),
+             ('perl', 'Perl')
+             #('ruby', 'Ruby'),
+             #('scala', 'Scala')
+             ]
 LANGUAGES_IDS = [lang[0] for lang in LANGUAGES_RAW]
 LANGUAGES_DISPLAY = [lang[1] for lang in LANGUAGES_RAW]
 
@@ -224,6 +232,11 @@ def convertSections(tabContent):
         tabContent)
 
 fett.Template.FILTERS['convertSections'] = convertSections
+
+def numberOfLanguages(tabData):
+    return len(LANGUAGES_RAW)
+
+fett.Template.FILTERS['numberOfLanguages'] = numberOfLanguages
 
 def sortLanguages(tabData):
     # Create a list for the sorted data
