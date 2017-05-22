@@ -1,0 +1,18 @@
+version:
+  published:
+    - '6.1'
+    - '5.2'
+  active:
+    - '6.1'
+    - '5.2'
+  stable: '6.1'
+  upcoming: null
+git:
+  branches:
+    manual: 'master'
+    published:
+      - 'master'
+      - 'v5.2'
+      # the branches/published list **must** be ordered from most to
+      # least recent release.
+...
