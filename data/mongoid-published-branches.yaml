@@ -2,10 +2,7 @@ version:
   published:
     - '6.1'
     - '5.2'
-  active:
-    - '6.1'
-    - '5.2'
-  stable: '6.1'
+  stable: ''
   upcoming: null
 git:
   branches:
