@@ -9,7 +9,7 @@ git:
     manual: 'master'
     published:
       - 'master'
-      - 'v5.2'
+      - '5.2'
       # the branches/published list **must** be ordered from most to
       # least recent release.
 ...
