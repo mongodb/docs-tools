@@ -292,13 +292,23 @@ conf['directives'] = [
         'prepend': False,
         'callable': False,
     },
+    ## Custom Directives for expansions
     {
         'name': 'expansion',
         'tag': 'expansion',
         'description': 'Expansion',
-        'prepend': True,
+        'prepend': False,
         'callable': False
     },
+    ## For service actions
+    {
+        'name': 'action',
+        'tag': 'action',
+        'description': 'Service Actions',
+        'prepend': False,
+        'callable': False
+    },
+
 ]
 
 conf['prepend'] = { }
