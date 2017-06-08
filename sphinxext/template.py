@@ -30,10 +30,10 @@ LANGUAGES_RAW = [('shell', 'Mongo Shell'),
              #('java-async', 'Java (Sync)'),
              #('c', 'C'),
              #('cpp11', 'C++11'),
-             #('csharp', 'C#'),
+             ('csharp', 'C#'),
              ('perl', 'Perl'),
              ('ruby', 'Ruby')
-             #('scala', 'Scala')
+             ('scala', 'Scala')
              ]
 LANGUAGES_IDS = [lang[0] for lang in LANGUAGES_RAW]
 LANGUAGES_DISPLAY = [lang[1] for lang in LANGUAGES_RAW]
