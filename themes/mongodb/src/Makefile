@@ -7,8 +7,7 @@ CSS_INPUTS=css/bootstrap-custom.css \
            css/header.css \
            css/mws.css \
            css/copy-button.css \
-           css/tabs.css \
-           css/jirapanel.css
+           css/tabs.css
 CSS_FILES=$(CSS_INPUTS) css/basic.css
 
 CSS_ERRORS=errors,empty-rules,duplicate-properties,selector-max-approaching
@@ -18,20 +17,25 @@ CSS_WARNINGS=regex-selectors,unqualified-attributes,text-indent
 
 all: $(TARGETS)
 
-../static/navbar.js: js/*.js | node_modules
+../static/navbar.js: js/*.js node_modules/.CURRENT
 	greni
 	cp build/navbar.js $@
 	cp build/navbar.js.map $@.map
 
-../static/mongodb-docs.css: $(CSS_FILES) | node_modules
+../static/mongodb-docs.css: $(CSS_FILES) node_modules/.CURRENT
 	$(MAKE) lint-css
 	./node_modules/.bin/cleancss --skip-rebase --semantic-merging -o $@ $(CSS_INPUTS)
 
-lint-css: | node_modules
+lint-css: node_modules/.CURRENT
 	./node_modules/.bin/csslint --quiet --format=compact --errors=$(ERRORS) --warnings=$(CSS_WARNINGS) css/basic.css css/mongodb-docs.css
 
-node_modules: package.json
+node_modules/.CURRENT: package.json node_modules
 	npm update
+	touch node_modules/.CURRENT
+
+node_modules:
+	npm install
 
 clean:
-	rm -f $(TARGETS) ../static/navbar.js.map build/*
+	rm -f $(TARGETS) ../static/navbar.js.map
+	-rm -r build/*

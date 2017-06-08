@@ -1,14 +1,14 @@
 {
-  "dependencies" : {
-    "clean-css" : "3.4",
-    "csslint" : "0.10",
-    "eslint" : "3.15.0",
-    "rigning": "2.1.0",
-    "greni": "0.3.0"
+  "dependencies": {
+    "clean-css": "^3.4.26",
+    "csslint": "^0.10.0",
+    "eslint": "^3.19.0",
+    "rigning": "^3.0.1"
   },
-
   "greniConfig": {
-    "entryPoints": {"navbar.js": "js/navbar.js"},
+    "entryPoints": {
+      "navbar.js": "js/navbar.js"
+    },
     "output": "build",
     "buble": {
       "transforms": {

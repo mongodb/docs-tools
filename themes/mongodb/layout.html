@@ -43,10 +43,6 @@
   </a>
 {%- endmacro -%}
 
-{%- macro jiralink() -%}
-  <a class="jira-link jirafeedback" href="https://jira.mongodb.org/secure/CreateIssueDetails!init.jspa?pid=10380&issuetype=4&priority=4&summary=Comment+on%3a+%22{{ pagename | escape }}%2Etxt%22" target="_blank" title="Report a problem with {{pagename|e}}.txt on Jira">Fix This Page</a>
-{%- endmacro -%}
-
 {%- macro relbar() %}
    <div class="bc">
      {% if parents %}
@@ -221,23 +217,13 @@
 
 
   <div id="topbar" >
-     <div id="searchContainer" class="searchContainer">  
+     <div id="searchContainer" class="searchContainer">
         {%- block sitesearch %}{%- endblock -%}
 
        </div>
 
-     {% block rating %}
-        <div id="rating-panel"></div>
-     {% endblock %}
-
-     {%- block reportlink %}
-         <div id="jira-panel">
-          {{ jiralink() }}
-         </div>
-     {% endblock %}
-
   </div>
- 
+
   <div class="content" >
 
 
@@ -313,6 +299,9 @@
         {% endblock %}
       </div>
     </div>
+    {% block rating %}
+      <div id="rating-panel"></div>
+    {% endblock %}
     <div class="clearfix"></div>
   </div>
   {% block onboarding_modal %}{% endblock %}
