@@ -32,7 +32,7 @@ LANGUAGES_RAW = [('shell', 'Mongo Shell'),
              #('cpp11', 'C++11'),
              ('csharp', 'C#'),
              ('perl', 'Perl'),
-             ('ruby', 'Ruby')
+             ('ruby', 'Ruby'),
              ('scala', 'Scala')
              ]
 LANGUAGES_IDS = [lang[0] for lang in LANGUAGES_RAW]
