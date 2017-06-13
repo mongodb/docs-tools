@@ -17,7 +17,7 @@ function showHideSelectedTab(currentAttrValue) {
     const tabListItem = tabLink.parent('li');
     const tabList = tabListItem.parent('ul');
 
-     // Get the dropdown <a> and <li> for active and label management
+    // Get the dropdown <a> and <li> for active and label management
     const dropdownLink = $('.nav.nav-tabs.nav-justified .dropdown-toggle');
     const dropdownListItem = $('.nav.nav-tabs.nav-justified .dropdown');
 

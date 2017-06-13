@@ -49,8 +49,8 @@ export function setup(fastNav) {
 
     // Set up initial state so we can return to our initial landing page.
     window.history.replaceState({'href': window.location.href},
-                                document.querySelector('title').textContent,
-                                window.location.href);
+        document.querySelector('title').textContent,
+        window.location.href);
 
     // Stop loading the currently-in-progress page.
     function abortLoading() {
