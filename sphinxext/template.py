@@ -238,6 +238,15 @@ def numberOfLanguages(tabData):
 
 fett.Template.FILTERS['numberOfLanguages'] = numberOfLanguages
 
+def getLanguageNames(tabData):
+    for tab in tabData:
+        index = LANGUAGES_IDS.index(tab['id'])
+        tab['name'] = LANGUAGES_DISPLAY[index]
+
+    return tabData
+
+fett.Template.FILTERS['getLanguageNames'] = getLanguageNames
+
 def sortLanguages(tabData):
     # Create a list for the sorted data
     sorted = [None] * len(LANGUAGES_RAW)
