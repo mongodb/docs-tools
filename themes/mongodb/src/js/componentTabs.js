@@ -55,11 +55,23 @@ function hideTabBars() {
 
 // Create tab functionality for code examples
 export function setup() {
+    hideTabBars();
+
     let initialAttrValue = null;
 
     // Check if the user has a preference stored, if so load it
     if (localStorage.getItem('languagePref')) {
         initialAttrValue = localStorage.getItem('languagePref');
+
+        // Confirm a tab for their languagePref exists at the top of the page
+        if ($(`a[href=${initialAttrValue}]`).length < 1) {
+
+            // If not, get the first tab and set that as the active tab
+            if (document.querySelector('.nav.nav-tabs.nav-justified > li:first-child > a')) {
+                initialAttrValue = document.querySelector('.nav.nav-tabs.nav-justified > li:first-child > a').getAttribute('href');
+            }
+        }
+
     } else {
         const tabsElement = document.querySelector('.nav-tabs > .active > [href]');
         if (!tabsElement) {
@@ -72,9 +84,12 @@ export function setup() {
     // Show the appropriate tab content and mark the tab as active
     showHideTabContent(initialAttrValue);
     showHideSelectedTab(initialAttrValue);
-    hideTabBars();
 
-    document.querySelectorAll('.nav.nav-tabs.nav-justified a').forEach((element) => {
+    const tabLinks = document.querySelectorAll('.nav.nav-tabs.nav-justified a');
+
+    for (let i = 0; i < tabLinks.length; i += 1) {
+        const element = tabLinks[i];
+
         element.onclick = function(e) {
             // Get the href of the clicked tab
             const currentAttrValue = element.getAttribute('href');
@@ -92,5 +107,5 @@ export function setup() {
                 e.preventDefault();
             }
         };
-    });
+    }
 }
