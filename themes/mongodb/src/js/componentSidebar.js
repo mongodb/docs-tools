@@ -84,7 +84,7 @@ export function setup() {
         const self = $(this);
 
         if (!util.isLeafNode(self)) {
-            expandElement.addClass('fa fa-plus');
+            expandElement.addClass('docs-expand-arrow');
         }
 
         return expandElement;

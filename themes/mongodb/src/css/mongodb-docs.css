@@ -698,7 +698,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 .content {
     box-sizing: border-box;
     display: flex;
-    margin: 120px auto 0;
+    margin: 45px auto 0;
 }
 
 .content .main-column {
@@ -734,11 +734,12 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 #left-column {
    flex-shrink: 1;
    flex-grow: 0;
-   flex-basis: 310px;
-   background-color: #f5f6f7;
-   min-width: 310px;
+   flex-basis: 330px;
+   background-color: #fff;
+   min-width: 330px;
    display:flex;
    overflow-y: auto;
+   border-right: 1px solid #e0e7e8;
 }
 
 div.document {
@@ -768,83 +769,10 @@ div.document {
     }
 }
 
-
-div.gsc-control-cse-en, div.gsc-control-cse { padding: 0 !important; }
-
-form.gsc-search-box {
-   font-family: sans-serif;
-   font-size: 1em;
-   padding-left: 10px;
-   float: left;
-   height: 100%;
-   margin-left: 5px;
-
-
+/* Adjust padding around the search div so autocomplete suggestions line up */ 
+#navbar-docs .navbar-search {
+  padding: 10px 0px 10px 45px;
 }
-
-.gsc-search-box.gsc-search-box-tools .gsc-search-box .gsc-input {
-    padding: 0;
-}
-
-div.gsc-input-box,
-.gsc-search-box .gsc-input>input:hover, .gsc-input-box-hover,
-.gsc-search-box .gsc-input>input:focus, .gsc-input-box-focus {
-    background: transparent;
-    box-shadow: none;
-}
-
-/* [name] selector is a hack to override google's stylsheet */
-.gsc-input input.gsc-input[name="search"] {
-    background-color: transparent !important;
-    font-weight: 300;
-    font-size: 15px;
-    height: 1.3em !important;
-}
-
-.gsc-input input.gsc-input::-webkit-input-placeholder,
-.gsc-input input.gsc-input:-moz-input-placeholder,
-.gsc-input input.gsc-input::-moz-input-placeholder,
-.gsc-input input.gsc-input:-ms-input-placeholder {
-    color: #CCC;
-}
-
-/* Temporary fix for Google Site Search wonkiness. */
-.gsc-branding {
-    display: none !important;
-}
-
-/* Clear search button */
-.gsib_b {
-    display: none;
-}
-
-td.gsc-search-button {
-   background: #7fc857;
-}
-/*
-input.gsc-search-button {
-   height: 100%;
-   width: 15%;
-   border: 0;
-   background-color: #7fc857;
-   float: right;
-   color: white;
-   text-align: center;
-   font-size: 12px;
-}
-*/
-
-/* [title] selector is a hack to override google's stylesheet */
-input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-search-button:focus[title] {
-    border-color: transparent;
-    background-color: #7fc857;
-    padding: 0 8px;
-    width: initial;
-    box-sizing: content-box;
-    -webkit-box-sizing: content-box;
-    background-image: none;
-}
-
 
 #header-db .logo {
     padding: 5px 0;
@@ -1043,10 +971,10 @@ input.gsc-search-button[title], input.gsc-search-button:hover[title], input.gsc-
 }
 
 div.sphinxsidebar {
-    font-size: 14px;
+    font-size: 16px;
     line-height: 20px;
-    height: calc(100% - 131px); /* 131px is height of the top bars */
-
+    top: 45px; /* the height of the navbar */
+    bottom: 0;
     position: fixed;
     overflow-y: auto;
 }
@@ -1054,8 +982,7 @@ div.sphinxsidebar {
 div.sphinxsidebarwrapper {
     padding: 0; /* overwrites basic.css rules */
     min-height: 100%;
-    max-width: 310px;
-    min-width: 310px;
+    width: 330px;
     right: 0;
 }
 
@@ -1077,25 +1004,20 @@ div.sphinxsidebar h3 a.showlink {
 }
 
 .sphinxsidebarwrapper > ul > .toctree-l1 {
-    padding: 6px 0;
     line-height: 24px;
-    border-top: 1px solid #ebebed;
+    border-top: 1px solid #e0e7e8;
 }
 
+.sphinxsidebarwrapper>ul>.toctree-l1:last-child {
+    border-bottom: 1px solid #e0e7e8;
+}
   
 .sphinxsidebarwrapper li.toctree-l1 ul > li > a {
     line-height: 24px;
     display: inline-block;
     width: 100%;
+    position: relative;
 }
-/* Commenting out [Kay]:  I don't think I like the green on active although a pretty green.
-.sphinxsidebarwrapper li.toctree-l1 ul > li > a:active {
-    color: #7fc857;
-}
-*/
-/* .sphinxsidebarwrapper > ul > .toctree-l1:last-child {
-    border-bottom: 1px solid #ebebed;
-} */
 
 .version-toggle {
     font-size: 12px;
@@ -1103,12 +1025,53 @@ div.sphinxsidebar h3 a.showlink {
     position: static;
     left: 0;
 }
-/* .sphinxsidebarwrapper > ul > .toctree-l1:last-child {
-    border-bottom: 1px solid #ebebed;
-} */
 
-.sphinxsidebarwrapper .toctree-l1 li.current.selected-item {
-     color: #615f5f;
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a span {
+    color: #69b241;
+}
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a {
+    color: #69b241;
+    background-color: #f5f6f7;
+    border-right: 5px solid #69b241;
+}
+.expand-icon {
+    background-image: url(images/page-icon.png);
+    background-repeat: no-repeat;
+    width: 13px;
+    height: 16px;
+    top: 8px;
+    margin-left: -21px;
+    position: absolute;
+    display: inline-block;
+}
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > .expand-icon {
+    background-image: url(images/page-icon-active.png);
+}
+.sphinxsidebarwrapper .toctree-l1 li > a > .expand-icon.docs-expand-arrow,
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > .expand-icon.docs-expand-arrow {
+    background-image: none;
+}
+.expand-icon.docs-expand-arrow {
+   border-radius: 3px;
+    border-right: 3px solid #b3bbc1;
+    border-top: 3px solid #b3bbc1;
+    box-sizing: border-box;
+    content: '';
+    display: inline-block;
+    height: 13px;
+    margin-left: -23px;
+    position: absolute;
+    top: 8px;
+    transform: rotate(45deg);
+    transition: transform .2s ease-in-out;
+    width: 13px;
+}
+li.current > a > .docs-expand-arrow.expand-icon,
+.sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > .docs-expand-arrow.expand-icon {
+    transform: rotate(135deg);
+}
+.sphinxsidebarwrapper .toctree-l1 li a {
+    padding: 5px 5px 5px 0;
 }
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a,
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > tt,
@@ -1127,33 +1090,30 @@ div.sphinxsidebar h3 a.showlink {
 
 .sphinxsidebarwrapper > ul > .toctree-l1 > a {
     line-height: 24px;
-    padding: 0 12px;
+    padding: 0 30px;
     width: 100%;
     display: inline-block;
 }
 
-
-
+.sphinxsidebarwrapper>ul>.toctree-l1 {
+    padding: 10px 0;
+}
 
 .sphinxsidebarwrapper .mms-hosted-search {
     margin-top: 15px;
 }
 
 div.sphinxsidebar li.toctree-l2 > a {
-    text-indent: -12px;
-    padding-left: 37px;
+    padding-left: 52px;
 }
 div.sphinxsidebar li.toctree-l3 > a {
-    text-indent: -12px;
-    padding-left: 48px;
+    padding-left: 78px;
 }
 div.sphinxsidebar li.toctree-l4 > a {
-    text-indent: -12px;
-    padding-left: 60px;
+    padding-left: 104px;
 }
 div.sphinxsidebar li.toctree-l5 > a {
-    text-indent: -12px;
-    padding-left: 72px;
+    padding-left: 130px;
 }
 
 div.sphinxsidebar p {
@@ -1177,7 +1137,7 @@ div.sphinxsidebar ul.want-points {
 }
 
 div.sphinxsidebar ul {
-    margin: 0 10px;
+    margin: 0;
     padding: 0;
     color: #000;
 }
@@ -1206,11 +1166,6 @@ div.sphinxsidebar a { color: #333; }
     margin-left: 5px;
 }
 
-.gsc-control-searchbox-only {
-   width: 310px;
-   padding-left: 10px;
-   
-}
 .searchButton {
     height: 100%;
     width: 15%;
@@ -1623,17 +1578,6 @@ h4 .guilabel,
 h5 .guilabel,
 h6 .guilabel {
   font-style: italic;
-}
-
-.expand-icon {
-    vertical-align: 1.5px;
-    font-size: 0.6em;
-    width: 0.5em;
-    display: inline-block;
-}
-
-li.current > a > .fa.expand-icon:before {
-    content: ""; /* fa-minus */
 }
 
 .slides-link {
