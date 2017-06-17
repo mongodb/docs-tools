@@ -1,17 +1,5 @@
 {%- extends "layout.html" -%}
 
-{% block navbar %}
-  <script
-    async
-    id='mongodb-nav-data'
-    data-props='{"environment":"docs","isOpaque":true,
-                 "includeSearch":true,
-                 "searchUrl":"https://docs.mongodb.com/spark-connector/{{version}}/search/?query=",
-                 "contactUrl":"https://www.mongodb.com/contact?jmp=docs"}'
-    data-container='#header-db'
-    src="{{ pathto('_static/header.js', 1) }}"></script>
-{% endblock %}
-
 {%- block htmltitle %}
   {%- if not embedded and docstitle %}
     {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
@@ -54,30 +42,13 @@
     {%- include "adblock.html" %}
 {%- endblock -%}
 
-{%- block topnav %}
-  {%- block subnav %} {% endblock %}
-
-  {%- block searchbox %}
-      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="https://docs.mongodb.com/{{theme_project}}/search/" queryParameterName="query"></gcse:searchbox-only></div>
-  {% endblock %}
-{% endblock %}
-
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-  
       <script>
-        (function() {
-          var cx = '017213726194841070573:f1ky3bnchs0';
-          var gcse = document.createElement('script');
-          gcse.type = 'text/javascript';
-          gcse.async = true;
-          gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-          var s = document.getElementsByTagName('script')[0];
-          s.parentNode.insertBefore(gcse, s);
-        })();
+        window.googleSearchCx = "017213726194841070573:f1ky3bnchs0"
+        window.googleSearchPlaceholder = "Search Spark Connector Documentation"
+        window.googleSearchResultsUrl = "https://docs.mongodb.com/{{theme_project}}/{{version}}/search/"
       </script>
-      <gcse:searchbox-only resultsUrl="https://docs.mongodb.com/{{theme_project}}/{{version}}/search/" queryParameterName="query"></gcse:searchbox-only>
-      
   {%- endif %}
 {%- endblock -%}
  

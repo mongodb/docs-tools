@@ -16,20 +16,11 @@
 
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-
    <script>
-     (function() {
-       var cx = '014132741538533607290:xl0kbqanc9y';
-       var gcse = document.createElement('script');
-       gcse.type = 'text/javascript';
-       gcse.async = true;
-       gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-       var s = document.getElementsByTagName('script')[0];
-       s.parentNode.insertBefore(gcse, s);
-     })();
+     window.googleSearchCx = "014132741538533607290:xl0kbqanc9y"
+     window.googleSearchPlaceholder = "Search Mongoid"
+     window.googleSearchResultsUrl = "http://docs.mongodb.com/mongoid/{{version}}/search/"
    </script>
-   <gcse:searchbox-only resultsUrl="http://docs.mongodb.com/mongoid/{{version}}/search/" queryParameterName="query"></gcse:searchbox-only>
-  
   {%- endif %}
 {%- endblock -%}
    
