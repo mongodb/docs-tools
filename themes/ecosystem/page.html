@@ -19,20 +19,11 @@
 
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-
    <script>
-     (function() {
-       var cx = '014132741538533607290:vbud4n2gg40';
-       var gcse = document.createElement('script');
-       gcse.type = 'text/javascript';
-       gcse.async = true;
-       gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-       var s = document.getElementsByTagName('script')[0];
-       s.parentNode.insertBefore(gcse, s);
-     })();
+      window.googleSearchCx = "014132741538533607290:vbud4n2gg40"
+      window.googleSearchPlaceholder = "Search Ecosystem"
+      window.googleSearchResultsUrl = "http://docs.mongodb.com/ecosystem/search/"
    </script>
-   <gcse:searchbox-only resultsUrl="http://docs.mongodb.com/ecosystem/search/" queryParameterName="query"></gcse:searchbox-only>
-   
   {%- endif %}
 {%- endblock -%}
 

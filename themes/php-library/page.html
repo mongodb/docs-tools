@@ -16,20 +16,11 @@
 
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-
    <script>
-     (function() {
-       var cx = '014132741538533607290:-qqrgleg8mw';
-       var gcse = document.createElement('script');
-       gcse.type = 'text/javascript';
-       gcse.async = true;
-       gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-       var s = document.getElementsByTagName('script')[0];
-       s.parentNode.insertBefore(gcse, s);
-     })();
+     window.googleSearchCx = "014132741538533607290:-qqrgleg8mw"
+     window.googleSearchPlaceholder = "Search PHP Library"
+     window.googleSearchResultsUrl = "http://docs.mongodb.com/php-library/{{version}}/search/"
    </script>
-   <gcse:searchbox-only resultsUrl="http://docs.mongodb.com/php-library/{{version}}/search/" queryParameterName="query"></gcse:searchbox-only>
-  
   {%- endif %}
 {%- endblock -%}
    
