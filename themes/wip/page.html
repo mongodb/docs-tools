@@ -2,7 +2,7 @@
 
 {%- block htmltitle %}
   {%- if not embedded and docstitle %}
-    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e  %}
   {%- else %}
     {%- set titlesuffix = "" %}
   {%- endif -%}
@@ -31,14 +31,16 @@
     {%- include "adblock.html" %}
 {%- endblock -%}
 
-{%- block topnav %}
-  {%- block subnav %} {% endblock %}
 
-  {%- block searchbox %}
-  {% endblock %}
-{% endblock %}
 
 {%- block sitesearch %}
+  {%- if builder != 'singlehtml' %}
+   <script>
+      window.googleSearchCx = "017213726194841070573:nheyyu5ty9c"
+      window.googleSearchPlaceholder = "Search Stitch Docs"
+      window.googleSearchResultsUrl = "http://docs.mongodb.com/stitch/search/"
+   </script>
+  {%- endif %}
 {%- endblock -%}
 
 {%- block header %}
