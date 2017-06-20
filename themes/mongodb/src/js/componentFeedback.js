@@ -15,6 +15,8 @@ function loadPage() {
     }
 
     const ratingPanelElement = document.getElementById('rating-panel');
+    if (!ratingPanelElement) { return; }
+
     ratingPanelElement.innerText = '';
     if (ratingPanelElement) {
         (new Deluge(project, pagename, ratingPanelElement)).
