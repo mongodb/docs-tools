@@ -1,8 +1,29 @@
 from docutils.parsers.rst import Directive, directives
 from docutils import nodes
 from sphinx.locale import _
-from sphinx.util.compat import Directive, make_admonition
+from sphinx.util.compat import Directive
 from sphinx import addnodes
+
+
+# Removed in Sphinx 1.6 for publicly undisclosed reasons, with no obvious
+# replacement.
+def make_admonition(node_class, name, arguments, options, content, lineno,
+                    content_offset, block_text, state, state_machine):
+    text = '\n'.join(content)
+    admonition_node = node_class(text)
+    if arguments:
+        title_text = arguments[0]
+        textnodes, messages = state.inline_text(title_text, lineno)
+        admonition_node += nodes.title(title_text, '', *textnodes)
+        admonition_node += messages
+        if 'class' in options:
+            classes = options['class']
+        else:
+            classes = ['admonition-' + nodes.make_id(title_text)]
+        admonition_node['classes'] += classes
+    state.nested_parse(content, content_offset, admonition_node)
+    return [admonition_node]
+
 
 class MongoDBNode(Directive):
     """
