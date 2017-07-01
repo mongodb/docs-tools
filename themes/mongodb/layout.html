@@ -5,7 +5,7 @@
 
 {%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
 {%- set url_root = pathto('', 1) %}
-{%  set script_files = ["_static/jquery.js", "_static/underscore.js", "_static/lib/bootstrap.js", "_static/lib/jquery.cookie.js", "_static/navbar.js"] %}
+{%  set script_files = ["_static/underscore.js", "_static/lib/bootstrap.js", "_static/lib/jquery.cookie.js", "_static/navbar.js"] %}
 {%- set github_organization = "mongodb" %}
 
 {% macro version_selector() %}
@@ -73,6 +73,7 @@
 {%- endmacro -%}
 
 {%- macro script() %}
+  <script type="text/javascript" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" src="https://code.jquery.com/jquery-2.2.4.min.js" crossorigin=anonymous></script>
   {%- for scriptfile in script_files %}
     <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
   {%- endfor %}
