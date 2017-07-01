@@ -13,7 +13,7 @@ function showHideTabContent(currentAttrValue) {
 // Marks the selected tab as active, handles special cases for the dropdown
 function showHideSelectedTab(currentAttrValue) {
     // Get the <a>, <li> and <ul> of the selected tab
-    const tabLink = $(`a[href=${currentAttrValue}]`);
+    const tabLink = $(`a[href="${currentAttrValue}"]`);
     const tabListItem = tabLink.parent('li');
     const tabList = tabListItem.parent('ul');
 
@@ -64,7 +64,7 @@ export function setup() {
         initialAttrValue = localStorage.getItem('languagePref');
 
         // Confirm a tab for their languagePref exists at the top of the page
-        if ($(`a[href=${initialAttrValue}]`).length < 1) {
+        if ($(`a[href="${initialAttrValue}"]`).length < 1) {
 
             // If not, get the first tab and set that as the active tab
             if (document.querySelector('.nav.nav-tabs.nav-justified > li:first-child > a')) {
