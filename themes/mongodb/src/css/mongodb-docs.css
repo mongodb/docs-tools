@@ -704,7 +704,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 .content .main-column {
     order: 1;
     min-height: 600px;
-    width: 85%;
+    width: 68%;
     max-width: 800px;
     flex-grow: 2;
     margin: 40px 15px;
