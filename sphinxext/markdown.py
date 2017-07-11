@@ -1,11 +1,15 @@
+import os.path
+import re
 import warnings
 import docutils
 import docutils.utils
 import sphinx.builders.text
-import sphinx.writers.text
 import sphinx.util.images
+import sphinx.writers.text
+from sphinx.util.osutil import SEP
 
 PAT_FILENAME_TEMPLATE = r'^{}(.+?)\.fjson$'
+FILES = set(['2.6-downgrade', '2.6-upgrade-authorization', '2.6-upgrade', '3.0-downgrade', '3.0-scram', '3.0-upgrade', '3.2-downgrade', '3.2-upgrade', '3.4-downgrade-replica-set', '3.4-downgrade-sharded-cluster', '3.4-downgrade-standalone', '3.4-upgrade-replica-set', '3.4-upgrade-sharded-cluster', '3.4-upgrade-standalone', 'adjust-replica-set-member-priority', 'authenticate-nativeldap-activedirectory', 'backup-sharded-cluster-with-database-dumps', 'backup-sharded-cluster-with-filesystem-snapshots', 'backup-with-filesystem-snapshots', 'change-config-server-wiredtiger', 'change-own-password-and-custom-data', 'change-replica-set-wiredtiger', 'change-standalone-wiredtiger', 'clear-jumbo-flag', 'configure-fips', 'configure-ldap-sasl-activedirectory', 'configure-ldap-sasl-openldap', 'configure-secondary-only-replica-set-member', 'control-access-to-mongodb-windows-with-kerberos-authentication', 'control-access-to-mongodb-with-kerberos-authentication', 'convert-replica-set-to-replicated-shard-cluster', 'deploy-geographically-distributed-replica-set', 'deploy-replica-set-with-keyfile-access-control', 'deploy-replica-set', 'deploy-shard-cluster', 'deploy-sharded-cluster-hashed-sharding', 'deploy-sharded-cluster-ranged-sharding', 'deploy-sharded-cluster-with-keyfile-access-control', 'enable-authentication', 'enforce-keyfile-access-control-in-existing-replica-set-without-downtime', 'enforce-keyfile-access-control-in-existing-replica-set', 'enforce-keyfile-access-control-in-existing-sharded-cluster', 'install-mongodb-enterprise-on-amazon', 'install-mongodb-enterprise-on-debian', 'install-mongodb-enterprise-on-linux', 'install-mongodb-enterprise-on-os-x', 'install-mongodb-enterprise-on-red-hat', 'install-mongodb-enterprise-on-suse', 'install-mongodb-enterprise-on-ubuntu', 'install-mongodb-enterprise-on-windows', 'install-mongodb-on-amazon', 'install-mongodb-on-debian', 'install-mongodb-on-linux', 'install-mongodb-on-os-x', 'install-mongodb-on-red-hat', 'install-mongodb-on-suse', 'install-mongodb-on-ubuntu', 'install-mongodb-on-windows', 'kerberos-auth-activedirectory-authz', 'manage-sharded-cluster-balancer', 'manage-users-and-roles', 'migrate-sharded-cluster-to-new-hardware', 'monitor-with-snmp-on-windows', 'monitor-with-snmp', 'perform-findAndModify-linearizable-reads', 'perform-maintence-on-replica-set-members', 'perform-two-phase-commits', 'recover-data-following-unexpected-shutdown', 'replace-config-server', 'restore-replica-set-from-backup', 'restore-sharded-cluster', 'rotate-log-files', 'sharding-high-availability-writes', 'sharding-segmenting-data-by-location', 'sharding-segmenting-shards', 'sharding-tiered-hardware-for-varying-slas', 'text-search-with-rlp', 'transparent-huge-pages', 'verify-mongodb-packages'])
 
 
 def warn(message, node):
@@ -26,6 +30,8 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
         self.nested_table = 0
         self.pending_links = []
         self.pending_image = None
+        self.source_path = None
+        self.headmatter = None
 
         # The wrapping algorithm provided with the TextWriter breaks formatting.
         # Let's play it safe, and not bother wrapping.
@@ -61,6 +67,14 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
             assert 'refid' in node, \
                    'References must have "refuri" or "refid" attribute.'
             href = '#' + node['refid']
+
+        docname = href.strip('/').split('/')[-1]
+        if docname in FILES:
+            href = '../' + docname + '/'
+        elif not href.startswith('#') and not '://' in href:
+            href = os.path.normpath(os.path.join(self.source_path, href))
+            href = re.sub('^.*/source/', '', href)
+            href = 'https://docs.mongodb.com/manual/{}'.format(href)
 
         self.pending_links.append(href)
         self.add_text('[')
@@ -122,6 +136,32 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
         self.add_text(''.join(parts))
         raise docutils.nodes.SkipNode
 
+    def visit_topic(self, node):
+        if 'contents' in node['classes']:
+            raise docutils.nodes.SkipNode
+
+        self.new_state(0)
+
+    def visit_title(self, node):
+        if not self.headmatter:
+            self.headmatter = '''+++
+title = "{}"
+
+tags = [
+"mongodb" ]
++++
+'''.format(node.astext())
+
+        sphinx.writers.text.TextTranslator.visit_title(self, node)
+
+    def visit_document(self, node):
+        self.source_path = node['source']
+        sphinx.writers.text.TextTranslator.visit_document(self, node)
+
+    def depart_document(self, node):
+        sphinx.writers.text.TextTranslator.depart_document(self, node)
+        self.body = self.headmatter + '\n' + self.body
+
     def depart_table(self, node):
         if self.nested_table:
             self.nested_table -= 1
@@ -143,6 +183,11 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
         self.table = None
         self.end_state(wrap=False)
 
+    def visit_target(self, node):
+        if 'refid' in node:
+            self.add_text('<span id="{}"></span>'.format(node['refid'].replace('"', '\"')))
+        sphinx.writers.text.TextTranslator.visit_target(self, node)
+
 
 class MarkdownWriter(sphinx.writers.text.TextWriter):
     supported = ('markdown',)
@@ -160,6 +205,15 @@ class MarkdownBuilder(sphinx.builders.text.TextBuilder):
 
     def prepare_writing(self, docnames):
         self.writer = MarkdownWriter(self)
+
+    def get_target_uri(self, docname, typ=None):
+        if docname == 'index':
+            return ''
+
+        if docname.endswith(SEP + 'index'):
+            return docname[:-5]  # up to sep
+
+        return docname + SEP
 
 
 def setup(app):
