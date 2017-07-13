@@ -31,6 +31,22 @@ $(() => {
     fastNav.register(componentTabs);
     fastNav.register(componentVersionSelector);
 
+    $('.dropdown-toggle').on('click', (e) => {
+        const $element = $(e.target);
+        const $parent = $element.parent();
+
+        if ($element.is('.disabled, :disabled')) { return false; }
+
+        const isActive = $parent.hasClass('open');
+
+        if (!isActive) {
+            $parent.toggleClass('open');
+            $element.focus();
+        }
+
+        return false;
+    });
+
     $('body').on('click', '#header-db, .sidebar, .content', (e) => {
         $('.option-popup').
             addClass('closed').
