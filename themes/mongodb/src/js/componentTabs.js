@@ -4,10 +4,10 @@ function showHideTabContent(currentAttrValue) {
     if (currentAttrValue.charAt(0) === '#') {
         currentAttrValue = currentAttrValue.substring(1);
     }
-    $(`.tabs .${currentAttrValue}`).
-        show().
-        siblings().
+    $('.tab-content').children().
         hide();
+    $(`.tabs .${currentAttrValue}`).show();
+
 }
 
 // Marks the selected tab as active, handles special cases for the dropdown
