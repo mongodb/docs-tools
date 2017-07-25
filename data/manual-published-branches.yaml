@@ -17,7 +17,7 @@ version:
   upcoming: '3.6'
 git:
   branches:
-    manual: 'master'
+    manual: 'v3.4'
     published:
       - 'master'
       - 'v3.4'
