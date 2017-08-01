@@ -1,13 +1,13 @@
 {
   "dependencies": {
-    "clean-css": "^3.4.26",
+    "clean-css": "^3.4.28",
     "csslint": "^0.10.0",
     "eslint": "^3.19.0",
-    "rigning": "^3.0.1"
+    "rigning": "^3.1.8"
   },
   "greniConfig": {
     "entryPoints": {
-      "navbar.js": "js/navbar.js"
+      "controller.js": "js/controller.js"
     },
     "output": "build",
     "buble": {

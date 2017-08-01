@@ -5,7 +5,7 @@
 
 {%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
 {%- set url_root = pathto('', 1) %}
-{%  set script_files = ["_static/underscore.js", "_static/lib/bootstrap.js", "_static/lib/jquery.cookie.js", "_static/navbar.js"] %}
+{%  set script_files = ["_static/underscore.js", "_static/lib/bootstrap.js", "_static/lib/jquery.cookie.js", "_static/controller.js"] %}
 {%- set github_organization = "mongodb" %}
 
 {% macro version_selector() %}
@@ -212,7 +212,7 @@
   {%- block sitesearch %}{%- endblock -%}
 
   {% block navbar %}
-    <script src="{{ pathto('_static/new-navbar.min.js', 1) }}"></script>
+    <script src="{{ pathto('_static/navbar.min.js', 1) }}"></script>
   {% endblock %}
 
 

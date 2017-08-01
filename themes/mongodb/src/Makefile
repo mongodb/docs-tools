@@ -1,4 +1,4 @@
-TARGETS=../static/mongodb-docs.css ../static/navbar.js
+TARGETS=../static/mongodb-docs.css ../static/controller.js
 CSS_INPUTS=css/bootstrap-custom.css \
 		   css/icomoon.css \
            css/font-awesome.css \
@@ -17,10 +17,10 @@ CSS_WARNINGS=regex-selectors,unqualified-attributes,text-indent
 
 all: $(TARGETS)
 
-../static/navbar.js: js/*.js node_modules/.CURRENT
+../static/controller.js: js/*.js node_modules/.CURRENT
 	greni
-	cp build/navbar.js $@
-	cp build/navbar.js.map $@.map
+	cp build/controller.js $@
+	cp build/controller.js.map $@.map
 
 ../static/mongodb-docs.css: $(CSS_FILES) node_modules/.CURRENT
 	$(MAKE) lint-css
@@ -37,5 +37,5 @@ node_modules:
 	npm install
 
 clean:
-	rm -f $(TARGETS) ../static/navbar.js.map
+	rm -f $(TARGETS) ../static/controller.js.map
 	-rm -r build/*
