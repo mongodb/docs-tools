@@ -31,23 +31,6 @@ $(() => {
     fastNav.register(componentTabs);
     fastNav.register(componentVersionSelector);
 
-    $('body').on('click', '#header-db, .sidebar, .content', (e) => {
-        $('.option-popup').
-            addClass('closed').
-            find('.fa-angle-down, .fa-angle-up').
-            removeClass('fa-angle-down').
-            addClass('fa-angle-up');
-    });
-
-    /* Open options panel when clicking the version */
-    $('.sphinxsidebarwrapper h3 a.version').on('click', (e) => {
-        e.preventDefault();
-
-        // stop propagation to prevent reclosing of the option panel
-        e.stopPropagation();
-        $('.option-popup').removeClass('closed');
-    });
-
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {
         $('.right-column .toc').hide();
