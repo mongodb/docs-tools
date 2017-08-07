@@ -64,7 +64,11 @@
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _navbarDropdown = __webpack_require__(187);
+	var _Marian = __webpack_require__(187);
+	
+	var _Marian2 = _interopRequireDefault(_Marian);
+	
+	var _navbarDropdown = __webpack_require__(188);
 	
 	var _navbarDropdown2 = _interopRequireDefault(_navbarDropdown);
 	
@@ -84,13 +88,81 @@
 	
 	    var _this = _possibleConstructorReturn(this, (Navbar.__proto__ || Object.getPrototypeOf(Navbar)).call(this, props));
 	
+	    _this.onInput = function (event) {
+	      if (!_this.state.enableMarian) {
+	        return;
+	      }
+	
+	      _this.setState({
+	        searchText: event.target.value
+	      });
+	
+	      window.clearTimeout(_this.state.timeout);
+	      _this.setState({ timeout: _this.state.timeout = window.setTimeout(function () {
+	          _this.search();
+	        }, 250) });
+	    };
+	
+	    _this.search = function () {
+	      if (!_this.state.enableMarian) {
+	        return;
+	      }
+	
+	      window.clearTimeout(_this.state.timeout);
+	      _this.state.marian.search(_this.state.searchText);
+	    };
+	
 	    _this.state = JSON.parse(props.navprops);
+	    _this.state.enableMarian = Boolean(document.body.getAttribute('data-enable-marian'));
+	
+	    if (_this.state.enableMarian) {
+	      var label = document.body.getAttribute('data-project-title');
+	      var searchProperties = document.body.getAttribute('data-search-properties');
+	      if (!searchProperties) {
+	        var projectName = document.body.getAttribute('data-project');
+	        var projectBranch = document.body.getAttribute('data-branch');
+	        searchProperties = projectName + '-' + projectBranch;
+	
+	        if (label) {
+	          if (projectBranch && projectBranch !== 'master') {
+	            label += ' ' + projectBranch;
+	          }
+	        }
+	      }
+	
+	      if (!label) {
+	        label = searchProperties;
+	      }
+	
+	      _this.state.marian = new _Marian2.default('https://marian.mongodb.com', searchProperties, label);
+	      _this.state.timeout = -1;
+	      _this.state.searchText = '';
+	
+	      _this.state.marian.onchangequery = function (newQuery) {
+	        _this.setState({
+	          searchText: newQuery
+	        });
+	
+	        _this.search();
+	      };
+	
+	      window.history.onnavigate = function () {
+	        _this.setState({
+	          searchText: ''
+	        });
+	        _this.search();
+	      };
+	    }
 	    return _this;
 	  }
 	
 	  _createClass(Navbar, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
+	      if (this.state.enableMarian) {
+	        return;
+	      }
+	
 	      var cx = window.googleSearchCx;
 	      var gcse = document.createElement('script');
 	      gcse.type = 'text/javascript';
@@ -118,6 +190,18 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
+	      var searchBar = void 0;
+	      if (this.state.enableMarian) {
+	        searchBar = _react2.default.createElement('input', { type: 'search',
+	          className: 'navbar-search',
+	          onInput: this.onInput,
+	          value: this.state.searchText,
+	          placeholder: 'Search Documentation',
+	          'aria-label': 'Search Documentation' });
+	      } else {
+	        searchBar = _react2.default.createElement('div', { id: 'gsearch', className: 'gcse-searchbox-only', 'data-resultsUrl': window.googleSearchResultsUrl, 'data-queryParameterName': 'query' });
+	      }
+	
 	      var linkElements = this.state.links.map(function (link, i) {
 	        var linkClass = (0, _classnames2.default)({
 	          'navbar-links__item': true,
@@ -167,7 +251,7 @@
 	              _react2.default.createElement('path', { d: 'm8.8 6.8-1.2-1.2-2.1 2v-7.6h-1.7v7.6l-2.1-2-1.2 1.2 4.2 4.2z', fill: '#69b241' })
 	            )
 	          ),
-	          _react2.default.createElement('div', { id: 'gsearch', className: 'gcse-searchbox-only', 'data-resultsUrl': window.googleSearchResultsUrl, 'data-queryParameterName': 'query' })
+	          searchBar
 	        )
 	      );
 	    }
@@ -22326,6 +22410,313 @@
 
 /***/ }),
 /* 187 */
+/***/ (function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var TabStrip = function () {
+	    function TabStrip(initialSelection, tabs, onclick) {
+	        _classCallCheck(this, TabStrip);
+	
+	        this.tabs = tabs;
+	        this.element = document.createElement('ul');
+	        this.element.className = 'tab-strip';
+	        this.element.role = 'tablist';
+	
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+	
+	        try {
+	            for (var _iterator = tabs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                var tab = _step.value;
+	
+	                var tabElement = document.createElement('li');
+	                tabElement.role = 'tab';
+	                tabElement.className = 'tab-strip__element';
+	                tabElement.innerText = tab.label;
+	                tabElement.onclick = onclick.bind(null, tab);
+	
+	                this.element.appendChild(tabElement);
+	                tab.element = tabElement;
+	            }
+	        } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion && _iterator.return) {
+	                    _iterator.return();
+	                }
+	            } finally {
+	                if (_didIteratorError) {
+	                    throw _iteratorError;
+	                }
+	            }
+	        }
+	
+	        this.update(initialSelection);
+	    }
+	
+	    _createClass(TabStrip, [{
+	        key: 'update',
+	        value: function update(selectedId) {
+	            var _iteratorNormalCompletion2 = true;
+	            var _didIteratorError2 = false;
+	            var _iteratorError2 = undefined;
+	
+	            try {
+	                for (var _iterator2 = this.tabs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                    var tab = _step2.value;
+	
+	                    if (tab.id === selectedId) {
+	                        tab.element.setAttribute('aria-selected', true);
+	                    } else {
+	                        tab.element.setAttribute('aria-selected', false);
+	                    }
+	                }
+	            } catch (err) {
+	                _didIteratorError2 = true;
+	                _iteratorError2 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	                        _iterator2.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError2) {
+	                        throw _iteratorError2;
+	                    }
+	                }
+	            }
+	        }
+	    }]);
+	
+	    return TabStrip;
+	}();
+	
+	var Marian = function () {
+	    function Marian(url, defaultProperties, defaultPropertiesLabel) {
+	        var _this = this;
+	
+	        _classCallCheck(this, Marian);
+	
+	        this.url = url.replace(/\/+$/, '');
+	        this.defaultProperties = defaultProperties;
+	        this.onchangequery = function () {};
+	
+	        this.container = document.createElement('div');
+	        this.container.className = 'marian';
+	
+	        this.query = '';
+	        this.searchProperty = 'current';
+	
+	        // We have three options to search: the current site, the current MongoDB manual,
+	        // and all properties.
+	        var tabStripElements = [{ id: 'current', label: '' + defaultPropertiesLabel }];
+	        if (!defaultPropertiesLabel.match(/^MongoDB Manual/)) {
+	            tabStripElements.push({ id: 'manual', label: 'MongoDB Manual' });
+	        }
+	
+	        // Holding off on this until we deploy to more properties
+	        // tabStripElements.push({id: 'all', label: 'All Results'})
+	
+	        var tabStrip = new TabStrip('current', tabStripElements, function (tab) {
+	            tabStrip.update(tab.id);
+	            _this.searchProperty = tab.id;
+	            _this.search(_this.query);
+	        });
+	
+	        var titleElement = document.createElement('h3');
+	        titleElement.innerText = 'Search Results';
+	
+	        this.listElement = document.createElement('ul');
+	        this.listElement.className = 'marian-results';
+	        this.container.appendChild(titleElement);
+	        this.container.appendChild(tabStrip.element);
+	        this.container.appendChild(this.listElement);
+	
+	        document.addEventListener('DOMContentLoaded', function () {
+	            var rootElement = [document.querySelector('.main-column'), document.querySelector('.main'), document.body].filter(function (el) {
+	                return Boolean(el);
+	            })[0];
+	
+	            rootElement.appendChild(_this.container);
+	        });
+	
+	        // When we show our search results, the page body should go away
+	        this._bodyElement = null;
+	    }
+	
+	    _createClass(Marian, [{
+	        key: 'show',
+	        value: function show() {
+	            this.container.className = 'marian marian--shown';
+	            this.bodyElement.style.display = 'none';
+	        }
+	    }, {
+	        key: 'hide',
+	        value: function hide() {
+	            this.container.className = 'marian';
+	            this.bodyElement.style.removeProperty('display');
+	        }
+	    }, {
+	        key: 'search',
+	        value: function search(query) {
+	            var _this2 = this;
+	
+	            this.query = query;
+	            if (!query) {
+	                this.listElement.innerText = '';
+	                this.hide();
+	                return;
+	            }
+	
+	            this.show();
+	            var request = new XMLHttpRequest();
+	            var requestUrl = this.url + '/search?q=' + encodeURIComponent(query);
+	
+	            if (this.defaultProperties.length && this.searchProperty === 'current') {
+	                requestUrl += '&searchProperty=' + encodeURIComponent(this.defaultProperties);
+	            } else if (this.searchProperty === 'manual') {
+	                requestUrl += '&searchProperty=manual-current';
+	            }
+	
+	            request.open('GET', requestUrl);
+	            request.onreadystatechange = function (ev) {
+	                if (request.readyState !== 4) {
+	                    return;
+	                }
+	
+	                if (!request.responseText) {
+	                    console.error('Error receiving search results');
+	                    return;
+	                }
+	
+	                _this2.listElement.innerText = '';
+	                var data = JSON.parse(request.responseText);
+	
+	                var spellingErrors = Object.keys(data.spellingCorrections);
+	                if (spellingErrors.length > 0) {
+	                    var corrected = query;
+	                    var _iteratorNormalCompletion3 = true;
+	                    var _didIteratorError3 = false;
+	                    var _iteratorError3 = undefined;
+	
+	                    try {
+	                        for (var _iterator3 = spellingErrors[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                            var orig = _step3.value;
+	
+	                            corrected = corrected.replace(orig, data.spellingCorrections[orig]);
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError3 = true;
+	                        _iteratorError3 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	                                _iterator3.return();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError3) {
+	                                throw _iteratorError3;
+	                            }
+	                        }
+	                    }
+	
+	                    var li = document.createElement('li');
+	                    var correctLink = document.createElement('a');
+	                    correctLink.onclick = function () {
+	                        _this2.onchangequery(corrected);
+	                    };
+	                    li.className = 'marian-result';
+	                    correctLink.className = 'marian-spelling-correction';
+	                    correctLink.innerText = 'Did you mean: ' + corrected;
+	                    li.appendChild(correctLink);
+	                    _this2.listElement.appendChild(li);
+	                }
+	
+	                var _iteratorNormalCompletion4 = true;
+	                var _didIteratorError4 = false;
+	                var _iteratorError4 = undefined;
+	
+	                try {
+	                    for (var _iterator4 = data.results[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	                        var result = _step4.value;
+	
+	                        var _li = document.createElement('li');
+	                        _li.className = 'marian-result';
+	
+	                        var titleLink = document.createElement('a');
+	                        titleLink.innerText = result.title;
+	                        titleLink.className = 'marian-title';
+	                        titleLink.href = result.url;
+	
+	                        var previewElement = document.createElement('div');
+	                        previewElement.innerText = result.preview;
+	                        previewElement.className = 'marian-preview';
+	
+	                        _li.appendChild(titleLink);
+	                        _li.appendChild(previewElement);
+	                        _this2.listElement.appendChild(_li);
+	                    }
+	                } catch (err) {
+	                    _didIteratorError4 = true;
+	                    _iteratorError4 = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion4 && _iterator4.return) {
+	                            _iterator4.return();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError4) {
+	                            throw _iteratorError4;
+	                        }
+	                    }
+	                }
+	            };
+	
+	            request.send();
+	        }
+	    }, {
+	        key: 'bodyElement',
+	        get: function get() {
+	            if (!this._bodyElement) {
+	                var _arr = ['.main__content', '.document'];
+	
+	                for (var _i = 0; _i < _arr.length; _i++) {
+	                    var candidate = _arr[_i];
+	                    this._bodyElement = document.querySelector(candidate);
+	                    if (this._bodyElement) {
+	                        break;
+	                    }
+	                }
+	
+	                // If we can't find a page body, just use a dummy element
+	                if (!this._bodyElement) {
+	                    this._bodyElement = document.createElement('div');
+	                }
+	            }
+	
+	            return this._bodyElement;
+	        }
+	    }]);
+	
+	    return Marian;
+	}();
+	
+	exports.default = Marian;
+
+/***/ }),
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22344,11 +22735,11 @@
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _menu = __webpack_require__(188);
+	var _menu = __webpack_require__(189);
 	
 	var _menu2 = _interopRequireDefault(_menu);
 	
-	var _submenu = __webpack_require__(189);
+	var _submenu = __webpack_require__(190);
 	
 	var _submenu2 = _interopRequireDefault(_submenu);
 	
@@ -22660,7 +23051,7 @@
 	exports.default = NavbarDropdown;
 
 /***/ }),
-/* 188 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22686,7 +23077,7 @@
 	exports.default = Menu;
 
 /***/ }),
-/* 189 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
