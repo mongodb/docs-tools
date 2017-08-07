@@ -1,5 +1,17 @@
 {%- extends "page-layout.html" -%}
 
+{%- block htmltitle %}
+  {%- if not embedded and docstitle %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif -%}
+
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
+
+{%- block editlink_icon %}{% endblock %}
+
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
     <link rel="canonical" href="http://docs.atlas.mongodb.com/" />
