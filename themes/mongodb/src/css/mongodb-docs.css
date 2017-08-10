@@ -717,6 +717,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     -webkit-justify-content: center;
             justify-content: center;
     display: inline-block;
+    overflow-x: scroll;
 
 }
 
