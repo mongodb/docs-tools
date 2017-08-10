@@ -24,6 +24,14 @@ class BuildTask:
     def build(self) -> None:
         print('Building ' + self.build_dir)
         subprocess.check_call(['git', 'clean', '-xfd'], cwd=self.build_dir)
+
+        # Some of our properties die if these directories do not exist
+        for path in ('build', 'build/master', 'build/public', 'build/public/master'):
+            try:
+                os.mkdir(os.path.join(self.build_dir, path))
+            except OSError:
+                pass
+
         subprocess.check_call(self.build_command, shell=True, cwd=self.build_dir)
 
 
@@ -38,7 +46,7 @@ def pull(path: str, branch: str) -> None:
     subprocess.check_call(['git', 'checkout', '-q', branch], cwd=path)
 
 
-def build(project, pattern) -> List[BuildTask]:
+def build(project, patterns) -> List[BuildTask]:
     project_name = PAT_URL.match(project['git']).group(1)
 
     try:
@@ -49,7 +57,13 @@ def build(project, pattern) -> List[BuildTask]:
     build_tasks = []
     for branch in project['branches']:
         full_branch_name = '-'.join((project_name, branch))
-        if not pattern.match(full_branch_name):
+        matched = False
+        for pattern in patterns:
+            if pattern.match(full_branch_name):
+                matched = True
+                break
+
+        if not matched:
             continue
 
         output_dir = os.path.join('build', full_branch_name)
@@ -74,11 +88,11 @@ def build(project, pattern) -> List[BuildTask]:
     return build_tasks
 
 
-def main(path: str, pattern_text: str):
+def main(path: str, patterns_text: List[str]):
     with open(path, 'r') as f:
         data = json.load(f)
 
-    pattern = re.compile(fnmatch.translate(pattern_text))
+    patterns = [re.compile(fnmatch.translate(text)) for text in patterns_text]
 
     # Pull docs-tools
     if not os.path.isdir('build/docs-tools'):
@@ -88,7 +102,7 @@ def main(path: str, pattern_text: str):
 
     tasks = []
     for project in data:
-        tasks.extend(build(project, pattern))
+        tasks.extend(build(project, patterns))
 
     for task in tasks:
         try:
@@ -98,8 +112,8 @@ def main(path: str, pattern_text: str):
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        pattern = sys.argv[1]
+        patterns = sys.argv[1:]
     else:
-        pattern = '*'
+        patterns = ['*']
 
-    main('projects.json', pattern)
+    main('projects.json', patterns)
