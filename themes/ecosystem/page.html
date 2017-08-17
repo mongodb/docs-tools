@@ -6,6 +6,15 @@
 
 {%- block format_selector %} {%- endblock -%}
 
+{%- block htmltitle %}
+  {%- if not embedded and docstitle %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif -%}
+
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
 
 {%- block righttoc %} {% endblock %}
 
