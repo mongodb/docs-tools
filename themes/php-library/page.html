@@ -1,5 +1,15 @@
 {%- extends "layout.html" -%}
 
+{%- block htmltitle %}
+  {%- if not embedded and docstitle %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif -%}
+
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
+
 {%- block translationslink -%} {%- endblock -%}
 
 {%- block version_selector %} {% endblock %}
