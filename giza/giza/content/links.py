@@ -48,20 +48,3 @@ def get_top_level_links(links, conf):
         ret.extend(process_target_list(links))
 
     return ret
-
-
-def get_public_links(conf):
-    iconf = conf.system.files.data.integration
-
-    try:
-        return get_top_level_links(iconf['base']['links'], conf)
-    except KeyError:
-        return []
-
-
-def create_manual_symlink(conf):
-    public_links = get_public_links(conf)
-
-    for name, target in public_links:
-        logger.info('creating link to "{0}", named "{1}"'.format(target, name))
-        create_link(target, name)

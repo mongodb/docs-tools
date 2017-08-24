@@ -17,7 +17,6 @@ import os.path
 
 from giza.libgiza.task import Task
 
-from giza.content.links import create_manual_symlink, get_public_links
 from giza.content.post.json_output import json_output_tasks
 from giza.content.post.singlehtml import finalize_single_html_tasks
 from giza.content.post.archives import man_tarball, html_tarball, get_tarball_name
@@ -59,18 +58,6 @@ def finalize_sphinx_build(sconf, conf):
                      args=(sconf, conf),
                      target=os.path.join(conf.paths.projectroot, conf.paths.public_site_output),
                      dependency=None)
-            tasks.append(t)
-
-        if conf.system.branched is True and conf.git.branches.current == 'master':
-            deps = conf.system.files.get_configs('integration')
-            deps.append(os.path.join(conf.paths.projectroot,
-                                     conf.paths.public_site_output))
-
-            t = Task(job=create_manual_symlink,
-                     args=[conf],
-                     target=[link[0] for link in get_public_links(conf)],
-                     dependency=deps,
-                     description='create symlinks')
             tasks.append(t)
     elif target == 'epub':
         t = Task(job=finalize_epub_build,
