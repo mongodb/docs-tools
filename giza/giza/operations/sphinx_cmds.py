@@ -103,7 +103,7 @@ def sphinx_publication(conf, app):
     # call this from/as the giza.operations.generate.source() entry point.
     sphinx_content_preperation(app, conf)
 
-    app.randomize = True
+    app.randomize = False
     app.run()
     app.reset()
 
