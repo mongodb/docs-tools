@@ -44,7 +44,7 @@ def generate_hash_file(fn, conf):
 
     try:
         if r.data == existing[:-1]:
-            logger.info('no new commit(s), not updating {0} ({1})'.format(fn, commit[:10]))
+            logger.debug('no new commit(s), not updating {0} ({1})'.format(fn, commit[:10]))
             return True
     except TypeError:
         logger.warning('problem generating {0}, continuing'.format(fn))
@@ -55,7 +55,7 @@ def generate_hash_file(fn, conf):
                 os.utime(fn, None)
     else:
         r.write(fn)
-        logger.info('regenerated {0} with new commit hash: {1}'.format(fn, commit[:10]))
+        logger.debug('regenerated {0} with new commit hash: {1}'.format(fn, commit[:10]))
 
 
 def generate_release_file(release_fn, conf):
@@ -66,7 +66,7 @@ def generate_release_file(release_fn, conf):
     with open(release_fn, 'w') as f:
         f.write(conf.git.commit)
 
-    logger.info('generated "{0}" with current release hash.'.format(release_fn))
+    logger.debug('generated "{0}" with current release hash.'.format(release_fn))
 
 # Worker
 

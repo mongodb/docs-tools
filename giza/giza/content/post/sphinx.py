@@ -48,6 +48,12 @@ def finalize_sphinx_build(sconf, conf):
                  description="creating tarball for html archive")
         tasks.append(t)
     elif target == 'dirhtml' and not conf.runstate.fast:
+        # We're experiencing some cases were giza seemingly randomly doesn't migrate.
+        # Log this to help us figure out what's going on.
+        logger.info('Going to migrate {} to {}'.format(
+            sconf.fq_build_output,
+            os.path.join(conf.paths.projectroot, conf.paths.public_site_output)))
+
         for job in (finalize_dirhtml_build, error_pages):
             t = Task(job=job,
                      args=(sconf, conf),
@@ -104,5 +110,5 @@ def finalize_sphinx_build(sconf, conf):
                  dependency=None)
         tasks.append(t)
 
-    logger.info('adding {0} finalizing tasks for {1} build'.format(len(tasks), target))
+    logger.debug('adding {0} finalizing tasks for {1} build'.format(len(tasks), target))
     return tasks

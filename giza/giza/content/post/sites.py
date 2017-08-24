@@ -68,17 +68,7 @@ def error_pages(sconf, conf):
 
 
 def finalize_dirhtml_build(sconf, conf):
-    builder = sconf.builder
-
-    single_html_dir = get_single_html_dir(conf)
-    search_page = os.path.join(conf.paths.branch_output, builder, 'index.html')
-
-    if os.path.exists(search_page):
-        copy_if_needed(source_file=search_page,
-                       target_file=os.path.join(single_html_dir, 'search.html'))
-
     dest = os.path.join(conf.paths.projectroot, conf.paths.public_site_output)
-
     cmd_str = 'rsync -a {source}/ {destination}'.format(source=sconf.fq_build_output,
                                                         destination=dest)
 

@@ -35,7 +35,7 @@ def register_glossary(conf):
 def write_glossary(terms, fn):
     content = render_glossary(terms)
     content.write(fn)
-    logger.info('wrote glossary file: ' + fn)
+    logger.debug('wrote glossary file: ' + fn)
 
 
 def glossary_tasks(conf):
@@ -46,11 +46,11 @@ def glossary_tasks(conf):
     for fn, glossary_file in terms.file_iter():
         tasks.append(Task(job=write_glossary,
                           args=(glossary_file, glossary_file.target(fn)),
-                          description="generate glossary for: " + fn,
+                          description='generate glossary for: ' + fn,
                           target=glossary_file.target(fn),
                           dependency=fn))
 
-    logger.info("add {0} glossary tasks".format(len(tasks)))
+    logger.debug('add {0} glossary tasks'.format(len(tasks)))
     return tasks
 
 

@@ -34,7 +34,7 @@ def register_extracts(conf):
 def write_extract_file(extract, fn):
     content = render_extracts(extract)
     content.write(fn)
-    logger.info('wrote extract file: ' + fn)
+    logger.debug('wrote extract file: ' + fn)
 
 
 def extract_tasks(conf):
@@ -66,6 +66,6 @@ def extract_tasks(conf):
                          description=msg)
                 tasks.append(t)
 
-    logger.info("added tasks for {0} extract generation tasks".format(len(tasks)))
+    logger.debug('added tasks for {0} extract generation tasks'.format(len(tasks)))
 
     return tasks

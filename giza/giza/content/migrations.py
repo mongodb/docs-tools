@@ -74,7 +74,7 @@ def migration_tasks(conf):
 
         tasks.append(copy_job)
 
-    logger.info('created {0} file migration tasks'.format(len(tasks)))
+    logger.debug('created {0} file migration tasks'.format(len(tasks)))
 
     return tasks
 

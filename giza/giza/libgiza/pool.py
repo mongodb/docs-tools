@@ -230,14 +230,14 @@ class ThreadPool(WorkerPool):
     def __init__(self, pool_size=None):
         self.pool_size = pool_size
         self.p = multiprocessing.dummy.Pool(self.pool_size)
-        logger.info('new thread pool object')
+        logger.debug('new thread pool object')
 
 
 class ProcessPool(WorkerPool):
     def __init__(self, pool_size=None):
         self.pool_size = pool_size
         self.p = multiprocessing.Pool(self.pool_size)
-        logger.info('new process pool object')
+        logger.debug('new process pool object')
 
 
 class EventPool(WorkerPool):
@@ -251,7 +251,7 @@ class EventPool(WorkerPool):
             try:
                 import gevent.pool
                 self.p = gevent.pool.Pool(self.pool_size)
-                logger.info('new event pool object')
+                logger.debug('new event pool object')
             except ImportError:
                 logger.error('gevent is not supported on this system, using threads')
                 self.p = multiprocessing.dummy.Pool(self.pool_size)

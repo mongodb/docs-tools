@@ -35,7 +35,7 @@ def register_apiargs(conf):
 def write_apiargs(apiargs, fn):
     content = render_apiargs(apiargs)
     content.write(fn)
-    logger.info('wrote apiarg table to: ' + fn)
+    logger.debug('wrote apiarg table to: ' + fn)
 
 
 def apiarg_tasks(conf):
@@ -54,6 +54,6 @@ def apiarg_tasks(conf):
                  description="write apiarg table for: " + dep_fn)
         tasks.append(t)
 
-    logger.info('added tasks for {0} apiarg table generation tasks'.format(len(tasks)))
+    logger.debug('added tasks for {0} apiarg table generation tasks'.format(len(tasks)))
 
     return tasks

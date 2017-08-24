@@ -36,19 +36,19 @@ def register_toc(conf):
 def write_toc_tree_output(fn, toc_items, is_ref):
     content = render_toctree(toc_items, is_ref)
     content.write(fn)
-    logger.info("wrote toctree to: " + fn)
+    logger.debug('wrote toctree to: ' + fn)
 
 
 def write_dfn_list_output(fn, toc_items):
     content = render_dfn_list(toc_items)
     content.write(fn)
-    logger.info("wrote toc dfnlist to: " + fn)
+    logger.debug('wrote toc dfnlist to: ' + fn)
 
 
 def write_toc_table(fn, toc_items):
     content = render_toc_table(toc_items)
     content.write(fn)
-    logger.info("wrote toc table to: " + fn)
+    logger.debug('wrote toc table to: ' + fn)
 
 
 def toc_tasks(conf):
@@ -79,7 +79,7 @@ def toc_tasks(conf):
                      args=(out_fn, toc_items, is_ref),
                      target=out_fn,
                      dependency=dep_fn,
-                     description="writing toctree to '{0}'".format(out_fn))
+                     description='writing toctree to "{0}"'.format(out_fn))
             tasks.append(t)
         else:
             deps.extend(toc_data.spec_deps())
@@ -91,7 +91,7 @@ def toc_tasks(conf):
                         args=(out_fn, toc_items),
                         target=out_fn,
                         dependency=deps,
-                        description="write ref toc table to '{0}'".format(out_fn))
+                        description='write ref toc table to "{0}"'.format(out_fn))
             tasks.append(reft)
         elif 'ref-spec' in dep_fn:
             out_fn = os.path.join(conf.system.content.toc.output_dir, 'table-spec-' + fn_basename)
@@ -100,7 +100,7 @@ def toc_tasks(conf):
                            args=(out_fn, toc_items),
                            target=out_fn,
                            dependency=deps,
-                           description="write ref spec table to '{0}'".format(out_fn))
+                           description='write ref spec table to "{0}"'.format(out_fn))
             tasks.append(refspec)
         else:
             out_fn = os.path.join(conf.system.content.toc.output_dir, 'dfn-list-' + fn_basename)
@@ -108,9 +108,9 @@ def toc_tasks(conf):
                       args=(out_fn, toc_items),
                       target=out_fn,
                       dependency=deps,
-                      description="write definition list toc to '{0}'".format(out_fn))
+                      description='write definition list toc to "{0}"'.format(out_fn))
             tasks.append(dt)
 
-    logger.info('added tasks for {0} toc generation tasks'.format(len(tasks)))
+    logger.debug('added tasks for {0} toc generation tasks'.format(len(tasks)))
 
     return tasks

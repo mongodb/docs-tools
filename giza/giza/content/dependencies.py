@@ -59,7 +59,7 @@ def dump_file_hashes(conf):
     with open(output, 'w') as f:
         json.dump(o, f)
 
-    logger.info('wrote dependency cache to: {0}'.format(output))
+    logger.debug('wrote dependency cache to: {0}'.format(output))
 
 # Update Dependencies
 
@@ -96,7 +96,7 @@ def _refresh_deps(graph, dep_map, conf):
                     os.utime(dep, None)
                     count += 1
 
-    logger.info('bumped timestamps for {0} files'.format(count))
+    logger.debug('bumped timestamps for {0} files'.format(count))
 
 
 def refresh_deps(conf):

@@ -34,7 +34,7 @@ def register_releases(conf):
 def write_release_file(release, fn, conf):
     content = render_releases(release, conf)
     content.write(fn)
-    logger.info('wrote release content: ' + fn)
+    logger.debug('wrote release content: ' + fn)
 
 
 def release_tasks(conf):
@@ -50,7 +50,7 @@ def release_tasks(conf):
                  dependency=dep_fn)
         tasks.append(t)
 
-    logger.info("added tasks for {0} release generation tasks".format(len(tasks)))
+    logger.debug('added tasks for {0} release generation tasks'.format(len(tasks)))
     return tasks
 
 

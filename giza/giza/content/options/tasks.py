@@ -35,7 +35,7 @@ def register_options(conf):
 def write_options(option, fn, conf):
     content = render_options(option, conf)
     content.write(fn)
-    logger.info('wrote options file: ' + fn)
+    logger.debug('wrote options file: ' + fn)
 
 
 def option_tasks(conf):
@@ -62,7 +62,7 @@ def option_tasks(conf):
                  dependency=[dep_fn])
         tasks.append(t)
 
-    logger.info("added tasks for {0} option generation tasks".format(len(tasks)))
+    logger.debug('added tasks for {0} option generation tasks'.format(len(tasks)))
     return tasks
 
 

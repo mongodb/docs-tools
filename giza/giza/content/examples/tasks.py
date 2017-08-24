@@ -60,7 +60,7 @@ def example_tasks(conf):
                  dependency=fn)
         tasks.append(t)
 
-    logger.info("added tasks for {0} example generation tasks".format(len(tasks)))
+    logger.debug('added tasks for {0} example generation tasks'.format(len(tasks)))
     return tasks
 
 

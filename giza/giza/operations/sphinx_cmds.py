@@ -121,11 +121,9 @@ def sphinx_builder_tasks(app, conf):
         app.extend_queue(sphinx_job)
         logger.info("adding builder job for {0} ({1}, {2})".format(builder, language, edition))
 
-    logger.info("sphinx build configured, running the build now.")
-
+    logger.debug("sphinx build configured, running the build now.")
     app.run()
-    logger.info("sphinx build complete.")
-
+    logger.debug("sphinx build complete.")
     logger.info('builds finalized. sphinx output and errors to follow')
 
     # process the sphinx build. These oeprations allow us to de-duplicate
@@ -209,4 +207,4 @@ def sphinx_content_preperation(app, conf):
         app.extend_queue(latex_image_transfer_tasks(build_config, sconf))
 
         msg = 'added source tasks for ({0}, {1}, {2}) in {3}'
-        logger.info(msg.format(builder, language, edition, build_config.paths.branch_source))
+        logger.debug(msg.format(builder, language, edition, build_config.paths.branch_source))

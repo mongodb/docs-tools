@@ -35,7 +35,7 @@ def register_steps(conf):
 def write_steps(steps, fn, conf):
     content = render_steps(steps, conf)
     content.write(fn)
-    logger.info('wrote steps to: ' + fn)
+    logger.debug('wrote steps to: ' + fn)
 
 
 def step_tasks(conf):
@@ -51,7 +51,7 @@ def step_tasks(conf):
                  dependency=fn)
         tasks.append(t)
 
-    logger.info("added tasks for {0} step generation tasks".format(len(tasks)))
+    logger.debug('added tasks for {0} step generation tasks'.format(len(tasks)))
     return tasks
 
 

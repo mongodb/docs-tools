@@ -86,7 +86,7 @@ def get_sphinx_args(sconf, conf):
     if is_parallel_sphinx(pkg_resources.get_distribution("sphinx").version):
         if 'serial_sphinx' in conf.runstate:
             m = 'running with serial sphinx processes ({0}.{1}.{2}.{3})'
-            logger.info(m.format(sconf.builder, conf.project.name,
+            logger.debug(m.format(sconf.builder, conf.project.name,
                                  conf.project.edition, conf.git.branches.current))
             if conf.runstate.serial_sphinx == "publish":
                 if ((len(conf.runstate.builder) >= 1 or 'publish' in conf.runstate.builder) or
@@ -96,19 +96,19 @@ def get_sphinx_args(sconf, conf):
                 else:
                     o.append(' '.join(['-j', n_workers]))
             elif conf.runstate.serial_sphinx is False:
-                logger.info('running with parallelized sphinx processes')
+                logger.debug('running with parallelized sphinx processes')
                 o.append(' '.join(['-j', n_workers]))
             elif (isinstance(conf.runstate.serial_sphinx, numbers.Number) and
                   conf.runstate.serial_sphinx > 1):
-                logger.info('running with parallelized sphinx processes')
+                logger.debug('running with parallelized sphinx processes')
                 o.append(' '.join(['-j', n_workers]))
             else:
                 pass
         elif len(conf.runstate.builder) >= conf.runstate.pool_size:
-            logger.info('running with serial sphinx processes')
+            logger.debug('running with serial sphinx processes')
             pass
         else:
-            logger.info('running with parallelized sphinx processes')
+            logger.debug('running with parallelized sphinx processes')
             o.append(' '.join(['-j', n_workers]))
 
     o.append(' '.join(['-c', conf.paths.projectroot]))
@@ -233,7 +233,7 @@ def is_msg_worthy(l):
 def run_sphinx(builder, sconf, conf):
     if safe_create_directory(sconf.fq_build_output):
         m = 'created directory "{1}" for sphinx builder {0}'
-        logger.info(m.format(builder, sconf.fq_build_output))
+        logger.debug(m.format(builder, sconf.fq_build_output))
 
     if 'language' in sconf and sconf.language is not None:
         cmd_str = 'sphinx-intl build --language=' + sconf.language
