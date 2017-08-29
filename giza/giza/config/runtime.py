@@ -303,23 +303,22 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
             with open(fn, 'r') as f:
                 self._branch_conf = yaml.load(f)
         else:
-            logger.warning('this project does uses legacy published branch configuration.')
-
             fn = os.path.join(self.conf.paths.builddata, 'published_branches.yaml')
             fq_fn = os.path.join(self.conf.paths.projectroot, fn)
 
-            if self.conf.git.branches.current == 'master' and not os.path.isfile(fq_fn):
-                self._branch_conf = {}
-            else:
-                try:
-                    data = self.conf.git.repo.branch_file(path=fn, branch='master')
-                except GitError:
-                    logger.critical('giza does not support "detached head" state, '
-                                    'and local repositories without a master branch.')
-                    self._branch_conf = {}
-                    return
+            self._branch_conf = {}
+            if os.path.isfile(fq_fn):
+                logger.warning('this project uses legacy published branch configuration.')
 
-                self._branch_conf = yaml.load(data)
+                if self.conf.git.branches.current == 'master':
+                    try:
+                        data = self.conf.git.repo.branch_file(path=fn, branch='master')
+                    except GitError:
+                        logger.critical('giza does not support "detached head" state, '
+                                        'and local repositories without a master branch.')
+                        return
+
+                    self._branch_conf = yaml.load(data)
 
     @property
     def builder(self):
