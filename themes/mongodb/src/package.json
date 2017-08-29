@@ -2,7 +2,7 @@
   "dependencies": {
     "clean-css": "^3.4.28",
     "csslint": "^0.10.0",
-    "rigning": "^3.1.9"
+    "rigning": "^3.1.10"
   },
   "greniConfig": {
     "entryPoints": {
