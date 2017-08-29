@@ -333,8 +333,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
                 targets = self.conf.system.files.data.integration['base']['targets']
                 self.state['builder'].extend(set([target.split('-')[0] for target in targets
                                                   if '/' not in target and
-                                                  not target.startswith('htaccess') and
-                                                  not target == 'html']))
+                                                  not target.startswith('htaccess')]))
                 return self.state['builder']
             else:
                 m = 'Builder integration not specified for "publish" target'
