@@ -305,11 +305,13 @@ conf['directives'] = [
         'name': 'action',
         'tag': 'action',
         'description': 'Service Actions',
-        'prepend': False,
+        'prepend': True,  
         'callable': False
     },
 
 ]
+
+## If prepend: True, you can have a page title that match the directive.  For example, an operator X in a page with title X.  Otherwise, you can't have in page with same title and you'll get iddup as the reference.
 
 conf['prepend'] = { }
 
