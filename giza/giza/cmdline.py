@@ -28,7 +28,6 @@ import giza.operations.make
 import giza.operations.packaging
 import giza.operations.build_env
 import giza.operations.quickstart
-import giza.operations.stage
 import giza.operations.sphinx_cmds
 import giza.operations.tx
 import giza.operations.code_review
@@ -46,8 +45,6 @@ commands = {
         giza.operations.quickstart.make_project,
         giza.operations.sphinx_cmds.main,
         giza.operations.deploy.twofa_code,
-        giza.operations.stage.main_stage,
-        giza.operations.stage.main_deploy,
         giza.operations.configuration.report_version,
         giza.operations.make.main,
         giza.operations.test.integration_main,

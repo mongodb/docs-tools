@@ -208,11 +208,5 @@ class PathsConfig(RecursiveConfigurationBase):
             return self.state['htaccess']
 
     @property
-    def file_changes_database(self):
-        """Returns a path to the database containing output path mtimes and
-           hashes to back FileCollector."""
-        return os.path.join(self.projectroot, self.output, 'stage-cache.db')
-
-    @property
     def images(self):
         return self.state.get('images', None)
