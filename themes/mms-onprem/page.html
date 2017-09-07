@@ -24,6 +24,20 @@
     {%- include "onprem-adblock-header.html" %}
 {%- endblock -%}
 
+{%- block alertbar -%}
+    {%- if theme_active_branches and version not in theme_active_branches %}
+        <div class="alert alert-info">
+           <span class="alert-message">This version of the manual is no longer supported.</span>
+        </div>
+    {%- elif theme_eol == "true" %}
+        <div class="alert alert-info">
+           <span class="alert-message">{{theme_eol_msg}}</span>
+        </div>
+    {%- endif %}
+
+{%- endblock -%}
+
+
 {%- block adblock %}
     {%- include "onprem-adblock.html" %}
 {%- endblock -%}
