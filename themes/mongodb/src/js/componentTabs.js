@@ -4,7 +4,7 @@
  * @returns {void}
  */
 function showHideTabContent(currentAttrValue) {
-    $('.tab-content').children().
+    $('.tabs__content').children().
         hide();
     $(`.tabs .tabpanel-${currentAttrValue}`).show();
 }
@@ -42,7 +42,7 @@ class TabsSingleton {
         for (const element of this.tabStrip.querySelectorAll('[data-tabid]')) {
             element.onclick = (e) => {
                 // Get the tab ID of the clicked tab
-                const currentAttrValue = element.getAttribute('data-tabid');
+                const currentAttrValue = e.target.getAttribute('data-tabid');
 
                 // Check to make sure value is not null, i.e., don't do anything on "other"
                 if (currentAttrValue) {
