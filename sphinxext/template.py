@@ -20,23 +20,8 @@ if sys.version_info.major >= 3:
 REGISTERED = {}
 
 PAT_SUBSTITUTION = re.compile(r'^\$[\w\.]+$')
-PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^````+$))', re.M)
-# List of tuples with language tab ( ID, Display Name)
-LANGUAGES_RAW = [('shell', 'Mongo Shell'), 
-             ('python', 'Python'),
-             ('java-sync', 'Java (Sync)'),
-             ('nodejs', 'Node.js'),
-             ('php', 'PHP'),
-             #('java-async', 'Java (Sync)'),
-             #('c', 'C'),
-             #('cpp11', 'C++11'),
-             ('csharp', 'C#'),
-             ('perl', 'Perl'),
-             ('ruby', 'Ruby'),
-             ('scala', 'Scala')
-             ]
-LANGUAGES_IDS = [lang[0] for lang in LANGUAGES_RAW]
-LANGUAGES_DISPLAY = [lang[1] for lang in LANGUAGES_RAW]
+
+BUILT_IN_PATH = '[built_in]'
 
 def should_substitute(value):
     """Return true if a value should be substituted."""
@@ -139,7 +124,7 @@ def create_directive(name, template, defined_in, is_yaml):
 
         def run(self):
             source_path = self.state.document.get('source')
-            if source_path not in REGISTERED or name not in REGISTERED[source_path]:
+            if defined_in != BUILT_IN_PATH and (source_path not in REGISTERED or name not in REGISTERED[source_path]):
                 raise self.severe(u'Unknown directive: {}. '
                                   u'Try including {}'.format(self.name, defined_in))
 
@@ -224,43 +209,3 @@ def setup(app):
             'parallel_write_safe': True}
 
 
-def convertSections(tabContent):
-    """Convert rst-style sections into custom directives that ONLY insert
-       the HTML header tags."""
-    return PAT_RST_SECTION.sub(
-        lambda match: '.. h{}:: {}'.format(Options.HEADING_LEVELS.index(match.group(2)[0]) + 1, match.group(1)),
-        tabContent)
-
-fett.Template.FILTERS['convertSections'] = convertSections
-
-def numberOfLanguages(tabData):
-    return len(LANGUAGES_RAW)
-
-fett.Template.FILTERS['numberOfLanguages'] = numberOfLanguages
-
-def getLanguageNames(tabData):
-    for tab in tabData:
-        index = LANGUAGES_IDS.index(tab['id'])
-        tab['name'] = LANGUAGES_DISPLAY[index]
-
-    return tabData
-
-fett.Template.FILTERS['getLanguageNames'] = getLanguageNames
-
-def sortLanguages(tabData):
-    # Create a list for the sorted data
-    sorted = [None] * len(LANGUAGES_RAW)
-    
-    for tab in tabData:
-        index = LANGUAGES_IDS.index(tab['id'])
-        tab['name'] = LANGUAGES_DISPLAY[index]
-        sorted[index] = tab
-    
-    # Fill in any missing languages with empty content
-    for index in range(len(sorted)):
-        if sorted[index] is None:
-            sorted[index] = {'id': LANGUAGES_IDS[index], 'name': LANGUAGES_DISPLAY[index], 'content': ''}
-
-    return sorted
-
-fett.Template.FILTERS['sortLanguages'] = sortLanguages
