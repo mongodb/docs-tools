@@ -27,7 +27,7 @@ version:
   upcoming: ''
 git:
   branches:
-    manual: 'master'
+    manual: '2.2'
     published:
       - 'master'
       - 'v2.8'
