@@ -113,7 +113,7 @@ class MongoDBObject(ObjectDescription):
             fullname = name_obj[0]
 
         signode['names'].append(fullname)
-        signode['ids'].append(fullname.replace('$', '_S_').replace(' ', '-'))
+        signode['ids'].append(fullname.replace('$', '_S_').replace(' ', '-').replace('"', '_dq_'))
         signode['first'] = not self.names
         self.state.document.note_explicit_target(signode)
 
