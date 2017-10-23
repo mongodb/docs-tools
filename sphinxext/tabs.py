@@ -25,17 +25,17 @@ TABS_TEMPLATE = '''
 
    <div class="tabs">
      <ul class="tab-strip tab-strip--singleton" role="tablist">
-       {{ for tab in tabs sortLanguages }}
+       {{ for tab in tabs FILTER }}
        {{ # Only render the tab here if i < 5 }}
        {{ if i lessThan(5) }}
        <li class="tab-strip__element" data-tabid="{{ tab.id }}" role="tab" aria-selected="{{ if i zero }}true{{ else }}false{{ end }}">{{ tab.name }}</li>
        {{ end }}
        {{ end }}
-       {{ if tabs numberOfLanguages greaterThan(5) }}
+       {{ if tabs len greaterThan(5) }}
        <li class="tab-strip__element dropdown">
          <a class="dropdown-toggle" data-toggle="dropdown">Other <span class="caret"></span></a>
          <ul class="dropdown-menu tab-strip__dropdown" role="menu">
-           {{ for tab in tabs sortLanguages }}
+           {{ for tab in tabs FILTER }}
            {{ # Only render the tab here if i >= 5 }}
            {{ if i greaterThanOrEqual(5) }}
            <li data-tabid="{{ tab.id }}" aria-selected="{{ if i zero }}true{{ else }}false{{ end }}">{{ tab.name }}</li>
@@ -46,33 +46,7 @@ TABS_TEMPLATE = '''
        {{ end }}
      </ul>
      <div class="tabs__content" role="tabpanel">
-       {{ for tab in tabs sortLanguages}}
-       <div class="tabpanel-{{ tab.id }}">
-
-{{ tab.content convertSections }}
-
-.. raw:: html
-
-       </div>
-       {{ end }}
-     </div>
-   </div>
-'''
-
-TABSGS_TEMPLATE = '''
-.. raw:: html
-
-   <div class="tabs">
-     <ul class="tab-strip tab-strip--singleton" role="tablist">
-       {{ for tab in tabs }}
-       {{ # Only render the tab here if i < 5 }}
-       {{ if i lessThan(5) }}
-       <li class="tab-strip__element" data-tabid="{{ tab.id }}" role="tab" aria-selected="{{ if i zero }}true{{ else }}false{{ end }}">{{ tab.name }}</li>
-       {{ end }}
-       {{ end }}
-     </ul>
-     <div class="tabs__content" role="tabpanel">
-       {{ for tab in tabs }}
+       {{ for tab in tabs FILTER }}
        <div class="tabpanel-{{ tab.id }}">
 
 {{ tab.content convertSections }}
@@ -110,6 +84,7 @@ H4_TEMPLATE = '''
 '''
 
 def setup(app):
+    # Handle headers inside tab directives
     directive = template.create_directive('h1', H1_TEMPLATE, template.BUILT_IN_PATH, True)
     app.add_directive('h1', directive)
     
@@ -122,11 +97,13 @@ def setup(app):
     directive = template.create_directive('h4', H4_TEMPLATE, template.BUILT_IN_PATH, True)
     app.add_directive('h4', directive)
 
-    directive = template.create_directive('tabs', TABS_TEMPLATE, template.BUILT_IN_PATH, True)
-    app.add_directive('tabs', directive)
+    # Create drivers tab directive
+    directive = template.create_directive('tabs-drivers', TABS_TEMPLATE.replace("FILTER", "sortLanguages"), template.BUILT_IN_PATH, True)
+    app.add_directive('tabs-drivers', directive)
 
-    directive = template.create_directive('tabs-gs', TABSGS_TEMPLATE, template.BUILT_IN_PATH, True)
-    app.add_directive('tabs-gs', directive)
+    # Create general purpose tab directive with no error checking
+    directive = template.create_directive('tabs', TABS_TEMPLATE.replace("FILTER", ""), template.BUILT_IN_PATH, True)
+    app.add_directive('tabs', directive)
 
     return {'parallel_read_safe': True,
             'parallel_write_safe': True}
@@ -140,11 +117,6 @@ def convertSections(tabContent):
         tabContent)
 
 fett.Template.FILTERS['convertSections'] = convertSections
-
-def numberOfLanguages(tabData):
-    return len(LANGUAGES_RAW)
-
-fett.Template.FILTERS['numberOfLanguages'] = numberOfLanguages
 
 def getLanguageNames(tabData):
     for tab in tabData:
