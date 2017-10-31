@@ -13,21 +13,54 @@ class TabsSingleton {
     constructor(key) {
         this.key = key;
         this.tabStrip = document.querySelector('.tab-strip--singleton');
+
+        // Only tab sets will have a type, init and try to retrieve
+        this.type = null;
+        if (this.tabStrip !== null) {
+            this.type = this.tabStrip.getAttribute('data-tab-preference');
+        }
     }
 
-    get languagePref() {
-        return window.localStorage.getItem(this.key);
+    /**
+     * Return the tabPref object containing preferences for tab sets
+     * and page specific prefs. Returns an empty object if it doesn't
+     * exist.
+     * @returns {object} Tab preference object.
+     */
+    get tabPref() {
+        return JSON.parse(window.localStorage.getItem(this.key)) || {};
     }
 
-    set languagePref(value) {
-        window.localStorage.setItem(this.key, value);
+    /**
+     * Sets the tabPref object depending on whether the tab belongs
+     * to set (e.g., "drivers") or if it's a one-off page.
+     * @param {object} value The "tabId" and optional "type" (tab set)
+     */
+    set tabPref(value) {
+        const tabPref = this.tabPref;
+
+        // If "type" exists it belongs to a tab set
+        if (this.type) {
+            // Set top-level fields for tab set preferences
+            tabPref[value.type] = value.tabId;
+        } else if (tabPref.pages) {
+            // Store one-off pages in the pages embedded document
+            tabPref.pages[window.location.pathname] = value.tabId;
+        } else {
+            // Init pages embedded doc if it doesnt exist and store one-off
+            tabPref.pages = {};
+            tabPref.pages[window.location.pathname] = value.tabId;
+        }
+
+        // Write pref object back to localStorage
+        window.localStorage.setItem(this.key, JSON.stringify(tabPref));
     }
 
     /**
      * Return the first singleton tab ID on the page.
      * @returns {string} The first singleton tab ID found.
      */
-    getFirstLanguage() {
+    getFirstTab() {
         const tabsElement = this.tabStrip.querySelector('.tab-strip__element[aria-selected=true]');
         if (!tabsElement) { return null; }
 
@@ -42,12 +75,18 @@ class TabsSingleton {
         for (const element of this.tabStrip.querySelectorAll('[data-tabid]')) {
             element.onclick = (e) => {
                 // Get the tab ID of the clicked tab
-                const currentAttrValue = e.target.getAttribute('data-tabid');
+                const tabId = e.target.getAttribute('data-tabid');
+                const type = this.tabStrip.getAttribute('data-tab-preference');
+
+                // Build the pref object to set
+                const pref = {};
+                pref.tabId = tabId;
+                pref.type = type;
 
                 // Check to make sure value is not null, i.e., don't do anything on "other"
-                if (currentAttrValue) {
+                if (tabId) {
                     // Save the users preference and re-render
-                    this.languagePref = currentAttrValue;
+                    this.tabPref = pref;
                     this.update();
 
                     e.preventDefault();
@@ -60,20 +99,27 @@ class TabsSingleton {
 
     update() {
         if (!this.tabStrip) { return; }
+        let type = this.type;
 
-        let languagePref = this.languagePref;
-        if (!languagePref) {
-            languagePref = this.getFirstLanguage();
-        } else if (!this.tabStrip.querySelector(`[data-tabid="${languagePref}"]`)) {
-            // Confirm a tab for their languagePref exists at the top of the page
-            languagePref = this.getFirstLanguage();
+        let tabPref = this.tabPref;
+
+        if (!tabPref) {
+            // Display the first tab when there is no pref
+            tabPref = this.getFirstTab();
+        } else if (tabPref.pages && tabPref.pages[window.location.pathname]) {
+            // Check if current page has a one-off page specific pref
+            tabPref = tabPref.pages;
+            type = window.location.pathname;
+        } else if (!this.tabStrip.querySelector(`[data-tabid="${tabPref[type]}"]`)) {
+            // Confirm a tab for their tabPref exists at the top of the page
+            tabPref = this.getFirstTab();
         }
 
-        if (!languagePref) { return; }
+        if (!tabPref) { return; }
 
         // Show the appropriate tab content and mark the tab as active
-        showHideTabContent(languagePref);
-        this.showHideSelectedTab(languagePref);
+        showHideTabContent(tabPref[type]);
+        this.showHideSelectedTab(tabPref[type]);
     }
 
     /**
@@ -128,5 +174,5 @@ class TabsSingleton {
 
 // Create tab functionality for code examples
 export function setup() {
-    (new TabsSingleton('languagePref')).setup();
+    (new TabsSingleton('tabPref')).setup();
 }

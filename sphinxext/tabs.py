@@ -24,8 +24,8 @@ TABS_TEMPLATE = '''
 .. raw:: html
 
    <div class="tabs">
-     <ul class="tab-strip tab-strip--singleton" role="tablist">
-       {{ for tab in tabs FILTER }}
+     <ul class="tab-strip tab-strip--singleton" role="tablist" %PREFERENCE%>
+       {{ for tab in tabs %FILTER% }}
        {{ # Only render the tab here if i < 5 }}
        {{ if i lessThan(5) }}
        <li class="tab-strip__element" data-tabid="{{ tab.id }}" role="tab" aria-selected="{{ if i zero }}true{{ else }}false{{ end }}">{{ tab.name }}</li>
@@ -35,7 +35,7 @@ TABS_TEMPLATE = '''
        <li class="tab-strip__element dropdown">
          <a class="dropdown-toggle" data-toggle="dropdown">Other <span class="caret"></span></a>
          <ul class="dropdown-menu tab-strip__dropdown" role="menu">
-           {{ for tab in tabs FILTER }}
+           {{ for tab in tabs %FILTER% }}
            {{ # Only render the tab here if i >= 5 }}
            {{ if i greaterThanOrEqual(5) }}
            <li data-tabid="{{ tab.id }}" aria-selected="{{ if i zero }}true{{ else }}false{{ end }}">{{ tab.name }}</li>
@@ -46,7 +46,7 @@ TABS_TEMPLATE = '''
        {{ end }}
      </ul>
      <div class="tabs__content" role="tabpanel">
-       {{ for tab in tabs FILTER }}
+       {{ for tab in tabs %FILTER% }}
        <div class="tabpanel-{{ tab.id }}">
 
 {{ tab.content convertSections }}
@@ -98,16 +98,33 @@ def setup(app):
     app.add_directive('h4', directive)
 
     # Create drivers tab directive
-    directive = template.create_directive('tabs-drivers', TABS_TEMPLATE.replace("FILTER", "sortLanguages"), template.BUILT_IN_PATH, True)
+    directive = template.create_directive('tabs-drivers', buildTemplate("sortLanguages", "drivers"), template.BUILT_IN_PATH, True)
     app.add_directive('tabs-drivers', directive)
 
+    # Create getting started tab directive
+    # Shares preference with drivers if possible, no error checking
+    directive = template.create_directive('tabs-gs', buildTemplate("", "drivers"), template.BUILT_IN_PATH, True)
+    app.add_directive('tabs-gs', directive)
+
     # Create general purpose tab directive with no error checking
-    directive = template.create_directive('tabs', TABS_TEMPLATE.replace("FILTER", ""), template.BUILT_IN_PATH, True)
+    directive = template.create_directive('tabs', buildTemplate("", ""), template.BUILT_IN_PATH, True)
     app.add_directive('tabs', directive)
 
     return {'parallel_read_safe': True,
             'parallel_write_safe': True}
 
+def buildTemplate(tabFilter, preference):
+    # If tabFilter is not a string, make it an empty string
+    if type(tabFilter) != str:
+        tabFilter = ""
+    template = TABS_TEMPLATE.replace("%FILTER%", tabFilter)
+
+    if type(preference) == str and preference != "":
+        template = template.replace("%PREFERENCE%", "data-tab-preference=\"" + preference + "\"")
+    else:
+        template = template.replace("%PREFERENCE%", "")
+
+    return template
 
 def convertSections(tabContent):
     """Convert rst-style sections into custom directives that ONLY insert
