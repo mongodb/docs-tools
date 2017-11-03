@@ -144,7 +144,7 @@ class MarkdownTranslator(sphinx.writers.text.TextTranslator):
 
     def visit_title(self, node):
         if not self.headmatter:
-            self.headmatter = '''+++
+            self.headmatter = u'''+++
 title = "{}"
 
 tags = [
@@ -202,6 +202,7 @@ class MarkdownBuilder(sphinx.builders.text.TextBuilder):
     format = 'markdown'
     out_suffix = '.md'
     allow_parallel = True
+    default_translator_class = MarkdownTranslator
 
     def prepare_writing(self, docnames):
         self.writer = MarkdownWriter(self)
