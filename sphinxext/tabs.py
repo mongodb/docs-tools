@@ -4,13 +4,14 @@ import template
 
 PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^````+$))', re.M)
 # List of tuples with language tab ( ID, Display Name)
-LANGUAGES_RAW = [('shell', 'Mongo Shell'), 
+LANGUAGES_RAW = [('shell', 'Mongo Shell'),
+             ('compass', 'Compass'),
              ('python', 'Python'),
              ('java-sync', 'Java (Sync)'),
              ('nodejs', 'Node.js'),
              ('php', 'PHP'),
              ('java-async', 'Java (Async)'),
-             #('c', 'C'),
+             ('c', 'C'),
              #('cpp11', 'C++11'),
              ('csharp', 'C#'),
              ('perl', 'Perl'),
@@ -101,11 +102,6 @@ def setup(app):
     directive = template.create_directive('tabs-drivers', buildTemplate("sortLanguages", "drivers"), template.BUILT_IN_PATH, True)
     app.add_directive('tabs-drivers', directive)
 
-    # Create getting started tab directive
-    # Shares preference with drivers if possible, no error checking
-    directive = template.create_directive('tabs-gs', buildTemplate("", "drivers"), template.BUILT_IN_PATH, True)
-    app.add_directive('tabs-gs', directive)
-
     # Create general purpose tab directive with no error checking
     directive = template.create_directive('tabs', buildTemplate("", ""), template.BUILT_IN_PATH, True)
     app.add_directive('tabs', directive)
@@ -152,12 +148,7 @@ def sortLanguages(tabData):
         index = LANGUAGES_IDS.index(tab['id'])
         tab['name'] = LANGUAGES_DISPLAY[index]
         sorted[index] = tab
-    
-    # Fill in any missing languages with empty content
-    for index in range(len(sorted)):
-        if sorted[index] is None:
-            sorted[index] = {'id': LANGUAGES_IDS[index], 'name': LANGUAGES_DISPLAY[index], 'content': ''}
 
-    return sorted
+    return filter(None, sorted)
 
 fett.Template.FILTERS['sortLanguages'] = sortLanguages
