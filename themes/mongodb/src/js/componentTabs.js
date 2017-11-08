@@ -103,16 +103,13 @@ class TabsSingleton {
 
         let tabPref = this.tabPref;
 
-        if (!tabPref) {
-            // Display the first tab when there is no pref
-            tabPref = this.getFirstTab();
-        } else if (tabPref.pages && tabPref.pages[window.location.pathname]) {
+        if (tabPref.pages && tabPref.pages[window.location.pathname]) {
             // Check if current page has a one-off page specific pref
             tabPref = tabPref.pages;
             type = window.location.pathname;
         } else if (!this.tabStrip.querySelector(`[data-tabid="${tabPref[type]}"]`)) {
-            // Confirm a tab for their tabPref exists at the top of the page
-            tabPref = this.getFirstTab();
+            // If their tabPref does not exist at the top of the page use the first tab
+            tabPref[type] = this.getFirstTab();
         }
 
         if (!tabPref) { return; }
