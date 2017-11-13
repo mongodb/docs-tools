@@ -5,8 +5,7 @@ import re
 
 from docutils import nodes, statemachine, utils
 from docutils.utils.error_reporting import ErrorString
-from docutils.parsers.rst import directives
-from sphinx.util.compat import Directive
+from docutils.parsers.rst import directives, Directive
 
 import fett
 import yaml

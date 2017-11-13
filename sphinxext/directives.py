@@ -1,7 +1,6 @@
 from docutils.parsers.rst import Directive, directives
 from docutils import nodes
 from sphinx.locale import _
-from sphinx.util.compat import Directive
 from sphinx import addnodes
 
 
