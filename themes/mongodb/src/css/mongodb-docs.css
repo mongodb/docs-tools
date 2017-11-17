@@ -261,6 +261,11 @@ tt, code {
     color: #000;
 }
 
+abbr, acronym {
+    text-decoration: underline dotted;
+    cursor: help;
+}
+
 a>tt, a>code {
     color: #006cbc;
 }
