@@ -460,7 +460,7 @@ dl.glossary dt {
 }
 
 abbr, acronym {
-    border-bottom: dotted 1px;
+    text-decoration: underline dotted;
     cursor: help;
 }
 
