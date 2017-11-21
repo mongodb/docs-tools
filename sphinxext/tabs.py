@@ -60,25 +60,32 @@ TABS_TEMPLATE = '''
    </div>
 '''
 
-H1_TEMPLATE = '''
+# Fix passing title from RST into HTML templates below
+HEADING_TEMPLATE_RST = '''
+.. h{}::
+
+   title: {}
+'''
+
+H1_TEMPLATE_HTML = '''
 .. raw:: html
 
    <h1>{{ title }}</h1>
 '''
 
-H2_TEMPLATE = '''
+H2_TEMPLATE_HTML = '''
 .. raw:: html
 
    <h2>{{ title }}</h2>
 '''
 
-H3_TEMPLATE = '''
+H3_TEMPLATE_HTML = '''
 .. raw:: html
 
    <h3>{{ title }}</h3>
 '''
 
-H4_TEMPLATE = '''
+H4_TEMPLATE_HTML = '''
 .. raw:: html
 
    <h4>{{ title }}</h4>
@@ -86,16 +93,16 @@ H4_TEMPLATE = '''
 
 def setup(app):
     # Handle headers inside tab directives
-    directive = template.create_directive('h1', H1_TEMPLATE, template.BUILT_IN_PATH, True)
+    directive = template.create_directive('h1', H1_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
     app.add_directive('h1', directive)
     
-    directive = template.create_directive('h2', H2_TEMPLATE, template.BUILT_IN_PATH, True)
+    directive = template.create_directive('h2', H2_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
     app.add_directive('h2', directive)
     
-    directive = template.create_directive('h3', H3_TEMPLATE, template.BUILT_IN_PATH, True)
+    directive = template.create_directive('h3', H3_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
     app.add_directive('h3', directive)
     
-    directive = template.create_directive('h4', H4_TEMPLATE, template.BUILT_IN_PATH, True)
+    directive = template.create_directive('h4', H4_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
     app.add_directive('h4', directive)
 
     # Create drivers tab directive
@@ -126,7 +133,7 @@ def convertSections(tabContent):
     """Convert rst-style sections into custom directives that ONLY insert
        the HTML header tags."""
     return PAT_RST_SECTION.sub(
-        lambda match: '.. h{}:: {}'.format(Options.HEADING_LEVELS.index(match.group(2)[0]) + 1, match.group(1)),
+        lambda match: HEADING_TEMPLATE_RST.format(template.Options.HEADING_LEVELS.index(match.group(2)[0]) + 1, match.group(1)),
         tabContent)
 
 fett.Template.FILTERS['convertSections'] = convertSections
