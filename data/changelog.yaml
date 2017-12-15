@@ -66,6 +66,8 @@ groups:
     - mongostat
     - mongotop
     - mongoreplay
+  "Upgrade/Downgrade":
+    - Upgrade/Downgrade
 
 ordering:
   # Defines an order of groups. Issues with multiple components use
