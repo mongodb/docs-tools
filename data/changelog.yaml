@@ -52,6 +52,8 @@ groups:
     - Internal Code
     - Internal Client
     - Concurrency
+    - IDL
+    - Upgrade/Downgrade
   "Tools":
     - Tools
     - All Tools
@@ -66,8 +68,6 @@ groups:
     - mongostat
     - mongotop
     - mongoreplay
-  "Upgrade/Downgrade":
-    - Upgrade/Downgrade
 
 ordering:
   # Defines an order of groups. Issues with multiple components use
