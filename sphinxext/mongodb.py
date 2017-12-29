@@ -289,9 +289,10 @@ class MongoDBDomain(Domain):
 
         name, obj = self.find_obj(env, objectname, target, typ, searchorder)
 
-        if obj is not None:
-            if fromdocname == obj[0]:
-                return None
+#  Commenting out code that prevents links to refs on same page
+#        if obj is not None:
+#            if fromdocname == obj[0]:
+#                return None
 
         if obj is None:
             name, obj = self.find_obj(env, 'iddup.' + name, target, typ, searchorder)
