@@ -15,13 +15,6 @@ conf['directives'] = [
         'prepend': True,
     },
     {
-        'name': 'program',
-        'tag': 'bin',
-        'description': 'program',
-        'callable': False,
-        'prepend': True,
-    },
-    {
         'name': 'dbcommand',
         'tag': 'dbcmd',
         'description': 'database command',
