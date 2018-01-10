@@ -68,6 +68,8 @@ def available_sphinx_builders():
     builders.append('slides')
     builders.append('publish')
     builders.append('markdown')
+    builders.append('fasthtml')
+    builders.append('fastdirhtml')
 
     return builders
 
