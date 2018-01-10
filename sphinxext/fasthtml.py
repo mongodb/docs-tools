@@ -20,10 +20,6 @@ class Toctree:
         # Helper callbacks from the parent Builder
         self.render_title = render_title
         self.get_relative_uri = get_relative_uri
-
-        # Use dynamic programming to avoid needlessly recomputing unchanged
-        # parts of the TOC tree. Maps sets of slugs "a b c" to a string
-        self.cache = {}  # type: Dict[str, str]
         self.initialized = False
 
     def initialize(self, env, docname=None):
@@ -90,7 +86,6 @@ class Toctree:
         tokens = []
         tokens.append('<ul class="current">')
 
-        cache_key = ' '.join(str(s) for s in slugs)
         for title, slug in slugs:
             if title is None:
                 title = self.get_title(slug)
@@ -98,18 +93,14 @@ class Toctree:
             current = ' current' if self.is_child_of(cur_slug, slug) else ''
             exact_current = ' current' if cur_slug == slug else ''
             link = self.get_relative_uri(cur_slug, slug)
-            tokens.append('<li class="toctree-l{}{}"><a class="reference internal{}" href="{}">{}</a>'.format(level, current, exact_current, link, title))
+            tokens.append(u'<li class="toctree-l{}{}"><a class="reference internal{}" href="{}">{}</a>'.format(level, current, exact_current, link, title))
 
             children = self.children.get(slug, ())
+
             if children:
                 tokens.append('<ul>')
-                if current or not cache_key in self.cache:
-                    rendered_children = self.html(cur_slug, level+1, children)
-                    tokens.extend(rendered_children)
-                    if not current:
-                        self.cache[cache_key] = ''.join(rendered_children)
-                else:
-                    tokens.append(self.cache[cache_key])
+                rendered_children = self.html(cur_slug, level+1, children)
+                tokens.extend(rendered_children)
                 tokens.append('</ul>')
             else:
                 tokens.append('</li>')
