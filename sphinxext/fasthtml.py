@@ -1,13 +1,15 @@
-import collections
 import logging
-import os
-import os.path
-import re
 from sphinx.util.osutil import relative_uri
 from sphinx.builders.html import StandaloneHTMLBuilder, DirectoryHTMLBuilder
 from sphinx import addnodes
 
 logger = logging.getLogger('fasthtml')
+
+
+class ListSet(list):
+    def add(self, x):
+        if not x in self:
+            self.append(x)
 
 
 class Toctree:
@@ -41,12 +43,12 @@ class Toctree:
             toctrees.append(toctreenode)
 
         if not toctrees:
-            self.children[docname] = []
+            self.children[docname] = ListSet()
             return
 
         for toctree in toctrees:
             for title, child_docname in toctree['entries']:
-                self.children.setdefault(docname, []).append((title, child_docname))
+                self.children.setdefault(docname, ListSet()).add((title, child_docname))
                 self.parent.setdefault(child_docname, []).append(docname)
                 self.initialize(env, child_docname)
 
@@ -84,13 +86,19 @@ class Toctree:
             slugs = self.children.get(self.root, ())
 
         tokens = []
-        tokens.append('<ul class="current">')
+        have_current = False
+        tokens.append('<ul>')
+
+        if len(slugs) != len(set(slugs)):
+            print(slugs)
 
         for title, slug in slugs:
             if title is None:
                 title = self.get_title(slug)
 
             current = ' current' if self.is_child_of(cur_slug, slug) else ''
+            if current:
+                have_current = True
             exact_current = ' current' if cur_slug == slug else ''
             link = self.get_relative_uri(cur_slug, slug)
             tokens.append(u'<li class="toctree-l{}{}"><a class="reference internal{}" href="{}">{}</a>'.format(level, current, exact_current, link, title))
@@ -98,14 +106,16 @@ class Toctree:
             children = self.children.get(slug, ())
 
             if children:
-                tokens.append('<ul>')
                 rendered_children = self.html(cur_slug, level+1, children)
                 tokens.extend(rendered_children)
-                tokens.append('</ul>')
-            else:
-                tokens.append('</li>')
+
+            tokens.append('</li>')
 
         tokens.append('</ul>')
+
+        if have_current:
+            tokens[0] = '<ul class="current">'
+
         return tokens
 
     def get_title(self, slug):
@@ -138,6 +148,7 @@ class FastHTMLBuilder(StandaloneHTMLBuilder, FastHTMLMixin):
             kwds['includehidden'] = False
 
         return ''.join(self.toctree.html(docname))
+
 
 class FastDirectoryHTMLBuilder(DirectoryHTMLBuilder, FastHTMLMixin):
     name = 'dirhtml'
