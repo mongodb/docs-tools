@@ -85,7 +85,7 @@ class Toctree:
             raise ValueError('No roots in toctree')
 
         if slugs is None:
-            slugs = [(None, self.root)]
+            slugs = self.children.get(self.root, ())
 
         tokens = []
         tokens.append('<ul class="current">')
