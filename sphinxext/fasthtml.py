@@ -95,9 +95,10 @@ class Toctree:
             if title is None:
                 title = self.get_title(slug)
 
-            current = 'current' if self.is_child_of(cur_slug, slug) else ''
+            current = ' current' if self.is_child_of(cur_slug, slug) else ''
+            exact_current = ' current' if cur_slug == slug else ''
             link = self.get_relative_uri(cur_slug, slug)
-            tokens.append('<li class="toctree-l{} {}"><a class="reference internal {}" href="{}">{}</a>'.format(level, current, current, link, title))
+            tokens.append('<li class="toctree-l{}{}"><a class="reference internal{}" href="{}">{}</a>'.format(level, current, exact_current, link, title))
 
             children = self.children.get(slug, ())
             if children:
