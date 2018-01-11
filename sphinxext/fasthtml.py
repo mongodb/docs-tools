@@ -12,6 +12,10 @@ class ListSet(list):
             self.append(x)
 
 
+def is_http(url):
+    return url.startswith('http://') or url.startswith('https://')
+
+
 class Toctree:
     def __init__(self, render_title, get_relative_uri):
         self.titles = {}  # type: Dict[str, str]
@@ -50,7 +54,8 @@ class Toctree:
             for title, child_docname in toctree['entries']:
                 self.children.setdefault(docname, ListSet()).add((title, child_docname))
                 self.parent.setdefault(child_docname, []).append(docname)
-                self.initialize(env, child_docname)
+                if not is_http(child_docname):
+                    self.initialize(env, child_docname)
 
         if root_stage:
             self.initialized = True
@@ -89,9 +94,6 @@ class Toctree:
         have_current = False
         tokens.append('<ul>')
 
-        if len(slugs) != len(set(slugs)):
-            print(slugs)
-
         for title, slug in slugs:
             if title is None:
                 title = self.get_title(slug)
@@ -100,9 +102,15 @@ class Toctree:
             if current:
                 have_current = True
             exact_current = ' current' if cur_slug == slug else ''
-            link = self.get_relative_uri(cur_slug, slug)
-            tokens.append(u'<li class="toctree-l{}{}"><a class="reference internal{}" href="{}">{}</a>'.format(level, current, exact_current, link, title))
 
+            if is_http(slug):
+                link = slug
+                link_type = 'external'
+            else:
+                link = self.get_relative_uri(cur_slug, slug)
+                link_type = 'internal'
+
+            tokens.append(u'<li class="toctree-l{}{}"><a class="reference {}{}" href="{}">{}</a>'.format(level, current, link_type, exact_current, link, title))
             children = self.children.get(slug, ())
 
             if children:
