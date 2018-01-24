@@ -251,8 +251,7 @@
                 {% block body %}
                   {{ body }}
                 {% endblock %}
-                {{- render_nextprev() -}}
-
+                {%- if meta is defined and meta is not none and 'noprevnext' not in meta %}{{- render_nextprev() -}}{%- endif %}
 
                 {%- block footer %}
                   <div class="footer">
