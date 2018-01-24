@@ -19,6 +19,7 @@ export function setup() {
         highlightElement.insertBefore(copyButtonContainer, highlightElement.children[0]);
         copyButton.addEventListener('click', () => {
             const tempElement = document.createElement('textarea');
+            tempElement.style.position = 'fixed';
             document.body.appendChild(tempElement);
             tempElement.value = text;
             tempElement.select();
