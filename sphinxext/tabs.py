@@ -10,6 +10,7 @@ LANGUAGES_RAW = [('shell', 'Mongo Shell'),
              ('java-sync', 'Java (Sync)'),
              ('nodejs', 'Node.js'),
              ('php', 'PHP'),
+             ('motor', 'Motor'),
              ('java-async', 'Java (Async)'),
              ('c', 'C'),
              #('cpp11', 'C++11'),
@@ -95,13 +96,13 @@ def setup(app):
     # Handle headers inside tab directives
     directive = template.create_directive('h1', H1_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
     app.add_directive('h1', directive)
-    
+
     directive = template.create_directive('h2', H2_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
     app.add_directive('h2', directive)
-    
+
     directive = template.create_directive('h3', H3_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
     app.add_directive('h3', directive)
-    
+
     directive = template.create_directive('h4', H4_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
     app.add_directive('h4', directive)
 
@@ -150,7 +151,7 @@ fett.Template.FILTERS['getLanguageNames'] = getLanguageNames
 def sortLanguages(tabData):
     # Create a list for the sorted data
     sorted = [None] * len(LANGUAGES_RAW)
-    
+
     for tab in tabData:
         index = LANGUAGES_IDS.index(tab['id'])
         tab['name'] = LANGUAGES_DISPLAY[index]
