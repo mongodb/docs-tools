@@ -1,6 +1,6 @@
 import logging
+from docutils import nodes
 from docutils.parsers.rst import Directive, directives
-from sphinx import addnodes
 from sphinx.util.nodes import nested_parse_with_titles
 
 logger = logging.getLogger('fasthtml')
@@ -19,10 +19,9 @@ class Cond(Directive):
     def run(self):
         config = self.state.document.settings.env.config
         if config._raw_config['tags'].eval_condition(self.arguments[0]):
-            node = addnodes.only()
-            node['expr'] = 'true'
+            node = nodes.Element()
             nested_parse_with_titles(self.state, self.content, node)
-            return [node]
+            return node.children
 
         return []
 
