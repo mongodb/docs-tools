@@ -22,13 +22,13 @@
 {%- endblock -%}
 
 {%- block alertbar -%}
-    {%- if theme_active_branches and version not in theme_active_branches %}
-        <div class="alert alert-info">
-           <span class="alert-message">This version of the manual is no longer supported.</span>
-        </div>
-    {%- elif theme_eol %}
+    {%- if theme_eol %}
         <div class="alert alert-warning">
            <span class="alert-message">{{theme_eol_msg}}</span>
+        </div>
+    {%- elif theme_active_branches and version not in theme_active_branches %}
+        <div class="alert alert-info">
+           <span class="alert-message">This version of the manual is no longer supported.</span>
         </div>
     {%- endif %}
 

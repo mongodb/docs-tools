@@ -11,8 +11,12 @@ version:
     - '1.3'
     - '1.2'
     - '1.1'
+  active:
+    - 'upcoming'
+    - '3.6'
+    - '3.4'
   stable: '3.6'
-  upcoming: '3.8'
+  upcoming: '4.0'
 git:
   branches:
     manual: 'v3.6'
