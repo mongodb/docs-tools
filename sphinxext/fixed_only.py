@@ -19,14 +19,9 @@ class Cond(Directive):
     def run(self):
         config = self.state.document.settings.env.config
         if config._raw_config['tags'].eval_condition(self.arguments[0]):
-            # node = nodes.container()
             node = addnodes.only()
             node['expr'] = 'true'
             nested_parse_with_titles(self.state, self.content, node)
-            # self.state.nested_parse(self.content, self.content_offset, node, match_titles=1)
-            # include_lines = statemachine.string2lines(self.content, tab_width,
-            #                                           convert_whitespace=True)
-            # self.state_machine.insert_input(include_lines, path)
             return [node]
 
         return []
