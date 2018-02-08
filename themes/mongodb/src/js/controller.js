@@ -1,6 +1,7 @@
 import * as componentCopyButtons from './componentCopyButtons';
 import * as componentFastLoad from './componentFastLoad';
 import * as componentFeedback from './componentFeedback';
+import * as componentLightbox from './componentLightbox';
 import * as componentSidebar from './componentSidebar';
 import * as componentTabs from './componentTabs';
 import * as componentVersionSelector from './componentVersionSelector';
@@ -27,6 +28,7 @@ $(() => {
     fastNav.register(componentCopyButtons);
     fastNav.register(componentFastLoad);
     fastNav.register(componentFeedback);
+    fastNav.register(componentLightbox);
     fastNav.register(componentSidebar);
     fastNav.register(componentTabs);
     fastNav.register(componentVersionSelector);

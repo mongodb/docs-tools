@@ -1,0 +1,46 @@
+.lightbox:hover {
+    cursor: pointer;
+}
+
+.lightbox img:hover {
+    opacity: 0.7;
+}
+
+.lightbox__modal {
+    background-color: #000; /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+    display: block; /* Hidden by default */
+    height: 100%; /* Full height */
+    left: 0;
+    overflow: auto; /* Enable scroll if needed */
+    padding-top: 100px; /* Location of the box */
+    position: fixed; /* Stay in place */
+    top: 0;
+    width: 100%; /* Full width */
+    z-index: 100; /* Sit on top */
+}
+
+.lightbox__modal:hover {
+    cursor: pointer;
+}
+
+.lightbox__content {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.lightbox__content--activated {
+    opacity: 1;
+}
+
+.lightbox__caption {
+    color: #444;
+    font-size: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 100%;
+}

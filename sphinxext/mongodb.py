@@ -14,10 +14,14 @@
 
 import os.path
 
+from docutils import nodes
+from docutils.parsers.rst import directives
+
 import sphinx
 from sphinx.domains import Domain, ObjType
 from sphinx.locale import l_, _
 from sphinx.directives import ObjectDescription
+from sphinx.directives.patches import Figure
 from sphinx.roles import XRefRole
 from sphinx.domains.python import _pseudo_parse_arglist
 from sphinx.util.nodes import make_refnode
@@ -317,8 +321,24 @@ class MongoDBDomain(Domain):
                 self.data['objects'][fullname] = (fn, objtype)
 
 
+class ExtendedFigure(Figure):
+    option_spec = Figure.option_spec.copy()
+    option_spec['lightbox'] = str
+
+    def run(self):
+        result = Figure.run(self)
+        if len(result) == 2 or isinstance(result[0], nodes.system_message):
+            return result
+
+        if 'lightbox' in self.options:
+            result[0]['classes'] += ['lightbox']
+
+        return result
+
+
 def setup(app):
     app.add_domain(MongoDBDomain)
+    directives.register_directive('figure', ExtendedFigure)
 
     # Do NOT turn on parallel reads until we know what's causing massive
     # (2+ GB per worker) memory bloat and thrashing.
