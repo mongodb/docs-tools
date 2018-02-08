@@ -27,7 +27,7 @@ all: $(TARGETS)
 lint-css: node_modules/.CURRENT
 	./node_modules/.bin/csslint --quiet --format=compact --errors=$(ERRORS) --warnings=$(CSS_WARNINGS) css/basic.css css/mongodb-docs.css
 
-node_modules/.CURRENT: package.json node_modules
+node_modules node_modules/.CURRENT: package.json package-lock.json
 	npm install
 	touch $@
 

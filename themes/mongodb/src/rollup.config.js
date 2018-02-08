@@ -22,7 +22,6 @@ export default {
         uglify({}, minify)
     ],
     output: {
-        file: '../static/controller.js',
         format: 'iife'
     }
 }
