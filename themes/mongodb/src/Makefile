@@ -18,24 +18,18 @@ CSS_WARNINGS=regex-selectors,unqualified-attributes,text-indent
 all: $(TARGETS)
 
 ../static/controller.js: js/*.js node_modules/.CURRENT
-	greni
-	cp build/controller.js $@
-	cp build/controller.js.map $@.map
+	./node_modules/.bin/rollup -m -c rollup.config.js -o $@
 
 ../static/mongodb-docs.css: $(CSS_FILES) node_modules/.CURRENT
 	$(MAKE) lint-css
-	./node_modules/.bin/cleancss --skip-rebase --semantic-merging -o $@ $(CSS_INPUTS)
+	./node_modules/.bin/cleancss -O2 'mergeSemantically:on;restructureRules:on' --skip-rebase --inline local,fonts.googleapis.com -o $@ $(CSS_INPUTS)
 
 lint-css: node_modules/.CURRENT
 	./node_modules/.bin/csslint --quiet --format=compact --errors=$(ERRORS) --warnings=$(CSS_WARNINGS) css/basic.css css/mongodb-docs.css
 
 node_modules/.CURRENT: package.json node_modules
-	npm update
-	touch node_modules/.CURRENT
-
-node_modules:
 	npm install
+	touch $@
 
 clean:
-	rm -f $(TARGETS) ../static/controller.js.map
-	-rm -r build/*
+	-rm $(TARGETS) ../static/controller.js.map
