@@ -8,7 +8,7 @@
 
 .lightbox__modal {
     background-color: #000; /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+    background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
     display: block; /* Hidden by default */
     height: 100%; /* Full height */
     left: 0;
