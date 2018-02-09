@@ -1,4 +1,5 @@
 const CLASS_ACTIVATED = 'lightbox__content--activated';
+const CLASS_SCALABLE = 'lightbox__content--scalable';
 
 const modal = document.createElement('div');
 modal.className = 'lightbox__modal';
@@ -29,6 +30,12 @@ export function setup() {
             document.body.appendChild(modal);
             modalContent.src = img.src;
             modalContent.alt = `${img.alt} — Enlarged`;
+
+            if (/\.svg$/.test(modalContent.src)) {
+                modalContent.classList.add(CLASS_SCALABLE);
+            } else {
+                modalContent.classList.remove(CLASS_SCALABLE);
+            }
 
             modal.addEventListener('click', () => {
                 modalContent.classList.remove(CLASS_ACTIVATED);

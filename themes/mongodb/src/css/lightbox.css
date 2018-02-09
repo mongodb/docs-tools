@@ -36,6 +36,11 @@
     opacity: 1;
 }
 
+.lightbox__content--scalable {
+    background-color: #fff;
+    padding: 5px;
+}
+
 .lightbox__caption {
     color: #444;
     font-size: 80%;
