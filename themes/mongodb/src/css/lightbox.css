@@ -2,11 +2,6 @@
     cursor: pointer;
 }
 
-.lightbox img {
-    /* Provide a little bit of room on the sides */
-    max-width: calc(100% - 20px);
-}
-
 .lightbox__modal {
     background-color: #000; /* Fallback color */
     background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
@@ -31,6 +26,9 @@
     margin-right: auto;
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
+
+    /* Provide a little bit of room on the sides */
+    max-width: calc(100% - 20px);
 }
 
 .lightbox__content--activated {
