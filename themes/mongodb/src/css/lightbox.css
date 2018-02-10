@@ -2,8 +2,9 @@
     cursor: pointer;
 }
 
-.lightbox img:hover {
-    opacity: 0.7;
+.lightbox img {
+    /* Provide a little bit of room on the sides */
+    max-width: calc(100% - 20px);
 }
 
 .lightbox__modal {
