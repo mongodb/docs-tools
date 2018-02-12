@@ -1,3 +1,4 @@
+import * as componentButtonCodeBlockCopyButton from './componentButtonCodeBlockCopyButton';
 import * as componentCopyButtons from './componentCopyButtons';
 import * as componentFastLoad from './componentFastLoad';
 import * as componentFeedback from './componentFeedback';
@@ -26,6 +27,7 @@ const fastNav = new FastNav();
 
 $(() => {
     fastNav.register(componentCopyButtons);
+    fastNav.register(componentButtonCodeBlockCopyButton);
     fastNav.register(componentFastLoad);
     fastNav.register(componentFeedback);
     fastNav.register(componentLightbox);
