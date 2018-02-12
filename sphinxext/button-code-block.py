@@ -20,12 +20,10 @@ class code_button(nodes.Element):
     pass
 def visit_code_button(self, node):
     x = node.get('href', False)
-    print(x)
     if x:
         start_tag = self.starttag(node, 'a', CLASS='code-button', href=x, target="_blank")
     else:
         start_tag = self.starttag(node, 'a', CLASS='code-button')
-    print('start_tag', start_tag, type(start_tag))
 
     self.body.append(start_tag)
 def depart_code_button(self, node):
@@ -43,7 +41,6 @@ def depart_code_container(self, node):
 
 
 def createButton(buttonType, link):
-    print('create button:', buttonType, link)
     button = code_button('')
     button['text'] = [buttonType]
     if link:
@@ -67,7 +64,6 @@ class ButtonCodeBlock(CodeBlock):
 
     def run(self):
         options = self.options
-        print(options)
 
         container = code_container('')
         codeblock = CodeBlock.run(self)
