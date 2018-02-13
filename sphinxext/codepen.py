@@ -21,7 +21,7 @@ def visit_codepen(self, node):
         data-pen-title={slug}
         data-slug-hash={slug}
         data-height="600"
-        data-theme-id="32499"
+        data-theme-id="32535"
         data-default-tab="js,result"
         data-user="mongodb-docs"
         data-embed-version="2"
