@@ -215,7 +215,7 @@ describe('widgets', function() {
             await engine.call('click', '.deluge-header')
             await engine.base.wait(500)
             await engine.compare('.deluge')
-            const afterHeight = await engine.base.evaluate(() => {
+            const afterHeight = await engine.test.evaluate(() => {
                 return document.querySelector('.deluge').offsetHeight
             })
 
