@@ -18,6 +18,7 @@ from docutils import nodes
 from docutils.parsers.rst import directives
 
 import sphinx
+import sphinx.directives.code
 from sphinx.domains import Domain, ObjType
 from sphinx.locale import l_, _
 from sphinx.directives import ObjectDescription
@@ -29,13 +30,16 @@ from sphinx.util.docfields import Field, GroupedField, TypedField
 
 from mongodb_conf import conf
 
+
 def make_index_entry(*args):
     """Sphinx 1.4 makes a breaking change in index format, so return a valid
        index entry whichever version we're running."""
     return args + (None,) if sphinx.version_info >= (1, 4) else args
 
+
 def basename(path):
     return os.path.splitext(os.path.basename(path))[0]
+
 
 class MongoDBObject(ObjectDescription):
     """
@@ -157,7 +161,6 @@ class MongoDBObject(ObjectDescription):
         else:
             objects[fullname] = self.env.docname, self.objtype
 
-
         indextext = self.get_index_text(objectname, name_obj)
         if indextext:
             self.indexnode['entries'].append(
@@ -210,8 +213,10 @@ class MongoDBObject(ObjectDescription):
               names=('rtype',)),
     ]
 
+
 class MongoDBMethod(MongoDBObject):
     has_arguments = True
+
 
 class MongoDBXRefRole(XRefRole):
     def process_link(self, env, refnode, has_explicit_title, title, target):
@@ -230,10 +235,11 @@ class MongoDBXRefRole(XRefRole):
             refnode['refspecific'] = True
         return title, target
 
+
 def render_domain_data(mongodb_directives):
-    directives = { }
-    roles = { }
-    object_types = { }
+    directives = {}
+    roles = {}
+    object_types = {}
 
     for directive in mongodb_directives:
         reftype = directive['name']
@@ -248,6 +254,7 @@ def render_domain_data(mongodb_directives):
 
     return directives, roles, object_types
 
+
 class MongoDBDomain(Domain):
     """MongoDB Documentation domain."""
     name = 'mongodb'
@@ -257,7 +264,7 @@ class MongoDBDomain(Domain):
     directives, roles, object_types = render_domain_data(conf['directives'])
 
     initial_data = {
-        'objects': {}, # fullname -> docname, objtype
+        'objects': {},  # fullname -> docname, objtype
     }
 
     def find_obj(self, env, obj, name, typ, searchorder=0):
@@ -336,11 +343,114 @@ class ExtendedFigure(Figure):
         return result
 
 
+class code_button_row(nodes.Element):
+    pass
+
+
+def visit_code_button_row(self, node):
+    start_tag = self.starttag(node, 'div', CLASS='button-row')
+    self.body.append(start_tag)
+
+
+def depart_code_button_row(self, node):
+    self.body.append('</div>\n')
+
+
+class code_button(nodes.Element):
+    pass
+
+
+def visit_code_button(self, node):
+    href = node.get('href', False)
+    css_class = ' '.join(['code-button'] + node.get('classes', []))
+
+    if href:
+        start_tag = self.starttag(node, 'a', CLASS=css_class, role='button', href=href, target='_blank')
+    else:
+        start_tag = self.starttag(node, 'a', CLASS=css_class, role='button')
+
+    self.body.append(start_tag)
+
+
+def depart_code_button(self, node):
+    self.body.append(node['text'][0] + '</a>\n')
+
+
+class code_container(nodes.Element):
+    pass
+
+
+def visit_code_container(self, node):
+    start_tag = self.starttag(node, 'div', CLASS='button-code-block')
+    self.body.append(start_tag)
+
+
+def depart_code_container(self, node):
+    self.body.append('</div>\n')
+
+
+def create_button(button_type, link, classes=[]):
+    """Create a button inside of a code block with the given label and link."""
+    button = code_button('')
+    button['text'] = [button_type]
+    button['classes'] = classes
+
+    if link:
+        button['href'] = [link]
+
+    return button
+
+
+class CodeBlock(sphinx.directives.code.CodeBlock):
+    """
+    Add copy, show in stitch, and github buttons to code block.
+    """
+    option_spec = sphinx.directives.code.CodeBlock.option_spec.copy()
+    option_spec.update({
+        'button-github': directives.uri,
+        'button-stitch': directives.uri,
+        'copyable': lambda argument: directives.choice(argument,
+                                                       ('true', 'false', None)),
+    })
+
+    def run(self):
+        options = self.options
+
+        container = code_container('')
+        codeblock = sphinx.directives.code.CodeBlock.run(self)
+        br = code_button_row('')
+
+        if options.get('copyable', 'true') != 'false':
+            codeblock[0]['classes'] += ['copyable-code-block']
+            br += create_button('copy', False, ['code-button--copy'])
+
+        if options.get('button-github'):
+            br += create_button('github', options['button-github'])
+
+        if options.get('button-stitch'):
+            br += create_button('stitch', options['button-stitch'])
+
+        container += br
+        container += codeblock
+        return [container]
+
+
 def setup(app):
     app.add_domain(MongoDBDomain)
     directives.register_directive('figure', ExtendedFigure)
 
+    app.add_node(code_button_row, html=(
+        visit_code_button_row, depart_code_button_row
+    ))
+    app.add_node(code_button, html=(
+        visit_code_button, depart_code_button
+    ))
+    app.add_node(code_container, html=(
+        visit_code_container, depart_code_container
+    ))
+    directives.register_directive('code-block', CodeBlock)
+
     # Do NOT turn on parallel reads until we know what's causing massive
     # (2+ GB per worker) memory bloat and thrashing.
-    return { 'parallel_read_safe': False,
-             'parallel_write_safe': True }
+    return {'parallel_read_safe': False,
+            'parallel_write_safe': True}
