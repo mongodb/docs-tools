@@ -1,27 +1,22 @@
 export function setup() {
-    const copyableBlocks = document.getElementsByClassName('copyable-code');
+    const copyableBlocks = document.getElementsByClassName('copyable-button');
     for (const copyBlock of copyableBlocks) {
         const highlightElement = copyBlock.getElementsByClassName('highlight')[0];
         if (!highlightElement) {
             return;
         }
 
-        const text = highlightElement.innerText.trim();
-        const copyButtonContainer = document.createElement('div');
-        const copyButton = document.createElement('button');
-        const copyIcon = document.createElement('span');
-        copyButtonContainer.className = 'copy-button-container';
-        copyIcon.className = 'fa fa-clipboard';
-        copyButton.className = 'copy-button';
-        copyButton.appendChild(copyIcon);
-        copyButton.appendChild(document.createTextNode('Copy'));
-        copyButtonContainer.appendChild(copyButton);
-        highlightElement.insertBefore(copyButtonContainer, highlightElement.children[0]);
+        const copyButton = copyBlock.previousElementSibling.querySelector('a');
+        if (!copyButton) {
+            return;
+        }
+
+        const originalText = copyButton.innerText;
         copyButton.addEventListener('click', () => {
             const tempElement = document.createElement('textarea');
             tempElement.style.position = 'fixed';
             document.body.appendChild(tempElement);
-            tempElement.value = text;
+            tempElement.value = highlightElement.innerText.trim();
             tempElement.select();
 
             try {
@@ -29,8 +24,12 @@ export function setup() {
                 if (!successful) {
                     throw new Error('Failed to copy');
                 }
+
+                copyButton.innerText = 'copied';
+                window.setTimeout(() => {
+                    copyButton.innerText = originalText;
+                }, 1000);
             } catch (err) {
-                console.error('Failed to copy');
                 console.error(err);
             }
 
