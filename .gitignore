@@ -26,3 +26,5 @@ src/build/
 /world-builder/source
 /world-builder/build
 /world-builder/.ninja*
+
+.vscode

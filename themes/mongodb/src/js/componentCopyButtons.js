@@ -1,27 +1,22 @@
 export function setup() {
-    const copyableBlocks = document.getElementsByClassName('copyable-code');
+    const copyableBlocks = document.getElementsByClassName('copyable-code-block');
     for (const copyBlock of copyableBlocks) {
         const highlightElement = copyBlock.getElementsByClassName('highlight')[0];
         if (!highlightElement) {
             return;
         }
 
-        const text = highlightElement.innerText.trim();
-        const copyButtonContainer = document.createElement('div');
-        const copyButton = document.createElement('button');
-        const copyIcon = document.createElement('span');
-        copyButtonContainer.className = 'copy-button-container';
-        copyIcon.className = 'fa fa-clipboard';
-        copyButton.className = 'copy-button';
-        copyButton.appendChild(copyIcon);
-        copyButton.appendChild(document.createTextNode('Copy'));
-        copyButtonContainer.appendChild(copyButton);
-        highlightElement.insertBefore(copyButtonContainer, highlightElement.children[0]);
+        const buttonRow = copyBlock.previousElementSibling;
+        const copyButton = buttonRow.getElementsByClassName('code-button--copy')[0];
+        if (!copyButton) {
+            return;
+        }
+
         copyButton.addEventListener('click', () => {
             const tempElement = document.createElement('textarea');
             tempElement.style.position = 'fixed';
             document.body.appendChild(tempElement);
-            tempElement.value = text;
+            tempElement.value = highlightElement.innerText.trim();
             tempElement.select();
 
             try {
@@ -30,7 +25,6 @@ export function setup() {
                     throw new Error('Failed to copy');
                 }
             } catch (err) {
-                console.error('Failed to copy');
                 console.error(err);
             }
 

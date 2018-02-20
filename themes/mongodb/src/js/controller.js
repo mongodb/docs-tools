@@ -26,13 +26,13 @@ class FastNav {
 const fastNav = new FastNav();
 
 $(() => {
-    fastNav.register(componentCopyButtons);
     fastNav.register(componentCodepen);
     fastNav.register(componentFastLoad);
     fastNav.register(componentFeedback);
     fastNav.register(componentLightbox);
     fastNav.register(componentSidebar);
     fastNav.register(componentTabs);
+    fastNav.register(componentCopyButtons);
     fastNav.register(componentVersionSelector);
 
     /* Hide toc if there aren't any items */

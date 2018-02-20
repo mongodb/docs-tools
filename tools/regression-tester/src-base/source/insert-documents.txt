@@ -30,7 +30,6 @@ Insert a Single Document
        content: |
          Shell ipsum dolor sit amet, consectetur adipiscing elit.
 
-         .. cssclass:: copyable-code
          .. code-block:: js
 
             db.inventory.insertOne(
