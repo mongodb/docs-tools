@@ -1,9 +1,6 @@
-import logging
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.util.nodes import nested_parse_with_titles
-
-logger = logging.getLogger('fasthtml')
 
 
 class Cond(Directive):
