@@ -1,23 +1,27 @@
 export function setup() {
-    const copyableBlocks = document.getElementsByClassName('copyable-code-block');
+    const copyableBlocks = document.getElementsByClassName('copyable-code');
     for (const copyBlock of copyableBlocks) {
         const highlightElement = copyBlock.getElementsByClassName('highlight')[0];
         if (!highlightElement) {
             return;
         }
 
-        const buttonRow = copyBlock.previousElementSibling;
-        const copyButton = buttonRow.getElementsByClassName('code-button--copy')[0];
-        if (!copyButton) {
-            return;
-        }
-
-        const originalText = copyButton.innerText;
+        const text = highlightElement.innerText.trim();
+        const copyButtonContainer = document.createElement('div');
+        const copyButton = document.createElement('button');
+        const copyIcon = document.createElement('span');
+        copyButtonContainer.className = 'copy-button-container';
+        copyIcon.className = 'fa fa-clipboard';
+        copyButton.className = 'copy-button';
+        copyButton.appendChild(copyIcon);
+        copyButton.appendChild(document.createTextNode('Copy'));
+        copyButtonContainer.appendChild(copyButton);
+        highlightElement.insertBefore(copyButtonContainer, highlightElement.children[0]);
         copyButton.addEventListener('click', () => {
             const tempElement = document.createElement('textarea');
             tempElement.style.position = 'fixed';
             document.body.appendChild(tempElement);
-            tempElement.value = highlightElement.innerText.trim();
+            tempElement.value = text;
             tempElement.select();
 
             try {
@@ -25,12 +29,8 @@ export function setup() {
                 if (!successful) {
                     throw new Error('Failed to copy');
                 }
-
-                copyButton.innerText = 'copied';
-                window.setTimeout(() => {
-                    copyButton.innerText = originalText;
-                }, 1000);
             } catch (err) {
+                console.error('Failed to copy');
                 console.error(err);
             }
 

@@ -156,8 +156,8 @@ describe('widgets', function() {
         it('should correctly copy code', async function() {
             await engine.base.clearClipboard()
             await engine.base.goto(getTestPath('insert-documents.html'))
-            await engine.base.wait('.code-button')
-            await engine.base.click('.code-button')
+            await engine.base.wait('.copy-button')
+            await engine.base.click('.copy-button')
             const text = await engine.base.getClipboard()
             assert.strictEqual(text, EXPECTED_TEXT)
         })

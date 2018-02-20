@@ -1,4 +1,3 @@
-import * as componentCodepen from './componentCodepen';
 import * as componentCopyButtons from './componentCopyButtons';
 import * as componentFastLoad from './componentFastLoad';
 import * as componentFeedback from './componentFeedback';
@@ -27,7 +26,6 @@ const fastNav = new FastNav();
 
 $(() => {
     fastNav.register(componentCopyButtons);
-    fastNav.register(componentCodepen);
     fastNav.register(componentFastLoad);
     fastNav.register(componentFeedback);
     fastNav.register(componentLightbox);
