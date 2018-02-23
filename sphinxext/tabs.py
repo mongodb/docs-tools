@@ -22,10 +22,17 @@ LANGUAGES_RAW = [('shell', 'Mongo Shell'),
 LANGUAGES_IDS = [lang[0] for lang in LANGUAGES_RAW]
 LANGUAGES_DISPLAY = [lang[1] for lang in LANGUAGES_RAW]
 
+TABS_TOP = '''
+.. raw:: html
+
+   <div class="tabs-top"></div>
+'''
+
 TABS_TEMPLATE = '''
 .. raw:: html
 
    <div class="tabs">
+     {{ if hidden not }}
      <ul class="tab-strip tab-strip--singleton" role="tablist" %PREFERENCE%>
        {{ for tab in tabs %FILTER% }}
        {{ # Only render the tab here if i < 5 }}
@@ -47,6 +54,7 @@ TABS_TEMPLATE = '''
        </li>
        {{ end }}
      </ul>
+     {{ end }}
      <div class="tabs__content" role="tabpanel">
        {{ for tab in tabs %FILTER% }}
        <div class="tabpanel-{{ tab.id }}">
@@ -105,6 +113,10 @@ def setup(app):
 
     directive = template.create_directive('h4', H4_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
     app.add_directive('h4', directive)
+
+    # Create directive for positioning tabs at top of the page
+    directive = template.create_directive('tabs-top', TABS_TOP, template.BUILT_IN_PATH, True)
+    app.add_directive('tabs-top', directive)
 
     # Create drivers tab directive
     directive = template.create_directive('tabs-drivers', buildTemplate("sortLanguages", "drivers"), template.BUILT_IN_PATH, True)
