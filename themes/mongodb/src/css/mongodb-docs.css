@@ -655,12 +655,10 @@ div.body div.contents.twocols  ul{
    margin: 0;
    padding-left: 1.0em;
    -webkit-column-count:2;
-   -moz-column-count:2;
    -ms-column-count:2;
    -o-column-count:2;
    column-count:2;
    -webkit-column-gap: 10px;
-   -moz-column-gap: 10px;
    -ms-column-gap: 10px;
    -o-column-gap: 10px;
    column-gap: 10px;
@@ -712,7 +710,6 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     flex-grow: 2;
     margin: 40px 15px;
     transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
-    -moz-transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
     -webkit-transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
 
     -webkit-align-items: center;
@@ -773,7 +770,7 @@ div.document {
     }
 }
 
-/* Adjust padding around the search div so autocomplete suggestions line up */ 
+/* Adjust padding around the search div so autocomplete suggestions line up */
 #navbar-docs .navbar-search {
   padding: 10px 0px 10px 45px;
 }
@@ -785,7 +782,6 @@ div.document {
 #header-db .search-db {
     transition: width 0.3s linear;
     -webkit-transition: width 0.3s linear;
-    -moz-transition: width 0.3s linear;
     -o-transition: width 0.3s linear;
     margin-left: 45px;
     margin-top: 11px;
@@ -879,11 +875,11 @@ div.document {
     height: 21px;
     position: absolute;
     right: 0;
-    bottom: 43px;
+    bottom: 0;
 }
 
 .right-column .wrapper {
-    min-height: 100%;
+    min-height: calc(100% - 50px);
     position: fixed;
     margin-top: 10px;
     /* the margin-top of 38px or so should make this align at top with the body text, couldn't decide */
@@ -1015,7 +1011,7 @@ div.sphinxsidebar h3 a.showlink {
 .sphinxsidebarwrapper>ul>.toctree-l1:last-child {
     border-bottom: 1px solid #e0e7e8;
 }
-  
+
 .sphinxsidebarwrapper li.toctree-l1 ul > li > a {
     line-height: 24px;
     display: inline-block;
@@ -1522,7 +1518,6 @@ h4.modal-title {
     background-color: none;
     border-radius: 0;
     -webkit-box-shadow: none;
-       -moz-box-shadow: none;
             box-shadow: none;
 }
 
@@ -1653,15 +1648,12 @@ table.compatibility-large th:nth-child(1){
     #topbar {
         display: none;
     }
-    
+
     #left-column {
         display: none;
     }
-    
+
     #showNav {
         display: none;
     }
-    
-    
 }
-
