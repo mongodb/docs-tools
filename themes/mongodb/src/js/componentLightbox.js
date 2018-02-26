@@ -8,6 +8,19 @@ const modalContent = document.createElement('img');
 modalContent.className = 'lightbox__content';
 modal.appendChild(modalContent);
 
+function closeLightbox(ev) {
+    if (ev.type === 'keydown' && ev.key !== 'Escape') {
+        return;
+    }
+
+    modalContent.classList.remove(CLASS_ACTIVATED);
+    if (!modal.parentNode) {
+        return;
+    }
+
+    modal.parentNode.removeChild(modal);
+}
+
 // Wrap an image in a lightbox
 function wrapImage(img) {
     const wrapperElement = document.createElement('div');
@@ -32,14 +45,7 @@ function wrapImage(img) {
             modalContent.classList.remove(CLASS_SCALABLE);
         }
 
-        modal.addEventListener('click', () => {
-            modalContent.classList.remove(CLASS_ACTIVATED);
-            if (!modal.parentNode) {
-                return;
-            }
-
-            modal.parentNode.removeChild(modal);
-        });
+        modal.addEventListener('click', closeLightbox);
 
         // Wait until the next DOM tick to make the fade animation work
         setTimeout(() => {
@@ -85,4 +91,7 @@ export function setup() {
             img.addEventListener('load', wrapIfNeeded.bind(null, figure, img));
         }
     }
+
+    // Register our escape handler. This is idempotent
+    document.addEventListener('keydown', closeLightbox);
 }
