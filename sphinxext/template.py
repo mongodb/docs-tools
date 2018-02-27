@@ -13,11 +13,6 @@ import yaml
 if sys.version_info.major >= 3:
     basestring = str
 
-# Maps source filenames (.txt) to a set of directives registered within that
-# scope. Makes sure that directives are always registered in each file, to
-# prevent inconsistent errors.
-REGISTERED = {}
-
 PAT_SUBSTITUTION = re.compile(r'^\$[\w\.]+$')
 
 BUILT_IN_PATH = '[built_in]'

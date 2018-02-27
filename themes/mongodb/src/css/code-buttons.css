@@ -15,6 +15,7 @@
   text-decoration: none;
   cursor: pointer;
 
+  position: relative;
   height: 24px;
   line-height: 16px;
   margin: 0px 1px;
@@ -38,6 +39,38 @@
 
 .code-button:active {
   background: #7a7b7b;
+}
+
+.code-button__tooltip {
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 13px;
+  opacity: 0;
+  padding: 4px 16px;
+  position: absolute;
+  pointer-events: none;
+  transition: opacity 0.3s ease-out;
+  background-color: rgba(34,34,34,0.8);
+  opacity: 0.0;
+  top: -125%;
+  right: 8px;
+}
+
+.code-button__tooltip::after {
+  width: 0;
+  height: 0;
+  border-top: 10px solid rgba(34,34,34,0.8);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  bottom: -10px;
+  left: calc(50% - 6px);
+  position: absolute;
+  content: "";
+}
+
+.code-button:hover .code-button__tooltip--active,
+.code-button:active .code-button__tooltip--active {
+  opacity: 1.0
 }
 
 .button-code-block pre {
