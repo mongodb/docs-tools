@@ -16,7 +16,7 @@ class TabsSingleton {
 
         // Only tab sets will have a type, init and try to retrieve
         this.type = null;
-        if (this.tabStrips !== null) {
+        if (this.tabStrips.length > 0) {
             this.type = this.tabStrips[0].getAttribute('data-tab-preference');
         }
     }
@@ -69,7 +69,7 @@ class TabsSingleton {
     }
 
     setup() {
-        if (!this.tabStrips) { return; }
+        if (this.tabStrips.length === 0) { return; }
 
         this.hideTabBars();
 
@@ -101,7 +101,7 @@ class TabsSingleton {
     }
 
     update() {
-        if (!this.tabStrips) { return; }
+        if (this.tabStrips.length === 0) { return; }
         let type = this.type;
 
         let tabPref = this.tabPref;
