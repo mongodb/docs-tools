@@ -46,18 +46,12 @@ export function setup() {
                 popupElement.classList.replace(TOOLTIP_STATE_INACTIVE, TOOLTIP_STATE_ACTIVE);
                 closePopupTimer = cancelAndWait(() => {
                     popupElement.classList.replace(TOOLTIP_STATE_ACTIVE, TOOLTIP_STATE_INACTIVE);
-                }, closePopupTimer, 2500);
+                }, closePopupTimer, 1500);
             } catch (err) {
                 console.error(err);
             }
 
             document.body.removeChild(tempElement);
         });
-
-        copyButton.onmouseleave = () => {
-            window.clearTimeout(closePopupTimer);
-            closePopupTimer = -1;
-            popupElement.classList.replace(TOOLTIP_STATE_ACTIVE, TOOLTIP_STATE_INACTIVE);
-        };
     }
 }

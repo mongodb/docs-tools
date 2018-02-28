@@ -69,8 +69,7 @@
   content: "";
 }
 
-.code-button:hover .code-button__tooltip--active,
-.code-button:active .code-button__tooltip--active {
+.code-button__tooltip--active {
   opacity: 1.0
 }
 
