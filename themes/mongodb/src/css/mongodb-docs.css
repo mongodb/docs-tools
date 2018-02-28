@@ -1363,10 +1363,6 @@ div.admonition {
     border-color: #ed271c;
 }
 
-div.admonition pre {
-    margin: 10px 0;
-}
-
 dd > div.admonition {
     margin-left: 0;
 }
