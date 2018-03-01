@@ -110,7 +110,7 @@ class Guide(Directive):
         'procedure': str,
         'verify': str,
         'summary': str,
-        'whats_next': str
+        'whats_next': str,
         'seealso': str
     }
 
