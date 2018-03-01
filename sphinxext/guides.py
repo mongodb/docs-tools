@@ -17,14 +17,21 @@ GUIDES_TEMPLATE = fett.Template('''
    :depth: 1
    :class: singlecol
 
+Author: {{ author }}
+
 {{ result_description }}
 
 *Time required: {{ time }} minutes*
 
-Prerequisites
--------------
+What You'll Need
+----------------
 
 {{ prerequisites }}
+
+Check Your Environment
+----------------------
+
+{{ check_your_environment }}
 
 Procedure
 ---------
@@ -35,6 +42,13 @@ Procedure
 
 {{ procedure }}
 
+{{ if verify }}
+Verify
+------
+
+{{ verify }}
+{{ end }}
+
 Summary
 -------
 
@@ -44,7 +58,6 @@ What's Next
 -----------
 
 {{ whats_next }}
-
 ''')
 
 LEADING_WHITESPACE = re.compile(r'^\n?(\x20+)')
@@ -95,12 +108,15 @@ class Guide(Directive):
         'check_your_environment': str,
         'considerations': str,
         'procedure': str,
+        'verify': str,
         'summary': str,
         'whats_next': str
+        'seealso': str
     }
 
     guide_key_defaults = {
-        'considerations': ''
+        'considerations': '',
+        'verify': ''
     }
 
     def run(self):
