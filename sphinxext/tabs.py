@@ -3,24 +3,6 @@ import fett
 import template
 
 PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^````+$))', re.M)
-# List of tuples with language tab ( ID, Display Name)
-LANGUAGES_RAW = [('shell', 'Mongo Shell'),
-             ('compass', 'Compass'),
-             ('python', 'Python'),
-             ('java-sync', 'Java (Sync)'),
-             ('nodejs', 'Node.js'),
-             ('php', 'PHP'),
-             ('motor', 'Motor'),
-             ('java-async', 'Java (Async)'),
-             ('c', 'C'),
-             #('cpp11', 'C++11'),
-             ('csharp', 'C#'),
-             ('perl', 'Perl'),
-             ('ruby', 'Ruby'),
-             ('scala', 'Scala')
-             ]
-LANGUAGES_IDS = [lang[0] for lang in LANGUAGES_RAW]
-LANGUAGES_DISPLAY = [lang[1] for lang in LANGUAGES_RAW]
 
 TABS_TOP = '''
 .. raw:: html
@@ -100,75 +82,93 @@ H4_TEMPLATE_HTML = '''
    <h4>{{ title }}</h4>
 '''
 
+
+def build_template(tab_filter, preference):
+    # If tab_filter is not a string, make it an empty string
+    if not isinstance(tab_filter, str):
+        tab_filter = ''
+
+    template = TABS_TEMPLATE.replace('%FILTER%', tab_filter)
+
+    if isinstance(preference, str) and preference != '':
+        return template.replace('%PREFERENCE%', 'data-tab-preference="{}"'.format(preference))
+
+    return template.replace('%PREFERENCE%', '')
+
+
+def create_tab_directive(name, tab_definitions):
+    tab_ids = [tab_definition[0] for tab_definition in tab_definitions]
+    tab_display = [tab_definition[1] for tab_definition in tab_definitions]
+
+    def sortTabs(tab_data):
+        # Create a list for the sorted data
+        sorted = [None] * len(tab_definitions)
+
+        for tab in tab_data:
+            index = tab_ids.index(tab['id'])
+            tab['name'] = tab_display[index]
+            sorted[index] = tab
+
+        return filter(None, sorted)
+
+    sorter_name = 'sort' + name.title()
+    fett.Template.FILTERS[sorter_name] = sortTabs
+
+    return template.create_directive(
+        'tabs-{}'.format(name),
+        build_template(sorter_name, name),
+        template.BUILT_IN_PATH,
+        True)
+
+
 def setup(app):
     # Handle headers inside tab directives
-    directive = template.create_directive('h1', H1_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
-    app.add_directive('h1', directive)
-
-    directive = template.create_directive('h2', H2_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
-    app.add_directive('h2', directive)
-
-    directive = template.create_directive('h3', H3_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
-    app.add_directive('h3', directive)
-
-    directive = template.create_directive('h4', H4_TEMPLATE_HTML, template.BUILT_IN_PATH, True)
-    app.add_directive('h4', directive)
+    app.add_directive('h1', template.create_directive('h1', H1_TEMPLATE_HTML, template.BUILT_IN_PATH, True))
+    app.add_directive('h2', template.create_directive('h2', H2_TEMPLATE_HTML, template.BUILT_IN_PATH, True))
+    app.add_directive('h3', template.create_directive('h3', H3_TEMPLATE_HTML, template.BUILT_IN_PATH, True))
+    app.add_directive('h4', template.create_directive('h4', H4_TEMPLATE_HTML, template.BUILT_IN_PATH, True))
 
     # Create directive for positioning tabs at top of the page
-    directive = template.create_directive('tabs-top', TABS_TOP, template.BUILT_IN_PATH, True)
-    app.add_directive('tabs-top', directive)
+    app.add_directive('tabs-top', template.create_directive('tabs-top', TABS_TOP, template.BUILT_IN_PATH, True))
 
     # Create drivers tab directive
-    directive = template.create_directive('tabs-drivers', buildTemplate("sortLanguages", "drivers"), template.BUILT_IN_PATH, True)
-    app.add_directive('tabs-drivers', directive)
+    app.add_directive('tabs-drivers',
+        create_tab_directive('languages',
+            [('shell', 'Mongo Shell'),
+             ('compass', 'Compass'),
+             ('python', 'Python'),
+             ('java-sync', 'Java (Sync)'),
+             ('nodejs', 'Node.js'),
+             ('php', 'PHP'),
+             ('motor', 'Motor'),
+             ('java-async', 'Java (Async)'),
+             ('c', 'C'),
+             # ('cpp11', 'C++11'),
+             ('csharp', 'C#'),
+             ('perl', 'Perl'),
+             ('ruby', 'Ruby'),
+             ('scala', 'Scala')]))
+
+    # Create operating system tab directive
+    app.add_directive('tabs-platforms',
+        create_tab_directive('platforms',
+            [('windows', 'Windows'),
+             ('macos', 'macOS'),
+             ('linux', 'Linux')]))
 
     # Create general purpose tab directive with no error checking
-    directive = template.create_directive('tabs', buildTemplate("", ""), template.BUILT_IN_PATH, True)
-    app.add_directive('tabs', directive)
+    app.add_directive('tabs', template.create_directive('tabs', build_template('', ''), template.BUILT_IN_PATH, True))
 
     return {'parallel_read_safe': True,
             'parallel_write_safe': True}
 
-def buildTemplate(tabFilter, preference):
-    # If tabFilter is not a string, make it an empty string
-    if type(tabFilter) != str:
-        tabFilter = ""
-    template = TABS_TEMPLATE.replace("%FILTER%", tabFilter)
 
-    if type(preference) == str and preference != "":
-        template = template.replace("%PREFERENCE%", "data-tab-preference=\"" + preference + "\"")
-    else:
-        template = template.replace("%PREFERENCE%", "")
-
-    return template
-
-def convertSections(tabContent):
+def convert_sections(tab_content):
     """Convert rst-style sections into custom directives that ONLY insert
        the HTML header tags."""
     return PAT_RST_SECTION.sub(
         lambda match: HEADING_TEMPLATE_RST.format(template.Options.HEADING_LEVELS.index(match.group(2)[0]) + 1, match.group(1)),
-        tabContent)
+        tab_content)
 
-fett.Template.FILTERS['convertSections'] = convertSections
 
-def getLanguageNames(tabData):
-    for tab in tabData:
-        index = LANGUAGES_IDS.index(tab['id'])
-        tab['name'] = LANGUAGES_DISPLAY[index]
-
-    return tabData
-
-fett.Template.FILTERS['getLanguageNames'] = getLanguageNames
-
-def sortLanguages(tabData):
-    # Create a list for the sorted data
-    sorted = [None] * len(LANGUAGES_RAW)
-
-    for tab in tabData:
-        index = LANGUAGES_IDS.index(tab['id'])
-        tab['name'] = LANGUAGES_DISPLAY[index]
-        sorted[index] = tab
-
-    return filter(None, sorted)
-
-fett.Template.FILTERS['sortLanguages'] = sortLanguages
+fett.Template.FILTERS['convertSections'] = convert_sections
