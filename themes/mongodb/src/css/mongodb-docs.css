@@ -163,7 +163,6 @@ div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
     font-weight: 200;
     line-height: 24px;
     color: #313030;
-    margin: 0;
     padding: 0;
 }
 
@@ -180,13 +179,11 @@ div.body h2 {
 div.body h3 {
     font-size: 18px;
     font-weight: bold;
-    margin-bottom: 0;
 }
 
 div.body h4 {
     font-size: 16px;
     font-weight: bold;
-    margin-bottom: 0;
 }
 div.body h5 {
     font-size: 14px;
@@ -196,6 +193,12 @@ div.body h6 {
     font-size: 14px;
     font-weight: 300;
  }
+
+h2,
+h3,
+h4 {
+    margin: 24px 0;
+}
 
 div.body h1 + p,  div.body h2 + p, div.body h3 + p, div.body h4 + p,
 div.body h1 + dl, div.body h2 + dl, div.body h3 + dl,  div.body h4 + dl {
@@ -565,15 +568,6 @@ h2 + div.section,
 h3 + div.section,
 h4 + div.section {
     margin-top: 0;
-}
-
-div.section > h2, div.section > h3, div.section > h4 {
-    margin: 24px 0;
-}
-
-div.section > h3,
-div.section > h4 {
-    margin-bottom: 0;
 }
 
 .body h3 + p,
