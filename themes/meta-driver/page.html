@@ -32,6 +32,11 @@
            release, and is made available for testing purposes only.</span>
         </div>
     {%- endif %}
+    {%- if theme_is_private %}
+        <div class="alert alert-info">
+           <span class="alert-message">{{theme_privacy_warning}}</span>
+        </div>
+    {%- endif %}
 {%- endblock -%}
 
 {%- block adblockheader %}
