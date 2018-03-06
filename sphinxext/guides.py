@@ -61,30 +61,61 @@ What's Next
 ''')
 
 LEADING_WHITESPACE = re.compile(r'^\n?(\x20+)')
-PAT_KEY_VALUE = re.compile(r'([a-z_]+):((?:[^\n]*\n)(?:^(?:\x20|\n)+[^\n]*\n?)*)', re.M)
 
 
 def parse_keys(lines):
     """docutils field list parsing is busted. Just do this ourselves."""
     result = {}
-    text = '\n'.join(lines).replace('\t', '    ')
-    for match in PAT_KEY_VALUE.finditer(text):
-        if match is None:
-            continue
+    in_key = True
+    indentation = 0
 
-        value = match.group(2)
-        indentation_match = LEADING_WHITESPACE.match(value)
-        if indentation_match is None:
-            value = value.strip()
-        else:
-            indentation = len(indentation_match.group(1))
-            lines = [line[indentation:] for line in value.split('\n')]
-            if lines[-1] == '':
-                lines.pop()
+    pending_key = ''
+    pending_value = []
 
-            value = '\n'.join(lines)
+    # This is a 2-state machine
+    for lineno, line in enumerate(lines):
+        line = line.replace('\t', '    ')
+        line_indentation_match = LEADING_WHITESPACE.match(line)
 
-        result[match.group(1)] = value
+        if not in_key:
+            if line_indentation_match is None:
+                if not line:
+                    pending_value.append('')
+                    continue
+
+                # Switch to in_key
+                result[pending_key] = '\n'.join(pending_value).strip()
+                pending_value = []
+                pending_key = ''
+                in_key = True
+                indentation = 0
+            else:
+                line_indentation = len(line_indentation_match.group(0))
+                if indentation == 0:
+                    indentation = line_indentation
+                if line_indentation < indentation:
+                    raise ValueError('Improper dedent', lineno)
+                line_indentation = min(indentation, line_indentation)
+                line = line[line_indentation:]
+                pending_value.append(line)
+
+        if in_key:
+            if line_indentation_match is not None:
+                raise ValueError('Unexpected indentation', lineno)
+
+            parts = line.split(':', 1)
+            if line.strip() and len(parts) != 2:
+                raise ValueError('Expected key', lineno)
+
+            pending_key = parts[0].strip()
+            value = parts[1].strip()
+            if value:
+                pending_value.append(value)
+
+            in_key = False
+
+    if pending_value:
+        result[pending_key] = '\n'.join(pending_value).strip()
 
     return result
 
@@ -152,3 +183,37 @@ def setup(app):
         'parallel_read_safe': True,
         'parallel_write_safe': True,
     }
+
+
+def test():
+    """Test the parser"""
+    parsed = '''title: Importing Data Into MongoDB
+product_version: 3.6
+  .. uriwriter:: hi
+result_description:
+
+  You can bulk import data into MongoDB using the ``mongoimport`` command distributed with the server.
+  This guide will show you how.
+
+time: 15
+prerequisites:
+  .. include:: /includes/steps/prereqs_crud.rst
+summary:
+  If you have successfully completed this guide, you have imported your first mongoDB data.
+   Now in the next guide, you will retrieve the information you just imported.
+seealso:
+  stuff
+  '''.split('\n')
+
+    assert parse_keys(parsed) == {
+        'title': 'Importing Data Into MongoDB',
+        'product_version': '3.6\n.. uriwriter:: hi',
+        'result_description': 'You can bulk import data into MongoDB using the ``mongoimport`` command distributed with the server.\nThis guide will show you how.',
+        'time': '15',
+        'prerequisites': '.. include:: /includes/steps/prereqs_crud.rst',
+        'summary': 'If you have successfully completed this guide, you have imported your first mongoDB data.\n Now in the next guide, you will retrieve the information you just imported.',
+        'seealso': 'stuff'}
+
+
+if __name__ == '__main__':
+    test()
