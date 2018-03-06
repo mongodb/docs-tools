@@ -63,6 +63,12 @@ What's Next
 LEADING_WHITESPACE = re.compile(r'^\n?(\x20+)')
 
 
+class ParseError(Exception):
+    def __init__(self, msg, lineno):
+        super(ParseError, self).__init__(msg)
+        self.lineno = lineno
+
+
 def parse_keys(lines):
     """docutils field list parsing is busted. Just do this ourselves."""
     result = {}
@@ -94,18 +100,18 @@ def parse_keys(lines):
                 if indentation == 0:
                     indentation = line_indentation
                 if line_indentation < indentation:
-                    raise ValueError('Improper dedent', lineno)
+                    raise ParseError('Improper dedent', lineno)
                 line_indentation = min(indentation, line_indentation)
                 line = line[line_indentation:]
                 pending_value.append(line)
 
         if in_key:
             if line_indentation_match is not None:
-                raise ValueError('Unexpected indentation', lineno)
+                raise ParseError('Unexpected indentation', lineno)
 
             parts = line.split(':', 1)
             if line.strip() and len(parts) != 2:
-                raise ValueError('Expected key', lineno)
+                raise ParseError('Expected key', lineno)
 
             pending_key = parts[0].strip()
             value = parts[1].strip()
@@ -152,7 +158,13 @@ class Guide(Directive):
 
     def run(self):
         messages = []
-        options = parse_keys(self.content)
+
+        try:
+            options = parse_keys(self.content)
+        except ParseError as err:
+            return [self.state.document.reporter.error(
+                        str(err),
+                        line=(self.lineno + err.lineno + 1))]
 
         for key in self.guide_keys:
             if key not in options:
