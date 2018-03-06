@@ -123,15 +123,16 @@ def render_action(action, indent, level, r):
         r.newline()
 
     if 'code' in action:
-        if action.copyable:
-            r.directive(name='cssclass', arg='copyable-code', indent=indent)
-            r.newline()
+        options = {}
+        if action.copyable == False:
+            options['fields'] = [('copyable', 'false')]
 
         r.directive(name='code-block',
                     arg=action.language,
                     indent=indent,
                     content=action.code,
-                    wrap=False)
+                    wrap=False,
+                    **options)
         r.newline()
 
     if 'content' in action:

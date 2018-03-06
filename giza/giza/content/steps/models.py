@@ -120,7 +120,7 @@ class ActionMixin(object):
 
     @property
     def copyable(self):
-        return self.state.get('copyable', False)
+        return self.state.get('copyable', True)
 
     @copyable.setter
     def copyable(self, value):
