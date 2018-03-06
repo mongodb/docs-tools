@@ -16,7 +16,8 @@ REQUIRES = [
     'sphinxcontrib-httpdomain',
     'wand',
     'fett',
-    'jira'
+    'jira',
+    'jsx-lexer'
 ]
 
 setup(
