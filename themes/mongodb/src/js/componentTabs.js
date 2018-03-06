@@ -106,7 +106,7 @@ class TabsSingleton {
 
         let tabPref = this.tabPref;
 
-        if (tabPref.pages && tabPref.pages[window.location.pathname]) {
+        if (!type && tabPref.pages && tabPref.pages[window.location.pathname]) {
             // Check if current page has a one-off page specific pref
             tabPref = tabPref.pages;
             type = window.location.pathname;

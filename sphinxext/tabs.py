@@ -154,7 +154,9 @@ def setup(app):
         create_tab_directive('platforms',
             [('windows', 'Windows'),
              ('macos', 'macOS'),
-             ('linux', 'Linux')]))
+             ('linux', 'Linux'),
+             ('debian', 'Debian'),
+             ('rhel', 'RHEL')]))
 
     # Create general purpose tab directive with no error checking
     app.add_directive('tabs', template.create_directive('tabs', build_template('', ''), template.BUILT_IN_PATH, True))
