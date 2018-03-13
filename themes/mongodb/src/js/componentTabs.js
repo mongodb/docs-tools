@@ -1,3 +1,8 @@
+import {Dispatcher} from './util';
+
+export const tabsEventDispatcher = new Dispatcher();
+const EVENT_TAB_SELECTED = 'event-tab-selected';
+
 /**
  * Show the appropriate tab content and hide other tab's content
  * @param {string} currentAttrValue The currently selected tab ID.
@@ -26,8 +31,9 @@ class TabsSingleton {
      * and page specific prefs. Returns an empty object if it doesn't
      * exist.
      * @returns {object} Tab preference object.
+     * @returns {void}
      */
-    get tabPref() {
+    getTabPref() {
         return JSON.parse(window.localStorage.getItem(this.key)) || {};
     }
 
@@ -35,9 +41,10 @@ class TabsSingleton {
      * Sets the tabPref object depending on whether the tab belongs
      * to set (e.g., "drivers") or if it's a one-off page.
      * @param {object} value The "tabId" and optional "type" (tab set)
+     * @returns {void}
      */
-    set tabPref(value) {
-        const tabPref = this.tabPref;
+    setTabPref(value) {
+        const tabPref = this.getTabPref();
 
         // If "type" exists it belongs to a tab set
         if (this.type) {
@@ -88,7 +95,7 @@ class TabsSingleton {
                     // Check to make sure value is not null, i.e., don't do anything on "other"
                     if (tabId) {
                         // Save the users preference and re-render
-                        this.tabPref = pref;
+                        this.setTabPref(pref);
                         this.update();
 
                         e.preventDefault();
@@ -104,7 +111,7 @@ class TabsSingleton {
         if (this.tabStrips.length === 0) { return; }
         let type = this.type;
 
-        let tabPref = this.tabPref;
+        let tabPref = this.getTabPref();
 
         if (!type && tabPref.pages && tabPref.pages[window.location.pathname]) {
             // Check if current page has a one-off page specific pref
@@ -120,6 +127,7 @@ class TabsSingleton {
         // Show the appropriate tab content and mark the tab as active
         showHideTabContent(tabPref[type]);
         this.showHideSelectedTab(tabPref[type]);
+        tabsEventDispatcher.dispatch(EVENT_TAB_SELECTED, tabPref);
     }
 
     /**

@@ -17,3 +17,19 @@ export function requiresPageload($node) {
     }
     return false;
 }
+
+export class Dispatcher {
+    constructor() {
+        this.listeners = [];
+    }
+
+    listen(handler) {
+        this.listeners.push(handler);
+    }
+
+    dispatch(name, ctx) {
+        for (let i = 0; i < this.listeners.length; i += 1) {
+            this.listeners[i](name, ctx);
+        }
+    }
+}
