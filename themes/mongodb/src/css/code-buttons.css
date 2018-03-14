@@ -124,6 +124,6 @@ td.code pre {
     max-width: 100%;
 }
 
-#linenos-button-row-filler {
+.linenos-button-row-spacer {
   width: 2em;
 }

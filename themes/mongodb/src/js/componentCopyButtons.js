@@ -9,15 +9,21 @@ function cancelAndWait(f, timeoutID, ms) {
     return window.setTimeout(f, ms);
 }
 
+function isCopyableCodeBlock(block) {
+    return Boolean(block.getElementsByClassName('copyable-code-block')[0]);
+}
+
 export function setup() {
-    const copyableBlocks = document.getElementsByClassName('copyable-code-block');
-    for (const copyBlock of copyableBlocks) {
-        const highlightElement = copyBlock.getElementsByClassName('highlight')[0];
+    const buttonCodeBlocks = document.getElementsByClassName('button-code-block');
+    const copyableBlocks = Array.from(buttonCodeBlocks).filter(isCopyableCodeBlock);
+
+    for (const block of copyableBlocks) {
+        const highlightElement = block.getElementsByClassName('highlight')[0];
         if (!highlightElement) {
             return;
         }
 
-        const buttonRow = copyBlock.previousElementSibling;
+        const buttonRow = block.getElementsByClassName('button-row')[0];
         const copyButton = buttonRow.getElementsByClassName('code-button--copy')[0];
         if (!copyButton) {
             return;

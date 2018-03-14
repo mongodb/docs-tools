@@ -27,15 +27,15 @@ class FastNav {
 const fastNav = new FastNav();
 
 $(() => {
+    fastNav.register(componentCodeBlockFix);
     fastNav.register(componentCodepen);
+    fastNav.register(componentCopyButtons);
     fastNav.register(componentFastLoad);
     fastNav.register(componentFeedback);
     fastNav.register(componentLightbox);
     fastNav.register(componentSidebar);
     fastNav.register(componentTabs);
-    fastNav.register(componentCopyButtons);
     fastNav.register(componentVersionSelector);
-    fastNav.register(componentCodeBlockFix);
 
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {
