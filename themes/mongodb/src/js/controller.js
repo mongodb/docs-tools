@@ -1,3 +1,4 @@
+import * as componentCodeBlockFix from './componentCodeBlockFix';
 import * as componentCodepen from './componentCodepen';
 import * as componentCopyButtons from './componentCopyButtons';
 import * as componentFastLoad from './componentFastLoad';
@@ -34,6 +35,7 @@ $(() => {
     fastNav.register(componentTabs);
     fastNav.register(componentCopyButtons);
     fastNav.register(componentVersionSelector);
+    fastNav.register(componentCodeBlockFix);
 
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {
