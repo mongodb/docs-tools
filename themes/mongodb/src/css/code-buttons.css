@@ -73,6 +73,10 @@
   opacity: 1.0
 }
 
+.button-code-block {
+  margin: 20px 0;
+}
+
 .button-code-block pre {
   margin: 0 auto;
   padding-top: 2px;
@@ -83,4 +87,43 @@
     .button-row {
         display: none;
     }
+}
+
+
+/* linenos code-block styling */
+table.highlighttable {
+  table-layout: fixed;
+}
+
+table.highlighttable td {
+  padding: 0;
+}
+
+td.linenos {
+  padding-top: 0;
+}
+
+td.linenos pre {
+  padding-top: 0;
+}
+
+td.code {
+  width: 100%;
+  padding-top: 0;
+}
+
+td.code div.highlight {
+  padding-top: 0;
+}
+
+td.code div.highlight pre {
+  padding-top: 0;
+}
+
+td.code pre {
+    max-width: 100%;
+}
+
+#linenos-button-row-filler {
+  width: 2em;
 }
