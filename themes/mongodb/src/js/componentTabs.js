@@ -83,6 +83,17 @@ class TabsSingleton {
         for (const tabStrip of this.tabStrips) {
             for (const element of tabStrip.querySelectorAll('[data-tabid]')) {
                 element.onclick = (e) => {
+                    // Get the initial position of the tab clicked
+                    // to avoid page jumping after new tab is selected
+                    const initRect = element.getBoundingClientRect();
+
+                    // Get the position where the user scrolled to
+                    const initScrollY = window.scrollY;
+
+                    // Calc the distance from the tab strip to the top
+                    // of whatever the user has scrolled to
+                    const offset = initScrollY - initRect.y;
+
                     // Get the tab ID of the clicked tab
                     const tabId = e.target.getAttribute('data-tabid');
                     const type = this.tabStrips[0].getAttribute('data-tab-preference');
@@ -97,6 +108,12 @@ class TabsSingleton {
                         // Save the users preference and re-render
                         this.setTabPref(pref);
                         this.update();
+
+                        // Get the position of tab strip after re-render
+                        const rects = element.getBoundingClientRect();
+
+                        // Reset the scroll position of the browser
+                        window.scrollTo(rects.x, rects.y + offset);
 
                         e.preventDefault();
                     }
