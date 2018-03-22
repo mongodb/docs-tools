@@ -10,6 +10,10 @@ function isLineNumberBlock(block) {
     return Boolean(block.getElementsByClassName('linenos').length);
 }
 
+function isCaptionBlock(block) {
+    return Boolean(block.getElementsByClassName('caption-text').length);
+}
+
 function hasButtonRow(block) {
     return Boolean(block.getElementsByClassName('button-row')[0]);
 }
@@ -34,15 +38,31 @@ function moveButtonRowToTable(block) {
     buttonRowDestination.append(buttonRow);
 }
 
+function moveButtonRowBelowCaption(block) {
+    // Select existing elements
+    const buttonRow = block.getElementsByClassName('button-row')[0];
+    const caption = block.getElementsByClassName('code-block-caption')[0];
+
+    console.log('MOVING BELOW CAPTION');
+
+    // Manipulate the DOM
+    caption.parentNode.insertBefore(buttonRow, caption.nextSibling);
+}
+
 function fixCodeBlock(block) {
-    if (hasButtonRow(block) && isLineNumberBlock(block)) {
+    if (isLineNumberBlock(block)) {
         moveButtonRowToTable(block);
+    }
+    else if (isCaptionBlock(block)) {
+        moveButtonRowBelowCaption(block);
     }
 }
 
 export function setup() {
     const codeblocks = document.getElementsByClassName('button-code-block');
     for (const codeblock of codeblocks) {
-        fixCodeBlock(codeblock);
+        if (hasButtonRow(codeblock)) {
+            fixCodeBlock(codeblock);
+        }
     }
 }
