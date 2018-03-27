@@ -1,0 +1,26 @@
+{
+  "name": "docs-screenshot-tool-atlas",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "make test"
+  },
+  "author": "Jeff",
+  "keywords": [
+    "nightmare",
+    "electron",
+    "screenshots"
+  ],
+  "description": "A tool to automatically take and save screenshots for Atlas",
+  "dependencies": {
+    "fs-extra": "^5.0.0",
+    "nightmare": "^2.10.0",
+    "nightmare-screenshot-selector": "^1.0.2",
+    "properties-reader": "^0.0.16",
+    "readline-sync": "1.4.9",
+    "resemblejs": "2.10.0",
+    "sharp": "0.20.1"
+  },
+  "engines": {
+    "node": ">=7.6.0"
+  }
+}
