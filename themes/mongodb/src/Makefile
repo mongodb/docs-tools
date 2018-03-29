@@ -1,6 +1,6 @@
 TARGETS=../static/mongodb-docs.css ../static/controller.js
 CSS_INPUTS=css/bootstrap-custom.css \
-		   css/icomoon.css \
+           css/icomoon.css \
            css/font-awesome.css \
            css/mongodb-docs.css \
            css/feedback.css \
@@ -8,7 +8,8 @@ CSS_INPUTS=css/bootstrap-custom.css \
            css/mws.css \
            css/tabs.css \
            css/lightbox.css \
-           css/code-buttons.css
+           css/code-buttons.css \
+           css/guides.css
 CSS_FILES=$(CSS_INPUTS) css/basic.css
 
 CSS_ERRORS=errors,empty-rules,duplicate-properties,selector-max-approaching
