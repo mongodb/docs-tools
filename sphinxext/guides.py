@@ -289,12 +289,14 @@ class CardSet:
         columns = self.categories[category_id]['columns']
         return min(columns, key=lambda col: sum(2 if el['jumbo'] else 1 for el in col))
 
-    def add_guide(self, guide, parent_card=None):
+    def add_guide(self, env, guide, parent_card=None):
+        env.included.add(guide['docname'])
         self.get_next_column(guide['category']).append(guide)
 
-    def add_guides(self, guides, title):
+    def add_guides(self, env, guides, title):
         categories = {}
         for guide in guides:
+            env.included.add(guide['docname'])
             categories.setdefault(guide['category'], []).append(guide)
 
         for category_name, category_guides in categories.items():
@@ -332,13 +334,13 @@ class GuideIndexDirective(Directive):
         def handle_single_guide():
             if pending_card[0] is None:
                 guide = guides[previous_line]
-                cardset.add_guide(guide)
+                cardset.add_guide(env, guide)
             else:
                 for docname in pending_card[0]['guides']:
                     guide = guides[docname]
 
                 cardset_guides = [guides[docname] for docname in pending_card[0]['guides'] + [previous_line]]
-                cardset.add_guides(cardset_guides, pending_card[0]['title'])
+                cardset.add_guides(env, cardset_guides, pending_card[0]['title'])
                 pending_card[0] = None
 
         for is_indented, lineno, line in parse_indentation(self.content):
