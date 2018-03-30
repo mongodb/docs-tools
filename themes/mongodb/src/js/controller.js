@@ -6,6 +6,7 @@ import * as componentFeedback from './componentFeedback';
 import * as componentLightbox from './componentLightbox';
 import * as componentSidebar from './componentSidebar';
 import * as componentTabs from './componentTabs';
+import * as componentThirdParty from './componentThirdParty';
 import * as componentVersionSelector from './componentVersionSelector';
 
 class FastNav {
@@ -27,6 +28,8 @@ class FastNav {
 const fastNav = new FastNav();
 
 $(() => {
+    componentThirdParty.initialize();
+
     fastNav.register(componentCodeBlockFix);
     fastNav.register(componentCodepen);
     fastNav.register(componentCopyButtons);
@@ -36,6 +39,7 @@ $(() => {
     fastNav.register(componentSidebar);
     fastNav.register(componentTabs);
     fastNav.register(componentVersionSelector);
+    fastNav.register(componentThirdParty);
 
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {
@@ -77,6 +81,12 @@ $(() => {
             window.setTimeout(offsetHashLink, 10);
         }
     });
+
+    document.getElementById('showNav').onclick = () => {
+        document.getElementById('sphinxsidebar').style.display = 'block';
+        document.getElementById('left-column').style.display = 'flex';
+        document.getElementById('showNav').style.display = 'none';
+    };
 
     // Update dynamic page features
     fastNav.update();

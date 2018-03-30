@@ -77,19 +77,6 @@
   {%- for scriptfile in script_files %}
     <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
   {%- endfor %}
-
-  <script type="text/javascript">
-     function showNav() {
-       document.getElementById("sphinxsidebar").style.display = "block";
-       document.getElementById("left-column").style.display = "flex";
-       document.getElementById("showNav").style.display="none";
-     }
-
-     function closeNav() {
-       document.getElementById("showNav").style.display="flex";
-       document.getElementById("left-column").style.display="none";
-     }
-  </script>
 {%- endmacro -%}
 
 {%- macro css() %}
@@ -170,28 +157,8 @@
   {%- block extrahead %}{% endblock -%}
 
   {%- block adblockheader %}{%- endblock -%}
-
-  {%- block fullstory %}
-  <script>
-    window['_fs_debug'] = false;
-    window['_fs_host'] = 'fullstory.com';
-    window['_fs_org'] = '54YFM';
-    window['_fs_namespace'] = 'FS';
-    (function(m,n,e,t,l,o,g,y){
-        if (e in m && m.console && m.console.log) { m.console.log('FullStory namespace conflict. Please set window["_fs_namespace"].'); return;}
-        g=m[e]=function(a,b){g.q?g.q.push([a,b]):g._api(a,b);};g.q=[];
-        o=n.createElement(t);o.async=1;o.src='https://'+_fs_host+'/s/fs.js';
-        y=n.getElementsByTagName(t)[0];y.parentNode.insertBefore(o,y);
-        g.identify=function(i,v){g(l,{uid:i});if(v)g(l,v)};g.setUserVars=function(v){g(l,v)};
-        g.identifyAccount=function(i,v){o='account';v=v||{};v.acctId=i;g(o,v)};
-        g.clearUserCookie=function(c,d,i){if(!c || document.cookie.match('fs_uid=[`;`]*`[`;`]*`[`;`]*`')){
-        d=n.domain;while(1){n.cookie='fs_uid=;domain='+d+
-        ';path=/;expires='+new Date(0).toUTCString();i=d.indexOf('.');if(i<0)break;d=d.slice(i+1)}}};
-    })(window,document,window['_fs_namespace'],'script','user');
-  </script>
-  {%- endblock -%}
 </head>
-<body data-project="{{theme_project}}" data-project-title="{{docstitle|e}}" data-branch="{{theme_branch}}" {%- if theme_project in ['atlas', 'bi-connector', 'spark-connector', 'compass', 'stitch', 'mms-cloud', 'mms-onprem', 'manual', 'ecosystem', 'docs-ruby', 'docs-php-library', 'mongoid'] %} data-enable-marian=1 {%- endif -%}>
+<body data-project="{{theme_project}}" data-project-title="{{docstitle|e}}" data-branch="{{theme_branch}}" data-enable-marian=1>
   {%- block googletagmanager %}
   <!-- Google Tag Manager -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-JQHP"
@@ -215,10 +182,7 @@
     <script src="{{ pathto('_static/navbar.min.js', 1) }}"></script>
   {% endblock %}
 
-
-
   <div class="content" >
-
 
    <div id="left-column">
          <aside id="sidebar" class="sidebar">
@@ -230,11 +194,9 @@
 
    </div>
 
-
     <div id="main-column" class="main-column">
 
-    <span id="showNav" class="showNav" onclick="showNav()">Navigation</span>
-
+    <span id="showNav" class="showNav">Navigation</span>
 
       {% block alertbar %}{% endblock %}
 
