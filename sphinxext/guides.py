@@ -288,7 +288,8 @@ class CardSet:
                 'truncated': False,
                 'title': category.title,
                 'cssclass': category.cssclass,
-                'columns': [[], [], []]
+                'columns': [[], [], []],
+                'n_guides': 0
             }
 
     def get_next_column(self, category_id):
@@ -298,6 +299,8 @@ class CardSet:
     def add_guide(self, env, guide, parent_card=None):
         env.included.add(guide['docname'])
         self.get_next_column(guide['category']).append(guide)
+        self.categories[guide['category']]['n_guides'] += 1
+
 
     def add_guides(self, env, guides, title):
         categories = {}
@@ -313,6 +316,7 @@ class CardSet:
             }
 
             self.get_next_column(category_name).append(card)
+            self.categories[category_name]['n_guides'] += 1
 
 
 class GuideIndexDirective(Directive):
@@ -374,7 +378,7 @@ class GuideIndexDirective(Directive):
 
         try:
             rendered = GUIDES_INDEX_TEMPLATE.render({
-                'categories': list(cardset.categories.values()),
+                'categories': [cat for cat in cardset.categories.values() if cat['n_guides'] > 0],
                 'link_suffix': env.app.builder.link_suffix
             })
         except Exception as error:
