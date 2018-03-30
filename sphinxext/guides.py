@@ -85,23 +85,26 @@ GUIDES_INDEX_TEMPLATE = fett.Template('''
        <div class="guide-category__view-all">View All Guides &gt;</div>
      {{ end }}
      <div class="guide-category__guides">
-     {{ for card in category.cards }}
-       {{ if card.jumbo }}
-       <div class="guide guide--jumbo">
-         <div class="guide__title">{{ card.title }}</div>
-
-         <ol>
-         {{ for guide in card.guides }}
-           <li><a href="{{ guide.docname }}{{ link_suffix }}">{{ guide.title }}</a></li>
+     {{ for column in category.columns }}
+       <div class="guide-column">
+       {{ for card in column }}
+         {{ if card.jumbo }}
+         <div class="guide guide--jumbo">
+           <div class="guide__title">{{ card.title }}</div>
+           <ol>
+           {{ for guide in card.guides }}
+             <li><a href="{{ guide.docname }}{{ link_suffix }}">{{ guide.title }}</a></li>
+           {{ end }}
+           </ol>
+         </div>
+         {{ else }}
+         <a class="guide" href="{{ card.docname }}{{ link_suffix }}">
+           <div class="guide__title">{{ card.title }}</div>
+           <div class="guide__time">{{ card.time }}min</div>
+         </a>
          {{ end }}
-         </ol>
-       </div>
-       {{ else }}
-       <a class="guide" href="{{ card.docname }}{{ link_suffix }}">
-         <div class="guide__title">{{ card.title }}</div>
-         <div class="guide__time">{{ card.time }}min</div>
-       </a>
        {{ end }}
+       </div>
      {{ end }}
      </div>
    </section>
@@ -265,7 +268,8 @@ class GuideDirective(Directive):
             'docname': env.docname,
             'title': options['title'],
             'time': options['time'],
-            'category': options['type']})
+            'category': options['type'],
+            'jumbo': False})
 
         return messages
 
@@ -278,12 +282,15 @@ class CardSet:
                 'truncated': False,
                 'title': category.title,
                 'cssclass': category.cssclass,
-                'cards': []
+                'columns': [[], [], []]
             }
 
+    def get_next_column(self, category_id):
+        columns = self.categories[category_id]['columns']
+        return min(columns, key=lambda col: sum(2 if el['jumbo'] else 1 for el in col))
+
     def add_guide(self, guide, parent_card=None):
-        guide['jumbo'] = False
-        self.categories[guide['category']]['cards'].append(guide)
+        self.get_next_column(guide['category']).append(guide)
 
     def add_guides(self, guides, title):
         categories = {}
@@ -297,7 +304,7 @@ class CardSet:
                 'guides': category_guides
             }
 
-            self.categories[category_name]['cards'].append(card)
+            self.get_next_column(category_name).append(card)
 
 
 class GuideIndexDirective(Directive):

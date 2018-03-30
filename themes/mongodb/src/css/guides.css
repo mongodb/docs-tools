@@ -56,6 +56,11 @@
     height: auto;
 }
 
+.guide-column {
+    display: flex;
+    flex-direction: column;
+}
+
 .guide-category__guides {
     display: flex;
     flex-wrap: wrap;
