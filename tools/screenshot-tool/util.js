@@ -36,7 +36,6 @@ async function getDiff(screenshot, orig_image) {
   else {
     console.log('Images are the same. No update needed.\n');
   }
-  resizeImage(orig_image);
 }
 
 /**
@@ -70,8 +69,8 @@ async function resizeImage(screenshot) {
 
 var methods = {
   compareImages: async function(filename) {
-    var screenshot = "./screenshots-temp/charts/" + filename;
-    var orig_image = "./source/images/charts/" + filename;
+    var orig_image = filename[0];
+    var screenshot = filename[1];
 
     if (fs.existsSync(orig_image)) {
       getDiff(screenshot, orig_image);
@@ -81,29 +80,6 @@ var methods = {
       console.log('Moved screenshot');
     }
     return;
-  },
-  nightmare_props: {
-    show: true,
-    typeInterval: 20,
-    width: 1500,
-    height: 2000,
-    url: 'https://cloud-dev.mongodb.com'
-  },
-  create_cluster_props: {
-      show: true,
-      typeInterval: 20,
-      width: 1000,
-      height: 750,
-      url: 'https://cloud-dev.mongodb.com'
-  },
-  charts_props: {
-      show: true,
-      typeInterval: 20,
-      height: 1500,
-      width: 1024,
-      webPreferences: {
-        zoomFactor: 1.0
-      }
   }
 }
 
