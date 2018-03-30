@@ -3,6 +3,7 @@ import fett
 import template
 
 PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^````+$))', re.M)
+PAT_IDENTIFIER_ILLEGAL = re.compile(r'[^_0-9a-z]', re.I)
 
 TABS_TOP = '''
 .. raw:: html
@@ -19,7 +20,7 @@ TABS_TEMPLATE = '''
        {{ for tab in tabs %FILTER% }}
        {{ # Only render the tab here if i < 5 }}
        {{ if i lessThan(5) }}
-       <li class="tab-strip__element" data-tabid="{{ tab.id }}" role="tab" aria-selected="{{ if i zero }}true{{ else }}false{{ end }}">{{ tab.name }}</li>
+       <li class="tab-strip__element" data-tabid="{{ tab.id asIdentifier }}" role="tab" aria-selected="{{ if i zero }}true{{ else }}false{{ end }}">{{ tab.name }}</li>
        {{ end }}
        {{ end }}
        {{ if tabs len greaterThan(5) }}
@@ -29,7 +30,7 @@ TABS_TEMPLATE = '''
            {{ for tab in tabs %FILTER% }}
            {{ # Only render the tab here if i >= 5 }}
            {{ if i greaterThanOrEqual(5) }}
-           <li data-tabid="{{ tab.id }}" aria-selected="{{ if i zero }}true{{ else }}false{{ end }}">{{ tab.name }}</li>
+           <li data-tabid="{{ tab.id asIdentifier }}" aria-selected="{{ if i zero }}true{{ else }}false{{ end }}">{{ tab.name }}</li>
            {{ end }}
            {{ end }}
          </ul>
@@ -39,7 +40,7 @@ TABS_TEMPLATE = '''
      {{ end }}
      <div class="tabs__content" role="tabpanel">
        {{ for tab in tabs %FILTER% }}
-       <div class="tabpanel-{{ tab.id }}">
+       <div class="tabpanel-{{ tab.id asIdentifier }}">
 
 {{ tab.content convertSections }}
 
@@ -174,3 +175,4 @@ def convert_sections(tab_content):
 
 
 fett.Template.FILTERS['convertSections'] = convert_sections
+fett.Template.FILTERS['asIdentifier'] = lambda val: PAT_IDENTIFIER_ILLEGAL.sub('', val)

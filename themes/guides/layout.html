@@ -1,7 +1,7 @@
 <!doctype html>
 
 {%- set url_root = pathto('', 1) %}
-{%  set script_files = ["_static/controller.js"] %}
+{%  set script_files = ["_static/lib/bootstrap.js", "_static/controller.js"] %}
 
 {%- macro css() %}
    {%- for cssfile in css_files %}
