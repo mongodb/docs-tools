@@ -100,6 +100,11 @@ GUIDES_INDEX_TEMPLATE = fett.Template('''
          {{ else }}
          <a class="guide" href="{{ card.docname }}{{ link_suffix }}">
            <div class="guide__title">{{ card.title }}</div>
+           <ul class="guide__pills">
+           {{ for pill in card.pills }}
+             <li>{{ pill }}</li>
+           {{ end }}
+           </ul>
            <div class="guide__time">{{ card.time }}min</div>
          </a>
          {{ end }}
@@ -269,6 +274,7 @@ class GuideDirective(Directive):
             'title': options['title'],
             'time': options['time'],
             'category': options['type'],
+            'pills': [],
             'jumbo': False})
 
         return messages
