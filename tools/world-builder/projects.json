@@ -1,7 +1,7 @@
 [
   {
     "git": "https://github.com/mongodb/docs-bi-connector.git",
-    "branches": ["v1.1", "v2.0", "v2.1", "v2.2", "master"],
+    "branches": ["v1.1", "v2.0", "v2.1", "v2.2", "v2.3", "master"],
     "build": "mkdir -p build/master && make publish",
     "docs-tools": true
   },
@@ -19,7 +19,7 @@
   },
   {
     "git": "git@github.com:10gen/mms-docs.git",
-    "branches": ["master", "v3.4", "v2.0", "v1.8", "v1.6", "v1.5", "v1.4", "v1.3", "v1.2", "v1.1"],
+    "branches": ["master", "v3.6", "v3.4", "v2.0", "v1.8", "v1.6", "v1.5", "v1.4", "v1.3", "v1.2", "v1.1"],
     "build": "giza make publish; giza make singlehtml",
     "docs-tools": true
   },
@@ -49,7 +49,7 @@
   },
   {
     "git": "https://github.com/mongodb/docs-ruby.git",
-    "branches": ["v1.x", "v2.0", "v2.2", "v2.3", "master"],
+    "branches": ["v1.x", "v2.0", "v2.2", "v2.3", "v2.4", "master"],
     "build": "make publish",
     "docs-tools": true
   },
