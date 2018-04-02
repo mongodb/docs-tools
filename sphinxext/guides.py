@@ -91,7 +91,7 @@ GUIDES_INDEX_TEMPLATE = fett.Template('''
          {{ if card.jumbo }}
          <div class="guide guide--jumbo">
            <div class="guide__title">{{ card.title }}</div>
-           <ol>
+           <ol class="guide__body">
            {{ for guide in card.guides }}
              <li><a href="{{ guide.docname }}{{ link_suffix }}">{{ guide.title }}</a></li>
            {{ end }}
@@ -100,6 +100,7 @@ GUIDES_INDEX_TEMPLATE = fett.Template('''
          {{ else }}
          <a class="guide" href="{{ card.docname }}{{ link_suffix }}">
            <div class="guide__title">{{ card.title }}</div>
+           <div class="guide__body"></div>
            <ul class="guide__pills">
            {{ for pill in card.pills }}
              <li>{{ pill }}</li>
@@ -346,10 +347,7 @@ class GuideIndexDirective(Directive):
                 guide = guides[previous_line]
                 cardset.add_guide(env, guide)
             else:
-                for docname in pending_card[0]['guides']:
-                    guide = guides[docname]
-
-                cardset_guides = [guides[docname] for docname in pending_card[0]['guides'] + [previous_line]]
+                cardset_guides = [guides[docname] for docname in pending_card[0]['guides']]
                 cardset.add_guides(env, cardset_guides, pending_card[0]['title'])
                 pending_card[0] = None
 

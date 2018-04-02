@@ -82,11 +82,14 @@ $(() => {
         }
     });
 
-    document.getElementById('showNav').onclick = () => {
-        document.getElementById('sphinxsidebar').style.display = 'block';
-        document.getElementById('left-column').style.display = 'flex';
-        document.getElementById('showNav').style.display = 'none';
-    };
+    const showNavButton = document.getElementById('showNav');
+    if (showNavButton) {
+        showNavButton.onclick = () => {
+            document.getElementById('sphinxsidebar').style.display = 'block';
+            document.getElementById('left-column').style.display = 'flex';
+            document.getElementById('showNav').style.display = 'none';
+        };
+    }
 
     // Update dynamic page features
     fastNav.update();
