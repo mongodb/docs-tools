@@ -91,6 +91,14 @@ $(() => {
         };
     }
 
+    const closeNavButton = document.getElementById('closeNav');
+    if (closeNavButton) {
+        closeNavButton.onclick = () => {
+            document.getElementById('showNav').style.display = 'flex';
+            document.getElementById('left-column').style.display = 'none';
+        };
+    }
+
     // Update dynamic page features
     fastNav.update();
 
