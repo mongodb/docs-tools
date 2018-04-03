@@ -28,3 +28,5 @@ src/build/
 /world-builder/.ninja*
 
 .vscode
+
+tools/screenshot-tool/.properties.ini
