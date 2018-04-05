@@ -18,6 +18,44 @@ export function requiresPageload($node) {
     return false;
 }
 
+export function throttle(func, wait) {
+    let args = null;
+    let result = null;
+    let timeout = null;
+    let previous = 0;
+
+    function later() {
+        previous = Date.now();
+        timeout = null;
+        result = func.apply(...args);
+        if (!timeout) {
+            args = null;
+        }
+    }
+
+    return function(...newArgs) {
+        const now = Date.now();
+        const remaining = wait - (now - previous);
+        args = newArgs;
+        if (remaining <= 0 || remaining > wait) {
+            if (timeout) {
+                window.clearTimeout(timeout);
+                timeout = null;
+            }
+
+            previous = now;
+            result = func(...args);
+            if (!timeout) {
+                args = null;
+            }
+        } else if (!timeout) {
+            timeout = window.setTimeout(later, remaining);
+        }
+
+        return result;
+    };
+}
+
 export class Dispatcher {
     constructor() {
         this.listeners = [];

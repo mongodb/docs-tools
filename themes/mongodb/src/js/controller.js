@@ -3,6 +3,7 @@ import * as componentCodepen from './componentCodepen';
 import * as componentCopyButtons from './componentCopyButtons';
 import * as componentFastLoad from './componentFastLoad';
 import * as componentFeedback from './componentFeedback';
+import * as componentGuides from './componentGuides';
 import * as componentLightbox from './componentLightbox';
 import * as componentSidebar from './componentSidebar';
 import * as componentTabs from './componentTabs';
@@ -40,6 +41,7 @@ $(() => {
     fastNav.register(componentTabs);
     fastNav.register(componentVersionSelector);
     fastNav.register(componentThirdParty);
+    fastNav.register(componentGuides);
 
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {

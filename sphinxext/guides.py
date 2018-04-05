@@ -18,17 +18,13 @@ GUIDE_CATEGORIES = {
     'Deep Dive': GuideCategory('Deep Dive', 'guide-category--deep-dive')
 }
 GUIDES_TEMPLATE = fett.Template('''
+:tocdepth: 2
+
 ====================================================================================================
 {{ title }}
 ====================================================================================================
 
 .. default-domain:: mongodb
-
-.. contents:: On this page
-   :local:
-   :backlinks: none
-   :depth: 1
-   :class: singlecol
 
 Author: {{ author }}
 

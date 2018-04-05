@@ -7,7 +7,7 @@
     background-color: #424950;
     background-image: url("images/bg.svg");
     color: #fff;
-    font-family: Akzidenz;
+    font-family: Akzidenz, sans-serif;
     padding-left: 10%;
     padding-right: 10%;
     padding-top: 40px;
@@ -138,8 +138,4 @@
 
 .guide--expanded > .guide__expand {
     transform: rotate(0deg);
-}
-
-.guide--expanded {
-
 }

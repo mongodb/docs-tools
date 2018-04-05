@@ -13,67 +13,29 @@
 {%- endmacro -%}
 
 {%- macro regular_body() -%}
-  <div id="left-column">
-    <aside id="sidebar" class="sidebar">
-      <div class="sphinxsidebar" id="sphinxsidebar">
-        <div id="sphinxsidebarwrapper" class="sphinxsidebarwrapper">
-        {%- if sidebars != None %}
-          {%- for sidebartemplate in sidebars %}
-            {%- include sidebartemplate %}
-          {%- endfor %}
-        {%- endif %}
-        </div>
-      </div>
-    </aside>
-  </div>
-
+  <aside class="left-toc hide-first-toc-level">
+    <div class="left-toc__title">Overview:</div>
+    {{ toc }}
+  </aside>
+  <div class="left-nav-space"></div>
   <div id="main-column" class="main-column">
     {%- block content %}
-      <div class="document">
-        {%- block document %}
-          <div class="documentwrapper">
-            {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
-            <div class="body" data-pagename="{{pagename}}">
-              {% block body %}
-                {{ body }}
-              {% endblock %}
+      {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
+      <div class="body" data-pagename="{{pagename}}">
+        {% block body %}
+          {{ body }}
+        {% endblock %}
 
-              {%- block footer %}
-                <div class="footer">
-                  <div class="copyright">
-                    <p>&copy; MongoDB, Inc 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
-                  </div>
-                </div>
-              {%- endblock %}
+        {%- block footer %}
+          <div class="footer">
+            <div class="copyright">
+              <p>&copy; MongoDB, Inc 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
             </div>
-            {%- if render_sidebar %}</div>{%- endif %}
           </div>
         {%- endblock %}
       </div>
+      {%- if render_sidebar %}</div>{%- endif %}
     {%- endblock %}
-  </div>
-  <div class="right-column">
-    <div class="wrapper">
-       {%- block righttoc %}
-          {%- if builder != 'singlehtml' %}
-            {%- if pagename != 'index' %}
-              <div class="toc">
-                <span class="toc-header">ON THIS PAGE</span>
-                {{ toc }}
-              </div>
-            {%- endif %}
-          {%- endif %}
-       {%- endblock %}
-
-      {%- block social %}
-         <div class="social">
-           <a class="twitter-icon" href="https://twitter.com/MongoDB"><i class="fa fa-twitter-square"></i></a>
-           <a class="youtube-icon" href="https://www.youtube.com/user/MongoDB"><i class="fa fa-youtube-square"></i></a>
-           <a class="facebook-icon" href="https://www.facebook.com/mongodb"><i class="fa fa-facebook-square"></i></a>
-           <a class="stack-overflow-icon" href="https://stackoverflow.com/tags/mongodb/info"><i class="fa fa-stack-overflow" aria-hidden="true"></i></a>
-         </div>
-      {% endblock %}
-    </div>
   </div>
 {%- endmacro -%}
 
