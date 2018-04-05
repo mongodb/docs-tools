@@ -11,6 +11,7 @@
 @import url("bootstrap-custom.css");
 @import url("icomoon.css");
 
+@import url("../colors.css");
 @import url("../font-awesome.css");
 @import url("../basic.css");
 @import url("../code-buttons.css");
@@ -339,7 +340,7 @@ div#top-right {
     position: absolute;
     top: -3px;
     right: 10px;
-    *z-index: 10;
+    z-index: 10;
 }
 
 div#top-right ul#header-menu-bar {
@@ -599,13 +600,7 @@ div.body div.contents.singlecol ul {
 div.body div.contents.twocols  ul{
    margin: 0;
    padding-left: 1.0em;
-   -webkit-column-count:2;
-   -ms-column-count:2;
-   -o-column-count:2;
    column-count:2;
-   -webkit-column-gap: 10px;
-   -ms-column-gap: 10px;
-   -o-column-gap: 10px;
    column-gap: 10px;
    columns:2;
 }
@@ -655,12 +650,8 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
     flex-grow: 2;
     margin: 40px 15px;
     transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
-    -webkit-transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
-
-    -webkit-align-items: center;
-            align-items: center;
-    -webkit-justify-content: center;
-            justify-content: center;
+    align-items: center;
+    justify-content: center;
     display: inline-block;
     overflow-x: scroll;
 
@@ -726,8 +717,6 @@ div.document {
 
 #header-db .search-db {
     transition: width 0.3s linear;
-    -webkit-transition: width 0.3s linear;
-    -o-transition: width 0.3s linear;
     margin-left: 45px;
     margin-top: 11px;
     display: inline-block;
@@ -972,12 +961,12 @@ div.sphinxsidebar h3 a.showlink {
 }
 
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a span {
-    color: #69b241;
+    color: var(--mongodb-green);
 }
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a {
-    color: #69b241;
+    color: var(--mongodb-green);
     background-color: #f5f6f7;
-    border-right: 5px solid #69b241;
+    border-right: 5px solid var(--mongodb-green);
 }
 .expand-icon {
     background-image: url(images/page-icon.png);
@@ -1458,8 +1447,7 @@ h4.modal-title {
     margin-top: 0;
     background-color: none;
     border-radius: 0;
-    -webkit-box-shadow: none;
-            box-shadow: none;
+    box-shadow: none;
 }
 
 .action-buttons .modal-column-1 {

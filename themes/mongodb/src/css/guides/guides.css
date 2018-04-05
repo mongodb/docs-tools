@@ -1,4 +1,5 @@
 @import url("../normalize.css");
+@import url("../colors.css");
 @import url("../basic.css");
 @import url("../font-awesome.css");
 @import url("../code-buttons.css");
@@ -16,7 +17,6 @@
 .left-toc {
     width: 248px;
     padding-left: 40px;
-    position: -webkit-sticky;
     position: sticky;
     padding-top: 56px;
     height: 100vh;
@@ -25,7 +25,7 @@
 }
 
 .left-toc a {
-    color: #424950;
+    color: var(--charcoal-grey-two);
 }
 
 .left-toc a:hover {
@@ -57,9 +57,9 @@
 
 .left-toc > ul > li > ul > li.active,
 .left-toc > ul > li > ul > li:hover {
-    color: #69b241;
+    color: #var(--mongodb-green);
     background-color: #f5f6f7;
-    border-right: 3px solid #69b241;
+    border-right: 3px solid #var(--mongodb-green);
 }
 
 .left-toc > ul > li > ul > li::before {
@@ -81,12 +81,12 @@
 
 .left-toc > ul > li > ul > li.active a,
 .left-toc > ul > li > ul > li:hover a {
-    color: #69b241;
+    color: var(--mongodb-green);
 }
 
 .left-toc ul > li {
     font-size: 16px;
-    color: #424950;
+    color: var(--charcoal-grey-two);
 }
 
 @media (max-width: 600px) {
@@ -130,8 +130,6 @@
 *,
 *:before,
 *:after {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 
@@ -139,7 +137,7 @@ body {
     font-family: "Akzidenz", sans-serif;
     margin: 0;
     padding: 0;
-    color: #424950;
+    color: var(--charcoal-grey-two);
 }
 
 hr { border: 1px solid #B1B4B6; }
@@ -186,7 +184,7 @@ a:hover {
 h1, h2, h3, h4, h5, h6 {
     font-family: "Akzidenz", sans-serif;
     line-height: 24px;
-    color: #424950;
+    color: var(--charcoal-grey-two);
     padding: 0;
 }
 
@@ -628,13 +626,7 @@ div.body div.contents.singlecol ul {
 div.body div.contents.twocols  ul{
    margin: 0;
    padding-left: 1.0em;
-   -webkit-column-count:2;
-   -ms-column-count:2;
-   -o-column-count:2;
    column-count:2;
-   -webkit-column-gap: 10px;
-   -ms-column-gap: 10px;
-   -o-column-gap: 10px;
    column-gap: 10px;
    columns:2;
 }
@@ -668,12 +660,8 @@ a > em { font-style: normal; }
     max-width: 800px;
     flex-grow: 2;
     transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
-    -webkit-transition: margin-left 0.4s cubic-bezier(.02,.01,.47,1);
-
-    -webkit-align-items: center;
-            align-items: center;
-    -webkit-justify-content: center;
-            justify-content: center;
+    align-items: center;
+    justify-content: center;
     display: inline-block;
     overflow-x: scroll;
 
