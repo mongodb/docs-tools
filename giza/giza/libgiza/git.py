@@ -262,7 +262,7 @@ class GitRepo(object):
             return False
 
     def current_branch(self):
-        return self.cmd('symbolic-ref', 'HEAD').split('/')[2]
+        return self.cmd('rev-parse', '--abbrev-ref', 'HEAD')
 
     def sha(self, ref='HEAD'):
         return self.cmd('rev-parse', '--verify', ref)
