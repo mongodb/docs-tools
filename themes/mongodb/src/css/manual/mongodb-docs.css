@@ -18,6 +18,7 @@
 @import url("../feedback.css");
 @import url("../fonts.css");
 @import url("../header.css");
+@import url("../landing-page.css");
 @import url("../lightbox.css");
 @import url("../marian.css");
 @import url("../mws.css");
@@ -164,7 +165,7 @@ div.section h1 + ul, div.section h2 + ul, div.section h3 + ul, div.section  h4 +
 }
 
 a.headerlink {
-    color: #c60f0f;
+    color: var(--mongodb-green);
     font-size: 0.8em;
     padding: 0 4px 0 4px;
     text-decoration: none;
@@ -687,7 +688,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 }
 
 div.document {
-  margin: 25px;
+  margin-left: 25px;
 }
 
 @media print {

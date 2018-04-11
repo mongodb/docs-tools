@@ -1,10 +1,12 @@
 {
   "dependencies": {
+    "npm": "^5.8.0",
     "postcss": "^6.0.21",
     "postcss-clean": "^1.1.0",
     "postcss-cli": "^5.0.0",
     "postcss-cssnext": "^3.1.0",
     "postcss-import": "^11.1.0",
+    "postcss-nested": "^3.0.0",
     "rigning": "^3.1.11",
     "rollup": "^0.55.3",
     "rollup-plugin-buble": "^0.18.0",

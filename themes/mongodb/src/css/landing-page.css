@@ -1,0 +1,128 @@
+.page { width: 775px; }
+
+.card {
+  background-color: white;
+  transition: 200ms;
+  box-sizing: border-box;
+  border-radius: 3px;
+  border: 1px solid #f5f6f7;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1);
+  
+  text-align: left;
+  padding: 0;
+  
+  &:hover { box-shadow: 0 10px 12px 1px rgba(0,0,0,.1); }
+  
+  & :any-link {
+    text-decoration: none;
+    color: #000;
+    // &:visited { color: inherit; }
+    &:hover { color: var(--mongodb-green) }
+    &:active { color: var(--light-grey-green) }
+  }
+}
+
+.card-icon {
+  margin: auto 12px;
+  margin-left: 0;
+}
+
+.card-large {
+  height: 180px;
+  width: 100%;
+  line-height: 50px;
+  display: flex;
+  flex-direction: column;
+  margin: 8px 0;
+  &:hover { box-shadow: 0 10px 12px 1px rgba(0,0,0,.1); }
+  &:active { box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1); }
+}
+
+.card-small {
+  height: 55px;
+  line-height: 55px;
+  min-width: 180px;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: row;
+  
+  margin: 0 auto;
+  
+  &:hover { box-shadow: 0 6px 8px 1px rgba(0,0,0,.1); }
+  &:active { box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1); }
+}
+
+.card-primary {
+  border-left: 10px solid var(--mongodb-green);
+}
+
+@media screen and (max-width: 830px) {
+    .card-primary {
+      border-left: 10px solid #ff0000;
+    }
+}
+
+.card-secondary {
+  border-left: 10px solid var(--light-grey-green);
+}
+
+.card-image {
+  height: 130px;;
+  width: 100%;
+  
+  & img {
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    user-drag: none;
+  }
+}
+
+.card-content {
+  line-height: inherit;
+  padding: 0 24px;
+}
+
+.card_group {
+  min-height: 130px;
+  
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 1em;
+
+}
+
+.card-section {
+  display: flex;
+  justify-content: space-between;
+  flex-flow: row wrap;
+
+
+}
+
+
+.intro_section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  & .card_group {
+      max-width: calc(50% - 0.5em);
+    }
+}
+
+.intro_section-paragraph {
+  line-height: 22px;
+  font-size: 1em;
+  display: flex;
+  flex-direction: column;
+  
+  margin: 0 0 24px 0 !important;
+  max-width: 380px;
+  flex: 1 2 auto;
+}
