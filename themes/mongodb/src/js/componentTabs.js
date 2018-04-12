@@ -1,73 +1,80 @@
-import {Dispatcher} from './util';
+import {Dispatcher, toArray} from './util';
 
 export const tabsEventDispatcher = new Dispatcher();
-const EVENT_TAB_SELECTED = 'event-tab-selected';
 
 /**
- * Show the appropriate tab content and hide other tab's content
- * @param {string} currentAttrValue The currently selected tab ID.
+ * Show only the first set of tabs at the top of the page.
  * @returns {void}
  */
-function showHideTabContent(currentAttrValue) {
-    $('.tabs__content').children().
-        hide();
-    $(`.tabs .tabpanel-${currentAttrValue}`).show();
+function hideTabBars() {
+    const isTop = document.querySelector('.tabs-top');
+    if (isTop) {
+        const tabBars = $('.tab-strip--singleton');
+        const mainTabBar = tabBars.first();
+        // Remove any additional tab bars
+        tabBars.slice(1).
+            detach();
+        // Position the main tab bar after the page title
+        mainTabBar.
+            detach().
+            insertAfter('h1').
+            first();
+    }
 }
 
-class TabsSingleton {
-    constructor(key) {
-        this.key = key;
-        this.tabStrips = document.querySelectorAll('.tab-strip--singleton');
+/**
+ * Return the tabPref object containing preferences for tab sets
+ * and page specific prefs. Returns an empty object if it doesn't
+ * exist.
+ * @returns {object} Tab preference object.
+ */
+function getTabPref() {
+    return JSON.parse(window.localStorage.getItem('tabPref')) || {};
+}
 
-        // Only tab sets will have a type, init and try to retrieve
-        this.type = null;
-        if (this.tabStrips.length > 0) {
-            this.type = this.tabStrips[0].getAttribute('data-tab-preference');
-        }
-    }
+/**
+ * Sets the tabPref object depending on whether the tab belongs
+ * to set (e.g., "drivers") or if it's a one-off page.
 
-    /**
-     * Return the tabPref object containing preferences for tab sets
-     * and page specific prefs. Returns an empty object if it doesn't
-     * exist.
-     * @returns {object} Tab preference object.
-     * @returns {void}
-     */
-    getTabPref() {
-        return JSON.parse(window.localStorage.getItem(this.key)) || {};
-    }
+ * @param {object} pref The "tabId" and "type" (tab set)
+ * @param {boolean} anonymous Whether or not the tab being configured is anonymous.
+ * @returns {void}
+ */
+function setTabPref(pref, anonymous) {
+    const tabPref = getTabPref();
 
-    /**
-     * Sets the tabPref object depending on whether the tab belongs
-     * to set (e.g., "drivers") or if it's a one-off page.
-     * @param {object} value The "tabId" and optional "type" (tab set)
-     * @returns {void}
-     */
-    setTabPref(value) {
-        const tabPref = this.getTabPref();
-
-        // If "type" exists it belongs to a tab set
-        if (this.type) {
-            // Set top-level fields for tab set preferences
-            tabPref[value.type] = value.tabId;
-        } else if (tabPref.pages) {
-            // Store one-off pages in the pages embedded document
-            tabPref.pages[window.location.pathname] = value.tabId;
-        } else {
-            // Init pages embedded doc if it doesnt exist and store one-off
+    if (anonymous) {
+        if (!tabPref.pages) {
             tabPref.pages = {};
-            tabPref.pages[window.location.pathname] = value.tabId;
         }
 
-        // Write pref object back to localStorage
-        window.localStorage.setItem(this.key, JSON.stringify(tabPref));
+        tabPref.pages[window.location.pathname] = pref.tabId;
+    } else {
+        // Set top-level fields for tab set preferences
+        tabPref[pref.type] = pref.tabId;
+    }
+
+    // Write pref object back to localStorage
+    window.localStorage.setItem('tabPref', JSON.stringify(tabPref));
+}
+
+let tabSets = {};
+class TabSet {
+    constructor(tabType, anonymous, tabStripElements, tabContents) {
+        this.type = tabType;
+        this.tabStrips = tabStripElements;
+        this.tabContents = tabContents;
+        this.anonymous = anonymous;
+
+        // A set of all tabIds contained within this TabSet.
+        this.tabIds = {};
     }
 
     /**
      * Return the first singleton tab ID on the page.
      * @returns {string} The first singleton tab ID found.
      */
-    getFirstTab() {
+    getFirstTabId() {
         const tabsElement = this.tabStrips[0].
             querySelector('.tab-strip__element[aria-selected=true]');
         if (!tabsElement) { return null; }
@@ -78,10 +85,12 @@ class TabsSingleton {
     setup() {
         if (this.tabStrips.length === 0) { return; }
 
-        this.hideTabBars();
+        hideTabBars();
 
         for (const tabStrip of this.tabStrips) {
             for (const element of tabStrip.querySelectorAll('[data-tabid]')) {
+                this.tabIds[element.getAttribute('data-tabid')] = true;
+
                 element.onclick = (e) => {
                     // Get the initial position of the tab clicked
                     // to avoid page jumping after new tab is selected
@@ -96,18 +105,16 @@ class TabsSingleton {
 
                     // Get the tab ID of the clicked tab
                     const tabId = e.target.getAttribute('data-tabid');
-                    const type = this.tabStrips[0].getAttribute('data-tab-preference');
 
                     // Build the pref object to set
                     const pref = {};
                     pref.tabId = tabId;
-                    pref.type = type;
+                    pref.type = this.type;
 
                     // Check to make sure value is not null, i.e., don't do anything on "other"
                     if (tabId) {
                         // Save the users preference and re-render
-                        this.setTabPref(pref);
-                        this.update();
+                        this.update(tabId, true);
 
                         // Get the position of tab strip after re-render
                         const rects = element.getBoundingClientRect();
@@ -121,30 +128,34 @@ class TabsSingleton {
             }
         }
 
-        this.update();
+        this.update(null, false);
     }
 
-    update() {
+    update(tabId, isUserAction) {
         if (this.tabStrips.length === 0) { return; }
-        let type = this.type;
 
-        let tabPref = this.getTabPref();
-
-        if (!type && tabPref.pages && tabPref.pages[window.location.pathname]) {
-            // Check if current page has a one-off page specific pref
-            tabPref = tabPref.pages;
-            type = window.location.pathname;
-        } else if (!this.tabStrips[0].querySelector(`[data-tabid="${tabPref[type]}"]`)) {
-            // If their tabPref does not exist at the top of the page use the first tab
-            tabPref[type] = this.getFirstTab();
+        if (!tabId) {
+            const tabPref = getTabPref();
+            if (this.anonymous && tabPref.pages && tabPref.pages[window.location.pathname]) {
+                // Check if current page has a one-off page specific pref
+                tabId = tabPref.pages[window.location.pathname];
+            } else if (tabPref[this.type]) {
+                tabId = tabPref[this.type];
+            }
         }
 
-        if (!tabPref) { return; }
+        if (!tabId || !this.tabIds[tabId]) {
+            tabId = this.getFirstTabId();
+
+            if (!tabId) { return; }
+        }
 
         // Show the appropriate tab content and mark the tab as active
-        showHideTabContent(tabPref[type]);
-        this.showHideSelectedTab(tabPref[type]);
-        tabsEventDispatcher.dispatch(EVENT_TAB_SELECTED, tabPref);
+        tabsEventDispatcher.dispatch({
+            'isUserAction': isUserAction,
+            'tabId': tabId,
+            'type': this.type
+        });
     }
 
     /**
@@ -156,6 +167,10 @@ class TabsSingleton {
         for (const tabStrip of this.tabStrips) {
             // Get the <a>, <li> and <ul> of the selected tab
             const tabLink = $(tabStrip.querySelector(`[data-tabid="${currentAttrValue}"]`));
+            if (!tabLink.length) {
+                continue;
+            }
+
             const tabList = tabLink.parent('ul');
 
             // Get the dropdown <a> and <li> for active and label management
@@ -179,30 +194,79 @@ class TabsSingleton {
                 dropdownLink.text('Other ').append('<span class="caret"></span>');
             }
         }
+
+        const className = `tabpanel-${currentAttrValue}`;
+        for (const contentElement of this.tabContents) {
+            for (const childElement of contentElement.children) {
+                if (childElement.classList.contains(className)) {
+                    childElement.style.display = 'block';
+                } else {
+                    childElement.style.display = 'none';
+                }
+            }
+        }
     }
 
-    /**
-     * Show only the first set of tabs at the top of the page.
-     * @returns {void}
-     */
-    hideTabBars() {
-        const isTop = document.querySelector('.tabs-top');
-        if (isTop) {
-            const tabBars = $('.tab-strip--singleton');
-            const mainTabBar = tabBars.first();
-            // Remove any additional tab bars
-            tabBars.slice(1).
-                detach();
-            // Position the main tab bar after the page title
-            mainTabBar.
-                detach().
-                insertAfter('h1').
-                first();
+    static register(tabElement) {
+        const tabStripElements = toArray(tabElement.getElementsByClassName('tab-strip--singleton'));
+        if (!tabStripElements.length) { return; }
+
+        const tabContent = tabElement.querySelector('.tabs__content');
+        let tabType = tabElement.getAttribute('data-tab-preference');
+        let anonymous = false;
+
+        // If there is no specified tab type, use the first tab's ID
+        if (!tabType) {
+            const tabs = tabStripElements[0].getElementsByClassName('tab-strip__element');
+            if (!tabs.length) {
+                return;
+            }
+
+            tabType = tabs[0].getAttribute('data-tabid');
+
+            if (!tabType) {
+                return;
+            }
+
+            tabType = `anonymous-${tabType}`;
+            anonymous = true;
         }
+
+        if (tabSets[tabType]) {
+            const tabSet = tabSets[tabType];
+            tabSet.tabStrips = tabSet.tabStrips.concat(tabStripElements);
+            tabSet.tabContents.push(tabContent);
+            return;
+        }
+
+        const tabSet = new TabSet(tabType, anonymous, tabStripElements, [tabContent], false);
+        tabSets[tabType] = tabSet;
     }
 }
 
+// Listen for state changes necessitating a redraw
+tabsEventDispatcher.listen((ctx) => {
+    const tabSet = tabSets[ctx.type];
+    if (tabSet) {
+        // Only save our new preference if we are responding to user input.
+        if (ctx.isUserAction) {
+            setTabPref(ctx, tabSet.anonymous);
+        }
+
+        tabSet.showHideSelectedTab(ctx.tabId);
+    }
+});
+
 // Create tab functionality for code examples
 export function setup() {
-    (new TabsSingleton('tabPref')).setup();
+    tabSets = {};
+
+    const tabsElements = document.getElementsByClassName('tabs');
+    for (let i = 0; i < tabsElements.length; i += 1) {
+        TabSet.register(tabsElements[i]);
+    }
+
+    for (const tabSet of Object.values(tabSets)) {
+        tabSet.setup();
+    }
 }

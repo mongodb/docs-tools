@@ -5,18 +5,39 @@ import template
 PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^````+$))', re.M)
 PAT_IDENTIFIER_ILLEGAL = re.compile(r'[^_0-9a-z]', re.I)
 
+LANGUAGES = [('shell', 'Mongo Shell'),
+             ('compass', 'Compass'),
+             ('python', 'Python'),
+             ('java-sync', 'Java (Sync)'),
+             ('nodejs', 'Node.js'),
+             ('php', 'PHP'),
+             ('motor', 'Motor'),
+             ('java-async', 'Java (Async)'),
+             ('c', 'C'),
+             # ('cpp11', 'C++11'),
+             ('csharp', 'C#'),
+             ('perl', 'Perl'),
+             ('ruby', 'Ruby'),
+             ('scala', 'Scala')]
+
 TABS_TOP = '''
 .. raw:: html
 
    <div class="tabs-top"></div>
 '''
 
+PILLS_TEMPLATE = '''
+.. raw:: html
+
+   <ul class="guide__pills pillstrip-declaration" role="tablist" data-tab-preference="{{ title }}"></ul>
+'''
+
 TABS_TEMPLATE = '''
 .. raw:: html
 
-   <div class="tabs">
+   <div class="tabs" %PREFERENCE%>
      {{ if hidden not }}
-     <ul class="tab-strip tab-strip--singleton" role="tablist" %PREFERENCE%>
+     <ul class="tab-strip tab-strip--singleton" role="tablist">
        {{ for tab in tabs %FILTER% }}
        {{ # Only render the tab here if i < 5 }}
        {{ if i lessThan(5) }}
@@ -131,24 +152,11 @@ def setup(app):
 
     # Create directive for positioning tabs at top of the page
     app.add_directive('tabs-top', template.create_directive('tabs-top', TABS_TOP, template.BUILT_IN_PATH, True))
+    app.add_directive('pillstrip', template.create_directive('pillstrip', PILLS_TEMPLATE, template.BUILT_IN_PATH, False))
 
     # Create drivers tab directive
     app.add_directive('tabs-drivers',
-        create_tab_directive('languages',
-            [('shell', 'Mongo Shell'),
-             ('compass', 'Compass'),
-             ('python', 'Python'),
-             ('java-sync', 'Java (Sync)'),
-             ('nodejs', 'Node.js'),
-             ('php', 'PHP'),
-             ('motor', 'Motor'),
-             ('java-async', 'Java (Async)'),
-             ('c', 'C'),
-             # ('cpp11', 'C++11'),
-             ('csharp', 'C#'),
-             ('perl', 'Perl'),
-             ('ruby', 'Ruby'),
-             ('scala', 'Scala')]))
+        create_tab_directive('languages', LANGUAGES))
 
     # Create operating system tab directive
     app.add_directive('tabs-platforms',

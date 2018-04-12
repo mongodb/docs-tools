@@ -5,6 +5,7 @@ import * as componentFastLoad from './componentFastLoad';
 import * as componentFeedback from './componentFeedback';
 import * as componentGuides from './componentGuides';
 import * as componentLightbox from './componentLightbox';
+import * as componentPillStrip from './componentPillStrip';
 import * as componentSidebar from './componentSidebar';
 import * as componentTabs from './componentTabs';
 import * as componentThirdParty from './componentThirdParty';
@@ -38,6 +39,8 @@ $(() => {
     fastNav.register(componentFeedback);
     fastNav.register(componentLightbox);
     fastNav.register(componentSidebar);
+    // Must preceed componentTabs
+    fastNav.register(componentPillStrip);
     fastNav.register(componentTabs);
     fastNav.register(componentVersionSelector);
     fastNav.register(componentThirdParty);
