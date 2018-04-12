@@ -2,6 +2,15 @@ export function isLeafNode($node) {
     return !$node.siblings('ul:not(.simple)').length;
 }
 
+export function toArray(arrayLike) {
+    const result = [];
+    for (let i = 0; i < arrayLike.length; i += 1) {
+        result.push(arrayLike[i]);
+    }
+
+    return result;
+}
+
 /* Checks a whitelist for non-leaf nodes that should trigger a full page reload */
 export function requiresPageload($node) {
     const docsExcludedNav = window.docsExcludedNav;
@@ -65,9 +74,9 @@ export class Dispatcher {
         this.listeners.push(handler);
     }
 
-    dispatch(name, ctx) {
+    dispatch(ctx) {
         for (let i = 0; i < this.listeners.length; i += 1) {
-            this.listeners[i](name, ctx);
+            this.listeners[i](ctx);
         }
     }
 }
