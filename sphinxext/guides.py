@@ -5,7 +5,13 @@ from docutils.parsers.rst import Directive, directives
 from docutils import statemachine
 from docutils.utils.error_reporting import ErrorString
 
-GuideCategory = namedtuple('GuideCategory', ('title', 'cssclass'))
+# Set up our languages list, and override a couple long-winded entries
+from tabs import LANGUAGES
+LANGUAGES_IDS = [lang[0] for lang in LANGUAGES]
+LANGUAGES_DICT = dict(LANGUAGES)
+LANGUAGES_DICT['shell'] = 'Shell'
+
+GuideCategory = namedtuple('GuideCategory', ('title', 'titlecssclass'))
 
 GUIDE_DIRECTIVE_PATTERN = re.compile(r'''
     (?P<outer_indentation>\x20*)
@@ -13,9 +19,9 @@ GUIDE_DIRECTIVE_PATTERN = re.compile(r'''
     (?:(?:(?P=outer_indentation) [^\n]+\n)|\n)*''', re.X)
 LEADING_WHITESPACE = re.compile(r'^\n?(\x20+)')
 GUIDE_CATEGORIES = {
-    'Getting Started': GuideCategory('Getting Started', 'guide-category--getting-started'),
-    'Use Case': GuideCategory('Use Case', 'guide-category--use-case'),
-    'Deep Dive': GuideCategory('Deep Dive', 'guide-category--deep-dive')
+    'Getting Started': GuideCategory('Getting Started', 'guide-category__title--getting-started'),
+    'Use Case': GuideCategory('Use Case', 'guide-category__title--use-case'),
+    'Deep Dive': GuideCategory('Deep Dive', 'guide-category__title--deep-dive')
 }
 GUIDES_TEMPLATE = fett.Template('''
 :tocdepth: 2
@@ -25,6 +31,20 @@ GUIDES_TEMPLATE = fett.Template('''
 ====================================================================================================
 
 .. default-domain:: mongodb
+
+{{ if languages }}
+.. raw:: html
+
+   <div class="guide-prefs">
+   <div class="guide-prefs__caption">Language:</div>
+
+.. tabs-pillstrip:: languages
+
+.. raw:: html
+
+   </div>
+   <hr>
+{{ end }}
 
 Author: {{ author }}
 
@@ -72,9 +92,8 @@ GUIDES_INDEX_TEMPLATE = fett.Template('''
 .. raw:: html
 
    {{ for category in categories }}
-   <section class="guide-category {{ category.cssclass }}">
-     <div class="guide-category__title">
-       <div class="guide-category__icon"></div>
+   <section class="guide-category">
+     <div class="guide-category__title {{ category.titlecssclass }}">
        {{ category.title }}
      </div>
      {{ if category.truncated }}
@@ -98,8 +117,11 @@ GUIDES_INDEX_TEMPLATE = fett.Template('''
            <div class="guide__title">{{ card.title }}</div>
            <div class="guide__body"></div>
            <ul class="guide__pills">
-           {{ for pill in card.pills }}
-             <li>{{ pill }}</li>
+           {{ for lang in card.card_languages }}
+             <li class="guide__pill" data-tab-preference="{{ lang.id asIdentifier }}">{{ lang.title }}</li>
+           {{ end }}
+           {{ if card.languages_truncated }}
+             <li class="guide__pill guide__pill--seeall">See All</li>
            {{ end }}
            </ul>
            <div class="guide__time">{{ card.time }}min</div>
@@ -120,6 +142,17 @@ def validate_guide_category(guide_category):
         raise ValueError('Invalid guide type')
 
     return guide_category
+
+
+def validate_languages(languages):
+    """Raise an error if an unknown tab language is used."""
+    languages = languages.split()
+    try:
+        languages.sort(key=lambda lang_id: LANGUAGES_IDS.index(lang_id))
+    except ValueError as err:
+        raise ValueError('Unknown language "{}"'.format(err.message.split()[0]))
+
+    return languages
 
 
 class ParseError(Exception):
@@ -204,6 +237,7 @@ class GuideDirective(Directive):
 
     guide_keys = {
         'title': str,
+        'languages': validate_languages,
         'author': str,
         'type': validate_guide_category,
         'level': str,
@@ -222,7 +256,8 @@ class GuideDirective(Directive):
 
     guide_key_defaults = {
         'considerations': '',
-        'verify': ''
+        'verify': '',
+        'languages': ''
     }
 
     def run(self):
@@ -248,11 +283,13 @@ class GuideDirective(Directive):
 
             try:
                 options[key] = validation_function(options[key])
-            except ValueError:
+            except ValueError as err:
+                if err.message:
+                    message = 'Invalid guide option value: {}: {}'.format(key, err.message)
+                else:
+                    message = 'Invalid guide option value: {}'.format(key)
                 messages.append(
-                    self.state.document.reporter.warning(
-                        'Invalid guide option value: {}'.format(key),
-                        line=self.lineno))
+                    self.state.document.reporter.warning(message, line=self.lineno))
 
         try:
             rendered = GUIDES_TEMPLATE.render(options)
@@ -266,13 +303,29 @@ class GuideDirective(Directive):
         if not hasattr(env, 'guide_all_guides'):
             env.guide_all_guides = []
 
-        env.guide_all_guides.append({
+        guide = {
             'docname': env.docname,
             'title': options['title'],
             'time': options['time'],
             'category': options['type'],
-            'pills': [],
-            'jumbo': False})
+            'all_languages': [{
+                'title': LANGUAGES_DICT[lang],
+                'id': lang} for lang in options['languages']],
+            'card_languages': [],
+            'languages_truncated': False,
+            'jumbo': False
+        }
+
+        total_length = 0
+        for language in guide['all_languages']:
+            if total_length > 50:
+                guide['languages_truncated'] = True
+                break
+
+            total_length += len(language['title']) + 4
+            guide['card_languages'].append(language)
+
+        env.guide_all_guides.append(guide)
 
         return messages
 
@@ -284,7 +337,7 @@ class CardSet:
             self.categories[category_id] = {
                 'truncated': False,
                 'title': category.title,
-                'cssclass': category.cssclass,
+                'titlecssclass': category.titlecssclass,
                 'columns': [[], [], []],
                 'n_guides': 0
             }
@@ -297,7 +350,6 @@ class CardSet:
         env.included.add(guide['docname'])
         self.get_next_column(guide['category']).append(guide)
         self.categories[guide['category']]['n_guides'] += 1
-
 
     def add_guides(self, env, guides, title):
         categories = {}

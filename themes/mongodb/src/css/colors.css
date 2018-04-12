@@ -3,4 +3,7 @@
   --light-tan: #f6d29d;
   --mongodb-green: #69b241;
   --charcoal-grey-two: #424950;
+
+  --sans-serif: "Akzidenz", "Helvetica Neue", sans-serif;
+  --monospace: "Source Code Pro", monospace;
 }

@@ -152,7 +152,7 @@ def setup(app):
 
     # Create directive for positioning tabs at top of the page
     app.add_directive('tabs-top', template.create_directive('tabs-top', TABS_TOP, template.BUILT_IN_PATH, True))
-    app.add_directive('pillstrip', template.create_directive('pillstrip', PILLS_TEMPLATE, template.BUILT_IN_PATH, False))
+    app.add_directive('tabs-pillstrip', template.create_directive('tabs-pillstrip', PILLS_TEMPLATE, template.BUILT_IN_PATH, False))
 
     # Create drivers tab directive
     app.add_directive('tabs-drivers',

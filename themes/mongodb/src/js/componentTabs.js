@@ -40,7 +40,7 @@ function getTabPref() {
  * @param {boolean} anonymous Whether or not the tab being configured is anonymous.
  * @returns {void}
  */
-function setTabPref(pref, anonymous) {
+export function setTabPref(pref, anonymous) {
     const tabPref = getTabPref();
 
     if (anonymous) {

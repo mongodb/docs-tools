@@ -1,3 +1,4 @@
+import {setTabPref} from './componentTabs';
 import {throttle} from './util';
 
 const headings = [];
@@ -25,7 +26,7 @@ function recalculate() {
 
 document.addEventListener('scroll', throttle(recalculate, 150));
 
-export function setup() {
+function setupScrollMonitor() {
     const leftToc = document.querySelector('.left-toc');
     if (!leftToc) { return; }
 
@@ -42,4 +43,29 @@ export function setup() {
 
     window.isVisible = isVisible;
     recalculate();
+}
+
+function pillClickHandler(ev) {
+    const tabId = ev.target.getAttribute('data-tab-preference');
+    if (!tabId) { return; }
+
+    setTabPref({
+        'tabId': tabId,
+        'type': 'languages'
+    }, false);
+}
+
+function setupLandingPage() {
+    const guidesCategoryListElements = document.getElementsByClassName('guide-category-list');
+    if (!guidesCategoryListElements.length) { return; }
+
+    const pills = guidesCategoryListElements[0].getElementsByClassName('guide__pill');
+    for (let i = 0; i < pills.length; i += 1) {
+        pills[i].onclick = pillClickHandler;
+    }
+}
+
+export function setup() {
+    setupScrollMonitor();
+    setupLandingPage();
 }

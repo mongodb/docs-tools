@@ -22,6 +22,16 @@
     {%- block content %}
       {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
       <div class="body" data-pagename="{{pagename}}">
+        <div class="bc">
+         {% if parents %}
+           <ul>
+            {%- for parent in parents %}
+              <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
+            {%- endfor %}
+          </ul>
+        {% endif %}
+        </div>
+
         {% block body %}
           {{ body }}
         {% endblock %}

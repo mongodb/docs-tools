@@ -9,7 +9,10 @@ const blacklist = {
 };
 
 function loadPage() {
-    const pagename = document.querySelector('.body').getAttribute('data-pagename');
+    const bodyElements = document.getElementsByClassName('body');
+    if (!bodyElements.length) { return; }
+
+    const pagename = bodyElements[0].getAttribute('data-pagename');
     if (Object.prototype.hasOwnProperty.call(blacklist, pagename)) {
         return;
     }
