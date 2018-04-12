@@ -34,7 +34,8 @@ export function setup() {
         tabTypes[tabsType].push(pillStripElement);
     }
 
-    for (const [tabsType, pillStripElements] of Object.entries(tabTypes)) {
+    for (const tabsType of Object.keys(tabTypes)) {
+        const pillStripElements = tabTypes[tabsType];
         const tabStrips = document.querySelectorAll(`.tabs[data-tab-preference="${tabsType}"] > .tab-strip`);
         const seenPills = {};
         const pills = [];

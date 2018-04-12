@@ -266,7 +266,7 @@ export function setup() {
         TabSet.register(tabsElements[i]);
     }
 
-    for (const tabSet of Object.values(tabSets)) {
-        tabSet.setup();
+    for (const tabType of Object.keys(tabSets)) {
+        tabSets[tabType].setup();
     }
 }

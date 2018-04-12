@@ -32,10 +32,10 @@ function moveButtonRowToTable(block) {
     linenosSpacer.className = 'linenos-button-row-spacer';
 
     // Manipulate the DOM
-    tableBody.prepend(tableButtonRow);
-    tableButtonRow.append(linenosSpacer);
-    tableButtonRow.append(buttonRowDestination);
-    buttonRowDestination.append(buttonRow);
+    tableBody.insertBefore(tableButtonRow, tableBody.firstChild);
+    tableButtonRow.appendChild(linenosSpacer);
+    tableButtonRow.appendChild(buttonRowDestination);
+    buttonRowDestination.appendChild(buttonRow);
 }
 
 function moveButtonRowBelowCaption(block) {

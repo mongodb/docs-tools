@@ -1,3 +1,5 @@
+import {toArray} from './util';
+
 const TOOLTIP_STATE_ACTIVE = 'code-button__tooltip--active';
 const TOOLTIP_STATE_INACTIVE = 'code-button__tooltip--inactive';
 
@@ -15,7 +17,7 @@ function isCopyableCodeBlock(block) {
 
 export function setup() {
     const buttonCodeBlocks = document.getElementsByClassName('button-code-block');
-    const copyableBlocks = Array.from(buttonCodeBlocks).filter(isCopyableCodeBlock);
+    const copyableBlocks = toArray(buttonCodeBlocks).filter(isCopyableCodeBlock);
 
     for (const block of copyableBlocks) {
         const highlightElement = block.getElementsByClassName('highlight')[0];
