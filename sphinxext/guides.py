@@ -44,6 +44,7 @@ GUIDES_TEMPLATE = fett.Template('''
 
    </div>
    <hr>
+
 {{ end }}
 
 Author: {{ author }}
@@ -52,15 +53,27 @@ Author: {{ author }}
 
 *Time required: {{ time }} minutes*
 
+.. raw:: html
+
+   <hr>
+
 What You'll Need
 ----------------
 
 {{ prerequisites }}
 
+.. raw:: html
+
+   <hr>
+
 Check Your Environment
 ----------------------
 
 {{ check_your_environment }}
+
+.. raw:: html
+
+   <hr>
 
 Procedure
 ---------
@@ -72,21 +85,44 @@ Procedure
 {{ procedure }}
 
 {{ if verify }}
+
+.. raw:: html
+
+   <hr>
+
 Verify
 ------
 
 {{ verify }}
 {{ end }}
 
+.. raw:: html
+
+   <hr>
+
 Summary
 -------
 
 {{ summary }}
 
-What's Next
+.. raw:: html
+
+   <hr>
+
+Next Guide:
 -----------
 
-{{ whats_next }}
+.. container:: next-guide-box
+
+   .. container:: next-guide-box-title
+
+      {{ whats_next.title }}
+
+   {{ whats_next.introduction }}
+
+   .. raw:: html
+
+      <a class="green-button" href="{{ whats_next.url }}">Next Guide</a>
 ''')
 GUIDES_INDEX_TEMPLATE = fett.Template('''
 .. raw:: html
@@ -153,6 +189,18 @@ def validate_languages(languages):
         raise ValueError('Unknown language "{}"'.format(err.message.split()[0]))
 
     return languages
+
+
+def validate_whats_next(whats_next):
+    lines = whats_next.strip().split('\n')
+    if len(lines) != 3:
+        raise ValueError('whats_next must be three lines')
+
+    return {
+        'title': lines[0],
+        'introduction': lines[1],
+        'url': lines[2]
+    }
 
 
 class ParseError(Exception):
@@ -250,7 +298,7 @@ class GuideDirective(Directive):
         'procedure': str,
         'verify': str,
         'summary': str,
-        'whats_next': str,
+        'whats_next': validate_whats_next,
         'seealso': str
     }
 
@@ -288,8 +336,8 @@ class GuideDirective(Directive):
                     message = 'Invalid guide option value: {}: {}'.format(key, err.message)
                 else:
                     message = 'Invalid guide option value: {}'.format(key)
-                messages.append(
-                    self.state.document.reporter.warning(message, line=self.lineno))
+
+                return [self.state.document.reporter.error(message, line=self.lineno)]
 
         try:
             rendered = GUIDES_TEMPLATE.render(options)
@@ -386,16 +434,18 @@ class GuideIndexDirective(Directive):
 
         cardset = CardSet()
 
-        indentation = 0
         previous_line = None
         pending_card = [None]
 
         def handle_single_guide():
             if pending_card[0] is None:
+                if previous_line not in guides:
+                    return
+
                 guide = guides[previous_line]
                 cardset.add_guide(env, guide)
             else:
-                cardset_guides = [guides[docname] for docname in pending_card[0]['guides']]
+                cardset_guides = [guides[docname] for docname in pending_card[0]['guides'] if docname in guides]
                 cardset.add_guides(env, cardset_guides, pending_card[0]['title'])
                 pending_card[0] = None
 
