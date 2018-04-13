@@ -28,7 +28,7 @@
           {%- for parent in parents %}
           <li class="breadcrumbs__bc"><a href="{{ parent.link|e }}">{{ parent.title }}</a> {{ reldelim1 }} </li>
           {%- endfor %}
-          <li class="breadcrumbs__bc">{{ title|e }}</li>
+          <li class="breadcrumbs__bc"><a href="#">{{ title|e }}</a></li>
         </ul>
 
         {% block body %}

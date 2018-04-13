@@ -1,4 +1,4 @@
-import {setTabPref} from './componentTabs';
+import {setTabPref, tabsEventDispatcher} from './componentTabs';
 import {throttle} from './util';
 
 const headings = [];
@@ -64,6 +64,17 @@ function setupLandingPage() {
         pills[i].onclick = pillClickHandler;
     }
 }
+
+// Guides show the current language in the tab preferences header. Update
+// that if necessary.
+const showCurrentLanguageElements = document.getElementsByClassName('show-current-language');
+tabsEventDispatcher.listen((ctx) => {
+    if (ctx.type !== 'languages') { return; }
+
+    for (let i = 0; i < showCurrentLanguageElements.length; i += 1) {
+        showCurrentLanguageElements[i].innerText = ctx.tabId;
+    }
+});
 
 export function setup() {
     setupScrollMonitor();

@@ -38,7 +38,7 @@ GUIDES_TEMPLATE = fett.Template('''
 .. raw:: html
 
    <div class="guide-prefs">
-   <div class="guide-prefs__caption">Language:</div>
+   <div class="guide-prefs__caption">Language: <span class="show-current-language"></span></div>
 
 .. tabs-pillstrip:: languages
 
@@ -133,7 +133,7 @@ GUIDES_INDEX_TEMPLATE = fett.Template('''
            <div class="guide__title">{{ card.title }}</div>
            <ol class="guide__body">
            {{ for guide in card.guides }}
-             <li><a href="{{ guide.docname }}{{ link_suffix }}">{{ guide.title }}</a></li>
+             <li class="guide__entry"><a href="{{ guide.docname }}{{ link_suffix }}">{{ guide.title }}</a></li>
            {{ end }}
            </ol>
          </div>

@@ -1,8 +1,7 @@
 .guide-category-list {
     background-color: var(--charcoal-grey-two);
-    background-image: url("images/bg.svg");
     color: #fff;
-    font-family: Akzidenz, sans-serif;
+    font-family: var(--sans-serif);
     padding-left: 10%;
     padding-right: 10%;
     padding-top: 40px;
@@ -34,8 +33,7 @@
 .guide {
     background-color: #fff;
     border-radius: 3px;
-    border: solid 1px #f5f6f7;
-    border-left-width: 8px;
+    border-left: solid 8px #f5f6f7;
     box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1);
     color: #212121;
     cursor: pointer;
@@ -91,13 +89,27 @@
 }
 
 .guide__title {
+    color: #212121;
+    font-family: "Akzidenz Grotesk BQ Medium", sans-serif;
     font-size: 20px;
     font-weight: bold;
-    color: #212121;
+    line-height: 24px
+}
+
+.guide:hover > .guide__title {
+    color: var(--mongodb-green);
 }
 
 .guide__body {
     flex-grow: 1;
+}
+
+.guide__entry {
+    padding-bottom: 20px;
+}
+
+.guide__entry:last-child {
+    padding-bottom: 0;
 }
 
 .guide__time {

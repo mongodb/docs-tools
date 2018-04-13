@@ -102,6 +102,8 @@ h2::before {
 @media (max-width: 600px) {
     .left-toc {
         display: none;
+        padding-left: 20px;
+        padding-right: 20px;
     }
 
     .left-nav-space {
@@ -199,6 +201,7 @@ h2::before {
 
 .breadcrumbs {
     font-size: 12px;
+    font-weight: bold;
     line-height: 1.67;
     margin-top: 46px;
     padding: 0;
