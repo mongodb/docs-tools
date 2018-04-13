@@ -35,7 +35,7 @@
     background-color: #fff;
     border-radius: 3px;
     border: solid 1px #f5f6f7;
-    border-left-width: 4px;
+    border-left-width: 8px;
     box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1);
     color: #212121;
     cursor: pointer;
@@ -125,7 +125,7 @@
 }
 
 .guide-category__title--getting-started::before {
-    background-image: url('data:image/svg+xml;utf,<svg xmlns="http://www.w3.org/2000/svg"><g><circle cx="18.5" cy="18.5" r="18.5" fill="%23EFF6EC"/><g fill="%2369B241"><path d="M38.6 22.5l-2.9-2.9-2.9 2.9V8h5.9z"/><path d="M41.5 10.9h-1.4v18.9h-8.7c-.4 0-.7.1-1 .4l-.4.4V15.8l1.4-1.4v-3.5c-.4 0-.7.1-1 .4l-1.9 1.9-1.9-1.9a1.4 1.4 0 0 0-1-.4H15.4c-.8 0-1.4.6-1.4 1.4v18.9c0 .8.7 1.4 1.4 1.4H25l2.5 2.5a1.4 1.4 0 0 0 2 0l2.5-2.5h9.6c.7 0 1.4-.6 1.4-1.4V12.3c0-.8-.7-1.4-1.4-1.4zM27 30.6l-.4-.4a1.4 1.4 0 0 0-1-.4h-8.7v-16H25l2 2v14.8z"/><path d="M21.3 18.1h4.3v-2.9h-4.3zm-3 4.4h7.3v-2.9h-7.3zm0 4.3h7.3V24h-7.3z"/></g></g></svg>');
+    background-image: url('data:image/svg+xml;utf,<svg xmlns="http://www.w3.org/2000/svg"><circle fill="%23EFF6EC" r="18.5" cy="18.5" cx="18.5"/><g fill="%2369b241"><path d="M28.6 19.2l-2.9-2.9-2.9 3V4.6h5.9z"/><path d="M31.5 7.6h-1.4v19h-8.7c-.4 0-.7 0-1 .3l-.4.4V12.5l1.4-1.4V7.6c-.4 0-.7.1-1 .4l-1.9 2-1.9-2a1.4 1.4 0 0 0-1-.4H5.4C4.6 7.6 4 8.2 4 9v19c0 .7.7 1.3 1.4 1.3H15l2.5 2.5a1.4 1.4 0 0 0 2 0l2.5-2.5h9.6c.7 0 1.4-.6 1.4-1.4V9c0-.8-.7-1.4-1.4-1.4zM17 27.3l-.4-.4a1.4 1.4 0 0 0-1-.4H6.9v-16H15l2 2z"/><path d="M11.3 14.8h4.3V12h-4.3zm-3 4.4h7.3v-2.9H8.3zm0 4.3h7.3v-2.8H8.3z"/></g></svg>');
     display: inline-block;
     content: "";
 }

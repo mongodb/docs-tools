@@ -1,5 +1,6 @@
 <!doctype html>
 
+{%- set reldelim1 = '&gt;' %}
 {%- set url_root = pathto('', 1) %}
 {%  set script_files = ["_static/lib/bootstrap.js", "_static/controller.js"] %}
 
@@ -22,15 +23,13 @@
     {%- block content %}
       {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
       <div class="body" data-pagename="{{pagename}}">
-        <div class="bc">
-         {% if parents %}
-           <ul>
-            {%- for parent in parents %}
-              <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
-            {%- endfor %}
-          </ul>
-        {% endif %}
-        </div>
+        <ul class="breadcrumbs">
+          <li class="breadcrumbs__bc"><a href="{{ pathto(master_doc) }}">{{ shorttitle|e }}</a> {{ reldelim1 }} </li>
+          {%- for parent in parents %}
+          <li class="breadcrumbs__bc"><a href="{{ parent.link|e }}">{{ parent.title }}</a> {{ reldelim1 }} </li>
+          {%- endfor %}
+          <li class="breadcrumbs__bc">{{ title|e }}</li>
+        </ul>
 
         {% block body %}
           {{ body }}

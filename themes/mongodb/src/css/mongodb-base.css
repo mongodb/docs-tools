@@ -28,7 +28,7 @@ body {
 
 hr {
     border: none;
-    border-top: solid 1px #e0e7e8;
+    border-top: var(--hr-style);
 }
 
 .content {

@@ -15,6 +15,15 @@
 @import url("../mongodb-base.css");
 @import url("./guides-landing.css");
 
+/* Draw a line separating sections. */
+h2::before {
+    border-top: var(--hr-style);
+    content: "";
+    width: 100%;
+    display: block;
+    padding-top: 20px;
+}
+
 .left-toc {
     width: 248px;
     padding-left: 40px;
@@ -175,7 +184,7 @@
 }
 
 .green-button {
-    background-image: radial-gradient(circle at 47% 65%, #7bc553, #69b241);
+    background-image: radial-gradient(circle at 47% 65%, #7bc553, var(--mongodb-green));
     border-radius: 3px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
     color: white;
@@ -186,4 +195,21 @@
 
 .green-button:hover {
     text-decoration: none;
+}
+
+.breadcrumbs {
+    font-size: 12px;
+    line-height: 1.67;
+    margin-top: 46px;
+    padding: 0;
+}
+
+.breadcrumbs__bc {
+    list-style: none;
+    font-size: 13px;
+    display:inline;
+}
+
+.breadcrumbs__bc > a {
+    color: var(--mongodb-green);
 }

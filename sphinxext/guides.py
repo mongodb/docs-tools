@@ -4,6 +4,8 @@ import fett
 from docutils.parsers.rst import Directive, directives
 from docutils import statemachine
 from docutils.utils.error_reporting import ErrorString
+from sphinx import addnodes
+from sphinx.util.nodes import set_source_info
 
 # Set up our languages list, and override a couple long-winded entries
 from tabs import LANGUAGES
@@ -53,27 +55,15 @@ Author: {{ author }}
 
 *Time required: {{ time }} minutes*
 
-.. raw:: html
-
-   <hr>
-
 What You'll Need
 ----------------
 
 {{ prerequisites }}
 
-.. raw:: html
-
-   <hr>
-
 Check Your Environment
 ----------------------
 
 {{ check_your_environment }}
-
-.. raw:: html
-
-   <hr>
 
 Procedure
 ---------
@@ -86,28 +76,18 @@ Procedure
 
 {{ if verify }}
 
-.. raw:: html
-
-   <hr>
-
 Verify
 ------
 
 {{ verify }}
 {{ end }}
 
-.. raw:: html
-
-   <hr>
-
 Summary
 -------
 
 {{ summary }}
 
-.. raw:: html
-
-   <hr>
+{{ if whats_next }}
 
 Next Guide:
 -----------
@@ -123,6 +103,15 @@ Next Guide:
    .. raw:: html
 
       <a class="green-button" href="{{ whats_next.url }}">Next Guide</a>
+{{ end }}
+
+{{ if seealso }}
+
+See Also:
+---------
+
+{{ seealso }}
+{{ end }}
 ''')
 GUIDES_INDEX_TEMPLATE = fett.Template('''
 .. raw:: html
@@ -191,7 +180,7 @@ def validate_languages(languages):
     return languages
 
 
-def validate_whats_next(whats_next):
+def parse_whats_next(whats_next):
     lines = whats_next.strip().split('\n')
     if len(lines) != 3:
         raise ValueError('whats_next must be three lines')
@@ -298,14 +287,16 @@ class GuideDirective(Directive):
         'procedure': str,
         'verify': str,
         'summary': str,
-        'whats_next': validate_whats_next,
+        'whats_next': str,
         'seealso': str
     }
 
-    guide_key_defaults = {
-        'considerations': '',
-        'verify': '',
-        'languages': ''
+    optional_keys = {
+        'considerations',
+        'verify',
+        'languages',
+        'whats_next',
+        'seealso'
     }
 
     def run(self):
@@ -320,8 +311,8 @@ class GuideDirective(Directive):
 
         for key, validation_function in self.guide_keys.items():
             if key not in options:
-                if key in self.guide_key_defaults:
-                    options[key] = self.guide_key_defaults[key]
+                if key in self.optional_keys:
+                    options[key] = ''
                 else:
                     messages.append(
                         self.state.document.reporter.warning(
@@ -332,12 +323,21 @@ class GuideDirective(Directive):
             try:
                 options[key] = validation_function(options[key])
             except ValueError as err:
+                message = 'Invalid guide option value: {}'.format(key)
                 if err.message:
-                    message = 'Invalid guide option value: {}: {}'.format(key, err.message)
-                else:
-                    message = 'Invalid guide option value: {}'.format(key)
+                    message += ': {}'.format(err.message)
 
                 return [self.state.document.reporter.error(message, line=self.lineno)]
+
+        # Parse specific values
+        try:
+            options['whats_next'] = parse_whats_next(options['whats_next'])
+        except ValueError as err:
+            options['whats_next'] = {}
+            messages.append(
+                self.state.document.reporter.warning(
+                    'Error parsing whats_next: {}'.format(err.message),
+                    line=self.lineno))
 
         try:
             rendered = GUIDES_TEMPLATE.render(options)
@@ -402,7 +402,7 @@ class CardSet:
     def add_guides(self, env, guides, title):
         categories = {}
         for guide in guides:
-            env.included.add(guide['docname'])
+            # env.included.add(guide['docname'])
             categories.setdefault(guide['category'], []).append(guide)
 
         for category_name, category_guides in categories.items():
@@ -483,7 +483,16 @@ class GuideIndexDirective(Directive):
         rendered_lines = statemachine.string2lines(rendered, 4, convert_whitespace=1)
         self.state_machine.insert_input(rendered_lines, '')
 
-        return []
+        # Add guides to the TOC
+        subnode = addnodes.toctree()
+        subnode['hidden'] = True
+        subnode['glob'] = False
+        subnode['includefiles'] = list(guides.keys())
+        subnode['parent'] = env.docname
+        subnode['entries'] = [(guide['title'], guide['docname']) for guide in guides.values()]
+        set_source_info(self, subnode)
+
+        return [subnode]
 
 
 def merge_info(app, env, docnames, other):
