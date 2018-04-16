@@ -61,7 +61,7 @@ TABS_TEMPLATE = '''
      {{ end }}
      <div class="tabs__content" role="tabpanel">
        {{ for tab in tabs %FILTER% }}
-       <div class="tabpanel-{{ tab.id asIdentifier }}">
+       <div class="tabpanel-{{ tab.id asIdentifier }}" data-tabid="{{ tab.id asIdentifier }}">
 
 {{ tab.content convertSections }}
 
