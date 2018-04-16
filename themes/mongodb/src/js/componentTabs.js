@@ -209,26 +209,16 @@ class TabSet {
 
     static register(tabElement) {
         const tabStripElements = toArray(tabElement.getElementsByClassName('tab-strip--singleton'));
-        if (!tabStripElements.length) { return; }
-
         const tabContent = tabElement.querySelector('.tabs__content');
         let tabType = tabElement.getAttribute('data-tab-preference');
         let anonymous = false;
 
         // If there is no specified tab type, use the first tab's ID
         if (!tabType) {
-            const tabs = tabStripElements[0].getElementsByClassName('tab-strip__element');
-            if (!tabs.length) {
-                return;
-            }
+            const firstTabidElement = tabElement.querySelector('[data-tabid]');
+            if (!firstTabidElement) { return; }
 
-            tabType = tabs[0].getAttribute('data-tabid');
-
-            if (!tabType) {
-                return;
-            }
-
-            tabType = `anonymous-${tabType}`;
+            tabType = `anonymous-${firstTabidElement.getAttribute('data-tabid')}`;
             anonymous = true;
         }
 
