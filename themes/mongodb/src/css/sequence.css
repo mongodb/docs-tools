@@ -3,7 +3,7 @@
     display: table;
     width: 100%;
     table-layout: fixed;
-    margin: 25px 0;
+    margin: 0;
 }
 
 .sequence-block > .bullet-block {

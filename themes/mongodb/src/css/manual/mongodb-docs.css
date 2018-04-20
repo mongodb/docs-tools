@@ -21,6 +21,7 @@
 @import url("../lightbox.css");
 @import url("../marian.css");
 @import url("../mws.css");
+@import url("../sequence.css");
 @import url("../tabs.css");
 
 /* OS X hides scroll bars, which makes some of our code boxes confusing. */
@@ -191,6 +192,11 @@ div.topic {
 
 table.docutils > div.admonition-example {
     background-color:inherit;
+}
+
+table.docutils div.admonition-example div.highlight {
+    /* Useful for showing examples in definition tables */
+    background-color: transparent;
 }
 
 div.admonition-example pre {
