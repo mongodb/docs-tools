@@ -242,11 +242,34 @@ img.align-center, .figure.align-center, object.align-center {
 
 div.sidebar {
     margin: 0 0 0.5em 1em;
-    border: 1px solid #ddb;
-    padding: 7px 7px 0 7px;
-    background-color: #ffe;
-    width: 40%;
+    border: 1px solid #aaa;
+    padding: 7px 7px 7px;
+    background-color: #fbfbfb;
+    width: 45%;
     float: right;
+    border-radius: 2px;
+
+    & p {
+        margin-bottom: 4px;
+    }
+
+    & .button-row {
+        display: none;
+    }
+
+    & .button-code-block {
+        margin: 0;
+    }
+
+    & div.highlight {
+        background: transparent;
+
+        & pre {
+            padding: 0 12px 0px 12px;
+            background: transparent;
+            border-left: none;
+        }
+    }
 }
 
 p.sidebar-title {
@@ -415,6 +438,10 @@ dl.glossary dt {
 
 .footnote:target  {
     background-color: #ffa;
+}
+
+li div.line-block {
+    margin-bottom: 0;
 }
 
 .line-block {
