@@ -5,6 +5,7 @@ import * as componentFastLoad from './componentFastLoad';
 import * as componentFeedback from './componentFeedback';
 import * as componentGuides from './componentGuides';
 import * as componentLightbox from './componentLightbox';
+import * as componentOpenAPI from './componentOpenAPI';
 import * as componentPillStrip from './componentPillStrip';
 import * as componentSidebar from './componentSidebar';
 import * as componentTabs from './componentTabs';
@@ -45,6 +46,7 @@ $(() => {
     fastNav.register(componentVersionSelector);
     fastNav.register(componentThirdParty);
     fastNav.register(componentGuides);
+    fastNav.register(componentOpenAPI);
 
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {

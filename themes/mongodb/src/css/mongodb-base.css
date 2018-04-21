@@ -301,11 +301,11 @@ div.section > h1 + dl.group > dt {display: none;}
 div.section > h1 + dl.expression > dt {display: none;}
 div.section > h1 + dl.projection > dt {display: none;}
 
-.body p {
+p {
     margin: 24px 0;
 }
 
-.body p.caption {
+p.caption {
     margin-top: 0;
 }
 

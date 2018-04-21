@@ -23,6 +23,7 @@
 @import url("../mws.css");
 @import url("../sequence.css");
 @import url("../tabs.css");
+@import url("../openapi.css");
 
 /* OS X hides scroll bars, which makes some of our code boxes confusing. */
 
@@ -473,11 +474,11 @@ div.section > h1 + dl.group > dt {display: none;}
 div.section > h1 + dl.expression > dt {display: none;}
 div.section > h1 + dl.projection > dt {display: none;}
 
-.body p {
+p {
     margin: 24px 0;
 }
 
-.body p.caption {
+p.caption {
     margin-top: 0;
 }
 

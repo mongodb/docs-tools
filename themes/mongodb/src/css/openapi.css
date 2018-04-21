@@ -1,0 +1,97 @@
+.apiref-resource {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.apiref-resource__header {
+    font-family: var(--monospace);
+    display: flex;
+    line-height: 32px;
+    cursor: pointer;
+
+    position: relative;
+    right: var(--caret-width);
+}
+
+.apiref-resource__header::before {
+    background: var(--image-caret);
+    background-size: 10.5px 8.4px;
+    padding-right: 15px;
+    content: "";
+    min-width: var(--caret-width);
+    transform: rotate(0deg);
+}
+
+.apiref-resource--collapsed > .apiref-resource__header::before {
+    transform: rotate(-90deg);
+}
+
+.apiref-resource__method {
+    width: 85px;
+    border-radius: 5px;
+    margin-right: 10px;
+    flex-shrink: 0;
+
+    /* If the path wraps to a new line, keep the method centered. */
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
+
+.apiref-resource__method--get {
+    background-color: var(--air);
+}
+
+.apiref-resource__method--patch {
+    background-color: var(--marigold);
+}
+
+.apiref-resource__method--put {
+    background-color: var(--marigold);
+}
+
+.apiref-resource__method--post {
+    background-color: var(--marigold);
+}
+
+.apiref-resource__method--delete {
+    background-color: var(--blush);
+}
+
+.apiref-resource__summary > p {
+    margin: 0;
+}
+
+.apiref-resource__summary {
+    margin-left: 100px;
+}
+
+.apiref-resource__body {
+    margin-left: 100px;
+}
+
+.apiref-resource--collapsed > .apiref-resource__body {
+    height: 0;
+    display: none;
+}
+
+.apiref-resource__parameter-required-flag::before {
+    color: var(--blush);
+    content: "required";
+    font-size: 10px;
+    font-style: italic;
+    font-weight: normal;
+}
+
+.apiref-resource__parameter-optional-flag::before {
+    color: var(--air);
+    content: "optional";
+    font-size: 10px;
+    font-style: italic;
+    font-weight: normal;
+}
+
+.apiref-resource__path-parameter {
+    font-weight: bold;
+}
