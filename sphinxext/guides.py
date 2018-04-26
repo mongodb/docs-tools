@@ -89,7 +89,7 @@ Summary
 
 {{ if whats_next }}
 
-Next Guide:
+What's Next
 -----------
 
 .. container:: next-guide-box
@@ -107,8 +107,8 @@ Next Guide:
 
 {{ if seealso }}
 
-See Also:
----------
+See Also
+--------
 
 {{ seealso }}
 {{ end }}

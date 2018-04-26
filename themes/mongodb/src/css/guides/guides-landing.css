@@ -1,5 +1,5 @@
 .guide-category-list {
-    background-color: var(--charcoal-grey-two);
+    background: var(--charcoal-grey-two) url('images/bg-accent.svg') no-repeat 0 300px;
     color: #fff;
     font-family: var(--sans-serif);
     padding-left: 10%;
@@ -8,6 +8,12 @@
     width: 100%;
     min-height: 100%;
     position: absolute;
+}
+
+@media (max-width: 1300px) {
+    .guide-category-list {
+        background-image: none;
+    }
 }
 
 .guide-category-list h1 {
