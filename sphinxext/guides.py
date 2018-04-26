@@ -138,7 +138,7 @@ GUIDES_INDEX_TEMPLATE = fett.Template('''
            </ol>
          </div>
          {{ else }}
-         <a class="guide" href="{{ card.docname }}{{ link_suffix }}">
+         <a class="guide guide--regular" href="{{ card.docname }}{{ link_suffix }}">
            <div class="guide__title">{{ card.title }}</div>
            <div class="guide__body"></div>
            <ul class="guide__pills">

@@ -11,6 +11,7 @@
 @import url("../mws.css");
 @import url("../tabs.css");
 @import url("../sequence.css");
+@import url("../dropdown.css");
 
 @import url("../mongodb-base.css");
 @import url("./guides-landing.css");
@@ -43,7 +44,7 @@ h2::before {
 }
 
 .left-toc__title {
-    font-family: "Akzidenz Grotesk BQ Medium", sans-serif;
+    font-family: var(--sans-serif-heavy);
     font-size: 20px;
     color: #4a4a4a;
 }
