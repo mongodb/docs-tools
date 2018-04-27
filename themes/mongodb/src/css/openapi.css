@@ -2,6 +2,8 @@
     padding: 5px;
     display: flex;
     flex-direction: column;
+    border-radius: 5px;
+    margin-bottom: 5px;
 }
 
 .apiref-resource__header {
@@ -11,7 +13,31 @@
     cursor: pointer;
 
     position: relative;
-    right: var(--caret-width);
+}
+
+.apiref-resource--get {
+    background-color: var(--air-neutral);
+    border: 0.5px solid var(--air);
+}
+
+.apiref-resource--patch {
+    background-color: var(--marigold-neutral);
+    border: 0.5px solid var(--marigold);
+}
+
+.apiref-resource--put {
+    background-color: var(--marigold-neutral);
+    border: 0.5px solid var(--marigold);
+}
+
+.apiref-resource--post {
+    background-color: var(--marigold-neutral);
+    border: 0.5px solid var(--marigold);
+}
+
+.apiref-resource--delete {
+    background-color: var(--blush-neutral);
+    border: 0.5px solid var(--blush);
 }
 
 .apiref-resource__header::before {
@@ -21,6 +47,7 @@
     content: "";
     min-width: var(--caret-width);
     transform: rotate(0deg);
+    height: 33px;
 }
 
 .apiref-resource--collapsed > .apiref-resource__header::before {
@@ -28,47 +55,14 @@
 }
 
 .apiref-resource__method {
-    width: 85px;
-    border-radius: 5px;
+    width: 60px;
     margin-right: 10px;
+    margin-left: 5px;
     flex-shrink: 0;
-
-    /* If the path wraps to a new line, keep the method centered. */
-    justify-content: center;
-    display: flex;
-    align-items: center;
-}
-
-.apiref-resource__method--get {
-    background-color: var(--air);
-}
-
-.apiref-resource__method--patch {
-    background-color: var(--marigold);
-}
-
-.apiref-resource__method--put {
-    background-color: var(--marigold);
-}
-
-.apiref-resource__method--post {
-    background-color: var(--marigold);
-}
-
-.apiref-resource__method--delete {
-    background-color: var(--blush);
 }
 
 .apiref-resource__summary > p {
     margin: 0;
-}
-
-.apiref-resource__summary {
-    margin-left: 100px;
-}
-
-.apiref-resource__body {
-    margin-left: 100px;
 }
 
 .apiref-resource--collapsed > .apiref-resource__body {
@@ -85,7 +79,7 @@
 }
 
 .apiref-resource__parameter-optional-flag::before {
-    color: var(--air);
+    color: var(--mongodb-green);
     content: "optional";
     font-size: 10px;
     font-style: italic;
@@ -94,4 +88,9 @@
 
 .apiref-resource__path-parameter {
     font-weight: bold;
+}
+
+.apiref-resource__path {
+    /* Fixes Chrome */
+    word-wrap: break-word;
 }

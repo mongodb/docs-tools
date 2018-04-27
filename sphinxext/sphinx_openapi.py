@@ -133,9 +133,9 @@ OPENAPI_TEMPLATE = fett.Template('''
 
 .. raw:: html
 
-   <div class="apiref-resource apiref-resource--collapsed" id="{{ operation.hash }}">
+   <div class="apiref-resource apiref-resource--{{ operation.method }} apiref-resource--collapsed" id="{{ operation.hash }}">
      <div class="apiref-resource__header" role="button">
-       <div class="apiref-resource__method apiref-resource__method--{{ operation.method escape }}">{{ operation.method escape }}</div>
+       <div class="apiref-resource__method apiref-resource__method">{{ operation.method }}</div>
        <div class="apiref-resource__path">{{ operation.path escape tagPathParameters }}</div>
      </div>
      <div class="apiref-resource__summary">
@@ -510,7 +510,7 @@ class OpenAPIDirective(Directive):
         stddomain = env.get_domain('std')
         labels = stddomain.data['labels']
         for method, path, methods in openapi.resources():
-            method_hash = methods[method]['hash']
+            method_hash = methods[method]['hash'].lower()
             if method_hash not in labels:
                 labels[method_hash] = (env.docname, method_hash, '{} {}'.format(method.upper(), path))
 

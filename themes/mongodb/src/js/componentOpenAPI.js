@@ -7,10 +7,12 @@ function createClickButNotSelectionHandler(element, onclick) {
     let dragStart = null;
 
     element.addEventListener('mousedown', (ev) => {
+        if (ev.button !== 0) { return; }
         dragStart = ev;
     });
 
     element.addEventListener('mouseup', (ev) => {
+        if (ev.button !== 0) { return; }
         const formerDragStart = dragStart;
         dragStart = null;
 
