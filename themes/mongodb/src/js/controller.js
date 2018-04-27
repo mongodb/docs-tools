@@ -34,7 +34,7 @@ $(() => {
     componentThirdParty.initialize();
 
     fastNav.register(componentCodeBlockFix);
-    fastNav.register(componentCodepen);
+    // fastNav.register(componentCodepen);
     fastNav.register(componentCopyButtons);
     fastNav.register(componentFastLoad);
     fastNav.register(componentFeedback);
