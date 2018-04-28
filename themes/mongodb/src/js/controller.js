@@ -10,6 +10,7 @@ import * as componentSidebar from './componentSidebar';
 import * as componentTabs from './componentTabs';
 import * as componentThirdParty from './componentThirdParty';
 import * as componentVersionSelector from './componentVersionSelector';
+import * as componentUriwriter from './componentUriwriter';
 
 class FastNav {
     constructor() {
@@ -45,6 +46,7 @@ $(() => {
     fastNav.register(componentThirdParty);
     fastNav.register(componentGuides);
     fastNav.register(componentOpenAPI);
+    fastNav.register(componentUriwriter);
 
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {
