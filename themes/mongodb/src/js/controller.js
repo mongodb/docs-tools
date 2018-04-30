@@ -1,5 +1,4 @@
 import * as componentCodeBlockFix from './componentCodeBlockFix';
-import * as componentCodepen from './componentCodepen';
 import * as componentCopyButtons from './componentCopyButtons';
 import * as componentFastLoad from './componentFastLoad';
 import * as componentFeedback from './componentFeedback';
@@ -34,7 +33,6 @@ $(() => {
     componentThirdParty.initialize();
 
     fastNav.register(componentCodeBlockFix);
-    // fastNav.register(componentCodepen);
     fastNav.register(componentCopyButtons);
     fastNav.register(componentFastLoad);
     fastNav.register(componentFeedback);

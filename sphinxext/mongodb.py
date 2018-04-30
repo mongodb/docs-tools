@@ -432,7 +432,7 @@ def add_buttons(parent_class):
 
             if options.get('button-github'):
                 br += create_button(
-                    'github',
+                    'see this on github',
                     options['button-github'],
                     classes=['code-button--github']
                 )

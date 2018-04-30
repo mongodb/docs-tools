@@ -41,7 +41,7 @@ class CodepenDirective(Directive):
         options = self.options
         data = {
             'slug': self.arguments[0],
-            'height': 600,
+            'height': 800,
             'title': "MongoDB Stitch Example"
         }
         if options.get('height'):
