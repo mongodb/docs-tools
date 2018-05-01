@@ -188,7 +188,7 @@ h2::before {
     font-weight: bold;
 }
 
-.green-button {
+.green-button > a {
     background-image: radial-gradient(circle at 47% 65%, #7bc553, var(--mongodb-green));
     border-radius: 3px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
@@ -198,7 +198,7 @@ h2::before {
     padding: 6px 12px 6px 12px;
 }
 
-.green-button:hover {
+.green-button > a:hover {
     text-decoration: none;
 }
 

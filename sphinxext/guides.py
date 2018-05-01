@@ -102,9 +102,10 @@ What's Next
 
    {{ whats_next.introduction }}
 
-   .. raw:: html
+   .. cssclass:: green-button
 
-      <a class="green-button" href="{{ whats_next.url }}">Next Guide</a>
+      :doc:`Next Guide <{{ whats_next.url }}>`
+
 {{ end }}
 
 {{ if seealso }}
@@ -184,13 +185,13 @@ def validate_languages(languages):
 
 def parse_whats_next(whats_next):
     lines = whats_next.strip().split('\n')
-    if len(lines) != 3:
-        raise ValueError('whats_next must be three lines')
+    if len(lines) < 3:
+        raise ValueError('whats_next must contain at least three lines: title, introduction, and docname')
 
     return {
         'title': lines[0],
-        'introduction': lines[1],
-        'url': lines[2]
+        'introduction': '\n'.join(lines[1:-1]),
+        'url': lines[-1]
     }
 
 
