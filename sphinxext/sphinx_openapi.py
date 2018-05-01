@@ -187,7 +187,8 @@ OPENAPI_TEMPLATE = fett.Template('''
 {{ for field in operation.requestBody.jsonFields }}
    * - ``{{ field.name }}`` {{ if field.required }}:raw-html:`<span class="apiref-resource__parameter-required-flag"></span>`{{ else }}:raw-html:`<span class="apiref-resource__parameter-optional-flag"></span>`{{ end }}
      - {{ field.type }}
-     - {{ field.description }}{{ if field.enum }}
+     -
+       {{ field.description }}{{ if field.enum }}
 
        Possible Values:
 
@@ -224,7 +225,8 @@ OPENAPI_TEMPLATE = fett.Template('''
 {{ for field in response.jsonFields }}
    * - ``{{ field.name }}``
      - {{ field.type }}
-     - {{ field.description }}{{ if field.enum }}
+     -
+       {{ field.description }}{{ if field.enum }}
 
        Possible Values:
 
