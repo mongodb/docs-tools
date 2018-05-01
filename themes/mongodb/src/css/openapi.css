@@ -92,5 +92,5 @@
 
 .apiref-resource__path {
     /* Fixes Chrome */
-    word-wrap: break-word;
+    word-break: break-all;
 }

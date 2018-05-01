@@ -20,6 +20,22 @@ class DictLike:
         return getattr(self, key)
 
 
+def deduce_type(obj):
+    """Return the type of a schema definition."""
+    data_type = obj.get('type', None)
+
+    if data_type is not None:
+        return data_type
+
+    if 'items' in obj:
+        return 'array'
+
+    if 'properties' in obj:
+        return 'object'
+
+    return 'any'
+
+
 class TagDefinition(DictLike):
     """Resources are grouped by logical "tags"."""
     def __init__(self, name, title, operations):
@@ -30,12 +46,12 @@ class TagDefinition(DictLike):
 
 class FieldDescription(DictLike):
     """A field in a request body, response, or parameter."""
-    def __init__(self, name, description, required, type, enum):
+    def __init__(self, name, description, required, data_type, enum):
         # type: (str, str, bool, str) -> None
         self.name = name
         self.description = description
         self.required = required
-        self.type = type
+        self.type = data_type
         self.enum = enum
 
     @classmethod
@@ -45,21 +61,11 @@ class FieldDescription(DictLike):
             for key, value in data['schema'].items():
                 data[key] = value
 
-        data_type = data.get('type', None)
-        if data_type is None:
-            if 'properties' in data:
-                data_type = 'object'
-            elif 'items' in data:
-                data_type = 'array'
-
-        if data_type is None:
-            data_type = 'Any'
-
         return cls(
             name if name is not None else data['name'],
             data.get('description', ''),
             required if required is not None else data.get('required', False),
-            data_type,
+            deduce_type(data),
             data.get('enum', []))
 
 
@@ -93,7 +99,8 @@ PARAMETER_TEMPLATE = fett.Template('''
        {{ if parameter.required }}:raw-html:`<span class="apiref-resource__parameter-required-flag"></span>`
        {{ else }}:raw-html:`<span class="apiref-resource__parameter-optional-flag"></span>`{{ end }}
      - {{ parameter.type }}
-     - {{ parameter.description }}{{ if parameter.enum }}
+     -
+       {{ parameter.description }}{{ if parameter.enum }}
 
        Possible Values:
 
@@ -273,7 +280,7 @@ def dereference_json_pointer(root, ptr):
        given JSON pointer (RFC-6901)."""
     cursor = root
     components = ptr.lstrip('#').lstrip('/').split('/')
-    for i, component in enumerate(components):
+    for component in components:
         component = decode_json_pointer(component)
         if isinstance(cursor, list):
             if component == '-':
@@ -336,9 +343,9 @@ def schema_as_fieldlist(content_schema, path=''):
 
     if 'items' in content_schema:
         new_path = path + '.' + '[]' if path else '[]'
-        options = content_schema['items']
-        fields.append(FieldDescription.load(options, new_path))
-        fields.extend(schema_as_fieldlist(options, path=new_path))
+        content_schema['type'] = 'array of {}s'.format(deduce_type(content_schema['items']))
+        fields.append(FieldDescription.load(content_schema, new_path))
+        fields.extend(schema_as_fieldlist(content_schema['items'], path=new_path))
 
     return fields
 
@@ -359,8 +366,8 @@ def process_parameters(endpoint, operation):
     parameter_types = {
         'path': ('path_parameters', 'Path Parameters', path_parameters),
         'query': ('query_parameters', 'Query Parameters', query_parameters),
-        'header': ('header_parameters', 'HTTP Header Parameters', header_parameters),
-        'cookie': ('cookie_parameters', 'HTTP Cookie Parameters', cookie_parameters),
+        'header': ('header_parameters', 'Header Parameters', header_parameters),
+        'cookie': ('cookie_parameters', 'Cookie Parameters', cookie_parameters),
     }
 
     for parameter in all_parameters:
@@ -404,40 +411,49 @@ class OpenAPI:
         # Set up our operations
         for method, path, methods in self.resources():
             resource = methods[method]
+            resource.update({
+                'method': method,
+                'path': path,
+                'hash': '{}-{}'.format(method, path)
+            })
+
+            resource.setdefault('summary', '')
+            resource.setdefault('requestBody', None)
+
+            security_schemas = self.get_security_schemas(resource)
+            if security_schemas:
+                resource.setdefault('parameters', []).append({
+                    'name': 'Authorization',
+                    'description': security_schemas[0].get('description', ''),
+                    'in': 'header',
+                    'required': True,
+                    'schema': {'type': 'string'}
+                })
+
+            for code, response in resource['responses'].items():
+                response.update({
+                    'code': code,
+                    'jsonSchema': None,
+                    'jsonFields': []
+                })
+
+                if 'content' in response and 'application/json' in response['content']:
+                    json_schema = response['content']['application/json']['schema']
+                    response['jsonSchema'] = json.dumps(schema_as_json(json_schema), indent=2)
+                    response['jsonFields'] = schema_as_fieldlist(json_schema)
+
+            if resource['requestBody'] is not None and 'application/json' in resource['requestBody']['content']:
+                resource['requestBody'].setdefault('required', False)
+                resource['requestBody'].setdefault('description', '')
+                json_schema = resource['requestBody']['content']['application/json']['schema']
+                resource['requestBody']['jsonSchema'] = json.dumps(schema_as_json(json_schema), indent=2)
+                resource['requestBody']['jsonFields'] = schema_as_fieldlist(json_schema)
+
+            resource.update(process_parameters(methods, resource))
 
             for tag in resource.get('tags', ()):
                 if tag not in self.tags:
                     self.tags[tag] = TagDefinition(tag, '', [])
-
-                resource.update({
-                    'method': method,
-                    'path': path,
-                    'hash': '{}-{}'.format(method, path)
-                })
-
-                resource.setdefault('summary', '')
-                resource.setdefault('requestBody', None)
-
-                for code, response in resource['responses'].items():
-                    response.update({
-                        'code': code,
-                        'jsonSchema': None,
-                        'jsonFields': []
-                    })
-
-                    if 'content' in response and 'application/json' in response['content']:
-                        json_schema = response['content']['application/json']['schema']
-                        response['jsonSchema'] = json.dumps(schema_as_json(json_schema), indent=2)
-                        response['jsonFields'] = schema_as_fieldlist(json_schema)
-
-                if resource['requestBody'] is not None and 'application/json' in resource['requestBody']['content']:
-                    resource['requestBody'].setdefault('required', False)
-                    resource['requestBody'].setdefault('description', '')
-                    json_schema = resource['requestBody']['content']['application/json']['schema']
-                    resource['requestBody']['jsonSchema'] = json.dumps(schema_as_json(json_schema), indent=2)
-                    resource['requestBody']['jsonFields'] = schema_as_fieldlist(json_schema)
-
-                resource.update(process_parameters(methods, resource))
 
                 self.tags[tag].operations.append(resource)
 
@@ -467,6 +483,22 @@ class OpenAPI:
                     continue
 
                 yield method, path, methods
+
+    def get_security_schemas(self, operation):
+        """Return the security schema definitions associated with an
+           operation definition."""
+        security_schemas = operation.get('security', None)
+
+        if security_schemas is None:
+            security_schemas = self.data.get('security', [])
+
+        # Look up the schema definition for each name
+        result = []
+        for security_schema in security_schemas:
+            for security_name in security_schema:
+                result.append(self.data['components']['securitySchemes'][security_name])
+
+        return result
 
     @classmethod
     def load(cls, data):
