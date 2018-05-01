@@ -60,10 +60,12 @@ What You'll Need
 
 {{ prerequisites }}
 
+{{ if check_your_environment }}
 Check Your Environment
 ----------------------
 
 {{ check_your_environment }}
+{{ end }}
 
 Procedure
 ---------
@@ -173,7 +175,7 @@ def validate_languages(languages):
     """Raise an error if an unknown tab language is used."""
     languages = languages.split()
     try:
-        languages.sort(key=lambda lang_id: LANGUAGES_IDS.index(lang_id))
+        languages.sort(key=LANGUAGES_IDS.index)
     except ValueError as err:
         raise ValueError('Unknown language "{}"'.format(err.message.split()[0]))
 
@@ -292,6 +294,7 @@ class GuideDirective(Directive):
     }
 
     optional_keys = {
+        'check_your_environment',
         'considerations',
         'verify',
         'languages',
@@ -305,9 +308,10 @@ class GuideDirective(Directive):
         try:
             options = parse_keys(self.content)
         except ParseError as err:
-            return [self.state.document.reporter.error(
-                        str(err),
-                        line=(self.lineno + err.lineno + 1))]
+            return [
+                self.state.document.reporter.error(
+                    str(err),
+                    line=(self.lineno + err.lineno + 1))]
 
         for key, validation_function in self.guide_keys.items():
             if key not in options:
@@ -394,7 +398,7 @@ class CardSet:
         columns = self.categories[category_id]['columns']
         return min(columns, key=lambda col: sum(2 if el['jumbo'] else 1 for el in col))
 
-    def add_guide(self, env, guide, parent_card=None):
+    def add_guide(self, env, guide):
         env.included.add(guide['docname'])
         self.get_next_column(guide['category']).append(guide)
         self.categories[guide['category']]['n_guides'] += 1
