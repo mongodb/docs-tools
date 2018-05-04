@@ -119,16 +119,15 @@ OPENAPI_TEMPLATE = fett.Template('''
    :format: html
 
 {{ if servers }}
-.. list-table::
-   :header-rows: 1
-
-   * - API Base URL
-     - Description
+Base URL
+~~~~~~~~
 
 {{ for server in servers }}
-   * - {{ server.url }}
-     - {{ server.description }}
+.. code-block:: none
 
+   {{ server.url }}
+
+{{ server.description }}
 {{ end }}
 {{ end }}
 
@@ -416,7 +415,7 @@ class OpenAPI:
             resource.update({
                 'method': method,
                 'path': path,
-                'hash': '{}-{}'.format(method, path)
+                'hash': '{}-{}'.format(method, path).lower()
             })
 
             resource.setdefault('summary', '')
@@ -544,7 +543,7 @@ class OpenAPIDirective(Directive):
         stddomain = env.get_domain('std')
         labels = stddomain.data['labels']
         for method, path, methods in openapi.resources():
-            method_hash = methods[method]['hash'].lower()
+            method_hash = methods[method]['hash']
             if method_hash not in labels:
                 labels[method_hash] = (env.docname, method_hash, '{} {}'.format(method.upper(), path))
 
