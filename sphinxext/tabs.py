@@ -167,6 +167,16 @@ def setup(app):
              ('debian', 'Debian'),
              ('rhel', 'RHEL')]))
 
+    # Create Stitch SDK tab directive
+    app.add_directive(
+        'tabs-stitch-sdks',
+        create_tab_directive('stitchSdks', [ # Note: camelCase is required
+            ('javascript', 'JavaScript SDK'),
+            ('android', 'Android SDK'),
+            ('ios', 'iOS SDK')
+        ])
+    )
+
     # Create general purpose tab directive with no error checking
     app.add_directive('tabs', template.create_directive('tabs', build_template('', ''), template.BUILT_IN_PATH, True))
 
