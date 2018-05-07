@@ -184,6 +184,9 @@ def validate_languages(languages):
 
 
 def parse_whats_next(whats_next):
+    if not whats_next:
+        return {}
+
     lines = whats_next.strip().split('\n')
     if len(lines) < 3:
         raise ValueError('whats_next must contain at least three lines: title, introduction, and docname')
