@@ -595,22 +595,24 @@ div.body div.contents {
 
 div.body div.contents.long-toc { max-width: 100%; float: none; margin-left: 0; }
 
-div.body div.contents li {
+.contents li {
    padding-top: .25em;
    column-break-inside: avoid;
    list-style-position: inside;
 }
-div.body div.contents.singlecol ul {
+
+:matches(.contents.singlecol, .contents.twocols-rootonly) ul {
    margin: 0;
    padding-left: 1.0em;
 }
 
-div.body div.contents.twocols  ul{
+.contents.twocols ul,
+.contents.twocols-rootonly > ul {
    margin: 0;
    padding-left: 1.0em;
-   column-count:2;
+   column-count: 2;
    column-gap: 10px;
-   columns:2;
+   columns: 2;
 }
 
 div.hidden { display: none; }
