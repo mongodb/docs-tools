@@ -94,17 +94,7 @@ Summary
 What's Next
 -----------
 
-.. container:: next-guide-box
-
-   .. container:: next-guide-box-title
-
-      {{ whats_next.title }}
-
-   {{ whats_next.introduction }}
-
-   .. cssclass:: green-button
-
-      :doc:`Next Guide <{{ whats_next.url }}>`
+{{ whats_next }}
 
 {{ end }}
 
@@ -181,21 +171,6 @@ def validate_languages(languages):
         raise ValueError('Unknown language "{}"'.format(err.message.split()[0]))
 
     return languages
-
-
-def parse_whats_next(whats_next):
-    if not whats_next:
-        return {}
-
-    lines = whats_next.strip().split('\n')
-    if len(lines) < 3:
-        raise ValueError('whats_next must contain at least three lines: title, introduction, and docname')
-
-    return {
-        'title': lines[0],
-        'introduction': '\n'.join(lines[1:-1]),
-        'url': lines[-1]
-    }
 
 
 class ParseError(Exception):
@@ -336,16 +311,6 @@ class GuideDirective(Directive):
                     message += ': {}'.format(err.message)
 
                 return [self.state.document.reporter.error(message, line=self.lineno)]
-
-        # Parse specific values
-        try:
-            options['whats_next'] = parse_whats_next(options['whats_next'])
-        except ValueError as err:
-            options['whats_next'] = {}
-            messages.append(
-                self.state.document.reporter.warning(
-                    'Error parsing whats_next: {}'.format(err.message),
-                    line=self.lineno))
 
         try:
             rendered = GUIDES_TEMPLATE.render(options)

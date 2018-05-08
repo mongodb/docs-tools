@@ -169,39 +169,6 @@ h2::before {
     margin-bottom: 11px;
 }
 
-.next-guide-title {
-    font-size: 40px;
-    font-weight: bold;
-}
-
-.next-guide-box {
-    background-color: white;
-    border-radius: 3px;
-    border: solid 1px #f5f6f7;
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1);
-    padding: 43px 29px 50px 29px;
-    width: 100%;
-}
-
-.next-guide-box-title {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.green-button > a {
-    background-image: radial-gradient(circle at 47% 65%, #7bc553, var(--mongodb-green));
-    border-radius: 3px;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 6px 12px 6px 12px;
-}
-
-.green-button > a:hover {
-    text-decoration: none;
-}
-
 .breadcrumbs {
     font-size: 12px;
     font-weight: bold;
