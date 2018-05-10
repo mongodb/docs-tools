@@ -1318,7 +1318,7 @@ div.admonition.note table.docutils tr:last-child td {
     border-bottom: 0;
 }
 
-@media (max-width: 1263px) {
+@media (max-width: 1340px) {
    #header-db .header-content {
       width: 100%;
    }
@@ -1340,7 +1340,7 @@ div.admonition.note table.docutils tr:last-child td {
 
 }
 
-@media (min-width: 1121px) and (max-width: 1262px) {
+@media (min-width: 1121px) and (max-width: 1340px) {
 
     #header-db .nav-items {
         margin-right: 15px;
@@ -1362,7 +1362,7 @@ div.admonition.note table.docutils tr:last-child td {
     display: none;
 }
 
-@media (max-width: 1093px) {
+@media (max-width: 1120px) {
     .expand-toc-icon {
         display: block;
         padding-top: 10px;
