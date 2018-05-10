@@ -1,177 +1,447 @@
-class UriwriterSingleton {
-    constructor(key) {
+const LOCALSTORAGE_KEY = 'uriwriter';
 
+const TEMPLATE_TYPE_SELF_MANAGED = 'on-premise MongoDB';
+const TEMPLATE_TYPE_REPLICA_SET = 'on-premise MongoDB with replica set';
+const TEMPLATE_TYPE_ATLAS_36 = 'Atlas (Cloud) v. 3.6';
+const TEMPLATE_TYPE_ATLAS_34 = 'Atlas (Cloud) v. 3.4';
+const TEMPLATE_TYPE_ATLAS = 'Atlas (Cloud)';
+
+const TEMPLATES = {
+    [TEMPLATE_TYPE_SELF_MANAGED]: {
+        'nodeuristring': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
+        'options': [
+            {
+                'name': 'authSource',
+                'placeholder': 'admin',
+                'type': 'text'
+            }
+        ],
+        'template': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
+        'templatePasswordRedactedShell': 'mongodb://$[hostlist]/$[database]?$[options] --username $[username]',
+        'templateShell': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]'
+    },
+    [TEMPLATE_TYPE_REPLICA_SET]: {
+        'nodeuristring': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
+        'options': [
+            {
+                'name': 'replicaSet',
+                'type': 'text'
+            },
+            {
+                'name': 'authSource',
+                'placeholder': 'admin',
+                'type': 'text'
+            },
+            {
+                'name': 'ssl',
+                'type': 'pass-through',
+                'value': 'true'
+            }
+        ],
+        'template': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
+        'templatePasswordRedactedShell': 'mongodb://$[hostlist]/$[database]?$[options] --username $[username] --password',
+        'templateShell': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]'
+    },
+    [TEMPLATE_TYPE_ATLAS_36]: {
+        'nodeuristring': 'mongodb+srv://$[username]:$[password]@$[hostlist]/$[database]',
+        'options': [],
+        'template': 'mongodb+srv://$[username]:$[password]@$[hostlist]/$[database]',
+        'templatePasswordRedactedShell': 'mongodb+srv://$[hostlist]/$[database] --username $[username] --password',
+        'templateShell': 'mongodb+srv://$[username]:$[password]@$[hostlist]/$[database]'
+    },
+    [TEMPLATE_TYPE_ATLAS_34]: {
+        'nodeuristring': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
+        'options': [
+            {
+                'name': 'replicaSet',
+                'type': 'text'
+            },
+            {
+                'name': 'authSource',
+                'type': 'text'
+            },
+            {
+                'name': 'ssl',
+                'type': 'pass-through',
+                'value': 'true'
+            }
+        ],
+        'template': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
+        'templatePasswordRedactedShell': 'mongodb://$[hostlist]/$[database]?replicaSet=$[replicaSet] --ssl true --authenticationDatabase $[authSource]  --username $[username] --password',
+        'templateShell': 'mongodb://$[hostlist]/$[database]?replicaSet=$[replicaSet] --ssl true --authenticationDatabase $[authSource]  --username $[username] --password $[password]'
+    }
+};
+
+function getValue(value, option) {
+    if (option.type === 'pass-through') {
+        return option.value;
+    }
+
+    return value;
+}
+
+function getPrefix(uri) {
+    if ((uri.charAt(0) === '\'') ||
+        (uri.charAt(0) === '"')) {
+        return uri.charAt(0);
+    }
+    return '';
+}
+
+function preparseUristrings() {
+    const elements = document.getElementsByTagName('pre');
+    for (let i = 0; i < elements.length; i += 1) {
+        if (elements[i].innerHTML.indexOf('&lt;URISTRING&gt;') > -1) {
+            elements[i].innerHTML = elements[i].innerHTML.
+                replace(
+                    '&lt;URISTRING&gt;',
+                    '<span class="uristring-element">&lt;URISTRING&gt;</span>');
+        }
+        if (elements[i].innerHTML.indexOf('&lt;USERNAME&gt;') > -1) {
+            elements[i].innerHTML = elements[i].innerHTML.
+                replace(
+                    '&lt;USERNAME&gt;',
+                    '<span class="uristring-element">&lt;USERNAME&gt;</span>');
+        }
+        if (elements[i].innerHTML.indexOf('&lt;URISTRING_NOUSER&gt;') > -1) {
+            elements[i].innerHTML = elements[i].innerHTML.
+                replace(
+                    '&lt;URISTRING_NOUSER&gt;',
+                    '<span class="uristring-element">&lt;URISTRING_NOUSER&gt;</span>');
+        }
+        if (elements[i].innerHTML.indexOf('&lt;NODE_URISTRING&gt;') > -1) {
+            elements[i].innerHTML = elements[i].innerHTML.
+                replace(
+                    '&lt;NODE_URISTRING&gt;',
+                    '<span class="uristring-element">&lt;NODE_URISTRING&gt;</span>');
+        }
+        if (elements[i].innerHTML.indexOf('&lt;URISTRING_SHELL&gt;') > -1) {
+            elements[i].innerHTML = elements[i].innerHTML.
+                replace(
+                    '&lt;URISTRING_SHELL&gt;',
+                    '<span class="uristring-element">&lt;URISTRING_SHELL&gt;</span>');
+        }
+    }
+}
+
+function validateHost(host) {
+    const parsed = (/^\s*([^:\s]+)(?::(\d+))?\s*$/).exec(host);
+    if (!parsed) {
+        throw new Error('Invalid host format: must match the format "hostname:port"');
+    }
+
+    const port = parseInt(parsed[2], 10);
+    if (isNaN(port)) {
+        throw new Error('Missing port: host must match the format "hostname:port"');
+    }
+
+    if (port > 65535) {
+        throw new Error('Port number is too large');
+    }
+
+    return [parsed[1], port];
+}
+
+function conveyInvalidParse(statusElement) {
+    statusElement.classList.add('mongodb-form__status--invalid');
+    statusElement.classList.remove('mongodb-form__status--good');
+    statusElement.style.display = '';
+    statusElement.innerText = 'Connection string could not be parsed';
+    // do something? email?
+}
+
+function conveyValidParse(statusElement) {
+    statusElement.classList.add('mongodb-form__status--good');
+    statusElement.classList.remove('mongodb-form__status--invalid');
+    statusElement.style.display = '';
+    statusElement.innerText = 'Connection string parsed';
+}
+
+function splitOptions(tempWriter, arrayOfMatches) {
+    const settingsArray = arrayOfMatches.split('&');
+    if (settingsArray.length > 0) {
+        for (let i = 0; i < settingsArray.length; i += 1) {
+            const keyValue = settingsArray[i].split('=');
+            tempWriter[keyValue[0]] = keyValue[1];
+        }
+    }
+}
+
+class HostList {
+    constructor(rootElement, uriWriter) {
+        this.root = rootElement;
+
+        this.uriWriter = uriWriter;
+        this.elementPairs = [];
+        this.updateHostsFromUriWriter();
+    }
+
+    get hosts() {
+        return this.elementPairs.map((pair) => pair[0].value.trim()).filter((host) => host);
+    }
+
+    get lastInput() {
+        return this.elementPairs[this.elementPairs.length - 1][0];
+    }
+
+    updateHostsFromUriWriter() {
+        this.root.innerText = '';
+        const state = this.uriWriter.loadState();
+        for (const host of state.hostlist || []) {
+            this.addHost(host);
+        }
+
+        this.addHost();
+    }
+
+    addHost(host) {
+        const inputElement = document.createElement('input');
+        inputElement.className = 'mongodb-form__input';
+        inputElement.placeholder = 'localhost:27017';
+        inputElement.value = host || '';
+        const statusElement = document.createElement('div');
+        statusElement.className = 'mongodb-form__status';
+
+        inputElement.oninput = () => {
+            if (inputElement.value) {
+                if (this.lastInput === inputElement) {
+                    this.addHost();
+                }
+            } else if (this.lastInput !== inputElement) {
+                this.elementPairs = this.elementPairs.filter((x) => x[0] !== inputElement);
+                this.root.removeChild(inputElement);
+                this.root.removeChild(statusElement);
+
+                this.uriWriter.setHosts(this.hosts);
+                return;
+            }
+
+            try {
+                validateHost(inputElement.value);
+            } catch (err) {
+                inputElement.setCustomValidity(err.message);
+                statusElement.innerText = `${err.message}.`;
+                statusElement.classList.add('mongodb-form__status--invalid');
+                return;
+            }
+
+            statusElement.innerText = '';
+            statusElement.classList.remove('mongodb-form__status--invalid');
+            inputElement.setCustomValidity('');
+
+            this.uriWriter.setHosts(this.hosts);
+        };
+
+        this.root.appendChild(inputElement);
+        this.root.appendChild(statusElement);
+        this.elementPairs.push([inputElement, statusElement]);
+    }
+}
+
+class UriwriterSingleton {
+    constructor() {
         // an array of DOM objects that care about changes to the URI
         this.uristowrite = [];
-        // this is the localCache key
-        this.key = key;
+        this.usernamestowrite = [];
+        this.uristowritepasswordredactedshell = [];
+        this.uristowriteshell = [];
+        this.uristowritenode = [];
         // this.uristringPasswordRedacted = 'mongodb://$[hostlist]/$[database]?$[options]';
         this.urireplacestring = '';
-        this.urireplaceStringPasswordRedacted = '';
-        this.templates = [];
         this.options = {};
-        this.templates['self-managed MongoDB'] = {
-            'options': [
-                {
-                    'name': 'authSource',
-                    'type': 'text'
-                }
-            ],
-            'template': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
-            'templatePasswordRedacted': 'mongodb://$[hostlist]/$[database]?$[options]'
-        };
-        this.templates['replica set'] = {
-            'options': [
-                {
-                    'name': 'replicaSet',
-                    'type': 'text'
-                },
-                {
-                    'name': 'authSource',
-                    'type': 'text'
-                },
-                {
-                    'name': 'ssl',
-                    'type': 'pass-through',
-                    'value': 'true'
-                }
-            ],
-            'template': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
-            'templatePasswordRedacted': 'mongodb://$[hostlist]/$[database]?$[options]'
-        };
-        this.templates['Atlas (Cloud) with shell v. 3.6'] = {
-            'options': [
-                {
-                    'name': 'authSource',
-                    'type': 'text'
-                }
-            ],
-            'template': 'mongodb+srv://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
-            'templatePasswordRedacted': 'mongodb://$[hostlist]/$[database]?$[options]'
-        };
-        this.templates['Atlas (Cloud) with shell v. 3.4'] = {
-            'options': [
-                {
-                    'name': 'authSource',
-                    'type': '[text]'
-                },
-                {
-                    'name': 'ssl',
-                    'type': 'pass-through',
-                    'value': 'true'
-                }
-            ],
-            'template': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
-            'templatePasswordRedacted': 'mongodb://$[hostlist]/$[database]?$[options]'
-        };
+
+        this.hostList = null;
+
+        // setup listeners on the page to changes in uri fields (view)
         this.setupURIListeners();
-        this.renderURI();
-
-        // this.renderOptions();
-    }
-
-    get uriwriter() {
-        return JSON.parse(window.localStorage.getItem(this.key)) || {};
-    }
-
-    set uriwriter(value) {
-        const uriwriter = value;
-        console.log('Setting uriwriter');
-        console.log(value);
-        window.localStorage.setItem(this.key, JSON.stringify(uriwriter));
-    }
-
-    addValue(key, value) {
-        const uriwriter = this.uriwriter;
-        uriwriter[key] = value;
-        this.uriwriter = uriwriter;
-    }
-
-    selectTemplate() {
-        return this.templates[this.uriwriter.env];
-    }
-
-    renderURI() {
-        console.log(this.uriwriter);
-        console.log('******');
-        if (this.uriwriter.env === undefined) {
-            console.log('uriwriter env is undefined');
-            const uriwriter = {};
-            uriwriter.env = 'self-managed MongoDB';
-            this.uriwriter = uriwriter;
+        // calculate and propagate the URI (controller)
+        if (this.loadState().env === undefined) {
+            this.saveState({'env': TEMPLATE_TYPE_SELF_MANAGED});
         }
-        const template = this.selectTemplate();
-        this.uristring = template.template;
-        this.uristringPasswordRedacted = template.templatePasswordRedacted;
-        this.options = template.options;
+        this.renderURI();
+    }
 
-        this.urireplacestring = this.replaceString(this.uristring);
-        this.urireplacestringPasswordRedacted = this.replaceString(this.uristringPasswordRedacted);
-        this.uristring = this.urireplacestring;
-        this.uristringPasswordRedacted = this.urireplaceStringPasswordRedacted;
-        this.writeToPlaceholders();
+    // get stuff related to this component out of local storage
+    loadState() {
+        return JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY)) || {};
+    }
+
+    // put stuff related to this coponent in local storage, we only set
+    // the whole thing, not portions
+    saveState(state) {
+        window.localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(state));
+    }
+
+    // add or modify a value in our uriwriter in local storage.
+    addValue(key, value) {
+        const uriwriter = this.loadState();
+        if (key !== 'atlaspasteduri' && key !== 'env') {
+            delete uriwriter.atlaspasteduri;
+        }
+        uriwriter[key] = value;
+        this.saveState(uriwriter);
+    }
+
+    // setup view hooks to change when data or environment changes
+    setupURIListeners() {
+        preparseUristrings();
+        const list = document.getElementsByClassName('uristring-element');
+        for (let i = 0; i < list.length; i += 1) {
+            if (list[i].innerHTML.indexOf('&lt;URISTRING&gt;') > -1) {
+                this.uristowrite.push(list[i]);
+            }
+            if (list[i].innerHTML.indexOf('&lt;USERNAME&gt;') > -1) {
+                this.usernamestowrite.push(list[i]);
+            }
+            if (list[i].innerHTML.indexOf('&lt;URISTRING_SHELL&gt;') > -1) {
+                this.uristowriteshell.push(list[i]);
+            }
+            if (list[i].innerHTML.indexOf('&lt;URISTRING_NOUSER&gt;') > -1) {
+                this.uristowritepasswordredactedshell.push(list[i]);
+            //    this.replaceKeyNoUserShell = '&lt;URISTRING_SHELL_NOUSER&gt;';
+            }
+            if (list[i].innerHTML.indexOf('&lt;NODE_URISTRING&gt;') > -1) {
+                this.uristowritenode.push(list[i]);
+            }
+        }
     }
 
     writeToPlaceholders() {
         for (let i = 0; i < this.uristowrite.length; i += 1) {
-            this.uristowrite[i].innerHTML = this.uristowrite[i].innerHTML.replace(this.replaceKey, this.urireplacestring);
-            this.uristowrite[i].innerHTML = this.uristowrite[i].innerHTML.replace(this.replaceKeyNoUser, this.urireplacestringPasswordRedacted);
+            const prefix = getPrefix(this.uristowrite[i].innerHTML);
+            this.uristowrite[i].innerHTML = `${prefix}${this.urireplacestring}${prefix}`;
         }
-        this.replaceKey = this.urireplacestring;
-        this.replaceKeyNoUser = this.urireplacestringPasswordRedacted;
-    }
-
-    setupURIListeners() {
-        const list = document.getElementsByTagName('pre');
-        for (let i = 0; i < list.length; i += 1) {
-            if (list[i].innerHTML.indexOf('&lt;URISTRING&gt;') > -1) {
-                this.uristowrite.push(list[i]);
-                this.replaceKey = '&lt;URISTRING&gt;';
-            }
-            if (list[i].innerHTML.indexOf('&lt;URISTRING_NOUSER&gt;') > -1) {
-                this.uristowrite.push(list[i]);
-                this.replaceKeyNoUser = '&lt;URISTRING_NOUSER&gt;';
-            }
-
+        for (let i = 0; i < this.uristowritepasswordredactedshell.length; i += 1) {
+            this.uristowritepasswordredactedshell[i].innerHTML =
+                this.urireplacestringPasswordRedactedShell;
+        }
+        for (let i = 0; i < this.uristowriteshell.length; i += 1) {
+            this.uristowriteshell[i].innerHTML = this.urireplacestringShell;
+        }
+        for (let i = 0; i < this.uristowritenode.length; i += 1) {
+            this.uristowritenode[i].innerHTML = this.nodeuristring;
+        }
+        // node use case for separation of username out of uri for encoding
+        for (let i = 0; i < this.usernamestowrite.length; i += 1) {
+            this.usernamestowrite[i].innerHTML = `${this.username}`;
         }
     }
 
+    // this is the listener that is triggered when an environment select happens
     setupEnvironmentListeners() {
-        const list = document.getElementsByClassName('uriwriter_sel');
-        for (let i = 0; i < list.length; i += 1) {
-            list[i].addEventListener('click', (event) => {
-                const e = event.srcElement.innerHTML;
-                this.addValue('env', e);
-                // document.getElementById('uriwriter_env').innerHTML = e;
-                this.renderURI();
-                this.renderOptions();
-                // event.preventDefault();
-            });
+        const elements = document.getElementsByClassName('uriwriter__toggle');
+        let initiallySelected = this.loadState().env;
+        if (initiallySelected === TEMPLATE_TYPE_ATLAS_36 ||
+            initiallySelected === TEMPLATE_TYPE_ATLAS_34) {
+            initiallySelected = TEMPLATE_TYPE_ATLAS;
         }
+
+        for (let i = 0; i < elements.length; i += 1) {
+            if (initiallySelected === elements[i].innerHTML) {
+                elements[i].classList.add('guide__pill--active');
+            }
+
+            elements[i].onclick = (event) => {
+                const state = this.loadState();
+                const element = event.target;
+
+                const parentChildren = element.parentElement.children;
+                for (let childIndex = 0; childIndex < parentChildren.length; childIndex += 1) {
+                    parentChildren[childIndex].classList.remove('guide__pill--active');
+                }
+
+                element.classList.add('guide__pill--active');
+                const html = element.innerHTML;
+                if (html.indexOf('Atlas') > -1) {
+                    document.getElementsByClassName('atlascontrols__status')[0].style.display =
+                        'none';
+
+                    if (state.atlaspasteduri !== undefined) {
+                        // move all of this to an encapsulating function;
+                        this.parseIncomingAtlasString(state.atlaspasteduri);
+                        this.renderURI();
+                        this.populateForm();
+                        return;
+                    }
+                }
+
+                this.addValue('env', html);
+                this.renderURI();
+                this.populateForm();
+            };
+        }
+    }
+
+    // controller for writing the uri out to the listening html
+    renderURI() {
+        // User is in Atlas placeholder mode, no template defined. Can't render a uri.
+        // or should we default?
+        if (this.loadState().env === TEMPLATE_TYPE_ATLAS) {
+            this.addValue('env', TEMPLATE_TYPE_ATLAS_36);
+        }
+        // we have a basic idea of the environment, get the associated uri template
+        const template = TEMPLATES[this.loadState().env];
+
+        if (!template) { return; }
+
+        // the placeholder uri string template
+        this.uristring = template.template;
+        // the placeholder uri string without password field
+        this.uristringPasswordRedactedShell = template.templatePasswordRedactedShell;
+        // options are environment specific settings that need to go in the uri
+        this.options = template.options;
+        // no we do our replacing of template fields
+        this.urireplacestring = this.replaceString(this.uristring);
+        // on the redacted one as well
+        this.urireplacestringShell = this.replaceString(template.templateShell);
+        this.urireplacestringPasswordRedactedShell =
+            this.replaceString(template.templatePasswordRedactedShell);
+        this.nodeuristring = this.replaceString(template.nodeuristring);
+        this.username = this.loadState().username;
+        this.writeToPlaceholders();
+    }
+
+    optionStringifier(options, type) {
+        const parts = [];
+        const state = this.loadState();
+
+        for (let i = 0; i < this.options.length; i += 1) {
+            const option = this.options[i];
+            const name = option.name;
+            let value = getValue(state[name], option);
+            if (!value) {
+                if (option.placeholder) {
+                    value = option.placeholder;
+                } else {
+                    value = `$[${name}]`;
+                }
+            }
+            parts.push(`${name}=${value}`);
+        }
+
+        return parts.join(',');
     }
 
     replaceString(localUriString) {
-
         let repl = localUriString;
+        const state = this.loadState();
 
-        if (this.uriwriter.username) {
-            repl = repl.replace('$[username]', this.uriwriter.username);
+        // replace hardcoded plaments (why oh why do we do this????)
+        if (state.username) {
+            repl = repl.replace('$[username]', state.username);
         }
-        if (this.uriwriter.database) {
-            repl = repl.replace('$[database]', this.uriwriter.database);
+        if (state.database) {
+            repl = repl.replace('$[database]', state.database);
+        }
+        if (state.authSource) {
+            repl = repl.replace('$[authSource]', state.authSource);
+        }
+        if (state.replicaSet) {
+            repl = repl.replace('$[replicaSet]', state.replicaSet);
         }
 
-        let optionsString = '';
-        if (this.options.length > 0) {
-            console.log('found options');
-            let name = this.options[0].name;
-            optionsString = `${name}=${this.getValue(this.uriwriter[name], this.options[0])}`;
-        }
-
-        for (let i = 1; i < this.options.length; i += 1) {
-            let name = this.options[i].name;
-            optionsString = `${optionsString},${this.options[i].name}=${this.getValue(this.uriwriter[name], this.options[i])}`;
-        }
+        // replace options where they exist
+        const optionsString = this.optionStringifier(this.options);
 
         if (optionsString.length > 0) {
             repl = repl.replace('$[options]', optionsString);
@@ -179,33 +449,25 @@ class UriwriterSingleton {
 
         let hostport = '';
 
-        if (this.uriwriter.hostlist && this.uriwriter.hostlist.length > 0) {
-            hostport = `${this.uriwriter.hostlist[0]}`;
-            for (let i = 1; i < this.uriwriter.hostlist.length; i += 1) {
-                hostport += `,${this.uriwriter.hostlist[i]}`;
+        // get our hosts and ports in
+        if (state.hostlist && state.hostlist.length > 0) {
+            hostport = `${state.hostlist[0]}`;
+            for (let i = 1; i < state.hostlist.length; i += 1) {
+                hostport += `,${state.hostlist[i]}`;
             }
             repl = repl.replace('$[hostlist]', hostport);
         }
-        //  this.addOptions(repl);
-        // if (document.getElementById('uri') !== null) {
-        //    document.getElementById('uri').innerHTML = repl;
-        // }
+
         return repl;
     }
 
-    getValue(value, option) {
-        if (option.type === 'pass-through') {
-            return option.value;
-        }
-        return value;
-    }
-
     renderOptions() {
+        const elements = document.getElementsByClassName('uriwriter__option-prompt');
+        while (elements.length > 0) {
+            elements[0].parentElement.removeChild(elements[0]);
+        }
+
         if (this.options && this.options.length > 0) {
-            const optionsNode = document.getElementById('options');
-            while (optionsNode.firstChild) {
-                optionsNode.removeChild(optionsNode.firstChild);
-            }
             for (let i = 0; i < this.options.length; i += 1) {
                 if (this.options[i].type !== 'pass-through') {
                     this.renderOption(this.options[i]);
@@ -215,164 +477,271 @@ class UriwriterSingleton {
     }
 
     renderOption(option) {
-        const optionElement = document.createElement('fieldset');
+        const optionElement = document.createElement('label');
+        optionElement.className = 'mongodb-form__prompt uriwriter__option-prompt';
+
+        const label = document.createElement('div');
+        label.className = 'mongodb-form__label';
+        label.innerText = option.name;
+
         const inputElement = document.createElement('input');
         inputElement.setAttribute('id', option.name);
-        inputElement.setAttribute('type', option.type);
-        inputElement.className = 'input-uriwriter';
-        if (this.uriwriter[option.name] !== undefined) {
-            inputElement.value = this.uriwriter[option.name];
+        if (option.placeholder) {
+            inputElement.setAttribute('placeholder', option.placeholder);
         }
-        inputElement.addEventListener('keyup', (event) => {
+        inputElement.className = 'mongodb-form__input';
+        if (this.loadState()[option.name] !== undefined) {
+            inputElement.value = this.loadState()[option.name];
+        }
+        inputElement.addEventListener('input', (event) => {
             this.addValue(option.name, document.getElementById(option.name).value);
             this.renderURI();
         });
-        const label = document.createElement('label');
-        optionElement.appendChild(inputElement);
-        label.setAttribute('for', option.name);
-        label.className = 'label-uriwriter';
-        label.innerHTML = option.name;
+
         optionElement.appendChild(label);
-        document.getElementById('options').appendChild(optionElement);
+        optionElement.appendChild(inputElement);
+
+        const serverPromptElement = document.querySelector('[data-server-configuration]');
+        serverPromptElement.parentElement.insertBefore(optionElement, serverPromptElement);
     }
 
-    setup() {
-        if (document.getElementById('uriwriter') === null) {
+    initializeWidget() {
+        if (!document.getElementById('uriwriter')) {
             return;
         }
-        // document.getElementById('uri').innerHTML = this.uristring;
-        document.getElementById('uriwriter_act').addEventListener('click', (event) => {
-            this.addHostEntryToList();
-            this.renderURI();
-            event.preventDefault();
-        });
 
-        document.getElementById('uriwriter_username').addEventListener('keyup', (event) => {
-            this.addValue('username', document.getElementById('uriwriter_username').value);
+        this.hostList = new HostList(document.getElementById('hostlist'), this);
+
+        document.getElementById('uriwriter_username').addEventListener('input', (event) => {
+            this.addValue('username', event.target.value);
             this.renderURI();
         });
 
-        // document.getElementsByClassName('uriwriter_sel').addEventListener('click', (event) => {
-        //    const e = event.srcElement.innerHTML;
-        //    this.addValue('env', e);
-        //    this.renderURI();
-        //     this.renderOptions();
-        // });
+        const atlaspaste = document.getElementById('uriwriter_atlaspaste');
+        const statusElement = document.getElementsByClassName('atlascontrols__status')[0];
 
-        document.getElementById('uriwriter_db').addEventListener('keyup', (event) => {
+        atlaspaste.oninput = (event) => {
+            const pastedValue = atlaspaste.value;
+            if (!pastedValue.trim()) {
+                statusElement.style.display = 'none';
+                atlaspaste.setCustomValidity('');
+                return;
+            }
+
+            if (!this.parseIncomingAtlasString(pastedValue)) {
+                atlaspaste.setCustomValidity('Failed to parse');
+                conveyInvalidParse(statusElement);
+            } else {
+                atlaspaste.setCustomValidity('');
+                this.addValue('atlaspasteduri', pastedValue);
+                conveyValidParse(statusElement);
+                this.renderURI();
+                this.populateForm();
+            }
+        };
+
+        document.getElementById('uriwriter_db').addEventListener('input', (event) => {
             this.addValue('database', document.getElementById('uriwriter_db').value);
             this.renderURI();
         });
 
         this.setupEnvironmentListeners();
-        // this.addValue('env', 'self-managed MongoDB');
-        // document.getElementById('uriwriter_env').innerHTML = 'self-managed MongoDB';
-        // this.renderURI();
         this.populateForm();
+    }
+
+    renderFormValues() {
+        const state = this.loadState();
+        const atlasControlsElement = document.getElementsByClassName('uriwriter__atlascontrols')[0];
+        if (state.env === TEMPLATE_TYPE_SELF_MANAGED || state.env === TEMPLATE_TYPE_REPLICA_SET) {
+            atlasControlsElement.style.display = 'none';
+            document.getElementById('userinfo_form').style.display = '';
+        } else {
+            document.getElementById('uriwriter_atlaspaste').value = state.atlaspasteduri || '';
+
+            if (state.atlaspasteduri !== undefined) {
+                atlasControlsElement.style.display = '';
+            } else {
+                atlasControlsElement.style.display = 'none';
+            }
+
+            document.getElementById('userinfo_form').style.display = 'none';
+            atlasControlsElement.style.display = '';
+            return;
+        }
+        if (state.username !== undefined) {
+            document.getElementById('uriwriter_username').value = state.username;
+        }
+        if (state.database !== undefined) {
+            document.getElementById('uriwriter_db').value = state.database;
+        }
+    }
+
+    /** IP related functions **/
+
+    setHosts(hostlist) {
+        const uriwriter = this.loadState();
+        uriwriter.hostlist = hostlist;
+        this.saveState(uriwriter);
+        this.renderURI();
     }
 
     populateForm() {
         this.renderOptions();
-        this.renderIps();
-        this.renderForm();
-    }
-
-    renderForm() {
-        if (this.uriwriter.username !== null) {
-            document.getElementById('uriwriter_username').value = this.uriwriter.username;
-        }
-
-        if (this.uriwriter.database !== null) {
-            document.getElementById('uriwriter_db').value = this.uriwriter.database;
-        }
-
-    }
-
-    renderIps() {
-        const hostlist = this.uriwriter.hostlist;
-        if (hostlist === undefined) {
-            return;
-        }
-        for (let i = 0; i < hostlist.length; i += 1) {
-            this.renderList(hostlist[i]);
-        }
-    }
-
-    resetForm() {
-        document.getElementById('hostname').value = '';
-        document.getElementById('port').value = '';
+        this.renderFormValues();
     }
 
 
-    addHostEntryToList() {
+    /** Atlas copy paste parse and processing **/
 
-        const hostname = document.getElementById('hostname').value;
-        const port = document.getElementById('port').value;
-
-        if (hostname === '' ||
-            (port === '' && this.uriwriter.env !== 'Atlas (Cloud) with shell v. 3.6')) { return; }
-
-        this.resetForm();
-        this.persistList(hostname, port);
+    // this is a 3.4 URI
+    // mongodb://<USERNAME>:<PASSWORD>@cluster0-shard-00-00-juau5.mongodb.net:27017,cluster0-shard-00-01-juau5.mongodb.net:27017,cluster0-shard-00-02-juau5.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin
+    parseTo3dot4(atlasString, tempWriter) {
+        tempWriter.env = TEMPLATE_TYPE_ATLAS_34;
+        // save the environment selection
+        this.saveState(tempWriter);
+        tempWriter = this.loadState();
+        const re = /(\S+):\/\/(\S+):(\S+)@(\S+)\/(\S+)\?(\S+)/;
+        const matchesArray = atlasString.match(re);
+        if (matchesArray === null) {
+            return false;
+        }
+        if (matchesArray.length === 7) {
+            tempWriter.username = matchesArray[2];
+            tempWriter.hostlist = matchesArray[4].split(',');
+            tempWriter.database = matchesArray[5];
+            splitOptions(tempWriter, matchesArray[6]);
+            this.saveState(tempWriter);
+            return true;
+        }
+        return false;
     }
 
-    persistList(host, port) {
-        console.log('*********HOST PORT*******');
-        let template = `${host}:${port}`;
-        console.log(template);
-        if (port === '') {
-            template = `${host}`;
-        }
+    parseOutShellParams(splitOnSpace, tempWriter) {
+        // go through all of the command line args, parse
+        for (let i = 0; i < splitOnSpace.length; i += 1) {
+            if (splitOnSpace[i].startsWith('--')) {
+                // this is a key, if next val does not begin with --, its a value
+                if (!splitOnSpace[i + 1].startsWith('--')) {
+                    let splitKey = splitOnSpace[i].replace('--', '');
+                    let splitValue = splitOnSpace[i + 1];
 
-        const uriwriter = this.uriwriter;
+                    if (splitKey === 'authenticationDatabase') {
+                        splitKey = 'authSource';
+                    }
 
-        if (uriwriter.hostlist) {
-            const hostlist  = uriwriter.hostlist;
-            if (hostlist.indexOf(template) < 0) {
-                hostlist.push(template);
-                uriwriter.hostlist = hostlist;
-            } else {
-                return;
+                    // sometimes the next string is another parameter,
+                    // ignore those as they are canned
+                    if (!splitValue.startsWith('--')) {
+                        // get rid of brackets which can cause problems with our inline code
+                        splitValue = splitValue.replace('<', '').replace('>', '');
+                        tempWriter[splitKey] = splitValue;
+                    }
+                }
             }
+        }
+    }
+
+    parseOutURIParams(shellString, tempWriter) {
+        const uriParamArray = shellString.split('&');
+        for (let i = 0; i < uriParamArray.length; i += 1) {
+            const keyValueString = uriParamArray[i];
+            const keyValueArray = keyValueString.split('=');
+            tempWriter[keyValueArray[0]] = keyValueArray[1];
+        }
+    }
+
+    parseOutEnvAndClusters(splitOnSpaceClusterEnv, tempWriter) {
+        // depending on whether this is 3.6 or 3.4 the cluster info looks slightly different
+        // 3.4 uses the URI to pass in a replica set name
+        let shellMatch = /(\w+):\/\/((\S+)(:)+(\S+))\/(\w+)?\?(\S+)/;
+        const shellMatch36 = /((\w+)\+(\w+)):\/\/((\S+))\/(\w+)/;
+        if (splitOnSpaceClusterEnv.startsWith('mongodb+srv')) {
+            shellMatch = shellMatch36;
+        }
+        const shellArray = splitOnSpaceClusterEnv.match(shellMatch);
+        // add length check here?
+        if (shellArray[1] === 'mongodb') {
+            tempWriter.env = TEMPLATE_TYPE_ATLAS_34;
+            const hostListString = shellArray[2];
+            tempWriter.hostlist = hostListString.split(',');
+            this.parseOutURIParams(shellArray[7], tempWriter);
         } else {
-            const array = [];
-            array.push(template);
-            uriwriter.hostlist = array;
+            tempWriter.env = TEMPLATE_TYPE_ATLAS_36;
+            tempWriter.hostlist = [shellArray[4]];
         }
+        tempWriter.database = shellArray[6];
+    }
+    // mongo "mongodb://cluster0-shard-00-00-igkvv.mongodb.net:27017,cluster0-shard-00-01-igkvv.mongodb.net:27017,cluster0-shard-00-02-igkvv.mongodb.net:27017/test?replicaSet=Cluster0-shard-0" --ssl --authenticationDatabase admin --username mongodb-stitch-easy_bake_oven-aluyj --password <PASSWORD>
+    // mongo "mongodb+srv://cluster0-igkvv.mongodb.net/test" --username mongodb-stitch-easy_bake_oven-aluyj
+    parseShell(atlasString, tempWriter) {
+        // split out the mongo and parse the rest
+        const splitOnSpace = atlasString.split(' ');
+        let splitOnSpaceClusterEnv = splitOnSpace[1];
+        // get rid of double quotes
+        splitOnSpaceClusterEnv = splitOnSpaceClusterEnv.replace(/"/g, '');
+        // get command line args
+        this.parseOutShellParams(splitOnSpace, tempWriter);
+        // get the cluster information
+        this.parseOutEnvAndClusters(splitOnSpaceClusterEnv, tempWriter);
 
-        this.uriwriter = uriwriter;
-        this.renderList(template);
+        this.saveState(tempWriter);
+
+        // we need to define success
+        return true;
     }
 
-    renderList(template) {
-        const hostpair = document.createElement('li');
-        hostpair.setAttribute('id', template);
-        hostpair.setAttribute('class', 'hostpair');
-        hostpair.innerHTML = template;
-        const button = document.createElement('button');
-        button.innerHTML = 'X';
-        button.setAttribute('class', 'littlebutton');
-        button.setAttribute('id', template);
-        button.addEventListener('click', (event) => {
-            const uriwriter = this.uriwriter;
-            const localStorage = uriwriter.hostlist;
-            const removeIndex = localStorage.indexOf(event.srcElement.id);
-            if (removeIndex > -1) {
-                localStorage.splice(removeIndex, 1);
-            } else {
-                return;
-            }
-            uriwriter.hostlist = localStorage;
-            this.uriwriter = uriwriter;
-            hostpair.outerHTML = '';
-            this.renderURI();
-        });
-        hostpair.appendChild(button);
-        document.getElementById('hostlist').appendChild(hostpair);
+    // get the pasted string and parse it out
+    parseIncomingAtlasString(pastedValue) {
+        if (pastedValue === undefined) {
+            return false;
+        }
+        // trim any carriage return line feed business
+        pastedValue = pastedValue.replace(/[\n\r]+/g, '').trim();
+        if (pastedValue !== null) {
+            const status = this.parseAtlasString(pastedValue);
+            this.hostList.updateHostsFromUriWriter();
+            return status;
+        }
+        return false;
+    }
+
+    // this is a 3.6 url, parse accordingly
+    // ex: mongodb+srv://<USERNAME>:<PASSWORD>@cluster0-juau5.mongodb.net/test
+    parseTo3dot6(atlasString, tempWriter) {
+        tempWriter.env = TEMPLATE_TYPE_ATLAS_36;
+        // save the environment selection
+        this.saveState(tempWriter);
+        tempWriter = this.loadState();
+        // regexp for 3.6 format
+        const re = /(\S+):\/\/(\S+):(\S+)@(\S+)\/(\S+)/;
+        const matchesArray = atlasString.match(re);
+        if (matchesArray.length === 6) {
+            const username = matchesArray[2];
+            tempWriter.username = username;
+            const clusterhost = matchesArray[4];
+            tempWriter.hostlist = [clusterhost];
+            const database = matchesArray[5];
+            tempWriter.database = database;
+            this.saveState(tempWriter);
+            return true;
+        }
+        return false;
+    }
+
+    parseAtlasString(atlasString) {
+        const tempWriter = this.loadState();
+        // add shell parser here
+        if (atlasString.indexOf(' --') > -1) {
+            return this.parseShell(atlasString, tempWriter);
+        }
+        if (atlasString.startsWith('mongodb+srv')) {
+            return this.parseTo3dot6(atlasString, tempWriter);
+        }
+        return this.parseTo3dot4(atlasString, tempWriter);
     }
 }
 
 // Create Uriwriter
 export function setup() {
-    (new UriwriterSingleton('uriwriter')).setup();
+    (new UriwriterSingleton()).initializeWidget();
 }

@@ -1,0 +1,71 @@
+.mongodb-form {
+  display: flex;
+  flex-direction: column;
+
+  &__prompt {
+    border-top: solid 1px #ddd;
+    display: flex;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+    &:nth-child(even) {
+      background-color: #f4f6f6;
+    }
+  }
+
+  &__label {
+    font-weight: bold;
+    flex-basis: 250px;
+    line-height: 40px;
+  }
+
+  &__input {
+    font-size: 16px;
+    border: solid 1px #babdbf;
+    border-radius: 2px;
+    padding: 10.5px 13px;
+
+    &:focus {
+      box-shadow: 0 2px 6px 0 rgba(78, 175, 233, 0.3);
+      border: solid 1px #5caeeb;
+    }
+
+    &:invalid {
+      box-shadow: 0 2px 6px 0 color(var(--tomato) alpha(0.3));
+      border: solid 1px var(--tomato);
+    }
+
+    input& {
+      height: 40px;
+      min-width: 370px;
+    }
+  }
+
+  &__status {
+    height: 0;
+    font-size: 14px;
+
+    &::before {
+      font-family: FontAwesome;
+      padding-right: 5px;
+    }
+
+    &--invalid {
+      color: var(--tomato);
+
+      &::before {
+        content: "\f06a";
+      }
+    }
+
+    &--good {
+      color: var(--mongodb-green);
+
+      &::before {
+        content: "\f058";
+      }
+    }
+  }
+}
