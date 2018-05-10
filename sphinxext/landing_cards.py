@@ -1,44 +1,67 @@
-from docutils import statemachine, utils, nodes
+from docutils import statemachine
+from docutils.nodes import Element, Text
 from docutils.parsers.rst import Directive, directives
 from template import populate, Options
 import sphinx
-import re
 import fett
-import logging
 import yaml
-import json
-import template
 
 CARD_GROUP_TEMPLATE_LARGE = fett.Template('''
 .. raw:: html
    
    <div class="card_group">
+   
      {{ for card in cards }}
-       <div class="card card-large" role="button" id="{{ card.id }}">
-         <a href="{{ card.link }}">
-           <div class="card-image">
+     <a href="{{ card.link }}" class="card card-large" id="{{ card.id }}">
+       <div class="card-image">
 
 .. image:: {{ card.image }}
 
 .. raw:: html
    
-           </div>
-           <div class="card-content">
-               {{ card.headline }}
-           </div>
-         </a>
        </div>
+       <div class="card-content">
+         <p>{{ card.headline }}</p>
+       </div>
+     </a>
      {{ end }}
+   
    </div>
 ''')
 
+CARD_GROUP_TEMPLATE_SMALL = fett.Template('''
+.. raw:: html
+    
+    <div class="card_group">
+      
+      {{ for card in cards }}
+      <a href="{{ card.link }}"
+         class="card card-small"
+      >
+        <div class="card-icon">
 
-def process_doc_link(doc_link, env):
+.. image:: {{ card.icon }}
+
+.. raw:: html
+    
+       </div>
+       <div class="card-content">{{ card.headline }}</div>
+     </a>
+     {{ end }}
+   </div> <!-- end card_group -->
+''')
+
+
+def process_card_data_field(card, field, fn):
+    return dict(card, **{field: fn(card[field])})
+
+
+def process_doc_link(doc_link):
+    ''' TODO - convert role style links to relative paths
+        e.g. given ":doc:`/procedure/init-stitchclient`"
+             returns "http://docs.mongodb.com/stitch/procedure/init-stitchclient"
+    '''
     return doc_link
-    _, doc_path = env.relfn2path(doc_link)
-    doc_path = utils.relative_path(None, doc_path)
-    doc_path = nodes.reprunicode(doc_path)
-    return doc_path
 
 
 class CardGroup(Directive):
@@ -46,23 +69,26 @@ class CardGroup(Directive):
     required_arguments = 0
     optional_arguments = 0
     final_argument_whitespace = True
-
     option_spec = {
-        'type': lambda argument: directives.choice(argument,
-                                                   ('large', 'small', None))
+        'type': lambda type: directives.choice(type, ('large', 'small', None))
     }
 
-    def process_data(self, data):
-        env = self.state.document.settings.env
-        cards = [
-            dict(card, **{'link': process_doc_link(card['link'], env)})
-            for card in data['cards']
-        ]
-        data['cards'] = cards
-
+    def get_data(self):
+        content = "\n".join(list(self.content))
+        data = self.process_yaml(content)
+        
+        # Data post-processing
+        cards = list(data["cards"])
+        for card in cards:
+            process_card_data_field(card, "link", process_doc_link)
+        data["cards"] = cards
+        
         return data
 
     def process_yaml(self, contents):
+        '''
+        YAML processing from create_directive's custom class in template.py
+        '''
         source_path = self.state_machine.input_lines.source(
             self.lineno - self.state_machine.input_offset - 1)
         try:
@@ -80,21 +106,24 @@ class CardGroup(Directive):
 
         return data
 
-    def run(self):
-        options = self.options
-        card_type = str(options.get('type'))
-        # Process the card group yaml body
-        content = "\n".join(list(self.content))
-        data = self.process_data(self.process_yaml(content))
-        # Render the cards
-        if card_type == "large":
-            rendered = CARD_GROUP_TEMPLATE_LARGE.render(data)
-
+    def render_cards(self, data, card_type):
+        fett_templates = {
+            "large": CARD_GROUP_TEMPLATE_LARGE,
+            "small": CARD_GROUP_TEMPLATE_SMALL
+        }
+        if card_type in fett_templates.keys():
+            rendered = fett_templates[card_type].render(data)
             rendered_lines = statemachine.string2lines(
                 rendered, 4, convert_whitespace=1
             )
             self.state_machine.insert_input(rendered_lines, '')
-
+    
+    def run(self):
+        options = self.options
+        data = self.get_data()
+        card_type = str(options.get('type', ''))
+        
+        self.render_cards(data, card_type)
         return []
 
 

@@ -3,6 +3,7 @@ module.exports = ctx => ({
   plugins: {
     'postcss-import': { root: ctx.file.dirname },
     'postcss-nested': { },
+    'postcss-responsive-type': { },
     'postcss-cssnext': {
         browsers: "defaults, IE >= 10",
         warnings: true,
