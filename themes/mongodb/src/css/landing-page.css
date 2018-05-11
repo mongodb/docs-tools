@@ -53,20 +53,16 @@
   &:active { box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1); }
   
   & .card-image {
-    position: relative;
-    padding-top: 34%;
     overflow: hidden;
     
     & > img {
-      position: absolute;
       height: 100%;
-      left: 0;
-      top: 0;
       width: 100%;
       height: auto;
       max-height: 130px;
       user-select: none;
       user-drag: none;
+      object-fit: cover;
     }
     
   }
