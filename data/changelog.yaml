@@ -27,6 +27,8 @@ groups:
     - MMAPv1
   "Storage":
     - Storage
+  "Catalog":
+    - Catalog
   "TTL":
     - TTL
   "GridFS":
@@ -80,6 +82,7 @@ ordering:
   - Query
   - Write Operations
   - Aggregation
+  - Catalog
   - JavaScript
   - WiredTiger
   - MMAP
