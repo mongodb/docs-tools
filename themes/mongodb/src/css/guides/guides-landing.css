@@ -60,8 +60,8 @@
 }
 
 .guide--jumbo {
-    min-height: 416px;
-    height: 416px;
+    min-height: 200px;
+    height: 200px;
     font-family: var(--sans-serif-heavy);
     font-size: 20px;
     font-weight: bold;
