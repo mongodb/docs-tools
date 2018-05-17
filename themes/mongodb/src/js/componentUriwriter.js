@@ -67,8 +67,8 @@ const TEMPLATES = {
             }
         ],
         'template': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
-        'templatePasswordRedactedShell': 'mongodb://$[hostlist]/$[database]?replicaSet=$[replicaSet] --ssl true --authenticationDatabase $[authSource]  --username $[username] --password',
-        'templateShell': 'mongodb://$[hostlist]/$[database]?replicaSet=$[replicaSet] --ssl true --authenticationDatabase $[authSource]  --username $[username] --password $[password]'
+        'templatePasswordRedactedShell': 'mongodb://$[hostlist]/$[database]?replicaSet=$[replicaSet] --ssl --authenticationDatabase $[authSource] --username $[username] --password',
+        'templateShell': 'mongodb://$[hostlist]/$[database]?replicaSet=$[replicaSet] --ssl --authenticationDatabase $[authSource] --username $[username] --password $[password]'
     }
 };
 
@@ -386,8 +386,6 @@ class UriwriterSingleton {
 
         // the placeholder uri string template
         this.uristring = template.template;
-        // the placeholder uri string without password field
-        this.uristringPasswordRedactedShell = template.templatePasswordRedactedShell;
         // options are environment specific settings that need to go in the uri
         this.options = template.options;
         // no we do our replacing of template fields

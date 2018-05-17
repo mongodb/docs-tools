@@ -231,7 +231,7 @@
         "semi": "error",
         "semi-spacing": "error",
         "sort-imports": "warn",
-        "sort-keys": "warn",
+        "sort-keys": "off",
         "sort-vars": "warn",
         "space-before-blocks": "error",
         "space-before-function-paren": "off",

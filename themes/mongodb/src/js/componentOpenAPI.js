@@ -34,7 +34,9 @@ function toggleResource(classListAction, resourceElement) {
 }
 
 function expand() {
-    const requested = document.getElementById(document.location.hash.slice(1));
+    const hash = document.location.hash.slice(1);
+    if (!hash) { return; }
+    const requested = document.getElementById(hash);
     if (!requested) { return; }
     if (!requested.classList.contains('apiref-resource')) { return; }
     toggleResource('remove', requested);
