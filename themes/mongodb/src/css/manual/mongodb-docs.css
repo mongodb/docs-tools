@@ -10,8 +10,9 @@
  */
 @import url("bootstrap-custom.css");
 @import url("icomoon.css");
-
 @import url("../colors.css");
+
+@import url("../auth-table.css");
 @import url("../font-awesome.css");
 @import url("../basic.css");
 @import url("../code-buttons.css");

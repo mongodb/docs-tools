@@ -1,0 +1,15 @@
+/* Custom CSS for auth provider configuration tables in Stitch Docs */
+.auth-table {
+
+    & td {
+        & .line-block {
+            margin: 0;
+        }
+        & p.first, p.last {
+            margin-bottom: 0;
+        }
+    }
+    
+}
+
+
