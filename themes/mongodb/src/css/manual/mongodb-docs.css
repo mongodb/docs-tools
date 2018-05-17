@@ -568,6 +568,14 @@ h4 + div.section {
 }
 
 table.docutils tbody tr td div.highlight pre { background-color: inherit; }
+table.docutils div.admonition {
+/* Code blocks in table cells don't have a background image (see "inherit" in previous rule)*/
+/* This restores the regular code block background when nested in an admonition in a table */
+    & div.highlight pre, div.button-row {
+        background: #f5f6f7 url(https://media.mongodb.org/code-block-bg.png) 0 0 repeat;
+    }
+}
+
 
 /* somehow, powershell commands starting with a directory reference does not include a div.highlight */
 
