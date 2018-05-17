@@ -177,6 +177,14 @@ def setup(app):
         ])
     )
 
+    app.add_directive(
+        'tabs-stitch-interfaces',
+        create_tab_directive('stitchInterfaces', [
+            ('stitch-ui', 'Stitch UI'),
+            ('import-export', 'Import/Export')
+        ])
+    )
+
     # Create general purpose tab directive with no error checking
     app.add_directive('tabs', template.create_directive('tabs', build_template('', ''), template.BUILT_IN_PATH, True))
 
