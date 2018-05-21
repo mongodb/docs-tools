@@ -2,7 +2,7 @@
 
 {%- block htmltitle %}
   {%- if not embedded and docstitle %}
-    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + version|e %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e  %}
   {%- else %}
     {%- set titlesuffix = "" %}
   {%- endif -%}
