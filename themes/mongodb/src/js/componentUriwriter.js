@@ -8,7 +8,6 @@ const TEMPLATE_TYPE_ATLAS = 'Atlas (Cloud)';
 
 const TEMPLATES = {
     [TEMPLATE_TYPE_SELF_MANAGED]: {
-        'nodeuristring': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
         'options': [
             {
                 'name': 'authSource',
@@ -21,7 +20,6 @@ const TEMPLATES = {
         'templateShell': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]'
     },
     [TEMPLATE_TYPE_REPLICA_SET]: {
-        'nodeuristring': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
         'options': [
             {
                 'name': 'replicaSet',
@@ -43,14 +41,12 @@ const TEMPLATES = {
         'templateShell': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]'
     },
     [TEMPLATE_TYPE_ATLAS_36]: {
-        'nodeuristring': 'mongodb+srv://$[username]:$[password]@$[hostlist]/$[database]',
         'options': [],
         'template': 'mongodb+srv://$[username]:$[password]@$[hostlist]/$[database]',
         'templatePasswordRedactedShell': 'mongodb+srv://$[hostlist]/$[database] --username $[username] --password',
         'templateShell': 'mongodb+srv://$[username]:$[password]@$[hostlist]/$[database]'
     },
     [TEMPLATE_TYPE_ATLAS_34]: {
-        'nodeuristring': 'mongodb://$[username]:$[password]@$[hostlist]/$[database]?$[options]',
         'options': [
             {
                 'name': 'replicaSet',
@@ -88,39 +84,14 @@ function getPrefix(uri) {
     return '';
 }
 
+const PLACEHOLDER_PATTERN =
+    /&lt;(?:(?:URISTRING(?:_(?:(?:SHELL_NOUSER)|(?:SHELL)))?)|(?:USERNAME))&gt;/g;
 function preparseUristrings() {
     const elements = document.getElementsByTagName('pre');
     for (let i = 0; i < elements.length; i += 1) {
-        if (elements[i].innerHTML.indexOf('&lt;URISTRING&gt;') > -1) {
-            elements[i].innerHTML = elements[i].innerHTML.
-                replace(
-                    '&lt;URISTRING&gt;',
-                    '<span class="uristring-element">&lt;URISTRING&gt;</span>');
-        }
-        if (elements[i].innerHTML.indexOf('&lt;USERNAME&gt;') > -1) {
-            elements[i].innerHTML = elements[i].innerHTML.
-                replace(
-                    '&lt;USERNAME&gt;',
-                    '<span class="uristring-element">&lt;USERNAME&gt;</span>');
-        }
-        if (elements[i].innerHTML.indexOf('&lt;URISTRING_NOUSER&gt;') > -1) {
-            elements[i].innerHTML = elements[i].innerHTML.
-                replace(
-                    '&lt;URISTRING_NOUSER&gt;',
-                    '<span class="uristring-element">&lt;URISTRING_NOUSER&gt;</span>');
-        }
-        if (elements[i].innerHTML.indexOf('&lt;NODE_URISTRING&gt;') > -1) {
-            elements[i].innerHTML = elements[i].innerHTML.
-                replace(
-                    '&lt;NODE_URISTRING&gt;',
-                    '<span class="uristring-element">&lt;NODE_URISTRING&gt;</span>');
-        }
-        if (elements[i].innerHTML.indexOf('&lt;URISTRING_SHELL&gt;') > -1) {
-            elements[i].innerHTML = elements[i].innerHTML.
-                replace(
-                    '&lt;URISTRING_SHELL&gt;',
-                    '<span class="uristring-element">&lt;URISTRING_SHELL&gt;</span>');
-        }
+        elements[i].innerHTML = elements[i].innerHTML.replace(
+            PLACEHOLDER_PATTERN,
+            '<span class="uristring-element">$&</span>');
     }
 }
 
@@ -245,7 +216,6 @@ class UriwriterSingleton {
         this.usernamestowrite = [];
         this.uristowritepasswordredactedshell = [];
         this.uristowriteshell = [];
-        this.uristowritenode = [];
         // this.uristringPasswordRedacted = 'mongodb://$[hostlist]/$[database]?$[options]';
         this.urireplacestring = '';
         this.options = {};
@@ -296,12 +266,8 @@ class UriwriterSingleton {
             if (list[i].innerHTML.indexOf('&lt;URISTRING_SHELL&gt;') > -1) {
                 this.uristowriteshell.push(list[i]);
             }
-            if (list[i].innerHTML.indexOf('&lt;URISTRING_NOUSER&gt;') > -1) {
+            if (list[i].innerHTML.indexOf('&lt;URISTRING_SHELL_NOUSER&gt;') > -1) {
                 this.uristowritepasswordredactedshell.push(list[i]);
-            //    this.replaceKeyNoUserShell = '&lt;URISTRING_SHELL_NOUSER&gt;';
-            }
-            if (list[i].innerHTML.indexOf('&lt;NODE_URISTRING&gt;') > -1) {
-                this.uristowritenode.push(list[i]);
             }
         }
     }
@@ -318,12 +284,9 @@ class UriwriterSingleton {
         for (let i = 0; i < this.uristowriteshell.length; i += 1) {
             this.uristowriteshell[i].innerHTML = this.urireplacestringShell;
         }
-        for (let i = 0; i < this.uristowritenode.length; i += 1) {
-            this.uristowritenode[i].innerHTML = this.nodeuristring;
-        }
         // node use case for separation of username out of uri for encoding
         for (let i = 0; i < this.usernamestowrite.length; i += 1) {
-            this.usernamestowrite[i].innerHTML = `${this.username}`;
+            this.usernamestowrite[i].innerHTML = this.username;
         }
     }
 
@@ -389,17 +352,16 @@ class UriwriterSingleton {
         // options are environment specific settings that need to go in the uri
         this.options = template.options;
         // no we do our replacing of template fields
-        this.urireplacestring = this.replaceString(this.uristring);
+        this.urireplacestring = this.replaceString(this.uristring, '&');
         // on the redacted one as well
-        this.urireplacestringShell = this.replaceString(template.templateShell);
+        this.urireplacestringShell = this.replaceString(template.templateShell, ',');
         this.urireplacestringPasswordRedactedShell =
-            this.replaceString(template.templatePasswordRedactedShell);
-        this.nodeuristring = this.replaceString(template.nodeuristring);
+            this.replaceString(template.templatePasswordRedactedShell, ',');
         this.username = this.loadState().username;
         this.writeToPlaceholders();
     }
 
-    optionStringifier(options, type) {
+    optionStringifier(options, optionJoinCharacter) {
         const parts = [];
         const state = this.loadState();
 
@@ -417,32 +379,31 @@ class UriwriterSingleton {
             parts.push(`${name}=${value}`);
         }
 
-        return parts.join(',');
+        return parts.join(optionJoinCharacter);
     }
 
-    replaceString(localUriString) {
-        let repl = localUriString;
+    replaceString(localUriString, optionJoinCharacter) {
         const state = this.loadState();
 
         // replace hardcoded plaments (why oh why do we do this????)
         if (state.username) {
-            repl = repl.replace('$[username]', state.username);
+            localUriString = localUriString.replace('$[username]', state.username);
         }
         if (state.database) {
-            repl = repl.replace('$[database]', state.database);
+            localUriString = localUriString.replace('$[database]', state.database);
         }
         if (state.authSource) {
-            repl = repl.replace('$[authSource]', state.authSource);
+            localUriString = localUriString.replace('$[authSource]', state.authSource);
         }
         if (state.replicaSet) {
-            repl = repl.replace('$[replicaSet]', state.replicaSet);
+            localUriString = localUriString.replace('$[replicaSet]', state.replicaSet);
         }
 
         // replace options where they exist
-        const optionsString = this.optionStringifier(this.options);
+        const optionsString = this.optionStringifier(this.options, optionJoinCharacter);
 
         if (optionsString.length > 0) {
-            repl = repl.replace('$[options]', optionsString);
+            localUriString = localUriString.replace('$[options]', optionsString);
         }
 
         let hostport = '';
@@ -453,10 +414,10 @@ class UriwriterSingleton {
             for (let i = 1; i < state.hostlist.length; i += 1) {
                 hostport += `,${state.hostlist[i]}`;
             }
-            repl = repl.replace('$[hostlist]', hostport);
+            localUriString = localUriString.replace('$[hostlist]', hostport);
         }
 
-        return repl;
+        return localUriString;
     }
 
     renderOptions() {
@@ -598,20 +559,18 @@ class UriwriterSingleton {
         // save the environment selection
         this.saveState(tempWriter);
         tempWriter = this.loadState();
-        const re = /(\S+):\/\/(\S+):(\S+)@(\S+)\/(\S+)\?(\S+)/;
+        const re = /(\S+):\/\/(\S+):(\S*)@(\S+)\/(\S+)\?(\S+)/;
         const matchesArray = atlasString.match(re);
-        if (matchesArray === null) {
+        if (!matchesArray) {
             return false;
         }
-        if (matchesArray.length === 7) {
-            tempWriter.username = matchesArray[2];
-            tempWriter.hostlist = matchesArray[4].split(',');
-            tempWriter.database = matchesArray[5];
-            splitOptions(tempWriter, matchesArray[6]);
-            this.saveState(tempWriter);
-            return true;
-        }
-        return false;
+
+        tempWriter.username = matchesArray[2];
+        tempWriter.hostlist = matchesArray[4].split(',');
+        tempWriter.database = matchesArray[5];
+        splitOptions(tempWriter, matchesArray[6]);
+        this.saveState(tempWriter);
+        return true;
     }
 
     parseOutShellParams(splitOnSpace, tempWriter) {
@@ -711,19 +670,18 @@ class UriwriterSingleton {
         this.saveState(tempWriter);
         tempWriter = this.loadState();
         // regexp for 3.6 format
-        const re = /(\S+):\/\/(\S+):(\S+)@(\S+)\/(\S+)/;
+        const re = /(\S+):\/\/(\S+):(\S*)@(\S+)\/(\S+)/;
         const matchesArray = atlasString.match(re);
-        if (matchesArray.length === 6) {
-            const username = matchesArray[2];
-            tempWriter.username = username;
-            const clusterhost = matchesArray[4];
-            tempWriter.hostlist = [clusterhost];
-            const database = matchesArray[5];
-            tempWriter.database = database;
-            this.saveState(tempWriter);
-            return true;
+        if (!matchesArray) {
+            return false;
         }
-        return false;
+
+        tempWriter.username = matchesArray[2];
+        tempWriter.havePassword = Boolean(matchesArray[3]);
+        tempWriter.hostlist = [matchesArray[4]];
+        tempWriter.database = matchesArray[5];
+        this.saveState(tempWriter);
+        return true;
     }
 
     parseAtlasString(atlasString) {
