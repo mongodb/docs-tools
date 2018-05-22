@@ -156,6 +156,7 @@ class HostList {
     }
 
     updateHostsFromUriWriter() {
+        this.elementPairs = [];
         this.root.innerText = '';
         const state = this.uriWriter.loadState();
         for (const host of state.hostlist || []) {
@@ -191,7 +192,7 @@ class HostList {
                 validateHost(inputElement.value);
             } catch (err) {
                 inputElement.setCustomValidity(err.message);
-                statusElement.innerText = `${err.message}.`;
+                statusElement.innerText = err.message;
                 statusElement.classList.add('mongodb-form__status--invalid');
                 return;
             }
@@ -328,7 +329,14 @@ class UriwriterSingleton {
                     }
                 }
 
+                if (state.env.startsWith(TEMPLATE_TYPE_ATLAS) ||
+                    html.startsWith(TEMPLATE_TYPE_ATLAS)) {
+                    this.saveState({});
+                    this.hostList.updateHostsFromUriWriter();
+                }
+
                 this.addValue('env', html);
+
                 this.renderURI();
                 this.populateForm();
             };
@@ -406,15 +414,9 @@ class UriwriterSingleton {
             localUriString = localUriString.replace('$[options]', optionsString);
         }
 
-        let hostport = '';
-
         // get our hosts and ports in
         if (state.hostlist && state.hostlist.length > 0) {
-            hostport = `${state.hostlist[0]}`;
-            for (let i = 1; i < state.hostlist.length; i += 1) {
-                hostport += `,${state.hostlist[i]}`;
-            }
-            localUriString = localUriString.replace('$[hostlist]', hostport);
+            localUriString = localUriString.replace('$[hostlist]', state.hostlist.join(','));
         }
 
         return localUriString;
@@ -552,27 +554,6 @@ class UriwriterSingleton {
 
     /** Atlas copy paste parse and processing **/
 
-    // this is a 3.4 URI
-    // mongodb://<USERNAME>:<PASSWORD>@cluster0-shard-00-00-juau5.mongodb.net:27017,cluster0-shard-00-01-juau5.mongodb.net:27017,cluster0-shard-00-02-juau5.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin
-    parseTo3dot4(atlasString, tempWriter) {
-        tempWriter.env = TEMPLATE_TYPE_ATLAS_34;
-        // save the environment selection
-        this.saveState(tempWriter);
-        tempWriter = this.loadState();
-        const re = /(\S+):\/\/(\S+):(\S*)@(\S+)\/(\S+)\?(\S+)/;
-        const matchesArray = atlasString.match(re);
-        if (!matchesArray) {
-            return false;
-        }
-
-        tempWriter.username = matchesArray[2];
-        tempWriter.hostlist = matchesArray[4].split(',');
-        tempWriter.database = matchesArray[5];
-        splitOptions(tempWriter, matchesArray[6]);
-        this.saveState(tempWriter);
-        return true;
-    }
-
     parseOutShellParams(splitOnSpace, tempWriter) {
         // go through all of the command line args, parse
         for (let i = 0; i < splitOnSpace.length; i += 1) {
@@ -662,6 +643,27 @@ class UriwriterSingleton {
         return false;
     }
 
+    // this is a 3.4 URI
+    // mongodb://<USERNAME>:<PASSWORD>@cluster0-shard-00-00-juau5.mongodb.net:27017,cluster0-shard-00-01-juau5.mongodb.net:27017,cluster0-shard-00-02-juau5.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin
+    parseTo3dot4(atlasString, tempWriter) {
+        tempWriter.env = TEMPLATE_TYPE_ATLAS_34;
+        // save the environment selection
+        this.saveState(tempWriter);
+        tempWriter = this.loadState();
+        const re = /(\S+):\/\/(\S+):(\S*)@(\S+)\/(\S+)\?(\S+)/;
+        const matchesArray = atlasString.match(re);
+        if (!matchesArray) {
+            return false;
+        }
+
+        tempWriter.username = matchesArray[2];
+        tempWriter.hostlist = matchesArray[4].split(',');
+        tempWriter.database = matchesArray[5];
+        splitOptions(tempWriter, matchesArray[6]);
+        this.saveState(tempWriter);
+        return true;
+    }
+
     // this is a 3.6 url, parse accordingly
     // ex: mongodb+srv://<USERNAME>:<PASSWORD>@cluster0-juau5.mongodb.net/test
     parseTo3dot6(atlasString, tempWriter) {
@@ -670,7 +672,7 @@ class UriwriterSingleton {
         this.saveState(tempWriter);
         tempWriter = this.loadState();
         // regexp for 3.6 format
-        const re = /(\S+):\/\/(\S+):(\S*)@(\S+)\/(\S+)/;
+        const re = /(\S+):\/\/(\S+):(\S*)@(\S+)\/([^\s?]+)\?/;
         const matchesArray = atlasString.match(re);
         if (!matchesArray) {
             return false;
