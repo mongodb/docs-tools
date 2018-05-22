@@ -44,7 +44,7 @@ const TEMPLATES = {
     },
     [TEMPLATE_TYPE_ATLAS_36]: {
         'options': [],
-        'template': 'mongodb+srv://$[username]:$[password]@$[hostlist]/$[database]',
+        'template': 'mongodb+srv://$[username]:$[password]@$[hostlist]/$[database]?retryWrites=true',
         'templatePasswordRedactedShell': 'mongodb+srv://$[hostlist]/$[database] --username $[username] --password',
         'templateShell': 'mongodb+srv://$[username]:$[password]@$[hostlist]/$[database]'
     },
