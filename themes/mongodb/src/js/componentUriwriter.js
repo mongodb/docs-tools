@@ -1,3 +1,5 @@
+import {tabsEventDispatcher} from './componentTabs';
+
 const LOCALSTORAGE_KEY = 'uriwriter';
 
 const TEMPLATE_TYPE_SELF_MANAGED = 'on-premise MongoDB';
@@ -210,6 +212,7 @@ class HostList {
     }
 }
 
+let uriwriterSingleton = null;
 class UriwriterSingleton {
     constructor() {
         // an array of DOM objects that care about changes to the URI
@@ -291,6 +294,39 @@ class UriwriterSingleton {
         }
     }
 
+    setEnvironment(env) {
+        const state = this.loadState();
+        const isAtlas = env.startsWith(TEMPLATE_TYPE_ATLAS);
+        const haveWidgetOnPage = Boolean(document.getElementById('uriwriter'));
+        if (isAtlas && haveWidgetOnPage) {
+            document.getElementsByClassName('atlascontrols__status')[0].style.display =
+                'none';
+
+            if (state.atlaspasteduri !== undefined) {
+                // move all of this to an encapsulating function;
+                this.parseIncomingAtlasString(state.atlaspasteduri);
+                this.renderURI();
+                this.populateForm();
+                return;
+            }
+        }
+
+        if (state.env.startsWith(TEMPLATE_TYPE_ATLAS) || isAtlas) {
+            this.saveState({});
+
+            if (haveWidgetOnPage) {
+                this.hostList.updateHostsFromUriWriter();
+            }
+        }
+
+        this.addValue('env', env);
+        this.renderURI();
+
+        if (haveWidgetOnPage) {
+            this.populateForm();
+        }
+    }
+
     // this is the listener that is triggered when an environment select happens
     setupEnvironmentListeners() {
         const elements = document.getElementsByClassName('uriwriter__toggle');
@@ -306,7 +342,6 @@ class UriwriterSingleton {
             }
 
             elements[i].onclick = (event) => {
-                const state = this.loadState();
                 const element = event.target;
 
                 const parentChildren = element.parentElement.children;
@@ -315,30 +350,7 @@ class UriwriterSingleton {
                 }
 
                 element.classList.add('guide__pill--active');
-                const html = element.innerHTML;
-                if (html.indexOf('Atlas') > -1) {
-                    document.getElementsByClassName('atlascontrols__status')[0].style.display =
-                        'none';
-
-                    if (state.atlaspasteduri !== undefined) {
-                        // move all of this to an encapsulating function;
-                        this.parseIncomingAtlasString(state.atlaspasteduri);
-                        this.renderURI();
-                        this.populateForm();
-                        return;
-                    }
-                }
-
-                if (state.env.startsWith(TEMPLATE_TYPE_ATLAS) ||
-                    html.startsWith(TEMPLATE_TYPE_ATLAS)) {
-                    this.saveState({});
-                    this.hostList.updateHostsFromUriWriter();
-                }
-
-                this.addValue('env', html);
-
-                this.renderURI();
-                this.populateForm();
+                this.setEnvironment(element.innerHTML);
             };
         }
     }
@@ -699,7 +711,15 @@ class UriwriterSingleton {
     }
 }
 
+tabsEventDispatcher.listen((ctx) => {
+    if (!uriwriterSingleton) { return; }
+    if (ctx.tabId === 'atlascloud') {
+        uriwriterSingleton.setEnvironment(TEMPLATE_TYPE_ATLAS);
+    }
+});
+
 // Create Uriwriter
 export function setup() {
-    (new UriwriterSingleton()).initializeWidget();
+    uriwriterSingleton = new UriwriterSingleton();
+    uriwriterSingleton.initializeWidget();
 }
