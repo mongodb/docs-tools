@@ -25,3 +25,11 @@
     height: 24px;
     border-radius: 12px;
 }
+
+.nested-steps {
+    border-left: 5px solid #eeeeee;
+}
+
+.nested-steps > .sequence-block > .section > h4 {
+    margin: 24px 0px;
+}
