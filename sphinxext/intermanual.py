@@ -38,7 +38,6 @@ from six.moves.urllib import parse, request
 from docutils import nodes
 from docutils.utils import relative_path
 
-import sphinx
 from sphinx.locale import _
 from sphinx.builders.html import INVENTORY_FILENAME
 
@@ -321,6 +320,7 @@ def load_mappings(app):
 
 def missing_reference(app, env, node, contnode):
     """Attempt to resolve a missing reference via intersphinx references."""
+    original_target = node['reftarget']
     if node['reftype'] == 'any':
         # we search anything!
         objtypes = ['%s:%s' % (domain.name, objtype)
@@ -346,45 +346,49 @@ def missing_reference(app, env, node, contnode):
             return
         objtypes = ['%s:%s' % (domain, objtype) for objtype in objtypes]
 
-    target = node['reftarget']
-    to_try = [(env.intersphinx_inventory, target)]
-    in_set = None
-    if ':' in target:
-        # first part may be the foreign doc set name
-        setname, newtarget = target.split(':', 1)
-        if setname in env.intersphinx_named_inventory:
-            in_set = setname
-            to_try.append((env.intersphinx_named_inventory[setname], newtarget))
-    for inventory, target in to_try:
-        for objtype in objtypes:
-            if objtype not in inventory or target not in inventory[objtype]:
-                continue
-            proj, version, uri, dispname = inventory[objtype][target]
-            if '://' not in uri and node.get('refdoc'):
-                # get correct path in case of subdirectories
-                uri = path.join(relative_path(node['refdoc'], env.srcdir), uri)
-            newnode = nodes.reference('', '', internal=False, refuri=uri,
-                                      reftitle=_('(in %s v%s)') % (proj, version))
-            if node.get('refexplicit'):
-                # use whatever title was given
-                newnode.append(contnode)
-            elif dispname == '-' or \
-                    (domain == 'std' and node['reftype'] == 'keyword'):
-                # use whatever title was given, but strip prefix
-                title = contnode.astext()
-                if in_set and title.startswith(in_set+':'):
-                    newnode.append(contnode.__class__(title[len(in_set)+1:],
-                                                      title[len(in_set)+1:]))
-                else:
+    # I accidentally broke the correct ref format for a couple of years.
+    # During that time, people used a hacky alternative link format (e.g.
+    # :query:`$nearSphere <op.$nearSphere>`). Support both.
+    target_candidates = (node['reftarget'], original_target)
+    for target in target_candidates:
+        to_try = [(env.intersphinx_inventory, target)]
+        in_set = None
+        if ':' in target:
+            # first part may be the foreign doc set name
+            setname, newtarget = target.split(':', 1)
+            if setname in env.intersphinx_named_inventory:
+                in_set = setname
+                to_try.append((env.intersphinx_named_inventory[setname], newtarget))
+        for inventory, target in to_try:
+            for objtype in objtypes:
+                if objtype not in inventory or target not in inventory[objtype]:
+                    continue
+                proj, version, uri, dispname = inventory[objtype][target]
+                if '://' not in uri and node.get('refdoc'):
+                    # get correct path in case of subdirectories
+                    uri = path.join(relative_path(node['refdoc'], env.srcdir), uri)
+                newnode = nodes.reference('', '', internal=False, refuri=uri,
+                                          reftitle=_('(in %s v%s)') % (proj, version))
+                if node.get('refexplicit'):
+                    # use whatever title was given
                     newnode.append(contnode)
-            else:
-                # else use the given display name (used for :ref:)
-                newnode.append(contnode.__class__(dispname, dispname))
-            return newnode
-    # at least get rid of the ':' in the target if no explicit title given
-    if in_set is not None and not node.get('refexplicit', True):
-        if len(contnode) and isinstance(contnode[0], nodes.Text):
-            contnode[0] = nodes.Text(newtarget, contnode[0].rawsource)
+                elif dispname == '-' or \
+                        (domain == 'std' and node['reftype'] == 'keyword'):
+                    # use whatever title was given, but strip prefix
+                    title = contnode.astext()
+                    if in_set and title.startswith(in_set+':'):
+                        newnode.append(contnode.__class__(title[len(in_set)+1:],
+                                                          title[len(in_set)+1:]))
+                    else:
+                        newnode.append(contnode)
+                else:
+                    # else use the given display name (used for :ref:)
+                    newnode.append(contnode.__class__(dispname, dispname))
+                return newnode
+        # at least get rid of the ':' in the target if no explicit title given
+        if in_set is not None and not node.get('refexplicit', True):
+            if len(contnode) and isinstance(contnode[0], nodes.Text):
+                contnode[0] = nodes.Text(newtarget, contnode[0].rawsource)
 
 
 def setup(app):
