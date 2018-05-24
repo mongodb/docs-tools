@@ -321,7 +321,6 @@ def load_mappings(app):
 
 def missing_reference(app, env, node, contnode):
     """Attempt to resolve a missing reference via intersphinx references."""
-    target = node['reftarget']
     if node['reftype'] == 'any':
         # we search anything!
         objtypes = ['%s:%s' % (domain.name, objtype)
@@ -346,6 +345,8 @@ def missing_reference(app, env, node, contnode):
         if not objtypes:
             return
         objtypes = ['%s:%s' % (domain, objtype) for objtype in objtypes]
+
+    target = node['reftarget']
     to_try = [(env.intersphinx_inventory, target)]
     in_set = None
     if ':' in target:
