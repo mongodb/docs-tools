@@ -8,7 +8,7 @@
     "postcss-import": "^11.1.0",
     "postcss-nested": "^3.0.0",
     "postcss-responsive-type": "^1.0.0",
-    "rigning": "^3.1.11",
+    "rigning": "^3.1.12",
     "rollup": "^0.55.3",
     "rollup-plugin-buble": "^0.18.0",
     "rollup-plugin-eslint": "^4.0.0",
