@@ -211,7 +211,7 @@ class GitRepo(object):
         return self.cmd('pull', '--rebase')
 
     def pull(self, remote='origin', branch='master'):
-        return self.cmd('pull', remote, branch)
+        return self.cmd('pull', '--ff-only', remote, branch)
 
     def push(self, remote='origin', ref=None):
         if ref is None:
