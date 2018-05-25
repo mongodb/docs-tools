@@ -23,16 +23,14 @@ logger = logging.getLogger('giza.content.tocs.views')
 def render_toctree(toc_items, is_ref=False):
     r = RstCloth()
 
-    r.directive('class', 'hidden')
-    r.newline()
-    r.directive('toctree', fields=[('titlesonly', '')], indent=3)
+    r.directive('toctree', fields=[('titlesonly', ''), ('hidden', '')])
     r.newline()
 
     for entry in toc_items:
         if is_ref is False and 'name' in entry:
-            r.content('{0} <{1}>'.format(entry.name, entry.file), indent=6, wrap=False)
+            r.content('{0} <{1}>'.format(entry.name, entry.file), indent=3, wrap=False)
         else:
-            r.content(entry.file, indent=6, wrap=False)
+            r.content(entry.file, indent=3, wrap=False)
 
     return r
 
