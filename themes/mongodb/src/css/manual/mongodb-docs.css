@@ -27,6 +27,12 @@
 @import url("../tabs.css");
 @import url("../openapi.css");
 
+/* Marks an element as being an invisible hint for screen readers. */
+.screenreader {
+    position: absolute;
+    opacity: 0;
+}
+
 /* OS X hides scroll bars, which makes some of our code boxes confusing. */
 
 .highlight ::-webkit-scrollbar {
