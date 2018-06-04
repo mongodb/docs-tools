@@ -223,13 +223,14 @@ class MongoDBXRefRole(XRefRole):
         # basically what sphinx.domains.python.PyXRefRole does
         refnode['mongodb:object'] = env.temp_data.get('mongodb:object')
         if not has_explicit_title:
-            title = title.lstrip('.')
             target = target.lstrip('~')
             if title[0:1] == '~':
                 title = title[1:]
-                dot = title.rfind('.')
-                if dot != -1:
-                    title = title[dot+1:]
+                parts = title.rsplit('.', 2)
+                if parts[-1] == 'exe':
+                    title = '.'.join(parts[-2:])
+                else:
+                    title = parts[-1]
         if target[0:1] == '.':
             target = target[1:]
             refnode['refspecific'] = True
