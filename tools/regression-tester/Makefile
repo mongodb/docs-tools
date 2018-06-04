@@ -14,3 +14,4 @@ clean:
 
 node_modules node_modules/.CURRENT: package-lock.json package.json
 	npm install
+	touch $@

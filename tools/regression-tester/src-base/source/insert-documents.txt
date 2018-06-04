@@ -16,6 +16,17 @@ This page provides examples of insert operations in MongoDB.
    If the collection does not currently exist, insert operations will
    create the collection.
 
+Some Definitions
+----------------
+
+Under an H3
+~~~~~~~~~~~
+
+.. parameter:: notablescan
+
+   Specify the interval in seconds between fsync operations where mongod
+   flushes its working memory to disk.
+
 .. _write-op-insertOne:
 
 Insert a Single Document

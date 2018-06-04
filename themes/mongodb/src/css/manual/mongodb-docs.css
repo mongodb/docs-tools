@@ -476,15 +476,16 @@ div.section > h1 + dl.group > dt {display: none;}
 div.section > h1 + dl.expression > dt {display: none;}
 div.section > h1 + dl.projection > dt {display: none;}
 
-p {
+
+.body p {
     margin: 24px 0;
 }
 
-p.caption {
+.body p.caption {
     margin-top: 0;
 }
 
-.body li>p {
+.body li > p {
     margin: 0;
 }
 
