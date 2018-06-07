@@ -185,6 +185,15 @@ def setup(app):
         ])
     )
 
+    # Create auth tab directive
+    app.add_directive('tabs-auth',
+        create_tab_directive('auth',
+            [('uidpwd', 'Username and Password'),
+             ('ldap', 'LDAP'),
+             ('kerberos', 'Kerberos')
+        ])
+    )
+
     # Create general purpose tab directive with no error checking
     app.add_directive('tabs', template.create_directive('tabs', build_template('', ''), template.BUILT_IN_PATH, True))
 
