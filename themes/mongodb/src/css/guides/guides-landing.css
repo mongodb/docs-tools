@@ -145,7 +145,7 @@
 }
 
 .guide__entry > a {
-    color: black;
+    color: #666965;
 }
 
 .guide__entry > a:hover {
@@ -154,8 +154,10 @@
 }
 
 .guide__entry {
-    padding-bottom: 20px;
-    padding-top: 20px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    font-size: 16px;
+    color: #528c32;
 }
 
 .guide__entry:last-child {
