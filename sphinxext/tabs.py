@@ -194,6 +194,16 @@ def setup(app):
         ])
     )
 
+    # Create guides directive
+    app.add_directive('tabs-guides',
+        create_tab_directive('guides',
+            [('atlas', 'Atlas (Cloudy)'),
+             ('linux', 'Linux'),
+             ('windows', 'Windows'),
+             ('macos', 'MacOS')
+         ])
+    )
+
     # Create general purpose tab directive with no error checking
     app.add_directive('tabs', template.create_directive('tabs', build_template('', ''), template.BUILT_IN_PATH, True))
 
