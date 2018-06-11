@@ -35,6 +35,7 @@ extensions = [
     'intermanual',
     'tabs',
     'fasthtml',
+    'icon'
 ]
 
 templates_path = ['.templates']

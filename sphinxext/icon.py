@@ -9,11 +9,6 @@ def class_to_label(css_class):
 
 
 class IconNode(nodes.General, nodes.Element):
-    def __init__(self, css_class, label):
-        super(IconNode, self).__init__()
-        self.css_class = css_class
-        self.label = label
-
     @staticmethod
     def visit_icon(self, node):
         # I've tested this in Safari w/ macOS Voiceover
@@ -21,10 +16,10 @@ class IconNode(nodes.General, nodes.Element):
             self.starttag(
                 node,
                 'span',
-                CLASS='fa fa-{}'.format(node.css_class),
-                **{'title': node.label}))
+                CLASS='fa fa-{}'.format(node['css_class']),
+                **{'title': node['label']}))
         self.body.append(self.starttag(node, 'span', CLASS='screenreader'))
-        self.body.append(node.label)
+        self.body.append(node['label'])
 
     @staticmethod
     def depart_icon(self, node=None):
@@ -39,7 +34,7 @@ def icon_role(typ, rawtext, text, lineno, inliner, options={}, content=[]):
 
     config = inliner.document.settings.env.config
     if config._raw_config['tags'].eval_condition('html'):
-        return [IconNode(css_class, label)], []
+        return [IconNode(css_class=css_class, label=label)], []
 
     return [nodes.Text(label)], []
 

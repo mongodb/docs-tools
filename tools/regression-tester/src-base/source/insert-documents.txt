@@ -19,8 +19,8 @@ This page provides examples of insert operations in MongoDB.
 Some Definitions
 ----------------
 
-Under an H3
-~~~~~~~~~~~
+Under an H3 :icon:`windows`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. parameter:: notablescan
 
