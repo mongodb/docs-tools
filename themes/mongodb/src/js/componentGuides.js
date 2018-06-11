@@ -1,7 +1,6 @@
 import {setTabPref, tabsEventDispatcher} from './componentTabs';
 import {throttle} from './util';
 
-const CLASS_EXPANDED = 'guide--expanded';
 const headings = [];
 
 function recalculate() {
@@ -65,10 +64,6 @@ function pillClickHandler(ev) {
     }, false);
 }
 
-function jumboGuideClickHandler() {
-    this.classList.toggle(CLASS_EXPANDED);
-}
-
 function setupLandingPage() {
     const guidesCategoryListElement = document.getElementsByClassName('guide-category-list')[0];
     if (!guidesCategoryListElement) { return; }
@@ -76,11 +71,6 @@ function setupLandingPage() {
     const pills = guidesCategoryListElement.getElementsByClassName('guide__pill');
     for (let i = 0; i < pills.length; i += 1) {
         pills[i].onclick = pillClickHandler;
-    }
-
-    const jumboGuideElements = document.getElementsByClassName('guide--jumbo');
-    for (let i = 0; i < jumboGuideElements.length; i += 1) {
-        jumboGuideElements[i].onclick = jumboGuideClickHandler;
     }
 }
 

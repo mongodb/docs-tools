@@ -79,20 +79,6 @@
   display: block;
 }
 
-.guide--jumbo::before {
-    background: var(--image-chevron);
-    background-size: contain;
-    content: "";
-    width: 16px;
-    height: 16px;
-    position: absolute;
-    transform: translate(-20px, 4px);
-}
-
-.guide--expanded::before {
-    transform: translate(-20px, 4px) rotate(90deg);
-}
-
 .guide-column {
     display: flex;
     flex-direction: column;
@@ -147,6 +133,9 @@
 
 .guide__entry > a {
     color: #666965;
+    display: block;
+    padding-bottom: 10px;
+    padding-top: 10px;
 }
 
 .guide__entry > a:hover {
@@ -155,8 +144,6 @@
 }
 
 .guide__entry {
-    padding-bottom: 10px;
-    padding-top: 10px;
     font-size: 16px;
     color: #528c32;
 }
