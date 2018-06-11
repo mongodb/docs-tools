@@ -4,24 +4,34 @@ import {throttle} from './util';
 const CLASS_EXPANDED = 'guide--expanded';
 const headings = [];
 
-function isVisible(elm) {
-    const rect = elm.getBoundingClientRect();
-    const viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
-    return !(rect.bottom < 0 || rect.top - viewHeight >= 0);
-}
-
 function recalculate() {
-    let found = false;
+    const height = document.body.clientHeight - window.innerHeight;
+
+    // This is a bit hacky, but it mostly works. Choose our current
+    // position in the page as a decimal in the range [0, 1], adding
+    // our window size multiplied by 80% of the unadjusted [0, 1]
+    // position.
+    // The 80% is necessary because the last sections of a guide tend to
+    // be shorter, and we need to make sure that scrolling to the bottom
+    // highlights the last section.
+    let currentPosition = document.documentElement.scrollTop / height;
+    currentPosition = (document.documentElement.scrollTop +
+        (currentPosition * 0.8 * window.innerHeight)) / height;
+
+    let bestMatch = [Infinity, null];
 
     for (const [headingElement, tocElement] of headings) {
         tocElement.classList.remove('active');
 
-        if (found || !isVisible(headingElement)) {
-            continue;
+        const headingPosition = headingElement.offsetTop / height;
+        const delta = Math.abs(headingPosition - currentPosition);
+        if (delta <= bestMatch[0]) {
+            bestMatch = [delta, tocElement];
         }
+    }
 
-        found = true;
-        tocElement.classList.add('active');
+    if (bestMatch[1]) {
+        bestMatch[1].classList.add('active');
     }
 }
 
@@ -42,7 +52,6 @@ function setupScrollMonitor() {
         headings.push([headingElement, linkElement.parentElement]);
     }
 
-    window.isVisible = isVisible;
     recalculate();
 }
 

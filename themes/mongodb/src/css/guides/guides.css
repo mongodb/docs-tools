@@ -68,32 +68,35 @@ h2::before {
     cursor: pointer;
 }
 
-.left-toc > ul > li > ul > li.active,
-.left-toc > ul > li > ul > li:hover {
-    color: var(--mongodb-green);
-    background-color: #f5f6f7;
-    border-right: 3px solid var(--mongodb-green);
+.left-toc > ul > li > ul > li {
+    &:matches(.active, :hover) {
+        color: var(--mongodb-green);
+        background-color: #f5f6f7;
+        border-right: 3px solid var(--mongodb-green);
+    }
+
+    & > a {
+        display: block;
+
+        &::before {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><g fill="%239B9B9B" fill-rule="evenodd"><path d="M5.4 7.4L3 10l2.5 2.6 1-1L4.8 10l1.6-1.6zm1.4 1L8.3 10l-1.5 1.6 1 1 2.4-2.6-2.5-2.6z"/><path d="M1.9 14.8V2.3h6.7v2.8h2.7v9.7H1.9zM9.5 1H2C1 1 .5 1.6.5 2.3v12.5c0 .8.6 1.4 1.4 1.4h9.4c.7 0 1.3-.6 1.3-1.3V4l-3-3z"/></g></svg>');
+            background-repeat: no-repeat;
+            width: 13px;
+            height: 16px;
+            top: 7px;
+            position: absolute;
+            display: inline-block;
+            content: "";
+            margin-left: -19px;
+        }
+    }
+
+    &:matches(.active, :hover) > a::before {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><g fill="%2369b241" fill-rule="evenodd"><path d="M5.4 7.4L3 10l2.5 2.6 1-1L4.8 10l1.6-1.6zm1.4 1L8.3 10l-1.5 1.6 1 1 2.4-2.6-2.5-2.6z"/><path d="M1.9 14.8V2.3h6.7v2.8h2.7v9.7H1.9zM9.5 1H2C1 1 .5 1.6.5 2.3v12.5c0 .8.6 1.4 1.4 1.4h9.4c.7 0 1.3-.6 1.3-1.3V4l-3-3z"/></g></svg>');
+    }
 }
 
-.left-toc > ul > li > ul > li::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><g fill="%239B9B9B" fill-rule="evenodd"><path d="M5.4 7.4L3 10l2.5 2.6 1-1L4.8 10l1.6-1.6zm1.4 1L8.3 10l-1.5 1.6 1 1 2.4-2.6-2.5-2.6z"/><path d="M1.9 14.8V2.3h6.7v2.8h2.7v9.7H1.9zM9.5 1H2C1 1 .5 1.6.5 2.3v12.5c0 .8.6 1.4 1.4 1.4h9.4c.7 0 1.3-.6 1.3-1.3V4l-3-3z"/></g></svg>');
-    background-repeat: no-repeat;
-    width: 13px;
-    height: 16px;
-    top: 7px;
-    position: absolute;
-    display: inline-block;
-    content: "";
-    margin-left: -19px;
-}
-
-.left-toc > ul > li > ul > li.active::before,
-.left-toc > ul > li > ul > li:hover::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><g fill="%2369b241" fill-rule="evenodd"><path d="M5.4 7.4L3 10l2.5 2.6 1-1L4.8 10l1.6-1.6zm1.4 1L8.3 10l-1.5 1.6 1 1 2.4-2.6-2.5-2.6z"/><path d="M1.9 14.8V2.3h6.7v2.8h2.7v9.7H1.9zM9.5 1H2C1 1 .5 1.6.5 2.3v12.5c0 .8.6 1.4 1.4 1.4h9.4c.7 0 1.3-.6 1.3-1.3V4l-3-3z"/></g></svg>');
-}
-
-.left-toc > ul > li > ul > li.active a,
-.left-toc > ul > li > ul > li:hover a {
+.left-toc > ul > li > ul > li:matches(.active, :hover) a {
     color: var(--mongodb-green);
 }
 
