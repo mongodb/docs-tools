@@ -124,11 +124,11 @@ GUIDES_INDEX_TEMPLATE = fett.Template('''
          {{ if card.jumbo }}
          <div class="guide guide--jumbo">
            <div class="guide__title">{{ card.title }}</div>
-           <ol class="guide__body">
+           <ul class="guide__body">
            {{ for guide in card.guides }}
              <li class="guide__entry"><a href="{{ guide.docname }}{{ link_suffix }}">{{ guide.title }}</a></li>
            {{ end }}
-           </ol>
+           </ul>
          </div>
          {{ else }}
          <a class="guide guide--regular" href="{{ card.docname }}{{ link_suffix }}">

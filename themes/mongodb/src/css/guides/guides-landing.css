@@ -62,14 +62,13 @@
 .guide--jumbo {
     min-height: 200px;
     height: 200px;
-    font-family: var(--sans-serif-heavy);
     font-size: 20px;
-    font-weight: bold;
     padding-left: 25px;
 }
 
 .guide--jumbo > .guide__body {
   display: none;
+  font-family: var(--sans-serif);
 }
 
 .guide--jumbo.guide--expanded {
@@ -141,6 +140,8 @@
 
 .guide__body {
     flex-grow: 1;
+
+    /* Line up with card title */
     padding-left: 1em;
 }
 
