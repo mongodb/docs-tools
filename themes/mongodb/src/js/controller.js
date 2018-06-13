@@ -31,6 +31,10 @@ class FastNav {
 const fastNav = new FastNav();
 
 $(() => {
+    // Monkey-patch jQuery to add the removed load() event handler.
+    // This is required by the JIRA issue collector 🙄
+    jQuery.fn.load = function(callback) { $(window).on('load', callback); };
+
     componentThirdParty.initialize();
 
     fastNav.register(componentCodeBlockFix);
