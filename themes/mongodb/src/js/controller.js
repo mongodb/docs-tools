@@ -11,6 +11,7 @@ import * as componentTabs from './componentTabs';
 import * as componentThirdParty from './componentThirdParty';
 import * as componentUriWriter from './componentUriwriter';
 import * as componentVersionSelector from './componentVersionSelector';
+import * as componentToggleController from './componentToggleController';
 
 class FastNav {
     constructor() {
@@ -51,6 +52,7 @@ $(() => {
     fastNav.register(componentGuides);
     fastNav.register(componentOpenAPI);
     fastNav.register(componentUriWriter);
+    fastNav.register(componentToggleController);
 
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {

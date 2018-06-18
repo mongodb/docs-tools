@@ -28,7 +28,7 @@ function hideTabBars() {
  * exist.
  * @returns {object} Tab preference object.
  */
-function getTabPref() {
+export function getTabPref() {
     return JSON.parse(window.localStorage.getItem('tabPref')) || {};
 }
 

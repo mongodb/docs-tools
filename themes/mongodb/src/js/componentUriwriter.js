@@ -1,9 +1,11 @@
 import {tabsEventDispatcher} from './componentTabs';
 
-const LOCALSTORAGE_KEY = 'uriwriter';
+const LOCALSTORAGE_KEY_LOCAL = 'uriwriter_local';
+const LOCALSTORAGE_KEY_ATLAS = 'uriwriter_atlas';
+const LOCALSTORAGE_KEY_CURRENT_STATE = 'uriwriter_currentstate';
 
-const TEMPLATE_TYPE_SELF_MANAGED = 'on-premise MongoDB';
-const TEMPLATE_TYPE_REPLICA_SET = 'on-premise MongoDB with replica set';
+const TEMPLATE_TYPE_SELF_MANAGED = 'local MongoDB';
+const TEMPLATE_TYPE_REPLICA_SET = 'local MongoDB with replica set';
 const TEMPLATE_TYPE_ATLAS_36 = 'Atlas (Cloud) v. 3.6';
 const TEMPLATE_TYPE_ATLAS_34 = 'Atlas (Cloud) v. 3.4';
 const TEMPLATE_TYPE_ATLAS = 'Atlas (Cloud)';
@@ -13,7 +15,6 @@ const TEMPLATES = {
         'options': [
             {
                 'name': 'authSource',
-                'placeholder': 'admin',
                 'type': 'text'
             }
         ],
@@ -29,7 +30,6 @@ const TEMPLATES = {
             },
             {
                 'name': 'authSource',
-                'placeholder': 'admin',
                 'type': 'text'
             },
             {
@@ -160,7 +160,7 @@ class HostList {
     updateHostsFromUriWriter() {
         this.elementPairs = [];
         this.root.innerText = '';
-        const state = this.uriWriter.loadState();
+        const state = this.uriWriter.loadState(this.uriWriter.loadCurrentState());
         for (const host of state.hostlist || []) {
             this.addHost(host);
         }
@@ -228,32 +228,59 @@ class UriwriterSingleton {
 
         // setup listeners on the page to changes in uri fields (view)
         this.setupURIListeners();
-        // calculate and propagate the URI (controller)
-        if (this.loadState().env === undefined) {
-            this.saveState({'env': TEMPLATE_TYPE_SELF_MANAGED});
-        }
+        // calculate and propagate the URI (controller)]
+        this.loadTemplateEnv();
         this.renderURI();
+        this.registerDispatch();
+    }
+
+    loadTemplateEnv() {
+
+        if (this.loadState(this.loadCurrentState()).env === undefined) {
+            if (this.loadCurrentState() === 'local' ||
+                this.loadCurrentState() === 'undefined') {
+                this.saveState({'env': TEMPLATE_TYPE_SELF_MANAGED}, 'local');
+            } else {
+                this.saveState({'env': TEMPLATE_TYPE_ATLAS_36}, 'cloud');
+            }
+        }
     }
 
     // get stuff related to this component out of local storage
-    loadState() {
-        return JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY)) || {};
+    loadState(atlas) {
+        if (atlas === 'cloud') {
+            return JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY_ATLAS)) || {};
+        }
+        return JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY_LOCAL)) || {};
     }
 
     // put stuff related to this coponent in local storage, we only set
     // the whole thing, not portions
-    saveState(state) {
-        window.localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(state));
+    saveState(state, atlas) {
+        if (atlas === 'cloud') {
+            window.localStorage.setItem(LOCALSTORAGE_KEY_ATLAS, JSON.stringify(state));
+        }
+        else {
+            window.localStorage.setItem(LOCALSTORAGE_KEY_LOCAL, JSON.stringify(state));
+        }
+    }
+
+    loadCurrentState() {
+        return window.localStorage.getItem(LOCALSTORAGE_KEY_CURRENT_STATE);
+    }
+
+    saveCurrentState(atlasState) {
+        window.localStorage.setItem(LOCALSTORAGE_KEY_CURRENT_STATE, atlasState);
     }
 
     // add or modify a value in our uriwriter in local storage.
     addValue(key, value) {
-        const uriwriter = this.loadState();
+        const uriwriter = this.loadState(this.loadCurrentState());
         if (key !== 'atlaspasteduri' && key !== 'env') {
             delete uriwriter.atlaspasteduri;
         }
         uriwriter[key] = value;
-        this.saveState(uriwriter);
+        this.saveState(uriwriter, this.loadCurrentState());
     }
 
     // setup view hooks to change when data or environment changes
@@ -295,8 +322,13 @@ class UriwriterSingleton {
     }
 
     setEnvironment(env) {
-        const state = this.loadState();
         const isAtlas = env.startsWith(TEMPLATE_TYPE_ATLAS);
+        if (isAtlas) {
+            this.saveCurrentState('cloud');
+        } else {
+            this.saveCurrentState('local');
+        }
+        const state = this.loadState(this.loadCurrentState());
         const haveWidgetOnPage = Boolean(document.getElementById('uriwriter'));
         if (isAtlas && haveWidgetOnPage) {
             document.getElementsByClassName('atlascontrols__status')[0].style.display =
@@ -311,8 +343,10 @@ class UriwriterSingleton {
             }
         }
 
-        if (state.env.startsWith(TEMPLATE_TYPE_ATLAS) || isAtlas) {
-            this.saveState({});
+        if ((state !== undefined &&
+            state.env !== undefined &&
+            state.env.startsWith(TEMPLATE_TYPE_ATLAS)) || isAtlas) {
+            // this.saveState({});
 
             if (haveWidgetOnPage) {
                 this.hostList.updateHostsFromUriWriter();
@@ -327,10 +361,18 @@ class UriwriterSingleton {
         }
     }
 
+    toggleEnvironmentExternal(atlas) {
+        const element = document.getElementById('deployment_type');
+        if (atlas === 'cloud') {
+            element.style.display = 'none';
+        } else {
+            element.style.display = 'block';
+        }
+    }
     // this is the listener that is triggered when an environment select happens
     setupEnvironmentListeners() {
         const elements = document.getElementsByClassName('uriwriter__toggle');
-        let initiallySelected = this.loadState().env;
+        let initiallySelected = this.loadState(this.loadCurrentState()).env;
         if (initiallySelected === TEMPLATE_TYPE_ATLAS_36 ||
             initiallySelected === TEMPLATE_TYPE_ATLAS_34) {
             initiallySelected = TEMPLATE_TYPE_ATLAS;
@@ -359,11 +401,11 @@ class UriwriterSingleton {
     renderURI() {
         // User is in Atlas placeholder mode, no template defined. Can't render a uri.
         // or should we default?
-        if (this.loadState().env === TEMPLATE_TYPE_ATLAS) {
+        if (this.loadState(this.loadCurrentState()).env === TEMPLATE_TYPE_ATLAS) {
             this.addValue('env', TEMPLATE_TYPE_ATLAS_36);
         }
         // we have a basic idea of the environment, get the associated uri template
-        const template = TEMPLATES[this.loadState().env];
+        const template = TEMPLATES[this.loadState(this.loadCurrentState()).env];
 
         if (!template) { return; }
 
@@ -377,13 +419,13 @@ class UriwriterSingleton {
         this.urireplacestringShell = this.replaceString(template.templateShell, ',');
         this.urireplacestringPasswordRedactedShell =
             this.replaceString(template.templatePasswordRedactedShell, ',');
-        this.username = this.loadState().username;
+        this.username = this.loadState(this.loadCurrentState()).username;
         this.writeToPlaceholders();
     }
 
     optionStringifier(options, optionJoinCharacter) {
         const parts = [];
-        const state = this.loadState();
+        const state = this.loadState(this.loadCurrentState());
 
         for (let i = 0; i < this.options.length; i += 1) {
             const option = this.options[i];
@@ -403,7 +445,7 @@ class UriwriterSingleton {
     }
 
     replaceString(localUriString, optionJoinCharacter) {
-        const state = this.loadState();
+        const state = this.loadState(this.loadCurrentState());
 
         // replace hardcoded plaments (why oh why do we do this????)
         if (state.username) {
@@ -463,8 +505,8 @@ class UriwriterSingleton {
             inputElement.setAttribute('placeholder', option.placeholder);
         }
         inputElement.className = 'mongodb-form__input';
-        if (this.loadState()[option.name] !== undefined) {
-            inputElement.value = this.loadState()[option.name];
+        if (this.loadState(this.loadCurrentState())[option.name] !== undefined) {
+            inputElement.value = this.loadState(this.loadCurrentState())[option.name];
         }
         inputElement.addEventListener('input', (event) => {
             this.addValue(option.name, document.getElementById(option.name).value);
@@ -517,13 +559,12 @@ class UriwriterSingleton {
             this.addValue('database', document.getElementById('uriwriter_db').value);
             this.renderURI();
         });
-
         this.setupEnvironmentListeners();
         this.populateForm();
     }
 
     renderFormValues() {
-        const state = this.loadState();
+        const state = this.loadState(this.loadCurrentState());
         const atlasControlsElement = document.getElementsByClassName('uriwriter__atlascontrols')[0];
         if (state.env === TEMPLATE_TYPE_SELF_MANAGED || state.env === TEMPLATE_TYPE_REPLICA_SET) {
             atlasControlsElement.style.display = 'none';
@@ -552,15 +593,43 @@ class UriwriterSingleton {
     /** IP related functions **/
 
     setHosts(hostlist) {
-        const uriwriter = this.loadState();
+        const uriwriter = this.loadState(this.loadCurrentState());
         uriwriter.hostlist = hostlist;
-        this.saveState(uriwriter);
+        this.saveState(uriwriter, this.loadCurrentState());
         this.renderURI();
     }
 
     populateForm() {
+        this.toggleEnvironmentExternal(this.loadCurrentState());
         this.renderOptions();
         this.renderFormValues();
+        this.hostList = new HostList(document.getElementById('hostlist'), this);
+    }
+
+    registerDispatch() {
+        tabsEventDispatcher.listen((ctx) => {
+            if (!uriwriterSingleton) { return; }
+            this.renderURI();
+            if (ctx.type !== 'cloud') { return; }
+            // tricky: we only want to change the pill state on toggle
+            if (ctx.tabId === 'cloud') {
+                if (this.loadCurrentState() === 'cloud') { return; }
+                this.saveCurrentState('cloud');
+                this.loadTemplateEnv();
+                this.renderURI();
+                // this.toggleEnvironmentExternal('cloud');
+            } else {
+                if (this.loadCurrentState() === 'local') { return; }
+                this.saveCurrentState('local');
+                this.loadTemplateEnv();
+                this.renderURI();
+                // this.toggleEnvironmentExternal('local');
+            }
+            const haveWidgetOnPage = Boolean(document.getElementById('uriwriter'));
+            if (haveWidgetOnPage) {
+                this.populateForm();
+            }
+        });
     }
 
 
@@ -634,7 +703,7 @@ class UriwriterSingleton {
         // get the cluster information
         this.parseOutEnvAndClusters(splitOnSpaceClusterEnv, tempWriter);
 
-        this.saveState(tempWriter);
+        this.saveState(tempWriter, 'cloud');
 
         // we need to define success
         return true;
@@ -660,8 +729,8 @@ class UriwriterSingleton {
     parseTo3dot4(atlasString, tempWriter) {
         tempWriter.env = TEMPLATE_TYPE_ATLAS_34;
         // save the environment selection
-        this.saveState(tempWriter);
-        tempWriter = this.loadState();
+        this.saveState(tempWriter, 'cloud');
+        tempWriter = this.loadState(this.loadCurrentState());
         const re = /(\S+):\/\/(\S+):(\S*)@(\S+)\/(\S+)\?(\S+)/;
         const matchesArray = atlasString.match(re);
         if (!matchesArray) {
@@ -672,7 +741,7 @@ class UriwriterSingleton {
         tempWriter.hostlist = matchesArray[4].split(',');
         tempWriter.database = matchesArray[5];
         splitOptions(tempWriter, matchesArray[6]);
-        this.saveState(tempWriter);
+        this.saveState(tempWriter, this.loadCurrentState());
         return true;
     }
 
@@ -681,8 +750,8 @@ class UriwriterSingleton {
     parseTo3dot6(atlasString, tempWriter) {
         tempWriter.env = TEMPLATE_TYPE_ATLAS_36;
         // save the environment selection
-        this.saveState(tempWriter);
-        tempWriter = this.loadState();
+        this.saveState(tempWriter, 'cloud');
+        tempWriter = this.loadState(this.loadCurrentState());
         // regexp for 3.6 format
         const re = /(\S+):\/\/(\S+):(\S*)@(\S+)\/([^\s?]+)\?/;
         const matchesArray = atlasString.match(re);
@@ -694,12 +763,12 @@ class UriwriterSingleton {
         tempWriter.havePassword = Boolean(matchesArray[3]);
         tempWriter.hostlist = [matchesArray[4]];
         tempWriter.database = matchesArray[5];
-        this.saveState(tempWriter);
+        this.saveState(tempWriter, this.loadCurrentState());
         return true;
     }
 
     parseAtlasString(atlasString) {
-        const tempWriter = this.loadState();
+        const tempWriter = this.loadState('true');
         // add shell parser here
         if (atlasString.indexOf(' --') > -1) {
             return this.parseShell(atlasString, tempWriter);
@@ -710,13 +779,6 @@ class UriwriterSingleton {
         return this.parseTo3dot4(atlasString, tempWriter);
     }
 }
-
-tabsEventDispatcher.listen((ctx) => {
-    if (!uriwriterSingleton) { return; }
-    if (ctx.tabId === 'atlascloud') {
-        uriwriterSingleton.setEnvironment(TEMPLATE_TYPE_ATLAS);
-    }
-});
 
 // Create Uriwriter
 export function setup() {

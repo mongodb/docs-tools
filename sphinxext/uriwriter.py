@@ -9,12 +9,12 @@ URIWRITER_TEMPLATE = '''
 .. raw:: html
 
    <form class="uriwriter__form" id="uriwriter" autocomplete="off">
-       <div class="mongodb-form__prompt">
+       <div id="deployment_type" class="mongodb-form__prompt">
            <div class="mongodb-form__label">Server deployment type</div>
            <ul class="guide__pills">
-               <li class="uriwriter__toggle guide__pill">on-premise MongoDB</li>
-               <li class="uriwriter__toggle guide__pill">on-premise MongoDB with replica set</li>
-               <li class="uriwriter__toggle guide__pill">Atlas (Cloud)</li>
+               <li class="uriwriter__toggle guide__pill">local MongoDB</li>
+               <li class="uriwriter__toggle guide__pill">local MongoDB with replica set</li>
+               <!--<li class="uriwriter__toggle guide__pill">Atlas (Cloud)</li>-->
            </ul>
        </div>
        <label class="mongodb-form__prompt uriwriter__atlascontrols">
