@@ -2,7 +2,7 @@ version:
   published:
     - '0.9'
   active:
-    - '0.9'
+    - 'master'
   stable: ''
   upcoming: '0.9'
 git:
