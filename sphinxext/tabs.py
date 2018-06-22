@@ -20,6 +20,9 @@ LANGUAGES = [('shell', 'Mongo Shell'),
              ('ruby', 'Ruby'),
              ('scala', 'Scala')]
 
+DEPLOYMENTS = [('cloud', 'Cloud (Atlas)'),
+               ('local', 'Local Instance')]
+
 TABS_TOP = '''
 .. raw:: html
 
@@ -157,6 +160,8 @@ def setup(app):
     # Create drivers tab directive
     app.add_directive('tabs-drivers',
         create_tab_directive('languages', LANGUAGES))
+    app.add_directive('tabs-cloud',
+        create_tab_directive('cloud', DEPLOYMENTS));
 
     # Create operating system tab directive
     app.add_directive('tabs-platforms',

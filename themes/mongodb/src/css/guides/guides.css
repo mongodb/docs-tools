@@ -14,7 +14,7 @@
 @import url("../dropdown.css");
 @import url("../form.css");
 @import url("../uriwriter.css");
-
+@import url("../toggle.css");
 @import url("../mongodb-base.css");
 @import url("./guides-landing.css");
 
@@ -163,6 +163,13 @@ h2::before {
     color: #fff;
 }
 
+.guide__deploymentpill:hover,
+.guide__deploymentpill--active,
+.guide__deploymentpill--seeall {
+    background-color: #AB1352;
+    color: #fff;
+}
+
 .guide-prefs {
     margin-bottom: 22px;
 }
@@ -184,7 +191,7 @@ h2::before {
 
 .breadcrumbs__bc {
     list-style: none;
-    font-size: 13px;
+    font-size: 20px;
     display:inline;
 }
 
@@ -194,4 +201,8 @@ h2::before {
 
 .show-current-language {
     color: var(--mongodb-green);
+}
+
+.show-current-deployment {
+    color: #AB1352;
 }

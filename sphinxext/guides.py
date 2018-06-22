@@ -34,12 +34,17 @@ GUIDES_TEMPLATE = fett.Template('''
 
 .. default-domain:: mongodb
 
+.. raw:: html
+
+   <div class="guide-prefs__deploy">
+       <div class="guide-prefs__caption">Deployment Type: <span class="show-current-deployment"></span></div>
+   </div>
+
 {{ if languages }}
 .. raw:: html
 
    <div class="guide-prefs">
-   <div class="guide-prefs__caption">Language: <span class="show-current-language"></span></div>
-
+   <div class="guide-prefs__caption">Client: <span class="show-current-language"></span></div>
 .. tabs-pillstrip:: languages
 
 .. raw:: html
