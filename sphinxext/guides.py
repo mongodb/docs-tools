@@ -1,11 +1,10 @@
 from collections import namedtuple, OrderedDict
 import re
 import fett
-from docutils.parsers.rst import Directive, directives
+from docutils import nodes
 from docutils import statemachine
+from docutils.parsers.rst import Directive, directives
 from docutils.utils.error_reporting import ErrorString
-from sphinx import addnodes
-from sphinx.util.nodes import set_source_info
 
 # Set up our languages list, and override a couple long-winded entries
 from tabs import LANGUAGES
@@ -112,50 +111,48 @@ See Also
 {{ end }}
 ''')
 GUIDES_INDEX_TEMPLATE = fett.Template('''
-.. raw:: html
-
-   {{ for category in categories }}
-   <section class="guide-category">
-     <div class="guide-category__title {{ category.titlecssclass }}">
-       {{ category.title }}
-     </div>
-     {{ if category.truncated }}
-       <div class="guide-category__view-all">View All Guides &gt;</div>
-     {{ end }}
-     <div class="guide-category__guides">
-     {{ for column in category.columns }}
-       <div class="guide-column">
-       {{ for card in column }}
-         {{ if card.jumbo }}
-         <div class="guide guide--jumbo guide--expanded">
-           <div class="guide__title">{{ card.title }}</div>
-           <ul class="guide__body">
-           {{ for guide in card.guides }}
-             <li class="guide__entry"><a href="{{ guide.docname }}{{ link_suffix }}">{{ guide.title }}</a></li>
-           {{ end }}
-           </ul>
-         </div>
-         {{ else }}
-         <a class="guide guide--regular" href="{{ card.docname }}{{ link_suffix }}">
-           <div class="guide__title">{{ card.title }}</div>
-           <div class="guide__body"></div>
-           <ul class="guide__pills">
-           {{ for lang in card.card_languages }}
-             <li class="guide__pill" data-tab-preference="{{ lang.id asIdentifier }}">{{ lang.title }}</li>
-           {{ end }}
-           {{ if card.languages_truncated }}
-             <li class="guide__pill guide__pill--seeall">See All</li>
-           {{ end }}
-           </ul>
-           <div class="guide__time">{{ card.time }}min</div>
-         </a>
-         {{ end }}
-       {{ end }}
-       </div>
-     {{ end }}
-     </div>
-   </section>
-   {{ end }}
+{{ for category in categories }}
+<section class="guide-category">
+  <div class="guide-category__title {{ category.titlecssclass }}">
+    {{ category.title }}
+  </div>
+  {{ if category.truncated }}
+    <div class="guide-category__view-all">View All Guides &gt;</div>
+  {{ end }}
+  <div class="guide-category__guides">
+  {{ for column in category.columns }}
+    <div class="guide-column">
+    {{ for card in column }}
+      {{ if card.jumbo }}
+      <div class="guide guide--jumbo guide--expanded">
+        <div class="guide__title">{{ card.title }}</div>
+        <ul class="guide__body">
+        {{ for guide in card.guides }}
+          <li class="guide__entry"><a href="{{ guide.docname }}{{ link_suffix }}">{{ guide.title }}</a></li>
+        {{ end }}
+        </ul>
+      </div>
+      {{ else }}
+      <a class="guide guide--regular" href="{{ card.docname }}{{ link_suffix }}">
+        <div class="guide__title">{{ card.title }}</div>
+        <div class="guide__body"></div>
+        <ul class="guide__pills">
+        {{ for lang in card.card_languages }}
+          <li class="guide__pill" data-tab-preference="{{ lang.id asIdentifier }}">{{ lang.title }}</li>
+        {{ end }}
+        {{ if card.languages_truncated }}
+          <li class="guide__pill guide__pill--seeall">See All</li>
+        {{ end }}
+        </ul>
+        <div class="guide__time">{{ card.time }}min</div>
+      </a>
+      {{ end }}
+    {{ end }}
+    </div>
+  {{ end }}
+  </div>
+</section>
+{{ end }}
 ''')
 
 
@@ -326,6 +323,7 @@ class GuideDirective(Directive):
         self.state_machine.insert_input(rendered_lines, '')
 
         env = self.state.document.settings.env
+        env.included.add(env.docname)
         if not hasattr(env, 'guide_all_guides'):
             env.guide_all_guides = []
 
@@ -372,15 +370,13 @@ class CardSet:
         columns = self.categories[category_id]['columns']
         return min(columns, key=lambda col: sum(2 if el['jumbo'] else 1 for el in col))
 
-    def add_guide(self, env, guide):
-        env.included.add(guide['docname'])
+    def add_guide(self, guide):
         self.get_next_column(guide['category']).append(guide)
         self.categories[guide['category']]['n_guides'] += 1
 
-    def add_guides(self, env, guides, title):
+    def add_guides(self, guides, title):
         categories = {}
         for guide in guides:
-            # env.included.add(guide['docname'])
             categories.setdefault(guide['category'], []).append(guide)
 
         for category_name, category_guides in categories.items():
@@ -394,6 +390,74 @@ class CardSet:
             self.categories[category_name]['n_guides'] += 1
 
 
+class guide_index_node(nodes.Element):
+    pass
+
+
+def visit_guide_index_node(self, node):
+    """Render the guide index, now that all guides are collected."""
+    env = self.builder.env
+    if not hasattr(env, 'guide_all_guides'):
+        return
+
+    guides = {}
+    for guide in env.guide_all_guides:
+        guides[guide['docname']] = guide
+
+    cardset = CardSet()
+
+    previous_line = None
+    pending_card = [None]
+
+    def handle_single_guide():
+        if pending_card[0] is None:
+            if previous_line not in guides:
+                return
+
+            guide = guides[previous_line]
+            cardset.add_guide(guide)
+        else:
+            cardset_guides = [guides[docname] for docname in pending_card[0]['guides'] if docname in guides]
+            cardset.add_guides(cardset_guides, pending_card[0]['title'])
+            pending_card[0] = None
+
+    for is_indented, lineno, line in parse_indentation(node['content']):
+        if not line:
+            continue
+
+        if is_indented:
+            # A card containing multiple guides
+            if pending_card[0] is None:
+                pending_card[0] = {
+                    'title': previous_line,
+                    'jumbo': False,
+                    'guides': []
+                }
+
+            pending_card[0]['guides'].append(line)
+        elif previous_line is not None:
+            # A card containing a single guide
+            handle_single_guide()
+
+        previous_line = line
+
+    if previous_line is not None:
+        handle_single_guide()
+
+    self.body.append(GUIDES_INDEX_TEMPLATE.render({
+        'categories': [cat for cat in cardset.categories.values() if cat['n_guides'] > 0],
+        'link_suffix': env.app.builder.link_suffix
+    }))
+
+
+def depart_guide_index_node(self, node):
+    pass
+
+
+# from sphinx import addnodes
+# from sphinx.util.nodes import set_source_info
+
+
 class GuideIndexDirective(Directive):
     has_content = True
     required_arguments = 0
@@ -402,75 +466,7 @@ class GuideIndexDirective(Directive):
     option_spec = {}
 
     def run(self):
-        env = self.state.document.settings.env
-        if not hasattr(env, 'guide_all_guides'):
-            return []
-
-        guides = {}
-        for guide in env.guide_all_guides:
-            guides[guide['docname']] = guide
-
-        cardset = CardSet()
-
-        previous_line = None
-        pending_card = [None]
-
-        def handle_single_guide():
-            if pending_card[0] is None:
-                if previous_line not in guides:
-                    return
-
-                guide = guides[previous_line]
-                cardset.add_guide(env, guide)
-            else:
-                cardset_guides = [guides[docname] for docname in pending_card[0]['guides'] if docname in guides]
-                cardset.add_guides(env, cardset_guides, pending_card[0]['title'])
-                pending_card[0] = None
-
-        for is_indented, lineno, line in parse_indentation(self.content):
-            if not line:
-                continue
-
-            if is_indented:
-                # A card containing multiple guides
-                if pending_card[0] is None:
-                    pending_card[0] = {
-                        'title': previous_line,
-                        'jumbo': False,
-                        'guides': []
-                    }
-
-                pending_card[0]['guides'].append(line)
-            elif previous_line is not None:
-                # A card containing a single guide
-                handle_single_guide()
-
-            previous_line = line
-
-        if previous_line is not None:
-            handle_single_guide()
-
-        try:
-            rendered = GUIDES_INDEX_TEMPLATE.render({
-                'categories': [cat for cat in cardset.categories.values() if cat['n_guides'] > 0],
-                'link_suffix': env.app.builder.link_suffix
-            })
-        except Exception as error:
-            raise self.severe('Failed to render template: {}'.format(ErrorString(error)))
-
-        rendered_lines = statemachine.string2lines(rendered, 4, convert_whitespace=1)
-        self.state_machine.insert_input(rendered_lines, '')
-
-        # Add guides to the TOC
-        subnode = addnodes.toctree()
-        subnode['hidden'] = True
-        subnode['glob'] = False
-        subnode['includefiles'] = list(guides.keys())
-        subnode['parent'] = env.docname
-        subnode['entries'] = [(guide['title'], guide['docname']) for guide in guides.values()]
-        set_source_info(self, subnode)
-
-        return [subnode]
+        return [guide_index_node(content=self.content)]
 
 
 def merge_info(app, env, docnames, other):
@@ -497,6 +493,8 @@ def setup(app):
     directives.register_directive('guide-index', GuideIndexDirective)
     app.connect('env-merge-info', merge_info)
     app.connect('env-purge-doc', purge_guide_info)
+    app.add_node(guide_index_node,
+                 html=(visit_guide_index_node, depart_guide_index_node))
 
     return {
         'parallel_read_safe': True,
