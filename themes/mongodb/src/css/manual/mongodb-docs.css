@@ -1583,3 +1583,7 @@ table.compatibility-large th:nth-child(1){
         display: none;
     }
 }
+
+.alert-info {
+  margin-bottom: 40px;
+}
