@@ -126,7 +126,9 @@
 
 .guide__body {
     flex-grow: 1;
-    list-style-type: '➤ ';
+
+    /* Black rightwards arrowhead */
+    list-style-type: '\27A4  ';
 
     /* Line up with card title */
     padding-left: 1em;
