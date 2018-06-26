@@ -13,11 +13,11 @@ version:
     - '3.6'
     - '3.4'
     - '3.2'
-  stable: '4.0'
-  upcoming: null
+  stable: '3.6'
+  upcoming: '4.0'
 git:
   branches:
-    manual: 'master'
+    manual: 'v3.6'
     published:
       - 'master'
       - 'v3.6'
