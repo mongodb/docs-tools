@@ -126,30 +126,34 @@
 
 .guide__body {
     flex-grow: 1;
+    list-style-type: '➤ ';
 
     /* Line up with card title */
     padding-left: 1em;
 }
 
 .guide__entry > a {
-    color: #666965;
+    color: inherit;
     display: block;
     padding-bottom: 10px;
     padding-top: 10px;
 }
 
 .guide__entry > a:hover {
-    color: var(--mongodb-green);
     text-decoration: none;
 }
 
 .guide__entry {
     font-size: 16px;
-    color: #528c32;
-}
+    color: #666965;
 
-.guide__entry:last-child {
-    padding-bottom: 0;
+    &:hover {
+        color: var(--mongodb-green);
+    }
+
+    &:last-child {
+        padding-bottom: 0;
+    }
 }
 
 .guide__time {
