@@ -446,16 +446,12 @@ def visit_guide_index_node(self, node):
 
     self.body.append(GUIDES_INDEX_TEMPLATE.render({
         'categories': [cat for cat in cardset.categories.values() if cat['n_guides'] > 0],
-        'link_suffix': env.app.builder.link_suffix
+        'link_suffix': self.builder.get_target_uri('')
     }))
 
 
 def depart_guide_index_node(self, node):
     pass
-
-
-# from sphinx import addnodes
-# from sphinx.util.nodes import set_source_info
 
 
 class GuideIndexDirective(Directive):
