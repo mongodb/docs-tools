@@ -8,11 +8,11 @@ version:
     - '1.3'
     - '1.2'
     - '1.1'
-  stable: '1.3'
-  upcoming: '1.4'
+  stable: '1.4'
+  upcoming: ''
 git:
   branches:
-    manual: 'v1.3'
+    manual: 'v1.4'
     published:
       - 'master'
       - 'v1.3'
