@@ -199,6 +199,15 @@ def setup(app):
         ])
     )
 
+    # Create deployments tab directive
+    app.add_directive('tabs-deployments',
+        create_tab_directive('deployments',
+            [('standalone', 'Standalone'),
+             ('repl', 'Replica Set'),
+             ('shard', 'Sharded Cluster')
+        ])
+    )
+
     # Create general purpose tab directive with no error checking
     app.add_directive('tabs', template.create_directive('tabs', build_template('', ''), template.BUILT_IN_PATH, True))
 
