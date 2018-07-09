@@ -12,13 +12,18 @@ Nightmare.action('screenshotSelector', screenshotSelector);
 async function main(argv) {
   const script = require(argv[2]);
   const nightmare = Nightmare(script.nightmare_props);
-  let loginInfo = {};
+  let atlasLoginInfo = {};
+  let chartsLoginInfo = {};
 
   if (argv[3] !== undefined) {
     const properties = PropertiesReader(argv[3]);
-    loginInfo = {
-      username: properties.get('user.login.username'),
-      password: properties.get('user.login.password')
+    atlasLoginInfo = {
+      username: properties.get('atlasUser.login.username'),
+      password: properties.get('atlasUser.login.password')
+    }
+    chartsLoginInfo = {
+      email: properties.get('chartsUser.login.email'),
+      password: properties.get('chartsUser.login.password')
     }
   }
 
@@ -29,14 +34,27 @@ async function main(argv) {
       nightmare.goto('https://cloud.mongodb.com/user#/atlas/login')
       nightmare.wait('input[name="username"]');
 
-      if (loginInfo.username && loginInfo.password) {
-        nightmare.type('input[name="username"]', loginInfo.username);
-        nightmare.type('input[name="password"]', loginInfo.password);
+      if (atlasLoginInfo.username && atlasLoginInfo.password) {
+        nightmare.type('input[name="username"]', atlasLoginInfo.username);
+        nightmare.type('input[name="password"]', atlasLoginInfo.password);
       }
       else {
         throw new Error("No login information specified");
       }
       nightmare.click('.login-form-submit-button');
+    },
+    loginToCharts: function() {
+      nightmare.goto('http://charts.mongodb.parts/login')
+      nightmare.wait('input#email');
+
+      if (chartsLoginInfo.email && chartsLoginInfo.password) {
+        nightmare.type('input#email', chartsLoginInfo.email);
+        nightmare.type('input#password', chartsLoginInfo.password);
+      }
+      else {
+        throw new Error("No login information specified");
+      }
+      nightmare.click('[data-test-id="login-form-submit-button"]');
     }
   });
 
