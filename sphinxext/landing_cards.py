@@ -8,9 +8,9 @@ import yaml
 
 CARD_GROUP_TEMPLATE_LARGE = fett.Template('''
 .. raw:: html
-   
+
    <div class="card_group">
-   
+
      {{ for card in cards }}
      <a href="{{ card.link }}" class="card card-large" id="{{ card.id }}">
        <div class="card-image">
@@ -18,22 +18,25 @@ CARD_GROUP_TEMPLATE_LARGE = fett.Template('''
 .. image:: {{ card.image }}
 
 .. raw:: html
-   
+
        </div>
        <div class="card-content">
-         <p>{{ card.headline }}</p>
+         <div class="card-headline">{{ card.headline }}</div>
+         {{if card.has_subheadline }}
+         <div class="card-subheadline">{{ card.subheadline }}</div>
+         {{end}}
        </div>
      </a>
      {{ end }}
-   
+
    </div>
 ''')
 
 CARD_GROUP_TEMPLATE_SMALL = fett.Template('''
 .. raw:: html
-    
+
     <div class="card_group">
-      
+
       {{ for card in cards }}
       <a href="{{ card.link }}"
          class="card card-small"
@@ -43,7 +46,7 @@ CARD_GROUP_TEMPLATE_SMALL = fett.Template('''
 .. image:: {{ card.icon }}
 
 .. raw:: html
-    
+
        </div>
        <div class="card-content">{{ card.headline }}</div>
      </a>
@@ -76,13 +79,14 @@ class CardGroup(Directive):
     def get_data(self):
         content = "\n".join(list(self.content))
         data = self.process_yaml(content)
-        
+
         # Data post-processing
         cards = list(data["cards"])
         for card in cards:
             process_card_data_field(card, "link", process_doc_link)
+            card["has_subheadline"] = bool(card.get('subheadline', False))
         data["cards"] = cards
-        
+
         return data
 
     def process_yaml(self, contents):
@@ -117,12 +121,12 @@ class CardGroup(Directive):
                 rendered, 4, convert_whitespace=1
             )
             self.state_machine.insert_input(rendered_lines, '')
-    
+
     def run(self):
         options = self.options
         data = self.get_data()
         card_type = str(options.get('type', ''))
-        
+
         self.render_cards(data, card_type)
         return []
 
