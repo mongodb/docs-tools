@@ -20,14 +20,14 @@
   border-radius: 3px;
   border: 1px solid #f5f6f7;
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1);
-  
+
   text-align: left;
   padding: 0;
-  
+
   font-size: responsive 14px 16px;
   font-range: 410px 800px;
-  
-  
+
+
   text-decoration: none;
   color: #000;
   &:hover { box-shadow: 0 10px 12px 1px rgba(0,0,0,.1); color: var(--mongodb-green); text-decoration: none; }
@@ -51,10 +51,10 @@
 
   &:hover { box-shadow: 0 10px 12px 1px rgba(0,0,0,.1); }
   &:active { box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1); }
-  
+
   & .card-image {
     overflow: hidden;
-    
+
     & > img {
       height: 100%;
       width: 100%;
@@ -64,15 +64,20 @@
       user-drag: none;
       object-fit: cover;
     }
-    
+
   }
 
   & .card-content {
-    padding: 0 6%;
+    padding: 10px 6%;
 
-    & p {
-      margin: 8px 0;
-      line-height: 34px;
+    & .card-headline {
+      line-height: 40px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    & .card-subheadline {
+      line-height: 26px;
     }
   }
 }
@@ -84,7 +89,7 @@
   padding: 0 12px;
   display: flex;
   flex-direction: row;
-  
+
   border-left: 10px solid var(--light-grey-green);
   &:hover {
     box-shadow: 0 6px 8px 1px rgba(0,0,0,.1);
@@ -125,7 +130,7 @@
     display: flex;
     flex-direction: column;
     max-width: 380px;
-    
+
     > * {
       margin: 4px 0;
     }
@@ -134,12 +139,12 @@
   .intro-section {
     display: flex;
     flex-direction: column;
-    
+
     & .card_group {
       max-width: 380px;
     }
   }
-  
+
   .intro-section-paragraph {
     padding: 0;
     margin: 0;
