@@ -35,6 +35,7 @@
     width: 1%;
 }
 
+/*Overwritten by static/css/navbar.min.css from docs-tutorials*/
 /*Styles for active tabs*/
 .tab-strip__element[aria-selected=true],
 .tab-strip__element[aria-selected=true]:focus,
@@ -44,6 +45,8 @@
     background-color: #fff;
     border: 0.5px solid #babdbe;
     border-bottom-color: transparent;
+    border-top-color: #6ba442;
+    border-top-width: 4px;
 }
 
 /*White background on hover*/

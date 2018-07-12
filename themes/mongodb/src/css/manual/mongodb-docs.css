@@ -327,6 +327,41 @@ table.index-table-less-padding > thead th.head {
     padding: 0 0 5px 10px;
  }
 
+
+ table.border-table  {
+    margin: auto;
+    width: 98%; /* hack to prevent horizontal scrolling */
+ }
+
+table.border-table > thead th.head {
+    text-align: left;
+    padding: 0 0 5px 10px;
+    border-bottom: none;
+    border-right: 1px solid #ebebed;
+}
+
+table.border-table td {
+    text-align: left;
+    border-bottom: none;
+    border-top: 1px solid #ebebed;
+    border-right: 1px solid #ebebed;
+    padding-left: 10px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-top: 5px;
+    line-height: 15px;
+    margin-bottom: 0px;
+}
+
+table.border-table td:last-child {
+    border-right: 0;
+}
+
+
+table.border-table > thead th.head:last-child {
+    border-right: 0;
+}
+
 div#mongodb ul {
     list-style: none;
     padding-left:0px;
