@@ -1,3 +1,4 @@
+import * as componentCloseOpen from './componentCloseOpen';
 import * as componentCodeBlockFix from './componentCodeBlockFix';
 import * as componentCopyButtons from './componentCopyButtons';
 import * as componentFastLoad from './componentFastLoad';
@@ -9,9 +10,9 @@ import * as componentPillStrip from './componentPillStrip';
 import * as componentSidebar from './componentSidebar';
 import * as componentTabs from './componentTabs';
 import * as componentThirdParty from './componentThirdParty';
+import * as componentToggleController from './componentToggleController';
 import * as componentUriWriter from './componentUriwriter';
 import * as componentVersionSelector from './componentVersionSelector';
-import * as componentToggleController from './componentToggleController';
 
 class FastNav {
     constructor() {
@@ -53,6 +54,7 @@ $(() => {
     fastNav.register(componentOpenAPI);
     fastNav.register(componentUriWriter);
     fastNav.register(componentToggleController);
+    fastNav.register(componentCloseOpen);
 
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {
@@ -94,23 +96,6 @@ $(() => {
             window.setTimeout(offsetHashLink, 10);
         }
     });
-
-    const showNavButton = document.getElementById('showNav');
-    if (showNavButton) {
-        showNavButton.onclick = () => {
-            document.getElementById('sphinxsidebar').style.display = 'block';
-            document.getElementById('left-column').style.display = 'flex';
-            document.getElementById('showNav').style.display = 'none';
-        };
-    }
-
-    const closeNavButton = document.getElementById('closeNav');
-    if (closeNavButton) {
-        closeNavButton.onclick = () => {
-            document.getElementById('showNav').style.display = 'flex';
-            document.getElementById('left-column').style.display = 'none';
-        };
-    }
 
     // Update dynamic page features
     fastNav.update();
