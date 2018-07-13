@@ -26,6 +26,7 @@
 @import url("../sequence.css");
 @import url("../tabs.css");
 @import url("../openapi.css");
+@import url("../pills.css");
 
 /* Marks an element as being an invisible hint for screen readers. */
 .screenreader {
