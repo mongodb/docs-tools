@@ -35,25 +35,6 @@ PILLS_TEMPLATE = '''
    <ul class="guide__pills pillstrip-declaration" role="tablist" data-tab-preference="{{ title }}"></ul>
 '''
 
-ACCORDION_TEMPLATE = '''
-.. raw:: html
-
-   <div class="accordion accordion--collapsed">
-     <div class="accordion__button" role="button">
-       <span class="accordion__title"> {{ title }}</span>
-       <span class="accordion__control">Expand</span>
-     </div>
-
-     <div class="accordion__content">
-
-{{ content }}
-
-.. raw:: html
-
-     </div>
-   </div>
-'''
-
 TABS_TEMPLATE = '''
 .. raw:: html
 
@@ -166,9 +147,6 @@ def create_tab_directive(name, tab_definitions):
 
 
 def setup(app):
-    # Create accordion directive
-    app.add_directive('accordion', template.create_directive('accordion', ACCORDION_TEMPLATE, template.BUILT_IN_PATH, True))
-
     # Handle headers inside tab directives
     app.add_directive('h1', template.create_directive('h1', H1_TEMPLATE_HTML, template.BUILT_IN_PATH, True))
     app.add_directive('h2', template.create_directive('h2', H2_TEMPLATE_HTML, template.BUILT_IN_PATH, True))
