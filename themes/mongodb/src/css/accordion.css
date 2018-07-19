@@ -4,20 +4,12 @@
     position: relative;
 }
 
-.accordion__title {
-    margin-left: 35px;
-    font-family: Akzidenz;
-    font-size: 20px;
-    position: relative;
+.accordion__action {
     color: #000;
-}
-
-.accordion__control {
-    font-family: Akzidenz;
-    font-size: 20px;
-    color: #000;
-    position: relative;
     float: right;
+    font-family: Akzidenz;
+    font-size: 20px;
+    position: relative;
 }
 
 .accordion__button {
@@ -25,17 +17,13 @@
     user-select: none;
 }
 
-.accordion__content {
-  padding: 20px 0px;
-}
-
 .accordion__button::before {
     border-radius: 1px;
     border-right: 3px solid #000;
     border-top: 3px solid #000;
     content: '';
-    left: 20px;
     height: 13px;
+    left: 20px;
     position: absolute;
     top: 23px;
     transform: rotate(135deg);
@@ -47,11 +35,12 @@
     transform: rotate(45deg);
 }
 
-.accordion--collapsed > .accordion__content {
-     display: none;
-     /* This animation sort of works
-     position: absolute;
-     opacity: 0; */
+.accordion__title {
+    color: #000;
+    font-family: Akzidenz;
+    font-size: 20px;
+    margin-left: 35px;
+    position: relative;
 }
 
 .accordion__content {
@@ -60,4 +49,11 @@
     position: static;
     opacity: 1;
     transition: opacity 1s linear; */
+}
+
+.accordion--collapsed > .accordion__content {
+     display: none;
+     /* This animation sort of works
+     position: absolute;
+     opacity: 0; */
 }

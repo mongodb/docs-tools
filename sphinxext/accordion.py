@@ -7,7 +7,7 @@ ACCORDION_TEMPLATE = '''
    <div class="accordion accordion--collapsed">
      <div class="accordion__button" role="button">
        <span class="accordion__title">{{title}}</span>
-       <span class="accordion__control">Expand</span>
+       <span class="accordion__action">Expand</span>
      </div>
 
      <div class="accordion__content">
