@@ -7,7 +7,7 @@
 .accordion__action {
     color: #000;
     float: right;
-    font-family: Akzidenz;
+    font-family: var(--sans-serif);
     font-size: 20px;
     position: relative;
 }
@@ -37,7 +37,7 @@
 
 .accordion__title {
     color: #000;
-    font-family: Akzidenz;
+    font-family: var(--sans-serif);
     font-size: 20px;
     margin-left: 35px;
     position: relative;
