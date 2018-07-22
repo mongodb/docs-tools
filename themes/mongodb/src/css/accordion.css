@@ -1,0 +1,59 @@
+.accordion {
+    border: 2px solid #eee;
+    padding: 20px;
+    position: relative;
+}
+
+.accordion__action {
+    color: #000;
+    float: right;
+    font-family: var(--sans-serif);
+    font-size: 20px;
+    position: relative;
+}
+
+.accordion__button {
+    cursor: pointer;
+    user-select: none;
+}
+
+.accordion__button::before {
+    border-radius: 1px;
+    border-right: 3px solid #000;
+    border-top: 3px solid #000;
+    content: '';
+    height: 13px;
+    left: 20px;
+    position: absolute;
+    top: 23px;
+    transform: rotate(135deg);
+    transition: transform .2s ease-in-out;
+    width: 13px;
+}
+
+.accordion--collapsed > .accordion__button::before {
+    transform: rotate(45deg);
+}
+
+.accordion__title {
+    color: #000;
+    font-family: var(--sans-serif);
+    font-size: 20px;
+    margin-left: 35px;
+    position: relative;
+}
+
+.accordion__content {
+    display: block;
+    /* This animation sort of works
+    position: static;
+    opacity: 1;
+    transition: opacity 1s linear; */
+}
+
+.accordion--collapsed > .accordion__content {
+     display: none;
+     /* This animation sort of works
+     position: absolute;
+     opacity: 0; */
+}

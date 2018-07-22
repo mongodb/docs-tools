@@ -1,3 +1,4 @@
+import * as componentAccordion from './componentAccordion';
 import * as componentCloseOpen from './componentCloseOpen';
 import * as componentCodeBlockFix from './componentCodeBlockFix';
 import * as componentCopyButtons from './componentCopyButtons';
@@ -55,6 +56,7 @@ $(() => {
     fastNav.register(componentUriWriter);
     fastNav.register(componentToggleController);
     fastNav.register(componentCloseOpen);
+    fastNav.register(componentAccordion);
 
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {
