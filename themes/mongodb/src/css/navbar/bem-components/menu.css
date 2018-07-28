@@ -1,0 +1,36 @@
+.menu {
+  list-style-type: none;
+  margin-bottom: 0;
+  padding-left: 0;
+
+  &__item {
+    border-top: 1px solid var(--light-grey-primary);
+    padding: 15px 45px;
+    position: relative;
+
+    &:last-child {
+      border-bottom: 1px solid var(--light-grey-primary);
+    }
+
+    &--secondary {
+      a {
+        color: var(--mongodb-green) !important;
+      }
+    }
+
+    a {
+      color: var(--charcoal-grey-two);
+      text-decoration: none;
+    }
+  }
+
+  &__link {
+    color: var(--charcoal-grey-two);
+    display: inline-block;
+    font-family: Akzidenz;
+    outline: none;
+    text-decoration: none;
+    width: 100%;
+
+  }
+}

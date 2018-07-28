@@ -1,0 +1,97 @@
+@import 'constants';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 40px;
+  font-weight: normal;
+  line-height: 47px;
+  margin-top: 20px;
+}
+
+h2 {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 30px;
+  font-weight: normal;
+  line-height: 47px;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+h3 {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 24px;
+  margin-bottom: 10px;
+}
+
+h4 {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 24px;
+  margin-bottom: 10px;
+}
+
+h1:before,
+h2:before,
+h3:before,
+h4:before {
+  content: '';
+  display: block;
+  height: var(--navbar-height);
+  margin-top: calc(var(--navbar-height) * -1);
+  position: relative;
+  width: 0;
+}
+
+/* Label */
+h5 {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 14px;
+  margin-bottom: 10px;
+}
+
+p {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 20px;
+  margin-bottom: 30px;
+}
+
+button {
+  outline: none; /* remove blue outline of focus */
+}
+
+a {
+  color: var(--mongodb-green);
+  transition-duration: .4s;
+
+  &:hover {
+    color: var(--green-secondary);
+    transition-duration: .4s;
+  }
+}
+
+ul {
+  font-family: Akzidenz;
+}

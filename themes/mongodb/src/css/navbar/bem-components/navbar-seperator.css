@@ -1,0 +1,7 @@
+.navbar-seperator {
+  background-color: var(--grey-secondary); /* TODO: Melissa grey-primary? */
+  display: inline-block;
+  height: 16px;
+  margin: 0 6px;
+  width: 1px;
+}
