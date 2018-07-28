@@ -1,0 +1,5 @@
+.label {
+  &--secondary {
+    color: var(--grey-secondary);
+  }
+}

@@ -1,0 +1,96 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 40px;
+  font-weight: normal;
+}
+
+h2 {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 30px;
+  font-weight: normal;
+}
+
+h3 {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+h4 {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+/* Label */
+h5 {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+p {
+  color: var(--charcoal-grey-two);
+  font-family: Akzidenz;
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 24px;
+}
+
+a {
+  color: var(--mongodb-green);
+  text-decoration: none;
+  transition-duration: .4s;
+
+  &:hover {
+    color: var(--green-secondary);
+    text-decoration: underline;
+    transition-duration: .4s;
+  }
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--light-grey-primary);
+  display: block;
+  height: 1px;
+  margin: 30px 0;
+  padding: 0;
+}
+
+.title {
+  border-bottom: 1px solid var(--light-grey-primary);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+
+.heading {
+  margin-bottom: 10px;
+}
+
+/* this fixes interal link jumping */
+.anchor {
+  display: block; 
+  margin-top: -60px; 
+  height: 60px; 
+  visibility: hidden; 
+}
+
+#code-widget {
+  margin: 15px 0;
+}

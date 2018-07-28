@@ -1,4 +1,8 @@
-TARGETS=../static/mongodb-docs.css ../static/guides.css ../static/controller.js
+TARGETS=../static/mongodb-docs.css \
+        ../static/guides.css \
+        ../static/landing.css \
+        ../static/navbar.min.css \
+        ../static/controller.js
 POSTCSS=./node_modules/.bin/postcss
 
 .PHONY: all lint-css clean
@@ -13,6 +17,12 @@ all: $(TARGETS)
 
 ../static/guides.css: css/guides/*.css css/*.css postcss.config.js node_modules/.CURRENT
 	$(POSTCSS) css/guides/guides.css -c postcss.config.js -o $@
+
+../static/landing.css: css/landing/*.css css/*.css postcss.config.js node_modules/.CURRENT
+	$(POSTCSS) css/landing/landing.css -c postcss.config.js -o $@
+
+../static/navbar.min.css: css/navbar/*.css css/*.css postcss.config.js node_modules/.CURRENT
+	$(POSTCSS) css/navbar/navbar.css -c postcss.config.js -o $@
 
 lint-css: node_modules/.CURRENT
 	./node_modules/.bin/csslint --quiet --format=compact --errors=$(ERRORS) --warnings=$(CSS_WARNINGS) css/basic.css css/mongodb-docs.css
