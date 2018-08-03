@@ -27,7 +27,6 @@ from giza.libgiza.task import Task
 from giza.content.robots import robots_txt_tasks
 from giza.content.images.tasks import image_tasks
 from giza.content.intersphinx import intersphinx_tasks
-from giza.content.table import table_tasks
 from giza.content.hash import hash_tasks
 from giza.content.source import source_tasks, latex_image_transfer_tasks
 from giza.content.dependencies import refresh_dependency_tasks, dump_file_hash_tasks
@@ -191,7 +190,7 @@ def sphinx_content_preperation(app, conf):
         # these functions all return tasks
         app.extend_queue(image_tasks(build_config, sconf))
         for content_generator in (robots_txt_tasks, intersphinx_tasks,
-                                  table_tasks, hash_tasks):
+                                  hash_tasks):
             app.extend_queue(content_generator(build_config))
 
         dependency_refresh_app = app.add('app')

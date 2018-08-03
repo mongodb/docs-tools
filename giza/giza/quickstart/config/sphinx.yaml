@@ -8,7 +8,6 @@
 
 prerequisites: []
 generated-source:
-  - tables
   - api
   - toc
   - intersphinx

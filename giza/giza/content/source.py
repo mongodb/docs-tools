@@ -61,8 +61,7 @@ def transfer_source(conf, sconf):
         raise InvalidFile(msg)
 
     source_dir = os.path.join(conf.paths.projectroot, conf.paths.source)
-    exclusions = [os.path.join('includes', 'table'),
-                  os.path.join('includes', 'generated')]
+    exclusions = [os.path.join('includes', 'generated')]
 
     if conf.paths.images is not None:
         image_dir = os.path.join(conf.paths.images[len(conf.paths.source) + 1:])

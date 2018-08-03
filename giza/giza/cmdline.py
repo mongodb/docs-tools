@@ -71,7 +71,6 @@ commands = {
         giza.operations.generate.options,
         giza.operations.generate.migration,
         giza.operations.generate.steps,
-        giza.operations.generate.tables,
         giza.operations.generate.toc,
         giza.operations.generate.examples,
         giza.operations.generate.redirects,

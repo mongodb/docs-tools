@@ -29,7 +29,6 @@ from giza.config.helper import fetch_config, get_restricted_builder_jobs
 from giza.content.assets import assets_tasks, assets_clean
 from giza.content.images.tasks import image_tasks, image_clean
 from giza.content.intersphinx import intersphinx_tasks, intersphinx_clean
-from giza.content.table import table_tasks, table_clean
 from giza.content.robots import robots_txt_tasks
 from giza.content.redirects import make_redirect, redirect_tasks
 from giza.content.migrations import migration_tasks, migration_clean
@@ -173,20 +172,6 @@ def release(args):
             app.extend_queue(release_clean(c))
         else:
             app.extend_queue(release_tasks(c))
-
-
-@argh.arg('--clean', '-c', default=False, action="store_true", dest="clean_generated")
-@argh.expects_obj
-def tables(args):
-    c = fetch_config(args)
-
-    with BuildApp.new(pool_type=c.runstate.runner,
-                      pool_size=c.runstate.pool_size,
-                      force=c.runstate.force).context() as app:
-        if c.runstate.clean_generated is True:
-            app.extend_queue(table_clean(c))
-        else:
-            app.extend_queue(table_tasks(c))
 
 
 @argh.expects_obj
