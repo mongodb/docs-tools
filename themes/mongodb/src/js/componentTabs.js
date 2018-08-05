@@ -1,4 +1,4 @@
-import {Dispatcher, toArray} from './util';
+import {Dispatcher, reportAnalytics, toArray} from './util';
 
 export const tabsEventDispatcher = new Dispatcher();
 
@@ -121,6 +121,12 @@ class TabSet {
 
                         // Reset the scroll position of the browser
                         window.scrollTo(rects.x, rects.y + offset);
+
+                        reportAnalytics('Tab Selected', {
+                            'tabId': tabId,
+                            'title': e.target.innerText,
+                            'tabSet': this.type
+                        });
 
                         e.preventDefault();
                     }
