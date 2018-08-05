@@ -1,4 +1,4 @@
-import {toArray} from './util';
+import {reportAnalytics, toArray} from './util';
 
 const TOOLTIP_STATE_ACTIVE = 'code-button__tooltip--active';
 const TOOLTIP_STATE_INACTIVE = 'code-button__tooltip--inactive';
@@ -42,7 +42,8 @@ export function setup() {
             const tempElement = document.createElement('textarea');
             tempElement.style.position = 'fixed';
             document.body.appendChild(tempElement);
-            tempElement.value = highlightElement.innerText.trim();
+            const text = highlightElement.innerText.trim();
+            tempElement.value = text;
             tempElement.select();
 
             try {
@@ -60,6 +61,8 @@ export function setup() {
             }
 
             document.body.removeChild(tempElement);
+
+            reportAnalytics('Codeblock Copied', {'code': text});
         });
     }
 }

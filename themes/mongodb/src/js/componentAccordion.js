@@ -1,3 +1,5 @@
+import {reportAnalytics} from './util';
+
 const COLLAPSED_PROPERTY = 'accordion--collapsed';
 
 /**
@@ -11,6 +13,12 @@ function accordionShowHide(element) {
 
     const control = element.querySelector('.accordion__action');
     control.innerHTML = (control.innerHTML === 'Expand') ? 'Collapse' : 'Expand';
+
+    const title = element.querySelector('.accordion__title').innerText;
+    reportAnalytics('Accordion Toggled', {
+        'title': title,
+        'status': element.classList.contains(COLLAPSED_PROPERTY) ? 'collapsed' : 'expanded'
+    });
 }
 
 export function setup() {

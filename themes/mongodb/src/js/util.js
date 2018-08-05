@@ -65,6 +65,14 @@ export function throttle(func, wait) {
     };
 }
 
+export function reportAnalytics(eventName, data) {
+    try {
+        window.analytics.track(eventName, data);
+    } catch (err) {
+        console.error(`Error reporting analytics: ${eventName}`, err);
+    }
+}
+
 export class Dispatcher {
     constructor() {
         this.listeners = [];

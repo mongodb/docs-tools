@@ -1,11 +1,18 @@
+import {reportAnalytics, toArray} from './util';
 import {tabsEventDispatcher} from './componentTabs';
-import {toArray} from './util';
 
 function pillClickHandler(tabType, ev) {
+    const tabId = ev.target.getAttribute('data-tabid');
     tabsEventDispatcher.dispatch({
         'isUserAction': true,
-        'tabId': ev.target.getAttribute('data-tabid'),
+        'tabId': tabId,
         'type': tabType
+    });
+
+    reportAnalytics('Pill Selected', {
+        'tabId': tabId,
+        'title': ev.target.innerText,
+        'pillSet': tabType
     });
 }
 
