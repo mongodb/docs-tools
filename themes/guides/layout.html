@@ -2,7 +2,7 @@
 
 {%- set reldelim1 = '&gt;' %}
 {%- set url_root = pathto('', 1) %}
-{%  set script_files = ["_static/lib/bootstrap.js", "_static/controller.js"] %}
+{%  set script_files = ["_static/lib/jquery.min.js", "_static/lib/bootstrap.js", "_static/controller.js"] %}
 
 {%- macro css() %}
    {%- for cssfile in css_files %}
@@ -97,7 +97,6 @@
     <div id="rating-panel"></div>
   </div>
 
-  <script type="text/javascript" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin=anonymous></script>
   <!-- Google Tag Manager -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-JQHP"
                     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
