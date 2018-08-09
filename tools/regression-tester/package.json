@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "nightmare": "^2.10.0",
+    "nightmare": "^3.0.1",
     "nightmare-load-filter": "^0.2.0",
     "pixelmatch": "^4.0.2"
   },
