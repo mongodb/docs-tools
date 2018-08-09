@@ -39,7 +39,7 @@ function wrapImage(img) {
         modalContent.src = img.src;
         modalContent.alt = `${img.alt} — Enlarged`;
 
-        if (/\.svg$/.test(modalContent.src)) {
+        if ((/\.svg$/).test(modalContent.src)) {
             modalContent.classList.add(CLASS_SCALABLE);
         } else {
             modalContent.classList.remove(CLASS_SCALABLE);

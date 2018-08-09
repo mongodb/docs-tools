@@ -2,12 +2,15 @@ module.exports = ctx => ({
   map: false,
   plugins: {
     'postcss-import': { root: ctx.file.dirname },
-    'postcss-nested': { },
     'postcss-responsive-type': { },
-    'postcss-cssnext': {
-        browsers: "defaults, IE >= 10",
-        warnings: true,
-        preserve: false
+
+    // postcss-nested allows token concatenation, which is not included
+    // in the nested rule spec. e.g. &__nested
+    'postcss-nested': { },
+
+    'postcss-preset-env': {
+        stage: 2,
+        browsers: "defaults, IE >= 10"
     },
     'postcss-clean': {
         level: {
