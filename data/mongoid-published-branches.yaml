@@ -1,5 +1,6 @@
 version:
   published:
+    - 'master'
     - '7.0'
     - '6.4'
     - '6.3'
@@ -7,12 +8,13 @@ version:
     - '6.1'
     - '5.2'
   stable: '7.0'
-  upcoming: null
+  upcoming: master
 git:
   branches:
     manual: 'master'
     published:
       - 'master'
+      - '7.0'
       - '6.4'
       - '6.3'
       - '6.2'
