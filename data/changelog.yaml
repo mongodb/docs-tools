@@ -70,6 +70,7 @@ groups:
     - mongostat
     - mongotop
     - mongoreplay
+    - llmgo
 
 ordering:
   # Defines an order of groups. Issues with multiple components use
