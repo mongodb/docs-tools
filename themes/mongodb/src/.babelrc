@@ -1,0 +1,15 @@
+{
+  "presets": [
+    [
+      "env",
+      {
+        "modules": false,
+        "targets": {"browsers": ["defaults", "IE>=10"]}
+      }
+    ]
+  ],
+  "plugins": [
+    "external-helpers",
+    ["transform-react-jsx", {"pragma": "preact.h"}]
+  ]
+}

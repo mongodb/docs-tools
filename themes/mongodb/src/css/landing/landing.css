@@ -3,3 +3,4 @@
 @import 'base';
 @import 'grid';
 @import 'bem-components';
+@import '../tabs';

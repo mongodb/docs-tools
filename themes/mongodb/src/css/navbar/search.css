@@ -60,8 +60,3 @@
 .marian-spelling-correction:hover {
   cursor: pointer;
 }
-
-.navbar-search {
-  -webkit-appearance: textfield;
-  margin-left: 28px;
-}
