@@ -4,9 +4,15 @@
         "jquery": true
     },
     "parserOptions": {
-        "sourceType": "module"
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended"
+    ],
     "rules": {
         "accessor-pairs": "error",
         "array-bracket-spacing": "error",
@@ -258,6 +264,14 @@
         "wrap-iife": "error",
         "wrap-regex": "error",
         "yield-star-spacing": "error",
-        "yoda": "error"
+        "yoda": "error",
+
+        "react/no-deprecated": "off"
+    },
+    "settings": {
+        "react": {
+            "pragma": "preact",
+            "version": "15.0"
+        }
     }
 }
