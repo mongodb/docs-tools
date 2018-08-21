@@ -372,11 +372,6 @@ table.no-outer-border  {
    border-style: hidden;
 }
 
-table.nogrid-table tr{
-    text-align: left;
-    padding: 0 0 5px 10px;
-} 
-
 div#mongodb ul {
     list-style: none;
     padding-left:0px;
