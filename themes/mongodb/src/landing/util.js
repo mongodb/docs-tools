@@ -60,26 +60,7 @@ const utils = {
         });
     },
 
-    // this is currently only used on the landing pages
-    setupList () {
-        const links = document.querySelectorAll('.list__item__title');
-
-        links.forEach((link) => {
-            const nestedList = link.nextElementSibling;
-
-            link.parentElement.addEventListener('click', (e) => {
-                if (link.classList.contains('list__item--open')) {
-                    link.classList.remove('list__item--open');
-                    Velocity(nestedList, 'slideUp', {'duration': 400});
-                } else {
-                    link.classList.add('list__item--open');
-                    Velocity(nestedList, 'slideDown', {'duration': 400});
-                }
-            });
-        });
-    },
-
-    // This is copied from docs-tools
+    // This is copied from js/componentFeedback.js
     setupFeedback () {
         // We require DOM storage. Don't show anything if support is not present.
         if (window.localStorage === undefined) { return; }

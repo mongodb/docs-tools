@@ -1,5 +1,5 @@
 .navbar-seperator {
-  background-color: var(--grey-secondary); /* TODO: Melissa grey-primary? */
+  background-color: var(--grey-secondary);
   display: inline-block;
   height: 16px;
   margin: 0 6px;

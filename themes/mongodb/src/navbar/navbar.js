@@ -5,13 +5,17 @@ import Velocity from 'velocity-animate';
 import classNames from 'classnames';
 import preact from 'preact';
 
+function DownloadArrowIcon() {
+    return (<svg height="11" width="9" xmlns="http://www.w3.org/2000/svg"><path d="m8.8 6.8-1.2-1.2-2.1 2v-7.6h-1.7v7.6l-2.1-2-1.2 1.2 4.2 4.2z" fill="#69b241"/></svg>);
+}
+
 class Navbar extends preact.Component {
     constructor (props) {
         super(props);
         this.state = JSON.parse(props.navprops);
         this.state.enableMarian = Boolean(document.body.getAttribute('data-enable-marian'));
 
-        // There are three supported configurations:
+        // There are four supported configurations:
         // 1) No Marian
         // 2) data-project-title & data-search-properties are set
         // 3) data-project-title & data-search-properties are empty
@@ -173,7 +177,7 @@ class Navbar extends preact.Component {
 
                     <div className="navbar-download">
                         <a href="https://www.mongodb.com/download-center?jmp=tutorials" className="navbar-download__text">Download MongoDB</a>
-                        <svg height="11" width="9" xmlns="http://www.w3.org/2000/svg"><path d="m8.8 6.8-1.2-1.2-2.1 2v-7.6h-1.7v7.6l-2.1-2-1.2 1.2 4.2 4.2z" fill="#69b241"/></svg>
+                        <DownloadArrowIcon />
                     </div>
                     { searchBar }
                 </div>

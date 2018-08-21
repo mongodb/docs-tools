@@ -13,7 +13,7 @@ POSTCSS=./node_modules/.bin/postcss
 all: $(TARGETS)
 
 # All properties
-../static/navbar.min.js: navbar/*.js node_modules/.CURRENT
+../static/navbar.min.js: navbar/*.js .babelrc node_modules/.CURRENT
 	$(ROLLUP) -c navbar/rollup.config.js -o $@
 
 ../static/navbar.min.css: css/navbar/*.css css/*.css postcss.config.js node_modules/.CURRENT
@@ -22,14 +22,14 @@ all: $(TARGETS)
 	cp $@ ../static/css/navbar.min.css
 
 # Landing pages
-../static/landing.min.js: landing/*.js node_modules/.CURRENT
+../static/landing.min.js: landing/*.js .babelrc node_modules/.CURRENT
 	$(ROLLUP) -c landing/rollup.config.js -o $@
 
-../static/landing.css: css/landing/*.css css/*.css postcss.config.js node_modules/.CURRENT
+../static/landing.css: css/landing/*.css css/landing/bem-components/*.css css/*.css postcss.config.js node_modules/.CURRENT
 	$(POSTCSS) css/landing/landing.css -c postcss.config.js -o $@
 
 # Manual properties
-../static/controller.js: js/*.js node_modules/.CURRENT
+../static/controller.js: js/*.js .babelrc node_modules/.CURRENT
 	$(ROLLUP) -c rollup.config.js -o $@
 
 ../static/mongodb-docs.css: css/manual/*.css css/*.css postcss.config.js node_modules/.CURRENT

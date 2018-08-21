@@ -2,6 +2,5 @@
 
 @import 'bem-components/card';
 @import 'bem-components/toc'; /* TODO: dedup from tutorials*/
-@import 'bem-components/list';
 
 @import 'bem-components/block';

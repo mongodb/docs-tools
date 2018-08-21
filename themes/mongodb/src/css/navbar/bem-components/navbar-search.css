@@ -1,4 +1,5 @@
 .navbar-search {
+  -webkit-appearance: textfield;
   background-color: var(--light-grey-secondary) !important;
   background-image: url('../images/icon-search.png') !important;
   background-position: 14px 14px !important;
@@ -8,6 +9,7 @@
   flex: 1;
   font-size: 14px;
   height: 45px;
+  margin-left: 28px;
   outline: none;
   padding: 10px 10px 10px 43px;
   position: absolute;

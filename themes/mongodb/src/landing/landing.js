@@ -15,6 +15,5 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     util.setupSidebar()
-    util.setupList()
     util.setupFeedback()
 });

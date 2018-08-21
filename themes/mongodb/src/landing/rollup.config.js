@@ -1,4 +1,4 @@
-import buble from 'rollup-plugin-buble';
+import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import {eslint} from 'rollup-plugin-eslint';
 import {minify} from 'uglify-es';
@@ -14,11 +14,8 @@ export default {
         }),
         resolve(),
         commonjs({'include': 'node_modules/**'}),
-        buble({
-            'transforms': {
-                'dangerousForOf': true
-            },
-            'jsx': 'preact.h'
+        babel({
+            exclude: 'node_modules/**'
         }),
         uglify({}, minify)
     ],

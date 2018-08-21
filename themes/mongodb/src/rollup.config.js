@@ -1,4 +1,4 @@
-import buble from 'rollup-plugin-buble'
+import babel from 'rollup-plugin-babel'
 import { minify } from 'uglify-es'
 import { eslint } from 'rollup-plugin-eslint'
 import resolve from 'rollup-plugin-node-resolve'
@@ -14,10 +14,8 @@ export default {
         }),
         svelte(),
         resolve(),
-        buble({
-            transforms: {
-                dangerousForOf: true
-            }
+        babel({
+            exclude: 'node_modules/**'
         }),
         uglify({}, minify)
     ],
