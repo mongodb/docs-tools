@@ -364,6 +364,19 @@ table.border-table > thead th.head:last-child {
     border-right: 0;
 }
 
+table.no-outer-border  {
+   margin: auto;
+   width: 98%; /* hack to prevent horizontal scrolling */
+   text-align: left;
+   border-collapse: collapse;
+   border-style: hidden;
+}
+
+table.nogrid-table tr{
+    text-align: left;
+    padding: 0 0 5px 10px;
+} 
+
 div#mongodb ul {
     list-style: none;
     padding-left:0px;
