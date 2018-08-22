@@ -13,8 +13,8 @@ POSTCSS=./node_modules/.bin/postcss
 all: $(TARGETS)
 
 # All properties
-../static/navbar.min.js: navbar/*.js .babelrc node_modules/.CURRENT
-	$(ROLLUP) -c navbar/rollup.config.js -o $@
+../static/navbar.min.js: navbar/*.js rollup.config.js node_modules/.CURRENT
+	$(ROLLUP) -c rollup.config.js -o $@ navbar/navbar.js
 
 ../static/navbar.min.css: css/navbar/*.css css/*.css postcss.config.js node_modules/.CURRENT
 	$(POSTCSS) css/navbar/navbar.css -c postcss.config.js -o $@
@@ -22,15 +22,15 @@ all: $(TARGETS)
 	cp $@ ../static/css/navbar.min.css
 
 # Landing pages
-../static/landing.min.js: landing/*.js .babelrc node_modules/.CURRENT
-	$(ROLLUP) -c landing/rollup.config.js -o $@
+../static/landing.min.js: landing/*.js deluge/*.js rollup.config.js node_modules/.CURRENT
+	$(ROLLUP) -c rollup.config.js -o $@ landing/landing.js
 
 ../static/landing.css: css/landing/*.css css/landing/bem-components/*.css css/*.css postcss.config.js node_modules/.CURRENT
 	$(POSTCSS) css/landing/landing.css -c postcss.config.js -o $@
 
 # Manual properties
-../static/controller.js: js/*.js .babelrc node_modules/.CURRENT
-	$(ROLLUP) -c rollup.config.js -o $@
+../static/controller.js: js/*.js deluge/*.js rollup.config.js node_modules/.CURRENT
+	$(ROLLUP) -c rollup.config.js -o $@ js/controller.js
 
 ../static/mongodb-docs.css: css/manual/*.css css/*.css postcss.config.js node_modules/.CURRENT
 	$(POSTCSS) css/manual/mongodb-docs.css -c postcss.config.js -o $@

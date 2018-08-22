@@ -1,10 +1,12 @@
 {
     "env": {
         "browser": true,
-        "jquery": true
+        "jquery": true,
+        "es6": true
     },
     "parserOptions": {
         "sourceType": "module",
+        "ecmaVersion": 2018,
         "ecmaFeatures": {
             "jsx": true
         }
@@ -266,7 +268,8 @@
         "yield-star-spacing": "error",
         "yoda": "error",
 
-        "react/no-deprecated": "off"
+        "react/no-deprecated": "off",
+        "react/no-unknown-property": [2, {"ignore": ["class"]}]
     },
     "settings": {
         "react": {
