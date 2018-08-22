@@ -1,5 +1,5 @@
-import {Deluge} from 'rigning-non-greni';
 import Velocity from 'velocity-animate';
+import deluge from '../deluge/deluge';
 
 const utils = {
     setupCopyButtons () {
@@ -69,20 +69,8 @@ const utils = {
         const pagename = document.querySelector('.main').getAttribute('data-pagename');
         const ratingPanelElement = document.getElementById('rating-panel');
 
-        ratingPanelElement.innerText = '';
-
         if (ratingPanelElement) {
-            const deluge = new Deluge(project, pagename, ratingPanelElement).
-                askFreeformQuestion('reason', 'What were you looking for?').
-                askQuestion('findability', 'Did you find it?').
-                askQuestion('accuracy', 'Was the information you found <strong>accurate</strong>?').
-                askQuestion('clarity', 'Was the information <strong>clear</strong>?').
-                askQuestion('fragmentation', 'Was the information you needed <strong>' +
-                        'all on one page</strong>?');
-
-            for (const element of document.querySelectorAll('.toc__link--deluge')) {
-                element.addEventListener('click', deluge.open.bind(deluge));
-            }
+            deluge(project, pagename, ratingPanelElement);
         }
     }
 };

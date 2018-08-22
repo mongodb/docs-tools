@@ -1,6 +1,7 @@
-import {Deluge} from 'rigning';
+import deluge from '../deluge/deluge';
 
 let project = null;
+let ratingPanelElement = null;
 
 // Files on which we should not have feedback widgets
 const blacklist = {
@@ -8,37 +9,28 @@ const blacklist = {
     'search': true
 };
 
-function loadPage() {
+function getPageName() {
     const bodyElements = document.getElementsByClassName('body');
-    if (!bodyElements.length) { return; }
+    if (!bodyElements.length) { return null; }
 
     const pagename = bodyElements[0].getAttribute('data-pagename');
     if (Object.prototype.hasOwnProperty.call(blacklist, pagename)) {
-        return;
+        return null;
     }
 
-    const ratingPanelElement = document.getElementById('rating-panel');
-    if (!ratingPanelElement) { return; }
-
-    ratingPanelElement.innerText = '';
-    if (ratingPanelElement) {
-        (new Deluge(project, pagename, ratingPanelElement)).
-            askFreeformQuestion('reason', 'What were you looking for?').
-            askQuestion('findability', 'Did you find it?').
-            askQuestion('accuracy', 'Was the information you found <strong>accurate</strong>?').
-            askQuestion('clarity', 'Was the information <strong>clear</strong>?').
-            askQuestion('fragmentation', 'Was the information you needed <strong>' +
-                        'all on one page</strong>?');
-    }
+    return pagename;
 }
 
 export function init() {
     project = document.body.getAttribute('data-project');
+    ratingPanelElement = document.getElementById('rating-panel');
 }
 
 export function setup() {
     // We require DOM storage. Don't show anything if support is not present.
     if (window.localStorage === undefined) { return; }
 
-    loadPage();
+    if (ratingPanelElement) {
+        deluge(project, getPageName(), ratingPanelElement);
+    }
 }
