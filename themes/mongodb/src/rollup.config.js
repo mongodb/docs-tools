@@ -1,26 +1,26 @@
-import babel from 'rollup-plugin-babel'
-import { minify } from 'uglify-es'
-import { eslint } from 'rollup-plugin-eslint'
-import resolve from 'rollup-plugin-node-resolve'
-import svelte from 'rollup-plugin-svelte'
-import { uglify } from 'rollup-plugin-uglify'
+import babel from 'rollup-plugin-babel';
+import commonjs from 'rollup-plugin-commonjs';
+import {eslint} from 'rollup-plugin-eslint';
+import {minify} from 'uglify-es';
+import replace from 'rollup-plugin-replace';
+import resolve from 'rollup-plugin-node-resolve';
+import {uglify} from 'rollup-plugin-uglify';
 
 export default {
-    input: 'js/controller.js',
-    plugins: [
+    'plugins': [
         eslint({
-            include: 'js/**',
-            throwOnError: true,
+            'exclude': 'node_modules/**',
+            'throwOnError': true,
+            'configFile': '.eslintrc.json'
         }),
-        svelte(),
+        replace({
+          'process.env.NODE_ENV': JSON.stringify('production')
+        }),
         resolve(),
-        babel({
-            exclude: 'node_modules/**'
-        }),
+        commonjs({'include': 'node_modules/**'}),
+        babel({exclude: 'node_modules/**'}),
         uglify({}, minify)
     ],
-    output: {
-        format: 'iife'
-    }
-}
+    'output': {'format': 'iife'}
+};
 
