@@ -57,9 +57,13 @@ class Deluge extends preact.Component {
         };
 
         try {
-            fields.segmentUID = window.analytics.user().
-                id().
-                toString();
+            const user = window.analytics.user();
+            const segmentUID = user.id();
+            if (segmentUID) {
+                fields.segmentUID = segmentUID.toString();
+            } else {
+                fields.segmentAnonymousID = user.anonymousId().toString();
+            }
             window.analytics.track('Feedback Submitted', analyticsData);
         } catch (err) {
             console.error(err);
