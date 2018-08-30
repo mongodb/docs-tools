@@ -42,8 +42,8 @@ class Deluge extends preact.Component {
                 'voteAcknowledgement': (vote) ? 'up' : 'down'
             });
         }).
-            catch(() => {
-                console.error('Error submitting feedback');
+            catch((err) => {
+                console.error(err);
             });
     }
 
@@ -57,6 +57,9 @@ class Deluge extends preact.Component {
         };
 
         try {
+            fields.segmentUID = window.analytics.user().
+                id().
+                toString();
             window.analytics.track('Feedback Submitted', analyticsData);
         } catch (err) {
             console.error(err);
