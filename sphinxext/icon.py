@@ -8,7 +8,7 @@ def class_to_label(css_class):
     return css_class.rstrip('-o').replace('-', ' ') + ' icon'
 
 
-class IconNode(nodes.General, nodes.Element):
+class IconNode(nodes.General, nodes.Inline, nodes.Element):
     @staticmethod
     def visit_icon(self, node):
         # I've tested this in Safari w/ macOS Voiceover
@@ -27,9 +27,7 @@ class IconNode(nodes.General, nodes.Element):
 
 
 def icon_role(typ, rawtext, text, lineno, inliner, options={}, content=[]):
-    has_explicit_title, label, target = split_explicit_title(text)
-    css_class = target
-
+    has_explicit_title, label, css_class = split_explicit_title(text)
     label = label if has_explicit_title else class_to_label(css_class)
 
     config = inliner.document.settings.env.config
