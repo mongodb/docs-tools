@@ -14,7 +14,6 @@ Usage:
   :xml:`<strong>A link to our binary bson dump docs <mono><ref target="binary-bson-dumps">a link</ref></mono></strong>.
 """
 
-import sphinx.domains.std
 from docutils import nodes
 from docutils.parsers.rst import roles
 
@@ -23,40 +22,40 @@ import xml.sax.handler
 
 
 class RoleWrapper:
-    __slots__ = ('name', 'role')
+    __slots__ = ('domain_name', 'name')
 
-    def __init__(self, name):
+    def __init__(self, domain_name, name):
+        self.domain_name = domain_name
         self.name = name
-        self._role = None
 
-    @property
-    def role(self):
-        if self._role is not None:
-            return self._role
+    def get_role(self, domain):
+        role = domain.roles.get(self.name, None)
 
-        self._role = sphinx.domains.std.StandardDomain.roles.get(self.name, None)
+        if role is None:
+            role = roles._roles[self.name]
 
-        if self._role is None:
-            self._role = roles._roles[self.name]
-
-        return self._role
+        return role
 
 
 class LinkWrapper(RoleWrapper):
     def __call__(self, attrs, children, args):
+        inliner = args[1]
+        domain = inliner.document.settings.env.domains.get(self.domain_name)
         target = attrs['target']
         rawsource = ':{}:`{}`'.format(self.name, target)
-        node = self.role(self.name, rawsource, target, *args)[0][0]
+        node = self.get_role(domain)(self.name, rawsource, target, *args)[0][0]
 
         if children:
             # Set up our children, and prevent delayed link resolution
             # (like intermanual) from trampling over them.
             node.children = children
+            for child in children:
+                child.parent = node
             node['refexplicit'] = True
 
         # Allow intermanual links to work
-        node['refdomain'] = 'mongodb'
-        node['reftype'] = 'any'
+        node['refdomain'] = self.domain_name
+        node['reftype'] = self.name
 
         return node
 
@@ -73,7 +72,7 @@ class Handler(xml.sax.handler.ContentHandler, xml.sax.handler.ErrorHandler):
         'strong': make_node_wrapper(nodes.strong),
         'em': make_node_wrapper(nodes.emphasis),
         'mono': make_node_wrapper(nodes.literal),
-        'ref': LinkWrapper('ref'),
+        'ref': LinkWrapper('std', 'ref'),
         'link': lambda attrs, children, args: nodes.reference('', '', *children, refuri=attrs.get('target', '#'))
     }
 
@@ -111,7 +110,7 @@ class Handler(xml.sax.handler.ContentHandler, xml.sax.handler.ErrorHandler):
         self.errors.append(exception)
 
 
-def nested_role(typ, rawtext, text, lineno, inliner, options={}, content=[]):
+def xml_role(typ, rawtext, text, lineno, inliner, options={}, content=[]):
     handler = Handler((lineno, inliner, options, content))
     xml.sax.parseString(text, handler, errorHandler=handler)
 
@@ -125,7 +124,7 @@ def nested_role(typ, rawtext, text, lineno, inliner, options={}, content=[]):
 
 
 def setup(app):
-    roles.register_local_role('xml', nested_role)
+    roles.register_local_role('xml', xml_role)
 
     return {
         'parallel_read_safe': True,
