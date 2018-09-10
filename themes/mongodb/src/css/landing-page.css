@@ -128,7 +128,7 @@
 @media (max-width: 760px) {
   .card_group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     max-width: 380px;
 
     > * {
