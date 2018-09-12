@@ -9,6 +9,10 @@ function DownloadArrowIcon() {
     return (<svg height="11" width="9" xmlns="http://www.w3.org/2000/svg"><path d="m8.8 6.8-1.2-1.2-2.1 2v-7.6h-1.7v7.6l-2.1-2-1.2 1.2 4.2 4.2z" fill="#69b241"/></svg>);
 }
 
+function RocketDownloadIcon() {
+    return (<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g id="Icons" fill="#69b241"><path class="cls-1" d="M15.67.32a.79.79,0,0,0-.76-.2,18.67,18.67,0,0,0-3.77,1.22l3.51,3.51a18.64,18.64,0,0,0,1.22-3.77A.79.79,0,0,0,15.67.32Z"/><path class="cls-1" d="M8,3.5,2.31,9.22l4.45,4.45L12.49,8a11,11,0,0,0,1.35-1.68L9.72,2.15A11,11,0,0,0,8,3.5Z"/><path class="cls-1" d="M1.2,11.45C.28,12.37.09,15.91.09,15.91s3.53-.19,4.45-1.11a2.34,2.34,0,0,0,.68-1.55L2.75,10.77A2.34,2.34,0,0,0,1.2,11.45Z"/><polygon class="cls-1" points="4.83 5.88 1.2 5.88 0.09 7 1.9 8.81 4.83 5.88"/><polygon class="cls-1" points="8.99 15.91 10.11 14.79 10.11 11.18 7.19 14.1 8.99 15.91"/></g></svg>);
+}
+
 class Navbar extends preact.Component {
     constructor (props) {
         super(props);
@@ -149,6 +153,21 @@ class Navbar extends preact.Component {
                 aria-label="Search Documentation"></input>;
         }
 
+        function NavbarDownloadButton() {
+            const dataProject = document.body.getAttribute('data-project');
+            const dataProjectIsAtlas = dataProject === 'atlas';
+            const linkText = dataProjectIsAtlas ? 'Deploy a free cluster' : 'Download MongoDB';
+            const linkUrl = `https://www.mongodb.com/download-center?utm_source=${dataProject}&utm_campaign=download-mongodb-navbar-cta&utm_medium=docs`;
+            const linkIcon = dataProjectIsAtlas ? <RocketDownloadIcon /> : <DownloadArrowIcon />;
+
+            return (
+                <div className="navbar-download">
+                    <a href={ linkUrl } className="navbar-download__text">{ linkText }</a>
+                    { linkIcon }
+                </div>
+            );
+        }
+
         const linkElements = this.state.links.map((link, i) => {
             const linkClass = classNames({
                 'navbar-links__item': true,
@@ -175,10 +194,7 @@ class Navbar extends preact.Component {
                         { linkElements }
                     </div>
 
-                    <div className="navbar-download">
-                        <a href="https://www.mongodb.com/download-center?jmp=tutorials" className="navbar-download__text">Download MongoDB</a>
-                        <DownloadArrowIcon />
-                    </div>
+                    <NavbarDownloadButton />
                     { searchBar }
                 </div>
             </nav>
