@@ -190,6 +190,18 @@ def setup(app):
         ])
     )
 
+    app.add_directive(
+        'tabs-stitch-auth-providers',
+        create_tab_directive('stitchAuthProviders', [
+            ('anon-user', 'Anonymous'),
+            ('local-userpass', 'Email/Password'),
+            ('oauth2-google', 'Google'),
+            ('oauth2-facebook', 'Facebook'),
+            ('api-key', 'API Key Authentication'),
+            ('custom-token', 'Custom')
+        ])
+    )
+
     # Create auth tab directive
     app.add_directive('tabs-auth',
         create_tab_directive('auth',
