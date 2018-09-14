@@ -213,6 +213,7 @@ Base URL
 
    {{ response.jsonSchema }}
 
+{{ if response.jsonFields }}
 .. list-table::
    :header-rows: 1
    :widths: 40 10 50
@@ -222,6 +223,7 @@ Base URL
      - Description
 
 {{ for field in response.jsonFields }}
+
    * - ``{{ field.name }}``
      - {{ field.type }}
      -
@@ -233,7 +235,9 @@ Base URL
        - ``{{ val }}``
 
        {{ end }}
-       {{ end }}
+
+{{ end }}
+{{ end }}
 
 {{ end }}
 {{ end }}
