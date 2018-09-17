@@ -215,7 +215,12 @@ export class MarianUI {
             newURL = window.location.href;
         }
 
-        window.history.replaceState({'href': newURL}, null, newURL);
+        // Only replaceState when changing query in URL, otherwise pushState
+        if (newURL.indexOf('&query=') >= 0 && window.location.href.indexOf('&query=') >= 0) {
+            window.history.replaceState({'href': newURL}, null, newURL);
+        } else {
+            window.history.pushState({'href': newURL}, null, newURL);
+        }
     }
 
     parseUrl() {
