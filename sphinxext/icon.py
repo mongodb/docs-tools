@@ -16,15 +16,24 @@ ICONS = set([
     'check-square',
     'edit',
     'exclamation-circle',
-    'pencil',
+    'pencil-alt',
     'save',
     'trash',
     'trash-alt'
 ])
 
+# Discouraged, but not prohibited (yet)
+ICONS.add('arrow-right')
+ICONS.add('asterisk')
+ICONS.add('check')
+ICONS.add('ellipsis-h')
+ICONS.add('minus')
+ICONS.add('plus')
+
 ICONSB = set([
     'windows',
 ])
+
 
 def class_to_label(css_class):
     """Approximate a label for screen readers from a FontAwesome class."""
