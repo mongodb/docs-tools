@@ -16,10 +16,15 @@ ICONS = set([
     'check-square',
     'edit',
     'exclamation-circle',
+    'eye',
+    'globe',
+    'lock',
     'pencil-alt',
     'save',
+    'sync-alt',
     'trash',
-    'trash-alt'
+    'trash-alt',
+    'users'
 ])
 
 # Discouraged, but not prohibited (yet)
