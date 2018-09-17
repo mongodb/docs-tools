@@ -36,7 +36,7 @@ class IconNode(nodes.General, nodes.Inline, nodes.Element):
             self.starttag(
                 node,
                 'span',
-                CLASS='fa fa-{}'.format(node['css_class']),
+                CLASS='fas fa-{}'.format(node['css_class']),
                 **{'title': node['label']}))
         self.body.append(self.starttag(node, 'span', CLASS='screenreader'))
         self.body.append(node['label'])
