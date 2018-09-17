@@ -134,8 +134,9 @@ a.headerlink:hover {
 }
 
 a.reference.external:after {
-    font-family: FontAwesome;
-    content: "\f08e";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;  /* solid style weight */
+    content: var(--external-link);
     padding-left: 3px;
     vertical-align: middle;
 }

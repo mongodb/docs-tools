@@ -186,8 +186,9 @@ a.headerlink:hover {
 }
 
 a.reference.external:after {
-    font-family: FontAwesome;
-    content: "\f08e";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;  /* solid style weight */
+    content: var(--external-link);
     padding-left: 3px;
     vertical-align: middle;
 }
@@ -687,7 +688,7 @@ div.hidden { display: none; }
     float: right;
     bottom: -9px;
     text-decoration: none;
-    font-size: 24px;
+    font-size: 20px;
     color: #313030;
 }
 
@@ -880,6 +881,13 @@ div.document {
     position: absolute;
     right: 0;
     bottom: 0;
+}
+
+a.twitter-icon, a.youtube-icon, a.facebook-icon, a.stack-overflow-icon, a.slack-icon {
+    margin-right: 2px;
+    font-size: 18px;
+    color: #615f5f;
+    width: 21px;
 }
 
 .right-column .wrapper {

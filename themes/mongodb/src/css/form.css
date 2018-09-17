@@ -52,7 +52,7 @@
     font-size: 14px;
 
     &::before {
-      font-family: FontAwesome;
+      font-family: 'Font Awesome 5 Free';
       padding-right: 5px;
     }
 
@@ -60,7 +60,8 @@
       color: var(--tomato);
 
       &::before {
-        content: "\f06a";
+        content: var(--exclamation-circle);
+        font-weight: 900;
       }
     }
 
@@ -68,7 +69,8 @@
       color: var(--mongodb-green);
 
       &::before {
-        content: "\f058";
+        content: var(--check-circle);
+        font-weight: 900;
       }
     }
   }

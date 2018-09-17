@@ -208,6 +208,7 @@
                 {%- block editlink_icon %}
                    {{ editlink('icon') }}
                 {% endblock %}
+                 
                 {{ relbar() }}
                 {% block body %}
                   {{ body }}
@@ -243,13 +244,15 @@
 
         {%- block adblock %}{% endblock %}
         {%- block social %}
-           <div class="social">
-             <a class="twitter-icon" href="https://twitter.com/MongoDB"><i class="fa fa-twitter-square"></i></a>
-             <a class="youtube-icon" href="https://www.youtube.com/user/MongoDB"><i class="fa fa-youtube-square"></i></a>
-             <a class="facebook-icon" href="https://www.facebook.com/mongodb"><i class="fa fa-facebook-square"></i></a>
-             <a class="stack-overflow-icon" href="https://stackoverflow.com/tags/mongodb/info"><i class="fa fa-stack-overflow" aria-hidden="true"></i></a>
-           </div>
+            <div class="social">
+               <a class="slack-icon" href="https://launchpass.com/mongo-db?jmp=docs" title="https://launchpass.com/mongo-db?jmp=docs"><i class="fab fa-slack" aria-hidden="true"></i></a>
+               <a class="twitter-icon" href="https://twitter.com/MongoDB" title="https://twitter.com/MongoDB"><i class="fab fa-twitter-square"></i></a>
+               <a class="youtube-icon" href="https://www.youtube.com/user/MongoDB" title="https://www.youtube.com/user/MongoDB"><i class="fab fa-youtube-square"></i></a>
+               <a class="facebook-icon" href="https://www.facebook.com/mongodb" title="https://www.facebook.com/mongodb"><i class="fab fa-facebook-square"></i></a>
+               <a class="stack-overflow-icon" href="https://stackoverflow.com/tags/mongodb/info" title="https://stackoverflow.com/tags/mongodb/info"><i class="fab fa-stack-overflow" aria-hidden="true"></i></a>
+            </div>
         {% endblock %}
+         
       </div>
     </div>
     {% block rating %}
