@@ -218,6 +218,13 @@ conf['directives'] = [
         'callable': False,
     },
     {
+        'name': 'config-expansion',
+        'tag': 'config-expansion',
+        'description': 'expansion directive for mongod/s configuration file',
+        'callable': False,
+        'prepend': True,
+    },
+    {
         ## Support defining mongotape's commands
         'name': 'toolcommand',
         'tag': 'toolcommand',
