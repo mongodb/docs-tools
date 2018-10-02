@@ -218,8 +218,8 @@ conf['directives'] = [
         'callable': False,
     },
     {
-        'name': 'config-expansion',
-        'tag': 'config-expansion',
+        'name': 'configexpansion',
+        'tag': 'configexpansion',
         'description': 'expansion directive for mongod/s configuration file',
         'callable': False,
         'prepend': True,
