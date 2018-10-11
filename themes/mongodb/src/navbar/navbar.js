@@ -156,7 +156,7 @@ class Navbar extends preact.Component {
         function NavbarDownloadButton() {
             const dataProject = document.body.getAttribute('data-project');
             const dataProjectIsAtlas = dataProject === 'atlas';
-            const linkText = dataProjectIsAtlas ? 'Deploy a free cluster' : 'Download MongoDB';
+            const linkText = dataProjectIsAtlas ? 'Deploy a free cluster' : 'Get MongoDB';
             const linkUrl = `https://www.mongodb.com/download-center?utm_source=${dataProject}&utm_campaign=download-mongodb-navbar-cta&utm_medium=docs`;
             const linkIcon = dataProjectIsAtlas ? <RocketDownloadIcon /> : <DownloadArrowIcon />;
 
