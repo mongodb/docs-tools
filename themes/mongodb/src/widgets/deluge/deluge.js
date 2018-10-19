@@ -104,7 +104,9 @@ class Deluge extends preact.Component {
             <MainWidget
                 voteAcknowledgement={voteAcknowledgement}
                 onSubmit={this.onSubmit}
-                onClear={() => this.setState({'answers': {}})}>
+                onClear={() => this.setState({'answers': {}})}
+                canShowSuggestions={props.canShowSuggestions}i
+                handleOpenDrawer={props.handleOpenDrawer}>
                 <FreeformQuestion
                     store={this.makeStore('reason')}
                     placeholder="What were you looking for?" />
@@ -128,15 +130,9 @@ class Deluge extends preact.Component {
 
 Deluge.propTypes = {
     'project': PropTypes.string.isRequired,
-    'path': PropTypes.string.isRequired
+    'path': PropTypes.string.isRequired,
+    'canShowSuggestions': PropTypes.bool.isRequired,
+    'handleOpenDrawer': PropTypes.func.isRequired
 };
 
-export default function deluge(project, path, rootElement) {
-    preact.render('', rootElement, rootElement._delugeRendered);
-
-    if (path) {
-        rootElement._delugeRendered = preact.render(
-            <Deluge project={project} path={path} />,
-            rootElement);
-    }
-}
+export default Deluge;

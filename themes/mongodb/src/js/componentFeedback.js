@@ -1,4 +1,4 @@
-import deluge from '../deluge/deluge';
+import widgets from '../widgets/widgets';
 
 let project = null;
 let ratingPanelElement = null;
@@ -17,7 +17,6 @@ function getPageName() {
 
     return pagename;
 }
-
 export function init() {
     project = document.body.getAttribute('data-project');
     ratingPanelElement = document.getElementById('rating-panel');
@@ -27,7 +26,8 @@ export function setup() {
     // We require DOM storage. Don't show anything if support is not present.
     if (window.localStorage === undefined) { return; }
 
+    const pageName = getPageName();
     if (ratingPanelElement) {
-        deluge(project, getPageName(), ratingPanelElement);
+        widgets(project, pageName, ratingPanelElement);
     }
 }

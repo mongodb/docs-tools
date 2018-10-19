@@ -561,3 +561,10 @@ span.eqno {
         display: none;
     }
 }
+
+/* -- ensure page width is not greater than device width ---------------------*/
+
+html {
+  overflow-x: hidden;
+}
+

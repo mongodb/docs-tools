@@ -1,5 +1,5 @@
 import Velocity from 'velocity-animate';
-import deluge from '../deluge/deluge';
+import widgets from '../widgets/widgets';
 
 const utils = {
     setupCopyButtons () {
@@ -70,7 +70,7 @@ const utils = {
         const ratingPanelElement = document.getElementById('rating-panel');
 
         if (ratingPanelElement) {
-            deluge(project, pagename, ratingPanelElement);
+            widgets(project, pagename, ratingPanelElement);
         }
     }
 };
