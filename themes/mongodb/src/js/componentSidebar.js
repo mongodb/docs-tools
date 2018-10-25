@@ -6,6 +6,10 @@ function isCurrentNode($node) {
 }
 
 export function setup() {
+    const isStitch = $('body').attr('data-project') === 'stitch';
+    if (isStitch) {
+        return;
+    }
     let $current = $('.sidebar a.current');
     if (util.isLeafNode($current) || util.requiresPageload($current) || isCurrentNode($current)) {
         $current.parent('li').addClass('selected-item');

@@ -1,0 +1,1584 @@
+/*
+ * nature.css_t
+ * ~~~~~~~~~~~~
+ *
+ * Sphinx stylesheet -- nature theme.
+ *
+ * :copyright: Copyright 2007-2011 by the Sphinx team, see AUTHORS.
+ * :license: BSD, see LICENSE for details.
+ *
+ */
+@import url("bootstrap-custom.css");
+@import url("icomoon.css");
+@import url("../colors.css");
+
+@import url("../auth-table.css");
+@import url("../font-awesome.css");
+@import url("../basic.css");
+@import url("../code-buttons.css");
+@import url("../feedback.css");
+@import url("../fonts.css");
+@import url("../header.css");
+@import url("../landing-page.css");
+@import url("../lightbox.css");
+@import url("../marian.css");
+@import url("../mws.css");
+@import url("../sequence.css");
+@import url("../tabs.css");
+@import url("../openapi.css");
+@import url("../pills.css");
+@import url("../accordion.css");
+@import url("../stitch-sidebar.css");
+
+/* Marks an element as being an invisible hint for screen readers. */
+.screenreader {
+    position: absolute;
+    opacity: 0;
+}
+
+/* OS X hides scroll bars, which makes some of our code boxes confusing. */
+
+.highlight ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+    height: 5px;
+}
+
+.highlight ::-webkit-scrollbar-thumb {
+    border-radius: 0px;
+    background-color: rgba(0, 0, 0, .5);
+    height: 0px;
+}
+
+/* -- page layout ----------------------------------------------------------- */
+
+#baselineOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    opacity: 0.5;
+    background: url(https://media.mongodb.org/24px-baseline-overlay.png) 0 0 repeat;
+}
+
+body {
+    font-family: "Akzidenz", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #494747;
+    -webkit-font-smoothing: antialiased;
+}
+
+hr {
+    border: 1px solid #B1B4B6;
+}
+
+.content {
+    font-size: 16px;
+    line-height: 24px;
+}
+
+div.related {
+    color: #fff;
+    background-color: #402817;
+    margin-bottom: 0.9em;
+    font-size: 90%;
+}
+
+div.related a {
+    color: #E2F3CC;
+}
+
+div.related ul {
+    padding: 0 0 0;
+}
+
+div.footer-nav div.related ul {
+    padding: 5px 10px 0;
+}
+
+.figure img {
+    width: 100%;
+}
+
+
+p.searchtip {
+    font-size: 93%;
+}
+
+/* -- body styles ----------------------------------------------------------- */
+
+a {
+    color: #006cbc;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 {
+    font-family: "Akzidenz", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 200;
+    line-height: 24px;
+    color: #313030;
+    padding: 0;
+}
+
+div.body h1 {
+    border-top: none;
+    font-size: 36px;
+    line-height: 48px;
+    padding: 0;
+    margin: -24px 0 24px 0;
+}
+
+div.body h2 {
+    font-size: 24px;
+}
+
+div.body h3 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+div.body h4 {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+div.body h5 {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+div.body h6 {
+    font-size: 14px;
+    font-weight: 300;
+}
+
+h2,
+h3,
+h4 {
+    margin: 24px 0;
+}
+
+div.body h1+p,
+div.body h2+p,
+div.body h3+p,
+div.body h4+p,
+div.body h1+dl,
+div.body h2+dl,
+div.body h3+dl,
+div.body h4+dl {
+    padding: 0;
+    text-indent: 0;
+}
+
+div.body h1+ul,
+div.body h2+ul,
+div.body h3+ul,
+div.body h4+ul,
+div.section h1+ul,
+div.section h2+ul,
+div.section h3+ul,
+div.section h4+ul {
+    padding-top: 0;
+    margin-top: 0.3em;
+    text-indent: 0;
+    margin-left: -1.5em;
+}
+
+a.headerlink {
+    color: var(--mongodb-green);
+    font-size: 0.8em;
+    padding: 0 4px 0 4px;
+    text-decoration: none;
+}
+
+a.headerlink:hover {
+    background-color: #c60f0f;
+    color: white;
+}
+
+a.reference.external:after {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    /* solid style weight */
+    content: var(--external-link);
+    padding-left: 3px;
+    vertical-align: middle;
+}
+
+div.body li {
+    padding-top: .2em;
+}
+
+div.highlight {
+    background-color: white;
+}
+
+dl.binary {
+    display: none;
+}
+
+div.topic {
+    background-color: #ffffff;
+}
+
+table.docutils>div.admonition-example {
+    background-color: inherit;
+}
+
+table.docutils div.admonition-example div.highlight {
+    /* Useful for showing examples in definition tables */
+    background-color: transparent;
+}
+
+div.admonition-example pre {
+    background-color: #FBFBFB;
+}
+
+div.seealso {
+    padding-bottom: 7px;
+}
+
+pre {
+    padding: 24px 12px;
+    color: #222;
+    margin: 24px 0;
+}
+
+tt,
+code {
+    color: #000;
+}
+
+abbr,
+acronym {
+    text-decoration: underline dotted;
+    cursor: help;
+}
+
+a>tt,
+a>code {
+    color: #006cbc;
+}
+
+tt.xref,
+a tt,
+code.xref,
+a code {
+    font-weight: normal;
+}
+
+
+.viewcode-back {
+    font-family: helvetica, arial, sans-serif;
+}
+
+div.viewcode-block:target {
+    background-color: #f4debf;
+    border-top: 1px solid #ac9;
+    border-bottom: 1px solid #ac9;
+}
+
+/*
+p.first, p.last {
+    margin-bottom: 0 !important;
+}
+*/
+
+table.docutils td {
+    padding: 1px 8px 1em 5px;
+}
+
+table.docutils.field-list ul.first.last.simple>li {
+    padding-top: 1em;
+}
+
+table.docutils.field-list ul.first.last.simple>li>p {
+    padding-top: 1em;
+}
+
+.hll {
+    display: inherit;
+}
+
+table.footnote {
+    font-size: 0.95em;
+    line-height: 1.3em;
+}
+
+div td pre {
+    border: none;
+    margin: 0px;
+    background-color: transparent;
+}
+
+table.docutils {
+    margin: 24px 0;
+    font-size: 14px;
+    line-height: 24px;
+}
+
+table.docutils>thead th.head {
+    padding: 0 5px 12px;
+}
+
+table.docutils td,
+table.docutils th {
+    border-color: #ebebed;
+    padding: 11px 5px 12px;
+}
+
+table.index-table td {
+    text-align: left;
+    border-bottom: none;
+    border-right: 1px solid #ebebed;
+    padding-left: 25px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-top: 5px;
+    line-height: 15px;
+    margin-bottom: 0px;
+}
+
+table.index-table td:last-child {
+    border-right: 0;
+}
+
+table.index-table {
+    margin: auto;
+    width: 98%;
+    /* hack to prevent horizontal scrolling in index.html */
+}
+
+table.index-table>thead th.head {
+    text-align: left;
+    padding: 0 0 5px 24px;
+    border-bottom: none;
+}
+
+table.index-table-less-padding td {
+    padding-left: 10px;
+
+}
+
+table.index-table-less-padding>thead th.head {
+    padding: 0 0 5px 10px;
+}
+
+
+table.border-table {
+    margin: auto;
+    width: 98%;
+    /* hack to prevent horizontal scrolling */
+}
+
+table.border-table>thead th.head {
+    text-align: left;
+    padding: 0 0 5px 10px;
+    border-bottom: none;
+    border-right: 1px solid #ebebed;
+}
+
+table.border-table td {
+    text-align: left;
+    border-bottom: none;
+    border-top: 1px solid #ebebed;
+    border-right: 1px solid #ebebed;
+    padding-left: 10px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-top: 5px;
+    line-height: 15px;
+    margin-bottom: 0px;
+}
+
+table.border-table td:last-child {
+    border-right: 0;
+}
+
+
+table.border-table>thead th.head:last-child {
+    border-right: 0;
+}
+
+table.no-outer-border {
+    margin: auto;
+    width: 98%;
+    /* hack to prevent horizontal scrolling */
+    text-align: left;
+    border-collapse: collapse;
+    border-style: hidden;
+}
+
+div#mongodb ul {
+    list-style: none;
+    padding-left: 0px;
+    padding-right: 1em;
+}
+
+div#mongodb ul.simple {
+    list-style: circle;
+    margin-top: 0px;
+    padding-left: 0px;
+}
+
+div.related li.right {
+    float: right;
+    margin-right: 5px;
+    margin-top: 85px;
+}
+
+#main-db {
+    padding-top: 2.5em;
+    padding-bottom: 2em;
+    background-image: url(https://media.mongodb.org/back-body.png);
+    background-repeat: repeat-x;
+}
+
+div#top-right {
+    position: absolute;
+    top: -3px;
+    right: 10px;
+    z-index: 10;
+}
+
+div#top-right ul#header-menu-bar {
+    margin-top: 0;
+    padding-left: 20px;
+    height: 38px;
+    background-image: url(https://media.mongodb.org/trans-user-left.png);
+    background-repeat: no-repeat;
+}
+
+div#top-right div.user-right {
+    float: right;
+    height: 38px;
+    min-width: 186px;
+    margin: 0;
+    padding: 0 20px 0 0;
+    font-size: 10pt;
+    background-image: url(https://media.mongodb.org/trans-user-right.png);
+    background-position: top right;
+    background-repeat: no-repeat;
+}
+
+div#top-right div.user-right li.normal {
+    float: left;
+    padding: 8px 1em 0 0;
+    height: 38px;
+    background-image: url(https://media.mongodb.org/trans-user-back.png);
+    background-repeat: repeat-x;
+    list-style-type: none;
+    font-size: 10pt;
+    color: #c48c55;
+}
+
+div#top-right div.user-right a,
+div#top-right div.user-right a:visited {
+    border-right: 1px solid #663f12;
+    padding-right: 1em;
+    color: #aa814d;
+    font-weight: normal;
+}
+
+div#top-right div.user-right li.last,
+div#top-right div.user-right a.last,
+div#top-right div.user-right a.last:visited {
+    padding-right: 0;
+    border-right: none;
+}
+
+.quick-search {
+    margin: 0;
+    padding: 0;
+}
+
+#quick-search input {
+    float: right;
+}
+
+.quick-search input {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+input.blank-search,
+.quick-search .placeholded {
+    color: #666;
+}
+
+input.blur {
+    color: #666;
+}
+
+input[type="text"]:disabled {
+    color: #333;
+}
+
+#quick-search-query {
+    width: 13em;
+}
+
+input#quick-search-query {
+    -webkit-appearance: none;
+    background-color: transparent !important;
+    position: relative;
+    top: 7px;
+    width: 230px;
+    border: none;
+    font-size: 73%;
+    color: #dbcaaf;
+}
+
+input#quick-search-query:active {
+    border: none !important;
+}
+
+#quick-search .placeholded {
+    color: #dbcaaf;
+}
+
+input.blur {
+    color: #666;
+}
+
+input[type="text"]:disabled {
+    color: #333;
+}
+
+#quick-search-query {
+    width: 13em;
+}
+
+div#docs-header {
+    width: 950px;
+}
+
+div#main-db.hidden {
+    display: none;
+}
+
+tt,
+tt span.pre,
+code,
+code span.pre {
+    font-family: 'Source Code Pro', monospace;
+}
+
+tt.descname,
+tt.descclassname,
+code.descname,
+code.descclassname {
+    font-size: 16px;
+    font-weight: normal;
+}
+
+dl.method dt {
+    margin-bottom: 24px;
+}
+
+dl.method>dt big {
+    font-family: 'Source Code Pro', monospace;
+    font-weight: 300;
+    font-size: 16px;
+}
+
+dl.method>dt em {
+    font-family: 'Source Code Pro', monospace;
+    font-weight: 700;
+    font-style: normal;
+}
+
+div.section>h1+dl.dbcommand>dt {
+    display: none;
+}
+
+div.section>h1+dl.operator>dt {
+    display: none;
+}
+
+div.section>h1+dl.method>dt {
+    display: none;
+}
+
+div.section>h1+dl.pipeline>dt {
+    display: none;
+}
+
+div.section>h1+dl.group>dt {
+    display: none;
+}
+
+div.section>h1+dl.expression>dt {
+    display: none;
+}
+
+div.section>h1+dl.projection>dt {
+    display: none;
+}
+
+
+.body p {
+    margin: 24px 0;
+}
+
+.body p.caption {
+    margin-top: 0;
+}
+
+.body li>p {
+    margin: 0;
+}
+
+div.highlight pre {
+    background: #f5f6f7 url(https://media.mongodb.org/code-block-bg.png) 0 0 repeat;
+    border-radius: 0;
+    border: none;
+    border-left: 5px solid #494747;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    line-height: 24px;
+    overflow: auto;
+    word-wrap: normal;
+    white-space: pre;
+}
+
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+    div.highlight pre {
+        background: #f5f6f7 url(https://media.mongodb.org/code-block-bg@2x.png) 0 0 repeat;
+        background-size: 12px 12px;
+    }
+}
+
+table.docutils div.highlight pre {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+table.docutils .button-row {
+    border: none;
+    background: none;
+}
+
+h2+div.section,
+h3+div.section,
+h4+div.section {
+    margin-top: 0;
+}
+
+.body h3+p,
+.body h4+p {
+    margin-top: 0;
+}
+
+#btnv {
+    padding-top: 2em;
+    padding-bottom: 2.5em;
+    display: table;
+    width: 100%;
+}
+
+#btnv .btn-prev-text,
+#btnv .btn-next-text,
+#btnv .btn-arrow-left,
+#btnv .btn-arrow-right {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+#btnv .btn-arrow-left,
+#btnv .btn-next-text {
+    text-align: right;
+}
+
+#btnv .btn-arrow-right,
+#btnv .btn-prev-text {
+    text-align: left;
+}
+
+#btnv .btn-prev-text>span,
+#btnv .btn-next-text>span {
+    display: inline-block;
+    width: 270px;
+}
+
+@media print {
+    #btnv {
+        display: none;
+    }
+}
+
+table.docutils tbody tr td div.highlight pre {
+    background-color: inherit;
+}
+
+table.docutils div.admonition {
+
+    /* Code blocks in table cells don't have a background image (see "inherit" in previous rule)*/
+    /* This restores the regular code block background when nested in an admonition in a table */
+    & div.highlight pre,
+    div.button-row {
+        background: #f5f6f7 url(https://media.mongodb.org/code-block-bg.png) 0 0 repeat;
+    }
+}
+
+
+/* somehow, powershell commands starting with a directory reference does not include a div.highlight */
+
+div.highlight-powershell pre {
+    background-color: #F5F5F5;
+}
+
+div.body li>p.first {
+    margin-bottom: 0;
+}
+
+h4#vnd {
+    padding: 0;
+    margin: 0;
+    line-height: 1.5;
+    padding-left: 10px;
+}
+
+div.body div.bc {
+    background: white;
+    cursor: default;
+    margin-bottom: 24px;
+}
+
+div.body div.bc .fa-home {
+    font-size: 24px;
+    margin-top: 2px;
+}
+
+div.body div.bc li.jr {
+    float: right;
+    display: none;
+}
+
+div.body div.bc ul {
+    padding: 0;
+    margin: 0
+}
+
+div.body div.bc ul li {
+    list-style: none;
+    font-size: 13px;
+    display: inline;
+}
+
+div.body div.bc ul li a {
+    color: #006cbc;
+}
+
+div.dc span.bcpoint {
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #343434;
+}
+
+div.body div.contents {
+    padding: 0 0.5em 0.5em;
+}
+
+div.body div.contents.long-toc {
+    max-width: 100%;
+    float: none;
+    margin-left: 0;
+}
+
+.contents li {
+    padding-top: .25em;
+    column-break-inside: avoid;
+    list-style-position: inside;
+}
+
+:matches(.contents.singlecol, .contents.twocols-rootonly) ul {
+    margin: 0;
+    padding-left: 1.0em;
+}
+
+.contents.twocols ul,
+.contents.twocols-rootonly>ul {
+    margin: 0;
+    padding-left: 1.0em;
+    column-count: 2;
+    column-gap: 10px;
+    columns: 2;
+}
+
+div.hidden {
+    display: none;
+}
+
+#vn {
+    font-size: 0.85em;
+}
+
+.document .body .edit-link,
+.document .body .edit-link:hover {
+    position: relative;
+    float: right;
+    bottom: -9px;
+    text-decoration: none;
+    font-size: 20px;
+    color: #313030;
+}
+
+@media print {
+    .document .body .edit-link {
+        display: none;
+    }
+}
+
+a>em {
+    font-style: normal;
+}
+
+div.versionadded>p>span,
+div.versionchanged>p>span,
+div.deprecated>p>span {
+    font-style: italic;
+}
+
+/* Content */
+
+
+.content {
+    box-sizing: border-box;
+    display: flex;
+    margin: 45px auto 0;
+}
+
+.content .main-column {
+    order: 1;
+    min-height: 600px;
+    width: 68%;
+    max-width: 800px;
+    flex-grow: 2;
+    margin: 40px 15px;
+    transition: margin-left 0.4s cubic-bezier(.02, .01, .47, 1);
+    align-items: center;
+    justify-content: center;
+    display: inline-block;
+    overflow-x: scroll;
+
+}
+
+#topbar {
+    display: inline-block;
+    top: 95px;
+    height: 36px;
+    position: fixed;
+    width: 100%;
+    background-color: #fff;
+    z-index: 100;
+    border-bottom: .5px solid #ccc;
+}
+
+#left-column {
+    flex-shrink: 1;
+    flex-grow: 0;
+    flex-basis: 330px;
+    background-color: #fff;
+    min-width: 330px;
+    display: flex;
+    overflow-y: auto;
+    border-right: 1px solid #e0e7e8;
+}
+
+div.document {
+    margin-left: 25px;
+}
+
+@media print {
+    .content .main-column {
+        margin-left: 0px;
+        margin-top: 0px;
+    }
+}
+
+#see-also>p {
+    margin-top: 12.5px;
+}
+
+
+
+
+@media print {
+    #header-db {
+        display: none;
+    }
+
+    #left-column {
+        display: none
+    }
+}
+
+/* Adjust padding around the search div so autocomplete suggestions line up */
+#navbar-docs .navbar-search {
+    padding: 10px 0px 10px 45px;
+}
+
+#header-db .logo {
+    padding: 5px 0;
+}
+
+#header-db .search-db {
+    transition: width 0.3s linear;
+    margin-left: 45px;
+    margin-top: 11px;
+    display: inline-block;
+}
+
+#header-db .search-db.narrow {
+    width: 98px;
+}
+
+#header-db .search-db.wide {
+    width: 226px;
+}
+
+/* Footer styles */
+.footer {
+    width: auto;
+    font-size: 80%;
+    border: none;
+    padding: 20px 0;
+}
+
+.footer .copyright {
+    text-align: center;
+}
+
+.footer p {
+    margin: 1em 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+.footer a {
+    color: #989898;
+    text-decoration: underline;
+}
+
+.footer h3 {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.footer .box {
+    background-color: #f5f6f7;
+    min-height: 20px;
+    padding: 15px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.footer .box a {
+    color: #333;
+    text-decoration: none;
+}
+
+.footer .box a:hover {
+    text-decoration: underline;
+}
+
+.footer ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.footer .section-0 {
+    padding-left: 100px;
+}
+
+.footer .section-1 {
+    padding-left: 46px;
+}
+
+.footer .section-2 {
+    padding-left: 64px;
+}
+
+.footer .section-3 {
+    padding-left: 49px;
+}
+
+@media (max-width: 992px) {
+
+    .footer .section-0,
+    .footer .section-1,
+    .footer .section-2,
+    .footer .section-3 {
+        padding-left: 15px;
+    }
+}
+
+.social {
+    height: 21px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+a.twitter-icon,
+a.youtube-icon,
+a.facebook-icon,
+a.stack-overflow-icon,
+a.slack-icon {
+    margin-right: 2px;
+    font-size: 18px;
+    color: #615f5f;
+    width: 21px;
+}
+
+.right-column .wrapper {
+    min-height: calc(100% - 50px);
+    position: fixed;
+    margin-top: 10px;
+    /* the margin-top of 38px or so should make this align at top with the body text, couldn't decide */
+}
+
+.right-column .social .img {
+    background-repeat: no-repeat;
+    background-size: 21px 21px;
+    width: 21px;
+    height: 21px;
+    display: inline-block;
+}
+
+.right-column .social a {
+    margin-right: 2px;
+    font-size: 22px;
+    color: #615f5f;
+}
+
+
+
+.searchContainer {
+    margin-top: 5px;
+    height: 30px;
+    min-width: 310px;
+    float: left;
+}
+
+#search {
+    font-family: sans-serif;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    padding-left: 10px;
+    float: left;
+    height: 100%;
+    width: 250px;
+    margin-left: 5px;
+}
+
+.searchButton {
+    height: 100%;
+    width: 15%;
+    border: 0;
+    background-color: #7fc857;
+    float: right;
+    color: white;
+    text-align: center;
+    font-size: 12px;
+}
+
+.version-button {
+    background-color: transparent;
+    border: none;
+}
+
+
+
+
+
+
+
+
+
+
+/* Right column TOC */
+
+.content .right-column {
+    width: 161px;
+    flex: 1 0 161px;
+    margin: 10px;
+    -webkit-transform: translateZ(0);
+    /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
+    order: 2;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.right-column .toc {
+    padding: 24px 20px;
+    background-color: rgb(245, 246, 247);
+    margin-bottom: 24px;
+}
+
+.right-column .toc .toc-header {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.right-column .toc a {
+    font-size: 13px;
+    text-indent: -11px;
+}
+
+/*hack for correct line height*/
+.right-column .toc li {
+    line-height: 23px;
+}
+
+.right-column .toc li a {
+    line-height: 24px;
+}
+
+/*end hack*/
+
+.right-column .toc li {
+    list-style: none;
+}
+
+.right-column .toc ul {
+    padding: 0;
+    margin: 0;
+}
+
+.right-column .toc>ul>li>a {
+    display: none;
+}
+
+/* hack to hide toc items that are more than 2 levels deep */
+.right-column .toc>ul>li>ul>li>ul>li>ul {
+    display: none;
+}
+
+.right-column .toc>ul>li>ul {
+    padding-left: 1px;
+}
+
+.right-column .toc>ul>li>ul>li>ul {
+    padding-left: 13px;
+}
+
+.right-column .toc li>a:before {
+    content: '\2022';
+    color: #333;
+    opacity: 0.5;
+    display: inline-block;
+}
+
+/* Admonition styles */
+div.admonition {
+    margin: 24px 0;
+    width: auto;
+    max-width: 100%;
+    padding: 2px 12px 22px 12px;
+    border-left: 5px solid transparent;
+}
+
+.admonition .admonition-title {
+    margin-bottom: 0;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: 24px;
+}
+
+.admonition .admonition-title:after {
+    content: ":";
+    font-weight: 900;
+}
+
+.admonition>p {
+    margin: 0 0 12.5px 0;
+}
+
+.admonition>p.last {
+    margin-bottom: 0;
+}
+
+.admonition.admonition-platform-support,
+.admonition.tip,
+.admonition.admonition-tip,
+.admonition.note,
+.admonition-instructor {
+    background-color: #edf4e8;
+    border-color: #6ba442;
+}
+
+.admonition.admonition-platform-support .admonition-title,
+.admonition.tip .admonition-title,
+.admonition.note .admonition-title,
+.admonition-instructor .admonition-title {
+    color: #89b668;
+}
+
+.admonition.important {
+    background-color: #fff2d5;
+    border-color: #ffb618;
+}
+
+.admonition.important .admonition-title {
+    color: #ffb618;
+}
+
+/*.admonition.tip, .admonition-tip {
+    background-color: #a6c88e;
+    border-color: #507b32;
+}*/
+
+.admonition.admonition-optional {
+    background-color: inherit;
+    border: 1px solid #DCDCDC;
+}
+
+.admonition.admonition-example {
+    background-color: #F5F5F5;
+    color: #000000;
+}
+
+.admonition.warning {
+    background-color: #fae6e5;
+    border-color: #ed271c;
+}
+
+.admonition.warning .admonition-title {
+    color: #ed271c;
+}
+
+.admonition.admonition-advisories,
+.admonition.admonition-advisory {
+    background-color: #fae6e5;
+    border-color: #ed271c;
+}
+
+dd>div.admonition {
+    margin-left: 0;
+}
+
+p>div.admonition {
+    margin-left: 0;
+}
+
+li>div.admonition {
+    margin-left: 0;
+}
+
+div.admonition.note table.docutils tr:last-child td {
+    border-bottom: 0;
+}
+
+@media (max-width: 1340px) {
+    #header-db .header-content {
+        width: 100%;
+    }
+
+    .content .right-column {
+        display: none;
+    }
+
+    .document {
+        margin-left: 25px;
+    }
+
+    #left-column {
+        display: flex;
+    }
+
+    .sphinxsidebar {
+        display: block;
+    }
+
+}
+
+@media (min-width: 1121px) and (max-width: 1340px) {
+
+    #header-db .nav-items {
+        margin-right: 15px;
+    }
+
+    #header-db .nav-items {
+        float: none;
+    }
+
+    .content .right-column {
+        display: none;
+    }
+
+    .document {
+        margin-left: 25px;
+    }
+}
+
+.expand-toc-icon {
+    display: none;
+}
+
+@media (max-width: 1120px) {
+    .expand-toc-icon {
+        display: block;
+        padding-top: 10px;
+        padding-right: 10px;
+        color: white;
+    }
+
+    .expand-toc-icon:hover,
+    .expand-toc-icon:active {
+        color: white;
+        text-decoration: none;
+    }
+
+    #header-db .header-content {
+        width: 1093px;
+        padding-left: 30px;
+        float: none;
+    }
+
+    #header-db .nav-items {
+        margin-right: 15px;
+        float: none;
+    }
+
+    #showNav {
+        cursor: pointer;
+        position: fixed;
+        display: block;
+
+    }
+
+    #left-column,
+    .sphinxsidebar {
+        display: none;
+    }
+
+    .document {
+        margin-left: 25px;
+    }
+
+}
+
+
+/* Modal styles */
+.modal-content {
+    border-radius: 0;
+    padding: 24px 18px 18px 18px;
+    color: #494747;
+}
+
+.modal-content h4 {
+    color: #494747;
+}
+
+/*.modal-content > form {
+    margin-bottom: 0;
+}
+*/
+.modal-body {
+    padding: 0;
+    margin-top: 25px;
+}
+
+.modal-header {
+    border-bottom: 1px solid #ebebed;
+    padding: 0 0 18px 0;
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.modal-header h3,
+h4.modal-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: normal;
+    color: #6e7c9f;
+}
+
+.modal-header .close {
+    font-size: 24px;
+    color: #615f5f;
+    position: relative;
+    top: -6px;
+}
+
+.modal-header .close:hover,
+.modal-header .close:focus {
+    color: #494747;
+}
+
+.modal-footer {
+    border-top: 1px solid #ebebed;
+    padding: 18px 0 0 0;
+    margin-top: 0;
+    background-color: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.action-buttons .modal-column-1 {
+    position: relative;
+    border-right: 1px solid #ebebed;
+}
+
+.action-buttons .modal-column-2>.btn-group {
+    margin-left: -9px;
+}
+
+.action-buttons .modal-column-1,
+.action-buttons .modal-column-2 {
+    padding-top: 25px;
+    padding-bottom: 40px;
+}
+
+.action-buttons .circle {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    right: -12px;
+    top: 29px;
+    border-radius: 14px;
+    border: 1px solid #dee0e3;
+    background-color: white;
+}
+
+.action-buttons .divider-text {
+    cursor: default;
+    position: absolute;
+    right: -5px;
+    top: 32px;
+    font-size: 13px;
+    color: #333;
+}
+
+.action-buttons .btn-group,
+.action-buttons .btn-group>button {
+    width: 100%;
+}
+
+.saving-copy,
+.redirect-copy {
+    height: 100px;
+}
+
+.guilabel {
+    font-style: normal;
+    font-weight: bold;
+}
+
+h1 .guilabel,
+h2 .guilabel,
+h3 .guilabel,
+h4 .guilabel,
+h5 .guilabel,
+h6 .guilabel {
+    font-style: italic;
+}
+
+.slides-link {
+    float: right;
+}
+
+/*  tables for compatibility matrices */
+
+table.compatibility,
+table.compatibility-large {
+    border-collapse: collapse;
+    color: rgb(73, 71, 71);
+    display: table-cell;
+    font-family: "Akzidenz", 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    width: 100%;
+    vertical-align: middle;
+}
+
+table.docutils.compatibility,
+table.docutils.compatibility-large {
+    line-height: 12px;
+    vertical-align: middle;
+}
+
+table.docutils.compatibility>thead th.head,
+table.docutils.compatibility-large>thead th.head {
+    padding: 12px 12px;
+    text-align: center;
+    background-color: rgb(127, 127, 127);
+    color: rgb(255, 255, 255);
+}
+
+table.docutils.compatibility>thead th:nth-child(1),
+table.docutils.compatibility-large>thead th:nth-child(1) {
+    text-align: left;
+    padding: 10px 12px;
+    background-color: rgb(238, 238, 238);
+    color: rgb(127, 127, 127);
+}
+
+table.docutils.compatibility td {
+    padding: 11px 55px 12px;
+}
+
+table.docutils.compatibility-large td {
+    padding: 11px 35px 12px;
+}
+
+table.compatibility th,
+table.compatibility td,
+table.compatibility-large th,
+table.compatibility-large td {
+    border: rgb(245, 246, 247);
+    border-style: solid;
+    border-width: 1px;
+    vertical-align: middle;
+}
+
+table.compatibility td,
+table.compatibility-large td {
+    text-align: center;
+}
+
+table.compatibility th:nth-child(1),
+table.compatibility-large th:nth-child(1) {
+    text-align: left;
+    padding: 10px 12px;
+    background-color: rgb(238, 238, 238);
+    color: rgb(127, 127, 127);
+}
+
+@media print {
+    #topbar {
+        display: none;
+    }
+
+    #left-column {
+        display: none;
+    }
+
+    #showNav {
+        display: none;
+    }
+}
+
+.alert-info {
+    margin-bottom: 40px;
+}
