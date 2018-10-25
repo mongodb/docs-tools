@@ -1,6 +1,7 @@
 ROLLUP=./node_modules/.bin/rollup -m
 TARGETS=../static/mongodb-docs.css \
         ../static/guides.css \
+        ../static/stitch.css \
         ../static/landing.css \
         ../static/navbar.min.css \
         ../static/controller.js \
@@ -38,6 +39,10 @@ all: $(TARGETS)
 # Guides
 ../static/guides.css: css/guides/*.css css/*.css postcss.config.js node_modules/.CURRENT
 	$(POSTCSS) css/guides/guides.css -c postcss.config.js -o $@
+
+# Stitch
+../static/stitch.css: css/stitch/*.css css/*.css postcss.config.js node_modules/.CURRENT
+	$(POSTCSS) css/stitch/stitch.css -c postcss.config.js -o $@
 
 # Utilities
 lint-css: node_modules/.CURRENT
