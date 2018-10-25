@@ -46,6 +46,11 @@ window.addEventListener('hashchange', () => {
 // If the browser is sufficiently modern, make navbar links load only
 // content pieces to avoid a full page load.
 export function setup(fastNav) {
+    const isStitch = $('body').attr('data-project') === 'stitch';
+    if (isStitch) {
+        return false;
+    }
+
     if (window.history === undefined ||
         document.querySelectorAll === undefined ||
         document.body.classList === undefined ||
