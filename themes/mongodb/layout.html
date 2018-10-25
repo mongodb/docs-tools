@@ -48,10 +48,12 @@
      {% if parents %}
        <ul>
         {%- block rootrellink %}{%- endblock %}
-        {%- for parent in parents %}
-          <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
-          {% if loop.last %}<li>{{title}}</li>{% endif %}
-        {%- endfor %}
+        {%- block breadcrumbs %}
+          {%- for parent in parents %}
+            <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
+            {% if loop.last %}<li>{{title}}</li>{% endif %}
+          {%- endfor %}
+        {% endblock %}
         {%- block relbaritems %} {% endblock %}
       </ul>
     {% else %}
@@ -208,7 +210,7 @@
                 {%- block editlink_icon %}
                    {{ editlink('icon') }}
                 {% endblock %}
-                 
+
                 {{ relbar() }}
                 {% block body %}
                   {{ body }}
@@ -252,7 +254,7 @@
                <a class="stack-overflow-icon" href="https://stackoverflow.com/tags/mongodb/info" title="https://stackoverflow.com/tags/mongodb/info"><i class="fab fa-stack-overflow" aria-hidden="true"></i></a>
             </div>
         {% endblock %}
-         
+
       </div>
     </div>
     {% block rating %}
