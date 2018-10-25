@@ -9,6 +9,7 @@ import * as componentLightbox from './componentLightbox';
 import * as componentOpenAPI from './componentOpenAPI';
 import * as componentPillStrip from './componentPillStrip';
 import * as componentSidebar from './componentSidebar';
+import * as componentStitchSidebar from './componentStitchSidebar';
 import * as componentTabs from './componentTabs';
 import * as componentThirdParty from './componentThirdParty';
 import * as componentToggleController from './componentToggleController';
@@ -46,7 +47,8 @@ $(() => {
     fastNav.register(componentFeedback);
     fastNav.register(componentLightbox);
     fastNav.register(componentSidebar);
-    // Must preceed componentTabs
+    fastNav.register(componentStitchSidebar);
+    // Must precede componentTabs
     fastNav.register(componentPillStrip);
     fastNav.register(componentTabs);
     fastNav.register(componentVersionSelector);
