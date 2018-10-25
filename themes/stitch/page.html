@@ -15,6 +15,17 @@
 {%- block canonicalref %}
 {%- endblock -%}
 
+{%- block breadcrumbs %}
+  {%- for ancestor in lineage %}
+    <li>
+      {% if ancestor.link %}<a href="{{ ancestor.link }}">{% endif %}
+        {{ ancestor.text }}
+        {% if ancestor.link %}</a>{% endif %}
+      {% if not loop.last %}<span class="bcpoint"> > </span>{% endif %}
+    </li>
+  {%- endfor %}
+{%- endblock -%}
+
 {%- block alertbar -%}
     {%- if theme_is_upcoming %}
         <div class="alert alert-info">
