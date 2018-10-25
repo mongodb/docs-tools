@@ -1,0 +1,316 @@
+@media print {
+    .sidebar {
+        display: none;
+    }
+}
+
+/* Collapsible sidebar styles */
+#showNav {
+    display: none;
+    position: fixed;
+    top: 90px;
+    font-size: 14px;
+    margin-top: 70px;
+    text-align: center;
+    border-radius: 3px;
+    background-color: #7fc857;
+    color: white;
+    left: 30px;
+    border: 1.5px solid #7fc857;
+    padding: 5px 10px;
+    transform: rotate(90deg);
+    transform-origin: left top 0;
+    cursor: pointer;
+}
+
+#closeNav {
+    font-size: 14px;
+    color: #333 !important;
+    text-decoration: none;
+    text-align: right;
+    position: relative;
+    right: 12px;
+    display: block;
+    top: 12px;
+
+    &:hover {
+        color: black;
+        text-decoration: none;
+    }
+}
+
+.version-toggle {
+    font-size: 12px;
+    line-height: 22px;
+    position: static;
+    left: 0;
+}
+
+div.sphinxsidebarwrapper {
+    padding: 0;
+    /* overwrites basic.css rules */
+    min-height: 100%;
+    width: 330px;
+    right: 0;
+}
+
+div.sphinxsidebar {
+    font-size: 16px;
+    line-height: 20px;
+    top: 45px;
+    /* the height of the navbar */
+    bottom: 0;
+    position: fixed;
+    overflow-y: auto;
+
+    & h3 {
+        padding: 6px 12px;
+        margin: 5px 0 0 10px;
+        font-size: 14px;
+        line-height: 24px;
+        font-weight: bold;
+
+        & a.index-link {
+            text-transform: uppercase;
+        }
+
+        & a.showlink {
+            color: #003594;
+        }
+    }
+
+    & p {
+        color: #333;
+        margin: 12px 0 5px 12px;
+        padding: 0 12px;
+    }
+
+    & p.logo {
+        color: #888;
+        padding: 0px;
+        margin: -18px 5px 5px;
+    }
+
+    & a {
+        color: #333;
+    }
+
+    & ul {
+        list-style: none outside none;
+        margin-left: 0;
+        margin: 0;
+        padding: 0;
+        color: #000;
+    }
+
+}
+
+div.sphinxsidebarwrapper > ul.toctree-root {
+    margin: 0;
+    padding: 0;
+
+    & a.reference.internal {
+        padding-right: 10px !important;
+    }
+
+    & li.selected-item-root h3.toc-section-heading {
+        color: var(--mongodb-green);
+        font-weight: bold !important;
+    }
+
+    & li>a.current {
+        color: var(--mongodb-green);
+    }
+
+    & ul {
+        list-style: none outside none;
+        margin: 0;
+    }
+
+    & li.toctree-l1 {
+        line-height: 24px;
+        padding: 0;
+        border-top: unset;
+
+        &:last-child {
+            border-bottom: 1px solid #e0e7e8;
+        }
+
+        & ul > li > a {
+            line-height: 24px;
+            display: inline-block;
+            width: 100%;
+            position: relative;
+        }
+
+        & li a {
+            padding: 5px 5px 5px 0;
+        }
+
+        > a {
+            line-height: 24px;
+            padding: 0 30px;
+            width: 100%;
+            display: inline-block;
+        }
+    }
+
+    & li.toctree-l2 {
+        > a {
+            padding-left: 0px;
+            margin-left: 62px;
+            width: calc(100% - 62px);
+        }
+
+        &:last-child:not(.current)>h4.toc-section-heading:not(.open) {
+            border-bottom: none;
+        }
+    }
+
+    & li.toctree-l3 {
+        >a {
+            padding-left: 0px;
+            margin-left: 78px;
+            width: calc(100% - 78px);
+        }
+    }
+
+    & li.toctree-l4 {
+        >a {
+            padding-left: 0px;
+            margin-left: 104px;
+            width: calc(100% - 104px);
+        }
+    }
+}
+
+.selected-item>a>.page-icon {
+    background: url(images/file-alt-regular-active.svg) 0 0/13px 15px no-repeat !important;
+}
+
+.page-icon {
+    background: url(images/file-alt-regular.svg);
+    background-size: 13px 15px;
+    background-repeat: no-repeat;
+    width: 13px;
+    height: 15px;
+    top: 8px;
+    margin-left: -21px;
+    position: absolute;
+    display: inline-block;
+}
+
+.nested-page-toggle {
+    width: 13px;
+    height: 24px;
+    top: 8px;
+    margin-left: -21px;
+    position: absolute;
+    display: inline-block;
+    background-repeat: no-repeat;
+
+    &.is-closed {
+        background: url(images/plus-square-regular.svg) 0 0/14px 14px no-repeat;
+
+        &.contains-current-page {
+            background: url(images/plus-square-regular-active.svg) 0 0/14px 14px no-repeat;
+        }
+    }
+
+    &.is-open {
+        background: url(images/minus-square-regular.svg) 0 0/14px 14px no-repeat;
+
+        &.contains-current-page {
+            background: url(images/minus-square-regular-active.svg) 0 0/14px 14px no-repeat;
+        }
+    }
+}
+
+h3.toc-section-heading {
+    margin: 0 !important;
+    border-top: 1px solid #e0e7e8;
+    padding-left: 22px !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    cursor: pointer;
+
+    &:before {
+        display: inline-block;
+        content: ' ';
+        background: url(images/caret-right-solid.svg);
+        background-size: 14px 14px;
+        height: 14px;
+        width: 14px;
+        transition: 400ms;
+    }
+
+    &.current:before {
+        transform: rotate(90deg);
+        transition: 400ms;
+    }
+}
+
+h4.toc-section-heading {
+    border-bottom: 1px solid #e0e7e8;
+    margin: 0 0 0 42px !important;
+    padding: 6px 12px 3px 0px;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 700;
+    cursor: default;
+
+    &:before {
+        display: inline-block;
+        content: ' ';
+        background: url(images/caret-right-solid.svg);
+        background-size: 14px 14px;
+        height: 14px;
+        width: 14px;
+        transition: 400ms;
+    }
+
+    &.open {
+        &:before {
+            transform: rotate(90deg);
+            transition: 400ms;
+        }
+    }
+
+    &.current {
+        margin-bottom: 6px !important;
+    }
+}
+
+h5.toc-section-heading {
+    border-bottom: 1px solid #e0e7e8;
+    margin: 0 0 6px 52px !important;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 700;
+}
+
+ul.toc-section-nested {
+    & .nested-page-line {
+        height: 100%;
+        border-left: 1px solid #9e9e9e;
+        position: absolute;
+        top: 0px;
+        margin-left: -42px;
+    }
+
+    & li:last-of-type .nested-page-line {
+        height: 70%;
+    }
+
+    & li.toctree-l2 {
+        & a.reference.internal {
+            padding-left: 88px;
+        }
+    }
+
+    & li.toctree-l3 {
+        & a.reference.internal {
+            padding-left: 88px;
+        }
+    }
+}
