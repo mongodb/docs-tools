@@ -139,7 +139,6 @@ div.sphinxsidebarwrapper > ul.toctree-root {
         & ul > li > a {
             line-height: 24px;
             display: inline-block;
-            width: 100%;
             position: relative;
         }
 
@@ -310,7 +309,7 @@ ul.toc-section-nested {
 
     & li.toctree-l3 {
         & a.reference.internal {
-            padding-left: 88px;
+            padding-left: 11px;
         }
     }
 }
