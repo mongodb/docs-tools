@@ -33,6 +33,16 @@ function xhrGet(url, options) {
     }
 }
 
+// Because this is a SPA,  the browser can't scroll to find hashes
+// on its own.
+window.addEventListener('hashchange', () => {
+    if (!window.location.hash) { return; }
+
+    const el = document.getElementById(window.location.hash.slice(1));
+    if (!el) { return; }
+    el.scrollIntoView(true);
+});
+
 // If the browser is sufficiently modern, make navbar links load only
 // content pieces to avoid a full page load.
 export function setup(fastNav) {
@@ -98,7 +108,7 @@ export function setup(fastNav) {
                 bodyElement.classList.remove('loading');
 
                 // Change URL before loading the DOM to properly resolve URLs
-                if (createHistory) {
+                if (createHistory && trueUrl !== window.location.href) {
                     window.history.pushState({'href': trueUrl}, '', trueUrl);
                 }
 
