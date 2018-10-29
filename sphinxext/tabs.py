@@ -220,6 +220,15 @@ def setup(app):
         ])
     )
 
+    # Create cloud providers tab directive
+    app.add_directive('tabs-cloud-providers',
+        create_tab_directive('cloudproviders',
+            [('aws', 'AWS'),
+             ('azure', 'Azure'),
+             ('gcp', 'GCP')
+        ])
+    )
+
     # Create general purpose tab directive with no error checking
     app.add_directive('tabs', template.create_directive('tabs', build_template('', ''), template.BUILT_IN_PATH, True))
 
