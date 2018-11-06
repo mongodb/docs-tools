@@ -13,6 +13,10 @@ import json
 
 logger = logging.getLogger("fasthtml")
 
+TOC_EXCLUDED = [
+    "genindex",
+    "search"
+]
 
 def is_http(url):
     return url.startswith("http://") or url.startswith("https://")
@@ -231,7 +235,7 @@ class Toctree:
             "sections": [section.as_dict() for section in self.sections]
         }
 
-    def get_page(self, slug, app):
+    def get_page(self, slug, app, env):
         page = None
         for section in self.sections:
             if page:
@@ -241,7 +245,10 @@ class Toctree:
                     page = descendant_page
                     break
         if not page:
-            app.warn("Cannot find a matching page for slug: {}".format(slug))
+            meta = env.metadata.get(slug)
+            is_orphan = meta and meta.get("orphan") is not None
+            if not is_orphan and slug != self.root and slug not in TOC_EXCLUDED:
+                app.warn("Cannot find a matching page for slug: {}".format(slug))
         return page
 
     def initialize(self, env, docname=None):
@@ -466,14 +473,13 @@ class FastHTMLBuilder(StandaloneHTMLBuilder, FastHTMLMixin):
 
         lineage = self._get_page_lineage(docname)
         processed_lineage = self._process_page_lineage(docname, lineage)
-        # self.app.warn("{} => {}".format(lineage, processed_lineage))
         addctx["lineage"] = processed_lineage
 
         StandaloneHTMLBuilder.handle_page(self, docname, addctx, templatename=templatename, outfilename=outfilename, event_arg=event_arg)
 
     def _get_page_lineage(self, docname, **kw):
         lineage = [{ "text": "Stitch", "link": self.toctree.root }]
-        page = self.toctree.get_page(docname, self.app)
+        page = self.toctree.get_page(docname, self.app, self.env)
         if page:
             lineage.extend(page.get_lineage())
         return lineage
