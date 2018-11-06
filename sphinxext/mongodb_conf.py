@@ -292,11 +292,19 @@ conf['directives'] = [
         'prepend': False,
         'callable': False,
     },
-    ## Custom Directives for expansions
+    ## Custom Directive for JSON expression expansions
     {
-        'name': 'expansion',
-        'tag': 'expansion',
-        'description': 'Expansion',
+        'name': 'json-expansion',
+        'tag': 'json-expansion',
+        'description': 'JSON Expression Expansion',
+        'prepend': False,
+        'callable': False
+    },
+    ## Custom Directive for JSON expression operators
+    {
+        'name': 'json-operator',
+        'tag': 'json-operator',
+        'description': 'JSON Expression Operator',
         'prepend': False,
         'callable': False
     },
@@ -305,7 +313,7 @@ conf['directives'] = [
         'name': 'action',
         'tag': 'action',
         'description': 'Service Actions',
-        'prepend': True,  
+        'prepend': True,
         'callable': False
     },
     ## For s3 service actions
@@ -313,7 +321,7 @@ conf['directives'] = [
         'name': 's3action',
         'tag': 's3',
         'description': 'Service Actions',
-        'prepend': True,  
+        'prepend': True,
         'callable': False
     },
     ## For ses service actions
@@ -321,7 +329,7 @@ conf['directives'] = [
         'name': 'sesaction',
         'tag': 'ses',
         'description': 'Service Actions',
-        'prepend': True,  
+        'prepend': True,
         'callable': False
     },
     ## For slack service actions
@@ -329,7 +337,7 @@ conf['directives'] = [
         'name': 'slackaction',
         'tag': 'slack',
         'description': 'Service Actions',
-        'prepend': True,  
+        'prepend': True,
         'callable': False
     },
     ## For http service actions
@@ -337,7 +345,7 @@ conf['directives'] = [
         'name': 'httpaction',
         'tag': 'http',
         'description': 'Service Actions',
-        'prepend': True,  
+        'prepend': True,
         'callable': False
     },
     ## For twilio service actions
@@ -345,7 +353,7 @@ conf['directives'] = [
         'name': 'twilioaction',
         'tag': 'twilio',
         'description': 'Service Actions',
-        'prepend': True,  
+        'prepend': True,
         'callable': False
     },
     ## For slack service actions
@@ -353,7 +361,7 @@ conf['directives'] = [
         'name': 'slackaction',
         'tag': 'slack',
         'description': 'Service Actions',
-        'prepend': True,  
+        'prepend': True,
         'callable': False
     },
     ## For mailgun service actions
@@ -361,7 +369,7 @@ conf['directives'] = [
         'name': 'mailgunaction',
         'tag': 'mailgun',
         'description': 'Service Actions',
-        'prepend': True,  
+        'prepend': True,
         'callable': False
     },
 
