@@ -466,10 +466,6 @@ class FastHTMLBuilder(StandaloneHTMLBuilder, FastHTMLMixin):
         event_arg=None,
     ):
         self.toctree.initialize(self.env)
-        if docname == "index":
-            with open('/Users/nick/sidebar/toctree.json', 'w') as file:
-                json.dump(self.toctree.as_dict(), file)
-
 
         lineage = self._get_page_lineage(docname)
         processed_lineage = self._process_page_lineage(docname, lineage)
@@ -518,9 +514,6 @@ class FastDirectoryHTMLBuilder(DirectoryHTMLBuilder, FastHTMLMixin):
         event_arg=None,
     ):
         self.toctree.initialize(self.env)
-        # if pagename == "index":
-        #     with open('/Users/nick/sidebar/toctree.json', 'w') as file:
-        #         json.dump(self.toctree.as_dict(), file)
 
         DirectoryHTMLBuilder.handle_page(
             self,
