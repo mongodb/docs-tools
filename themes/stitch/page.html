@@ -16,14 +16,20 @@
 {%- endblock -%}
 
 {%- block breadcrumbs %}
+  <ul class="stitch-bc">
+  {% if lineage and lineage|length > 1 %}
   {%- for ancestor in lineage %}
     <li>
-      {% if ancestor.link %}<a href="{{ ancestor.link }}">{% endif %}
+      {% if ancestor.link %}
+        <a href="{{ ancestor.link }}">{{ ancestor.text }}</a>
+      {% else %}
         {{ ancestor.text }}
-        {% if ancestor.link %}</a>{% endif %}
+      {% endif %}
       {% if not loop.last %}<span class="bcpoint"> > </span>{% endif %}
     </li>
   {%- endfor %}
+  {%- endif %}
+  </ul>
 {%- endblock -%}
 
 {%- block alertbar -%}

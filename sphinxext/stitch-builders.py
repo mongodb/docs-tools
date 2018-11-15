@@ -515,6 +515,10 @@ class FastDirectoryHTMLBuilder(DirectoryHTMLBuilder, FastHTMLMixin):
     ):
         self.toctree.initialize(self.env)
 
+        lineage = self._get_page_lineage(docname)
+        processed_lineage = self._process_page_lineage(docname, lineage)
+        addctx["lineage"] = processed_lineage
+
         DirectoryHTMLBuilder.handle_page(
             self,
             pagename,
@@ -523,6 +527,23 @@ class FastDirectoryHTMLBuilder(DirectoryHTMLBuilder, FastHTMLMixin):
             outfilename=outfilename,
             event_arg=event_arg,
         )
+
+    def _get_page_lineage(self, docname, **kw):
+        lineage = [{ "text": "Stitch", "link": self.toctree.root }]
+        page = self.toctree.get_page(docname, self.app, self.env)
+        if page:
+            lineage.extend(page.get_lineage())
+        return lineage
+
+    def _process_page_lineage(self, docname, lineage):
+        processed = []
+        for ancestor in lineage:
+            if not ancestor.get("text"):
+                ancestor["text"] = self.toctree.render_title(ancestor["slug"])
+            if ancestor.get("link"):
+                ancestor["link"] = self.toctree.get_relative_uri(docname, ancestor["link"])
+            processed.append(ancestor)
+        return processed
 
     def _get_local_toctree(self, docname, collapse=True, **kwds):
         if "includehidden" not in kwds:
