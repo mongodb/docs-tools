@@ -507,7 +507,7 @@ class FastDirectoryHTMLBuilder(DirectoryHTMLBuilder, FastHTMLMixin):
 
     def handle_page(
         self,
-        pagename,
+        docname,
         addctx,
         templatename="page.html",
         outfilename=None,
@@ -521,7 +521,7 @@ class FastDirectoryHTMLBuilder(DirectoryHTMLBuilder, FastHTMLMixin):
 
         DirectoryHTMLBuilder.handle_page(
             self,
-            pagename,
+            docname,
             addctx,
             templatename=templatename,
             outfilename=outfilename,
