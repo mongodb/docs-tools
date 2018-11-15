@@ -44,21 +44,21 @@
 {%- endmacro -%}
 
 {%- macro relbar() %}
-   <div class="bc">
-     {% if parents %}
-       <ul>
+  <div class="bc">
+    {%- block breadcrumbs %}
+    {% if parents %}
+      <ul>
         {%- block rootrellink %}{%- endblock %}
-        {%- block breadcrumbs %}
-          {%- for parent in parents %}
-            <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
+        {%- for parent in parents %}
+          <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
             {% if loop.last %}<li>{{title}}</li>{% endif %}
-          {%- endfor %}
-        {% endblock %}
+        {%- endfor %}
         {%- block relbaritems %} {% endblock %}
       </ul>
     {% else %}
       {# <i class="fa fa-home"></i> #}
     {% endif %}
+    {% endblock %}
   </div>
 {%- endmacro %}
 

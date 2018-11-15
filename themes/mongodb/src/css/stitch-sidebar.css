@@ -313,3 +313,7 @@ ul.toc-section-nested {
         }
     }
 }
+
+ul.stitch-bc li {
+    font-size: 16px !important;
+}
