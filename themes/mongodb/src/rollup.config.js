@@ -1,6 +1,7 @@
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import {eslint} from 'rollup-plugin-eslint';
+import json from 'rollup-plugin-json';
 import {minify} from 'uglify-es';
 import replace from 'rollup-plugin-replace';
 import resolve from 'rollup-plugin-node-resolve';
@@ -14,10 +15,15 @@ export default {
             'configFile': '.eslintrc.json'
         }),
         replace({
-          'process.env.NODE_ENV': JSON.stringify('production')
+            'process.env.NODE_ENV': JSON.stringify('production')
         }),
-        resolve(),
+        resolve({
+            'browser': true,
+            'exclude': 'node_modules/**',
+            'preferBuiltins': false
+        }),
         commonjs({'include': 'node_modules/**'}),
+        json(),
         babel({
             'exclude': 'node_modules/**',
             'presets': [

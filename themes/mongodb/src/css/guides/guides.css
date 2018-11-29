@@ -18,6 +18,7 @@
 @import url("../mongodb-base.css");
 @import url("./guides-landing.css");
 @import url("../pills.css");
+@import url("../suggestion.css");
 
 /* Draw a line separating sections. */
 h2::before {

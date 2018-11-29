@@ -31,7 +31,7 @@ class MainWidget extends preact.Component {
         }
     }
 
-    render({children, voteAcknowledgement}, {state}) {
+    render({children, canShowSuggestions, voteAcknowledgement}, {state}) {
         const delugeBodyClass = (state === STATE_INITIAL)
             ? 'deluge-body'
             : 'deluge-body deluge-body-expanded';
@@ -57,27 +57,48 @@ class MainWidget extends preact.Component {
                     onClick={() => this.setState({'state': true})}
                     class="deluge-vote-button">Yes</a>),
                 (<a key="votedown" id="rate-down"
-                    onClick={() => this.setState({'state': false})}
+                    onClick={() => {
+                        this.setState({'state': false});
+                        this.props.handleOpenDrawer();
+                    }}
                     class="deluge-vote-button">No</a>)];
         } else if (typeof state === 'boolean') {
             const sorry = (state === false)
                 ? <li>We&apos;re sorry! Please help us improve this page.</li>
                 : null;
 
-            body = (
-                <div class="deluge-questions">
-                    <ul>
-                        {sorry}
-                        {children.map((el, i) => <li key={i}>{el}</li>)}
-                    </ul>
+            if (canShowSuggestions) {
+                const commentBox = children[0];
+                body = (
+                    <div class="deluge-questions">
+                        <ul>
+                            {sorry}
+                            <li>{commentBox}</li>
+                        </ul>
 
-                    <div class="deluge-button-group">
-                        <button onClick={this.onToggle}>Cancel</button>
-                        <button class="primary"
-                            onClick={this.onSubmit}>Submit</button>
+                        <div class="deluge-button-group">
+                            <button onClick={this.onToggle}>Cancel</button>
+                            <button class="primary"
+                                onClick={this.onSubmit}>Submit</button>
+                        </div>
                     </div>
-                </div>
-            );
+                );
+            } else {
+                body = (
+                    <div class="deluge-questions">
+                        <ul>
+                            {sorry}
+                            {children.map((el, i) => <li key={i}>{el}</li>)}
+                        </ul>
+
+                        <div class="deluge-button-group">
+                            <button onClick={this.onToggle}>Cancel</button>
+                            <button class="primary"
+                                onClick={this.onSubmit}>Submit</button>
+                        </div>
+                    </div>
+                );
+            }
         }
 
 
@@ -106,7 +127,9 @@ MainWidget.propTypes = {
     'onSubmit': PropTypes.func.isRequired,
     'onClear': PropTypes.func.isRequired,
     'children': PropTypes.arrayOf(PropTypes.node),
-    'voteAcknowledgement': PropTypes.string
+    'voteAcknowledgement': PropTypes.string,
+    'handleOpenDrawer': PropTypes.func.isRequired,
+    'canShowSuggestions': PropTypes.bool.isRequired
 };
 
 export default MainWidget;
