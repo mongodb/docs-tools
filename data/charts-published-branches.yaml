@@ -1,8 +1,10 @@
 version:
   published:
+    - 'Atlas'
     - '0.10'
     - '0.9'
   active:
+    - 'Atlas'
     - '0.10'
     - '0.9'
   stable: ''
@@ -11,6 +13,7 @@ git:
     manual: 'master'
     published:
       - 'master'
+      - 'v0.10'
       - 'v0.9'
       # the branches/published list **must** be ordered from most to
       # least recent release.
