@@ -21,19 +21,20 @@
 {%- endblock -%}
 
 {%- block alertbar -%}
-    {%- if theme_active_branches and version not in theme_active_branches %}
+    {%- if theme_is_saas %}
         <div class="alert alert-info">
-           <span class="alert-message">This version of the manual is no longer supported.</span>
+          <span class="alert-message">This documentation refers to the
+          MongoDB Charts SaaS application in Atlas. For documentation on
+          the on premises version of MongoDB Charts,
+          <a href="https://docs.mongodb.com/charts/onprem/">click
+          here</a>.</span>
         </div>
-    {%- endif %}
-    {%- if theme_is_upcoming %}
+    {%- else %}
         <div class="alert alert-info">
-           <span class="alert-message">This manual pertains to an upcoming
-           release, and is made available for testing purposes only.</span>
-        </div>
-    {%- elif theme_eol %}
-        <div class="alert alert-warning">
-           <span class="alert-message">{{theme_eol_msg}}</span>
+          <span class="alert-message">This documentation refers to the
+          on premises version of MongoDB Charts. For documentation on
+          the MongoDB Charts SaaS application in Atlas,
+          <a href="https://docs.mongodb.com/charts/master/">click here</a>.</span>
         </div>
     {%- endif %}
 {%- endblock -%}
