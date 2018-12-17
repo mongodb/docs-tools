@@ -30,6 +30,12 @@ class FastNav {
         for (const component of this.components) {
             component.setup(this);
         }
+
+        // The anchor we wanted might have shifted around the page.
+        // Reload to make sure that we're at the right place.
+        if (window.location.hash) {
+            window.location.hash = window.location.hash;  // eslint-disable-line no-self-assign
+        }
     }
 }
 const fastNav = new FastNav();
