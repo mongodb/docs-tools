@@ -44,6 +44,7 @@ groups:
   "Build and Packaging":
     - Build
     - Packaging
+    - Mobile
   "Internals":
     - Testing
     - Testing Infrastructure
@@ -72,8 +73,6 @@ groups:
     - mongotop
     - mongoreplay
     - llmgo
-  "Mobile":
-    - Mobile
 
 ordering:
   # Defines an order of groups. Issues with multiple components use
@@ -91,7 +90,6 @@ ordering:
   - WiredTiger
   - MMAP
   - Storage
-  - Mobile
   - TTL
   - GridFS
   - Operations
