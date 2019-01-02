@@ -105,7 +105,7 @@ class NavbarDropdown extends preact.Component {
                                             <a href="https://docs.mongodb.com/bi-connector/current/">MongoDB BI Connector</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/charts/current/">MongoDB Charts</a>
+                                            <a href="https://docs.mongodb.com/charts/saas/">MongoDB Charts</a>
                                         </li>
                                         <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/compass/current/">MongoDB Compass</a>
