@@ -23,18 +23,27 @@
 {%- block alertbar -%}
     {%- if theme_is_saas %}
         <div class="alert alert-info">
-          <span class="alert-message">This documentation refers to the
-          MongoDB Charts SaaS application in Atlas. For documentation on
-          the on premises version of MongoDB Charts,
-          <a href="https://docs.mongodb.com/charts/onprem/">click
-          here</a>.</span>
+          <span class="alert-message">
+
+            This documentation refers to the MongoDB Charts beta 
+            service in MongoDB Atlas. Read the
+            <a href="https://docs.mongodb.com/charts/onprem/">
+            on-premises documentation</a> to learn how to use the
+            MongoDB Charts beta on site.
+
+          </span>
         </div>
     {%- else %}
         <div class="alert alert-info">
-          <span class="alert-message">This documentation refers to the
-          on premises version of MongoDB Charts. For documentation on
-          the MongoDB Charts SaaS application in Atlas,
-          <a href="https://docs.mongodb.com/charts/master/">click here</a>.</span>
+          <span class="alert-message">
+
+            This documentation refers to the on-premises edition
+            of MongoDB Charts beta. Read the 
+            <a href="https://docs.mongodb.com/charts/master/">Atlas
+            service documentation</a> to learn how to use MongoDB 
+            Charts beta with your Atlas project.
+
+          </span>
         </div>
     {%- endif %}
 {%- endblock -%}
