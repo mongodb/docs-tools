@@ -176,6 +176,7 @@ def setup(app):
     app.add_directive(
         'tabs-stitch-sdks',
         create_tab_directive('stitchSdks', [ # Note: camelCase is required
+            ('functions', 'Functions'),
             ('javascript', 'JavaScript SDK'),
             ('android', 'Android SDK'),
             ('ios', 'iOS SDK')
