@@ -47,7 +47,7 @@ def render_steps(steps, conf):
 
         if 'heading' in step:
             r.heading(text=step.heading,
-                      char=character_levels[step.level],
+                      char=character_levels[step.level] * 2,
                       indent=3)
             r.newline()
 
@@ -64,12 +64,12 @@ def render_steps(steps, conf):
 
         if 'heading' in step:
             r.heading(text="Step {0}: {1}".format(step.number, step.heading),
-                      char=character_levels[step.level],
+                      char=character_levels[step.level] * 2,
                       indent=3)
             r.newline()
         else:
             r.heading(text="Step {0}".format(step.number),
-                      char=character_levels[step.level],
+                      char=character_levels[step.level] * 2,
                       indent=3)
             r.newline()
 
