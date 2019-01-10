@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Next time we egg, will bump to 0.5.18 
-# After egging, will be 0.5.19-dev, but must egg with non-dev  version
-__version__ = '0.5.18-dev'
+# Next time we egg, will bump to 0.5.19
+# After egging, will be 0.5.20-dev, but must egg with non-dev  version
+__version__ = '0.5.19-dev'
