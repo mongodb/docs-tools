@@ -1,4 +1,5 @@
 import * as componentAccordion from './componentAccordion';
+import * as componentAtlas from './componentAtlas';
 import * as componentCloseOpen from './componentCloseOpen';
 import * as componentCodeBlockFix from './componentCodeBlockFix';
 import * as componentCopyButtons from './componentCopyButtons';
@@ -65,6 +66,9 @@ $(() => {
     fastNav.register(componentToggleController);
     fastNav.register(componentCloseOpen);
     fastNav.register(componentAccordion);
+    if (document.referrer.indexOf('aws.amazon.com') >= 0) {
+        fastNav.register(componentAtlas);
+    }
 
     /* Hide toc if there aren't any items */
     if (!$('.toc > ul > li > ul > li').length) {
