@@ -1,0 +1,15 @@
+/* Custom CSS for configuration tables in Stitch Docs */
+/* Useful for multi-interface configuration tables */
+.config-table {
+    width: 100%;
+
+    & td {
+        & .line-block {
+            margin: 0;
+        }
+        & p.first, p.last {
+            margin-bottom: 0;
+        }
+    }
+
+}
