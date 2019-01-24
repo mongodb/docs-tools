@@ -18,7 +18,8 @@ LANGUAGES = [('shell', 'Mongo Shell'),
              ('csharp', 'C#'),
              ('perl', 'Perl'),
              ('ruby', 'Ruby'),
-             ('scala', 'Scala')]
+             ('scala', 'Scala'),
+             ('go', 'Go')]
 
 DEPLOYMENTS = [('cloud', 'Cloud (Atlas)'),
                ('local', 'Local Instance')]
