@@ -24,7 +24,7 @@ class Widgets extends preact.Component {
     }
 
     isSuggestionPage(path) {
-        return whitelist.includes(path);
+        return whitelist.indexOf(path) >= 0;
     }
 
     handleOpenDrawer() {
