@@ -10,6 +10,9 @@
         & p.first, p.last {
             margin-bottom: 0;
         }
+        & div.tabs p:nth-child(1) {
+            margin: 0
+        }
     }
 
 }
