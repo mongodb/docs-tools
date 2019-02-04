@@ -1,0 +1,4 @@
+span.caption-text { font-weight: bold; }
+div.literal-block-wrapper.copyable-code-block { padding: 0; }
+div.tabs__content > div > div:nth-child(1) { margin-top: 0; }
+ul.tab-strip { margin-bottom: 0 }
