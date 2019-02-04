@@ -1,21 +1,21 @@
-import * as componentAccordion from './componentAccordion';
-import * as componentAtlas from './componentAtlas';
-import * as componentCloseOpen from './componentCloseOpen';
-import * as componentCodeBlockFix from './componentCodeBlockFix';
-import * as componentCopyButtons from './componentCopyButtons';
-import * as componentFastLoad from './componentFastLoad';
-import * as componentFeedback from './componentFeedback';
-import * as componentGuides from './componentGuides';
-import * as componentLightbox from './componentLightbox';
-import * as componentOpenAPI from './componentOpenAPI';
-import * as componentPillStrip from './componentPillStrip';
-import * as componentSidebar from './componentSidebar';
-import * as componentStitchSidebar from './componentStitchSidebar';
-import * as componentTabs from './componentTabs';
-import * as componentThirdParty from './componentThirdParty';
-import * as componentToggleController from './componentToggleController';
-import * as componentUriWriter from './componentUriwriter';
-import * as componentVersionSelector from './componentVersionSelector';
+import * as componentAccordion from '../js/componentAccordion';
+import * as componentAtlas from '../js/componentAtlas';
+import * as componentCloseOpen from '../js/componentCloseOpen';
+import * as componentCodeBlockFix from '../js/componentCodeBlockFix';
+import * as componentCopyButtons from '../js/componentCopyButtons';
+import * as componentFastLoad from '../js/componentFastLoad';
+import * as componentFeedback from '../js/componentFeedback';
+import * as componentGuides from '../js/componentGuides';
+import * as componentLightbox from '../js/componentLightbox';
+import * as componentOpenAPI from '../js/componentOpenAPI';
+import * as componentPillStrip from '../js/componentPillStrip';
+import * as componentSidebar from '../js/componentSidebar';
+import * as componentStitchSidebar from '../js/componentStitchSidebar';
+import * as componentTabs from '../js/componentTabs';
+import * as componentThirdParty from '../js/componentThirdParty';
+import * as componentToggleController from '../js/componentToggleController';
+import * as componentUriWriter from '../js/componentUriwriter';
+import * as componentVersionSelector from '../js/componentVersionSelector';
 
 class FastNav {
     constructor() {
