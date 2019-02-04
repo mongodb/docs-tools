@@ -5,6 +5,8 @@ TARGETS=../static/mongodb-docs.css \
         ../static/landing.css \
         ../static/navbar.min.css \
         ../static/controller.js \
+        ../static/feedback.min.js \
+        ../static/feedback.css \
         ../static/navbar.min.js \
         ../static/landing.min.js
 POSTCSS=./node_modules/.bin/postcss
@@ -30,11 +32,18 @@ all: $(TARGETS)
 	$(POSTCSS) css/landing/landing.css -c postcss.config.js -o $@
 
 # Manual properties
-../static/controller.js: js/*.js widgets/*/*.js widgets/*.js rollup.config.js node_modules/.CURRENT
-	$(ROLLUP) -c rollup.config.js -o $@ js/controller.js
+../static/controller.js: main/controller.js js/*.js widgets/*/*.js widgets/*.js rollup.config.js node_modules/.CURRENT
+	$(ROLLUP) -c rollup.config.js -o $@ main/controller.js
 
 ../static/mongodb-docs.css: css/manual/*.css css/*.css postcss.config.js node_modules/.CURRENT
 	$(POSTCSS) css/manual/mongodb-docs.css -c postcss.config.js -o $@
+
+# Standalone feedback widgets
+../static/feedback.css: css/feedback.css css/fonts.css postcss.config.js node_modules/.CURRENT
+	$(POSTCSS) css/feedback.css -c postcss.config.js -o $@
+
+../static/feedback.min.js: main/feedbackController.js widgets/*/*.js widgets/*.js rollup.config.js node_modules/.CURRENT
+	$(ROLLUP) -c rollup.config.js -o $@ main/feedbackController.js
 
 # Guides
 ../static/guides.css: css/guides/*.css css/*.css postcss.config.js node_modules/.CURRENT
