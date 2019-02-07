@@ -1,11 +1,13 @@
 version:
   published:
     - 'Atlas'
+    - '0.12'
     - '0.11'
     - '0.10'
     - '0.9'
   active:
     - 'Atlas'
+    - '0.12'
     - '0.11'
     - '0.10'
     - '0.9'
@@ -15,6 +17,7 @@ git:
     manual: 'master'
     published:
       - 'master'
+      - 'v0.12'
       - 'v0.11'
       - 'v0.10'
       - 'v0.9'
