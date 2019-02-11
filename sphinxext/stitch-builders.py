@@ -167,6 +167,7 @@ class TocSection:
         return section
 
     def children_from_toctree_entries(self, entries):
+        # TODO: Allow for anchor links (slug#page-heading-or-somesuch)
         children = [TocPage(display_name, slug, parent_section=self) for display_name, slug in entries]
         return children
 
