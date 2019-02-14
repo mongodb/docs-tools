@@ -1,4 +1,5 @@
 import BinaryQuestion from './BinaryQuestion';
+import EmailInput from './EmailInput';
 import FreeformQuestion from './FreeformQuestion';
 import MainWidget from './MainWidget';
 import PropTypes from 'prop-types';
@@ -122,6 +123,9 @@ class Deluge extends preact.Component {
                     hasError={(input) => this.validateFormLength(input)}
                     store={this.makeStore('reason')}
                     placeholder="What were you looking for?" />
+                <EmailInput
+                    store={this.makeStore('email')}
+                    placeholder="Email address" />
                 <BinaryQuestion
                     store={this.makeStore('findability')}>
                     Did you find it?</BinaryQuestion>

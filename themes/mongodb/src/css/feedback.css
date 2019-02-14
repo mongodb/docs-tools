@@ -46,6 +46,8 @@
   .deluge .error {
     color: red;
     line-height: 1.1; }
+  .deluge input {
+    width: 100%; }
   .deluge ul {
     margin: 0;
     padding: 0; }
