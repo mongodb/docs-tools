@@ -7,6 +7,7 @@ TARGETS=../static/mongodb-docs.css \
         ../static/controller.js \
         ../static/feedback.min.js \
         ../static/feedback.css \
+        ../static/copy-buttons.min.js \
         ../static/navbar.min.js \
         ../static/landing.min.js
 POSTCSS=./node_modules/.bin/postcss
@@ -44,6 +45,10 @@ all: $(TARGETS)
 
 ../static/feedback.min.js: main/feedbackController.js widgets/*/*.js widgets/*.js rollup.config.js node_modules/.CURRENT
 	$(ROLLUP) -c rollup.config.js -o $@ main/feedbackController.js
+
+# Standalone copy buttons
+../static/copy-buttons.min.js: main/copyButtonsController.js js/componentCopyButtons.js js/util.js rollup.config.js node_modules/.CURRENT
+	$(ROLLUP) -c rollup.config.js -o $@ main/copyButtonsController.js
 
 # Guides
 ../static/guides.css: css/guides/*.css css/*.css postcss.config.js node_modules/.CURRENT
