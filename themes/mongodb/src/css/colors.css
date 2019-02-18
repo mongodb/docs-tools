@@ -26,6 +26,14 @@
   --light-grey-secondary: #f5f6f7;
   --primary-shadow: rgba(0, 0, 0, .1);
 
+  --mms-alert-blue: #43b1e5;
+  --mms-alert-red: #ef4c4c;
+  --mms-alert-red-dark: color(var(--alert-red) tint(25%));
+  --mms-gray1: #464c4f;
+  --mms-gray5: #babdbe;
+  --mms-green2: #13aa52;
+  --mms-warning-text: #ffb618;
+
   --sans-serif-heavy: "Akzidenz Grotesk BQ Medium", sans-serif;
   --sans-serif: "Akzidenz", "Helvetica Neue", sans-serif;
   --monospace: "Source Code Pro", monospace;
