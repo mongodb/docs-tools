@@ -1,6 +1,27 @@
 @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:300,500,700);
 
 /* Fonts! */
+
+/* MMS Icons */
+@font-face {
+    font-family: 'MMSIcons-Regular';
+    src: url('fonts/MMSIcons-Regular.woff2') format('woff2'),
+         url('fonts/MMSIcons-Regular.woff') format('woff'),
+         url('fonts/MMSIcons-Regular.ttf')  format('truetype');
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: 'MMSOrgIcons-Regular';
+    src: url('fonts/MMSOrgIcons-Regular.woff2') format('woff2'),
+         url('fonts/MMSOrgIcons-Regular.woff') format('woff'),
+         url('fonts/MMSOrgIcons-Regular.ttf')  format('truetype');
+    font-style: normal;
+    font-weight: normal;
+}
+
+/* Akzidenz */
 /*Reg*/
 @font-face {
     font-family: 'Akzidenz';
