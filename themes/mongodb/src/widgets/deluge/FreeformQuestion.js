@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import preact from 'preact';
 
 const MIN_CHAR_COUNT = 15;
-const ERROR_TEXT = 'Please provide at least 15 characters in your response.';
+const ERROR_TEXT = `Please respond with at least ${MIN_CHAR_COUNT} characters.`;
 
 class FreeformQuestion extends preact.Component {
     constructor(props) {
