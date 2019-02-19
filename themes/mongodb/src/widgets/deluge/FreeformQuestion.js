@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
 import preact from 'preact';
 
-const MIN_CHAR_COUNT = 15;
-const ERROR_TEXT = `Please respond with at least ${MIN_CHAR_COUNT} characters.`;
-
 class FreeformQuestion extends preact.Component {
     constructor(props) {
         super(props);
@@ -17,28 +14,25 @@ class FreeformQuestion extends preact.Component {
     }
 
     handleChange(ev) {
-        const {store} = this.props;
+        const {hasError, store} = this.props;
         const value = ev.target.value;
+        const error = hasError(value);
 
-        if (value === '' || value.length >= MIN_CHAR_COUNT) {
-            this.setState({
-                'error': false,
-                'text': value
-            });
+        if (error) {
+            store.set('');
+            ev.target.setCustomValidity(error);
+        } else {
             store.set(value);
             ev.target.setCustomValidity('');
-        } else {
-            this.setState({
-                'error': true,
-                'text': value
-            });
-            store.set('');
-            ev.target.setCustomValidity(ERROR_TEXT);
         }
+        this.setState({
+            'error': error,
+            'text': value
+        });
     }
 
     render() {
-        const {placeholder} = this.props;
+        const {errorText, placeholder} = this.props;
         const {error, text} = this.state;
         return (
             <div>
@@ -49,7 +43,7 @@ class FreeformQuestion extends preact.Component {
                 <div
                     className="error"
                     style={{'visibility': error ? 'visible' : 'hidden'}}>
-                    {ERROR_TEXT}
+                    {errorText}
                 </div>
             </div>
         );
@@ -57,8 +51,14 @@ class FreeformQuestion extends preact.Component {
 }
 
 FreeformQuestion.propTypes = {
+    'errorText': PropTypes.string,
+    'hasError': PropTypes.func,
     'placeholder': PropTypes.string,
     'store': PropTypes.objectOf(PropTypes.func).isRequired
+};
+
+FreeformQuestion.defaultProps = {
+    'hasError': () => false
 };
 
 export default FreeformQuestion;

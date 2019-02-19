@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import preact from 'preact';
 
 const FEEDBACK_URL = 'http://deluge.us-east-1.elasticbeanstalk.com/';
+const MIN_CHAR_COUNT = 15;
+const MIN_CHAR_ERROR_TEXT = `Please respond with at least ${MIN_CHAR_COUNT} characters.`;
 
 // Take a url and a query parameters object, and return the resulting url.
 function addQueryParameters(url, parameters) {
@@ -18,6 +20,7 @@ class Deluge extends preact.Component {
         super(props);
         this.state = {
             'answers': {},
+            'error': false,
             'voteAcknowledgement': null
         };
         this.onSubmit = this.onSubmit.bind(this);
@@ -99,6 +102,12 @@ class Deluge extends preact.Component {
         };
     }
 
+    validateFormLength(input) {
+        const hasError = !(input === '' || input.length >= MIN_CHAR_COUNT);
+        this.setState({'error': hasError});
+        return hasError;
+    }
+
     render(props, {voteAcknowledgement}) {
         return (
             <MainWidget
@@ -106,8 +115,11 @@ class Deluge extends preact.Component {
                 onSubmit={this.onSubmit}
                 onClear={() => this.setState({'answers': {}})}
                 canShowSuggestions={props.canShowSuggestions}i
-                handleOpenDrawer={props.handleOpenDrawer}>
+                handleOpenDrawer={props.handleOpenDrawer}
+                error={this.state.error}>
                 <FreeformQuestion
+                    errorText={MIN_CHAR_ERROR_TEXT}
+                    hasError={(input) => this.validateFormLength(input)}
                     store={this.makeStore('reason')}
                     placeholder="What were you looking for?" />
                 <BinaryQuestion

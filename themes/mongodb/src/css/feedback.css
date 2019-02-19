@@ -150,6 +150,8 @@
     font-family: "Akzidenz",sans-serif;
     font-size: 12px;
     height: 26px; }
+  .deluge-button-group button:disabled {
+    background-color: var(--light-grey-primary); }
 
 .deluge-questions {
   font-size: 12px; }

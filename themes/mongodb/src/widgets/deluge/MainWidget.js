@@ -79,7 +79,8 @@ class MainWidget extends preact.Component {
                         <div class="deluge-button-group">
                             <button onClick={this.onToggle}>Cancel</button>
                             <button class="primary"
-                                onClick={this.onSubmit}>Submit</button>
+                                onClick={this.onSubmit}
+                                disabled={this.props.error}>Submit</button>
                         </div>
                     </div>
                 );
@@ -94,7 +95,8 @@ class MainWidget extends preact.Component {
                         <div class="deluge-button-group">
                             <button onClick={this.onToggle}>Cancel</button>
                             <button class="primary"
-                                onClick={this.onSubmit}>Submit</button>
+                                onClick={this.onSubmit}
+                                disabled={this.props.error}>Submit</button>
                         </div>
                     </div>
                 );
@@ -124,6 +126,7 @@ class MainWidget extends preact.Component {
 }
 
 MainWidget.propTypes = {
+    'error': PropTypes.bool.isRequired,
     'onSubmit': PropTypes.func.isRequired,
     'onClear': PropTypes.func.isRequired,
     'children': PropTypes.arrayOf(PropTypes.node),
