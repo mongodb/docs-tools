@@ -41,6 +41,11 @@
     height: 100px;
     line-height: 1.5em;
     width: 100%; }
+  .deluge textarea:invalid {
+    color: red; }
+  .deluge .error {
+    color: red;
+    line-height: 1.1; }
   .deluge ul {
     margin: 0;
     padding: 0; }
@@ -145,6 +150,8 @@
     font-family: "Akzidenz",sans-serif;
     font-size: 12px;
     height: 26px; }
+  .deluge-button-group button:disabled {
+    background-color: var(--light-grey-primary); }
 
 .deluge-questions {
   font-size: 12px; }
