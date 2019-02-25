@@ -236,6 +236,15 @@ ICONS_MMS_ORG = IconSet(
         'activity-feed',
     )))
 
+#: Charts icons
+ICONS_CHARTS = IconSet(
+    node_name='IconCharts',
+    role_names=('icon-charts',),
+    css_prefix='charts-icon charts-icon-',
+    icons=set((
+        'geoglobe',
+    )))
+
 
 def class_to_label(css_class):
     """Approximate a label for screen readers from a CSS class name."""
@@ -338,6 +347,9 @@ def setup(app):
     create_icon_set(app, ICONS_MMS_ORG)
     create_icon_set(app, ICONS_MMS)
     create_icon_set(app, ICONS_FA4)
+
+    # For Charts
+    create_icon_set(app, ICONS_CHARTS)
 
     # For everything else, there's MasterCard. Also FontAwesome 5.
     create_icon_set(app, ICONS_FA5)
