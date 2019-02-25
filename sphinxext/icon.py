@@ -12,7 +12,7 @@ HELP_TEMPLATE = fett.Template('''
 .. list-table::
 
 {{ for name in icons }}
-   * - ``{{ name }}``
+   * - ``:{{ role }}:`{{ name }}```
      - :{{ role }}:`{{ name }}`
 {{ end }}
 ''')
