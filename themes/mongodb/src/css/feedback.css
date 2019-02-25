@@ -41,12 +41,11 @@
     height: 100px;
     line-height: 1.5em;
     width: 100%; }
-  .deluge textarea:invalid {
-    color: red; }
   .deluge input {
     width: 100%; }
+  .deluge textarea:invalid,
   .deluge input:invalid {
-    color: red; }
+    color: var(--tomato); }
   .deluge .error {
     color: red;
     line-height: 1.1; }
@@ -62,6 +61,9 @@
     font-size: 16px;
     margin-top: 15px;
     margin-bottom: 15px; }
+  .deluge .caption {
+    font-size: 12px;
+    line-height: 1.4; }
   @media print {
     .deluge {
       display: none; } }

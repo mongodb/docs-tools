@@ -9,6 +9,7 @@ const FEEDBACK_URL = 'http://deluge.us-east-1.elasticbeanstalk.com/';
 const MIN_CHAR_COUNT = 15;
 const MIN_CHAR_ERROR_TEXT = `Please respond with at least ${MIN_CHAR_COUNT} characters.`;
 const EMAIL_ERROR_TEXT = 'Please enter a valid email address.';
+const EMAIL_PROMPT_TEXT = 'May we contact you about your feedback?';
 
 // Take a url and a query parameters object, and return the resulting url.
 function addQueryParameters(url, parameters) {
@@ -132,6 +133,7 @@ class Deluge extends preact.Component {
                     hasError={(input) => this.validateFormLength(input)}
                     store={this.makeStore('reason')}
                     placeholder="What were you looking for?" />
+                <div className="caption">{EMAIL_PROMPT_TEXT}</div>
                 <InputField
                     errorText={EMAIL_ERROR_TEXT}
                     hasError={(input) => this.validateEmail(input)}
