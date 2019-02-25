@@ -21,6 +21,16 @@
     font-weight: normal;
 }
 
+/* Charts */
+@font-face {
+    font-family: 'ChartsIcons';
+    src: url('fonts/charts.woff2') format('woff2'),
+         url('fonts/charts.woff') format('woff'),
+         url('fonts/charts.ttf')  format('truetype');
+    font-style: normal;
+    font-weight: normal;
+}
+
 /* Akzidenz */
 /*Reg*/
 @font-face {
