@@ -1,5 +1,6 @@
 import BinaryQuestion from './BinaryQuestion';
 import FreeformQuestion from './FreeformQuestion';
+import InputField from './InputField';
 import MainWidget from './MainWidget';
 import PropTypes from 'prop-types';
 import preact from 'preact';
@@ -7,6 +8,8 @@ import preact from 'preact';
 const FEEDBACK_URL = 'http://deluge.us-east-1.elasticbeanstalk.com/';
 const MIN_CHAR_COUNT = 15;
 const MIN_CHAR_ERROR_TEXT = `Please respond with at least ${MIN_CHAR_COUNT} characters.`;
+const EMAIL_ERROR_TEXT = 'Please enter a valid email address.';
+const EMAIL_PROMPT_TEXT = 'May we contact you about your feedback?';
 
 // Take a url and a query parameters object, and return the resulting url.
 function addQueryParameters(url, parameters) {
@@ -20,7 +23,8 @@ class Deluge extends preact.Component {
         super(props);
         this.state = {
             'answers': {},
-            'error': false,
+            'emailError': false,
+            'formLengthError': false,
             'voteAcknowledgement': null
         };
         this.onSubmit = this.onSubmit.bind(this);
@@ -104,11 +108,18 @@ class Deluge extends preact.Component {
 
     validateFormLength(input) {
         const hasError = !(input === '' || input.length >= MIN_CHAR_COUNT);
-        this.setState({'error': hasError});
+        this.setState({'formLengthError': hasError});
+        return hasError;
+    }
+
+    validateEmail(input) {
+        const hasError = !(input === '' || (/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(input));
+        this.setState({'emailError': hasError});
         return hasError;
     }
 
     render(props, {voteAcknowledgement}) {
+        const hasError = this.state.formLengthError || this.state.emailError;
         return (
             <MainWidget
                 voteAcknowledgement={voteAcknowledgement}
@@ -116,12 +127,19 @@ class Deluge extends preact.Component {
                 onClear={() => this.setState({'answers': {}})}
                 canShowSuggestions={props.canShowSuggestions}i
                 handleOpenDrawer={props.handleOpenDrawer}
-                error={this.state.error}>
+                error={hasError}>
                 <FreeformQuestion
                     errorText={MIN_CHAR_ERROR_TEXT}
                     hasError={(input) => this.validateFormLength(input)}
                     store={this.makeStore('reason')}
                     placeholder="What were you looking for?" />
+                <div className="caption">{EMAIL_PROMPT_TEXT}</div>
+                <InputField
+                    errorText={EMAIL_ERROR_TEXT}
+                    hasError={(input) => this.validateEmail(input)}
+                    inputType={'email'}
+                    store={this.makeStore('email')}
+                    placeholder="Email address" />
                 <BinaryQuestion
                     store={this.makeStore('findability')}>
                     Did you find it?</BinaryQuestion>
