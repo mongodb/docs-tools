@@ -113,6 +113,9 @@ class NavbarDropdown extends preact.Component {
                                         <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/spark-connector/current/">MongoDB Spark Connector</a>
                                         </li>
+                                        <li className="submenu__item">
+                                            <a href="https://docs.mongodb.com/kubernetes-operator/current/">MongoDB Enterprise Kubernetes Operator</a>
+                                        </li>
                                     </Submenu>
                                 </li>
 
