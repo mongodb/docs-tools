@@ -924,10 +924,10 @@ a.twitter-icon, a.youtube-icon, a.facebook-icon, a.stack-overflow-icon, a.slack-
     margin-top: 70px;
     text-align: center;
     border-radius: 3px;
-    background-color: #7fc857;
+    background-color: var(--mongodb-green);
     color: white;
     left: 30px;
-    border: 1.5px solid #7fc857;
+    border: 1.5px solid var(--mongodb-green);
     padding: 5px 10px;
     transform: rotate(90deg);
     transform-origin: left top 0;

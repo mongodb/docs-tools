@@ -1,7 +1,6 @@
 /* Copied from docs-tutorials */
 .deluge {
-  background-color: #7bc552;
-  background-image: radial-gradient(circle at 47% 65%, #7bc552, #69b241);
+  background-color: var(--mongodb-green);
   border-radius: 4px 4px 0 0;
   bottom: 0;
   color: #fff;
@@ -21,9 +20,9 @@
     .deluge .switch:hover {
       cursor: pointer; }
     .deluge .switch.good.selected, .deluge .switch.good.selected:hover {
-      color: #69b241; }
+      color: var(--mongodb-green); }
     .deluge .switch.good:hover {
-      color: #4f872f; }
+      color: var(--mongodb-green); }
     .deluge .switch.bad.selected, .deluge .switch.bad.selected:hover {
       color: #c85757; }
     .deluge .switch.bad:hover {
@@ -125,7 +124,7 @@
   top: 6px; }
 
 .deluge-vote-button {
-  color: #69b241;
+  color: var(--mongodb-green);
   display: inline-block;
   font-family: 'Akzidenz', sans-serif;
   text-align: center;
@@ -136,7 +135,7 @@
   cursor: pointer; }
 
 .deluge-fix-button {
-  color: #69b241;
+  color: var(--mongodb-green);
   font-family: 'Akzidenz', sans-serif;
   text-decoration: underline; }
 
