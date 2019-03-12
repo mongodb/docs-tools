@@ -40,12 +40,12 @@
 .tab-strip__element[aria-selected=true],
 .tab-strip__element[aria-selected=true]:focus,
 .tab-strip__element[aria-selected=true]:hover {
-    color: #6ba442;
+    color: var(--mongodb-green);
     font-weight: bold;
     background-color: #fff;
     border: 0.5px solid #babdbe;
     border-bottom-color: transparent;
-    border-top-color: #6ba442;
+    border-top-color: var(--mongodb-green);
     border-top-width: 4px;
 }
 
@@ -61,8 +61,8 @@
 .tab-strip__element[aria-selected=true] > .caret,
 .tab-strip__element[aria-selected=true]:focus > .caret,
 .tab-strip__element[aria-selected=true]:hover > .caret {
-    border-top-color: #6ba442;
-    border-bottom-color: #6ba442;
+    border-top-color: var(--mongodb-green);
+    border-bottom-color: var(--mongodb-green);
 }
 
 .tab-strip__element[aria-selected=true] > .caret,
@@ -80,7 +80,7 @@
 
 /*Dropdown hover highlight mongo green*/
 .tab-strip__dropdown > li:hover {
-     background-color: #6ba442;
+     background-color: var(--mongodb-green);
 }
 
 /*White background for dropdown items*/
