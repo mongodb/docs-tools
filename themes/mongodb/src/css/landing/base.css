@@ -58,7 +58,7 @@ a {
   transition-duration: .4s;
 
   &:hover {
-    color: var(--green-secondary);
+    color: var(--elf-green);
     text-decoration: underline;
     transition-duration: .4s;
   }
