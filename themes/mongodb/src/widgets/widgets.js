@@ -7,7 +7,8 @@ const whitelist = [
     'tutorial/install-mongodb-on-windows',
     'tutorial/install-mongodb-on-ubuntu',
     'tutorial/query-documents',
-    'reference/method/db.collection.find'
+    'reference/method/db.collection.find',
+    'reference/method/db.collection.updateOne'
 ];
 
 class Widgets extends preact.Component {
