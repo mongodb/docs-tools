@@ -30,6 +30,10 @@
         <div class="alert alert-info">
            <span class="alert-message">This version of the manual is no longer supported.</span>
         </div>
+    {%- elif theme_banner %}
+        <div class="alert alert-info">
+           <span class="alert-message">{{theme_banner_msg}}</span>
+        </div>
     {%- endif %}
 
 {%- endblock -%}
