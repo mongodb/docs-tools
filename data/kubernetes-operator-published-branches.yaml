@@ -14,7 +14,7 @@ git:
     manual: 'v0.9'
     published:
       - 'master'
-      - '0.9'
+      - 'v0.9'
       - 'v0.8'
       # the branches/published list **must** be ordered from most to
       # least recent release.
