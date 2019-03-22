@@ -1,4 +1,5 @@
 .announcement {
+  max-width: 775px;
 
   &__header {
     font-weight: bold;
