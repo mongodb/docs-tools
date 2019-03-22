@@ -4,3 +4,5 @@
 @import 'bem-components/toc'; /* TODO: dedup from tutorials*/
 
 @import 'bem-components/block';
+
+@import 'bem-components/announcement';

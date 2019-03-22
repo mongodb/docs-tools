@@ -1,0 +1,12 @@
+.announcement {
+
+  &__header {
+    font-weight: bold;
+    margin-bottom: 24px;
+  }
+
+  &__body {
+    color: var(--grey-secondary);
+    margin-bottom: 24px;
+  }
+}
