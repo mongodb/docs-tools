@@ -132,7 +132,7 @@ class Deluge extends preact.Component {
                     errorText={MIN_CHAR_ERROR_TEXT}
                     hasError={(input) => this.validateFormLength(input)}
                     store={this.makeStore('reason')}
-                    placeholder="What were you looking for?" />
+                    placeholder="What are you trying to do?" />
                 <div className="caption">{EMAIL_PROMPT_TEXT}</div>
                 <InputField
                     errorText={EMAIL_ERROR_TEXT}
