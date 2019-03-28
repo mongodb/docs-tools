@@ -10,7 +10,6 @@
   position: fixed;
   right: 20px;
   transition: width .3s ease;
-  width: 195px;
   z-index: 100; }
   .deluge .switch {
     display: inline-block;
@@ -105,7 +104,11 @@
   font-family: 'Akzidenz', sans-serif;
   height: 44px;
   line-height: 44px;
+  padding: 0 1rem;
   text-align: center; }
+
+.deluge-header a {
+  color: #fff; }
 
 .deluge-header-expanded {
   height: 48px; }

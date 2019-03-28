@@ -25,10 +25,9 @@ class MainWidget extends preact.Component {
     onToggle() {
         this.props.onClear();
         if (this.state.state === STATE_INITIAL) {
-            this.setState({'state': STATE_NOT_VOTED});
-        } else {
-            this.setState({'state': STATE_INITIAL});
+            return;
         }
+        this.setState({'state': STATE_INITIAL});
     }
 
     render({children, canShowSuggestions, voteAcknowledgement}, {state}) {
@@ -109,7 +108,22 @@ class MainWidget extends preact.Component {
                 <div class={delugeHeaderClass} onClick={this.onToggle}>
                     {state === STATE_INITIAL &&
                         <span class="fa fa-comments deluge-comment-icon"></span>}
-                    <span class="deluge-helpful">Was this page helpful?</span>
+                    <span class="deluge-helpful">Was this page helpful?&emsp;
+                        {state === STATE_INITIAL && (
+                            <span>
+                                <a key="voteup" id="rate-up"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        this.setState({'state': true});
+                                    }}>Yes</a>&nbsp;&middot;&nbsp;
+                                <a key="votedown" id="rate-down"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        this.setState({'state': false});
+                                    }}>No</a>
+                            </span>
+                        )}
+                    </span>
                     {state !== STATE_INITIAL &&
                         <span class="fa fa-angle-down deluge-close-icon"></span>}
                 </div>
