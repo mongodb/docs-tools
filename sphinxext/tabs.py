@@ -81,7 +81,7 @@ TABS_TEMPLATE = '''
 HEADING_TEMPLATE_RST = '''
 .. h{}::
 
-   title: {}
+   title: "{}"
 '''
 
 H1_TEMPLATE_HTML = '''
