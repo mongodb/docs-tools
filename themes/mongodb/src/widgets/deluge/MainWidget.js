@@ -109,23 +109,23 @@ class MainWidget extends preact.Component {
                     {state === STATE_INITIAL &&
                         <span class="fa fa-comments deluge-comment-icon"></span>}
                     <span class="deluge-helpful">Was this page helpful?</span>
-                    {state === STATE_INITIAL && (
-                        <span>
-                            <a key="voteup" id="rate-up"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    this.setState({'state': true});
-                                }}>Yes</a>&nbsp;&middot;&nbsp;
-                            <a key="votedown" id="rate-down"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    this.setState({'state': false});
-                                }}>No</a>
-                        </span>
-                    )}
                     {state !== STATE_INITIAL &&
                         <span class="fa fa-angle-down deluge-close-icon"></span>}
                 </div>
+                {state === STATE_INITIAL && (
+                    <div class="deluge-vote">
+                        <a key="voteup" id="rate-up"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                this.setState({'state': true});
+                            }}>Yes</a>
+                        <a key="votedown" id="rate-down"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                this.setState({'state': false});
+                            }}>No</a>
+                    </div>
+                )}
 
                 <div class={delugeBodyClass}>
                     {state === STATE_VOTED &&
