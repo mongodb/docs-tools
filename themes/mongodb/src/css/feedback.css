@@ -3,6 +3,7 @@
   background-color: var(--mongodb-green);
   border-radius: 4px 4px 0 0;
   bottom: 0;
+  box-shadow: 0 16px 60px 0 rgba(86, 91, 115, 0.2);
   color: #fff;
   font-family: 'Akzidenz', sans-serif;
   font-size: 14px;
@@ -112,6 +113,19 @@
 
 .deluge-header-expanded {
   height: 48px; }
+
+.deluge-vote {
+  background-color: #fff;
+  display: flex;
+  justify-content: space-evenly; }
+
+.deluge-vote a {
+  color: var(--mongodb-green);
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 1rem; 
+  text-transform: uppercase; }
 
 .deluge-comment-icon {
   padding-right: 5px; }
