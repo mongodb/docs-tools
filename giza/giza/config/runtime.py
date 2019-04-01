@@ -301,7 +301,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
 
         if os.path.isfile(fn):
             with open(fn, 'r') as f:
-                self._branch_conf = yaml.load(f)
+                self._branch_conf = yaml.safe_load(f)
         else:
             fn = os.path.join(self.conf.paths.builddata, 'published_branches.yaml')
             fq_fn = os.path.join(self.conf.paths.projectroot, fn)
@@ -318,7 +318,7 @@ class RuntimeStateConfig(RuntimeStateConfigurationBase):
                                         'and local repositories without a master branch.')
                         return
 
-                    self._branch_conf = yaml.load(data)
+                    self._branch_conf = yaml.safe_load(data)
 
     @property
     def builder(self):
