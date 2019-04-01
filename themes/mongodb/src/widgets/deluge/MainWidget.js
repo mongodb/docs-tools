@@ -3,7 +3,6 @@ import preact from 'preact';
 
 // State enum
 const STATE_INITIAL = 'Initial';
-const STATE_NOT_VOTED = 'NotVoted';
 const STATE_VOTED = 'Voted';
 
 class MainWidget extends preact.Component {
@@ -14,12 +13,21 @@ class MainWidget extends preact.Component {
         };
 
         this.onSubmit = this.onSubmit.bind(this);
+        this.onInitialVote = this.onInitialVote.bind(this);
         this.onToggle = this.onToggle.bind(this);
     }
 
     onSubmit() {
         this.props.onSubmit(this.state.state);
         this.setState({'state': STATE_VOTED});
+    }
+
+    onInitialVote(e, state) {
+        e.stopPropagation();
+        this.setState({'state': state});
+        if (state === false) {
+            this.props.handleOpenDrawer();
+        }
     }
 
     onToggle() {
@@ -50,17 +58,6 @@ class MainWidget extends preact.Component {
                         report the problem on Jira.</a></p>);
         } else if (state === STATE_VOTED && !voteAcknowledgement) {
             body = (<p>Submitting feedback...</p>);
-        } else if (state === STATE_NOT_VOTED) {
-            body = [
-                (<a key="voteup" id="rate-up"
-                    onClick={() => this.setState({'state': true})}
-                    class="deluge-vote-button">Yes</a>),
-                (<a key="votedown" id="rate-down"
-                    onClick={() => {
-                        this.setState({'state': false});
-                        this.props.handleOpenDrawer();
-                    }}
-                    class="deluge-vote-button">No</a>)];
         } else if (typeof state === 'boolean') {
             const sorry = (state === false)
                 ? <li>We&apos;re sorry! Please help us improve this page.</li>
@@ -115,15 +112,9 @@ class MainWidget extends preact.Component {
                 {state === STATE_INITIAL && (
                     <div class="deluge-vote">
                         <a key="voteup" id="rate-up"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                this.setState({'state': true});
-                            }}>Yes</a>
+                            onClick={(e) => this.onInitialVote(e, true)}>Yes</a>
                         <a key="votedown" id="rate-down"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                this.setState({'state': false});
-                            }}>No</a>
+                            onClick={(e) => this.onInitialVote(e, false)}>No</a>
                     </div>
                 )}
 

@@ -112,6 +112,7 @@
   color: #fff; }
 
 .deluge-header-expanded {
+  cursor: pointer;
   height: 48px; }
 
 .deluge-vote {
