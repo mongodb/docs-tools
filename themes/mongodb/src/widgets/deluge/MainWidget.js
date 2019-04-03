@@ -25,6 +25,7 @@ class MainWidget extends preact.Component {
     onInitialVote(e, state) {
         e.stopPropagation();
         this.setState({'state': state});
+        this.props.onInitialSubmit(state);
         if (state === false) {
             this.props.handleOpenDrawer();
         }
@@ -132,6 +133,7 @@ class MainWidget extends preact.Component {
 MainWidget.propTypes = {
     'error': PropTypes.bool.isRequired,
     'onSubmit': PropTypes.func.isRequired,
+    'onInitialSubmit': PropTypes.func.isRequired,
     'onClear': PropTypes.func.isRequired,
     'children': PropTypes.arrayOf(PropTypes.node),
     'voteAcknowledgement': PropTypes.string,
