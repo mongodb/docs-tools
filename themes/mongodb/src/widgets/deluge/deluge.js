@@ -22,17 +22,21 @@ class Deluge extends preact.Component {
     constructor(props) {
         super(props);
 
-        const buf = new Uint8Array(16);
-        crypto.getRandomValues(buf);
-
         this.state = {
             'answers': {},
             'emailError': false,
             'formLengthError': false,
-            'voteAcknowledgement': null,
-            'voteId': btoa(Array.prototype.map.call(buf,
-                (ch) => String.fromCharCode(ch)).join('')).slice(0, -2)
+            'voteAcknowledgement': null
         };
+
+        const crypto = (window.crypto || window.msCrypto);
+        if (crypto) {
+            const buf = new Uint8Array(16);
+            crypto.getRandomValues(buf);
+            this.state.voteId = btoa(Array.prototype.map.call(buf,
+                (ch) => String.fromCharCode(ch)).join('')).slice(0, -2);
+        }
+
         this.onSubmit = this.onSubmit.bind(this);
         this.onInitialSubmit = this.onInitialSubmit.bind(this);
     }

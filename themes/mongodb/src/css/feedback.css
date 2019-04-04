@@ -118,7 +118,7 @@
 .deluge-vote {
   background-color: #fff;
   display: flex;
-  justify-content: space-evenly; }
+  justify-content: space-around; }
 
 .deluge-vote a {
   color: var(--mongodb-green);
