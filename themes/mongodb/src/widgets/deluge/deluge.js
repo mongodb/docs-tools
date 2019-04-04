@@ -21,24 +21,13 @@ function addQueryParameters(url, parameters) {
 class Deluge extends preact.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             'answers': {},
             'emailError': false,
             'formLengthError': false,
             'voteAcknowledgement': null
         };
-
-        const crypto = (window.crypto || window.msCrypto);
-        if (crypto) {
-            const buf = new Uint8Array(16);
-            crypto.getRandomValues(buf);
-            this.state.voteId = btoa(Array.prototype.map.call(buf,
-                (ch) => String.fromCharCode(ch)).join('')).slice(0, -2);
-        }
-
         this.onSubmit = this.onSubmit.bind(this);
-        this.onInitialSubmit = this.onInitialSubmit.bind(this);
     }
 
     onSubmit(vote) {
@@ -55,7 +44,7 @@ class Deluge extends preact.Component {
             }
         }
 
-        this.sendRating(vote, fields, null).then(() => {
+        this.sendRating(vote, fields).then(() => {
             this.setState({
                 'voteAcknowledgement': (vote) ? 'up' : 'down'
             });
@@ -65,18 +54,7 @@ class Deluge extends preact.Component {
             });
     }
 
-    onInitialSubmit(vote) {
-        this.sendRating(vote, {}, 'initial_vote').then(() => {
-            this.setState({
-                'voteAcknowledgement': (vote) ? 'up' : 'down'
-            });
-        }).
-            catch((err) => {
-                console.error(err);
-            });
-    }
-
-    sendRating(vote, fields, requestPath) {
+    sendRating(vote, fields) {
         const path = `${this.props.project}/${this.props.path}`;
 
         // Report to Segment
@@ -100,12 +78,10 @@ class Deluge extends preact.Component {
 
         // Report to Deluge
         return new Promise((resolve, reject) => {
-            const feedbackUrl = requestPath ? `${FEEDBACK_URL}${requestPath}` : FEEDBACK_URL;
-            const url = addQueryParameters(feedbackUrl, {
+            const url = addQueryParameters(FEEDBACK_URL, {
                 ...fields,
                 'v': vote,
                 'p': path,
-                'vId': this.state.voteId,
                 'url': location.href
             });
 
@@ -143,14 +119,11 @@ class Deluge extends preact.Component {
     }
 
     render(props, {voteAcknowledgement}) {
-        const noAnswersSubmitted = Object.keys(this.state.answers).length === 0 ||
-            Object.values(this.state.answers).every((val) => val === '');
-        const hasError = noAnswersSubmitted || this.state.formLengthError || this.state.emailError;
+        const hasError = this.state.formLengthError || this.state.emailError;
         return (
             <MainWidget
                 voteAcknowledgement={voteAcknowledgement}
                 onSubmit={this.onSubmit}
-                onInitialSubmit={this.onInitialSubmit}
                 onClear={() => this.setState({'answers': {}})}
                 canShowSuggestions={props.canShowSuggestions}i
                 handleOpenDrawer={props.handleOpenDrawer}
