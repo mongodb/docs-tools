@@ -30,7 +30,8 @@ class Deluge extends preact.Component {
             'emailError': false,
             'formLengthError': false,
             'voteAcknowledgement': null,
-            'voteId': new TextDecoder('utf-8').decode(buf)
+            'voteId': btoa(Array.prototype.map.call(buf,
+                (ch) => String.fromCharCode(ch)).join('')).slice(0, -2)
         };
         this.onSubmit = this.onSubmit.bind(this);
         this.onInitialSubmit = this.onInitialSubmit.bind(this);
