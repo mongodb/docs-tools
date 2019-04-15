@@ -316,63 +316,6 @@ conf['directives'] = [
         'prepend': True,
         'callable': False
     },
-    ## For s3 service actions
-    {
-        'name': 's3action',
-        'tag': 's3',
-        'description': 'Service Actions',
-        'prepend': True,
-        'callable': False
-    },
-    ## For ses service actions
-    {
-        'name': 'sesaction',
-        'tag': 'ses',
-        'description': 'Service Actions',
-        'prepend': True,
-        'callable': False
-    },
-    ## For slack service actions
-    {
-        'name': 'slackaction',
-        'tag': 'slack',
-        'description': 'Service Actions',
-        'prepend': True,
-        'callable': False
-    },
-    ## For http service actions
-    {
-        'name': 'httpaction',
-        'tag': 'http',
-        'description': 'Service Actions',
-        'prepend': True,
-        'callable': False
-    },
-    ## For twilio service actions
-    {
-        'name': 'twilioaction',
-        'tag': 'twilio',
-        'description': 'Service Actions',
-        'prepend': True,
-        'callable': False
-    },
-    ## For slack service actions
-    {
-        'name': 'slackaction',
-        'tag': 'slack',
-        'description': 'Service Actions',
-        'prepend': True,
-        'callable': False
-    },
-    ## For mailgun service actions
-    {
-        'name': 'mailgunaction',
-        'tag': 'mailgun',
-        'description': 'Service Actions',
-        'prepend': True,
-        'callable': False
-    },
-
 ]
 
 ## If prepend: True, you can have a page title that match the directive.  For example, an operator X in a page with title X.  Otherwise, you can't have in page with same title and you'll get iddup as the reference.
