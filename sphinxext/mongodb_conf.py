@@ -316,6 +316,14 @@ conf['directives'] = [
         'prepend': True,
         'callable': False
     },
+    ## Stitch function context packages
+    {
+        'name': 'fn-context',
+        'tag': 'fn-context',
+        'description': 'Stitch Function Context',
+        'prepend': False,
+        'callable': False
+    },
 ]
 
 ## If prepend: True, you can have a page title that match the directive.  For example, an operator X in a page with title X.  Otherwise, you can't have in page with same title and you'll get iddup as the reference.
