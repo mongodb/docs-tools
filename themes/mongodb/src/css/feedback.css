@@ -39,6 +39,8 @@
     font-size: inherit;
     height: 100px;
     line-height: 1.5em;
+    overflow: auto;
+    resize: none;
     width: 100%; }
   .deluge input {
     width: 100%; }
@@ -123,7 +125,6 @@
 .deluge-vote a {
   color: var(--mongodb-green);
   cursor: pointer;
-  font-size: 1.25rem;
   font-weight: 700;
   padding: 1rem; 
   text-transform: uppercase; }

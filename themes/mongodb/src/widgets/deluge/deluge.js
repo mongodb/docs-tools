@@ -145,7 +145,7 @@ class Deluge extends preact.Component {
                     Did you find it?</BinaryQuestion>
                 <BinaryQuestion
                     store={this.makeStore('accuracy')}>
-                    Was the information you found <strong>accurate</strong></BinaryQuestion>
+                    Was the information you found <strong>accurate</strong>?</BinaryQuestion>
                 <BinaryQuestion
                     store={this.makeStore('clarity')}>
                     Was the information <strong>clear</strong>?</BinaryQuestion>
