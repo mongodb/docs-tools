@@ -43,31 +43,22 @@
 {%- block onboarding_modal -%}{%- endblock -%}
 
 {%- block alertbar -%}
-    {%- if theme_has_mdb_agent %}
-        <div class="alert alert-info" style="margin-left: 20px">
-          <span class="alert-message">
+  {%- if theme_has_mdb_agent %}
+    <div class="alert alert-info alert-dismissible fade in" role="alert" style="margin-left: 20px">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <span class="alert-message">
 
-            <h4 class="alert-heading">Change is coming soon to the MongoDB Agents!</h4>
-            Monitoring, Backup and Automation are merging to become
-            the MongoDB Agent. Read the
-            <a href="https://docs.cloudmanager.mongodb.com/reference/faq/faq-mongodb-agent/">FAQ</a>
-            to learn about what's coming with the MongoDB Agent.
+        <h4 class="alert-heading" style="margin-bottom: 10px;">Change is coming soon to the MongoDB Agents!</h4>
+        Monitoring, Backup and Automation are merging to become
+        the MongoDB Agent.
 
-          </span>
-        </div>
-    {%- else %}
-        <div class="alert alert-info" style="margin-left: 20px">
-          <span class="alert-message">
+        <a class="btn btn-success" style="margin-left: 40px;" href="https://docs.cloudmanager.mongodb.com/reference/faq/faq-mongodb-agent/">Learn More</a>
 
-            <h4 class="alert-heading">Change is coming soon to the MongoDB Agents!</h4>
-            Monitoring, Backup and Automation are merging to become
-            the MongoDB Agent. Read the
-            <a href="https://docs.cloudmanager.mongodb.com/reference/faq/faq-mongodb-agent/">FAQ</a>
-            to learn about what's coming with the MongoDB Agent.
-
-          </span>
-        </div>
-    {%- endif %}
+      </span>
+    </div>
+  {%- endif %}
 {%- endblock -%}
 
 {% block language_selector %}{% endblock %}
