@@ -1,4 +1,3 @@
-import BinaryQuestion from './BinaryQuestion';
 import FreeformQuestion from './FreeformQuestion';
 import InputField from './InputField';
 import MainWidget from './MainWidget';
@@ -140,19 +139,6 @@ class Deluge extends preact.Component {
                     inputType={'email'}
                     store={this.makeStore('email')}
                     placeholder="Email address" />
-                <BinaryQuestion
-                    store={this.makeStore('findability')}>
-                    Did you find it?</BinaryQuestion>
-                <BinaryQuestion
-                    store={this.makeStore('accuracy')}>
-                    Was the information you found <strong>accurate</strong>?</BinaryQuestion>
-                <BinaryQuestion
-                    store={this.makeStore('clarity')}>
-                    Was the information <strong>clear</strong>?</BinaryQuestion>
-                <BinaryQuestion
-                    store={this.makeStore('fragmentation')}>
-                    Was the information you needed <strong>all on one page</strong>?
-                </BinaryQuestion>
             </MainWidget>
         );
     }

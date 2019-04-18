@@ -177,4 +177,5 @@
     background-color: var(--light-grey-primary); }
 
 .deluge-questions {
-  font-size: 12px; }
+  font-size: 12px;
+  width: 100%; }
