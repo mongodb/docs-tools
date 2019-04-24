@@ -1,21 +1,14 @@
+import {AnonymousCredential, Stitch} from 'mongodb-stitch-browser-sdk';
 import FreeformQuestion from './FreeformQuestion';
 import InputField from './InputField';
 import MainWidget from './MainWidget';
 import PropTypes from 'prop-types';
 import preact from 'preact';
 
-const FEEDBACK_URL = 'http://deluge.us-east-1.elasticbeanstalk.com/';
 const MIN_CHAR_COUNT = 15;
 const MIN_CHAR_ERROR_TEXT = `Please respond with at least ${MIN_CHAR_COUNT} characters.`;
 const EMAIL_ERROR_TEXT = 'Please enter a valid email address.';
 const EMAIL_PROMPT_TEXT = 'May we contact you about your feedback?';
-
-// Take a url and a query parameters object, and return the resulting url.
-function addQueryParameters(url, parameters) {
-    const queryComponents = Object.keys(parameters).map((key) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(JSON.stringify(parameters[key]))}`);
-    return `${url}?${queryComponents.join('&')}`;
-}
 
 class Deluge extends preact.Component {
     constructor(props) {
@@ -24,12 +17,71 @@ class Deluge extends preact.Component {
             'answers': {},
             'emailError': false,
             'formLengthError': false,
-            'voteAcknowledgement': null
+            'voteAcknowledgement': null,
+            'voteId': undefined
         };
-        this.onSubmit = this.onSubmit.bind(this);
+        this.onSubmitFeedback = this.onSubmitFeedback.bind(this);
+        this.onSubmitVote = this.onSubmitVote.bind(this);
     }
 
-    onSubmit(vote) {
+    componentDidMount() {
+        this.setupStitch();
+    }
+
+    setupStitch() {
+        const appName = null;
+        this.stitchClient = Stitch.hasAppClient(appName)
+            ? Stitch.defaultAppClient
+            : Stitch.initializeDefaultAppClient(appName);
+        this.stitchClient.auth.loginWithCredential(new AnonymousCredential()).catch((err) => {
+            console.error(err);
+        });
+    }
+
+    onSubmitVote(vote) {
+        this.sendVote(vote).then((result) => {
+            this.setState({
+                'voteAcknowledgement': (vote) ? 'up' : 'down',
+                'voteId': result.insertedId
+            });
+        }).
+            catch((err) => {
+                console.error(err);
+            });
+    }
+
+    sendVote(vote) {
+        const path = `${this.props.project}/${this.props.path}`;
+
+        // Report to Segment
+        const analyticsData = {
+            'useful': vote
+        };
+
+        try {
+            const user = window.analytics.user();
+            const segmentUID = user.id();
+            if (segmentUID) {
+                analyticsData.segmentUID = segmentUID.toString();
+            } else {
+                analyticsData.segmentAnonymousID = user.anonymousId().toString();
+            }
+            window.analytics.track('Vote Submitted', analyticsData);
+        } catch (err) {
+            console.error(err);
+        }
+
+        const voteDocument = {
+            'useful': vote,
+            'page': path,
+            'url': location.href,
+            'date': new Date()
+        };
+
+        return this.stitchClient.callFunction('submitVote', [voteDocument]);
+    }
+
+    onSubmitFeedback(vote) {
         const fields = {};
 
         const answers = this.state.answers;
@@ -43,19 +95,12 @@ class Deluge extends preact.Component {
             }
         }
 
-        this.sendRating(vote, fields).then(() => {
-            this.setState({
-                'voteAcknowledgement': (vote) ? 'up' : 'down'
-            });
-        }).
-            catch((err) => {
-                console.error(err);
-            });
+        this.sendFeedback(vote, fields).catch((err) => {
+            console.error(err);
+        });
     }
 
-    sendRating(vote, fields) {
-        const path = `${this.props.project}/${this.props.path}`;
-
+    sendFeedback(vote, fields) {
         // Report to Segment
         const analyticsData = {
             'useful': vote,
@@ -75,22 +120,18 @@ class Deluge extends preact.Component {
             console.error(err);
         }
 
-        // Report to Deluge
-        return new Promise((resolve, reject) => {
-            const url = addQueryParameters(FEEDBACK_URL, {
-                ...fields,
-                'v': vote,
-                'p': path,
-                'url': location.href
-            });
+        if (!this.state.voteId) {
+            return Promise.reject(new Error('Could not locate document ID'));
+        }
 
-            // Report this rating using an image GET to work around the
-            // same-origin policy
-            const img = new Image();
-            img.onload = () => resolve();
-            img.onerror = () => reject(new Error('Failed to report feedback'));
-            img.src = url;
-        });
+        const query = {'_id': this.state.voteId};
+        const update = {
+            '$set': {
+                ...fields
+            }
+        };
+
+        return this.stitchClient.callFunction('submitFeedback', [query, update]);
     }
 
     makeStore(key) {
@@ -118,11 +159,14 @@ class Deluge extends preact.Component {
     }
 
     render(props, {voteAcknowledgement}) {
-        const hasError = this.state.formLengthError || this.state.emailError;
+        const noAnswersSubmitted = Object.keys(this.state.answers).length === 0 ||
+            Object.values(this.state.answers).every((val) => val === '');
+        const hasError = noAnswersSubmitted || this.state.formLengthError || this.state.emailError;
         return (
             <MainWidget
                 voteAcknowledgement={voteAcknowledgement}
-                onSubmit={this.onSubmit}
+                onSubmitFeedback={this.onSubmitFeedback}
+                onSubmitVote={this.onSubmitVote}
                 onClear={() => this.setState({'answers': {}})}
                 canShowSuggestions={props.canShowSuggestions}i
                 handleOpenDrawer={props.handleOpenDrawer}
