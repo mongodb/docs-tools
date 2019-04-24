@@ -124,16 +124,16 @@ class NavbarDropdown extends preact.Component {
                                 </li>
                             </Submenu>
                         </li>
-                        <li className="menu__item">
+                        <li className="menu__item menu__item--secondary">
                             <a href="https://www.mongodb.com/">Company</a>
                         </li>
-                        <li className="menu__item">
+                        <li className="menu__item menu__item--secondary">
                             <a href="https://university.mongodb.com/">Learn</a>
                         </li>
-                        <li className="menu__item">
+                        <li className="menu__item menu__item--secondary">
                             <a href="https://www.mongodb.com/community">Community</a>
                         </li>
-                        <li className="menu__item">
+                        <li className="menu__item menu__item--secondary">
                             <a href="https://www.mongodb.com/what-is-mongodb">What is MongoDB</a>
                         </li>
                         <li className="menu__item menu__item--secondary">

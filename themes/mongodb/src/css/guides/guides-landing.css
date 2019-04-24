@@ -92,7 +92,7 @@
 
 /* First */
 .guide-category:nth-of-type(3n+1) .guide {
-    border-left-color: var(--elf-green);
+    border-left-color: var(--fern);
 }
 
 .guide-category:nth-of-type(3n+1) .guide:hover {
@@ -101,12 +101,12 @@
 
 /* Second */
 .guide-category:nth-of-type(3n+2) .guide {
-    border-left-color: var(--silver-chalice);
+    border-left-color: var(--fog);
 }
 
 /* Third */
 .guide-category:nth-of-type(3n+3) .guide {
-    border-left-color: var(--jewel);
+    border-left-color: var(--forest);
 }
 
 .guide__title {

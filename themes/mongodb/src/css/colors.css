@@ -1,15 +1,20 @@
 /* Brand Portal: https://mongodb.frontify.com */
 
 :root {
-
-  /* "New Colors" (retrieved March 2019) */
-  --elf-green: #0e8975;
+ 
+  /* "Primary Palette" (retrieved April 2019) */
+  --mongodb-green: var(--leaf);
+  --leaf: #13aa52;
+  --fern: #12924f;
+  --forest: #116149;
+  --fog: #b8c4c2;
+  --graphite: #21313c;
   --white: #fefefe;
-  --silver-chalice: #ababab;
-  --cod-gray: #1a1a1a;
-  --jewel: #116149;
-  --mongodb-green: #13aa52;
-  
+
+  /* "Secondary Palette" (retrieved April 2019) */
+  --spring: #91c851;
+  --daffodile: #ffdd49;
+
   --mongodb-green-light: #c2e0b4;
   --mongodb-green-neutral: #eff6ec;
   --green-secondary: #3c6626;
