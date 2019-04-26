@@ -13,10 +13,16 @@ const EMAIL_PROMPT_TEXT = 'May we contact you about your feedback?';
 class Deluge extends preact.Component {
     constructor(props) {
         super(props);
+
+        const buf = new Uint8Array(16);
+        crypto.getRandomValues(buf);
+
         this.state = {
             'answers': {},
             'emailError': false,
             'formLengthError': false,
+            'interactionId': btoa(Array.prototype.map.call(buf,
+                (ch) => String.fromCharCode(ch)).join('')).slice(0, -2),
             'voteAcknowledgement': null,
             'voteId': undefined
         };
@@ -29,13 +35,29 @@ class Deluge extends preact.Component {
     }
 
     setupStitch() {
-        const appName = null;
+        const appName = 'feedback-ibcyy';
         this.stitchClient = Stitch.hasAppClient(appName)
             ? Stitch.defaultAppClient
             : Stitch.initializeDefaultAppClient(appName);
         this.stitchClient.auth.loginWithCredential(new AnonymousCredential()).catch((err) => {
             console.error(err);
         });
+    }
+
+    sendAnalytics(eventName, eventObj) {
+        try {
+            const user = window.analytics.user();
+            const segmentUID = user.id();
+            if (segmentUID) {
+                eventObj.segmentUID = segmentUID.toString();
+            } else {
+                eventObj.segmentAnonymousID = user.anonymousId().toString();
+            }
+            window.analytics.track(eventName, eventObj);
+        } catch (err) {
+            console.error(err);
+        }
+        return eventObj;
     }
 
     onSubmitVote(vote) {
@@ -51,32 +73,24 @@ class Deluge extends preact.Component {
     }
 
     sendVote(vote) {
+        const segmentEvent = this.sendAnalytics('Vote Submitted', {
+            'useful': vote,
+            'interactionId': this.state.interactionId
+        });
+
         const path = `${this.props.project}/${this.props.path}`;
-
-        // Report to Segment
-        const analyticsData = {
-            'useful': vote
-        };
-
-        try {
-            const user = window.analytics.user();
-            const segmentUID = user.id();
-            if (segmentUID) {
-                analyticsData.segmentUID = segmentUID.toString();
-            } else {
-                analyticsData.segmentAnonymousID = user.anonymousId().toString();
-            }
-            window.analytics.track('Vote Submitted', analyticsData);
-        } catch (err) {
-            console.error(err);
-        }
-
         const voteDocument = {
             'useful': vote,
             'page': path,
-            'url': location.href,
+            'q-url': location.href,
             'date': new Date()
         };
+
+        if (segmentEvent.segmentUID) {
+            voteDocument['q-segmentUID'] = segmentEvent.segmentUID;
+        } else {
+            voteDocument['q-segmentAnonymousID'] = segmentEvent.segmentAnonymousID;
+        }
 
         return this.stitchClient.callFunction('submitVote', [voteDocument]);
     }
@@ -101,28 +115,24 @@ class Deluge extends preact.Component {
     }
 
     sendFeedback(vote, fields) {
-        // Report to Segment
-        const analyticsData = {
+        this.sendAnalytics('Feedback Submitted', {
             'useful': vote,
+            'interactionId': this.state.interactionId,
             ...fields
-        };
-
-        try {
-            const user = window.analytics.user();
-            const segmentUID = user.id();
-            if (segmentUID) {
-                fields.segmentUID = segmentUID.toString();
-            } else {
-                fields.segmentAnonymousID = user.anonymousId().toString();
-            }
-            window.analytics.track('Feedback Submitted', analyticsData);
-        } catch (err) {
-            console.error(err);
-        }
+        });
 
         if (!this.state.voteId) {
             return Promise.reject(new Error('Could not locate document ID'));
         }
+
+        // Prefix fields with q- to preserve Deluge's naming scheme
+        Object.keys(fields).forEach((key) => {
+            if (!key.startsWith('q-')) {
+                Object.defineProperty(fields, `q-${key}`,
+                    Object.getOwnPropertyDescriptor(fields, key));
+                delete fields[key];
+            }
+        });
 
         const query = {'_id': this.state.voteId};
         const update = {
