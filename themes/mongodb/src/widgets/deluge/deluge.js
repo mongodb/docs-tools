@@ -14,6 +14,7 @@ class Deluge extends preact.Component {
     constructor(props) {
         super(props);
 
+        const crypto = (window.crypto || window.msCrypto);
         const buf = new Uint8Array(16);
         crypto.getRandomValues(buf);
 
