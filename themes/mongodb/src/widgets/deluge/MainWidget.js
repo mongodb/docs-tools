@@ -12,19 +12,20 @@ class MainWidget extends preact.Component {
             'state': STATE_INITIAL
         };
 
-        this.onSubmit = this.onSubmit.bind(this);
+        this.onSubmitFeedback = this.onSubmitFeedback.bind(this);
         this.onInitialVote = this.onInitialVote.bind(this);
         this.onToggle = this.onToggle.bind(this);
     }
 
-    onSubmit() {
-        this.props.onSubmit(this.state.state);
+    onSubmitFeedback() {
+        this.props.onSubmitFeedback(this.state.state);
         this.setState({'state': STATE_VOTED});
     }
 
     onInitialVote(e, state) {
         e.stopPropagation();
         this.setState({'state': state});
+        this.props.onSubmitVote(state);
         if (state === false) {
             this.props.handleOpenDrawer();
         }
@@ -75,7 +76,7 @@ class MainWidget extends preact.Component {
                         <div class="deluge-button-group">
                             <button onClick={this.onToggle}>Cancel</button>
                             <button class="primary"
-                                onClick={this.onSubmit}
+                                onClick={this.onSubmitFeedback}
                                 disabled={this.props.error}>Submit</button>
                         </div>
                     </div>
@@ -91,7 +92,7 @@ class MainWidget extends preact.Component {
                         <div class="deluge-button-group">
                             <button onClick={this.onToggle}>Cancel</button>
                             <button class="primary"
-                                onClick={this.onSubmit}
+                                onClick={this.onSubmitFeedback}
                                 disabled={this.props.error}>Submit</button>
                         </div>
                     </div>
@@ -131,7 +132,8 @@ class MainWidget extends preact.Component {
 
 MainWidget.propTypes = {
     'error': PropTypes.bool.isRequired,
-    'onSubmit': PropTypes.func.isRequired,
+    'onSubmitFeedback': PropTypes.func.isRequired,
+    'onSubmitVote': PropTypes.func.isRequired,
     'onClear': PropTypes.func.isRequired,
     'children': PropTypes.arrayOf(PropTypes.node),
     'voteAcknowledgement': PropTypes.string,
