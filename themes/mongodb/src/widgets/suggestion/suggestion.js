@@ -48,8 +48,8 @@ class Suggestion extends preact.Component {
     setupStitch() {
         const appName = 'ref_data-bnbxq';
         this.stitchClient = Stitch.hasAppClient(appName)
-            ? Stitch.defaultAppClient
-            : Stitch.initializeDefaultAppClient(appName);
+            ? Stitch.getAppClient(appName)
+            : Stitch.initializeAppClient(appName);
         this.stitchClient.auth.loginWithCredential(new AnonymousCredential()).then((user) => {
             this.fetchStitchSuggestions();
         }).
