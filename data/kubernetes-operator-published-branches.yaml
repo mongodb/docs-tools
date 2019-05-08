@@ -9,11 +9,11 @@ version:
     - '0.10'
     - '0.9'
     - '0.8'
-  stable: '0.10'
-  upcoming: '0.11'
+  stable: '0.11'
+  upcoming: ''
 git:
   branches:
-    manual: 'v0.10'
+    manual: 'v0.11'
     published:
       - 'master'
       - 'v0.10'
