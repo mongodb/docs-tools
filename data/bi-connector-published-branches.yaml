@@ -1,48 +1,33 @@
 version:
   published:
+    - '2.11'
     - '2.10'
     - '2.9'
     - '2.8'
     - '2.7'
     - '2.6'
     - '2.5'
-    - '2.4'
-    - '2.3'
-    - '2.2'
-    - '2.1'
-    - '2.0'
-    - '1.1'
   active:
+    - '2.11'
     - '2.10'
     - '2.9'
     - '2.8'
     - '2.7'
     - '2.6'
     - '2.5'
-    - '2.4'
-    - '2.3'
-    - '2.2'
-    - '2.1'
-    - '2.0'
-    - '1.1'
   stable: ''
   upcoming: ''
 git:
   branches:
-    manual: '2.10'
+    manual: '2.11'
     published:
       - 'master'
+      - '2.10'
       - 'v2.9'
       - 'v2.8'
       - 'v2.7'
       - 'v2.6'
       - 'v2.5'
-      - 'v2.4'
-      - 'v2.3'
-      - 'v2.2'
-      - 'v2.1'
-      - 'v2.0'
-      - 'v1.1'
       # the branches/published list **must** be ordered from most to
       # least recent release.
 ...
