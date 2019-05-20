@@ -21,7 +21,6 @@ class Deluge extends preact.Component {
         this.state = {
             'answers': {},
             'emailError': false,
-            'formLengthError': false,
             'interactionId': btoa(Array.prototype.map.call(buf,
                 (ch) => String.fromCharCode(ch)).join('')).slice(0, -2),
             'voteAcknowledgement': null,
@@ -166,7 +165,7 @@ class Deluge extends preact.Component {
     render(props, {voteAcknowledgement}) {
         const noAnswersSubmitted = Object.keys(this.state.answers).length === 0 ||
             Object.values(this.state.answers).every((val) => val === '');
-        const hasError = noAnswersSubmitted || this.state.formLengthError || this.state.emailError;
+        const hasError = noAnswersSubmitted || this.state.emailError;
         return (
             <MainWidget
                 voteAcknowledgement={voteAcknowledgement}
