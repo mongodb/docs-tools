@@ -18,6 +18,13 @@ class MainWidget extends preact.Component {
         this.toggleVisibility = this.toggleVisibility.bind(this);
     }
 
+    componentDidMount() {
+        const savedFeedbackState = JSON.parse(window.sessionStorage.getItem('feedbackHidden'));
+        if (savedFeedbackState) {
+            this.setState({'closed': savedFeedbackState});
+        }
+    }
+
     onSubmitFeedback() {
         this.props.onSubmitFeedback(this.state.state);
         this.setState({'state': STATE_VOTED});
@@ -38,7 +45,10 @@ class MainWidget extends preact.Component {
         if ((typeof state === 'boolean' || state === STATE_VOTED) && closed === false) {
             this.setState({'state': STATE_INITIAL});
         }
-        this.setState((prevState) => ({'closed': !prevState.closed}));
+        this.setState(
+            (prevState) => ({'closed': !prevState.closed}),
+            () => window.sessionStorage.setItem('feedbackHidden', JSON.stringify(this.state.closed))
+        );
     }
 
     render({children, canShowSuggestions, voteAcknowledgement}, {closed, state}) {
@@ -112,7 +122,8 @@ class MainWidget extends preact.Component {
         return (
             <div class={delugeClass}>
                 {closed ? (
-                    <div class="deluge-header deluge-header-minimized" onClick={this.toggleVisibility}>
+                    <div class="deluge-header deluge-header-minimized"
+                        onClick={this.toggleVisibility}>
                         <span class="fa fa-angle-up deluge-open-icon"></span>
                     </div>
                 ) : (
@@ -120,7 +131,8 @@ class MainWidget extends preact.Component {
                         <div class={delugeHeaderClass}>
                             <span class="fa fa-angle-down deluge-close-icon-hidden"></span>
                             <span class="deluge-helpful">Was this page helpful?</span>
-                            <span class="fa fa-angle-down deluge-close-icon" onClick={this.toggleVisibility}></span>
+                            <span class="fa fa-angle-down deluge-close-icon"
+                                onClick={this.toggleVisibility}></span>
                         </div>
                         {state === STATE_INITIAL && (
                             <div class="deluge-vote">
