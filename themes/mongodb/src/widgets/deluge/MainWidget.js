@@ -65,10 +65,10 @@ class MainWidget extends preact.Component {
             body = (
                 <div>
                     <p>Thank you for your feedback!</p>
-                    <p>If this page contains an error, you may <a
+                    {voteAcknowledgement === 'down' && <p>If this page contains an error, you may <a
                         class="deluge-fix-button"
                         href="https://jira.mongodb.org/">
-                            report the problem on Jira.</a></p>
+                            report the problem on Jira.</a></p>}
                     <p>We also recommend you explore <a class="deluge-fix-button"
                         href="https://groups.google.com/group/mongodb-user">
                             the MongoDB discussion forum</a> for additional support.</p>
