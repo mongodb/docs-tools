@@ -21,7 +21,6 @@ class Deluge extends preact.Component {
         this.state = {
             'answers': {},
             'emailError': false,
-            'formLengthError': false,
             'interactionId': btoa(Array.prototype.map.call(buf,
                 (ch) => String.fromCharCode(ch)).join('')).slice(0, -2),
             'voteAcknowledgement': null,
@@ -157,12 +156,6 @@ class Deluge extends preact.Component {
         };
     }
 
-    validateFormLength(input) {
-        const hasError = !(input === '' || input.length >= MIN_CHAR_COUNT);
-        this.setState({'formLengthError': hasError});
-        return hasError;
-    }
-
     validateEmail(input) {
         const hasError = !(input === '' || (/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(input));
         this.setState({'emailError': hasError});
@@ -172,7 +165,7 @@ class Deluge extends preact.Component {
     render(props, {voteAcknowledgement}) {
         const noAnswersSubmitted = Object.keys(this.state.answers).length === 0 ||
             Object.values(this.state.answers).every((val) => val === '');
-        const hasError = noAnswersSubmitted || this.state.formLengthError || this.state.emailError;
+        const hasError = noAnswersSubmitted || this.state.emailError;
         return (
             <MainWidget
                 voteAcknowledgement={voteAcknowledgement}
@@ -184,7 +177,6 @@ class Deluge extends preact.Component {
                 error={hasError}>
                 <FreeformQuestion
                     errorText={MIN_CHAR_ERROR_TEXT}
-                    hasError={(input) => this.validateFormLength(input)}
                     store={this.makeStore('reason')}
                     placeholder="What are you trying to do?" />
                 <div className="caption">{EMAIL_PROMPT_TEXT}</div>

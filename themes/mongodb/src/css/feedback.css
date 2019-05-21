@@ -60,7 +60,6 @@
   .deluge p {
     display: inline-block;
     font-size: 16px;
-    margin-top: 15px;
     margin-bottom: 15px; }
   .deluge .caption {
     font-size: 12px;
@@ -104,18 +103,24 @@
   padding-top: 21px; }
 
 .deluge-header {
+  align-items: center;
+  display: flex;
   font-family: 'Akzidenz', sans-serif;
   height: 44px;
+  justify-content: center;
   line-height: 44px;
-  padding: 0 1rem;
+  padding: 0 18px;
   text-align: center; }
 
 .deluge-header a {
   color: #fff; }
 
-.deluge-header-expanded {
-  cursor: pointer;
-  height: 48px; }
+.deluge-header-minimized {
+  min-width: 44px; }
+
+.deluge-helpful {
+  display: flex;
+  padding: 0 10px; }
 
 .deluge-vote {
   background-color: #fff;
@@ -132,12 +137,25 @@
 .deluge-comment-icon {
   padding-right: 5px; }
 
+.deluge-open-icon,
 .deluge-close-icon {
   font-size: 20px;
   font-weight: bold;
-  position: absolute;
-  right: 12px;
-  top: 6px; }
+  cursor: pointer; }
+
+.deluge-close-icon {
+  margin-left: auto; }
+
+.deluge-close-icon-hidden {
+  margin-right: auto;
+  visibility: hidden; }
+
+.deluge-close-link {
+  color: var(--grey-primary);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: underline;
+  width: 100%; }
 
 .deluge-vote-button {
   color: var(--mongodb-green);
@@ -153,7 +171,7 @@
 .deluge-fix-button {
   color: var(--mongodb-green);
   font-family: 'Akzidenz', sans-serif;
-  text-decoration: underline; }
+  text-decoration: none; }
 
 .deluge-fix-button:hover {
   color: #3c6626;

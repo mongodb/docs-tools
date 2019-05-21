@@ -9,12 +9,20 @@ class MainWidget extends preact.Component {
     constructor(props) {
         super(props);
         this.state = {
+            'closed': false,
             'state': STATE_INITIAL
         };
 
         this.onSubmitFeedback = this.onSubmitFeedback.bind(this);
         this.onInitialVote = this.onInitialVote.bind(this);
-        this.onToggle = this.onToggle.bind(this);
+        this.toggleVisibility = this.toggleVisibility.bind(this);
+    }
+
+    componentDidMount() {
+        const savedFeedbackState = JSON.parse(window.sessionStorage.getItem('feedbackHidden'));
+        if (savedFeedbackState) {
+            this.setState({'closed': savedFeedbackState});
+        }
     }
 
     onSubmitFeedback() {
@@ -31,32 +39,42 @@ class MainWidget extends preact.Component {
         }
     }
 
-    onToggle() {
-        this.props.onClear();
-        if (this.state.state === STATE_INITIAL) {
-            return;
+    toggleVisibility(event) {
+        const {closed, state} = this.state;
+        event.stopPropagation();
+        if ((typeof state === 'boolean' || state === STATE_VOTED) && closed === false) {
+            this.setState({'state': STATE_INITIAL});
         }
-        this.setState({'state': STATE_INITIAL});
+        this.setState(
+            (prevState) => ({'closed': !prevState.closed}),
+            () => window.sessionStorage.setItem('feedbackHidden', JSON.stringify(this.state.closed))
+        );
     }
 
-    render({children, canShowSuggestions, voteAcknowledgement}, {state}) {
+    render({children, canShowSuggestions, voteAcknowledgement}, {closed, state}) {
         const delugeBodyClass = (state === STATE_INITIAL)
             ? 'deluge-body'
             : 'deluge-body deluge-body-expanded';
-        const delugeHeaderClass = (state === STATE_INITIAL)
-            ? 'deluge-header'
-            : 'deluge-header deluge-header-expanded';
-        const delugeClass = (state === STATE_INITIAL)
-            ? 'deluge'
-            : 'deluge deluge-expanded';
+        const delugeHeaderClass = 'deluge-header';
+        const delugeClass = (state !== STATE_INITIAL && closed === false)
+            ? 'deluge deluge-expanded'
+            : 'deluge';
 
         let body = null;
-        if (state === STATE_VOTED && voteAcknowledgement === 'down') {
+        if (state === STATE_VOTED) {
             body = (
-                <p>If this page contains an error, you may <a
-                    class="deluge-fix-button"
-                    href="https://jira.mongodb.org/">
-                        report the problem on Jira.</a></p>);
+                <div>
+                    <p>Thank you for your feedback!</p>
+                    {voteAcknowledgement === 'down' && <p>If this page contains an error, you may <a
+                        class="deluge-fix-button"
+                        href="https://jira.mongodb.org/">
+                            report the problem on Jira.</a></p>}
+                    <p>We also recommend you explore <a class="deluge-fix-button"
+                        href="https://groups.google.com/group/mongodb-user">
+                            the MongoDB discussion forum</a> for additional support.</p>
+                    <p className="deluge-close-link"><small><span onClick={this.toggleVisibility}>
+                        Close</span></small></p>
+                </div>);
         } else if (state === STATE_VOTED && !voteAcknowledgement) {
             body = (<p>Submitting feedback...</p>);
         } else if (typeof state === 'boolean') {
@@ -74,7 +92,7 @@ class MainWidget extends preact.Component {
                         </ul>
 
                         <div class="deluge-button-group">
-                            <button onClick={this.onToggle}>Cancel</button>
+                            <button onClick={this.toggleVisibility}>Cancel</button>
                             <button class="primary"
                                 onClick={this.onSubmitFeedback}
                                 disabled={this.props.error}>Submit</button>
@@ -90,7 +108,7 @@ class MainWidget extends preact.Component {
                         </ul>
 
                         <div class="deluge-button-group">
-                            <button onClick={this.onToggle}>Cancel</button>
+                            <button onClick={this.toggleVisibility}>Cancel</button>
                             <button class="primary"
                                 onClick={this.onSubmitFeedback}
                                 disabled={this.props.error}>Submit</button>
@@ -103,28 +121,33 @@ class MainWidget extends preact.Component {
 
         return (
             <div class={delugeClass}>
-                <div class={delugeHeaderClass} onClick={this.onToggle}>
-                    {state === STATE_INITIAL &&
-                        <span class="fa fa-comments deluge-comment-icon"></span>}
-                    <span class="deluge-helpful">Was this page helpful?</span>
-                    {state !== STATE_INITIAL &&
-                        <span class="fa fa-angle-down deluge-close-icon"></span>}
-                </div>
-                {state === STATE_INITIAL && (
-                    <div class="deluge-vote">
-                        <a key="voteup" id="rate-up"
-                            onClick={(e) => this.onInitialVote(e, true)}>Yes</a>
-                        <a key="votedown" id="rate-down"
-                            onClick={(e) => this.onInitialVote(e, false)}>No</a>
+                {closed ? (
+                    <div class="deluge-header deluge-header-minimized"
+                        onClick={this.toggleVisibility}>
+                        <span class="fa fa-angle-up deluge-open-icon"></span>
+                    </div>
+                ) : (
+                    <div>
+                        <div class={delugeHeaderClass}>
+                            <span class="fa fa-angle-down deluge-close-icon-hidden"></span>
+                            <span class="deluge-helpful">Was this page helpful?</span>
+                            <span class="fa fa-angle-down deluge-close-icon"
+                                onClick={this.toggleVisibility}></span>
+                        </div>
+                        {state === STATE_INITIAL && (
+                            <div class="deluge-vote">
+                                <a key="voteup" id="rate-up"
+                                    onClick={(e) => this.onInitialVote(e, true)}>Yes</a>
+                                <a key="votedown" id="rate-down"
+                                    onClick={(e) => this.onInitialVote(e, false)}>No</a>
+                            </div>
+                        )}
+
+                        <div class={delugeBodyClass}>
+                            {body}
+                        </div>
                     </div>
                 )}
-
-                <div class={delugeBodyClass}>
-                    {state === STATE_VOTED &&
-                        voteAcknowledgement === 'up' &&
-                        <p>Thank you for your feedback!</p>}
-                    {body}
-                </div>
             </div>
         );
     }
