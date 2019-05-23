@@ -64,4 +64,11 @@
   &__link {
     text-decoration: none;
   }
+
+  &--centered {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
 }
