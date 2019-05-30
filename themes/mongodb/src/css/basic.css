@@ -208,7 +208,8 @@ p.rubric {
     font-weight: bold;
 }
 
-.figure {
+.figure,
+img {
     max-width: 100%;
 }
 
