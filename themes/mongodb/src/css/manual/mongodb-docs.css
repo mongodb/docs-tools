@@ -1605,6 +1605,11 @@ table.docutils.compatibility td{
 table.docutils.compatibility-large td{
     padding: 11px 35px 12px;
 }
+
+table.docutils.compatibility-large.no-padding td{
+    padding: unset;
+}
+
 table.compatibility th,
 table.compatibility td,
 table.compatibility-large th,
