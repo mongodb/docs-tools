@@ -180,3 +180,7 @@ h2::before {
 .show-current-deployment {
     color: #AB1352;
 }
+
+.content .main-column {
+    margin: 0 20px;
+}
