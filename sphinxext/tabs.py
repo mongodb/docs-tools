@@ -1,6 +1,9 @@
 import re
 import fett
 import template
+import docutils.nodes
+import docutils.parsers.rst
+from docutils.utils.error_reporting import ErrorString
 
 PAT_RST_SECTION = re.compile(r'(.*)\n((?:^----+$)|(?:^====+$)|(?:^~~~~+$)|(?:^````+$))', re.M)
 PAT_IDENTIFIER_ILLEGAL = re.compile(r'[^_0-9a-z]', re.I)
@@ -110,6 +113,22 @@ H4_TEMPLATE_HTML = '''
 '''
 
 
+def option_bool(argument):
+    """A docutils option validator for boolean flags."""
+    return docutils.parsers.rst.directives.choice(argument, ('true', 'false', None))
+
+
+class tab(docutils.nodes.General, docutils.nodes.Element):
+    """An instance of a tab. Has the following attributes:
+
+       - tabid: optional id identifying the tab. Generated from title if needed.
+       - title: optional title for the tab.
+       - source: string source of the tab's contents.
+
+       One of tabid or title must be provided."""
+    pass
+
+
 def build_template(tab_filter, preference):
     # If tab_filter is not a string, make it an empty string
     if not isinstance(tab_filter, str):
@@ -124,28 +143,118 @@ def build_template(tab_filter, preference):
 
 
 def create_tab_directive(name, tab_definitions):
-    tab_ids = [tab_definition[0] for tab_definition in tab_definitions]
-    tab_display = [tab_definition[1] for tab_definition in tab_definitions]
+    """Create a tab directive with the given tabset name and list of
+       (tabid, title) pairs for tab sorting and validation. For an
+       anonymous tab directive, name and tab_definitions should both be
+       empty."""
+    # If this is a named tabset with a restricted set of tab IDs,
+    # create a sorting function that the template can use
+    if tab_definitions:
+        tab_ids = [tab_definition[0] for tab_definition in tab_definitions]
+        tab_display = [tab_definition[1] for tab_definition in tab_definitions]
 
-    def sortTabs(tab_data):
-        # Create a list for the sorted data
-        sorted = [None] * len(tab_definitions)
+        def sort_tabs(tab_data):
+            # Create a list for the sorted data
+            sorted_tabs = [None] * len(tab_definitions)
 
-        for tab in tab_data:
-            index = tab_ids.index(tab['id'])
-            tab['name'] = tab_display[index]
-            sorted[index] = tab
+            for tab in tab_data:
+                index = tab_ids.index(tab['id'])
+                tab['name'] = tab_display[index]
+                sorted_tabs[index] = tab
 
-        return filter(None, sorted)
+            return filter(None, sorted_tabs)
 
-    sorter_name = 'sort' + name.title()
-    fett.Template.FILTERS[sorter_name] = sortTabs
+        sorter_name = 'sort' + name.title()
+        fett.Template.FILTERS[sorter_name] = sort_tabs
 
-    return template.create_directive(
-        'tabs-{}'.format(name),
-        build_template(sorter_name, name),
+    # Create a templated superclass for this tabs directive.
+    LegacyDirective = template.create_directive(
+        'tabs-{}'.format(name) if name else 'tabs',
+        build_template(sorter_name if tab_definitions else '', name),
         template.BUILT_IN_PATH,
         True)
+
+    class TabsDirective(LegacyDirective):
+        """A set of tabbed content. This is complex: there's four possible states we
+           handle:
+           - Legacy (YAML) Syntax
+           - Pure-RST Syntax
+           and
+           - Anonymous tabset
+           - Named tabset"""
+        required_arguments = 0
+        optional_arguments = 1
+        final_argument_whitespace = True
+        has_content = True
+        option_spec = {
+            'tabset': str,
+            'hidden': option_bool
+        }
+
+        def run(self):
+            # Transform the old YAML-based syntax into the new pure-rst syntax.
+            # This heuristic guesses whether we have the old syntax or the new.
+            # Basically, if any of the first 2 non-empty lines are "tabs:", that's a good
+            # signal that this is YAML. Why 2? One for hidden:..., one for tabs:.
+            nonempty_lines = list(line for line in self.content if line)
+            if any(line == 'tabs:' for line in nonempty_lines[:2]):
+                return LegacyDirective.run(self)
+
+            # Map the new syntax into structured data, and plug it into the old
+            # template rendering.
+            tabs_node = docutils.nodes.Element()
+            tabs_node.source, tabs_node.line = self.state_machine.get_source_and_line(self.lineno)
+            tabs_node.document = self.state.document
+            data = {
+                'hidden': self.options.get('hidden', False),
+                'tabs': []
+            }
+
+            self.state.nested_parse(
+                self.content,
+                self.content_offset,
+                tabs_node,
+                match_titles=True,
+            )
+
+            # Transform the rst nodes into structured data to plug into our template
+            for node in tabs_node.children:
+                if not isinstance(node, tab):
+                    raise self.severe(ErrorString('"tabs" may only contain "tab" directives'))
+
+                data['tabs'].append({
+                    'id': node['tabid'],
+                    'name': node['title'],
+                    'content': node['source']
+                })
+
+            return self.render(data)
+
+    return TabsDirective
+
+
+class TabInstanceDirective(docutils.parsers.rst.Directive):
+    """A single tab in a set of tabs. Contains a tabid, an optional title, and
+       a chunk of rst content."""
+    optional_arguments = 1
+    final_argument_whitespace = True
+    has_content = True
+    option_spec = {
+        'tabid': str,
+    }
+
+    def run(self):
+        node = tab()
+        node.source, node.line = self.state_machine.get_source_and_line(self.lineno)
+
+        if not self.arguments and 'tabid' not in self.options:
+            raise self.severe(ErrorString('Argument or tabid required for a tab'))
+
+        title = self.arguments[0] if self.arguments else ''
+        node['tabid'] = self.options.get('tabid', title)
+        node['title'] = title
+        node['source'] = '\n'.join(self.content)
+        return [node]
 
 
 def setup(app):
@@ -233,7 +342,10 @@ def setup(app):
     )
 
     # Create general purpose tab directive with no error checking
-    app.add_directive('tabs', template.create_directive('tabs', build_template('', ''), template.BUILT_IN_PATH, True))
+    app.add_directive('tabs', create_tab_directive('', []))
+
+    # Add a tab directive used by the new tab syntax
+    app.add_directive('tab', TabInstanceDirective)
 
     return {'parallel_read_safe': True,
             'parallel_write_safe': True}
