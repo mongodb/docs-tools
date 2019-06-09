@@ -1,7 +1,6 @@
 import os.path
 import re
 import sys
-import re
 
 from docutils import nodes, statemachine, utils
 from docutils.utils.error_reporting import ErrorString
@@ -135,6 +134,9 @@ def create_directive(name, template, defined_in, is_yaml):
                 title = self.arguments[0]
                 data = {'directive': name, 'body': contents, 'title': title}
 
+            return self.render(data)
+
+        def render(self, data):
             try:
                 rendered = template.render(data)
             except Exception as error:
@@ -166,7 +168,6 @@ def create_directive(name, template, defined_in, is_yaml):
                     self.name, ErrorString(error)))
 
             return data
-
 
     return CustomDirective
 
@@ -206,5 +207,3 @@ def setup(app):
 
     return {'parallel_read_safe': True,
             'parallel_write_safe': True}
-
-
