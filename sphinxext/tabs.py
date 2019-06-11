@@ -115,7 +115,9 @@ H4_TEMPLATE_HTML = '''
 
 def option_bool(argument):
     """A docutils option validator for boolean flags."""
-    return docutils.parsers.rst.directives.choice(argument, ('true', 'false', None))
+    if not argument:
+        return 'true'
+    return docutils.parsers.rst.directives.choice(argument, ('true', 'false'))
 
 
 class tab(docutils.nodes.General, docutils.nodes.Element):
@@ -182,7 +184,6 @@ def create_tab_directive(name, tab_definitions):
            and
            - Anonymous tabset
            - Named tabset"""
-        required_arguments = 0
         optional_arguments = 1
         final_argument_whitespace = True
         has_content = True
@@ -206,7 +207,7 @@ def create_tab_directive(name, tab_definitions):
             tabs_node.source, tabs_node.line = self.state_machine.get_source_and_line(self.lineno)
             tabs_node.document = self.state.document
             data = {
-                'hidden': self.options.get('hidden', False),
+                'hidden': self.options.get('hidden', 'false') == 'true',
                 'tabs': []
             }
 
