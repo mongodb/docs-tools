@@ -11,5 +11,8 @@ git:
     manual: 'master'
     published:
       - 'master'
-      - 'on-prem-GA'
+      - '19-06'
+
+      # the branches/published list **must** be ordered from most to
+      # least recent release.
 ...
