@@ -23,8 +23,7 @@ class Deluge extends preact.Component {
             'emailError': false,
             'interactionId': btoa(Array.prototype.map.call(buf,
                 (ch) => String.fromCharCode(ch)).join('')).slice(0, -2),
-            'voteAcknowledgement': null,
-            'voteId': undefined
+            'voteAcknowledgement': null
         };
         this.onSubmitFeedback = this.onSubmitFeedback.bind(this);
         this.onSubmitVote = this.onSubmitVote.bind(this);
@@ -63,8 +62,7 @@ class Deluge extends preact.Component {
     onSubmitVote(vote) {
         this.sendVote(vote).then((result) => {
             this.setState({
-                'voteAcknowledgement': (vote) ? 'up' : 'down',
-                'voteId': result.insertedId
+                'voteAcknowledgement': (vote) ? 'up' : 'down'
             });
         }).
             catch((err) => {
@@ -80,6 +78,7 @@ class Deluge extends preact.Component {
 
         const path = `${this.props.project}/${this.props.path}`;
         const voteDocument = {
+            'interactionId': this.state.interactionId,
             'useful': vote,
             'page': path,
             'q-url': location.href,
@@ -92,7 +91,7 @@ class Deluge extends preact.Component {
             voteDocument['q-segmentAnonymousID'] = segmentEvent.segmentAnonymousID;
         }
 
-        return this.stitchClient.callFunction('submitVote', [voteDocument]);
+        return this.stitchClient.callFunction('submitVoteV2', [voteDocument]);
     }
 
     onSubmitFeedback(vote) {
@@ -121,10 +120,6 @@ class Deluge extends preact.Component {
             ...fields
         });
 
-        if (!this.state.voteId) {
-            return Promise.reject(new Error('Could not locate document ID'));
-        }
-
         // Prefix fields with q- to preserve Deluge's naming scheme
         Object.keys(fields).forEach((key) => {
             if (!key.startsWith('q-')) {
@@ -134,7 +129,7 @@ class Deluge extends preact.Component {
             }
         });
 
-        const query = {'_id': this.state.voteId};
+        const query = {'interactionId': this.state.interactionId};
         const update = {
             '$set': {
                 ...fields
