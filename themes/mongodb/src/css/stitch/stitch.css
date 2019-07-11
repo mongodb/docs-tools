@@ -32,7 +32,7 @@
 @import url("../pills.css");
 @import url("../accordion.css");
 @import url("../stitch-sidebar.css");
-@import url("./block-admonition.css");
+@import url("./reference-block.css");
 
 /* Marks an element as being an invisible hint for screen readers. */
 .screenreader {

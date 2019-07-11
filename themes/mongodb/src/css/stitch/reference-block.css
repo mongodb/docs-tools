@@ -1,6 +1,5 @@
-.block-admonition {
-  padding-left: 0px !important;
-  padding-right: 0px !important;
+.reference-block {
+  padding: 0px !important;
   & .button-code-block {
     border-left: 5px solid #494747;
     & pre {
