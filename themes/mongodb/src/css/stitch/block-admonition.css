@@ -1,0 +1,10 @@
+.block-admonition {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  & .button-code-block {
+    border-left: 5px solid #494747;
+    & pre {
+      padding: 2px 12px 24px 12px !important;
+    }
+  }
+}

@@ -32,6 +32,7 @@
 @import url("../pills.css");
 @import url("../accordion.css");
 @import url("../stitch-sidebar.css");
+@import url("./block-admonition.css");
 
 /* Marks an element as being an invisible hint for screen readers. */
 .screenreader {
@@ -1513,12 +1514,7 @@ table.compatibility-large {
     font-size: 14px;
     width: 100%;
     vertical-align: middle;
-}
-
-table.docutils.compatibility,
-table.docutils.compatibility-large {
-    line-height: 12px;
-    vertical-align: middle;
+    line-height: 20px;
 }
 
 table.docutils.compatibility>thead th.head,
