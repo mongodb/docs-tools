@@ -1,6 +1,5 @@
 import re
 import sys
-from docutils._compat import b
 import docutils.io
 
 PAT_VARIABLE = re.compile(r'{\+([\w-]+)\+}')
@@ -39,7 +38,7 @@ def setup(app):
                     # read as binary data to circumvent auto-decoding
                     data = self.source.buffer.read()
                     # normalize newlines
-                    data = b('\n').join(data.splitlines()) + b('\n')
+                    data = b'\n'.join(data.splitlines()) + b'\n'
                 else:
                     data = self.source.read()
             except (UnicodeError, LookupError):  # (in Py3k read() decodes)
@@ -49,7 +48,7 @@ def setup(app):
                     data = b_source.read()
                     b_source.close()
                     # normalize newlines
-                    data = b('\n').join(data.splitlines()) + b('\n')
+                    data = b'\n'.join(data.splitlines()) + b'\n'
                 else:
                     raise
             finally:
