@@ -22,8 +22,10 @@ logger = logging.getLogger('giza.config.credentials')
 def get_credentials_skeleton():
     return {
         'jira': {
-            'username': None,
-            'password': None,
+            'access_token': None,
+            'access_token_secret': None,
+            'consumer_key': None,
+            'key_cert': None,
             'url': None,
         },
         'corp': {
@@ -100,7 +102,7 @@ class CredentialsConfig(ConfigurationBase):
 
 
 class JiraCredentialsConfig(ConfigurationBase):
-    _option_registry = ['username', 'password']
+    _option_registry = ['username', 'password', 'access_token', 'access_token_secret', 'consumer_key', 'key_cert']
 
     @property
     def url(self):

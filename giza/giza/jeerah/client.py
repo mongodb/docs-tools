@@ -33,16 +33,24 @@ class JeerahClient(object):
             self._results_format = value
 
     def connect(self):
+        credentials = {}
+        if self.credentials.access_token is not None:
+            logger.debug('using OAuth')
+            credentials['oauth'] = {
+                'access_token': self.credentials.access_token,
+                'access_token_secret': self.credentials.access_token_secret,
+                'consumer_key': self.credentials.consumer_key,
+                'key_cert': self.credentials.key_cert
+            }
+        elif self.credentials.username is not None:
+            logger.debug('using basic authentication')
+            credentials['basic_auth'] = (self.credentials.username, self.credentials.password)
+
         if self.c is None:
-            self.c = JIRA(options={'server': self.credentials.url},
-                          basic_auth=(self.credentials.username,
-                                      self.credentials.password))
+            self.c = JIRA(options={'server': self.credentials.url}, validate=True, **credentials)
             logger.debug('created jira connection')
         else:
             logger.debug('jira connection exists')
-
-        logger.debug('configured user: ' + self.credentials.username)
-        logger.debug('actual user: ' + self.c.current_user())
 
     def connect_unauthenticated(self):
         if self.c is None:
