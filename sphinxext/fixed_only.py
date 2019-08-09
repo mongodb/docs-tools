@@ -1,6 +1,7 @@
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
-from sphinx.util.nodes import nested_parse_with_titles
+from docutils.utils import SafeString
+from sphinx.util.nodes import nested_parse_with_titles, set_source_info
 
 
 class Cond(Directive):
@@ -11,12 +12,18 @@ class Cond(Directive):
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = True
-    option_spec = {} # type: Dict
+    option_spec = {}
 
     def run(self):
         config = self.state.document.settings.env.config
-        if config._raw_config['tags'].eval_condition(self.arguments[0]):
+        try:
+            result = config._raw_config['tags'].eval_condition(self.arguments[0])
+        except ValueError as err:
+            raise self.severe(u'Error parsing conditional parsing expression: {}'.format(SafeString(str(err))))
+
+        if result:
             node = nodes.Element()
+            set_source_info(self, node)
             nested_parse_with_titles(self.state, self.content, node)
             return node.children
 
