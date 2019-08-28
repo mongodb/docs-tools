@@ -102,6 +102,9 @@ class NavbarDropdown extends preact.Component {
                                 <li className="submenu__item submenu__item--nested">
                                     <Submenu title="Tools" open={true}>
                                         <li className="submenu__item">
+                                            <a href="https://docs.mongodb.com/atlas-open-service-broker/current/">MongoDB Atlas Open Service Broker</a>
+                                        </li>
+                                        <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/bi-connector/current/">MongoDB BI Connector</a>
                                         </li>
                                         <li className="submenu__item">
