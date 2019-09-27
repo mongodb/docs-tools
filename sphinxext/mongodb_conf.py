@@ -102,7 +102,7 @@ conf['directives'] = [
         'name': 'bsontype',
         'tag': 'bson',
         'description': 'BSON type',
-        'prepend': False,
+        'prepend': True,
         'callable': False,
     },
     {
