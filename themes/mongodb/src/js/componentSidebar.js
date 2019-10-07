@@ -6,7 +6,8 @@ function isCurrentNode($node) {
 }
 
 export function setup() {
-    const isStitch = $('body').attr('data-project') === 'stitch';
+    const project = $('body').attr('data-project');
+    const isStitch = project === 'stitch' || project === 'realm';
     if (isStitch) {
         return;
     }
