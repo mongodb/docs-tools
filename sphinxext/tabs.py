@@ -284,6 +284,19 @@ def setup(app):
              ('debian', 'Debian'),
              ('rhel', 'RHEL')]))
 
+    # Create Realm SDK tab directive
+    app.add_directive(
+        'tabs-realm-languages',
+        create_tab_directive('realmLanguages', [ # Note: camelCase is required
+            ('javascript', 'JavaScript'),
+            ('kotlin', 'Kotlin'),
+            ('swift', 'Swift'),
+            ('c-sharp', 'C#'),
+            ('java', 'Java'),
+            ('objective-c', 'Objective C'),
+        ])
+    )
+
     # Create Stitch SDK tab directive
     app.add_directive(
         'tabs-stitch-sdks',
