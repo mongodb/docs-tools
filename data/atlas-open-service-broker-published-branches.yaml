@@ -1,9 +1,9 @@
 version:
   published:
-    - '0.1'
+    - '1.0'
   active:
-    - '0.1'
-  stable: '0.1'
+    - '1.0'
+  stable: '1.0'
   upcoming: ''
 git:
   branches:
