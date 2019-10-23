@@ -332,8 +332,8 @@ conf['directives'] = [
         'callable': False
     },
     {
-        'name': 'omk8sop',
-        'tag': 'omk8sop',
+        'name': 'opsmgrkube',
+        'tag': 'opsmgrkube',
         'description': 'Kubernetes Operator Ops Manager Resource Setting',
         'prepend': True,
         'callable': False
