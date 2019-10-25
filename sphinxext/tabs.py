@@ -342,14 +342,6 @@ def setup(app):
         ])
     )
 
-    # Create cloud providers tab directive
-    app.add_directive('tabs-k8s-orchestrator',
-        create_tab_directive('k8sorchestrator',
-            [('k8s', 'Kubernetes'),
-             ('openshift', 'Openshift')
-        ])
-    )
-
     # Create general purpose tab directive with no error checking
     app.add_directive('tabs', create_tab_directive('', []))
 
