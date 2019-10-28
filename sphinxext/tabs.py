@@ -342,6 +342,14 @@ def setup(app):
         ])
     )
 
+    # Create k8s orchestrator tab directive
+    app.add_directive('tabs-k8s-orchestrator',
+        create_tab_directive('k8sorchestrator',
+            [('k8s', 'Kubernetes'),
+             ('openshift', 'OpenShift')
+        ])
+    )
+
     # Create general purpose tab directive with no error checking
     app.add_directive('tabs', create_tab_directive('', []))
 
