@@ -106,7 +106,12 @@ class StitchRelease(Directive):
         return content
 
     def render(self, release_date, release_content):
-        date = parse_date(release_date)
+        def add_dummy_day(dateString):
+            parts = dateString.split(",")
+            parts[0] += " 01,"
+            dummified = "".join(parts)
+            return dummified
+        date = parse_date(add_dummy_day(release_date))
         slug_date = month_name[date.month].lower() + "-" + str(date.year)
         rendered_stitch_release_template = STITCH_RELEASE.render({
             "header": release_date,
