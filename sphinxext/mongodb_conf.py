@@ -337,7 +337,15 @@ conf['directives'] = [
         'description': 'Kubernetes Operator Ops Manager Resource Setting',
         'prepend': True,
         'callable': False
-    }    
+    },
+    ## Custom directive for automatic client side field level encryption keywords
+    {
+        'name': 'autoencryptkeyword',
+        'tag' : 'autoencryptkeyword',
+        'description': 'Automatic Client-Side Field Level Encrytion Rules Keyword',
+        'prepend': True,
+        'callable': False
+    }
 ]
 
 ## If prepend: True, you can have a page title that match the directive.  For example, an operator X in a page with title X.  Otherwise, you can't have in page with same title and you'll get iddup as the reference.
