@@ -1,6 +1,17 @@
 /* Brand Portal: https://mongodb.frontify.com */
 
 :root {
+
+  /* Leafygreen UI Colors (retrieved 12 December 2019)
+   * https://github.com/mongodb/leafygreen-ui/blob/master/packages/palette/src/uiColors.ts
+   */
+  --gray-dark3: #21313C;
+  --gray-dark2: #3D4F58;
+  --gray-dark1: #5D6C74;
+  --gray-base: #89989B;
+  --gray-light1: #B8C4C2;
+  --gray-light2: #E7EEEC;
+  --gray-light3: #F9FBFA;
  
   /* "Primary Palette" (retrieved April 2019) */
   --mongodb-green: var(--leaf);
