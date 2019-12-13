@@ -3,7 +3,7 @@ version:
     - '0.2'
   active:
     - '0.2'
-  stable: '0.2'
+  stable: ''
   upcoming: ''
 git:
   branches:
