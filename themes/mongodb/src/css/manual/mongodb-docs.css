@@ -1164,11 +1164,34 @@ div.sphinxsidebar a { color: #333; }
     font-size: 12px;
 }
 
-.version-button {
-    background-color: transparent;
-    border: none;
+.version-sidebar {
+  box-sizing: border-box;
+  margin: 8px 12px 12px 22px;
+  width: calc(100% - 34px);
 }
 
+.version-sidebar > .dropdown-menu {
+  width: 100%;
+}
+
+.version-button {
+    background-color: var(--gray-light3);
+    background-image: linear-gradient(
+      white,
+      var(--gray-light2)
+    );
+    border: 1px solid var(--gray-light1);
+    box-shadow: inset 0 -1px 0 var(--gray-light1);
+    color: var(--gray-dark2);
+    padding: 8px;
+    text-align: left;
+    width: 100%;
+}
+
+.version-button .caret {
+  float: right;
+  margin-top: 8px;
+}
 
 div.sphinxsidebar input[type="submit"] {
     text-align: center;

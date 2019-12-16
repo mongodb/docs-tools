@@ -9,9 +9,10 @@
 {%- set github_organization = "mongodb" %}
 
 {% macro version_selector() %}
-    <div class="btn-group btn-group-xs pull-right">
+    <div class="btn-group version-sidebar">
       <button type="button" class="version-button dropdown-toggle" data-toggle="dropdown">
-        {{ theme_version_selector|selectattr('current')|map(attribute='text')|first|e }}<span class="caret"></span>
+        {% set version = theme_version_selector|selectattr('current')|map(attribute='text')|first|e %}
+        {% if version.split()[0]|int != 0 %}Version {% endif %}{{ version }}<span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
         {% for v in theme_version_selector %}
@@ -20,7 +21,9 @@
           {% else %}
           <li>
           {% endif %}
-            <a {% if not v.current %}class="version-selector" {% endif %}href="#" data-path="{{ v.path }}">{{ v.text }}</a>
+            <a {% if not v.current %}class="version-selector" {% endif %}href="#" data-path="{{ v.path }}">
+              {% if v.text.split()[0]|int != 0 %}Version {% endif %}{{ v.text }}
+            </a>
           </li>
         {% endfor %}
       </ul>
