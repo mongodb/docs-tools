@@ -2793,7 +2793,7 @@ input[type="button"].btn-block {
 }
 .dropdown-menu > li > a {
   display: block;
-  padding: 3px 8px;
+  padding: 8px;
   clear: both;
   font-weight: normal;
   line-height: 1.428571429;
