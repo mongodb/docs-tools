@@ -1166,11 +1166,11 @@ div.sphinxsidebar a { color: #333; }
 
 .version-sidebar {
   box-sizing: border-box;
-  margin: 8px 12px 8px 22px;
+  margin: 8px 12px 12px 22px;
   width: calc(100% - 34px);
 }
 
-.version-sidebar .dropdown-menu {
+.version-sidebar > .dropdown-menu {
   width: 100%;
 }
 
@@ -1190,7 +1190,7 @@ div.sphinxsidebar a { color: #333; }
 
 .version-button .caret {
   float: right;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 div.sphinxsidebar input[type="submit"] {
