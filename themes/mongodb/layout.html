@@ -12,7 +12,8 @@
     <div class="btn-group version-sidebar">
       <button type="button" class="version-button dropdown-toggle" data-toggle="dropdown">
         {% set version = theme_version_selector|selectattr('current')|map(attribute='text')|first|e %}
-        {% if version.split()[0]|int != 0 %}Version {% endif %}{{ version }}<span class="caret"></span>
+        {% if version is defined %}{% set version_num = version.split()[0] %}{% endif %}
+        {% if (version_num is defined) and (version_num|int != 0) %}Version {% endif %}{{ version }}<span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
         {% for v in theme_version_selector %}
@@ -22,7 +23,8 @@
           <li>
           {% endif %}
             <a {% if not v.current %}class="version-selector" {% endif %}href="#" data-path="{{ v.path }}">
-              {% if v.text.split()[0]|int != 0 %}Version {% endif %}{{ v.text }}
+              {% if v.text is defined %}{% set version_num = v.text.split()[0] %}{% endif %}
+              {% if (version_num is defined) and (version_num|int != 0) %}Version {% endif %}{{ v.text }}
             </a>
           </li>
         {% endfor %}
