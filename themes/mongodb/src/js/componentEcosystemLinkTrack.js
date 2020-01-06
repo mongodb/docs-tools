@@ -9,7 +9,7 @@ function reportClick(anchorElement) {
 
 export function setup() {
     // only on ecosystem homepage, track link clicks
-    if (document.body.dataset && document.body.dataset.project === 'ecosystem' && window.location.href === 'https://docs.mongodb.com/ecosystem/') {
+    if (document.body.dataset && document.body.dataset.project === 'ecosystem' && (window.location.href === 'https://docs.mongodb.com/ecosystem/' || window.location.href === 'https://docs.mongodb.com/ecosystem/drivers/')) {
         // get links on ecosystem
         const anchors = document.querySelectorAll('a.external');
         for (let i = 0; i < anchors.length; i += 1) {
