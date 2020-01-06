@@ -1029,7 +1029,7 @@ div.sphinxsidebar h3 a.showlink {
     top: 8px;
     margin-left: -21px;
     position: absolute;
-    display: inline-block;
+    display: none;
 }
 .sphinxsidebarwrapper .toctree-l1 li.current.selected-item > a > .expand-icon {
     background-image: url(images/page-icon-active.png);
@@ -1044,7 +1044,7 @@ div.sphinxsidebar h3 a.showlink {
     border-top: 3px solid #b3bbc1;
     box-sizing: border-box;
     content: '';
-    display: inline-block;
+    display: inline-block !important;
     height: 13px;
     margin-left: -23px;
     position: absolute;
