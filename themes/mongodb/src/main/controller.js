@@ -3,6 +3,7 @@ import * as componentAtlas from '../js/componentAtlas';
 import * as componentCloseOpen from '../js/componentCloseOpen';
 import * as componentCodeBlockFix from '../js/componentCodeBlockFix';
 import * as componentCopyButtons from '../js/componentCopyButtons';
+import * as componentEcosystemLinkTrack from '../js/componentEcosystemLinkTrack';
 import * as componentFastLoad from '../js/componentFastLoad';
 import * as componentFeedback from '../js/componentFeedback';
 import * as componentGuides from '../js/componentGuides';
@@ -50,6 +51,7 @@ $(() => {
 
     fastNav.register(componentCodeBlockFix);
     fastNav.register(componentCopyButtons);
+    fastNav.register(componentEcosystemLinkTrack);
     fastNav.register(componentFastLoad);
     fastNav.register(componentFeedback);
     fastNav.register(componentLightbox);
