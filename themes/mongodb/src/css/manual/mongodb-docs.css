@@ -197,6 +197,11 @@ a.reference.external:after {
     vertical-align: middle;
 }
 
+
+a.external[href^='https://docs.mongodb.com']:after { 
+    display: none; 
+}
+
 div.body li {
     padding-top: .2em;
 }
