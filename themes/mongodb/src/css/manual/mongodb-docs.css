@@ -1224,7 +1224,7 @@ div.sphinxsidebarwrapper div.idxcontents {
     margin: 10px;
     -webkit-transform: translateZ(0); /* hack around Chrome bug: http://stackoverflow.com/questions/11258877/fixed-element-disappears-in-chrome */
     order :2;
-    overflow-y: auto;
+    overflow-y: hidden !important;
     overflow-x: hidden;
 }
 
