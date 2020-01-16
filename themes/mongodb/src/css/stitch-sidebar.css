@@ -169,7 +169,7 @@ div.sphinxsidebarwrapper > ul.toctree-root {
     & li.toctree-l3 {
         >a {
             padding-left: 0px;
-            margin-left: 78px;
+            margin-left: 62px;
             width: calc(100% - 78px);
         }
     }
@@ -196,7 +196,7 @@ div.sphinxsidebarwrapper > ul.toctree-root {
     top: 8px;
     margin-left: -21px;
     position: absolute;
-    display: inline-block;
+    display: none !important;
 }
 
 .nested-page-toggle {
