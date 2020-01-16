@@ -1,8 +1,8 @@
 version:
   published:
-    - '0.2'
+    - '1.0'
   active:
-    - '0.2'
+    - '1.0'
   stable: ''
   upcoming: ''
 git:
