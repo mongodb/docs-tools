@@ -98,7 +98,8 @@ ICONS_FA4 = IconSet(
         'search',
         'stop',
         'times-circle',
-        'trash-o'
+        'trash-o',
+        'undo'
     )))
 
 #: MMS icon font
