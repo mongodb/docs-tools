@@ -275,30 +275,14 @@ def setup(app):
     app.add_directive('tabs-cloud',
         create_tab_directive('cloud', DEPLOYMENTS));
 
-    # Create client operating system tab directive
+    # Create operating system tab directive
     app.add_directive('tabs-platforms',
         create_tab_directive('platforms',
             [('windows', 'Windows'),
              ('macos', 'macOS'),
-             ('debian', 'Ubuntu/Debian'),
-             ('rhel', 'RHEL/CentOS/AMZ'),
-             ('linux', 'Linux')]))
-
-    # Create server operating system tab directive
-    app.add_directive('tabs-server-platforms',
-        create_tab_directive('server-platforms',
-            [
-             ('windows', 'Windows'),
-             ('deb', 'Ubuntu/Debian'),
-             ('rpm', 'RHEL/CentOS/AMZ'),
+             ('linux', 'Linux'),
              ('debian', 'Debian'),
-             ('ubuntu', 'Ubuntu'),
-             ('rhel', 'RHEL/CentOS'),
-             ('suse', 'SUSE'),
-             ('amz', 'Amazon Linux'),
-             ('linux', 'Other Linux')
-            ]))
-
+             ('rhel', 'RHEL')]))
 
     # Create Realm SDK tab directive
     app.add_directive(
