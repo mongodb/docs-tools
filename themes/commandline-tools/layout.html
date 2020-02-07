@@ -1,0 +1,232 @@
+{%- block doctype -%}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{%- endblock %}
+
+{%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and (sidebars != []) %}
+{%- set url_root = pathto('', 1) %}
+{%  set script_files = ["_static/lib/jquery.min.js", "_static/underscore.js", "_static/lib/bootstrap.js", "_static/lib/jquery.cookie.js", "_static/controller.js"] %}
+{%- set github_organization = "mongodb" %}
+
+{%- macro translationslink() -%}
+  {%- block translationslink %}
+    <a class="translation-link" href="{{ pathto('meta/translation', 1) }}" title="View in another language"><span class="icon-translation"></span></a>
+  {%- endblock -%}
+{%- endmacro -%}
+
+{%- macro editlink(type) -%}
+  <a class="edit-link" href="https://github.com/{{ github_organization }}/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt" target="_blank" title="Edit {{pagename}}.txt on GitHub">
+    {% if type == 'icon' %}
+      <span class="icon-edit"></span>
+    {% else %}
+      <span>Edit on Github</span>
+    {% endif %}
+  </a>
+{%- endmacro -%}
+
+{%- macro relbar() %}
+  <div class="bc">
+    {%- block breadcrumbs %}
+    {% if parents %}
+      <ul>
+        {%- block rootrellink %}{%- endblock %}
+        {%- for parent in parents %}
+          <li><a href="{{ parent.link|e }}">{{ parent.title }}</a><span class="bcpoint"> > </span></li>
+            {% if loop.last %}<li>{{title}}</li>{% endif %}
+        {%- endfor %}
+        {%- block relbaritems %} {% endblock %}
+      </ul>
+    {% else %}
+      {# <i class="fa fa-home"></i> #}
+    {% endif %}
+    {% endblock %}
+  </div>
+{%- endmacro %}
+
+{%- macro sidebar() %}
+  <div class="sphinxsidebar" id="sphinxsidebar">
+    <div id="sphinxsidebarwrapper" class="sphinxsidebarwrapper">
+      {%- if sidebars != None %}
+        {%- for sidebartemplate in sidebars %}
+          {%- include sidebartemplate %}
+        {%- endfor %}
+      {%- endif %}
+    </div>
+  </div>
+{%- endmacro -%}
+
+{%- macro script() %}
+  {%- for scriptfile in script_files %}
+    <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
+  {%- endfor %}
+{%- endmacro -%}
+
+{%- macro css() %}
+   {%- for cssfile in css_files %}
+       <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css" />
+   {%- endfor %}
+   <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
+   <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css" />
+   <link rel="stylesheet" href="{{ pathto('_static/css/navbar.min.css', 1) }}" type="text/css" />
+{%- endmacro -%}
+
+{%- macro render_nextprev() %}
+    <div id="btnv">
+      {%- if prev %}
+      <span class="btn-arrow-left">&larr; &nbsp;</span>
+      <a class="btn-prev-text" href="{{ prev.link|e }}" title="Previous Section: {{ prev.title|striptags|e }}"><span>{{ prev.title|striptags|e }}</span></a>
+      {%- endif %}
+      {%- if next %}
+      <a class="btn-next-text" href="{{ next.link|e }}" title="Next Section: {{ next.title|striptags|e }}"><span>{{ next.title|striptags|e }}</span></a>
+      <span class="btn-arrow-right">&nbsp;&rarr;</span>
+      {%- endif %}
+    </div>
+{%- endmacro -%}
+
+{% if theme_language == '' %}
+   <html xmlns="http://www.w3.org/1999/xhtml">
+{%- else -%}
+   <html xmlns="http://www.w3.org/1999/xhtml" lang="{{theme_language}}">
+{%- endif %}
+
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css' />
+  {%- block htmltitle %}
+    <title>{{ title|striptags|e }}</title>
+  {%- endblock -%}
+
+  <link rel="shortcut icon" href="https://media.mongodb.org/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
+
+  {%- if version == theme_upcoming or theme_eol == "true" or theme_eol %}
+    <meta name="robots" content="noindex,nofollow" />
+  {%- elif version in theme_active_branches or not theme_active_branches %}
+    <meta name="robots" content="index" />
+  {%- else -%}
+    <meta name="robots" content="noindex,nofollow" />
+  {%- endif %}
+
+  <meta name="release" content="{{release}}"/>
+  <meta name="version" content="{{version}}"/>
+  <meta name="DC.Source" content="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt"/>
+  <meta property="og:image" content="http://s3.amazonaws.com/info-mongodb-com/_com_assets/cms/mongodb-for-giant-ideas-bbab5c3cf8.png">
+  <meta property="og:image:secure_url" content="https://webassets.mongodb.com/_com_assets/cms/mongodb-for-giant-ideas-bbab5c3cf8.png">
+
+  {%- block metadescription %}{%- endblock -%}
+
+  {%- block canonicalref %}{%- endblock -%}
+
+  {{ metatags }}
+  {{ css() }}
+
+  {%- if not embedded %}
+    {{ script() }}
+
+    {%- block googlecse_opensearch %}
+      <link rel="search" type="application/opensearchdescription+xml" href="https://docs.mongodb.com/osd.xml" title="MongoDB Help"/>
+    {%- endblock -%}
+
+    {%- if favicon %}
+      <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}"/>
+    {%- endif %}
+  {%- endif %}
+
+  {%- block linktags %}
+    {%- include "linktags.html" %}
+  {%- endblock -%}
+
+  {%- block extrahead %}{% endblock -%}
+
+  {%- block adblockheader %}{%- endblock -%}
+</head>
+<body data-project="{{theme_project}}" data-project-title="{{docstitle|e}}" data-branch="{{theme_branch}}" data-enable-marian=1>
+  {%- block googletagmanager %}
+  <!-- Google Tag Manager -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-JQHP"
+                    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push(
+     {'gtm.start': new Date().getTime(),event:'gtm.js'}
+   );var f=d.getElementsByTagName(s)[0],
+   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+   '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+   })(window,document,'script','dataLayer','GTM-JQHP');</script>
+  <!-- End Google Tag Manager -->
+  {%- endblock -%}
+
+  {%- block header %}
+  <div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools","active": true},{"url": "https://docs.mongodb.com/guides/","text": "Guides"}]}'></div>
+  {%- endblock %}
+
+  {%- block sitesearch %}{%- endblock -%}
+
+  {% block navbar %}
+    <script src="{{ pathto('_static/navbar.min.js', 1) }}"></script>
+  {% endblock %}
+
+  <div class="content" >
+
+   <div id="left-column">
+         <aside id="sidebar" class="sidebar">
+
+           {%- block sidebar2 %}
+             {{ sidebar() }}
+           {% endblock %}
+         </aside>
+
+   </div>
+
+    <div id="main-column" class="main-column">
+
+    <span id="showNav" class="showNav">Navigation</span>
+
+      {% block alertbar %}{% endblock %}
+
+      {%- block content %}
+        <div class="document">
+          {%- block document %}
+            <div class="documentwrapper">
+              {%- if render_sidebar %}<div class="bodywrapper">{%- endif %}
+              <div class="body" data-pagename="{{pagename}}">
+                {%- block editlink_icon %}
+                   {{ editlink('icon') }}
+                {% endblock %}
+
+                {{ relbar() }}
+                {% block body %}
+                  {{ body }}
+                {% endblock %}
+                {%- if meta is defined and meta is not none and 'noprevnext' not in meta %}{{- render_nextprev() -}}{%- endif %}
+
+                {%- block footer %}
+                  <div class="footer">
+                    <div class="copyright">
+                      <p>&copy; MongoDB, Inc 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.</p>
+                    </div>
+                  </div>
+                {%- endblock %}
+              </div>
+              {%- if render_sidebar %}</div>{%- endif %}
+            </div>
+          {%- endblock %}
+        </div>
+      {%- endblock %}
+    </div>
+    {% block rating %}
+    <div id="rating-panel"></div>
+    {% endblock %}
+    <div class="clearfix"></div>
+  </div>
+  {% block onboarding_modal %}{% endblock %}
+  {%- block versionnav %}
+
+  <script type="text/javascript">
+  // Bootstrap array of links that should trigger a full page reload
+  window.docsExcludedNav = {{ theme_nav_excluded }};
+  </script>
+  {%- endblock -%}
+
+</body>
+
+{%- block endjs %} {%- endblock %}
+</html>
