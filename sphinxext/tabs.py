@@ -280,9 +280,9 @@ def setup(app):
         create_tab_directive('platforms',
             [('windows', 'Windows'),
              ('macos', 'macOS'),
-             ('linux', 'Linux'),
-             ('debian', 'Debian'),
-             ('rhel', 'RHEL')]))
+             ('debian', 'Ubuntu/Debian'),
+             ('rhel', 'RHEL/CentOS/AMZ'),
+             ('linux', 'Linux')]))
 
     # Create Realm SDK tab directive
     app.add_directive(
