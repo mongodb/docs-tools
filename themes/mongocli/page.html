@@ -37,18 +37,14 @@
         </div>
     {%- endif %}
     {%- if theme_is_alpha %}
-    <div class="alert alert-info alert-dismissible in" role="alert" style="margin-left: 20px">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <span class="alert-message">
-        <h4 class="alert-heading" style="margin-bottom: 10px;">Alpha
-        Release of MongoDB CLI</h4>
-        This is a pre-release early version of MongoDB CLI. Do not use
-        MongoDB CLI to manage production environments.
-      </span>
-    </div>
-  {%- endif %}
+        <div class="alert alert-info">
+            <span class="alert-message">
+               <h4 class="alert-heading" style="margin-bottom:
+               10px;">Alpha Release of MongoDB CLI</h4>
+               This is a pre-release early version of MongoDB CLI. Do not use MongoDB CLI to manage production environments.
+            </span>
+        </div>
+    {%- endif %}
 {%- endblock -%}
 
 {%- block adblockheader %}
