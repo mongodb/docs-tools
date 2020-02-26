@@ -1,0 +1,80 @@
+{%- extends "layout.html" -%}
+
+{%- block htmltitle %}
+  {%- if not embedded and docstitle %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif -%}
+
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
+
+{%- block editlink_icon %}{% endblock %}
+
+{%- block canonicalref %}
+  {%- if pagename == 'index' %}
+    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/master/" />
+  {%- else %}
+    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/master/{{pagename}}" />
+  {%- endif -%}
+{%- endblock -%}
+
+{%- block alertbar -%}
+    {%- if theme_active_branches and version not in theme_active_branches %}
+        <div class="alert alert-info">
+           <span class="alert-message">This version of the manual is no longer supported.</span>
+        </div>
+    {%- endif %}
+    {%- if theme_is_upcoming %}
+        <div class="alert alert-info">
+           <span class="alert-message">This manual pertains to an upcoming
+           release, and is made available for testing purposes only.</span>
+        </div>
+    {%- elif theme_eol %}
+        <div class="alert alert-warning">
+           <span class="alert-message">{{theme_eol_msg}}</span>
+        </div>
+    {%- endif %}
+    {%- if theme_is_alpha %}
+    <div class="alert alert-info alert-dismissible in" role="alert" style="margin-left: 20px">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <span class="alert-message">
+        <h4 class="alert-heading" style="margin-bottom: 10px;">Alpha
+        Release of MongoDB CLI</h4>
+        This is a pre-release early version of MongoDB CLI. Do not use
+        MongoDB CLI to manage production environments.
+      </span>
+    </div>
+  {%- endif %}
+{%- endblock -%}
+
+{%- block adblockheader %}
+    {%- include "adblock-header.html" %}
+{%- endblock -%}
+
+{%- block adblock %}
+    {%- include "adblock.html" %}
+{%- endblock -%}
+
+{%- block sitesearch %}
+  {%- if builder != 'singlehtml' %}
+      <script>
+        window.googleSearchCx = "014132741538533607290:cgznrev_wu0"
+	window.googleSearchPlaceholder = "Search MongoDB CLI"
+        window.googleSearchResultsUrl = "https://docs.mongodb.com/{{theme_project}}/{{version}}/search/"
+      </script>
+  {%- endif %}
+{%- endblock -%}
+
+{%- block header %}
+<div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools","active": true},{"url": "https://docs.mongodb.com/guides/","text": "Guides"}]}'></div>
+{%- endblock %}
+
+
+{%- block langauge_selector %}{%- endblock -%}
+{%- block pdflink %}{%- endblock %}
+{%- block epublink %}{%- endblock %}
+{%- block righttoc %} {% endblock %}
