@@ -284,7 +284,7 @@ def setup(app):
              ('rhel', 'RHEL/CentOS/AMZ'),
              ('linux', 'Linux')]))
 
-    # Create Realm SDK tab directive
+    # Create Realm Language tab directive
     app.add_directive(
         'tabs-realm-languages',
         create_tab_directive('realmLanguages', [ # Note: camelCase is required
@@ -295,6 +295,50 @@ def setup(app):
             ('objective-c', 'Objective C'),
             ('swift', 'Swift'),
             ('typescript', 'TypeScript'),
+        ])
+    )
+    
+    # Create Realm SDK tab directive
+    app.add_directive(
+        'tabs-realm-sdks',
+        create_tab_directive('realmSdks', [ # Note: camelCase is required
+            ('functions', 'Functions'),
+            ('json-expressions', 'JSON Expressions'),
+            ('graphql', 'GraphQL'),
+            ('ios', 'iOS SDK'),
+            ('android', 'Android SDK'),
+            ('dotnet', '.NET SDK'),
+            ('xamarin', 'Xamarin SDK'),
+            ('javascript', 'JavaScript SDKs'),
+            ('node', 'Node.js SDK'),
+            ('react-native', 'React Native SDK'),
+        ])
+    )
+
+    # Create Realm admin interface tab directive
+    app.add_directive(
+        'tabs-realm-admin-interfaces',
+        create_tab_directive('realmAdminInterfaces', [
+            ('ui', 'Realm UI'),
+            ('cli', 'Realm CLI'),
+            ('api', 'Admin API'),
+            ('github', 'GitHub Deploy'),
+            ('code-deploy', 'Code Deploy'),
+        ])
+    )
+
+    # Create Realm auth provider tab directive
+    app.add_directive(
+        'tabs-realm-auth-providers',
+        create_tab_directive('realmAuthProviders', [
+            ('anon-user', 'Anonymous'),
+            ('local-userpass', 'Email/Password'),
+            ('oauth2-apple', 'Apple ID'),
+            ('oauth2-google', 'Google'),
+            ('oauth2-facebook', 'Facebook'),
+            ('api-key', 'API Key'),
+            ('custom-token', 'Custom JWT'),
+            ('custom-function', 'Custom Function'),
         ])
     )
 
