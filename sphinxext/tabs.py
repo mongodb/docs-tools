@@ -319,7 +319,7 @@ def setup(app):
     app.add_directive(
         'tabs-realm-admin-interfaces',
         create_tab_directive('realmAdminInterfaces', [
-            ('ui', 'MongoDB Realm UI'),
+            ('ui', 'Realm UI'),
             ('cli', 'Realm CLI'),
             ('api', 'Admin API'),
             ('github', 'GitHub Deploy'),
