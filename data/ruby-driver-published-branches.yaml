@@ -1,6 +1,7 @@
 version:
   published:
     - 'master'
+    - '2.12'
     - '2.11'
     - '2.10'
     - '2.9'
@@ -15,6 +16,7 @@ version:
     - '1.x'
   active:
     - 'master'
+    - '2.12'
     - '2.11'
     - '2.10'
     - '2.9'
@@ -26,13 +28,14 @@ version:
     - '2.3'
     - '2.2'
     - '2.0'
-  stable: '2.11'
+  stable: '2.12'
   upcoming: master
 git:
   branches:
     manual: 'master'
     published:
       - 'master'
+      - 'v2.12'
       - 'v2.11'
       - 'v2.10'
       - 'v2.9'
