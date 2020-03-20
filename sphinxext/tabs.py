@@ -22,7 +22,9 @@ LANGUAGES = [('shell', 'Mongo Shell'),
              ('perl', 'Perl'),
              ('ruby', 'Ruby'),
              ('scala', 'Scala'),
-             ('go', 'Go')]
+             ('go', 'Go'),
+             ('swift-sync', 'Swift (Sync)'),
+             ('swift-async', 'Swift (Async)')]
 
 DEPLOYMENTS = [('cloud', 'Cloud (Atlas)'),
                ('local', 'Local Instance')]
