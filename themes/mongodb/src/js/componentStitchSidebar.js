@@ -52,8 +52,8 @@ function handleSectionNavigation(e) {
     const $targetSection = $targetHeading.parent();
 
     function collapseSection(section) {
-        const $sectionHeading = section.children('h4');
-        const $sectionContent = section.children(':not(h4)');
+        const $sectionHeading = section.children('h4, h5');
+        const $sectionContent = section.children(':not(h4, h5)');
 
         $sectionHeading.removeClass('open');
         $sectionContent.slideUp(SLIDE_ANIMATION_TIME_MS, () => {
@@ -62,8 +62,8 @@ function handleSectionNavigation(e) {
     }
 
     function expandSection(section) {
-        const $sectionHeading = section.children('h4');
-        const $sectionContent = section.children(':not(h4)');
+        const $sectionHeading = section.children('h4, h5');
+        const $sectionContent = section.children(':not(h4, h5)');
 
         $sectionHeading.addClass('open current');
         $sectionContent.slideDown(SLIDE_ANIMATION_TIME_MS, () => {
@@ -103,6 +103,7 @@ function addNavigationHandlers() {
     const $tocSections = $('.toctree-root .toctree-l1');
     $tocSections.on('click', 'h3', handleRootSectionNavigation);
     $tocSections.on('click', 'h4', handleSectionNavigation);
+    $tocSections.on('click', 'h5', handleSectionNavigation);
     $tocSections.on('click', 'a span.nested-page-toggle', handleCompositePage);
 }
 
