@@ -1,6 +1,6 @@
 import Deluge from './deluge/deluge';
 import PropTypes from 'prop-types';
-import Suggestion from './suggestion/Suggestion';
+import Suggestion from './suggestion/suggestion';
 import preact from 'preact';
 
 const whitelist = [
