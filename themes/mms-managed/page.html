@@ -44,7 +44,9 @@
 
 {%- block onboarding_modal -%}{%- endblock -%}
 
-{%- block alertbar -%}{%- endblock -%}
+{%- block alertbar -%}
+    {{ super() }}
+{%- endblock -%}
 
 {% block language_selector %}{% endblock %}
 

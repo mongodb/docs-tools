@@ -1175,6 +1175,10 @@ div.sphinxsidebar a { color: #333; }
   width: calc(100% - 34px);
 }
 
+.version-sidebar > a {
+  color: #006cbc !important;
+}
+
 .version-sidebar > .dropdown-menu {
   width: 100%;
 }
@@ -1191,6 +1195,16 @@ div.sphinxsidebar a { color: #333; }
     padding: 8px;
     text-align: left;
     width: 100%;
+}
+
+.version-button:disabled {
+  background-color: var(--gray-light2);
+  background-image: none;
+  border-color: var(--gray-light1);
+  box-shadow: none;
+  color: var(--gray-base);
+  margin-bottom: 12px;
+  pointer-events: none;
 }
 
 .version-button .caret {

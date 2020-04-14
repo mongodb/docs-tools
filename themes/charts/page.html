@@ -21,6 +21,7 @@
 {%- endblock -%}
 
 {%- block alertbar -%}
+    {{ super() }}
     {%- if theme_is_saas %}
         <div class="alert alert-info">
           <span class="alert-message">
