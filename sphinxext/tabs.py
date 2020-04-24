@@ -283,7 +283,7 @@ def setup(app):
             [('windows', 'Windows'),
              ('macos', 'macOS'),
              ('debian', 'Ubuntu/Debian'),
-             ('rhel', 'RHEL/CentOS/AMZ'),
+             ('rhel', 'RHEL/CentOS/SLES/AMZ'),
              ('linux', 'Linux')]))
 
     # Create Realm Language tab directive
