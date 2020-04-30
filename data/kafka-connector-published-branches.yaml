@@ -1,8 +1,10 @@
 version:
   published:
+    - 'master'
     - 'v1.1'
     - 'v1.0'
   active:
+    - 'master'
     - 'v1.1'
     - 'v1.0'
   stable: 'v1.1'
