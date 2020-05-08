@@ -57,7 +57,8 @@ def generate_image_inkscape(build_type, dpi, width, target, source):
     inkscape = None
 
     for path in ('/usr/bin/inkscape', '/usr/local/bin/inkscape',
-                 '/Applications/Inkscape.app/Contents/Resources/bin/inkscape'):
+                 '/Applications/Inkscape.app/Contents/Resources/bin/inkscape',
+                 '/Applications/Inkscape.app/Contents/MacOS/inkscape'):
         if os.path.exists(path):
             inkscape = path
             break
