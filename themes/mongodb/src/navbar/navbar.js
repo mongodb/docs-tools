@@ -178,27 +178,34 @@ class Navbar extends preact.Component {
             return <a href={ link.url } key={i} className={ linkClass }>{ link.text }</a>;
         });
 
+        const bannerUrl = document.body.clientWidth > 1200 ? 'https://docs.mongodb.com/images/mongodb-live-banner.png' : 'https://docs.mongodb.com/images/mongodb-live-banner-mobile.png';
+
         return (
-            <nav className="navbar">
-                <div className="navbar__left">
-                    <a href="https://www.mongodb.com/">
-                        <img src="https://docs.mongodb.com/images/mongodb-logo.png" className="navbar-brand" alt="MongoDB Logo" />
-                    </a>
+            <div style="position: fixed; top: 0;">
+                <a href="https://www.mongodb.com/world">
+                    <img src={bannerUrl} alt="MongoDB.live Banner" />
+                </a>
+                <nav className="navbar">
+                    <div className="navbar__left">
+                        <a href="https://www.mongodb.com/">
+                            <img src="https://docs.mongodb.com/images/mongodb-logo.png" className="navbar-brand" alt="MongoDB Logo" />
+                        </a>
 
-                    <span className="navbar-seperator"></span>
+                        <span className="navbar-seperator"></span>
 
-                    <NavbarDropdown links={this.state.dropdown} />
-                </div>
-
-                <div className="navbar__right">
-                    <div className="navbar-links">
-                        { linkElements }
+                        <NavbarDropdown links={this.state.dropdown} />
                     </div>
 
-                    <NavbarDownloadButton />
-                    { searchBar }
-                </div>
-            </nav>
+                    <div className="navbar__right">
+                        <div className="navbar-links">
+                            { linkElements }
+                        </div>
+
+                        <NavbarDownloadButton />
+                        { searchBar }
+                    </div>
+                </nav>
+            </div>
         );
     }
 }
