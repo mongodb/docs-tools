@@ -81,10 +81,6 @@
   {%- endif %}
 </head>
 <body data-project="{{theme_project}}" data-project-title="{{docstitle|e}}" data-branch="{{theme_branch}}" data-enable-marian=1>
-  <div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides","active": true}]}'></div>
-
-  <script async src="{{ pathto('_static/navbar.min.js', 1) }}"></script>
-
   <div class="content">
     {%- if pagename == 'index' -%}
     <div class="guide-category-list">
@@ -96,6 +92,10 @@
 
     <div id="rating-panel"></div>
   </div>
+
+  <div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides","active": true}]}'></div>
+
+  <script async src="{{ pathto('_static/navbar.min.js', 1) }}"></script>
 
   <!-- Google Tag Manager -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-JQHP"
