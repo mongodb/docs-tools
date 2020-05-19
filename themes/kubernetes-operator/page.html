@@ -23,7 +23,11 @@
 {%- block alertbar -%}
     {%- if theme_active_branches and version not in theme_active_branches %}
         <div class="alert alert-info">
-           <span class="alert-message">This version of the manual is no longer supported.</span>
+           <span class="alert-message">This version of the manual is no
+           longer supported. <a
+           href="https://docs.mongodb.com/kubernetes-operator/stable/upgrade/">Learn
+           more</a> about upgrading your version of the MongoDB
+           Enterprise Kubernetes Operator.</span>
         </div>
     {%- endif %}
     {%- if theme_is_upcoming %}
