@@ -857,7 +857,7 @@ div.deprecated>p>span {
 .content {
     box-sizing: border-box;
     display: flex;
-    margin: 45px auto 0;
+    margin: 85px auto 0;
 }
 
 .content .main-column {
