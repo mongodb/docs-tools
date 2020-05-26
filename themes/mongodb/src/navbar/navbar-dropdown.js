@@ -45,11 +45,6 @@ class NavbarDropdown extends preact.Component {
                                 <li className="submenu__item">
                                     <a href="https://docs.mongodb.com/manual/">MongoDB Server</a>
                                 </li>
-
-                                <li className="submenu__item">
-                                    <a href="https://docs.mongodb.com/stitch/">MongoDB Stitch</a>
-                                </li>
-
                                 <li className="submenu__item">
                                     <Submenu title="Drivers" open={false}>
                                         <li className="submenu__item">
@@ -90,6 +85,10 @@ class NavbarDropdown extends preact.Component {
                                         <li className="submenu__item">
                                             <a href="https://docs.atlas.mongodb.com/">MongoDB Atlas</a>
                                         </li>
+                                        <li className="submenu__item">
+                                            <a href="https://docs.mongodb.com/realm/">MongoDB Realm</a>
+                                        </li>
+
                                         <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/datalake/">MongoDB Atlas Data Lake</a>
                                         </li>
