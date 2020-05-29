@@ -1,6 +1,7 @@
 version:
   published:
     - 'master'
+    - '1.7'
     - '1.6'
     - '1.5'
     - '1.4'
@@ -9,6 +10,7 @@ version:
     - '1.1'
   active:
     - 'master'
+    - '1.7'
     - '1.6'
     - '1.5'
     - '1.4'
@@ -19,9 +21,10 @@ version:
   upcoming: 'master'
 git:
   branches:
-    manual: 'v1.5'
+    manual: 'v1.6'
     published:
       - 'master'
+      - 'v1.7'
       - 'v1.6'
       - 'v1.5'
       - 'v1.4'
