@@ -91,6 +91,9 @@ class NavbarDropdown extends preact.Component {
                                             <a href="https://docs.atlas.mongodb.com/">MongoDB Atlas</a>
                                         </li>
                                         <li className="submenu__item">
+                                            <a href="https://docs.atlas.mongodb.com/atlas-search/">MongoDB Atlas Search</a>
+                                        </li>
+                                        <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/datalake/">MongoDB Atlas Data Lake</a>
                                         </li>
                                         <li className="submenu__item">
