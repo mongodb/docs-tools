@@ -1,80 +1,120 @@
 [
   {
+    "git": "git@github.com:10gen/cloud-docs.git",
+    "branches": ["master"],
+    "build": "make publish",
+    "deploy": "make deploy"
+  },
+  {
+    "name": "atlasOSB",
+    "git": "git@github.com:10gen/cloud-docs-osb.git",
+    "branches": "../../data/atlas-open-service-broker-published-branches.yaml",
+    "build": "make publish",
+    "deploy": "make deploy"
+  },
+  {
     "git": "https://github.com/mongodb/docs-bi-connector.git",
     "branches": "../../data/bi-connector-published-branches.yaml",
-    "build": "mkdir -p build/master && make publish"
+    "build": "make publish",
+    "deploy": "make deploy"
   },
   {
-    "git": "https://github.com/mongodb/docs-spark-connector.git",
-    "branches": "../../data/spark-connector-published-branches.yaml",
-    "build": "giza make publish"
-  },
-  {
-    "git": "https://github.com/mongodb/docs.git",
-    "branches": "../../data/manual-published-branches.yaml",
-    "build": "make publish"
-  },
-  {
-    "name": "mms-onprem",
-    "git": "git@github.com:10gen/mms-docs.git",
-    "branches": "../../data/mms-published-branches.yaml",
-    "build": "giza make publish-onprem"
+    "git": "git@github.com:10gen/docs-charts.git",
+    "branches": "../../data/charts-published-branches.yaml",
+    "build": "make publish",
+    "deploy": "make deploy"
   },
   {
     "name": "mms-cloud",
     "git": "git@github.com:10gen/mms-docs.git",
     "branches": ["master"],
-    "build": "make publish-cloud"
+    "build": "make publish-cloud",
+    "deploy": "make deploy-cloud"
   },
   {
-    "git": "git@github.com:10gen/baas-docs.git",
-    "branches": "../../data/stitch-published-branches.yaml",
-    "build": "make publish"
-  },
-  {
-    "git": "https://github.com/mongodb/docs-compass.git",
+    "git": "git@github.com:mongodb/docs-compass.git",
     "branches": "../../data/compass-published-branches.yaml",
-    "build": "make publish"
+    "build": "make publish",
+    "deploy": "make deploy"
   },
   {
-    "git": "git@github.com:10gen/docs-charts.git",
-    "branches": "../../data/charts-published-branches.yaml",
-    "build": "make publish"
-  },
-  {
-    "git": "git@github.com:10gen/cloud-docs.git",
+    "git": "git@github.com:mongodb/docs-commandline-tools.git",
     "branches": ["master"],
-    "build": "make publish"
+    "build": "make publish",
+    "deploy": "make deploy"
   },
   {
-    "git": "https://github.com/mongodb/docs-php-library.git",
-    "branches": "../../data/php-library-published-branches.yaml",
-    "build": "make publish"
+    "name": "guides",
+    "git": "git@github.com:10gen/docs-tutorials.git",
+    "branches": ["master"],
+    "build": "make publish",
+    "deploy": "make deploy"
   },
   {
-    "git": "https://github.com/mongodb/docs-ruby.git",
-    "branches": "../../data/ruby-driver-published-branches.yaml",
-    "build": "make publish"
+    "git": "git@github.com:10gen/docs-k8s-operator.git",
+    "branches": "../../data/kubernetes-operator-published-branches.yaml",
+    "build": "make publish",
+    "deploy": "make deploy"
   },
   {
-    "git": "git@github.com:10gen/docs-mongoid.git",
-    "branches": "../../data/mongoid-published-branches.yaml",
-    "build": "make publish"
+    "git": "git@github.com:10gen/docs-kafka-connector.git",
+    "branches": "../../data/kafka-connector-published-branches.yaml",
+    "build": "make publish",
+    "deploy": "make deploy"
+  },
+  {
+    "git": "git@github.com:mongodb/docs-landing.git",
+    "branches": ["master"],
+    "build": "make build",
+    "deploy": "make deploy"
   },
   {
     "git": "git@github.com:mongodb/docs-meta.git",
     "branches": ["master"],
-    "build": "make publish"
+    "build": "make publish",
+    "deploy": "make deploy"
   },
   {
-    "git": "git@github.com:mongodb/docs-ecosystem.git",
-    "branches": ["master"],
-    "build": "make publish"
+    "git": "git@github.com:10gen/docs-mongocli.git",
+    "branches": "../../data/mongocli-published-branches.yaml",
+    "build": "make publish",
+    "deploy": "make deploy"
   },
   {
-    "git": "https://github.com/mongodb/docs-landing.git",
+    "name": "mms-onprem",
+    "git": "git@github.com:10gen/mms-docs.git",
+    "branches": "../../data/mms-published-branches.yaml",
+    "build": "make publish-onprem",
+    "deploy": "make deploy-opsmgr"
+  },
+  {
+    "git": "https://github.com/mongodb/docs-spark-connector.git",
+    "branches": "../../data/spark-connector-published-branches.yaml",
+    "build": "make publish",
+    "deploy": "make deploy"
+  },
+  {
+    "git": "git@github.com:mongodb/docs-php-library.git",
+    "branches": "../../data/php-library-published-branches.yaml",
+    "build": "true",
+    "deploy": "make deploy"
+  },
+  {
+    "git": "git@github.com:mongodb/docs-ruby.git",
+    "branches": "../../data/ruby-driver-published-branches",
+    "build": "make publish",
+    "deploy": "make deploy"
+  },
+  {
+    "git": "git@github.com:mongodb/docs.git",
+    "branches": "../../data/manual-published-branches",
+    "build": "make publish",
+    "deploy": "make deploy"
+  },
+  {
+    "git": "git@github.com:mongodb/docs-mongodb-shell.git",
     "branches": ["master"],
-    "build": "",
-    "docs-tools": false
+    "build": "make publish",
+    "deploy": "make deploy"
   }
 ]
