@@ -91,10 +91,10 @@ class NavbarDropdown extends preact.Component {
                                             <a href="https://docs.atlas.mongodb.com/">MongoDB Atlas</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.atlas.mongodb.com/atlas-search/">MongoDB Atlas Search</a>
+                                            <a href="https://docs.mongodb.com/datalake/">MongoDB Atlas Data Lake</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/datalake/">MongoDB Atlas Data Lake</a>
+                                            <a href="https://docs.atlas.mongodb.com/atlas-search/">MongoDB Atlas Search</a>
                                         </li>
                                         <li className="submenu__item">
                                             <a href="https://docs.cloudmanager.mongodb.com/">MongoDB Cloud Manager</a>
@@ -132,7 +132,13 @@ class NavbarDropdown extends preact.Component {
                                             <a href="https://docs.mongodb.com/kafka-connector/current/">MongoDB Kafka Connector</a>
                                         </li>
                                         <li className="submenu__item">
+                                            <a href="https://docs.mongodb.com/mongodb-shell/">MongoDB Shell</a>
+                                        </li>
+                                        <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/spark-connector/current/">MongoDB Spark Connector</a>
+                                        </li>
+                                        <li className="submenu__item">
+                                            <a href="https://docs.mongodb.com/mongodb-vscode/">MongoDB for VS Code</a>
                                         </li>
                                     </Submenu>
                                 </li>
