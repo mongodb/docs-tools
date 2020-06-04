@@ -451,7 +451,7 @@ a > em { font-style: normal; }
 .content {
     box-sizing: border-box;
     display: flex;
-    margin: 85px auto 0;
+    margin: 45px auto 0;
 }
 
 .main-column {
