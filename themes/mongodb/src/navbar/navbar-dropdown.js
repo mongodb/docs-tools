@@ -120,6 +120,9 @@ class NavbarDropdown extends preact.Component {
                                             <a href="https://docs.mongodb.com/mongocli/stable/">MongoDB Command Line Interface</a>
                                         </li>
                                         <li className="submenu__item">
+                                            <a href="https://github.com/mongodb/mongodb-kubernetes-operator">MongoDB Community Kubernetes Operator</a>
+                                        </li>
+                                        <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/compass/current/">MongoDB Compass</a>
                                         </li>
                                         <li className="submenu__item">
