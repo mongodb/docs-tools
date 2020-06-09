@@ -45,11 +45,6 @@ class NavbarDropdown extends preact.Component {
                                 <li className="submenu__item">
                                     <a href="https://docs.mongodb.com/manual/">MongoDB Server</a>
                                 </li>
-
-                                <li className="submenu__item">
-                                    <a href="https://docs.mongodb.com/stitch/">MongoDB Stitch</a>
-                                </li>
-
                                 <li className="submenu__item">
                                     <Submenu title="Drivers" open={false}>
                                         <li className="submenu__item">
@@ -102,6 +97,9 @@ class NavbarDropdown extends preact.Component {
                                         <li className="submenu__item">
                                             <a href="https://docs.opsmanager.mongodb.com/current/">MongoDB Ops Manager</a>
                                         </li>
+                                        <li className="submenu__item">
+                                            <a href="https://docs.mongodb.com/realm/">MongoDB Realm</a>
+                                        </li>
                                     </Submenu>
                                 </li>
 
@@ -118,6 +116,9 @@ class NavbarDropdown extends preact.Component {
                                         </li>
                                         <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/mongocli/stable/">MongoDB Command Line Interface</a>
+                                        </li>
+                                        <li className="submenu__item">
+                                            <a href="https://github.com/mongodb/mongodb-kubernetes-operator">MongoDB Community Kubernetes Operator</a>
                                         </li>
                                         <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/compass/current/">MongoDB Compass</a>

@@ -290,13 +290,13 @@ def setup(app):
     app.add_directive(
         'tabs-realm-languages',
         create_tab_directive('realmLanguages', [ # Note: camelCase is required
-            ('c-sharp', 'C#'),
-            ('java', 'Java'),
-            ('javascript', 'JavaScript'),
-            ('kotlin', 'Kotlin'),
-            ('objective-c', 'Objective C'),
             ('swift', 'Swift'),
+            ('kotlin', 'Kotlin'),
             ('typescript', 'TypeScript'),
+            ('java', 'Java'),
+            ('objective-c', 'Objective C'),
+            ('javascript', 'JavaScript'),
+            ('c-sharp', 'C#'),
         ])
     )
     
