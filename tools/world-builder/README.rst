@@ -1,18 +1,19 @@
-===================================
-MongoDB Documentation World Builder
-===================================
+========================================================
+MongoDB Documentation World Builder for Legacy Toolchain
+========================================================
 
-This directory contains the MongoDB Documentation World Builder. The World
-Builder provides a centralized way of building all MongoDB documentation
-projects.
+This directory contains the MongoDB Documentation World Builder. The
+World Builder provides a centralized way of building **and deploying**
+all MongoDB documentation projects that build with the legacy toolchain
+(i.e. giza/sphinx).
 
 Quick Start
 -----------
 
-Run ``./build.py`` to build all MongoDB documentation projects.
+Run ``./build.py`` to build and deploy all MongoDB documentation projects.
 
-Building Specific Targets
--------------------------
+Build and Deploy Specific Targets
+---------------------------------
 
 The World Builder can also fetch and build specific projects using
 shell-style glob expressions on git repository names.
