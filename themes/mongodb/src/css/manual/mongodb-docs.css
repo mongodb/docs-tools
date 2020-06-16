@@ -719,7 +719,7 @@ div.versionadded > p > span, div.versionchanged > p > span, div.deprecated > p >
 .content {
     box-sizing: border-box;
     display: flex;
-    margin: 45px auto 0;
+    margin: 85px auto 0;
 }
 
 .content .main-column {
@@ -965,7 +965,7 @@ a.twitter-icon, a.youtube-icon, a.facebook-icon, a.stack-overflow-icon, a.slack-
 div.sphinxsidebar {
     font-size: 16px;
     line-height: 20px;
-    top: 45px; /* the height of the navbar */
+    top: 85px; /* the height of the navbar */
     bottom: 0;
     position: fixed;
     overflow-y: auto;

@@ -3,8 +3,9 @@
   box-shadow: 0 2px 4px 0 var(--primary-shadow);
   display: flex;
   height: 45px; /* this isn't 100% necessary, but makes other math easier */
-  position: fixed;
-  top: 0;
+  /* Re-insert when removing banner */
+  /* position: fixed; */
+  /* top: 0; */
   width: 100%;
   z-index: 9999;
 

@@ -179,26 +179,32 @@ class Navbar extends preact.Component {
         });
 
         return (
-            <nav className="navbar">
-                <div className="navbar__left">
-                    <a href="https://www.mongodb.com/">
-                        <img src="https://docs.mongodb.com/images/mongodb-logo.png" className="navbar-brand" alt="MongoDB Logo" />
-                    </a>
+            <div style="position: fixed; top: 0;">
+                <a href="https://www.mongodb.com/resources/channel/mongodblive">
+                    <img className="show-medium-and-up" src="https://docs.mongodb.com/images/post-live-banner.png"  alt="Register Now for MongoDB.live, free & fully virtual on June 9th-10th" />
+                    <img className="hide-medium-and-up" src="https://docs.mongodb.com/images/post-live-banner-mobile.png" alt="Register Now for MongoDB.live, free & fully virtual on June 9th-10th" />
+                </a>
+                <nav className="navbar">
+                    <div className="navbar__left">
+                        <a href="https://www.mongodb.com/">
+                            <img src="https://docs.mongodb.com/images/mongodb-logo.png" className="navbar-brand" alt="MongoDB Logo" />
+                        </a>
 
-                    <span className="navbar-seperator"></span>
+                        <span className="navbar-seperator"></span>
 
-                    <NavbarDropdown links={this.state.dropdown} />
-                </div>
-
-                <div className="navbar__right">
-                    <div className="navbar-links">
-                        { linkElements }
+                        <NavbarDropdown links={this.state.dropdown} />
                     </div>
 
-                    <NavbarDownloadButton />
-                    { searchBar }
-                </div>
-            </nav>
+                    <div className="navbar__right">
+                        <div className="navbar-links">
+                            { linkElements }
+                        </div>
+
+                        <NavbarDownloadButton />
+                        { searchBar }
+                    </div>
+                </nav>
+            </div>
         );
     }
 }
