@@ -180,9 +180,9 @@ class Navbar extends preact.Component {
 
         return (
             <div style="position: fixed; top: 0;">
-                <a href="https://www.mongodb.com/world">
-                    <img className="show-medium-and-up" src="https://docs.mongodb.com/images/mongodb-live-banner.png"  alt="Register Now for MongoDB.live, free & fully virtual on June 9th-10th" />
-                    <img className="hide-medium-and-up" src="https://docs.mongodb.com/images/mongodb-live-banner-mobile.png" alt="Register Now for MongoDB.live, free & fully virtual on June 9th-10th" />
+                <a href="https://www.mongodb.com/resources/channel/mongodblive">
+                    <img className="show-medium-and-up" src="https://docs.mongodb.com/images/post-live-banner.png"  alt="Register Now for MongoDB.live, free & fully virtual on June 9th-10th" />
+                    <img className="hide-medium-and-up" src="https://docs.mongodb.com/images/post-live-banner-mobile.png" alt="Register Now for MongoDB.live, free & fully virtual on June 9th-10th" />
                 </a>
                 <nav className="navbar">
                     <div className="navbar__left">
