@@ -48,19 +48,19 @@ class NavbarDropdown extends preact.Component {
                                 <li className="submenu__item">
                                     <Submenu title="Drivers" open={false}>
                                         <li className="submenu__item">
-                                            <a href="http://mongoc.org/libmongoc/current/">C</a>
+                                            <a href="https://docs.mongodb.com/drivers/c/">C</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://mongodb.github.io/mongo-cxx-driver/">C++11</a>
+                                            <a href="https://docs.mongodb.com/drivers/cxx/">C++</a>
                                         </li>
                                         <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/ecosystem/drivers/csharp/">C#</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="http://mongodb.github.io/mongo-java-driver/">Java</a>
+                                            <a href="https://docs.mongodb.com/drivers/java-drivers/">Java</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://mongodb.github.io/node-mongodb-native/">Node.js</a>
+                                            <a href="https://docs.mongodb.com/drivers/node/">Node.js</a>
                                         </li>
                                         <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/ecosystem/drivers/perl/">Perl</a>
