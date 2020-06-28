@@ -37,6 +37,11 @@ def include_files(conf, files=None):
             except subprocess.CalledProcessError as e:
                 grep = e.output
 
+        # Depending on Python version, output may be a str or bytes instance.
+        if not isinstance(grep, str):
+            # Assume output is in UTF-8.
+            grep = grep.decode('utf-8')
+
         rx = re.compile(source_dir + r'(.*):.*\.\. include:: (.*)')
 
         s = [m.groups()

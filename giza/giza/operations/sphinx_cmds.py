@@ -141,7 +141,13 @@ def sphinx_builder_tasks(app, conf):
         # otherwise, exit.
         ret_code = sum([o[0] for o in results])
 
-        output = [o[1].split('\n') for o in results if o != '']
+        # Depending on Python version, output may be a str or bytes instance.
+        # Assume output is in UTF-8.
+        outputs = [o[1] for o in results]
+        if outputs and not isinstance(outputs[0], str):
+            outputs = [o.decode('utf-8') for o in outputs]
+        
+        output = [o.split('\n') for o in outputs if o != '']
 
         sphinx_output = list(reduce(itertools.chain, output))
         try:
