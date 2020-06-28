@@ -303,7 +303,7 @@ def render_sphinx_config(conf):
                                                           'language': lang},
                                                          conf, computed)
 
-    for i in computed.keys():
+    for i in list(computed.keys()):
         if i in ['prerequisites', 'generated-source',
                  'sphinx-builders'] or 'base' in i:
             del computed[i]
