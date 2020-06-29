@@ -57,7 +57,7 @@ div.sphinxsidebarwrapper {
 div.sphinxsidebar {
     font-size: 16px;
     line-height: 20px;
-    top: 85px;
+    top: 45px;
     /* the height of the navbar */
     bottom: 0;
     position: fixed;
