@@ -51,7 +51,8 @@
     }
 
     &--shown {
-      max-height: 9999px;
+      max-height: 80vh;
+      overflow-y: scroll;
       visibility: visible;
     }
   }
