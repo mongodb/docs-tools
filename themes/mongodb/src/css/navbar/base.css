@@ -50,8 +50,7 @@ h4 {
 h1:before,
 h2:before,
 h3:before,
-h4:before,
-code:before {
+h4:before {
   content: '';
   display: block;
   height: calc(var(--navbar-height) + 10px);
