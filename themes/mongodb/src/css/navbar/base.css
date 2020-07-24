@@ -50,11 +50,12 @@ h4 {
 h1:before,
 h2:before,
 h3:before,
-h4:before {
+h4:before,
+code:before {
   content: '';
   display: block;
-  height: var(--navbar-height);
-  margin-top: calc(var(--navbar-height) * -1);
+  height: calc(var(--navbar-height) + 10px);
+  margin-top: calc((var(--navbar-height) + 10px) * -1);
   position: relative;
   width: 0;
 }
