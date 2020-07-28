@@ -2,7 +2,7 @@
 Giza -- Documentation Build Tools
 =================================
 
-**Giza is no longer maintained.** 
+**GIZA IS NO LONGER MAINTAINED.** 
 
 MongoDB's documentation is migrating to use
 our new toolchain, `snooty <https://github.com/mongodb/snooty>`_.
