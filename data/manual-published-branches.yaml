@@ -17,11 +17,11 @@ version:
     - '3.6'
     - '3.4'
     - '3.2'
-  stable: '4.2'
-  upcoming: '4.4'
+  stable: '4.4'
+  upcoming: null
 git:
   branches:
-    manual: 'v4.2'
+    manual: 'master'
     published:
       - 'master'
       - 'v4.2'
