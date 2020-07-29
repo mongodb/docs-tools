@@ -1,5 +1,6 @@
 version:
   published:
+    - '1.4.0'
     - '1.3.0'
     - '1.2.0'
     - '1.1.0'
@@ -10,17 +11,19 @@ version:
     - '0.0.4'
     - '0.0.3'
   active:
+    - '1.4.0'
     - '1.3.0'
     - '1.2.0'
     - '1.1.0'
     - '1.0.0'
-  stable: '1.2.0'
-  upcoming: '1.3.0'
+  stable: '1.3.0'
+  upcoming: '1.4.0'
 git:
   branches:
-    manual: 'v1.3.0'
+    manual: 'v1.4.0'
     published:
       - 'master'
+      - 'v1.3.0'
       - 'v1.2.0'
       - 'v1.1.0'
       - 'v1.0.0'
