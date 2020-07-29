@@ -96,23 +96,6 @@ $(() => {
         }
     });
 
-    /* Adjust the scroll location to account for our fixed header */
-    function offsetHashLink() {
-        if (location.hash && document.getElementById(location.hash.substr(1))) {
-            $(window).scrollTop(window.scrollY - 75);
-        }
-    }
-    window.addEventListener('hashchange', offsetHashLink);
-    if (location.hash) {
-        window.setTimeout(offsetHashLink, 10);
-    }
-    $('.content').on('click', 'a', (e) => {
-        // Fixes corner case where the user clicks the same hash link twice
-        if ($(e.currentTarget).attr('href') === location.hash) {
-            window.setTimeout(offsetHashLink, 10);
-        }
-    });
-
     // Update dynamic page features
     fastNav.update();
 
