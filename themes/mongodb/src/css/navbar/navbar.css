@@ -12,7 +12,6 @@
 @import 'bem-components/submenu';
 
 @import 'search';
-@import 'base';
 @import 'constants';
 
 /* hide the links on small screens */
