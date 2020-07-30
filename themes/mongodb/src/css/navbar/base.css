@@ -10,6 +10,10 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
+ul {
+  padding-left: 40px;
+}
+
 h1 {
   color: var(--charcoal-grey-two);
   font-family: Akzidenz;
