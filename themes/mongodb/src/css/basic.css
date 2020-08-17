@@ -404,7 +404,7 @@ dd {
     margin-left: 30px;
 }
 
-dt:target, .highlighted {
+.highlighted {
     background-color: #fbe54e;
 }
 
