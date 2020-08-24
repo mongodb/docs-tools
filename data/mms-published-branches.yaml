@@ -2,13 +2,11 @@ version:
   published:
     - 'upcoming'
     - '4.4'
-    - '4.3 (rapid)'
     - '4.2'
     - '4.0'
   active:
     - 'upcoming'
     - '4.4'
-    - '4.3 (rapid)'
     - '4.2'
     - '4.0'
   stable: '4.4'
@@ -19,7 +17,6 @@ git:
     published:
       - 'master'
       - 'v4.4'
-      - 'v4.3'
       - 'v4.2'
       - 'v4.0'
       # the branches/published list **must** be ordered from most to
