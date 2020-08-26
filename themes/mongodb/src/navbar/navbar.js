@@ -18,7 +18,10 @@ class Navbar extends preact.Component {
     constructor (props) {
         super(props);
         this.state = JSON.parse(props.navprops);
-        this.state.enableMarian = Boolean(document.body.getAttribute('data-enable-marian'));
+        // If gatsby is available, then this site is built off next gen
+        const isLegacy = !document.getElementById('___gatsby');
+        const enableMarianAttr = Boolean(document.body.getAttribute('data-enable-marian'));
+        this.state.enableMarian =  isLegacy && enableMarianAttr;
 
         // There are four supported configurations:
         // 1) No Marian
