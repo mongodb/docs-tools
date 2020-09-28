@@ -314,6 +314,7 @@ def setup(app):
             ('javascript', 'JavaScript SDKs'),
             ('node', 'Node.js SDK'),
             ('react-native', 'React Native SDK'),
+            ('web', 'Web SDK'),
         ])
     )
 
