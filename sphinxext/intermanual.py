@@ -346,6 +346,12 @@ def missing_reference(app, env, node, contnode):
             return
         objtypes = ['%s:%s' % (domain, objtype) for objtype in objtypes]
 
+    # Sphinx, at least older versions like we use, special-case options.
+    # Essentially, cmdoption == option. In snooty for consistency we emit option,
+    # but Sphinx expects cmdoption.
+    if "std:cmdoption" in objtypes:
+        objtypes.append("std:option")
+
     # I accidentally broke the correct ref format for a couple of years.
     # During that time, people used a hacky alternative link format (e.g.
     # :query:`$nearSphere <op.$nearSphere>`). Support both.
