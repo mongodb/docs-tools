@@ -31,7 +31,7 @@ git:
     manual: 'v1.8'
     published:
       - 'master'
-      - 'v1.8'
+      - 'v1.7'
       - 'v1.6'
       - 'v1.5'
       - 'v1.4.0'
