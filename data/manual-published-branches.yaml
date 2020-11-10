@@ -23,6 +23,7 @@ git:
   branches:
     manual: 'v4.4'
     published:
+      - 'master'
       - 'v4.4'
       - 'v4.2'
       - 'v4.0'
