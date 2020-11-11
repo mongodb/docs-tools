@@ -70,7 +70,7 @@ class MainWidget extends preact.Component {
                         href="https://jira.mongodb.org/">
                             report the problem on Jira.</a></p>}
                     <p>We also recommend you explore <a class="deluge-fix-button"
-                        href="https://groups.google.com/group/mongodb-user">
+                        href="https://developer.mongodb.com/community/forums/">
                             the MongoDB discussion forum</a> for additional support.</p>
                     <p className="deluge-close-link"><small><span onClick={this.toggleVisibility}>
                         Close</span></small></p>
