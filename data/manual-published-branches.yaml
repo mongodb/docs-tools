@@ -1,6 +1,5 @@
 version:
   published:
-    - 'upcoming'
     - '4.4'
     - '4.2'
     - '4.0'
@@ -22,10 +21,9 @@ version:
   upcoming: null
 git:
   branches:
-    manual: 'v4.4'
+    manual: 'master'
     published:
       - 'master'
-      - 'v4.4'
       - 'v4.2'
       - 'v4.0'
       - 'v3.6'
