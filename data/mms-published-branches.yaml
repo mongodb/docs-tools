@@ -1,21 +1,24 @@
 version:
   published:
     - 'upcoming'
+    - '4.9 (rapid)'
     - '4.4'
     - '4.2'
     - '4.0'
   active:
     - 'upcoming'
+    - '4.9 (rapid)'
     - '4.4'
     - '4.2'
     - '4.0'
   stable: '4.4'
-  upcoming: '4.6'
+  upcoming: '5.0'
 git:
   branches:
     manual: 'v4.4'
     published:
       - 'master'
+      - 'v4.9'
       - 'v4.4'
       - 'v4.2'
       - 'v4.0'
