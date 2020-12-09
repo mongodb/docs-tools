@@ -16,8 +16,6 @@ const SAMPLE_FACTORS = {
     'spark-connector': 0.05562
 };
 
-let initialLoadFinished = false;
-
 export function initialize() {
     /* eslint-disable */
 
@@ -44,14 +42,9 @@ export function setup(fastNav) {
     }
 
     // Update our path. We're not using Gatsby, but this is the event name that was already in use.
-    // We only want to do this after the initial pageload, since that ping is implicit.
-    if (initialLoadFinished) {
-        try {
-            window.dataLayer.push({event: 'gatsby-route-change'});
-        } catch (err) {
-            console.error('Error updating route:', err);
-        }
+    try {
+        window.dataLayer.push({event: 'gatsby-route-change'});
+    } catch (err) {
+        console.error('Error updating route:', err);
     }
-
-    initialLoadFinished = true;
 }
