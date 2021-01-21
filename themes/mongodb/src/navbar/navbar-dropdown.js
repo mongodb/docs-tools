@@ -54,7 +54,7 @@ class NavbarDropdown extends preact.Component {
                                             <a href="https://docs.mongodb.com/drivers/cxx/">C++</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/ecosystem/drivers/csharp/">C#</a>
+                                            <a href="https://docs.mongodb.com/drivers/csharp/">C#</a>
                                         </li>
                                         <li className="submenu__item">
                                             <a href="https://docs.mongodb.com/drivers/java-drivers/">Java</a>
@@ -63,19 +63,19 @@ class NavbarDropdown extends preact.Component {
                                             <a href="https://docs.mongodb.com/drivers/node/">Node.js</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/ecosystem/drivers/perl/">Perl</a>
+                                            <a href="https://docs.mongodb.com/drivers/perl/">Perl</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/ecosystem/drivers/php/">PHP</a>
+                                            <a href="https://docs.mongodb.com/drivers/php/">PHP</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/ecosystem/drivers/python/">Python</a>
+                                            <a href="https://docs.mongodb.com/drivers/python/">Python</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/ecosystem/drivers/ruby/">Ruby</a>
+                                            <a href="https://docs.mongodb.com/drivers/ruby/">Ruby</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/ecosystem/drivers/scala/">Scala</a>
+                                            <a href="https://docs.mongodb.com/drivers/scala/">Scala</a>
                                         </li>
                                     </Submenu>
                                 </li>
