@@ -1,5 +1,13 @@
 {%- extends "layout.html" -%}
 
+{%- block canonicalref %}
+  {%- if pagename == 'index' %}
+    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/current/" />
+  {%- else %}
+    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/current/{{pagename}}/" />
+  {%- endif -%}
+{%- endblock -%}
+
 {%- block translationslink -%} {%- endblock -%}
 
 {%- block version_selector %} {% endblock %}
