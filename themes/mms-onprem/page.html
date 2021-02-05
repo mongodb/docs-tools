@@ -33,6 +33,9 @@
   {%- elif theme_active_branches and version not in theme_active_branches %}
       <div class="alert alert-info">
          <span class="alert-message">This version of the manual is no longer supported.</span>
+        {%- if theme_eol_remove %}
+            <span class="alert-message">It will be removed on {{ theme_eol_date }}.</span>
+        {%- endif %}
       </div>
   {%- endif %}
 
