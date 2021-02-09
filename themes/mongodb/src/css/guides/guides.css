@@ -51,7 +51,8 @@ h2::before {
 }
 
 .left-toc__title {
-    font-family: var(--sans-serif-heavy);
+    font-family: var(--sans-serif);
+    font-weight: bold;
     font-size: 20px;
     color: #4a4a4a;
 }
@@ -149,7 +150,7 @@ h2::before {
 }
 
 .guide-prefs__caption {
-    font-family: var(--sans-serif-heavy);
+    font-family: var(--sans-serif);
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 11px;

@@ -12,7 +12,6 @@
 @import 'bem-components/submenu';
 
 @import 'search';
-
 @import 'constants';
 
 /* hide the links on small screens */
@@ -22,4 +21,24 @@
   #gsearch {
     display: none;
   }
+}
+
+img.hide-medium-and-up,
+img.show-medium-and-up {
+  max-width: 100%;
+}
+
+.hide-medium-and-up {
+    display: none !important;
+}
+.show-medium-and-up {
+    display: block !important;
+}
+@media (max-width: 767px) {
+    .hide-medium-and-up {
+        display: block !important;
+    }
+    .show-medium-and-up {
+        display: none !important;
+    }
 }

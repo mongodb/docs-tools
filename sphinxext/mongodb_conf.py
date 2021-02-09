@@ -308,6 +308,22 @@ conf['directives'] = [
         'prepend': False,
         'callable': False
     },
+    ## Custom Directive for Realm Sync Protocol Client->Server messages
+    {
+        'name': 'sync-client-message',
+        'tag': 'sync-client-message',
+        'description': 'Realm Sync Protocol Client->Server Request',
+        'prepend': False,
+        'callable': False
+    },
+    ## Custom Directive for Realm Sync Protocol Server->Client messages
+    {
+        'name': 'sync-server-message',
+        'tag': 'sync-server-message',
+        'description': 'Realm Sync Protocol Client->Server Request',
+        'prepend': False,
+        'callable': False
+    },
     ## For service actions
     {
         'name': 'action',

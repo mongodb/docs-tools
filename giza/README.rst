@@ -2,6 +2,11 @@
 Giza -- Documentation Build Tools
 =================================
 
+**GIZA IS NO LONGER MAINTAINED.** 
+
+MongoDB's documentation is migrating to use
+our new toolchain, `snooty <https://github.com/mongodb/snooty>`_.
+
 Giza is a collection of tools built around `Sphinx
 <http://sphinx-doc.org/>`_, that coordinates assembling, building, and
 deploying documentation. Giza primarily addresses the MongoDB
@@ -22,13 +27,15 @@ File issues in the `MongoDB DOCS Jira Project
 Installation
 ------------
 
+**Giza uses Python 2**.
+
 Giza is available in PyPi, and all dependencies and the package
 handles all dependencies and version management. For most use, you
 will want to install Giza using the specification in the
 ``requirements.txt`` file in the repository and branch you want to
 build. Use the following command: ::
 
-   pip install -r requirements.txt
+   pip2 install -r requirements.txt
 
 While most branches will use the latest version of the software, at
 some point in the future, it may only be possible to build some older
@@ -38,12 +45,12 @@ ensure that you will always install the correct version of Giza.
 At any time, you can install the latest version with the following
 ``pip`` command: ::
 
-   pip install giza
+   pip2 install giza
 
 To install the optional ``github`` and ``jira`` integration, use the
 following command: ::
 
-   pip install giza [jira,github]
+   pip2 install giza [jira,github]
 
 Additional Components
 ---------------------

@@ -14,14 +14,32 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/master/" />
+    <link rel="canonical" href="https://docs.mongodb.com/{{theme_project}}/" />
   {%- else %}
-    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/master/{{pagename}}" />
+    <link rel="canonical" href="https://docs.mongodb.com/{{theme_project}}/{{pagename}}/" />
   {%- endif -%}
 {%- endblock -%}
 
 {%- block alertbar -%}
-    {{ super() }}
+    {%- if theme_active_branches and version not in theme_active_branches %}
+        <div class="alert alert-info">
+           <span class="alert-message">This version of the manual is no longer supported.</span>
+        </div>
+    {%- endif %}
+    {%- if theme_is_upcoming %}
+        <div class="alert alert-info">
+           <span class="alert-message">This manual pertains to an upcoming
+           release, and is made available for testing purposes only.</span>
+        </div>
+    {%- elif theme_eol %}
+        <div class="alert alert-warning">
+           <span class="alert-message">{{theme_eol_msg}}</span>
+        </div>
+    {%- elif theme_banner %}
+        <div class="alert alert-info">
+           <span class="alert-message">{{theme_banner_msg}}</span>
+        </div>
+    {%- endif %}
 {%- endblock -%}
 
 {%- block adblockheader %}
@@ -36,8 +54,8 @@
   {%- if builder != 'singlehtml' %}
       <script>
         window.googleSearchCx = "014132741538533607290:cgznrev_wu0"
-	window.googleSearchPlaceholder = "Search BI Connector"
-        window.googleSearchResultsUrl = "https://docs.mongodb.com/{{theme_project}}/{{version}}/search/"
+	window.googleSearchPlaceholder = "Search MongoDB Database Tools"
+        window.googleSearchResultsUrl = "https://docs.mongodb.com/{{theme_project}}/search/"
       </script>
   {%- endif %}
 {%- endblock -%}
@@ -48,6 +66,9 @@
 
 
 {%- block langauge_selector %}{%- endblock -%}
+{% block version_selector %}{% endblock %}
 {%- block pdflink %}{%- endblock %}
 {%- block epublink %}{%- endblock %}
 {%- block righttoc %} {% endblock %}
+
+

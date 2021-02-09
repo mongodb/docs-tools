@@ -1,15 +1,27 @@
 version:
   published:
-    - '1.0'
+    - 'master'
+    - 'v1.3'
+    - 'v1.2'
+    - 'v1.1'
+    - 'v1.0'
   active:
-    - '1.0'
-  stable: ''
-  upcoming: ''
+    - 'master'
+    - 'v1.3'
+    - 'v1.2'
+    - 'v1.1'
+    - 'v1.0'
+  stable: 'v1.3'
+  upcoming: 'master'
 git:
   branches:
     manual: 'master'
     published:
       - 'master'
+      - 'v1.3'
+      - 'v1.2'
+      - 'v1.1'
+      - 'v1.0'
       # the branches/published list **must** be ordered from most to
       # least recent release.
 ...

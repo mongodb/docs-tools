@@ -283,20 +283,20 @@ def setup(app):
             [('windows', 'Windows'),
              ('macos', 'macOS'),
              ('debian', 'Ubuntu/Debian'),
-             ('rhel', 'RHEL/CentOS/AMZ'),
+             ('rhel', 'RHEL/CentOS/SLES/AMZ'),
              ('linux', 'Linux')]))
 
     # Create Realm Language tab directive
     app.add_directive(
         'tabs-realm-languages',
         create_tab_directive('realmLanguages', [ # Note: camelCase is required
-            ('c-sharp', 'C#'),
-            ('java', 'Java'),
-            ('javascript', 'JavaScript'),
-            ('kotlin', 'Kotlin'),
-            ('objective-c', 'Objective C'),
             ('swift', 'Swift'),
+            ('kotlin', 'Kotlin'),
             ('typescript', 'TypeScript'),
+            ('java', 'Java'),
+            ('objective-c', 'Objective C'),
+            ('javascript', 'JavaScript'),
+            ('c-sharp', 'C#'),
         ])
     )
     
@@ -314,6 +314,7 @@ def setup(app):
             ('javascript', 'JavaScript SDKs'),
             ('node', 'Node.js SDK'),
             ('react-native', 'React Native SDK'),
+            ('web', 'Web SDK'),
         ])
     )
 

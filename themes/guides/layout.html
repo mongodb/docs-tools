@@ -81,10 +81,6 @@
   {%- endif %}
 </head>
 <body data-project="{{theme_project}}" data-project-title="{{docstitle|e}}" data-branch="{{theme_branch}}" data-enable-marian=1>
-  <div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides","active": true}]}'></div>
-
-  <script async src="{{ pathto('_static/navbar.min.js', 1) }}"></script>
-
   <div class="content">
     {%- if pagename == 'index' -%}
     <div class="guide-category-list">
@@ -97,15 +93,19 @@
     <div id="rating-panel"></div>
   </div>
 
+  <div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides","active": true}]}'></div>
+
+  <script async src="{{ pathto('_static/navbar.min.js', 1) }}"></script>
+
   <!-- Google Tag Manager -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-JQHP"
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-GDFN"
                     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push(
      {'gtm.start': new Date().getTime(),event:'gtm.js'}
    );var f=d.getElementsByTagName(s)[0],
    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-   })(window,document,'script','dataLayer','GTM-JQHP');</script>
+   })(window,document,'script','dataLayer','GTM-GDFN');</script>
   <!-- End Google Tag Manager -->
   <script>
     window['_fs_debug'] = false;

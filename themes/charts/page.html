@@ -22,19 +22,7 @@
 
 {%- block alertbar -%}
     {{ super() }}
-    {%- if theme_is_saas %}
-        <div class="alert alert-info">
-          <span class="alert-message">
-
-            This documentation refers to the MongoDB Charts 
-            service in MongoDB Atlas. Read the
-            <a href="https://docs.mongodb.com/charts/onprem/">
-            on-premises documentation</a> to learn how to use the
-            MongoDB Charts on site.
-
-          </span>
-        </div>
-    {%- else %}
+    {%- if not theme_is_saas %}
         <div class="alert alert-info">
           <span class="alert-message">
 

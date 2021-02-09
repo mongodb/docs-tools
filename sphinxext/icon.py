@@ -84,6 +84,7 @@ ICONS_FA4 = IconSet(
         'caret-right',
         'circle',
         'download',
+        'ellipsis-v',
         'exclamation-circle',
         'exclamation-triangle',
         'globe',

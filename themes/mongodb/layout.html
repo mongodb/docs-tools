@@ -100,7 +100,7 @@
    {%- endfor %}
    <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
    <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css" />
-   <link rel="stylesheet" href="{{ pathto('_static/css/navbar.min.css', 1) }}" type="text/css" />
+   <link rel="stylesheet" href="{{ pathto('_static/css/navbar.min.css', 1) + '?t=nocache' }}" type="text/css" />
 {%- endmacro -%}
 
 {%- macro render_nextprev() %}
@@ -176,30 +176,18 @@
 <body data-project="{{theme_project}}" data-project-title="{{docstitle|e}}" data-branch="{{theme_branch}}" data-enable-marian=1 data-eol="{{theme_eol}}">
   {%- block googletagmanager %}
   <!-- Google Tag Manager -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-JQHP"
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-GDFN"
                     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push(
-     {'gtm.start': new Date().getTime(),event:'gtm.js'}
-   );var f=d.getElementsByTagName(s)[0],
-   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-   '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-   })(window,document,'script','dataLayer','GTM-JQHP');</script>
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push(
+  {'gtm.start':new Date().getTime(),event:'gtm.js'}
+  );var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-GDFN');
+  </script>
   <!-- End Google Tag Manager -->
   {%- endblock -%}
 
-  {%- block header %}
-    {%- if not theme_eol -%}
-      <div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides","active": true}]}'></div>
-    {%- endif -%}
-  {%- endblock %}
-
   {%- block sitesearch %}{%- endblock -%}
 
-  {% block navbar %}
-    {%- if not theme_eol -%}
-      <script src="{{ pathto('_static/navbar.min.js', 1) }}"></script>
-    {%- endif -%}
-  {% endblock %}
 
   <div class="content" {% if theme_eol %}style="margin-top: 0;"{% endif %}>
 
@@ -220,7 +208,7 @@
       {% block alertbar %}
         {%- if theme_eol %}
             <div class="alert alert-warning">
-              <span class="alert-message">This version of the documentation is archived and no longer supported.{% if theme_eol_upgrade_url %} Learn more about <a href="{{ theme_eol_upgrade_url }}">upgrading</a> your version of {{ theme_sitename }}.{% endif %}</span>
+              <span class="alert-message">This version of the documentation is archived and no longer supported.{%- if theme_eol_remove %} It will be removed on {{ theme_eol_date }}.{% endif %}{% if theme_eol_upgrade_url %} Learn more about <a href="{{ theme_eol_upgrade_url }}">upgrading</a> your version of {{ theme_sitename }}.{% endif %}</span>
             </div>
         {%- elif theme_is_upcoming %}
             <div class="alert alert-info">
@@ -296,6 +284,19 @@
     {% endblock %}
     <div class="clearfix"></div>
   </div>
+
+  {%- block header %}
+    {%- if not theme_eol -%}
+      <div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides","active": true}]}'></div>
+    {%- endif -%}
+  {%- endblock %}
+
+  {% block navbar %}
+    {%- if not theme_eol -%}
+      <script src="{{ pathto('_static/navbar.min.js', 1) }}"></script>
+    {%- endif -%}
+  {% endblock %}
+
   {% block onboarding_modal %}{% endblock %}
   {%- block versionnav %}
 
