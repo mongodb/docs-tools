@@ -208,7 +208,7 @@
       {% block alertbar %}
         {%- if theme_eol %}
             <div class="alert alert-warning">
-              <span class="alert-message">This version of the documentation is archived and no longer supported.{%- if theme_eol_remove %} It will be removed on {{ theme_eol_date }}.{% endif %}{% if theme_eol_upgrade_url %} To learn how to upgrade your version of {{docstitle|e}}, refer to the <a href="{{ theme_eol_upgrade_url }}">upgrade documentation</a>.{% endif %}</span>
+              <span class="alert-message">This version of the documentation is archived and no longer supported.{%- if theme_eol_remove %} It will be removed on {{ theme_eol_date }}.{% endif %}{% if theme_eol_upgrade_url %} To learn how to upgrade your version of {% if docstitle == 'MongoDB Manual' %}MongoDB{% else %}{{docstitle|e}}{%- endif %}, refer to the <a href="{{ theme_eol_upgrade_url }}">upgrade documentation</a>.{% endif %}</span>
             </div>
         {%- elif theme_is_upcoming %}
             <div class="alert alert-info">
