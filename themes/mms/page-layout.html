@@ -30,6 +30,7 @@
 {%- block righttoc %} {% endblock %}
 
 {%- block alertbar -%}
+  {{ super() }}
   <div class="redirect-alert alert alert-warning hide">
     <span class="alert-message">You were redirected from a different version of the documentation. Click <a href="#" class="redirect-link">here</a> to go back.</span>
   </div>

@@ -16,15 +16,7 @@
 {%- endblock -%}
 
 {%- block alertbar -%}
-    {%- if theme_is_upcoming %}
-        <div class="alert alert-info">
-           <span class="alert-message">This is a draft version of the manual. The draft version reflects current work in progress, including content stubs and rapidly changing content.</span>
-        </div>
-    {%- elif theme_eol %}
-        <div class="alert alert-warning">
-           <span class="alert-message">{{theme_eol_msg}}</span>
-        </div>
-    {%- endif %}
+    {{ super() }}
 {%- endblock -%}
 
 {%- block adblockheader %}

@@ -15,6 +15,11 @@ function getPageName() {
         return null;
     }
 
+    const isEol = bodyElements[0].getAttribute('data-eol');
+    if (isEol) {
+        return null;
+    }
+
     return pagename;
 }
 export function init() {

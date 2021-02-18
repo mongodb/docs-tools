@@ -22,20 +22,7 @@
 {%- endblock -%}
 
 {%- block alertbar -%}
-    {%- if theme_eol %}
-        <div class="alert alert-warning">
-           <span class="alert-message">{{theme_eol_msg}}</span>
-        </div>
-    {%- elif theme_active_branches and version not in theme_active_branches %}
-        <div class="alert alert-info">
-           <span class="alert-message">This version of the manual is no longer supported.</span>
-        </div>
-    {%- elif theme_banner %}
-        <div class="alert alert-info">
-           <span class="alert-message">{{theme_banner_msg}}</span>
-        </div>
-    {%- endif %}
-
+    {{ super() }}
 {%- endblock -%}
 
 {%- block righttoc %} {% endblock %}
