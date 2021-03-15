@@ -1,4 +1,4 @@
-const ENABLED_SITES_FOR_DELIGHTED = ['cloud-docs', 'datalake', 'guides', 'manual', 'node', 'realm'];
+const ENABLED_SITES_FOR_DELIGHTED = ['cloud-docs', 'datalake', 'docs', 'guides', 'manual', 'node', 'realm'];
 
 export function initialize() {
     /* eslint-disable */
@@ -12,14 +12,13 @@ export function setup(fastNav) {
     const branch = document.body.getAttribute('data-branch');
 
     try {
-        console.log(process.env.NODE_ENV);
-        if (ENABLED_SITES_FOR_DELIGHTED.includes(project)) {
+        if (process.env.NODE_ENV === 'production' && ENABLED_SITES_FOR_DELIGHTED.includes(project)) {
+            const projectName = project === 'docs' ? 'manual' : project;
             window.delighted.survey({
                 minTimeOnPage: 90,
-                sampleFactor: 0.16,
                 properties: {
-                  project,
-                  branch,
+                    branch,
+                    project: projectName,
                 }
             });
         }
