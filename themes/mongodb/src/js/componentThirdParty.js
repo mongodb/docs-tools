@@ -20,7 +20,7 @@ export function setup(fastNav) {
     const branch = document.body.getAttribute('data-branch');
 
     try {
-        if (process.env.NODE_ENV === 'production' && ENABLED_SITES_FOR_DELIGHTED.includes(project)) {
+        if (ENABLED_SITES_FOR_DELIGHTED.includes(project)) {
             const projectName = project === 'docs' ? 'manual' : project;
             window.delighted.survey({
                 minTimeOnPage: 90,
