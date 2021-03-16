@@ -1,4 +1,12 @@
-const ENABLED_SITES_FOR_DELIGHTED = ['cloud-docs', 'datalake', 'docs', 'guides', 'manual', 'node', 'realm'];
+const ENABLED_SITES_FOR_DELIGHTED = [
+    'cloud-docs',
+    'datalake',
+    'docs',
+    'guides',
+    'manual',
+    'node',
+    'realm'
+];
 
 export function initialize() {
     /* eslint-disable */
