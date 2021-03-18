@@ -1,12 +1,4 @@
-const ENABLED_SITES_FOR_DELIGHTED = [
-    'cloud-docs',
-    'datalake',
-    'docs',
-    'guides',
-    'manual',
-    'node',
-    'realm'
-];
+const ENABLED_SITES_FOR_DELIGHTED = new Set(['docs', 'guides', 'manual']);
 
 export function initialize() {
     /* eslint-disable */
@@ -20,7 +12,7 @@ export function setup(fastNav) {
     const branch = document.body.getAttribute('data-branch');
 
     try {
-        if (ENABLED_SITES_FOR_DELIGHTED.includes(project)) {
+        if (ENABLED_SITES_FOR_DELIGHTED.has(project)) {
             const projectName = project === 'docs' ? 'manual' : project;
             window.delighted.survey({
                 minTimeOnPage: 90,
