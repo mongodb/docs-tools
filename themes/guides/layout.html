@@ -64,7 +64,15 @@
   <meta name="DC.Source" content="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt"/>
   <meta property="og:image" content="http://s3.amazonaws.com/info-mongodb-com/_com_assets/cms/mongodb-for-giant-ideas-bbab5c3cf8.png">
   <meta property="og:image:secure_url" content="https://webassets.mongodb.com/_com_assets/cms/mongodb-for-giant-ideas-bbab5c3cf8.png">
-
+  
+  {%- block canonicalref %}
+    {%- if pagename == 'index' %}
+      <link rel="canonical" href="https://docs.mongodb.com/{{theme_project}}/" />
+    {%- else %}
+      <link rel="canonical" href="https://docs.mongodb.com/{{theme_project}}/{{pagename}}/" />
+    {%- endif -%}
+  {%- endblock -%}
+  
   {%- block metadescription %}{%- endblock -%}
 
   {{ metatags }}
