@@ -113,14 +113,6 @@ div.body h1 + dl, div.body h2 + dl, div.body h3 + dl,  div.body h4 + dl {
     text-indent:0;
 }
 
-div.body h1 + ul, div.body h2 + ul, div.body h3 + ul, div.body  h4 + ul,
-div.section h1 + ul, div.section h2 + ul, div.section h3 + ul, div.section  h4 + ul{
-    padding-top:0;
-    margin-top: 0.3em;
-    text-indent:0;
-    margin-left: -1.5em;
-}
-
 a.headerlink {
     color: #c60f0f;
     font-size: 0.8em;
