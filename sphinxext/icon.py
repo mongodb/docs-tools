@@ -88,6 +88,7 @@ ICONS_FA4 = IconSet(
         'exclamation-circle',
         'exclamation-triangle',
         'globe',
+        'hand-pointer-o',
         'info',
         'info-circle',
         'lock',
