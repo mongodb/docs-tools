@@ -93,6 +93,7 @@ ICONS_FA4 = IconSet(
         'info',
         'info-circle',
         'lock',
+        'mouse-pointer',
         'pencil',
         'plus',
         'plus-square',
