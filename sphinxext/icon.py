@@ -87,7 +87,7 @@ ICONS_FA4 = IconSet(
         'ellipsis-v',
         'exclamation-circle',
         'exclamation-triangle',
-        'fa-files-o',
+        'files-o',
         'globe',
         'hand-pointer-o',
         'info',
