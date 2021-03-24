@@ -12,7 +12,8 @@ export function setup(fastNav) {
     const branch = document.body.getAttribute('data-branch');
 
     try {
-        if (ENABLED_SITES_FOR_DELIGHTED.has(project)) {
+        const isStaging = window.location.origin === "https://docs-mongodbcom-staging.corp.mongodb.com";
+        if (!isStaging && ENABLED_SITES_FOR_DELIGHTED.has(project)) {
             const projectName = project === 'docs' ? 'manual' : project;
             window.delighted.survey({
                 minTimeOnPage: 90,
