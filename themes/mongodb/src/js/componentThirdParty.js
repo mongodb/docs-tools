@@ -1,20 +1,4 @@
-const SAMPLE_FACTORS = {
-    'charts': 0.12158,
-    'guides': 0.02644,
-    'stitch': 0.03162,
-    'docs-ruby': 0.47984,
-    'ecosystem': 0.00997,
-    'docs-php-library': 0.04165,
-    'atlas': 0.01176,
-    'compass': 0.01684,
-    'manual': 0.00022,
-    'landing': 0.00806,
-    'mongoid': 0.07576,
-    'mms-cloud': 0.06358,
-    'mms-onprem': 0.01790,
-    'bi-connector': 0.03912,
-    'spark-connector': 0.05562
-};
+const ENABLED_SITES_FOR_DELIGHTED = new Set(['docs', 'guides', 'manual']);
 
 export function initialize() {
     /* eslint-disable */
@@ -28,15 +12,17 @@ export function setup(fastNav) {
     const branch = document.body.getAttribute('data-branch');
 
     try {
-        const sampleFactor = SAMPLE_FACTORS[project] || 0.1;
-        window.delighted.survey({
-            minTimeOnPage: 180,
-            sampleFactor: sampleFactor,
-            properties: {
-              project,
-              branch,
-            }
-        });
+        const isStaging = window.location.origin === "https://docs-mongodbcom-staging.corp.mongodb.com";
+        if (!isStaging && ENABLED_SITES_FOR_DELIGHTED.has(project)) {
+            const projectName = project === 'docs' ? 'manual' : project;
+            window.delighted.survey({
+                minTimeOnPage: 90,
+                properties: {
+                    branch,
+                    project: projectName,
+                }
+            });
+        }
     } catch (err) {
         console.error(err);
     }
