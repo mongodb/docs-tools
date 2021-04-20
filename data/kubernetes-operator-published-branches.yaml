@@ -17,7 +17,7 @@ version:
   upcoming: '1.11'
 git:
   branches:
-    manual: 'v1.11'
+    manual: 'v1.10'
     published:
       - 'master'
       - 'v1.10'
