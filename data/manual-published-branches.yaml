@@ -4,19 +4,11 @@ version:
     - '4.2'
     - '4.0'
     - '3.6'
-    - '3.4'
-    - '3.2'
-    - '3.0'
-    - '2.6'
-    - '2.4'
-    - '2.2'
   active:
     - '4.4'
     - '4.2'
     - '4.0'
     - '3.6'
-    - '3.4'
-    - '3.2'
   stable: '4.4'
   upcoming: null
 git:
@@ -27,12 +19,6 @@ git:
       - 'v4.2'
       - 'v4.0'
       - 'v3.6'
-      - 'v3.4'
-      - 'v3.2'
-      - 'v3.0'
-      - 'v2.6'
-      - 'v2.4'
-      - 'v2.2'
       # the branches/published list **must** be ordered from most to
       # least recent release.
 ...
