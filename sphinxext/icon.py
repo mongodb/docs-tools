@@ -100,6 +100,7 @@ ICONS_FA4 = IconSet(
         'question-circle',
         'refresh',
         'search',
+        'share-square-o',
         'stop',
         'times-circle',
         'trash-o',
