@@ -136,6 +136,7 @@
     <meta name="robots" content="noindex,nofollow" />
   {%- elif version in theme_active_branches or not theme_active_branches %}
     <meta name="robots" content="index" />
+    {%- block canonicalref %}{%- endblock -%}
   {%- else -%}
     <meta name="robots" content="noindex,nofollow" />
   {%- endif %}
@@ -147,8 +148,6 @@
   <meta property="og:image:secure_url" content="https://webassets.mongodb.com/_com_assets/cms/mongodb-for-giant-ideas-bbab5c3cf8.png">
 
   {%- block metadescription %}{%- endblock -%}
-
-  {%- block canonicalref %}{%- endblock -%}
 
   {{ metatags }}
   {{ css() }}
