@@ -6,7 +6,8 @@
   {%- else %}
     {%- set titlesuffix = "" %}
   {%- endif -%}
-
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
