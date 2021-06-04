@@ -13,13 +13,14 @@ version:
     - '1.8'
     - '1.7'
     - '1.6'
-  stable: '1.10'
-  upcoming: '1.11'
+  stable: '1.11'
+  upcoming: '1.12'
 git:
   branches:
-    manual: 'v1.10'
+    manual: 'v1.12'
     published:
       - 'master'
+      - 'v1.11'
       - 'v1.10'
       - 'v1.9'
       - 'v1.8'
