@@ -5,11 +5,12 @@ version:
     - '4.2'
     - '4.0'
   active:
+    - '5.0'
     - '4.4'
     - '4.2'
     - '4.0'
-  stable: '4.4'
-  upcoming: '5.0'
+  stable: '5.0'
+  upcoming: null
 git:
   branches:
     manual: 'v4.4'
