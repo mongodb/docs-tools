@@ -13,7 +13,7 @@ version:
   upcoming: null
 git:
   branches:
-    manual: 'v4.4'
+    manual: 'v5.0'
     published:
       - 'master'
       - 'v4.4'
