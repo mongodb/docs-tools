@@ -3,7 +3,6 @@ version:
     - 'upcoming'
     - '5.0'
     - '4.4'
-    - '4.2'
   active:
     - 'upcoming'
     - '5.0'
@@ -17,7 +16,6 @@ git:
       - 'master'
       - 'v5.0'
       - 'v4.4'
-      - 'v4.2'
       # the branches/published list **must** be ordered from most to
       # least recent release.
 ...
