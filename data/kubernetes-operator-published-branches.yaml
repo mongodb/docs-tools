@@ -5,18 +5,12 @@ version:
     - '1.11'
     - '1.10'
     - '1.9'
-    - '1.8'
-    - '1.7'
-    - '1.6'
   active:
     - '1.13'
     - '1.12'
     - '1.11'
     - '1.10'
     - '1.9'
-    - '1.8'
-    - '1.7'
-    - '1.6'
   stable: '1.12'
   upcoming: '1.13'
 git:
@@ -28,9 +22,6 @@ git:
       - 'v1.11'
       - 'v1.10'
       - 'v1.9'
-      - 'v1.8'
-      - 'v1.7'
-      - 'v1.6'
       # the branches/published list **must** be ordered from most to
       # least recent release.
 ...
