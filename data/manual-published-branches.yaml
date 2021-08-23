@@ -1,21 +1,24 @@
 version:
   published:
+    - '5.1'
     - '5.0'
     - '4.4'
     - '4.2'
     - '4.0'
   active:
+    - '5.1'
     - '5.0'
     - '4.4'
     - '4.2'
     - '4.0'
   stable: '5.0'
-  upcoming: null
+  upcoming: '5.1'
 git:
   branches:
     manual: 'v5.0'
     published:
       - 'master'
+      - 'v5.0'
       - 'v4.4'
       - 'v4.2'
       - 'v4.0'
