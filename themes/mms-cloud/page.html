@@ -59,7 +59,10 @@
       </span>
     </div>
   {%- endif %}
+{%- endblock -%}
 
+{%- block alertbar -%}
+  {{ super() }}
   {%- if theme_automation_eol %}
     <div class="alert alert-info alert-dismissible fade in" role="alert" style="margin-left: 20px">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
