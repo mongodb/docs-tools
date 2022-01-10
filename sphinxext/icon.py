@@ -47,6 +47,7 @@ ICONS_FA5 = IconSet(
         'eye',
         'globe',
         'lock',
+        'money',
         'pencil-alt',
         'save',
         'star',
