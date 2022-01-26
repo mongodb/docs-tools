@@ -19,7 +19,7 @@ class NavbarDropdown extends preact.Component {
         });
     }
 
-    render() {
+    render({baseUrl}) {
         const dropDownClass = classNames({
             'navbar-dropdown': true,
             'navbar-dropdown--open': this.state.open
@@ -31,6 +31,22 @@ class NavbarDropdown extends preact.Component {
             'navbar-dropdown__menu--shown': this.state.open
         });
 
+        let baseUrls = {
+            'base': 'https://docs.mongodb.com',
+            'atlas': 'https://docs.atlas.mongodb.com',
+            'opsmanager': 'https://docs.opsmanager.mongodb.com',
+            'cloudmanager': 'https://docs.cloudmanager.mongodb.com'
+        };
+
+        if (!baseUrl.includes('https://docs.')) {
+            baseUrls = {
+                'base': 'https://mongodb.com/docs',
+                'atlas': 'https://mongodb.com/docs/atlas',
+                'opsmanager': 'https://mongodb.com/docs/opsmanager',
+                'cloudmanager': 'https://docs.cloudmanager.mongodb.com'
+            };
+        }
+
         return (
             <div className={ dropDownClass }>
                 <span className="navbar-dropdown__label" onClick={this.toggle}>Documentation</span>
@@ -38,44 +54,44 @@ class NavbarDropdown extends preact.Component {
                 <div className={ menuClass }>
                     <Menu>
                         <li className="menu__item">
-                            <a href="https://docs.mongodb.com/">Docs Home</a>
+                            <a href={`${baseUrls.base}/`}>Docs Home</a>
                         </li>
                         <li className="menu__item">
                             <Submenu title="Documentation" open={true}>
                                 <li className="submenu__item">
-                                    <a href="https://docs.mongodb.com/manual/">MongoDB Server</a>
+                                    <a href={`${baseUrls.base}/manual/`}>MongoDB Server</a>
                                 </li>
                                 <li className="submenu__item">
                                     <Submenu title="Drivers" open={false}>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/drivers/c/">C</a>
+                                            <a href={`${baseUrls.base}/drivers/c/`}>C</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/drivers/cxx/">C++</a>
+                                            <a href={`${baseUrls.base}/drivers/cxx/`}>C++</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/drivers/csharp/">C#</a>
+                                            <a href={`${baseUrls.base}/drivers/csharp/`}>C#</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/drivers/java-drivers/">Java</a>
+                                            <a href={`${baseUrls.base}/drivers/java-drivers/`}>Java</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/drivers/node/">Node.js</a>
+                                            <a href={`${baseUrls.base}/drivers/node/`}>Node.js</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/drivers/perl/">Perl</a>
+                                            <a href={`${baseUrls.base}/drivers/perl/`}>Perl</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/drivers/php/">PHP</a>
+                                            <a href={`${baseUrls.base}/drivers/php/`}>PHP</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/drivers/python/">Python</a>
+                                            <a href={`${baseUrls.base}/drivers/python/`}>Python</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/drivers/ruby/">Ruby</a>
+                                            <a href={`${baseUrls.base}/drivers/ruby/`}>Ruby</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/drivers/scala/">Scala</a>
+                                            <a href={`${baseUrls.base}/drivers/scala/`}>Scala</a>
                                         </li>
                                     </Submenu>
                                 </li>
@@ -83,22 +99,22 @@ class NavbarDropdown extends preact.Component {
                                 <li className="submenu__item submenu__item--nested">
                                     <Submenu title="Cloud" open={true}>
                                         <li className="submenu__item">
-                                            <a href="https://docs.atlas.mongodb.com/">MongoDB Atlas</a>
+                                            <a href={`${baseUrls.atlas}/`}>MongoDB Atlas</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/datalake/">MongoDB Atlas Data Lake</a>
+                                            <a href={`${baseUrls.base}/datalake/`}>MongoDB Atlas Data Lake</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.atlas.mongodb.com/atlas-search/">MongoDB Atlas Search</a>
+                                            <a href={`${baseUrls.atlas}/atlas-search/`}>MongoDB Atlas Search</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.cloudmanager.mongodb.com/">MongoDB Cloud Manager</a>
+                                            <a href={`${baseUrls.cloudmanager}/`}>MongoDB Cloud Manager</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.opsmanager.mongodb.com/current/">MongoDB Ops Manager</a>
+                                            <a href={`${baseUrls.opsmanager}/current/`}>MongoDB Ops Manager</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/realm/">MongoDB Realm</a>
+                                            <a href={`${baseUrls.base}/realm/`}>MongoDB Realm</a>
                                         </li>
                                     </Submenu>
                                 </li>
@@ -106,46 +122,46 @@ class NavbarDropdown extends preact.Component {
                                 <li className="submenu__item submenu__item--nested">
                                     <Submenu title="Tools" open={true}>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/atlas-open-service-broker/current/">MongoDB Atlas Open Service Broker</a>
+                                            <a href={`${baseUrls.base}/atlas-open-service-broker/current/`}>MongoDB Atlas Open Service Broker</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/bi-connector/current/">MongoDB BI Connector</a>
+                                            <a href={`${baseUrls.base}/bi-connector/current/`}>MongoDB BI Connector</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/charts/saas/">MongoDB Charts</a>
+                                            <a href={`${baseUrls.base}/charts/saas/`}>MongoDB Charts</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/mongocli/stable/">MongoDB Command Line Interface</a>
+                                            <a href={`${baseUrls.base}/mongocli/stable/`}>MongoDB Command Line Interface</a>
                                         </li>
                                         <li className="submenu__item">
                                             <a href="https://github.com/mongodb/mongodb-kubernetes-operator">MongoDB Community Kubernetes Operator</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/compass/current/">MongoDB Compass</a>
+                                            <a href={`${baseUrls.base}/compass/current/`}>MongoDB Compass</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/database-tools/">MongoDB Database Tools</a>
+                                            <a href={`${baseUrls.base}/database-tools/`}>MongoDB Database Tools</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/kubernetes-operator/stable/">MongoDB Enterprise Kubernetes Operator</a>
+                                            <a href={`${baseUrls.base}/kubernetes-operator/stable/`}>MongoDB Enterprise Kubernetes Operator</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/kafka-connector/current/">MongoDB Kafka Connector</a>
+                                            <a href={`${baseUrls.base}/kafka-connector/current/`}>MongoDB Kafka Connector</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/mongodb-shell/">MongoDB Shell</a>
+                                            <a href={`${baseUrls.base}/mongodb-shell/`}>MongoDB Shell</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/spark-connector/current/">MongoDB Spark Connector</a>
+                                            <a href={`${baseUrls.base}/spark-connector/current/`}>MongoDB Spark Connector</a>
                                         </li>
                                         <li className="submenu__item">
-                                            <a href="https://docs.mongodb.com/mongodb-vscode/">MongoDB for VS Code</a>
+                                            <a href={`${baseUrls.base}/mongodb-vscode/`}>MongoDB for VS Code</a>
                                         </li>
                                     </Submenu>
                                 </li>
 
                                 <li className="submenu__item">
-                                    <a href="https://docs.mongodb.com/guides/">Guides</a>
+                                    <a href={`${baseUrls.base}/guides/`}>Guides</a>
                                 </li>
                             </Submenu>
                         </li>

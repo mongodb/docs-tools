@@ -181,16 +181,18 @@ class Navbar extends preact.Component {
             return <a href={ link.url } key={i} className={ linkClass }>{ link.text }</a>;
         });
 
+        const baseUrl = this.state.baseUrl;
+
         return (
             <nav className="navbar">
                 <div className="navbar__left">
                     <a href="https://www.mongodb.com/">
-                        <img src="https://docs.mongodb.com/images/mongodb-logo.png" className="navbar-brand" alt="MongoDB Logo" />
+                        <img src={`${baseUrl}/images/mongodb-logo.png`} className="navbar-brand" alt="MongoDB Logo" />
                     </a>
 
                     <span className="navbar-seperator"></span>
 
-                    <NavbarDropdown links={this.state.dropdown} />
+                    <NavbarDropdown links={this.state.dropdown} baseUrl={baseUrl} />
                 </div>
 
                 <div className="navbar__right">
