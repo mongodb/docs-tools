@@ -55,7 +55,7 @@
     <title>{{ title|striptags|e }}</title>
   {%- endblock -%}
 
-  <link rel="shortcut icon" href="https://docs.mongodb.com/assets/favicon.ico" />
+  <link rel="shortcut icon" href="{{theme_base_url}}/assets/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
   <meta name="robots" content="index" />
@@ -67,9 +67,9 @@
   
   {%- block canonicalref %}
     {%- if pagename == 'index' %}
-      <link rel="canonical" href="https://docs.mongodb.com/{{theme_project}}/" />
+      <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/" />
     {%- else %}
-      <link rel="canonical" href="https://docs.mongodb.com/{{theme_project}}/{{pagename}}/" />
+      <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/{{pagename}}/" />
     {%- endif -%}
   {%- endblock -%}
   
@@ -80,7 +80,7 @@
 
   {%- if not embedded %}
     {%- block googlecse_opensearch %}
-      <link rel="search" type="application/opensearchdescription+xml" href="https://docs.mongodb.com/osd.xml" title="MongoDB Help"/>
+      <link rel="search" type="application/opensearchdescription+xml" href="{{theme_base_url}}/osd.xml" title="MongoDB Help"/>
     {%- endblock -%}
 
     {%- if favicon %}
@@ -101,7 +101,7 @@
     <div id="rating-panel"></div>
   </div>
 
-  <div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides","active": true}]}'></div>
+  <div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud"},{"url": "{{theme_base_url}}/tools/","text": "Tools"},{"url": "{{theme_base_url}}/guides/","text": "Guides","active": true}], "baseUrl": "{{theme_base_url}}"}'></div>
 
   <script async src="{{ pathto('_static/navbar.min.js', 1) }}"></script>
 
