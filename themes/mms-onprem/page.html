@@ -14,13 +14,13 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    {%- if theme_base_url == 'https://mongodb.com/docs' %}
+    {%- if theme_base_url == 'https://www.mongodb.com/docs' %}
       <link rel="canonical" href="{{theme_base_url}}/opsmanager/current/" />
     {%- else %}
       <link rel="canonical" href="https://docs.opsmanager.mongodb.com/current/" />
     {%- endif %}
   {%- else %}
-    {%- if theme_base_url == 'https://mongodb.com/docs' %}
+    {%- if theme_base_url == 'https://www.mongodb.com/docs' %}
       <link rel="canonical" href="{{theme_base_url}}/opsmanager/current/{{pagename}}/" />
     {%- else %}
       <link rel="canonical" href="https://docs.opsmanager.mongodb.com/current/{{pagename}}/" />
@@ -44,7 +44,7 @@
         <h4 class="alert-heading" style="margin-bottom: 10px;">The MongoDB Agent has been released!</h4>
         The Monitoring, Backup and Automation Agents have been merged into the MongoDB Agent.
 
-        {%- if theme_base_url == 'https://mongodb.com/docs' %}
+        {%- if theme_base_url == 'https://www.mongodb.com/docs' %}
           <a class="btn btn-success" style="margin-left: 5px; margin-bottom: 5px;" href="{{theme_base_url}}/opsmanager/master/reference/faq/faq-mongodb-agent/">Learn More</a>
         {%- else %}
           <a class="btn btn-success" style="margin-left: 5px; margin-bottom: 5px;" href="https://docs.opsmanager.mongodb.com/master/reference/faq/faq-mongodb-agent/">Learn More</a>
@@ -80,7 +80,7 @@
 
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-    {%- if theme_base_url == 'https://mongodb.com/docs' %}
+    {%- if theme_base_url == 'https://www.mongodb.com/docs' %}
       <script type="text/javascript">
         window.googleSearchCx = "017938353964985089139:s4tijscdeac"
         window.googleSearchPlaceholder = "Search Ops Manager"

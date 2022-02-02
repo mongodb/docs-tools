@@ -9,7 +9,7 @@ function reportClick(anchorElement) {
 
 export function setup() {
     // only on ecosystem homepage, track link clicks
-    const driversUrls = ['https://docs.mongodb.com/drivers/', 'https://mongodb.com/docs/drivers/'];
+    const driversUrls = ['https://docs.mongodb.com/drivers/', 'https://www.mongodb.com/docs/drivers/'];
     if (document.body.dataset && document.body.dataset.project === 'ecosystem' && driversUrls.includes(window.location.href)) {
         // get links on ecosystem
         const anchors = document.querySelectorAll('a.external');
