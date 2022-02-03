@@ -14,9 +14,9 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/" />
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/" />
   {%- else %}
-    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/{{pagename}}" />
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/{{pagename}}" />
   {%- endif -%}
 {%- endblock -%}
 
@@ -44,12 +44,12 @@
   {%- block subnav %} {% endblock %}
 
   {%- block searchbox %}
-      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="https://docs.mongodb.com/{{theme_project}}/search/" queryParameterName="query"></gcse:searchbox-only></div>
+      <div class="search-db narrow pull-right"><gcse:searchbox-only resultsUrl="{{theme_base_url}}/{{theme_project}}/search/" queryParameterName="query"></gcse:searchbox-only></div>
   {% endblock %}
 {% endblock %}
 
 {%- block header %}
-<div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/drivers/","text": "Drivers","active": true},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides"}]}'></div>
+<div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/drivers/","text": "Drivers","active": true},{"url": "{{theme_base_url}}/cloud/","text": "Cloud"},{"url": "{{theme_base_url}}/tools/","text": "Tools"},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], "baseUrl": "{{theme_base_url}}"}'></div>
 {%- endblock %}
 
 {%- block righttoc %} {% endblock %}

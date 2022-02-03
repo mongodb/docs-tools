@@ -12,9 +12,9 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="https://docs.mongodb.com/php-library/current/" />
+    <link rel="canonical" href="{{theme_base_url}}/php-library/current/" />
   {%- else %}
-    <link rel="canonical" href="https://docs.mongodb.com/php-library/current/{{pagename}}/" />
+    <link rel="canonical" href="{{theme_base_url}}/php-library/current/{{pagename}}/" />
   {%- endif -%}
 {%- endblock -%}
 
@@ -37,11 +37,11 @@
    <script>
      window.googleSearchCx = "014132741538533607290:-qqrgleg8mw"
      window.googleSearchPlaceholder = "Search PHP Library"
-     window.googleSearchResultsUrl = "http://docs.mongodb.com/php-library/{{version}}/search/"
+     window.googleSearchResultsUrl = "{{theme_base_url}}/php-library/{{version}}/search/"
    </script>
   {%- endif %}
 {%- endblock -%}
 
 {%- block header %}
-<div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/drivers/","text": "Drivers","active": true},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides"}]}'></div>
+<div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/drivers/","text": "Drivers","active": true},{"url": "{{theme_base_url}}/cloud/","text": "Cloud"},{"url": "{{theme_base_url}}/tools/","text": "Tools"},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], "baseUrl": "{{theme_base_url}}"}'></div>
 {%- endblock %}

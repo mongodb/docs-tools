@@ -14,9 +14,17 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="https://docs.opsmanager.mongodb.com/current/" />
+    {%- if 'mongodb.com/docs' in theme_base_url %}
+      <link rel="canonical" href="{{theme_base_url}}/opsmanager/current/" />
+    {%- else %}
+      <link rel="canonical" href="https://docs.opsmanager.mongodb.com/current/" />
+    {%- endif %}
   {%- else %}
-    <link rel="canonical" href="https://docs.opsmanager.mongodb.com/current/{{pagename}}/" />
+    {%- if 'mongodb.com/docs' in theme_base_url %}
+      <link rel="canonical" href="{{theme_base_url}}/opsmanager/current/{{pagename}}/" />
+    {%- else %}
+      <link rel="canonical" href="https://docs.opsmanager.mongodb.com/current/{{pagename}}/" />
+    {%- endif %}
   {%- endif -%}
 {%- endblock -%}
 
@@ -36,8 +44,11 @@
         <h4 class="alert-heading" style="margin-bottom: 10px;">The MongoDB Agent has been released!</h4>
         The Monitoring, Backup and Automation Agents have been merged into the MongoDB Agent.
 
-        <a class="btn btn-success" style="margin-left: 5px; margin-bottom: 5px;" href="https://docs.opsmanager.mongodb.com/master/reference/faq/faq-mongodb-agent/">Learn More</a>
-
+        {%- if 'mongodb.com/docs' in theme_base_url %}
+          <a class="btn btn-success" style="margin-left: 5px; margin-bottom: 5px;" href="{{theme_base_url}}/opsmanager/master/reference/faq/faq-mongodb-agent/">Learn More</a>
+        {%- else %}
+          <a class="btn btn-success" style="margin-left: 5px; margin-bottom: 5px;" href="https://docs.opsmanager.mongodb.com/master/reference/faq/faq-mongodb-agent/">Learn More</a>
+        {%- endif %}
       </span>
     </div>
   {%- endif %}
@@ -69,16 +80,25 @@
 
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-       <script type="text/javascript">
+    {%- if 'mongodb.com/docs' in theme_base_url %}
+      <script type="text/javascript">
+        window.googleSearchCx = "017938353964985089139:s4tijscdeac"
+        window.googleSearchPlaceholder = "Search Ops Manager"
+        window.googleSearchResultsUrl = "{{theme_base_url}}/opsmanager/current/search/"
+      </script>
+    {%- else %}
+      <script type="text/javascript">
         window.googleSearchCx = "017938353964985089139:s4tijscdeac"
         window.googleSearchPlaceholder = "Search Ops Manager"
         window.googleSearchResultsUrl = "https://docs.opsmanager.mongodb.com/current/search/"
       </script>
+    {%- endif %}
   {%- endif %}
+  
 {%- endblock -%}
 
 {%- block header %}
-<div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud","active": true},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides"}]}'></div>
+<div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/ecosystem/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud","active": true},{"url": "{{theme_base_url}}/tools/","text": "Tools"},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], "baseUrl": "{{theme_base_url}}"}'></div>
 {%- endblock %}
 
 {% block version_selector %}

@@ -34,13 +34,13 @@
    <script>
       window.googleSearchCx = "017213726194841070573:nheyyu5ty9c"
       window.googleSearchPlaceholder = "Search Stitch Docs"
-      window.googleSearchResultsUrl = "http://docs.mongodb.com/stitch/search/"
+      window.googleSearchResultsUrl = "{{theme_base_url}}/stitch/search/"
    </script>
   {%- endif %}
 {%- endblock -%}
 
 {%- block header %}
-<div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud","active": true},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides"}]}'></div>
+<div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud","active": true},{"url": "{{theme_base_url}}/tools/","text": "Tools"},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], "baseUrl": "{{theme_base_url}}"}'></div>
 {%- endblock %}
 
 {%- block langauge_selector %}{%- endblock -%}

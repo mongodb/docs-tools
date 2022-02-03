@@ -16,7 +16,7 @@
           {% if version is defined and version.startswith("v") %}{% set version_num = version[1:] %}{% endif %}
           {% if (version_num is defined) and (version_num|int != 0) %}Version {{ version_num }}{% else %}{{ version }}{% endif %}
         </button>
-        <a href="https://docs.mongodb.com/legacy">&larr; Return to Documentation</a>
+        <a href="{{theme_base_url}}/legacy">&larr; Return to Documentation</a>
       {% else %}
         <button type="button" class="version-button dropdown-toggle" data-toggle="dropdown">
           {% set version = theme_version_selector|selectattr('current')|map(attribute='text')|first|e %}
@@ -128,7 +128,7 @@
     <title>{{ title|striptags|e }}</title>
   {%- endblock -%}
 
-  <link rel="shortcut icon" href="https://docs.mongodb.com/assets/favicon.ico" />
+  <link rel="shortcut icon" href="{{theme_base_url}}/assets/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
 
@@ -156,7 +156,7 @@
     {{ script() }}
 
     {%- block googlecse_opensearch %}
-      <link rel="search" type="application/opensearchdescription+xml" href="https://docs.mongodb.com/osd.xml" title="MongoDB Help"/>
+      <link rel="search" type="application/opensearchdescription+xml" href="{{theme_base_url}}/osd.xml" title="MongoDB Help"/>
     {%- endblock -%}
 
     {%- if favicon %}
@@ -286,7 +286,7 @@
 
   {%- block header %}
     {%- if not theme_eol -%}
-      <div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides","active": true}]}'></div>
+      <div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/ecosystem/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud"},{"url": "{{theme_base_url}}/tools/","text": "Tools"},{"url": "{{theme_base_url}}/guides/","text": "Guides","active": true}], "baseUrl": "{{theme_base_url}}"}'></div>
     {%- endif -%}
   {%- endblock %}
 

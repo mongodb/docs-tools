@@ -194,6 +194,10 @@ a.external[href^='https://docs.mongodb.com']:after {
     display: none; 
 }
 
+a.external[href^='https://www.mongodb.com/docs']:after { 
+    display: none; 
+}
+
 div.body li {
     padding-top: .2em;
 }
