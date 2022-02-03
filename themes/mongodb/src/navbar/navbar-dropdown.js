@@ -38,7 +38,7 @@ class NavbarDropdown extends preact.Component {
             'cloudmanager': 'https://docs.cloudmanager.mongodb.com'
         };
 
-        if (baseUrl === 'https://www.mongodb.com/docs') {
+        if (baseUrl.includes('mongodb.com/docs')) {
             baseUrls = {
                 'base': `${baseUrl}`,
                 'atlas': `${baseUrl}/atlas`,

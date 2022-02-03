@@ -12,13 +12,13 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    {%- if theme_base_url == 'https://www.mongodb.com/docs' %}
+    {%- if 'mongodb.com/docs' in theme_base_url %}
       <link rel="canonical" href="{{theme_base_url}}/cloudmanager/" />
     {%- else %}
       <link rel="canonical" href="https://docs.cloudmanager.mongodb.com/" />
     {%- endif %}
   {%- else %}
-    {%- if theme_base_url == 'https://www.mongodb.com/docs' %}
+    {%- if 'mongodb.com/docs' in theme_base_url %}
       <link rel="canonical" href="{{theme_base_url}}/cloudmanager/{{pagename}}/" />
     {%- else %}
       <link rel="canonical" href="https://docs.cloudmanager.mongodb.com/{{pagename}}/" />
@@ -36,7 +36,7 @@
 
 {%- block sitesearch %}
   {%- if builder != 'singlehtml' %}
-    {%- if theme_base_url == 'https://www.mongodb.com/docs' %}
+    {%- if 'mongodb.com/docs' in theme_base_url %}
       <script type="text/javascript">
         window.googleSearchCx = "017213726194841070573:sntjladnaos"
         window.googleSearchPlaceholder = "Search Cloud Manager"
@@ -70,7 +70,7 @@
         <h4 class="alert-heading" style="margin-bottom: 10px;">The MongoDB Agent has been released!</h4>
         The Monitoring, Backup and Automation Agents have been merged into the MongoDB Agent.
 
-        {%- if theme_base_url == 'https://www.mongodb.com/docs' %}
+        {%- if 'mongodb.com/docs' in theme_base_url %}
           <a class="btn btn-success" style="margin-left: 5px; margin-bottom: 5px;" href="{{theme_base_url}}/cloudmanager/reference/faq/faq-mongodb-agent/">Learn More</a>
         {%- else %}
           <a class="btn btn-success" style="margin-left: 5px; margin-bottom: 5px;" href="https://docs.cloudmanager.mongodb.com/reference/faq/faq-mongodb-agent/">Learn More</a>
@@ -85,7 +85,7 @@
         <span aria-hidden="true">&times;</span>
       </button>
       <span class="alert-message">
-        {%- if theme_base_url == 'https://www.mongodb.com/docs' %}
+        {%- if 'mongodb.com/docs' in theme_base_url %}
           <h4 class="alert-heading" style="margin-bottom: 10px;">Cloud Manager will no longer 
             support Automation for MongoDB 3.4 clusters after February 10, 2022. 
             Please <a href="{{theme_base_url}}/cloudmanager/tutorial/change-mongodb-version/">upgrade your MongoDB deployment</a> 
