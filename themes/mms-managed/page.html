@@ -14,9 +14,9 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://docs.atlas.mongodb.com/" />
+    <link rel="canonical" href="{{theme_base_url}}/atlas/" />
   {%- else %}
-    <link rel="canonical" href="http://docs.atlas.mongodb.com/{{pagename}}/" />
+    <link rel="canonical" href="{{theme_base_url}}/atlas/{{pagename}}/" />
   {%- endif -%}
 {%- endblock -%}
 
@@ -33,18 +33,20 @@
     <script type="text/javascript">
       window.googleSearchCx = "017213726194841070573:atohpekehkg"
       window.googleSearchPlaceholder = "Search Atlas"
-      window.googleSearchResultsUrl = "http://docs.atlas.mongodb.com/search/"
+      window.googleSearchResultsUrl = "{{theme_base_url}}/atlas/search/"
     </script>
   {%- endif %}
 {%- endblock -%}
 
 {%- block header %}
-<div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud","active": true},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides"}]}'></div>
+<div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud","active": true},{"url": "{{theme_base_url}}/tools/","text": "Tools"},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], "baseUrl": "{{theme_base_url}}"}'></div>
 {%- endblock %}
 
 {%- block onboarding_modal -%}{%- endblock -%}
 
-{%- block alertbar -%}{%- endblock -%}
+{%- block alertbar -%}
+    {{ super() }}
+{%- endblock -%}
 
 {% block language_selector %}{% endblock %}
 

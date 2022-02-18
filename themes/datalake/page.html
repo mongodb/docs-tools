@@ -1,0 +1,76 @@
+{%- extends "layout.html" -%}
+
+{%- block htmltitle %}
+  {%- if not embedded and docstitle %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif -%}
+
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
+
+{%- block editlink_icon %}{% endblock %}
+
+{%- block canonicalref %}
+  {%- if pagename == 'index' %}
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/master/" />
+  {%- else %}
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/master/{{pagename}}" />
+  {%- endif -%}
+{%- endblock -%}
+
+{%- block alertbar -%}
+    {%- if theme_active_branches and version not in theme_active_branches %}
+        <div class="alert alert-info">
+           <span class="alert-message">This version of the manual is no longer supported.</span>
+        </div>
+    {%- endif %}
+    {%- if theme_is_upcoming %}
+        <div class="alert alert-info">
+           <span class="alert-message">This manual pertains to an upcoming
+           release, and is made available for testing purposes only.</span>
+        </div>
+    {%- elif theme_eol %}
+        <div class="alert alert-warning">
+           <span class="alert-message">{{theme_eol_msg}}</span>
+        </div>
+    {%- endif %}
+    {%- if theme_is_beta %}
+        <div class="alert alert-info">
+            <span class="alert-message">
+               <h4 class="alert-heading" style="margin-bottom:
+               10px;">BETA</h4>
+               TThe Atlas Data Lake is available as a Beta feature. The product and the corresponding documentation may change at any time during the Beta stage.
+            </span>
+        </div>
+    {%- endif %}
+{%- endblock -%}
+
+{%- block adblockheader %}
+    {%- include "adblock-header.html" %}
+{%- endblock -%}
+
+{%- block adblock %}
+    {%- include "adblock.html" %}
+{%- endblock -%}
+
+{%- block sitesearch %}
+  {%- if builder != 'singlehtml' %}
+      <script>
+        window.googleSearchCx = "014132741538533607290:cgznrev_wu0"
+  window.googleSearchPlaceholder = "Search MongoDB Atlas Data Lake"
+        window.googleSearchResultsUrl = "{{theme_base_url}}/{{theme_project}}/{{version}}/search/"
+      </script>
+  {%- endif %}
+{%- endblock -%}
+
+{%- block header %}
+<div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/ecosystem/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud"},{"url": "{{theme_base_url}}/tools/","text": "Tools","active": true},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], "baseUrl": "{{theme_base_url}}"}'></div>
+{%- endblock %}
+
+
+{%- block langauge_selector %}{%- endblock -%}
+{%- block pdflink %}{%- endblock %}
+{%- block epublink %}{%- endblock %}
+{%- block righttoc %} {% endblock %}

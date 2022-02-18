@@ -1,25 +1,31 @@
 version:
   published:
     - 'master'
+    - '7.3'
+    - '7.2'
+    - '7.1'
     - '7.0'
     - '6.4'
     - '6.3'
     - '6.2'
     - '6.1'
-    - '5.2'
-  stable: '7.0'
+    - '5.4'
+  stable: '7.3'
   upcoming: master
 git:
   branches:
     manual: 'master'
     published:
       - 'master'
+      - '7.3'
+      - '7.2'
+      - '7.1'
       - '7.0'
       - '6.4'
       - '6.3'
       - '6.2'
       - '6.1'
-      - '5.2'
+      - '5.4'
       # the branches/published list **must** be ordered from most to
       # least recent release.
 ...

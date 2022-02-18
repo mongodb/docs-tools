@@ -22,7 +22,9 @@ LANGUAGES = [('shell', 'Mongo Shell'),
              ('perl', 'Perl'),
              ('ruby', 'Ruby'),
              ('scala', 'Scala'),
-             ('go', 'Go')]
+             ('go', 'Go'),
+             ('swift-sync', 'Swift (Sync)'),
+             ('swift-async', 'Swift (Async)')]
 
 DEPLOYMENTS = [('cloud', 'Cloud (Atlas)'),
                ('local', 'Local Instance')]
@@ -280,15 +282,75 @@ def setup(app):
         create_tab_directive('platforms',
             [('windows', 'Windows'),
              ('macos', 'macOS'),
-             ('linux', 'Linux'),
-             ('debian', 'Debian'),
-             ('rhel', 'RHEL')]))
+             ('debian', 'Ubuntu/Debian'),
+             ('rhel', 'RHEL/CentOS/SLES/AMZ'),
+             ('linux', 'Linux')]))
+
+    # Create Realm Language tab directive
+    app.add_directive(
+        'tabs-realm-languages',
+        create_tab_directive('realmLanguages', [ # Note: camelCase is required
+            ('swift', 'Swift'),
+            ('kotlin', 'Kotlin'),
+            ('typescript', 'TypeScript'),
+            ('java', 'Java'),
+            ('objective-c', 'Objective C'),
+            ('javascript', 'JavaScript'),
+            ('c-sharp', 'C#'),
+        ])
+    )
+    
+    # Create Realm SDK tab directive
+    app.add_directive(
+        'tabs-realm-sdks',
+        create_tab_directive('realmSdks', [ # Note: camelCase is required
+            ('functions', 'Functions'),
+            ('json-expressions', 'JSON Expressions'),
+            ('graphql', 'GraphQL'),
+            ('ios', 'iOS SDK'),
+            ('android', 'Android SDK'),
+            ('dotnet', '.NET SDK'),
+            ('xamarin', 'Xamarin SDK'),
+            ('javascript', 'JavaScript SDKs'),
+            ('node', 'Node.js SDK'),
+            ('react-native', 'React Native SDK'),
+            ('web', 'Web SDK'),
+        ])
+    )
+
+    # Create Realm admin interface tab directive
+    app.add_directive(
+        'tabs-realm-admin-interfaces',
+        create_tab_directive('realmAdminInterfaces', [
+            ('ui', 'Realm UI'),
+            ('cli', 'Realm CLI'),
+            ('api', 'Admin API'),
+            ('github', 'GitHub Deploy'),
+            ('code-deploy', 'Code Deploy'),
+        ])
+    )
+
+    # Create Realm auth provider tab directive
+    app.add_directive(
+        'tabs-realm-auth-providers',
+        create_tab_directive('realmAuthProviders', [
+            ('anon-user', 'Anonymous'),
+            ('local-userpass', 'Email/Password'),
+            ('oauth2-apple', 'Apple ID'),
+            ('oauth2-google', 'Google'),
+            ('oauth2-facebook', 'Facebook'),
+            ('api-key', 'API Key'),
+            ('custom-token', 'Custom JWT'),
+            ('custom-function', 'Custom Function'),
+        ])
+    )
 
     # Create Stitch SDK tab directive
     app.add_directive(
         'tabs-stitch-sdks',
         create_tab_directive('stitchSdks', [ # Note: camelCase is required
             ('functions', 'Functions'),
+            ('json-expressions', 'Json Expressions'),
             ('javascript', 'JavaScript SDK'),
             ('android', 'Android SDK'),
             ('ios', 'iOS SDK')
@@ -339,6 +401,14 @@ def setup(app):
             [('aws', 'AWS'),
              ('azure', 'Azure'),
              ('gcp', 'GCP')
+        ])
+    )
+
+    # Create k8s orchestrator tab directive
+    app.add_directive('tabs-k8s-orchestrator',
+        create_tab_directive('k8sorchestrator',
+            [('k8s', 'Kubernetes'),
+             ('openshift', 'OpenShift')
         ])
     )
 

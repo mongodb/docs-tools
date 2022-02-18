@@ -14,32 +14,21 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/master/" />
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/master/" />
   {%- else %}
-    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/master/{{pagename}}" />
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/master/{{pagename}}" />
   {%- endif -%}
 {%- endblock -%}
 
 {%- block alertbar -%}
-    {%- if theme_is_saas %}
-        <div class="alert alert-info">
-          <span class="alert-message">
-
-            This documentation refers to the MongoDB Charts 
-            service in MongoDB Atlas. Read the
-            <a href="https://docs.mongodb.com/charts/onprem/">
-            on-premises documentation</a> to learn how to use the
-            MongoDB Charts on site.
-
-          </span>
-        </div>
-    {%- else %}
+    {{ super() }}
+    {%- if not theme_is_saas %}
         <div class="alert alert-info">
           <span class="alert-message">
 
             This documentation refers to the on-premises edition
             of MongoDB Charts. Read the 
-            <a href="https://docs.mongodb.com/charts/master/">Atlas
+            <a href="{{theme_base_url}}/charts/master/">Atlas
             service documentation</a> to learn how to use MongoDB 
             Charts with your Atlas project.
 
@@ -61,13 +50,13 @@
       <script>
         window.googleSearchCx = "014132741538533607290:cgznrev_wu0"
 	window.googleSearchPlaceholder = "Search BI Connector"
-        window.googleSearchResultsUrl = "https://docs.mongodb.com/{{theme_project}}/{{version}}/search/"
+        window.googleSearchResultsUrl = "{{theme_base_url}}/{{theme_project}}/{{version}}/search/"
       </script>
   {%- endif %}
 {%- endblock -%}
 
 {%- block header %}
-<div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools","active": true},{"url": "https://docs.mongodb.com/guides/","text": "Guides"}]}'></div>
+<div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/ecosystem/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud"},{"url": "{{theme_base_url}}/tools/","text": "Tools","active": true},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], "baseUrl": "{{theme_base_url}}"}'></div>
 {%- endblock %}
 
 

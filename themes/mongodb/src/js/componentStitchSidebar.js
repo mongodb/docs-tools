@@ -27,14 +27,15 @@ function handleRootSectionNavigation(e) {
         const $sectionContent = section.children(':not(h3)');
 
         $sectionHeading.removeClass('open');
-        $sectionContent.slideUp(SLIDE_ANIMATION_TIME_MS, () => {
+        $sectionContent.stop().slideUp(SLIDE_ANIMATION_TIME_MS, () => {
             section.add(section.children()).removeClass('current');
         });
     }
 
     function expandSection(section) {
         section.add(section.children()).addClass('current');
-        section.children('ul.toc-section-root').slideDown(SLIDE_ANIMATION_TIME_MS);
+        section.children('ul.toc-section-root').stop().
+            slideDown(SLIDE_ANIMATION_TIME_MS);
     }
 
     if (isVisible($targetSection)) {
@@ -52,21 +53,21 @@ function handleSectionNavigation(e) {
     const $targetSection = $targetHeading.parent();
 
     function collapseSection(section) {
-        const $sectionHeading = section.children('h4');
-        const $sectionContent = section.children(':not(h4)');
+        const $sectionHeading = section.children('h4, h5');
+        const $sectionContent = section.children(':not(h4, h5)');
 
         $sectionHeading.removeClass('open');
-        $sectionContent.slideUp(SLIDE_ANIMATION_TIME_MS, () => {
+        $sectionContent.stop().slideUp(SLIDE_ANIMATION_TIME_MS, () => {
             section.add(section.children()).removeClass('current');
         });
     }
 
     function expandSection(section) {
-        const $sectionHeading = section.children('h4');
-        const $sectionContent = section.children(':not(h4)');
+        const $sectionHeading = section.children('h4, h5');
+        const $sectionContent = section.children(':not(h4, h5)');
 
         $sectionHeading.addClass('open current');
-        $sectionContent.slideDown(SLIDE_ANIMATION_TIME_MS, () => {
+        $sectionContent.stop().slideDown(SLIDE_ANIMATION_TIME_MS, () => {
             section.addClass('current');
             $sectionContent.addClass('current');
         });
@@ -87,11 +88,11 @@ function handleCompositePage(e) {
 
     const isClosed = $targetIcon.hasClass('is-closed');
     if (isClosed) {
-        $subpageSection.slideDown();
+        $subpageSection.stop().slideDown();
         $targetIcon.removeClass('is-closed');
         $targetIcon.addClass('is-open');
     } else {
-        $subpageSection.slideUp();
+        $subpageSection.stop().slideUp();
         $targetIcon.removeClass('is-open');
         $targetIcon.addClass('is-closed');
     }
@@ -103,6 +104,7 @@ function addNavigationHandlers() {
     const $tocSections = $('.toctree-root .toctree-l1');
     $tocSections.on('click', 'h3', handleRootSectionNavigation);
     $tocSections.on('click', 'h4', handleSectionNavigation);
+    $tocSections.on('click', 'h5', handleSectionNavigation);
     $tocSections.on('click', 'a span.nested-page-toggle', handleCompositePage);
 }
 
@@ -135,7 +137,8 @@ function addIcons() {
 }
 
 export function setup() {
-    const isStitch = $('body').attr('data-project') === 'stitch';
+    const project = $('body').attr('data-project');
+    const isStitch = project === 'stitch' || project === 'realm';
     if (isStitch) {
         $currentPage = $('.sidebar a.current');
         $currentPage.parent('li').addClass('selected-item');

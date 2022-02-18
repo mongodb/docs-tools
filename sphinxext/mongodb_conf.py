@@ -102,7 +102,7 @@ conf['directives'] = [
         'name': 'bsontype',
         'tag': 'bson',
         'description': 'BSON type',
-        'prepend': False,
+        'prepend': True,
         'callable': False,
     },
     {
@@ -308,6 +308,22 @@ conf['directives'] = [
         'prepend': False,
         'callable': False
     },
+    ## Custom Directive for Realm Sync Protocol Client->Server messages
+    {
+        'name': 'sync-client-message',
+        'tag': 'sync-client-message',
+        'description': 'Realm Sync Protocol Client->Server Request',
+        'prepend': False,
+        'callable': False
+    },
+    ## Custom Directive for Realm Sync Protocol Server->Client messages
+    {
+        'name': 'sync-server-message',
+        'tag': 'sync-server-message',
+        'description': 'Realm Sync Protocol Client->Server Request',
+        'prepend': False,
+        'callable': False
+    },
     ## For service actions
     {
         'name': 'action',
@@ -331,6 +347,21 @@ conf['directives'] = [
         'prepend': True,
         'callable': False
     },
+    {
+        'name': 'opsmgrkube',
+        'tag': 'opsmgrkube',
+        'description': 'Kubernetes Operator Ops Manager Resource Setting',
+        'prepend': True,
+        'callable': False
+    },
+    ## Custom directive for automatic client side field level encryption keywords
+    {
+        'name': 'autoencryptkeyword',
+        'tag' : 'autoencryptkeyword',
+        'description': 'Automatic Client-Side Field Level Encrytion Rules Keyword',
+        'prepend': True,
+        'callable': False
+    }
 ]
 
 ## If prepend: True, you can have a page title that match the directive.  For example, an operator X in a page with title X.  Otherwise, you can't have in page with same title and you'll get iddup as the reference.

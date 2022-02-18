@@ -169,7 +169,7 @@ div.sphinxsidebarwrapper > ul.toctree-root {
     & li.toctree-l3 {
         >a {
             padding-left: 0px;
-            margin-left: 78px;
+            margin-left: 62px;
             width: calc(100% - 78px);
         }
     }
@@ -177,8 +177,8 @@ div.sphinxsidebarwrapper > ul.toctree-root {
     & li.toctree-l4 {
         >a {
             padding-left: 0px;
-            margin-left: 104px;
-            width: calc(100% - 104px);
+            margin-left: 96px;
+            width: calc(100% - 96px);
         }
     }
 }
@@ -196,7 +196,7 @@ div.sphinxsidebarwrapper > ul.toctree-root {
     top: 8px;
     margin-left: -21px;
     position: absolute;
-    display: inline-block;
+    display: none !important;
 }
 
 .nested-page-toggle {
@@ -280,13 +280,38 @@ h4.toc-section-heading {
     }
 }
 
+
 h5.toc-section-heading {
     border-bottom: 1px solid #e0e7e8;
-    margin: 0 0 6px 52px !important;
+    margin: 0 0 6px 60px !important;
+    padding: 6px 12px 3px 0px;
     font-size: 14px;
     line-height: 24px;
     font-weight: 700;
+    cursor: default;
+
+    &:before {
+        display: inline-block;
+        content: ' ';
+        background: url(images/caret-right-solid.svg);
+        background-size: 14px 14px;
+        height: 14px;
+        width: 14px;
+        transition: 400ms;
+    }
+
+    &.open {
+        &:before {
+            transform: rotate(90deg);
+            transition: 400ms;
+        }
+    }
+
+    &.current {
+        margin-bottom: 6px !important;
+    }
 }
+
 
 ul.toc-section-nested {
     & .nested-page-line {

@@ -84,21 +84,28 @@ ICONS_FA4 = IconSet(
         'caret-right',
         'circle',
         'download',
+        'ellipsis-v',
         'exclamation-circle',
         'exclamation-triangle',
+        'files-o',
         'globe',
+        'hand-pointer-o',
         'info',
         'info-circle',
         'lock',
+        'money',
+        'mouse-pointer',
         'pencil',
         'plus',
         'plus-square',
         'question-circle',
         'refresh',
         'search',
+        'share-square-o',
         'stop',
         'times-circle',
-        'trash-o'
+        'trash-o',
+        'undo'
     )))
 
 #: MMS icon font

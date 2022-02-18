@@ -14,24 +14,14 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/master/" />
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/master/" />
   {%- else %}
-    <link rel="canonical" href="http://docs.mongodb.com/{{theme_project}}/master/{{pagename}}" />
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/master/{{pagename}}/" />
   {%- endif -%}
 {%- endblock -%}
 
 {%- block alertbar -%}
-    {%- if theme_active_branches and version not in theme_active_branches %}
-        <div class="alert alert-info">
-           <span class="alert-message">This version of the manual is no longer supported.</span>
-        </div>
-    {%- endif %}
-    {%- if theme_is_upcoming %}
-        <div class="alert alert-info">
-           <span class="alert-message">This manual pertains to an upcoming
-           release, and is made available for testing purposes only.</span>
-        </div>
-    {%- endif %}
+    {{ super() }}
 {%- endblock -%}
 
 {%- block adblockheader %}
@@ -47,13 +37,13 @@
       <script>
         window.googleSearchCx = "017213726194841070573:f1ky3bnchs0"
         window.googleSearchPlaceholder = "Search Spark Connector Documentation"
-        window.googleSearchResultsUrl = "https://docs.mongodb.com/{{theme_project}}/{{version}}/search/"
+        window.googleSearchResultsUrl = "{{theme_base_url}}/{{theme_project}}/{{version}}/search/"
       </script>
   {%- endif %}
 {%- endblock -%}
 
 {%- block header %}
-<div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server"},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools","active": true},{"url": "https://docs.mongodb.com/guides/","text": "Guides"}]}'></div>
+<div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud"},{"url": "{{theme_base_url}}/tools/","text": "Tools","active": true},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], "baseUrl": "{{theme_base_url}}"}'></div>
 {%- endblock %}
 
 {%- block langauge_selector %}{%- endblock -%}

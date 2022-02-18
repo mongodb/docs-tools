@@ -1,20 +1,20 @@
 version:
   published:
-    - 'Atlas'
+    - 'Cloud'
+    - '19.12 (On-Prem)'
     - '19.09 (On-Prem)'
-    - '19.06 (On-Prem)'
   active:
-    - 'Atlas'
+    - 'Cloud'
+    - '19.12 (On-Prem)'
     - '19.09 (On-Prem)'
-    - '19.06 (On-Prem)'
   stable: ''
 git:
   branches:
     manual: 'master'
     published:
       - 'master'
+      - '19.12'
       - '19.09'
-      - '19.06'
 
       # the branches/published list **must** be ordered from most to
       # least recent release.

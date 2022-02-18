@@ -15,27 +15,14 @@
 
 {%- block canonicalref %}
     {%- if pagename == 'index' %}
-      <link rel="canonical" href="https://docs.mongodb.com/{{theme_project}}/" />
+      <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/" />
     {%- else %}
-      <link rel="canonical" href="https://docs.mongodb.com/{{theme_project}}/{{pagename}}" />
+      <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/{{pagename}}/" />
     {%- endif -%}
 {%- endblock -%}
 
 {%- block alertbar -%}
-    {%- if theme_eol %}
-        <div class="alert alert-warning">
-           <span class="alert-message">{{theme_eol_msg}}</span>
-        </div>
-    {%- elif theme_active_branches and version not in theme_active_branches %}
-        <div class="alert alert-info">
-           <span class="alert-message">This version of the manual is no longer supported.</span>
-        </div>
-    {%- elif theme_banner %}
-        <div class="alert alert-info">
-           <span class="alert-message">{{theme_banner_msg}}</span>
-        </div>
-    {%- endif %}
-
+    {{ super() }}
 {%- endblock -%}
 
 {%- block righttoc %} {% endblock %}
@@ -52,14 +39,14 @@
       <script>
         window.googleSearchCx = "017213726194841070573:WMX6838984"
 	window.googleSearchPlaceholder = "Search Documentation"
-        window.googleSearchResultsUrl = "http://docs.mongodb.com/manual/search/"
+        window.googleSearchResultsUrl = "{{theme_base_url}}/manual/search/"
       </script>
   {%- endif %}
 {%- endblock -%}
 
 
 {%- block header %}
-<div id="navbar" data-navprops='{"links": [{"url": "https://docs.mongodb.com/manual/","text": "Server","active": true},{"url": "https://docs.mongodb.com/ecosystem/drivers/","text": "Drivers"},{"url": "https://docs.mongodb.com/cloud/","text": "Cloud"},{"url": "https://docs.mongodb.com/tools/","text": "Tools"},{"url": "https://docs.mongodb.com/guides/","text": "Guides"}]}'></div>
+<div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server","active": true},{"url": "{{theme_base_url}}/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud"},{"url": "{{theme_base_url}}/tools/","text": "Tools"},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], "baseUrl": "{{theme_base_url}}"}'></div>
 {%- endblock %}
 
 {%- block pdflink %}{%- endblock %}

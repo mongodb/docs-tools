@@ -18,7 +18,10 @@ class Navbar extends preact.Component {
     constructor (props) {
         super(props);
         this.state = JSON.parse(props.navprops);
-        this.state.enableMarian = Boolean(document.body.getAttribute('data-enable-marian'));
+        // If gatsby is available, then this site is built off next gen
+        const isLegacy = !document.getElementById('___gatsby');
+        const enableMarianAttr = Boolean(document.body.getAttribute('data-enable-marian'));
+        this.state.enableMarian =  isLegacy && enableMarianAttr;
 
         // There are four supported configurations:
         // 1) No Marian
@@ -158,7 +161,7 @@ class Navbar extends preact.Component {
             const dataProject = document.body.getAttribute('data-project');
             const dataProjectIsAtlas = dataProject === 'atlas';
             const linkText = dataProjectIsAtlas ? 'Deploy a free cluster' : 'Get MongoDB';
-            const linkUrl = `https://www.mongodb.com/download-center?utm_source=${dataProject}&utm_campaign=download-mongodb-navbar-cta&utm_medium=docs`;
+            const linkUrl = 'https://www.mongodb.com/download-center?tck=docs_navbar';
             const linkIcon = dataProjectIsAtlas ? <RocketDownloadIcon /> : '';
 
             return (
@@ -178,16 +181,18 @@ class Navbar extends preact.Component {
             return <a href={ link.url } key={i} className={ linkClass }>{ link.text }</a>;
         });
 
+        const baseUrl = this.state.baseUrl;
+
         return (
             <nav className="navbar">
                 <div className="navbar__left">
                     <a href="https://www.mongodb.com/">
-                        <img src="https://docs.mongodb.com/images/mongodb-logo.png" className="navbar-brand" alt="MongoDB Logo" />
+                        <img src={`${baseUrl}/images/mongodb-logo.png`} className="navbar-brand" alt="MongoDB Logo" />
                     </a>
 
                     <span className="navbar-seperator"></span>
 
-                    <NavbarDropdown links={this.state.dropdown} />
+                    <NavbarDropdown links={this.state.dropdown} baseUrl={baseUrl} />
                 </div>
 
                 <div className="navbar__right">

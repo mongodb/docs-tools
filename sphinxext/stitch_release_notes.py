@@ -4,6 +4,7 @@ from template import populate, Options
 import yaml
 import datetime
 from dateutil.parser import parse as parse_date
+from calendar import month_name
 import fett
 
 STITCH_RELEASE = fett.Template('''
@@ -105,9 +106,16 @@ class StitchRelease(Directive):
         return content
 
     def render(self, release_date, release_content):
+        def add_dummy_day(dateString):
+            parts = dateString.split(",")
+            parts[0] += " 01,"
+            dummified = "".join(parts)
+            return dummified
+        date = parse_date(add_dummy_day(release_date))
+        slug_date = month_name[date.month].lower() + "-" + str(date.year)
         rendered_stitch_release_template = STITCH_RELEASE.render({
             "header": release_date,
-            "slug_date": parse_date(release_date).isoformat().split("T")[0],
+            "slug_date": slug_date,
             "categories": [ReleaseCategory(category, items).asdict()
                            for category, items in release_content.items()],
         })

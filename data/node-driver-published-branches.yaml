@@ -1,0 +1,18 @@
+version:
+  published:
+    - 'master'
+    - 'foo'
+  active:
+    - 'master'
+    - 'foo'
+  stable: 'foo'
+  upcoming: null
+git:
+  branches:
+    manual: 'master'
+    published:
+      - 'master'
+      - 'docs-migration'
+      # the branches/published list **must** be ordered from most to
+      # least recent release.
+...

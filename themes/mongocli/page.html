@@ -1,0 +1,62 @@
+{%- extends "layout.html" -%}
+
+{%- block htmltitle %}
+  {%- if not embedded and docstitle %}
+    {%- set titlesuffix = " &mdash; "|safe + docstitle|e + " " + release|e %}
+  {%- else %}
+    {%- set titlesuffix = "" %}
+  {%- endif -%}
+
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+{%- endblock -%}
+
+{%- block editlink_icon %}{% endblock %}
+
+{%- block canonicalref %}
+  {%- if pagename == 'index' %}
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/master/" />
+  {%- else %}
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/master/{{pagename}}" />
+  {%- endif -%}
+{%- endblock -%}
+
+{%- block alertbar -%}
+    {{ super() }}
+    {%- if theme_is_alpha %}
+        <div class="alert alert-info">
+            <span class="alert-message">
+               <h4 class="alert-heading" style="margin-bottom:
+               10px;">Alpha Release of MongoDB CLI</h4>
+               This is a pre-release early version of MongoDB CLI. Do not use MongoDB CLI to manage production environments.
+            </span>
+        </div>
+    {%- endif %}
+{%- endblock -%}
+
+{%- block adblockheader %}
+    {%- include "adblock-header.html" %}
+{%- endblock -%}
+
+{%- block adblock %}
+    {%- include "adblock.html" %}
+{%- endblock -%}
+
+{%- block sitesearch %}
+  {%- if builder != 'singlehtml' %}
+      <script>
+        window.googleSearchCx = "014132741538533607290:cgznrev_wu0"
+	window.googleSearchPlaceholder = "Search MongoDB CLI"
+        window.googleSearchResultsUrl = "{{theme_base_url}}/{{theme_project}}/{{version}}/search/"
+      </script>
+  {%- endif %}
+{%- endblock -%}
+
+{%- block header %}
+<div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/ecosystem/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud"},{"url": "{{theme_base_url}}/tools/","text": "Tools","active": true},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], , "baseUrl": "{{theme_base_url}}"}'></div>
+{%- endblock %}
+
+
+{%- block langauge_selector %}{%- endblock -%}
+{%- block pdflink %}{%- endblock %}
+{%- block epublink %}{%- endblock %}
+{%- block righttoc %} {% endblock %}

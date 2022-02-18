@@ -3,6 +3,7 @@ import * as componentAtlas from '../js/componentAtlas';
 import * as componentCloseOpen from '../js/componentCloseOpen';
 import * as componentCodeBlockFix from '../js/componentCodeBlockFix';
 import * as componentCopyButtons from '../js/componentCopyButtons';
+import * as componentEcosystemLinkTrack from '../js/componentEcosystemLinkTrack';
 import * as componentFastLoad from '../js/componentFastLoad';
 import * as componentFeedback from '../js/componentFeedback';
 import * as componentGuides from '../js/componentGuides';
@@ -50,6 +51,7 @@ $(() => {
 
     fastNav.register(componentCodeBlockFix);
     fastNav.register(componentCopyButtons);
+    fastNav.register(componentEcosystemLinkTrack);
     fastNav.register(componentFastLoad);
     fastNav.register(componentFeedback);
     fastNav.register(componentLightbox);
@@ -91,23 +93,6 @@ $(() => {
             $sidebar.removeClass('reveal');
         } else if (!isTabletWidth && $window.width() <= 1093) {
             isTabletWidth = true;
-        }
-    });
-
-    /* Adjust the scroll location to account for our fixed header */
-    function offsetHashLink() {
-        if (location.hash && document.getElementById(location.hash.substr(1))) {
-            $(window).scrollTop(window.scrollY - 75);
-        }
-    }
-    window.addEventListener('hashchange', offsetHashLink);
-    if (location.hash) {
-        window.setTimeout(offsetHashLink, 10);
-    }
-    $('.content').on('click', 'a', (e) => {
-        // Fixes corner case where the user clicks the same hash link twice
-        if ($(e.currentTarget).attr('href') === location.hash) {
-            window.setTimeout(offsetHashLink, 10);
         }
     });
 
