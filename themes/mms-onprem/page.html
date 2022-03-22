@@ -96,7 +96,7 @@
         {% for v in theme_version_selector %}
           {% if not v.current %}
           <li>
-            <a href="#" data-path="{{ v.path }}" class="is-on-prem mms-version-selector">
+            <a href="#" data-path="{{ 'docs/' + v.path }}" class="is-on-prem mms-version-selector">
             {{ v.text }}
             </a>
           </li>
