@@ -30,7 +30,7 @@
             {% else %}
             <li>
             {% endif %}
-              <a {% if not v.current %}class="version-selector" {% endif %}href="#" data-path="{{ v.path }}">
+              <a {% if not v.current %}class="version-selector" {% endif %}href="#" data-path="{{ 'docs/' + v.path }}">
                 {% if v.text is defined %}{% set version_num = v.text.split()[0] %}{% endif %}
                 {% if (version_num is defined) and (version_num|int != 0) %}Version {% endif %}{{ v.text }}
               </a>
