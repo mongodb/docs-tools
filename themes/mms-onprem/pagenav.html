@@ -5,6 +5,40 @@
   <a href="{{ pathto('index') }}">{{ shorttitle }}</a>
 </h3>
 
+{% macro version_selector() %}
+<div class="btn-group version-sidebar">
+  {% if theme_eol %}
+    <button type="button" class="version-button dropdown-toggle" data-toggle="dropdown" disabled aria-disabled="disabled">
+      {% set version = theme_branch %}
+      {% if version is defined and version.startswith("v") %}{% set version_num = version[1:] %}{% endif %}
+      {% if (version_num is defined) and (version_num|int != 0) %}Version {{ version_num }}{% else %}{{ version }}{% endif %}
+    </button>
+    <a href="{{theme_base_url}}/legacy">&larr; Return to Documentation</a>
+  {% else %}
+    <button type="button" class="version-button dropdown-toggle" data-toggle="dropdown">
+      {% set version = theme_version_selector|selectattr('current')|map(attribute='text')|first|e %}
+      {% if version is defined %}{% set version_num = version.split()[0] %}{% endif %}
+      {% if (version_num is defined) and (version_num|int != 0) %}Version {% endif %}{{ version }}<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+      {% for v in theme_version_selector %}
+        {% if v.current %}
+        <li class="active">
+        {% else %}
+        <li>
+        {% endif %}
+          <a {% if not v.current %}class="version-selector" {% endif %}href="#" data-path="{{ 'docs/ops-manager/' + v.path }}">
+            {% if v.text is defined %}{% set version_num = v.text.split()[0] %}{% endif %}
+            {% if (version_num is defined) and (version_num|int != 0) %}Version {% endif %}{{ v.text }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+{% endmacro %}
+
+
 {{ version_selector() }}
 
 {{ toctree( collapse=false, titles_only=1) }}

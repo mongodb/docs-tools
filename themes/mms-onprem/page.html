@@ -81,30 +81,4 @@
 <div id="navbar" data-navprops='{"links": [{"url": "{{theme_base_url}}/manual/","text": "Server"},{"url": "{{theme_base_url}}/ecosystem/drivers/","text": "Drivers"},{"url": "{{theme_base_url}}/cloud/","text": "Cloud","active": true},{"url": "{{theme_base_url}}/tools/","text": "Tools"},{"url": "{{theme_base_url}}/guides/","text": "Guides"}], "baseUrl": "{{theme_base_url}}"}'></div>
 {%- endblock %}
 
-{% block version_selector %}
-  <li>
-    <label>{{ _('Version') }}</label>
-    <p class="pull-right saving-copy hide"><i class="fa fa-spin fa-spinner"></i> Saving your settings...</p>
-    <div class="btn-group btn-group-xs pull-right mms-version-btn-group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        {% for v in theme_version_selector %}
-          {% if v.current %}{{ v.text }}{% endif %}
-        {% endfor %}
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" role="menu">
-        {% for v in theme_version_selector %}
-          {% if not v.current %}
-          <li>
-            <a href="#" data-path="{{ 'docs/' + v.path }}" class="is-on-prem mms-version-selector">
-            {{ v.text }}
-            </a>
-          </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-    </div>
-  </li>
-{% endblock %}
-
 {%- block pdflink %}{%- endblock %}
