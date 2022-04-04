@@ -59,20 +59,6 @@
     </div>
   {%- endif %}
 
-  {%- if theme_automation_eol %}
-    <div class="alert alert-info alert-dismissible fade in" role="alert" style="margin-left: 20px">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <span class="alert-message">
-        <h4 class="alert-heading" style="margin-bottom: 10px;">Cloud Manager will no longer
-          support Automation for MongoDB 3.4 clusters after February 10, 2022.
-          Please <a href="{{theme_base_url}}/cloud-manager/tutorial/change-mongodb-version/">upgrade your MongoDB deployment</a>
-          or <a href="{{theme_base_url}}/atlas/migration-to-atlas-choosing/">migrate to Atlas.</a>
-        </h4>
-      </span>
-    </div>
-  {%- endif %}
 {%- endblock -%}
 
 {% block language_selector %}{% endblock %}
