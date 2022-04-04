@@ -31,21 +31,12 @@ class NavbarDropdown extends preact.Component {
             'navbar-dropdown__menu--shown': this.state.open
         });
 
-        let baseUrls = {
-            'base': 'https://docs.mongodb.com',
-            'atlas': 'https://docs.atlas.mongodb.com',
-            'opsmanager': 'https://docs.opsmanager.mongodb.com',
-            'cloudmanager': 'https://docs.cloudmanager.mongodb.com'
+        const baseUrls = {
+            'base': 'https://www.mongodb.com/docs',
+            'atlas': 'https://www.mongodb.com/docs/atlas',
+            'opsmanager': 'https://www.mongodb.com/docs/ops-manager',
+            'cloudmanager': 'https://www.mongodb.com/docs/cloud-manager'
         };
-
-        if (baseUrl.includes('mongodb.com/docs')) {
-            baseUrls = {
-                'base': `${baseUrl}`,
-                'atlas': `${baseUrl}/atlas`,
-                'opsmanager': `${baseUrl}/opsmanager`,
-                'cloudmanager': `${baseUrl}/cloudmanager`
-            };
-        }
 
         return (
             <div className={ dropDownClass }>
