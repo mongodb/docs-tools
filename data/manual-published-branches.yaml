@@ -1,14 +1,12 @@
 version:
   published:
-    - 'Upcoming Rapid Release (v5.3)'
-    - 'Atlas Rapid Release (v5.2)'
+    - 'Atlas Rapid Release (v5.3)'
     - '5.0'
     - '4.4'
     - '4.2'
     - '4.0'
   active:
     - '5.3'
-    - '5.2'
     - '5.0'
     - '4.4'
     - '4.2'
