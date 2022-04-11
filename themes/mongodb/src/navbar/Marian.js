@@ -69,8 +69,7 @@ export class Marian {
 
     search(query, properties) {
         if (!query) {
-            this.onresults({'results': null,
-                'spellingCorrections': {}}, query);
+            this.onresults({'results': null}, query);
             return;
         }
 
@@ -88,7 +87,7 @@ export class Marian {
         if (this.currentRequest !== null) { this.currentRequest.abort(); }
         const request = new XMLHttpRequest();
         this.currentRequest = request;
-        let requestUrl = `https://marian.mongodb.com/search?q=${encodeURIComponent(query)}`;
+        let requestUrl = `https://docs-search-transport.mongodb.com/search?q=${encodeURIComponent(query)}`;
 
         if (properties) {
             requestUrl += `&searchProperty=${encodeURIComponent(properties)}`;
@@ -262,7 +261,7 @@ export class MarianUI {
         if (this.defaultProperties.length && this.searchProperty === 'current') {
             searchProperty = this.defaultProperties;
         } else if (this.searchProperty === 'manual') {
-            searchProperty = 'manual-current';
+            searchProperty = 'manual-manual';
         }
 
         this.listElement.innerText = '';
@@ -272,25 +271,6 @@ export class MarianUI {
 
     render(data, query) {
         this.spinnerElement.className = 'spinner spinner--hidden';
-
-        const spellingErrors = Object.keys(data.spellingCorrections);
-        if (spellingErrors.length > 0) {
-            let corrected = query;
-            spellingErrors.forEach((orig) => {
-                corrected = corrected.replace(orig, data.spellingCorrections[orig]);
-            });
-
-            const li = document.createElement('li');
-            const correctLink = document.createElement('a');
-            correctLink.onclick = () => {
-                this.onchangequery(corrected);
-            };
-            li.className = 'marian-result';
-            correctLink.className = 'marian-spelling-correction';
-            correctLink.innerText = `Did you mean: ${corrected}`;
-            li.appendChild(correctLink);
-            this.listElement.appendChild(li);
-        }
 
         data.results.forEach((result) => {
             const li = document.createElement('li');
