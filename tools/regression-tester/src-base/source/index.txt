@@ -1,7 +1,0 @@
-.. class:: hidden
-
-   .. toctree::
-      :titlesonly:
-
-      /insert-documents
-
