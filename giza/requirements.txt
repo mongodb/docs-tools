@@ -16,7 +16,7 @@ hieroglyph==1.0.0
 idna==2.8
 imagesize==1.1.0
 ipaddress==1.0.22
-Jinja2==2.10.1
+Jinja2==2.11.3
 jira==2.0.0
 jsx-lexer==0.0.7
 MarkupSafe==1.1.1
