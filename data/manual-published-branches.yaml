@@ -5,14 +5,12 @@ version:
     - '5.0'
     - '4.4'
     - '4.2'
-    - '4.0'
   active:
     - '6.0'
     - '5.3'
     - '5.0'
     - '4.4'
     - '4.2'
-    - '4.0'
   stable: '5.0'
   upcoming: '6.0'
 git:
@@ -24,7 +22,6 @@ git:
       - 'v5.0'
       - 'v4.4'
       - 'v4.2'
-      - 'v4.0'
       # the branches/published list **must** be ordered from most to
       # least recent release.
 ...
