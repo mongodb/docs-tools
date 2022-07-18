@@ -69,6 +69,36 @@
     </div>
   {%- endif %}
 
+  {%- if theme_4-4_eol %}
+    <div class="alert alert-info alert-dismissible fade in" role="alert" style="margin-left: 20px">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <span class="alert-message">
+        <h4 class="alert-heading" style="margin-bottom: 10px;">
+          Support for Ops Manager 4.4 Ends July, 2022.
+        </h4>
+
+        <a href="{{theme_base_url}}/v5.0/tutorial/upgrade-ops-manager/">Upgrade Ops Manager to version 5.0</a> for continued support.
+      </span>
+    </div>
+  {%- endif %}
+
+  {%- if theme_5-0_eol %}
+  <div class="alert alert-info alert-dismissible fade in" role="alert" style="margin-left: 20px">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <span class="alert-message">
+      <h4 class="alert-heading" style="margin-bottom: 10px;">
+        Support for Ops Manager 5.0 Ends July, 2023.
+      </h4>
+
+      <a href="{{theme_base_url}}/v6.0/tutorial/upgrade-ops-manager/">Upgrade Ops Manager to version 6.0</a> for continued support.
+    </span>
+  </div>
+{%- endif %}
+
 {%- endblock -%}
 
 
