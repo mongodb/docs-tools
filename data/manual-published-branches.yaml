@@ -1,24 +1,21 @@
 version:
   published:
-    - '6.0 (upcoming)'
-    - 'Atlas Rapid Release (v5.3)'
+    - '6.0 (current)'
     - '5.0'
     - '4.4'
     - '4.2'
   active:
     - '6.0'
-    - '5.3'
     - '5.0'
     - '4.4'
     - '4.2'
-  stable: '5.0'
-  upcoming: '6.0'
+  stable: '6.0'
+  upcoming: null
 git:
   branches:
-    manual: 'v5.0'
+    manual: 'master'
     published:
       - 'master'
-      - 'v5.3'
       - 'v5.0'
       - 'v4.4'
       - 'v4.2'
