@@ -132,14 +132,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
 
-  {%- if version == theme_upcoming or theme_eol == "true" or theme_eol %}
-    <meta name="robots" content="noindex,nofollow" />
-  {%- elif version in theme_active_branches or not theme_active_branches %}
-    <meta name="robots" content="index" />
-    {%- block canonicalref %}{%- endblock -%}
-  {%- else -%}
-    <meta name="robots" content="noindex,nofollow" />
-  {%- endif %}
+  {%- block canonicalref %}{%- endblock -%}
 
   <meta name="release" content="{{release}}"/>
   <meta name="version" content="{{version}}"/>
