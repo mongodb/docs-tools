@@ -1,23 +1,26 @@
 version:
   published:
+    - '1.18'
     - '1.17'
     - '1.16'
     - '1.15'
     - '1.14'
 
   active:
+    - '1.18'
     - '1.17'
     - '1.16'
     - '1.15'
     - '1.14'
 
-  stable: '1.16'
-  upcoming: '1.17'
+  stable: '1.17'
+  upcoming: '1.18'
 git:
   branches:
-    manual: 'v1.16'
+    manual: 'v1.17'
     published:
       - 'master'
+      - 'v1.17'
       - 'v1.16'
       - 'v1.15'
       - 'v1.14'
