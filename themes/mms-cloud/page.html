@@ -73,6 +73,23 @@
       </span>
     </div>
   {%- endif %}
+
+  {%- if theme_backup_monitoring_eol_past %}
+    <div class="alert alert-info alert-dismissible fade in" role="alert" style="margin-left: 20px">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <span class="alert-message">
+        <h4 class="alert-heading" style="margin-bottom: 10px;">
+          Backup and Monitoring Support Ended for MongoDB 3.4 and Earlier
+        </h4>
+
+        Cloud Manager no longer supports Backup and Monitoring for MongoDB 2.6, 3.0, 3.2, or 3.4.
+        <a href="{{theme_base_url}}/cloud-manager/tutorial/change-mongodb-version/">Upgrade your MongoDB databases to 3.6 or later</a>
+        or <a href="{{theme_base_url}}/atlas/migration-to-atlas-choosing/">migrate your databases to MongoDB Atlas</a>.
+      </span>
+    </div>
+  {%- endif %}
 {%- endblock -%}
 
 {% block language_selector %}{% endblock %}
