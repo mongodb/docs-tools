@@ -1,7 +1,7 @@
 version:
   published:
-    - '6.1 (upcoming)'
-    - '6.0 (current)'
+    - '6.1 (Rapid Release)'
+    - '6.0 (Major Release)'
     - '5.0'
     - '4.4'
     - '4.2'
@@ -12,7 +12,7 @@ version:
     - '4.4'
     - '4.2'
   stable: '6.0'
-  upcoming: '6.1'
+  upcoming: null
 git:
   branches:
     manual: 'v6.0'
