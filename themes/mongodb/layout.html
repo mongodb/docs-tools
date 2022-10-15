@@ -132,7 +132,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
 
-  {%- block canonicalref %}{%- endblock -%}
+  {%- if version == theme_upcoming or theme_eol == "true" or theme_eol %}
+    {%- block canonicalref %}{%- endblock -%}
+  {%- endif %}
 
   <meta name="release" content="{{release}}"/>
   <meta name="version" content="{{version}}"/>
