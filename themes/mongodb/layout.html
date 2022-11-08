@@ -133,12 +133,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
 
   {%- if version == theme_upcoming or theme_eol == "true" or theme_eol %}
-    <meta name="robots" content="noindex,nofollow" />
-  {%- elif version in theme_active_branches or not theme_active_branches %}
-    <meta name="robots" content="index" />
     {%- block canonicalref %}{%- endblock -%}
-  {%- else -%}
-    <meta name="robots" content="noindex,nofollow" />
   {%- endif %}
 
   <meta name="release" content="{{release}}"/>
