@@ -131,11 +131,10 @@
   <link rel="shortcut icon" href="{{theme_base_url}}/assets/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
+  
+  {%- block canonicalref %}{%- endblock -%}
 
-  {%- if version == theme_upcoming or theme_eol == "true" or theme_eol %}
-    {%- block canonicalref %}{%- endblock -%}
-  {%- endif %}
-
+  <meta name="robots" content="index" />
   <meta name="release" content="{{release}}"/>
   <meta name="version" content="{{version}}"/>
   <meta name="DC.Source" content="https://github.com/mongodb/{{theme_repo_name}}/blob/{{theme_branch}}/source/{{pagename}}.txt"/>
