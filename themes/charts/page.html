@@ -14,9 +14,9 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/master/" />
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/current/" />
   {%- else %}
-    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/master/{{pagename}}" />
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/current/{{pagename}}" />
   {%- endif -%}
 {%- endblock -%}
 
@@ -28,7 +28,7 @@
 
             This documentation refers to the on-premises edition
             of MongoDB Charts. Read the 
-            <a href="{{theme_base_url}}/charts/master/">Atlas
+            <a href="{{theme_base_url}}/charts/current/">Atlas
             service documentation</a> to learn how to use MongoDB 
             Charts with your Atlas project.
 
