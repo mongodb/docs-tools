@@ -14,9 +14,9 @@
 
 {%- block canonicalref %}
   {%- if pagename == 'index' %}
-    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/current/" />
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/stable/" />
   {%- else %}
-    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/current/{{pagename}}/" />
+    <link rel="canonical" href="{{theme_base_url}}/{{theme_project}}/stable/{{pagename}}/" />
   {%- endif -%}
 {%- endblock -%}
 
