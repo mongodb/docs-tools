@@ -4,14 +4,12 @@ version:
     - '1.20'
     - '1.19'
     - '1.18'
-    - '1.17'
 
   active:
     - '1.21'
     - '1.20'
     - '1.19'
     - '1.18'
-    - '1.17'
 
   stable: '1.20'
   upcoming: '1.21'
@@ -23,7 +21,6 @@ git:
       - 'v1.20'
       - 'v1.19'
       - 'v1.18'
-      - 'v1.17'
 
       # the branches/published list **must** be ordered from most to
       # least recent release.
