@@ -87,19 +87,35 @@
   {%- endif %}
 
   {%- if theme_5_0_eol %}
-  <div class="alert alert-info alert-dismissible fade in" role="alert" style="margin-left: 20px">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <span class="alert-message">
-      <h4 class="alert-heading" style="margin-bottom: 10px;">
-        Support for Ops Manager 5.0 Ends July 2023.
-      </h4>
+    <div class="alert alert-info alert-dismissible fade in" role="alert" style="margin-left: 20px">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <span class="alert-message">
+        <h4 class="alert-heading" style="margin-bottom: 10px;">
+          Support for Ops Manager 5.0 Ends July 2023.
+        </h4>
+  
+        <a href="{{theme_base_url}}/ops-manager/v6.0/tutorial/upgrade-ops-manager/">Upgrade Ops Manager to version 6.0</a> for continued support.
+      </span>
+    </div>
+  {%- endif %}
 
-      <a href="{{theme_base_url}}/ops-manager/v6.0/tutorial/upgrade-ops-manager/">Upgrade Ops Manager to version 6.0</a> for continued support.
-    </span>
-  </div>
-{%- endif %}
+  {%- if theme_managed_sharded_collection_eol %}
+    <div class="alert alert-info alert-dismissible fade in" role="alert" style="margin-left: 20px">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <span class="alert-message">
+        <h4 class="alert-heading" style="margin-bottom: 10px;">
+          In version 7.0, MongoDB Ops Manager will end support for SNMP and 
+          the Manage Sharded Collections UI.
+        
+          The removal of the Manage Sharded Collections UI will not impact your sharded clusters.
+        </h4>
+      </span>
+    </div>
+  {%- endif %}
 
 {%- endblock -%}
 
