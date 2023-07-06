@@ -16,7 +16,7 @@
 
     /* TODO: this should be its own component */
     &__header {
-      font-family: Akzidenz;
+      font-family: sans-serif;
       font-weight: bold;
       padding: 20px;
     }

@@ -5,7 +5,7 @@
   bottom: 0;
   box-shadow: 0 16px 60px 0 rgba(86, 91, 115, 0.2);
   color: #fff;
-  font-family: 'Akzidenz', sans-serif;
+  font-family: sans-serif;
   font-size: 14px;
   line-height: 24px;
   position: fixed;
@@ -105,7 +105,7 @@
 .deluge-header {
   align-items: center;
   display: flex;
-  font-family: 'Akzidenz', sans-serif;
+  font-family: sans-serif;
   height: 44px;
   justify-content: center;
   line-height: 44px;
@@ -160,7 +160,7 @@
 .deluge-vote-button {
   color: var(--mongodb-green);
   display: inline-block;
-  font-family: 'Akzidenz', sans-serif;
+  font-family: sans-serif;
   text-align: center;
   text-decoration: underline;
   width: 50%; }
@@ -170,7 +170,7 @@
 
 .deluge-fix-button {
   color: var(--mongodb-green);
-  font-family: 'Akzidenz', sans-serif;
+  font-family: sans-serif;
   text-decoration: none; }
 
 .deluge-fix-button:hover {
@@ -188,7 +188,7 @@
     -webkit-box-flex: 1;
         -ms-flex-positive: 1;
             flex-grow: 1;
-    font-family: "Akzidenz",sans-serif;
+    font-family: sans-serif;
     font-size: 12px;
     height: 26px; }
   .deluge-button-group button:disabled {

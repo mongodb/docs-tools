@@ -71,7 +71,7 @@
 }
 
 body {
-    font-family: "Akzidenz", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
     color: #494747;
@@ -132,7 +132,7 @@ div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
-    font-family: "Akzidenz", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 200;
     line-height: 24px;
     color: #313030;
@@ -1499,7 +1499,7 @@ table.compatibility-large {
     border-collapse: collapse;
     color: rgb(73, 71, 71);
     display: table-cell;
-    font-family: "Akzidenz", 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 14px;
     width: 100%;
     vertical-align: middle;

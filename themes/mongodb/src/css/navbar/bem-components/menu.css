@@ -26,7 +26,7 @@
   &__link {
     color: var(--charcoal-grey-two);
     display: inline-block;
-    font-family: Akzidenz;
+    font-family: sans-serif;
     outline: none;
     text-decoration: none;
     width: 100%;

@@ -10,28 +10,28 @@ body {
 
 h1 {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 40px;
   font-weight: normal;
 }
 
 h2 {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 30px;
   font-weight: normal;
 }
 
 h3 {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 20px;
   font-weight: normal;
 }
 
 h4 {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 20px;
   font-weight: normal;
 }
@@ -39,14 +39,14 @@ h4 {
 /* Label */
 h5 {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 12px;
   font-weight: bold;
 }
 
 p {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 16px;
   font-weight: normal;
   line-height: 24px;
