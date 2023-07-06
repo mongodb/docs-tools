@@ -12,7 +12,7 @@ html {
 
 h1 {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 40px;
   font-weight: normal;
   line-height: 47px;
@@ -21,7 +21,7 @@ h1 {
 
 h2 {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 30px;
   font-weight: normal;
   line-height: 47px;
@@ -31,7 +31,7 @@ h2 {
 
 h3 {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 20px;
   font-weight: bold;
   line-height: 24px;
@@ -40,7 +40,7 @@ h3 {
 
 h4 {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 20px;
   font-weight: normal;
   line-height: 24px;
@@ -62,7 +62,7 @@ h4:before {
 /* Label */
 h5 {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 12px;
   font-weight: bold;
   line-height: 14px;
@@ -71,7 +71,7 @@ h5 {
 
 p {
   color: var(--charcoal-grey-two);
-  font-family: Akzidenz;
+  font-family: sans-serif;
   font-size: 16px;
   font-weight: normal;
   line-height: 20px;
@@ -93,5 +93,5 @@ a {
 }
 
 ul {
-  font-family: Akzidenz;
+  font-family: sans-serif;
 }
