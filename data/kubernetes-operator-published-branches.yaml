@@ -13,13 +13,14 @@ version:
     - '1.19'
     - '1.18'
 
-  stable: '1.21'
-  upcoming: '1.22'
+  stable: '1.22'
+  upcoming: '1.23'
 git:
   branches:
-    manual: 'v1.22'
+    manual: 'v1.23'
     published:
       - 'master'
+      - 'v1.22'
       - 'v1.21'
       - 'v1.20'
       - 'v1.19'
