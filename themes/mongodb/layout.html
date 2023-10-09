@@ -16,7 +16,7 @@
           {% if version is defined and version.startswith("v") %}{% set version_num = version[1:] %}{% endif %}
           {% if (version_num is defined) and (version_num|int != 0) %}Version {{ version_num }}{% else %}{{ version }}{% endif %}
         </button>
-        <a href="{{theme_base_url}}/legacy">&larr; Return to Documentation</a>
+        <a href="{{theme_base_url}}/legacy/">&larr; Return to Documentation</a>
       {% else %}
         <button type="button" class="version-button dropdown-toggle" data-toggle="dropdown">
           {% set version = theme_version_selector|selectattr('current')|map(attribute='text')|first|e %}
