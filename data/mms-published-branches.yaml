@@ -12,7 +12,6 @@ git:
     manual: 'v6.0'
     published:
       - 'master'
-      - 'v7.0'
       - 'v6.0'
       # the branches/published list **must** be ordered from most to
       # least recent release.
